@@ -1,0 +1,42 @@
+#%Module
+
+proc ModulesHelp {} {
+    puts stderr "Configure VACUMM's environment"
+    puts stderr "More info about the library at http://www.ifremer.fr/vacumm/"
+    puts stderr ""
+}
+
+# Declare a conflict with other vacumm that would be currently loaded
+conflict vacumm
+
+# You may want to load some dependencies here
+#   module load cdat
+#   module load ...
+# or declare a prerequisite, letting the user load the one of his choice
+#    prereq cdat
+#    prereq ...
+# We need cdat or uv-cdat
+prereq cdat uvcdat uv-cdat
+
+# Try to retrieve the real modulefile path in case it or one of its parent directories is a link 
+# (doing this in tcl language is a bit more complicated)
+set tmpstatus [catch {exec readlink -f $ModulesCurrentModulefile} realmodulefilepath]
+if {$tmpstatus == 0} {
+    set moduledir [file dirname $realmodulefilepath]
+} else { # Fallback without symbolic links care
+    set moduledir [file dirname $ModulesCurrentModulefile]
+
+}
+
+# Identify the needed informations to configure the environment
+set etcdir [file dirname $moduledir]
+set prefix [file dirname $etcdir]
+set bindir $prefix/bin 
+set libdir $prefix/lib 
+set libpydir $libdir/python
+
+# Now configure the environment
+setenv VACUMM_HOME $prefix
+prepend-path PATH $bindir
+prepend-path PYTHONPATH $libpydir
+

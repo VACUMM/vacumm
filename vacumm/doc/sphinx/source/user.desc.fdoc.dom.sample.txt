@@ -1,0 +1,57 @@
+**Programme**
+
+.. f:program:: make_stats
+
+    Programme principal de calcul des statistiques
+
+**Module** :f:mod:`mymodule`
+
+.. f:module:: mymodule
+    :synopsis: Module de calculs
+            
+.. f:variable:: nx
+    :type: integer
+    :attrs: parameter=5
+
+    Dimension zonale.
+    
+.. f:variable:: sst(nx)
+    :type: float
+    
+    SST du modèle.
+    
+.. f:type:: obs
+    
+    Type décrivant un jeu d'observations.
+    
+    :f x(nx): Axe zonal.
+    :ftype x: float
+    :f float sst(nx): SST
+
+.. f:subroutine:: stats(data, b, [c, d])
+
+    Description de la routine.
+    
+    :param obs data: Données à analyser.
+    :p integer a(nx,5) [in]: Aussi obligatoire.
+    :o float c [optional]: Optionel.
+    :o d: Aussi optionel.
+    :from: :f:prog:`make_stats`.
+    :to: :f:func:`rms`
+    
+**Module** :f:mod:`special_stats`
+
+.. f:module:: special_stats
+
+.. f:function:: rms(mod, obs, unbiased)
+
+    Compute RMS erreur.
+    
+    :p float mod(nx) [in]: Sortes modèles.
+    :p float obs(nx) [in]: Observations.
+    :o logical unbiased [default=.true.]: Calcul biasé ?
+    :r rms(nx): RMS calculée.
+    :rtype rms: float
+    :from: :f:func:`mymodule/stats` :f:func:`~mymodule/stats` :f:subr:`stats` :f:func:`stats`
+    
+.. f:currentmodule::

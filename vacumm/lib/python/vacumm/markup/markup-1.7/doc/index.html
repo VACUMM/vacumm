@@ -1,0 +1,584 @@
+<html>
+    <head>
+        <title>markup.py - an HTML and XML generator in Python</title>
+        <link href='markup.css' rel='stylesheet' type='text/css' media='all' />
+        <meta name='description' content='markup.py - an HTML/XML generator in Python'>
+        <meta name='keywords' content='python, html generator, xml generator, structured markup, web development'>
+    </head>
+    <body>
+
+        <table>
+            <tr>
+                <td>
+                    <br>
+                    <ul>
+                        <li class='side'><a href='#about' class='menu'>About</a></li>
+                        <li class='side'><a href='#features' class='menu'>Features</a></li>
+                        <li class='side'><a href='#examples' class='menu'>Examples</a></li>
+                        <li class='side'><a href='#documentation' class='menu'>Documentation</a></li>
+                        <li class='side'><a href='#download' class='menu'>Download</a></li>
+                        <li class='side'><a href='#development' class='menu'>Development</a></li>
+                    </ul>
+                </td>
+                <td>
+                    <div id='main'>
+
+            <h1><a name='about'>About markup.py</a></h1>
+            <p>Markup.py is an intuitive, lightweight, easy-to-use, customizable and pythonic HTML/XML generator. It attempts to help
+            developers output valid HTML 4.01 as defined by the
+            <a href='http://www.w3.org/TR/html4/'>W3C specification</a>.
+            The set of valid and invalid elements is not hard-wired and is easily <a href='#ex_xml'>customizable</a>.
+            There are no third-party dependencies only the standard Python library is needed in order to use markup.py.</p>
+
+            <p>The code is in the public domain, you can do absolutely whatever you want with it.</p>
+
+            <p>About the name: it is markup.py and not just markup so that it is easier to search for it on search engines.
+            Note that there was once a Markup package from Edgewall which changed its name to Genshi and now
+            can be found at <a href='http://genshi.edgewall.org/'>http://genshi.edgewall.org</a>.
+
+            <p>A quick example: the following code</p>
+
+            <a name='quick'><div class='code'></a><pre>
+    import markup
+
+    items = ( "Item one", "Item two", "Item three", "Item four" )
+    paras = ( "This was a fantastic list.", "And now for something completely different." )
+    images = ( "thumb1.jpg", "thumb2.jpg", "more.jpg", "more2.jpg" )
+
+    page = markup.page( )
+    page.init( title="My title", 
+               css=( 'one.css', 'two.css' ), 
+               header="Something at the top", 
+               footer="The bitter end." )
+
+    page.ul( class_='mylist' )
+    page.li( items, class_='myitem' )
+    page.ul.close( )
+
+    page.p( paras )
+    page.img( src=images, width=100, height=80, alt="Thumbnails" )
+
+    print page
+            </pre></div>
+
+            <p>will result in</p>
+
+            <div class='code'>
+                <pre>
+        &lt;!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'&gt;
+        &lt;html lang='en'&gt;
+        &lt;head&gt;
+        &lt;link media='all' href='one.css' type='text/css' rel='stylesheet' /&gt;
+        &lt;link media='all' href='two.css' type='text/css' rel='stylesheet' /&gt;
+        &lt;title&gt;My title&lt;/title&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+        Something at the top
+        &lt;ul class='mylist'&gt;
+        &lt;li class='myitem'&gt;Item one&lt;/li&gt;
+        &lt;li class='myitem'&gt;Item two&lt;/li&gt;
+        &lt;li class='myitem'&gt;Item three&lt;/li&gt;
+        &lt;li class='myitem'&gt;Item four&lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;p&gt;This was a fantastic list.&lt;/p&gt;
+        &lt;p&gt;And now for something completely different.&lt;/p&gt;
+        &lt;img width='100' alt='Thumbnails' src='thumb1.jpg' height='80' /&gt;
+        &lt;img width='100' alt='Thumbnails' src='thumb2.jpg' height='80' /&gt;
+        &lt;img width='100' alt='Thumbnails' src='more.jpg' height='80' /&gt;
+        &lt;img width='100' alt='Thumbnails' src='more2.jpg' height='80' /&gt;
+        The bitter end.
+        &lt;/body&gt;
+        &lt;/html&gt;
+                </pre>
+            </div>
+
+            <p>See below for more <a href='#examples'>examples</a> or download a module with even more <a href='examples.py'>examples.py</a>.</p>
+
+            <p>The emphasis is on being lightweight; markup.py is not a web framework or full blown templating engine or parser,
+            it is actually a single file with only three classes plus exceptions. And its only purpose in life is to generate
+            HTML/XML without cluttering your Python code with tags.</p>
+
+            <p>There are three modes of operation. In <a href='#doc_html'>strict HTML</a> mode an exception
+            is raised for <a href='http://www.w3.org/TR/html4/appendix/changes.html#h-A.3.1.2'>deprecated elements</a>,
+            in <a href='#doc_html'>loose HTML</a> mode deprecated elements are allowed and in
+            <a href='#doc_xml'>XML</a> mode arbitrary elements are allowed by default or they may be customized.</p>
+
+            <p>Apart from the basic elements there are shorthand methods in any of the two HTML modes
+            for frequently used combination of tags such
+            as defining a CSS stylesheet, defining a header or footer, etc.</p>
+
+            <p>Basic operation of markup.py tries to be simple. Element definition in your Python code
+            is done via</p>
+            <div class='code'><pre>
+    mypage.element( text, attr1=value1, attr2=value2 )</pre></div>
+            <p>which will be rendered as</p>
+            <div class='code'><pre>
+    &lt;element attr1='value1' attr2='value2'&gt;text&lt;/element&gt;</pre></div>
+            <p>for an element
+            with both opening and closing tags. Here <b>mypage</b> is an instance of <b>markup.page</b>.
+            For an element with an opening tag only non-keyword arguments raise
+                an exception thus only</p>
+                <div class='code'><pre>
+    mypage.element( attr1=value1, attr2=value2 )</pre></div>
+                <p>is allowed and will be rendered as</p>
+                <div class='code'><pre>
+    &lt;element attr1='value1' attr2='value2' /&gt;</pre></div>
+                <p>The set of valid elements is <a href='#tags'>customizable</a>.
+                You can define two sets one for the elements with opening
+                tags only and one for elements with both opening and closing tags. If you write a document with a fixed
+                set of element it is useful to define these because typos will be recognized and appropriate
+                exceptions will be raised. There are predefined sets for
+                HTML and an option to allow arbitrary elements.</p>
+
+                <p>In order to eliminate the need for explicit loops over the same elements all arguments
+                can be lists or tuples or any iterator in fact. That is <b>text</b>, <b>value1</b> and <b>value2</b> in the above examples
+                may be iterators and the corresponding element will be repeated as many times as the length
+                of the iterator. If the lengths are not the same (which is allowed) the longest will determine
+                the number of elements rendered and the last entry in the shorter iterators will be repeated
+                as many times as need for it to be as long as the longest.</p>
+
+                <p>It is also possible to nest elements. For full documentation <a href='#documentation'>see below</a>.</p>
+            
+            <p>Related projects include <a href='http://www.hoboes.com/Mimsy/?ART=128'>makeHTML</a>,
+            <a href='http://starship.python.net/crew/friedrich/HTMLgen/html/main.html'>HTMLgen</a> and
+            <a href='http://pyhtmloo.sourceforge.net/'>pyhtmloo</a>.</p><br>
+
+
+            <h1><a name='features'>Features</a></h1><br>
+
+            <ul>
+                <li>Conforms to HTML 4.01 by default</li><br>
+                <li>Optionally a customizable set of valid elements can be used for XML</li><br>
+                <li>Optionally escape &lt;, &gt; and &amp; characters as &amp;lt;, &amp;gt; and &amp;amp;</li><br>
+                <li>Output elements in either upper or lower case</li><br>
+                <li><a href='#nesting'>Nesting</a> of elements</li><br>
+                <li>Save lot of annoying tag typing! :)</li><br>
+            </ul>
+            <br>
+
+            <h1><a name='examples'>Examples</a></h1>
+
+            <h2><a name='ex_html'>HTML</a></h2>
+
+            <p>The following code</p>
+            <div class='code'><pre>
+    import markup
+
+    title = "Useless Inc."
+    header = "Some information at the top, perhaps a menu."
+    footer = "This is the end."
+    styles = ( 'layout.css', 'alt.css', 'images.css' )
+
+    page = markup.page( )
+    page.init( css=styles, title=title, header=header, footer=footer )
+    page.br( )
+    
+    paragraphs = ( "This will be a paragraph.",
+                   "So as this, only slightly longer, but not much.",
+                   "Third absolutely boring paragraph." )
+
+    page.p( paragraphs )
+        
+    page.a( "Click this.", class_='internal', href='index.html' )
+    page.img( width=60, height=80, alt='Fantastic!', src='fantastic.jpg' )
+
+    print page
+            </pre></div>
+            <p>will result in<p>
+            <div class='code'><pre>
+    &lt;!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'&gt;
+    &lt;html lang='en'&gt;
+    &lt;head&gt;
+    &lt;link href='layout.css' type='text/css' rel='stylesheet' /&gt;
+    &lt;link href='alt.css' type='text/css' rel='stylesheet' /&gt;
+    &lt;link href='images.css' type='text/css' rel='stylesheet' /&gt;
+    &lt;title&gt;Useless Inc.&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+    Some information at the top, perhaps a menu.
+    &lt;br /&gt;
+    &lt;p&gt;This will be a paragraph.&lt;/p&gt;
+    &lt;p&gt;So as this, only slightly longer, but not much.&lt;/p&gt;
+    &lt;p&gt;Third absolutely boring paragraph.&lt;/p&gt;
+    &lt;a href='index.html' class='internal'&gt;Click this.&lt;/a&gt;
+    &lt;img src='fantastic.jpg' alt='Fantastic!' height='80' width='60' /&gt;
+    This is the end.
+    &lt;/body&gt;
+    &lt;/html&gt;
+            </pre></div>
+            
+
+            <p>For an HTML snippet without doctype, head, title, etc, omit the <b>init( )</b> method:</p>
+            <div class='code'><pre>
+    import markup
+
+    images = ( 'egg.jpg', 'spam.jpg', 'eggspam.jpg' )
+    
+    page = markup.page( case='upper' )
+
+    page.div( class_='thumbs' )
+    page.img( width=60, height=80, src=images, class_='thumb' )
+    page.div.close( )
+
+    print page
+            </pre></div>
+            <p>which will output</p>
+            <div class='code'><pre>
+    &lt;DIV class='thumbs'&gt;
+    &lt;IMG src='egg.jpg' height='80' class='thumb' width='60' /&gt;
+    &lt;IMG src='spam.jpg' height='80' class='thumb' width='60' /&gt;
+    &lt;IMG src='eggspam.jpg' height='80' class='thumb' width='60' /&gt;
+    &lt;/DIV&gt;
+            </pre></div>
+
+            <h2><a name='ex_xml'>XML</a></h2>
+
+            <p>In the first example any element is allowed to occur in the document and a complete
+            document will be generated. Note the <b>mode='xlm'</b> keyword argument to <b>init( )</b>.</p>
+
+            <div class='code'><pre>
+    import markup
+
+    titles = ( 'Best featres of M-theory', 'Best bugs in M-theory', 'Branes and brains' )
+    universities = ( 'Cambridge', 'MIT', 'Amsterdam' )
+    dates = ( 'January', 'February', 'March' )
+
+    myxml = markup.page( mode='xml' )
+    myxml.init( encoding='ISO-8859-2' )
+
+    myxml.cv.open( )
+    myxml.talk( titles, university=universities, date=dates )
+    myxml.cv.close( )
+
+    print myxml
+            </pre></div>
+
+            <p>the above will output</p>
+
+            <div class='code'><pre>
+    &lt;?xml version='1.0' encoding='ISO-8859-2' ?&gt;
+    &lt;cv&gt;
+    &lt;talk date='January' university='Cambridge'&gt;Best featres of M-theory&lt;/talk&gt;
+    &lt;talk date='February' university='MIT'&gt;Best bugs in M-theory&lt;/talk&gt;
+    &lt;talk date='March' university='Amsterdam'&gt;Branes and brains&lt;/talk&gt;
+    &lt;/cv&gt;
+            </pre></div>
+
+            <p><a name='tags'>Limiting</a> the set of valid elements is done throught the <b>onetags</b> and <b>twotags</b> options of the
+            <b>init( )</b> method:</p>
+            <div class='code'><pre>
+    import markup
+
+    names =     ( 'Alice', 'Bob', 'Eve' )
+    positions = ( 'encryption', 'encryption', 'eavesdropper' )
+    locations = ( 'headquarters', 'headquarters', 'unknown' )
+
+    myxml = markup.page( mode='xml', onetags=[ 'person', 'location' ], twotags=[ 'company' ] )
+    myxml.init( )
+    
+    myxml.company( name='Secret' )
+    myxml.person( name=names, position=positions, location=locations )
+    myxml.location( name=( 'headquarters', 'unknown' ), address=( 'here', 'hmmmm' ) )
+    myxml.company.close( )
+
+    print myxml
+            </pre></div>
+
+            <p>The above will result in</p>
+            
+            <div class='code'><pre>
+    &lt;?xml version='1.0' ?&gt;
+    &lt;company name='Secret'&gt;
+    &lt;person position='encryption' location='headquarters' name='Alice' /&gt;
+    &lt;person position='encryption' location='headquarters' name='Bob' /&gt;
+    &lt;person position='eavesdropper' location='unknown' name='Eve' /&gt;
+    &lt;location name='headquarters' address='here' /&gt;
+    &lt;location name='unknown' address='hmmmm' /&gt;
+    &lt;/company&gt;
+            </pre></div>
+            
+            <p>In the above example passing a non-keyword argument to <b>person</b> would have raised an exception.</p>
+            <br>
+            <h1><a name='documentation'>Documentation</a></h1>
+            
+            <p>Each element is represented by a callable subclass of <b>markup.page</b>. Elements requiring both an opening and closing tag
+            and those with only opening tags are distinguished and handled differently. The first (non-keyword) argument
+            to an element will appear between the opening and closing tags and any keyword argument is interpreted as an attribute.
+            A non-keyword argument for elements requiring only an opening tag raises an exception.</p>
+
+            <p>Thus if <b>mypage</b> is an instance of <b>markup.page</b> then</p>
+            <div class='code'><pre>
+    mypage.element( text, attr1=value1, attr2=value2 )</pre></div>
+            <p>will be rendered as</p>
+            <div class='code'><pre>
+    &lt;element attr1='value1' attr2='value2'&gt;text&lt;/element&gt;</pre></div>
+            <p>for an element
+                with both opening and closing tags. For an element with an opening tag only non-keyword arguments raise
+                an exception and only</p>
+                <div class='code'><pre>
+    mypage.element( attr1=value1, attr2=value2 )</pre></div>
+                <p>is allowed and will be rendered as</p>
+                <div class='code'><pre>
+    &lt;element attr1='value1' attr2='value2' /&gt;</pre></div>
+
+                <p>It is possible to output an attribute without a value by specifying <b>None</b> as the keyword argument:</p>
+                <div class='code'><pre>
+    mypage.element( checked=None )</pre></div>
+                <p>which will result in</p>
+                <div class='code'><pre>
+    &lt;element checked /&gt;</pre></div>
+
+                <p>Adding pure text without tags is done with the <b>add( )</b> method of <b>markup.page</b> which
+                unfortunately forbids the use of <b>add</b> as an element name. The method <b>add( )</b> should be called
+                with a string argument that will be added to the document without any tags. Similarly <b>addheader( )</b>
+                adds text to the top of the document but after any header information added by the <b><a href='#init'>init( )</a></b> method and
+                <b>addfooter( )</b> adds text to the bottom of the document but also after any footer added by <b>init( )</b>.
+            
+                
+                <p>All arguments can also be lists, tuples or any iterator of strings in which case the element in question will be repeated
+                as many times as the length of the longest iterator. Shorter iterators will be filled up with the last entry to become
+                as long as the longest. This useful
+            feature eliminates the need for explicit loops in the code and can be used for both attributes (keyword arguments) and the content of an element
+            (non-keyword argument). An <a href='#quick'>example</a> showing this useful behaviour.</p>
+            
+            <p>In addition, elements requiring both opening and closing tags
+            have two methods, <b>open( )</b> and <b>close( )</b>, those with only an opening tag have only one method, <b>open( )</b>. The <b>open( )</b> method
+            can have any number of keyword arguments which will turn into attributes. The <b>close( )</b> method can have no
+            arguments. Using these methods
+            elements can be explicitly opened or closed. The validity of attributes is not checked.</p>
+
+            <a name='nesting'></a>
+            <p>It is possible to nest elements via the <b>oneliner</b> object. For instance:</p>
+
+            <div class='code'><pre>
+    from markup import oneliner as e
+
+    page = markup.page( )
+    page.a( e.img( src='myimage.jpg' ), href='http://hak5.org/' )
+    print page</pre></div>
+
+            <p>would give</p>
+
+            <div class='code'><pre>
+    &lt;a href='http://hak5.org/'&gt;&lt;img src='myimage.jpg' /&gt;&lt;/a&gt;</pre></div>
+
+            <p>The <b>oneliner</b> object is used in exactly the same way as <b>page</b> but returns the specified element without
+            any whitespace. There is a corresponding object <b>upper_oneliner</b> that will output upper case elements.</p>
+
+            <p>Since in Python <b>class</b> is a special keyword it can not be given as an attribute to any element, although it is
+            frequently used in HTML. To overcome this use <b>class_</b> instead and it will turn into <b>class</b> in the actual output.
+            This convention was chosen so as to be inline with <a href='http://python.org/dev/peps/pep-0008/'>PEP-8</a>.
+            There is also a problem with <b>http-equiv</b> and similar attributes because the <b>-</b> sign is interpreted
+            as subtraction by Python. Use an underscore instead, <b>http_equiv</b>, etc.</p>
+
+            <p>Defining a new document starts with instantiating the <b>markup.page</b> class. The following optional arguments may be passed
+            to the constructor:</p>
+
+            <dl>
+                <dt>mode</dt>
+                <dd>Possible values are <b>strict_html</b> or <b>html</b> for HTML 4.01, <b>loose_html</b> for HTML allowing some
+                <a href='http://www.w3.org/TR/html4/appendix/changes.html#h-A.3.1.2'>deprecated elements</a>
+                and <b>xml</b> for arbitrary elements by default or a customized set of elements upon request. See the options <b>onetags</b> and <b>twotags</b> below.
+                The default value of <b>mode</b> is <b>strict_html</b>.</dd>
+                <br>
+                
+                <dt>case</dt>
+                <dd>Possible values are <b>upper</b>, <b>lower</b> and the rendering of elements are done in upper or lower case accordingly. The default
+                value is <b>lower</b>.</dd>
+                <br>
+
+                <dt>onetags</dt>
+                <dd>The value of this option should be a list defining the valid set of elements without closing tags. Only interpreted in XML mode and if defined
+                also should be the option <b>twotags</b>.</dd>
+                <br>
+
+                <dt>twotags</dt>
+                <dd>The value of this option is again a list defining the valid set of elements with both opening and closing tags. Only interpreted in XML mode and
+                if defined also should be the option <b>onetags</b>.</dd>
+                <br>
+
+                <dt>separator</dt>
+                <dd>A string that will be printed between added elements. Defaults to a newline.</dd>
+                <br>
+
+                <dt>class_</dt>
+                <dd>A string that will be added to every element as a class attribute.</dd>
+                <br>
+
+            </dl>
+
+            <p>After instantiating the <b>markup.page</b> class it is possible to add stuff which is ususally needed for any document. This is not obligatory
+            for example for an HTML/XML snippet which should not include the document type, head, title, etc., it might be omitted. For a full document it
+            is useful however and is done with the <a name='init'><b>init( )</b></a> method which accepts the following keyword
+            argument in any mode:</p>
+            
+            <dl>
+                <dt>doctype</dt>
+                <dd>If set its value will be the first line of the document and should represent the document type. Its default value is
+                <b>&lt;!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'&gt;</b> in HTML mode and is <b>&lt;?xml version='1.0' ?&gt;</b> in XML.</dd>
+                <br>
+            </dl>
+
+            <p>There are three doctypes defined in the class <b>doctype</b>:
+            <dl>
+                <dt>doctype.frameset</dt>
+                <dd>&lt;!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Frameset//EN' 'http://www.w3.org/TR/html4/frameset.dtd'&gt;</dd>
+                <br>
+                
+                <dt>doctype.strict</dt>
+                <dd>&lt;!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01//EN' 'http://www.w3.org/TR/html4/strict.dtd'&gt;</dd>
+                <br>
+
+                <dt>doctype.loose</dt>
+                <dd>&lt;!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' 'http://www.w3.org/TR/html4/loose.dtd'&gt;</dd>
+                <br>
+
+            </dl>
+                
+            <p>There are further options that depend on whether HTML or XML mode is used and will be detailed below. If the <b>init( )</b>
+            method is used in HTML mode the closing tags <b>&lt;/body&gt;&lt;/html&gt;</b> will be added to the bottom of the
+            document automatically.</p>
+
+            <p>Once coding of the document finished, the actual content as a string is in <b>mypage( )</b> or <b>str( mypage )</b> assuming
+            that the <b>markup.page</b> instance is <b>mypage</b>. Sometimes it is useful to escape all &lt;, &gt; and &amp; characters
+            as &amp;lt;, &amp;gt; and &amp;amp; if you
+            want to show them in a browser in which case <b>mypage( escape=True )</b> can be called.
+            
+            <h2><a name='doc_html'>Generating HTML</a></h2>
+            <p>In <b>strict_html</b> mode the allowed set of elements with opening tags only are <b>AREA</b>, <b>BASE</b>, <b>BR</b>, <b>COL</b>, <b>FRAME</b>,
+            <b>HR</b>, <b>IMG</b>, <b>INPUT</b>, <b>LINK</b>, <b>META</b>, <b>PARAM</b>.</p>
+
+            <p>The following elements have both an opening and a closing tag:
+            <b>A</b>, <b>ABBR</b>, <b>ACRONYM</b>, <b>ADDRESS</b>, <b>B</b>, <b>BDO</b>, <b>BIG</b>, <b>BLOCKQUOTE</b>, <b>BODY</b>, <b>BUTTON</b>,
+            <b>CAPTION</b>, <b>CITE</b>, <b>CODE</b>, <b>COLGROUP</b>, <b>DD</b>, <b>DEL</b>, <b>DFN</b>, <b>DIV</b>, <b>DL</b>, <b>DT</b>, <b>EM</b>, <b>FIELDSET</b>,
+            <b>FORM</b>, <b>FRAMESET</b>, <b>H1</b>, <b>H2</b>, <b>H3</b>, <b>H4</b>, <b>H5</b>, <b>H6</b>, <b>HEAD</b>, <b>HTML</b>, <b>I</b>, <b>IFRAME</b>, <b>INS</b>,
+            <b>KBD</b>, <b>LABEL</b>, <b>LEGEND</b>, <b>LI</b>, <b>MAP</b>, <b>NOFRAMES</b>, <b>NOSCRIPT</b>, <b>OBJECT</b>, <b>OL</b>, <b>OPTGROUP</b>,
+            <b>OPTION</b>, <b>P</b>, <b>PRE</b>, <b>Q</b>, <b>SAMP</b>, <b>SCRIPT</b>, <b>SELECT</b>, <b>SMALL</b>, <b>SPAN</b>, <b>STRONG</b>, <b>STYLE</b>,
+            <b>SUB</b>, <b>SUP</b>, <b>TABLE</b>, <b>TBODY</b>, <b>TD</b>, <b>TEXTAREA</b>, <b>TFOOT</b>, <b>TH</b>, <b>THEAD</b>, <b>TITLE</b>, <b>TR</b>,
+            <b>TT</b>, <b>UL</b>, <b>VAR</b>.</p>
+
+            <p>All other elements will raise an InvalidElementError exception.</p>
+            
+            <p>In <b>loose_html</b> mode in addition to the above ones some deprecated elements are also allowed. The ones with opening tags only are 
+            <b>BASEFONT</b>, <b>ISINDEX</b>.</p>
+
+            <p>Deprecated elements with both opening and closing tags are <b>APPLET</b>, <b>CENTER</b>, <b>DIR</b>, <b>FONT</b>, <b>MENU</b>, <b>S</b>, <b>STRIKE</b>, <b>U</b>.</p>
+
+            <p>See the <a href='http://www.w3.org/TR/html4/index/elements.html'>W3C specification</a> for more details.</p>
+            
+            <p>The <b>init( )</b> method has the following keyword arguments in addition to <b>doctype</b> discussed above:</p>
+            
+            <dl>
+                <dt>charset</dt>
+                <dd>If set to <b>somecharset</b> it is passed to the <b>&lt;meta http-equiv='Content-Type' content="text/html; charset='somecharset'"&gt;</b>
+                meta element and will be printed in the <b>head</b> section.</dd>
+                <br>
+                
+                <dt>lang</dt>
+                <dd>Sets the language of the document in the <b>&lt;html&gt;</b> tag as <b>&lt;html lang='en'&gt;</b>. Defaults to <b>en</b>.</dd>
+                <br>
+                
+                <dt>css</dt>
+                <dd>Its value can be a list of filenames or a single filename and the corresponding file(s) are added as CSS stylesheets
+                via the <b>link</b> element in the <b>head</b> section.</dd>
+                <br>
+                
+                <dt>metainfo</dt>
+                <dd>Its value is a dictionary of the form { 'name':'content' } which will be inserted
+                into meta element(s) as <b>&lt;meta name='name' content='content'&gt;</b> (ignored in xml mode).</dd>
+                <br>
+                
+                <dt>bodyattrs</dt>
+                <dd>Its value is a dictionary { 'key':'value', ... } which will be added
+                as attributes of the <b>&lt;body&gt;</b> element as <b>&lt;body key='value' ... &gt;</b> (ignored in xml mode).</dd>
+                <br>
+
+                <dt>script</dt>
+                <dd>A (list/tuple of) dictionary { 'src':'type', ... } which will be added as<br>
+                <b>&lt;script type='text/type' src='src'&gt;&lt;/script&gt;</b>
+                (ignored in xml mode)</dd>
+                <br>
+
+                <dt>title</dt>
+                <dd>Used to set the document title via the <b>title</b> element</dd>
+                <br>
+                
+                <dt>header</dt>
+                <dd>Its value can be a string and is placed right after the <b>&lt;body&gt;</b> tag.</dd>
+                <br>
+
+                <dt>footer</dt>
+                <dd>Its value can be a string and is place right before the <b>&lt;/body&gt;</b> tag.</dd>
+                <br>
+                
+            </dl>
+
+
+            <h2><a name='doc_xml'>Generating XML</a></h2>
+
+            <p>Apart from the <b>doctype</b> keyword argument of the <b>init( )</b> method which is interpreted in both
+            HTML and XML mode there is also a second one in XML mode:
+            
+            <dl>
+                <dt>encoding</dt>
+                <dd>If set to <b>someencoding</b> it is passed to the <b>&lt;?xml version='1.0' encoding='someencoding' ?&gt;</b> definition
+                that will be the first line of the document. If not set the <b>encoding</b> attribute is omitted.</dd>
+                <br>
+            </dl>
+
+
+            <p>In XML mode any element with either only opening or both opening and closing tags are allowed. Using the <b>onetags</b> and <b>twotags</b> options
+            when instantiating the <b>markup.page</b> class the default behaviour can be overriden and these lists may contain the only allowed
+            elements with both opening and closing tags (<b>twotags</b>) and the ones with opening tag only (<b>onetags</b>).
+            See above for an <a href='#tags'>example</a>. If these keyword arguments are used appropriate exceptions are
+            raised if an invalid element (an element not in these lists) is attempted to be used in order to prevent typos.</p>
+
+            
+            <h1><a name='download'>Download</a></h1>
+            <p>You can download markup.py from the sourceforge <a href='http://sourceforge.net/project/showfiles.php?group_id=161108' class='plain'>project page</a>.</p>
+            <br>
+            
+            <h1><a name='development'>Development</a></h1>
+            <p>The current (17 May 2007) version is 1.7.</p>
+            
+            <p>If you find any bugs, please send them to nogradi at gmail dot com.</p>
+
+            <p>If you have feature requests, suggestions for improvements, any comments or such, please email that as well.</p>
+            
+            <p>Here is a list of people who have contributed to the development of markup.py in some way or another,
+            their efforts are kindly acknowledged:</p>
+
+            <ul><br>
+                <li>Roel Mathys</li><br>
+                <li>Brian Blais</li><br>
+                <li>Davide Cesari</li><br>
+                <li>Carsten Bock</li><br>
+                <li>Fred Gansevles</li>
+            </ul>
+
+        <br><br>
+        
+        <div align='right'>
+            nogradi at gmail dot com
+        </div>
+
+        <hr>
+    </div>
+            </td>
+        </tr>
+    </table>
+
+        <div id='footer'>
+            <ul>
+                <li><a href='#about' class='menu'>About</a></li>
+                <li><a href='#features' class='menu'>Features</a></li>
+                <li><a href='#examples' class='menu'>Examples</a></li>
+                <li><a href='#documentation' class='menu'>Documentation</a></li>
+                <li><a href='#download' class='menu'>Download</a></li>
+                <li><a href='#development' class='menu'>Development</a></li>
+            </ul>
+        </div>
+    
+    </body>
+</html>
+

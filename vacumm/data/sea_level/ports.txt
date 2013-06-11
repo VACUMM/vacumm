@@ -1,0 +1,180 @@
+nom : Nom de la station ou du port
+latitude : Latitude de la station
+longitude : Longitude de la station
+zone : Zone geographique
+igs : Identifiant IGS
+psmsl : Identifiant PSMSL
+uhslc : Identifiant UHSLC
+gloss : Identifiant GLOSS
+shom : Identifiant SHOM
+legos : Identifiant LEGOS
+phm : Plus Haute Mer astronomique 
+pm95 : Pleine Mer de Vive-eau moyenne (Coef. 95) 
+pm45 : Pleine mer de Morte-eau moyenne (Coef. 45) 
+nm : Niveau Moyen
+bm45 : Basse Mer de Morte-eau moyenne (Coef. 45) 
+bm95 : Basse Mer de Vive-eau moyenne (Coef. 95) 
+pbm : Plus Basse Mer astronomique 
+phm : Plus Haute Mer astronomique
+zero_hydro : Cote du zero hydro par rapport au zero de nivellement (IGN69) ou au zero Lallemand (NGF)
+url_zone :  http://www.shom.fr/fr_page/fr_act_oceano/maree/zone%s.htm
+zone1 : 1_5
+zone2 : 1_5
+zone3 : 1_5
+zone4 : 1_5
+zone5 : 1_5
+zone6 : 6_9
+zone7 : 6_9
+zone8 : 6_9
+zone9 : 6_9
+zone10 : 10_12
+zone11 : 10_12
+zone12 : 10_12
+zone13 : 13_14
+zone14 : 13_14
+zone15 : 15_16
+zone16 : 15_16
+zonegir : Gironde
+Nom                        IGS  PSMSL  UHSLC GLOSS SHOM  LEGOS Latitude    Longitude    Zone   PHM  PM95   PM45  NM   BM45  BM95  PBM   Zero_hydro
+Dunkerque                  None 190001 None   None DUNKE None  51 02'05"N  002 22'04"E   1     640   605   500   324  150    60    5    -2.693 m IGN69
+Gravelines                 None None   None   None None  None  51 01'00"N  002 06'00"E   1     695   650   535   349  165    65    5    -2.940 m IGN69
+Calais                     None 190011 None   None CALAI None  50 58'07"N  001 50'58"E   2     775   730   605   407  210    85   30    -3.459 m IGN69
+Wissant                    None None   None   None None  None  50 53'00"N  001 40'00"E   2     855   800   655   444  235   100   40    -3.880 m IGN69
+Boulogne-sur-Mer           None 190021 None   None BOULO None  50 43'42"N  001 35'36"E   3     945   885   720   491  260   110   40    -4.388 m IGN69
+Le Touquet, Etaples        None None   None   None None  None  50 31'00"N  001 35'00"E   3    1020   955   775   535  290   120   45    -4.830 m IGN69
+Berck-Plage                None None   None   None None  None  50 24'00"N  001 34'00"E   3    1050   980   795   547  295   125   45    -4.950 m IGN69
+Cayeux-sur-Mer             None None   None   None None  None  50 11'00"N  001 29'00"E   3    1055   985   800   549  295   120   45    -4.970 m IGN69
+Le Treport                 None None   None   None None  None  50 04'34"N  001 22'26"E   4    1030   945   750   505  255    90   10    -4.518 m IGN69
+Dieppe                     None None   None   None None  None  49 55'48"N  001 05'06"E   4    1010   930   740   494  250    80   -5    -4,448 m IGN69
+St-Valery-en-Caux          None None   None   None None  None  49 53'00"N  000 43'12"E   4     960   880   700   472  240    75   -5    -4.270 m IGN69
+Fecamp                     None None   None   None None  None  49 45'43"N  000 22'00"E   5     895   835   685   487  280   120   30    -4.428 m IGN69
+Etretat                    None None   None   None None  None  49 42'47"N  000 11'54"E   5     875   810   665   480  280   120   35    -4.370 m IGN69
+Le Havre-Antifer           None None   None   None None  None  49 39'05"N  000 09'15"E   5     855   800   665   487  285   125   45    -4.410 m IGN69
+Le Havre                   None 190051 None   None HAVRE None  49 29'00"N  000 07'00"E   5     840   790   660   487  285   120   30    -4.384 m IGN69
+Honfleur                   None None   None   None None  None  49 25'00"N  000 14'00"E   5     850   800   670   503  295   155   65    -4.310 m IGN69
+Trouville-Deauville        None None   None   None None  None  49 22'00"N  000 05'00"E   5     890   830   690   514  310   130   30    -4.650 m IGN69
+Dives (Embouchure)         None None   None   None None  None  49 18'00"N  000 05'00"W   5     875   820   680   508  305   130   30    -4.590 m IGN69
+Ouistreham                 None None   None   None None  None  49 16'54"N  000 14'54"W   5     810   760   630   463  260   95    10    -4.080 m IGN69
+Courseulles-sur-Mer        None None   None   None None  None  49 24'38"N  000 28'35"W   5     795   740   615   456  270   110   30    -3.990 m IGN69
+Arromanches                None None   None   None None  None  49 21'19"N  000 37'12"W   5     785   730   600   443  260   105   25    -4.020 m IGN69
+Port-en-Bessin             None None   None   None None  None  49 21'05"N  000 45'20"W   5     785   725   595   440  260   110   30    -4.220 m NGF
+Grandcamp                  None None   None   None None  None  49 25'16"N  001 05'07"W   6     750   720   590   440  265   125   55    -4.410 m NGF
+Iles Saint-Marcouf         None None   None   None None  None  49 29'46"N  001 08'16"W   6     735   705   575   428  260   120   50    -4.274 m NGF
+Saint-Vaast-la-Hougue      None None   None   None None  None  49 35'18"N  001 15'24"W   6     725   675   550   412  250   105   35    -3,474 m IGN69
+Barfleur                   None None   None   None None  None  49 40'24"N  001 15'30"W   6     715   650   530   394  250   115   45    -3.970 m NGF
+Cherbourg                  None 190061 None   None CHERB None  49 39'08"N  001 38'08"W   6     700   640   505   381  250   110   30    -3.277 m IGN69
+Omonville-la-Rogue         None None   None   None None  None  49 42'24"N  001 49'54"W   6     690   630   495   377  250   110   25    -3.257 m IGN69
+Les Casquets               None None   None   None None  None  49 42'55"N  002 43'06"W   7     752   670   510   373  245    70  -32    None
+Goury                      None None   None   None None  None  49 42'54"N  001 56'50"W   7     900   815   660   506  350   140   35    -4.915 m IGN69
+Dielette                   None None   None   None None  None  49 33'12"N  001 51'42"W   7    1080   975   745   544  350   120    0    -4.916 m IGN69
+Carteret                   None None   None   None None  None  49 21'54"N  001 50'06"W   7    1185  1065   810   586  375   135   20    -5.300 m IGN69
+Portbail                   None None   None   None None  None  49 18'30"N  001 44'45"W   7    1271  1145   870   632  400   145   10    -5.780 m IGN69
+Les Ecrehou                None None   None   None None  None  49 17'00"N  001 56'00"W   7    1215  1085   820   600  385   140   15    -5.510 m IGN69
+Saint-Germain-sur-Ay       None None   None   None None  None  49 14'00"N  001 36'00"W   7    1275  1150   880   648  420   160   15    -5.990 m IGN69
+Le Senequet                None None   None   None None  None  49 06'00"N  001 41'03"W   7    1335  1190   900   662  430   160   10    None
+Pointe d'Agon              None None   None   None None  None  48 59'31"N  001 37'31"W   7    1407  1270   970   705  440   155   -6    -6.550 m IGN69
+Les Minquiers              None None   None   None None  None  48 57'00"N  002 08'00"W   7    1228  1105   840   613  385   135    2    -5.910 m IGN69
+Iles Chausey               None None   None   None None  None  48 52'09"N  001 48'59"W   7    1440  1300  1000   737  480   195   45    -7.000 m IGN69
+Granville                  None None   None   None None  None  48 50'03"N  001 38'40"W   7    1450  1295   980   715  455   160    0    -6.620 m IGN69
+Cancale                    None None   None   None None  None  48 40'46"N  001 49'35"W   7    1450  1305   990   720  455   165   10    -6.770 m  IGN69
+Saint-Malo                 None None   None   None SMALO None  48 38'30"N  002 01'36"W   7    1350  1220   930   678   425  150    5    -6.289 m IGN69
+Ile des Hebihens           None None   None   None None  None  48 37'00"N  002 12'36"W   7    1330  1200   910   665   415  145    5    None
+Saint-Cast                 None None   None   None None  None  48 38'19"N  002 14'37"W   7    1325  1200   915   664   415  145    5    -6.250 m IGN69
+Erquy                      None None   None   None None  None  48 39'16"N  002 29'12"W   7    1290  1160   885   651   420  150   15    -6.060 m IGN69
+Dahouet                    None None   None   None None  None  48 34'45"N  002 34'10"W   7    1265  1130   865   632   400  135    0    -5.830 m IGN69
+Le Legue (Bouee)           None None   None   None None  None  48 34'00"N  002 43'00"W   7    1255  1140   880   640   400  140    5    -5.900 m IGN69
+Binic                      None None   None   None None  None  48 36'00"N  002 46'40"W   7    1280  1140   865   635   400  135    0    -5.905 m IGN69
+Saint-Quay-Portrieux       None None   None   None None  None  48 39'09"N  002 48'23"W   7    1275  1125   860   630   400  140   -5    -5.905 m IGN69
+Ile de Brehat (Port-Clos)  None None   None   None None  None  48 51'00"N  003 00'00"W   7    1160  1040   800   589   380  135   10    -5.400 m IGN69
+Paimpol                    None None   None   None None  None  48 47'21"N  002 56'50"W   7    1190  1080   835   609   385  135    5    -5.635 m IGN69
+Les Heaux-de-Brehat        None None   None   None None  None  48 55'00"N  003 05'00"W   7    1095   980   760   561   365  130   10    -5.120 m IGN69
+Lezardrieux                None None   None   None None  None  48 47'30"N  003 06'00"W   7    1170  1050   805   590   375  135   15    -5.480 m IGN69
+Port-Beni                  None None   None   None None  None  48 50'53"N  003 10'21"W   8    1095   980   770   570   370  140   20    -5.283 m IGN69
+Treguier                   None None   None   None None  None  48 47'11"N  003 13'10"W   8    1105   990   775   572   365  135   15    -5.280 m IGN69
+Perros-Guirec              None None   None   None None  None  48 48'13"N  003 26'32"W   8    1035   935   740   545   345  130   15    -4.985 m IGN69
+Ploumanac'h                None None   None   None None  None  48 50'12"N  003 29'10"W   8    1030   930   740   549   360  140   20    -5.020 m IGN69
+Trebeurden                 None None   None   None None  None  48 46'13"N  003 35'18"W   8    1015   920   735   548   355  140   25    -5.020 m IGN69
+Locquirec                  None None   None   None None  None  48 42'12"N  003 38'25"W   8    1005   910   725   539   345  130   15    -4.995 m IGN69
+Anse de Primel             None None   None   None None  None  48 42'49"N  003 49'31"W   8     990   900   715   532   345  130    5    -4.978 m IGN69    
+Roscoff                    None None   None   None None  None  48 43'18"N  003 57'48"W   8     975   885   705   525   340  130   20    -4.764 m IGN69
+Brignogan                  None None   None   None None  None  48 41'00"N  004 20'00"W   8     925   840   665   492   320  120   15    -4.430 m IGN69
+L'Aber Wrac'h              None None   None   None None  None  48 35'54"N  004 33'42"W   8     850   775   610   446   280  105   15    -4.070 m IGN69
+L'Aber Benoit              None None   None   None None  None  48 34'43"N  004 36'54"W   8     880   795   630   468   305  125   25    -4.221 m IGN69
+Portsall                   None None   None   None None  None  48 33'46"N  004 42'46"W   8     840   755   595   437   275  105   20    -3.896 m IGN69
+L'Aber Ildut               None None   None   None None  None  48 28'20"N  004 45'11"W   8     815   735   575   422   265  100   10    -3.725 m IGN69
+Ile d'Ouessant (Lampaul)   None None   None   None None  None  48 27'12"N  005 05'48"W   9     770   690   535   395   255  105   25    None
+Ile Molene                 None None   None   None None  None  48 24'13"N  004 57'17"W   9     815   730   575   426   280  115   25    None
+Le Conquet                 None 190089 None   None LCONQ None  48 21'36"N  004 47'00"W   9     760   680   530   389   255  100   25    -3.480 m IGN69
+Trez-Hir                   None None   None   None None  None  48 20'30"N  004 41'40"W   9     740   660   515   381   250  100   20    -3.420 m IGN69
+Brest                      BRST 190091 None   None BREST None  48 23'00"N  004 29'54"W   9     780   695   540   402   260  105   20    -3.636 m IGN69
+Camaret-sur-Mer            None None   None   None None  None  48 16'42"N  004 35'24"W   9     740   665   515   383   250  100   10    -3.400 m IGN69
+Morgat                     None None   None   None None  None  48 13'30"N  004 29'48"W   9     740   655   505   377   245  100   20    -3.400 m IGN69
+Douarnenez                 None None   None   None None  None  48 05'49"N  004 19'16"W   9     720   640   495   366   235   95   25    -3.285 m IGN69
+Ile de Sein                None None   None   None None  None  48 02'25"N  004 50'51"W   9     700   620   485   360   240   95   10    None
+Audierne                   None None   None   None None  None  48 00'30"N  004 33'00"W  10     590   525   410   307   205   85   20    -2.585 m IGN69
+Saint-Guenole              None None   None   None None  None  47 49'02"N  004 22'41"W  10     580   515   400   301   195   85   30    -2.511 m IGN69
+Le Guilvinec               None None   None   None None  None  47 47'44"N  004 16'45"W  10     565   510   400   304   205   90   20    -2.523 m IGN69
+Lesconil                   None None   None   None None  None  47 47'43"N  004 12'41"W  10     565   505   400   305   205   90   20    -2.395 m IGN69
+Loctudy                    None None   None   None None  None  47 50'12"N  004 10'05"W  10     570   505   395   298   195   85   30    -2.500 m IGN69
+Benodet                    None None   None   None None  None  47 52'52"N  004 06'57"W  10     580   515   405   305   200   80   15    -2.563 m IGN69
+Concarneau                 None None   None   None CONCA None  47 52'08"N  003 54'44"W  10     565   500   390   296   195   80   15    -2.534 m IGN69
+Iles Glenan (Penfret)      None None   None   None None  None  47 43'47"N  003 56'48"W  10     570   505   395   300   190   80   30    None
+Port-Tudy                  None None   None   None None  None  47 38'42"N  003 26'48"W  10     575   515   405   311   205   90   25    -2.729 m IGN69
+Port-Louis (Locmalo)       None None   None   None None  None  47 42'24"N  003 20'36"W  10     570   515   405   312   205   95   35    -2.850 m NGF
+Hennebont(Pont La Flamme)  None None   None   None None  None  47 47'54"N  003 16'30"W  10     575   515   405   308   195   85   25    -2.630 m IGN69
+Lorient                    None None   None   None None  None  47 43'42"N  003 21'48"W  10     575   515   405   308   200   80   15    -2.630 m IGN69
+Port d'Etel                None None   None   None None  None  47 40'00"N  003 12'30"W  10     540   495   410   325   220  155  125    -2.745 m IGN69
+Portivy                    None None   None   None None  None  47 32'09"N  003 09'14"W  10     580   520   410   315   205   90   25    -2.786 m IGN69
+Port-Maria (Quiberon)      None None   None   None None  None  47 28'24"N  003 07'18"W  10     590   530   415   320   205   90   30    -2.961 m IGN69
+Belle-Ile (Le Palais)      None None   None   None None  None  47 20'56"N  003 09'00"W  11     575   510   405   307   195   70    5    -2.650 m IGN69
+Port-Haliguen              None None   None   None None  None  47 29'15"N  003 05'57"W  11     585   525   415   315   200   70    0    -2.720 m IGN69
+La Trinite-sur-Mer         None None   None   None None  None  47 35'18"N  003 01'36"W  11     610   540   430   330   210   85   10    -2.865 m IGN69
+Port-Navalo                None None   None   None None  None  47 33'03"N  002 54'54"W  11     555   495   395   300   185   70   10    -2.625 m IGN69
+Auray (St-Goustan)         None None   None   None None  None  47 39'57"N  002 58'38"W  11     540   490   400   299   185   80   30    -2.465 m IGN69
+Arradon                    None None   None   None None  None  47 36'56"N  002 49'41"W  11     360   325   275   194   105   55   35    -1.425 m IGN69
+Vannes                     None None   None   None None  None  47 38'18"N  002 45'39"W  11     365   330   275   195   105   50   30    -1.430 m IGN69
+St Armel (Le Passage)      None None   None   None None  None  47 35'29"N  002 42'54"W  11     380   345   290   207   115   55   30    -1.530 m IGN69
+Le Lojo                    None None   None   None None  None  47 33'00"N  002 50'48"W  11     360   325   275   196   105   55   35    -1.434 m IGN69
+Port du Crouesty           None None   None   None LCROU None  47 32'37"N  002 53'37"W  11     595   530   420   323   200   75    5    -2.850 m IGN69
+Penerf                     None None   None   None None  None  47 30'42"N  002 37'24"W  11     610   545   430   328   205   75    5    -3.21 m  NGF
+Trehiguier                 None None   None   None None  None  47 29'42"N  002 26'24"W  11     630   550   440   340   215   75    0    -2,927 m IGN69
+Ile de Houat               None None   None   None None  None  47 24'18"N  002 56'54"W  11     580   520   415   317   200   80   10    None
+Ile de Hoedic              None None   None   None None  None  47 20'42"N  002 52'24"W  11     575   515   405   309   190   70    0    None
+Le Croisic                 None None   None   None None  None  47 18'00"N  002 31'00"W  12     615   545   430   330   200   70    0    -2.861 m IGN69
+Le Pouliguen               None None   None   None None  None  47 17'00"N  002 25'00"W  12     610   545   435   333   205   75    0    -3.000 m IGN69
+Pornichet                  None None   None   None None  None  47 15'30"N  002 20'48"W  12     620   550   440   341   215   85    0    -2.927 m IGN69
+Le Grand Charpentier       None None   None   None None  None  47 13'00"N  002 19'00"W  12     610   545   435   333   205   75    0    -3.000 m IGN69
+Saint-Nazaire              None None   None   None None  None  47 16'04"N  002 12'00"W  12     660   585   465   357   220   85    0    -3.159 m IGN69
+Donges                     None None   None   None None  None  48 18'24"N  002 05'12"W  12     675   595   470   358   210   65  -30    -3.159 m IGN69
+Saint-Gildas               None None   None   None None  None  47 08'30"N  002 14'18"W  12     630   560   445   341   210   80    0    -3.078 m IGN69
+Pornic                     None None   None   None None  None  47 06'30"N  002 06'46"W  12     655   580   465   357   220   80    0    -3.199 m IGN69
+Noirmoutier (Herbaudiere)  None None   None   None None  None  47 01'36"N  002 17'54"W  12     620   550   440   336   210   80    0    -3.085 m IGN69
+Fromentine                 None None   None   None None  None  46 53'36"N  002 08'30"W  12     601   530   420   320   195  100   44    -2.800 m IGN69
+Ile d'Yeu(Port-Joinville)  None None   None   None None  None  46 43'30"N  002 20'48"W  13     565   505   405   309   195   75    5    None
+St-Gilles-Croix-de-Vie     None None   None   None None  None  46 41'48"N  001 56'42"W  13     575   515   410   317   200   75    5    -2.750 m IGN69
+Les Sables-d'Olonne        None 190116 None   None None  None  46 29'48"N  001 47'42"W  13     580   520   415   320   205   75    0    -2.832 m IGN69
+Ile de Re (St-Martin)      None None   None   None None  None  46 12'29"N  001 21'56"W  14     676   605   490   382   245   95   15    -3.504 m IGN69
+La Rochelle                LROC 190121 None   None LROCH None  46 09'24"N  001 13'18"W  14     675   605   490   384   245   95   15    -3.504 m IGN69
+Ile d'Aix                  None None   None   None None  None  46 00'30"N  001 10'24"W  14     685   610   495   387   245   90   25    -3.650 m IGN69
+Le Chapus                  None None   None   None None  None  45 51'13"N  001 10'41"W  14     675   605   500   394   255  125   65    -3.800 m NGF
+La Cayenne                 None None   None   None None  None  45 47'34"N  001 07'55"W  14     615   560   465   362   240  105   35    -3.800 m NGF
+Pointe de Gatseau          None None   None   None None  None  45 48'06"N  001 13'49"W  15     590   530   435   343   230  120   60    -3.200 m NGF
+Cordouan                   None None   None   None None  None  45 35'00"N  001 10'00"W  15     575   495   400   303   200   80   10    None
+Royan                      None None   None   None None  None  45 36'54"N  001 01'22"W  15     575   515   420   321   210  105   55    -2.970 m IGN69
+Pointe de Grave            None None   None   None None  None  45 34'00"N  001 04'00"W  15     610   540   440   333   210  105   50    -2.831 m IGN69
+Le Verdon-sur-Mer          None None   None   None None  None  45 32'49"N  001 02'22"W Gir     610   540   440   333   210  105   50    -2.831 m IGN69
+Richard                    None None   None   None None  None  45 27'00"N  000 56'00"W Gir     595   530   430   310   170   55    0    -2.859 m IGN69
+Lamena                     None None   None   None None  None  45 20'00"N  000 48'00"W Gir     620   560   455   315   165   75   20    -2.817 m IGN69
+Pauillac                   None None   None   None None  None  45 12'00"N  000 45'00"W Gir     620   555   440   297   115   55   20    -2.539 m IGN69
+Ile Verte                  None None   None   None None  None  45 06'00"N  000 41'00"W Gir     605   540   420   275    90   45   20    -2.218 m IGN69
+La Reuille                 None None   None   None None  None  45 03'00"N  000 36'00"W Gir     570   525   410   249    80   30   10    -2.027 m IGN69
+Le Marquis                 None None   None   None None  None  45 00'00"N  000 33'00"W Gir     565   515   405   246    60   10  -15    -1.878 m IGN69
+Bordeaux                   None None   None   None None  None  44 52'00"N  000 33'00"W Gir     585   535   425   245    45    5  -25    -1.812 m IGN69
+Lacanau                    None None   None   None None  None  45 00'00"N  001 12'00"W  16     530   465   365   269   165   60    0    -2.380 m IGN69
+Cap Ferret                 None None   None   None None  None  44 38'00"N  001 14'00"W  16     455   405   325   238   130   50    0    -1.980 m IGN69
+Arcachon (Jetee d'Eyrac)   None None   None   None EYRAC None  44 40'00"N  001 10'00"W  16     490   435   340   249   130   45    5    -1.980 m IGN69
+Biscarrosse                None None   None   None None  None  44 27'00"N  001 15'00"W  16     440   390   300   220   135   50    0    -1.890 m IGN69
+Mimizan                    None None   None   None None  None  44 13'00"N  001 18'00"W  16     440   385   300   218   135   50    0    -1,870 m IGN69
+Vieux-Boucau               None None   None   None None  None  43 47'00"N  001 25'00"W  16     445   390   305   222   140   55    0    -1.910 m IGN69
+Boucau-Bayonne             None 190139 None   None BOUCA None  43 31'00"N  001 31'00"W  16     485   425   335   252   170   75   30    -2.143 m IGN69
+Saint-Jean-de-Luz          PPPP 190141 None   None SJLUZ None  43 23'48"N  001 40'54"W  16     490   430   335   248   155   60    0    -2.168 m IGN69
