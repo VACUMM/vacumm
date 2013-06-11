@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% set title = 'VACUMM' %}
+
+{% block body %}
+ 
+    <h1>VACUMM</h1>
+
+    <blockquote>
+        <p><i>"Validation, Analysis, Comparison - Utilities written in Python to validate and analyze
+        Multi-Model outputs, and compare them to observations."</i></p>
+    
+        <p>-- Quote translated from the <a href="https://forge.ifremer.fr/projects/vacumm">forge page</a> of the project</p>
+    </blockquote>
+    
+    <p>
+        VACUMM provides generic and specialized tools for the validation of ocean models, and more especially
+        the MARS model from IFREMER.
+        The heart of VACUMM is a <a href="{{ pathto('library/index') }}">library</a> written mainly
+        in the <a href="http://www.python.org">Python</a> language, 
+        whose <a href="{{ pathto('library/misc') }}">core</a> can be used for the <b>preprocessing</b> et le 
+        <b>postprocessing</b> of oceanic and atmospheric data coming from models or observations.
+        The library for instance also has specialized modules for managing outputs from 
+        <a href="{{ pathto('library/data/model') }}">models</a> and making advanced
+        <a href="{{ pathto('library/diag') }}">diagnostics</a>.
+    </p>
+    
+    <h1>Download</h1>
+
+    To download VACUMM, please go to this 
+    <a href="{{ pathto('user.install.download') }}">page</a>.
+
+    <h1>Documentation</h1>
+
+    The documentation is available <a href="{{ pathto('contents') }}">here</a>, 
+    with in particular
+    its <a href="{{ pathto('user') }}">user guide</a> and
+    its <a href="{{ pathto('library/index') }}">library</a>.
+
+    <h1>License</h1>
+
+    VACUMM is under the <a href="{{ pathto('appendix.license') }}">CeCiLL</a> license, 
+    which is compatible with well knwon GPL license.
+
+    <h1>Translation</h1>
+
+    The documentation is currently being translated.
+    Parts may be in english, in french or in both languages.
+    <b>If you want to contribute to the translation, you are welcome!</b>
+    
+    <h1>CAPARMOR users!</h1>
+    
+    If you have an access to the CAPARMOR supercomputer at IFREMER,
+    you can quickly try VACUMM:
+    <div class="highlight-bash"><div class="highlight"><pre>
+<span class="gp">shell&gt;</span> module use /home11/caparmor/mars/PYTHON/modulefiles
+<span class="gp">shell&gt;</span> module load uvcdat120
+<span class="gp">shell&gt;</span> python
+</pre></div></div>
+        
+    Then:
+        
+    <div class="highlight-python"><div class="highlight"><pre>
+<span class="gp">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">vacumm</span>
+</pre></div></div>
+
+    Or:
+    <div class="highlight-python"><div class="highlight"><pre>
+<span class="gp">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">vcmq</span> <span class="kn">import</span> *
+</pre></div></div>
+    
+{% endblock %}

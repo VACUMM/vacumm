@@ -1,0 +1,46 @@
+	Set Memory /Size=1000
+	!!!Set Memory /Size=100
+	
+	cancel d /all
+        !-- Lecture des fichiers
+        !   ####################
+	Use "SST/SST_NAR.nc"       ! Fichier observations
+	Use "SST/SST_prev_mars.nc"      ! Fichier previsions modele
+
+	!-- Selection obs selon niveau de confiance et prev selon mval et valeur min
+	!   ##########################################################################################
+        Let /Bad=999 obs0   = If ( conf_level[d=1] ge 3 ) then temp[d=1] else 999
+	Let /Bad=999 prev0  = If ( temp[ d=2 ] ne 99 AND temp[ d=2 ] gt 0 ) then temp[ d=2 ] else 999
+	
+	!Let  bath0 = If ( H0[ d=2 ] ne -99 ) then H0[ d=2 ] else (-1)*999
+	Let/BAD=999999.  bath0 = If ( H0[ d=2 ] ne -99 ) then H0[ d=2 ] else 999999.
+	
+	!-- Definition nouvelles grilles
+	!   ############################
+	Define Axis /X xnew = x[ d=1, gx=temp ] ! grille x,y = celle des obs
+	Define Axis /Y ynew = y[ d=1, gy=temp ]
+	Define Grid /X=xnew /Y=ynew gridnew0
+	
+	Define Axis /T="03-JAN-2007 00:00:00":"14-AUG-2008 00:00:00":"24" tnew		
+	Define Grid /X=xnew /Y=ynew /T=tnew gridnew1
+	
+	!-- Projection sur grille commune
+	!   #############################
+	
+	Let/Title="H0_nar"  H0_nar = bath0[ g=gridnew0 ]
+        Let obs1  = obs0[  g=gridnew1 ]
+	Let prev1 = prev0[ g=gridnew1 ]
+	
+	!-- Conserve les points ou obs ET modele ont des donnees valides
+	!   ############################################################
+	Let /Bad=999  obs2   = IF ( prev1  ne 999 ) then obs1  else 999
+	Let /Bad=999  prev2  = IF ( obs2   ne 999 ) then prev1 else 999
+	
+        Let /Bad=999 /Title="sst_nar"  /unit="degC" sst_nar  = obs2 - 0
+	Let /Bad=999 /Title="innov_nar" /unit="degC" innov_nar = sst_nar - prev2
+
+	!-- Sauvegarde ds fichier
+	!   #####################
+	Save /Clobber /File="/home2/creizic/pgarreau/EVAL_MENOR/SST/NARprev_colloc.nc" sst_nar
+	Save /Append  /File="/home2/creizic/pgarreau/EVAL_MENOR/SST/NARprev_colloc.nc" innov_nar
+	Save /Append  /File="/home2/creizic/pgarreau/EVAL_MENOR/SST/NARprev_colloc.nc" H0_nar

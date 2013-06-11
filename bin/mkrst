@@ -1,0 +1,92 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+__author__ = 'Jonathan Wilkins'
+__email__ = 'wilkins@actimar.fr'
+__description__ = '''\
+Scan a directory and produce rst files for each python package/module
+(pkg/mod.py=>pkg.mod.rst with automodule directive)
+'''
+
+import optparse, os, re, StringIO, sys, traceback, types
+
+
+indTpl = '''\
+
+API Documentation
+=================
+
+.. toctree::
+   :maxdepth: 2
+
+   %(rstfiles)s
+
+'''
+
+
+modTpl = '''\
+%(modulehead)s
+%(moduleunderline)s
+
+.. inheritance-diagram:: %(module)s
+
+.. automodule:: %(module)s
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+'''
+
+
+def pkg2rst(pkgdir, outdir, force):
+	pkgdir = os.path.abspath(os.path.expanduser(os.path.expandvars(pkgdir)))
+	modules = []
+	for root, dirs, files in os.walk(pkgdir, topdown=True):
+		for f in files:
+			f = os.path.join(root, f)
+			if not f.endswith('.py'): continue
+			if os.path.basename(f) == '__init__.py':
+				module = os.path.basename(pkgdir) + os.path.splitext(os.path.dirname(f).split(pkgdir)[-1])[0].replace(os.path.sep, '.')
+			else:
+				module = os.path.basename(pkgdir) + os.path.splitext(f.split(pkgdir)[-1])[0].replace(os.path.sep, '.')
+			s = StringIO.StringIO()
+			modulehead = ':mod:`%s`'%(module)
+			moduleunderline = '='*len(modulehead)
+			s.write(modTpl%vars())
+			fp = os.path.join(outdir, '%s.rst'%(module))
+			if os.path.exists(fp) and not force:
+				print 'skipping', fp, ': already exists'
+			else:
+				print 'writting rst for module', module
+				f = file(fp, 'w')
+				f.write(s.getvalue())
+				f.close()
+			modules.append(module)
+	return modules
+
+
+if __name__ == '__main__':
+	parser = optparse.OptionParser(
+		description=__description__,
+		usage='%s -p pypkgdir -o outdir [options]'%(os.path.basename(__file__)))
+	parser.add_option('-p', '--package', dest='package', action='store', default=None, help=u'package directory')
+	parser.add_option('-o', '--outdir', dest='outdir', action='store', default=None, help=u'output directory')
+	parser.add_option('-i', '--index', dest='index', action='store', default=None, help=u'index file name')
+	parser.add_option('-f', '--force', dest='force', action='store_true', default=False, help=u'overwrite existing files')
+	(options, args) = parser.parse_args()
+	if not options.package or not options.outdir:
+		parser.error('Missing argument')
+	if not os.path.isdir(options.outdir):
+		os.makedirs(options.outdir)
+	modules = pkg2rst(options.package, options.outdir, options.force)
+	pkgindex = options.index if options.index else '%s-index.rst'%os.path.basename(options.package)
+	fp = os.path.join(options.outdir, pkgindex)
+	if os.path.exists(fp) and not options.force:
+		print 'skipping', fp, ': already exists'
+	else:
+		print 'writting rst for package index', fp
+		f = file(fp, 'w')
+		rstfiles = '\n   '.join([s for s in sorted(modules) if s != pkgindex])
+		f.write(indTpl%vars())
+
+
