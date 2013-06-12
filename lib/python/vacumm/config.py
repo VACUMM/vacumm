@@ -144,7 +144,7 @@ def get_tut_dir(raiseerr=True):
     # Distributed library (dev)
     dist_dir = get_dist_dir()
     if dist_dir is not None:
-        tut_dir = os.path.join(dist_dir, 'doc/sphinx/source/tutorials/python')
+        tut_dir = os.path.join(dist_dir, 'scripts/tutorials')
         if os.path.exists(tut_dir):
             return tut_dir
             
