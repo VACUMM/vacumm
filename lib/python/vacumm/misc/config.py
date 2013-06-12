@@ -197,6 +197,31 @@ def _validator_figsize_(value, default=(6, 6)):
         val = min(20, val)
         out += val, 
     return out
+    
+def _validator_interval_(value, default=None):
+    """Validator of an interval of coordinates (min, max [,bounds])"""
+    if str(value) == 'None': return None
+    if not isinstance(value, basestring):
+        if not isinstance(value, list): 
+            raise VdtTypeError(value)
+        value = ','.join(value)
+    if value.startswith('('): value = value[1:]
+    if value.endswith(')'): value = value[:-1]
+    values = value.split(',')
+    if len(values)<2 or len(values)>3: raise VdtTypeError(value)
+    out = ()
+    for val in values[:2]:
+        try:
+            val = eval(val)
+        except:
+            pass
+        out += val, 
+    if len(values)==3 and values[2]:
+        m =  re.search('([co]{1,2}[ne]{0,2})', values[2])
+        if m is None:
+            raise VdtTypeError(value)
+        out += m.group(1), 
+    return out
 
 class VdtDateTimeError(ValidateError):
     pass
@@ -272,6 +297,7 @@ _validator_specs_ = {
         'datetime':_validator_datetime_,
         'file':_validator_path_,
         'directory':_validator_path_,
+        'interval':_validator_interval_,
         # lists validators for these scalars will be automatically generated
 }
 
