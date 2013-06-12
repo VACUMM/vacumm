@@ -4,18 +4,27 @@ import sys, os, shutil
 sys.path.insert(0, os.path.abspath('doc/sphinx/source'))
 
 # Revision number
-name="vacumm"
-try: # from doc
-    from conf import release
-except: # from current dir name
-    curdir = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
-    if curdir.startswith(name+"-"):
-        release = curdir[len(name+"-"):]
-    else:
-        release = 'X.X'
-    
+rootdir = os.path.dirname(__file__)
+# - from __init__.py
+f = open(os.path.join(rootdir, 'lib/python/vacumm/__init__.py'))
+for line in f:
+    line = line[:-1].strip()
+    if line.startswith('__version__'):
+        exec(line)
+        release = __version__
+        break
+f.close()
+version_sphinx = release
+# - from svn
+if os.path.exists(os.path.join(rootdir,'.svn/entries')):
+    f = open('.svn/entries')
+    line = f.readlines()[3][:-1]
+    f.close()
+    release += '-svn%i'%eval(line)
+release_sphinx = release
 
 # Infos
+name="vacumm"
 version = release
 description = 'Outils python pour VACUMM'
 long_description = "Validation, Analyse, Comparaison dU Modèle Mars Utilitaires pour valider, analyser les sorties du modèle MArs et comparer avec données in-situ "

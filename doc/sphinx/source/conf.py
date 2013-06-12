@@ -18,7 +18,7 @@ from matplotlib import use ; use('Agg')
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.append(os.path.abspath('.'))
-for path in ('../../lib/python', '../../lib/python/vacumm', 'sphinxext'):
+for path in ('../../../lib/python', '../../../lib/python/vacumm', 'sphinxext', '../../..'):
     sys.path.insert(0, os.path.abspath(path))
 
 # -- General configuration -----------------------------------------------------
@@ -66,28 +66,9 @@ copyright = u'2010, Actimar/IFREMER'
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-#
-# The short X.Y version.
-from vacumm import __version__ as version
-#version = '1.0'
-# The full version, including alpha/beta/rc tags.
-release = version
-# Add svn tag to release
-targetdir = os.path.abspath(__file__)
-for i in 0,1,2,3: # parents
-    targetdir = os.path.dirname(targetdir)
-if os.path.exists(os.path.join(targetdir, '.svn')):
-    #subprocess.Popen(["svn", "up", targetdir]).communicate()
-    std,err = subprocess.Popen(["svn", "info",targetdir], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    std = std.decode('utf-8', 'replace')
-    err = err.decode('utf-8', 'replace')
-    if not err is None:
-        try:
-            #release += '-svn'+std.splitlines()[4].split()[-1]
-            release += u'-svn'+std.splitlines()[4].split()[-1]
-            release = release.encode('utf8')
-        except:
-            pass
+import setup
+version = setup.version_sphinx
+release = setup.release_sphinx
             
 # Import of this file or use through sphinx?
 callfromsphinx = os.path.exists('contents.rst') and os.path.abspath(__file__) == __file__

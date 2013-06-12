@@ -35,12 +35,12 @@
 # 
 
 __project__ = 'vacumm'
-__version__ = '1.0.0'
+__version__ = '2.1'
 __release__ = 'rc1'
-__date__ = '2013-02-26'
-__author__ = u'Stéphane Raynaud, Jonathan Wilkins'
-__email__ = 'raynaud@actimar.fr, wilkins@actimar.fr'
-__copyright__ = 'Copyright (c) 2010 Actimar/IFREMER'
+__date__ = '2013-06-12'
+__author__ = u'Stéphane Raynaud, Jonathan Wilkins, Guillaume Charria'
+__email__ = 'raynaud@actimar.fr, wilkins@actimar.fr, charria@ifremer.fr'
+__copyright__ = 'Copyright (c) 2010-213 Actimar/IFREMER'
 __description__ = """
 VACUMM libraries
 
@@ -58,8 +58,6 @@ Content:
     - markup: tools for html page generation
 
 """
-
-__version__ = '2.0'
 
 docfiller_verbose = False
 
