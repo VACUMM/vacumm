@@ -12,7 +12,7 @@ Gestion d'une banque de bathymétries XYZ
 Voir : :class:`~vacumm.bathy.bathy.XYZBathyBank` (et éventuellement :class:`~vacumm.bathy.bathy.XYZBathyBankClient` et :class:`~vacumm.bathy.bathy.XYZBathyMixer`).
 
 .. _fig.bathy.bathy.xyz.bathybank:
-.. figure:: python/bathy-bathy-xyz-bathybank.*
+.. figure:: ../../../../scripts/tutorials/bathy-bathy-xyz-bathybank.png
 
-.. literalinclude:: python/bathy.bathy.xyz.bathybank.py
+.. literalinclude:: ../../../../scripts/tutorials/bathy.bathy.xyz.bathybank.py
 

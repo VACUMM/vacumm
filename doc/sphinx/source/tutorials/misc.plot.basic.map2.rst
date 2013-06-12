@@ -6,9 +6,9 @@ Tracé de cartes
 Voir : :func:`~vacumm.misc.plot.map2`.
 
 .. _fig.misc.plot.basic.map2:
-.. figure:: python/misc-plot-basic-map2.*
+.. figure:: ../../../../scripts/tutorials/misc-plot-basic-map2.png
     
     Une carte de base.
     
-.. literalinclude:: python/misc.plot.basic.map2.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.plot.basic.map2.py
 

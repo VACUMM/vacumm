@@ -3,4 +3,4 @@
 Les objets profils verticaux
 ============================
 
-.. literalinclude:: python/data.misc.profile.py
+.. literalinclude:: ../../../../scripts/tutorials/data.misc.profile.py

@@ -13,8 +13,8 @@ Cette méthode est utile pour regriller par exemple des précipitations dans le 
 Voir : :func:`~vacumm.misc.grid.regridding.regrid1d`.
 
 .. _fig.misc.grid.regridding.conserv1d:
-.. figure:: python/misc-grid-regridding-conserv1d.*
+.. figure:: ../../../../scripts/tutorials/misc-grid-regridding-conserv1d.png
 
     Des précipitations horaires sont réparties sur un axe de temps bi-horaire.
 
-.. literalinclude:: python/misc.grid.regridding.conserv1d.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.grid.regridding.conserv1d.py

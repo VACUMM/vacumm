@@ -9,9 +9,9 @@ Voir : :func:`~vacumm.misc.grid.regridding.fill2d` :func:`~vacumm.misc.grid.regr
 
 
 .. _fig.misc.grid.regridding.fill2d:
-.. figure:: python/misc-grid-regridding-fill2d.*
+.. figure:: ../../../../scripts/tutorials/misc-grid-regridding-fill2d.png
     
     Replissage de valeurs manquantes par interpolation spatiale.
 
-.. literalinclude:: python/misc.grid.regridding.fill2d.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.grid.regridding.fill2d.py
 

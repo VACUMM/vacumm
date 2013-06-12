@@ -10,8 +10,8 @@ grilles non structurées.
 Voir : :func:`~vacumm.misc.grid.regridding.xy2xy`.
 
 .. _fig.misc.grid.regridding.xy2xy:
-.. figure:: python/misc-grid-regridding-xy2xy.*
+.. figure:: ../../../../scripts/tutorials/misc-grid-regridding-xy2xy.png
     
     Interpolation de données entre des positions aléatoires.
 
-.. literalinclude:: python/misc.grid.regridding.xy2xy.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.grid.regridding.xy2xy.py

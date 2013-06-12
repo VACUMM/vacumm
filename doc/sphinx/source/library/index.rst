@@ -21,7 +21,7 @@ Library
     bathy
     tide
     sphinxext
-    ifroco
+    report
     
 
 

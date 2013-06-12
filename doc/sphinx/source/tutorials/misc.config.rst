@@ -62,34 +62,34 @@ Example
 
 Specification file:
 
-.. literalinclude:: python/misc.config.ini
+.. literalinclude:: ../../../../scripts/tutorials/misc.config.ini
     :language: ini
 
 Configuration file:
 
-.. literalinclude:: python/misc.config.cfg
+.. literalinclude:: ../../../../scripts/tutorials/misc.config.cfg
     :language: cfg
 
 Sample code using these specification and configuration:
 
-.. literalinclude:: python/misc.config.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.config.py
     :language: python
 
 The outputs of this code are:
 
-.. program-output:: tutorials/python/misc.config.py
+.. program-output:: ../../../scripts/tutorials/misc.config.py
 
 The help generated is:
 
-.. program-output:: tutorials/python/misc.config.py --help
+.. program-output:: ../../../scripts/tutorials/misc.config.py --help
 
 The outputs of this code with configuration setup with command line options:
 
-.. program-output:: tutorials/python/misc.config.py --scalars-string="foo, 'hello world'" --lists-floats="42,3.14"
+.. program-output:: ../../../scripts/tutorials/misc.config.py --scalars-string="foo, 'hello world'" --lists-floats="42,3.14"
 
 The outputs of this code with configuration setup with command line options and a configuration file :
 
-.. program-output:: tutorials/python/misc.config.py --scalars-string="foo, 'hello world'" --lists-floats="42,3.14" --cfgfile=tutorials/python/misc.config.cfg
+.. program-output:: ../../../scripts/tutorials/misc.config.py --scalars-string="foo, 'hello world'" --lists-floats="42,3.14" --cfgfile=tutorials/python/misc.config.cfg
 
 
 
@@ -101,7 +101,7 @@ Pour ce tutoriel, nous créons d'abord le **fichier de spécifications** :file:`
 définissant la nature de toutes les options, leur description
 et leur valeur par défaut :
 
-.. literalinclude:: python/config.ini
+.. literalinclude:: ../../../../scripts/tutorials/config.ini
     :language: cfg
 
 .. note:: Ce fichier doit être tout le temps accessible par le script.
@@ -111,12 +111,12 @@ qui sera lu
 à chaque exécution du script afin de définir nos propres valeurs
 par défaut :
 
-.. literalinclude:: python/config.cfg
+.. literalinclude:: ../../../../scripts/tutorials/config.cfg
     :language: ini
 
 Et voici le script executable (:file:`config-plot.py`) qui fera le travail :
     
-.. literalinclude:: python/misc.config.plot.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.config.plot.py
 
 Voici l'**aide courte** obtenue avec l'option :option:`--help` : ::
     
@@ -170,6 +170,6 @@ Au final, le fichier :file:`config.cfg` a modifié le nom de la variable netcdf,
 
 La figure ainsi créée :
     
-.. figure:: python/misc-config-plot.*
+.. figure:: ../../../../scripts/tutorials/misc-config-plot.png
 
     Figure créé par le script :file:`misc.config.plot.py`.

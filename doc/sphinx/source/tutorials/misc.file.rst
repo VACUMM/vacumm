@@ -57,10 +57,10 @@ Using regular expressions: See :func:`~vacumm.misc.file.xefind` and :func:`~vacu
 The example
 -----------
 
-.. literalinclude:: python/misc.file.find.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.file.find.py
     :language: python
 
-.. program-output:: tutorials/python/misc.file.find.py
+.. program-output:: ../../../scripts/tutorials/misc.file.find.py
 
 
 Making file backups (called rollover)
@@ -68,10 +68,10 @@ Making file backups (called rollover)
 
 See :func:`~vacumm.misc.file.rollover`
 
-.. literalinclude:: python/misc.file.rollover.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.file.rollover.py
     :language: python
 
-.. program-output:: tutorials/python/misc.file.rollover.py
+.. program-output:: ../../../scripts/tutorials/misc.file.rollover.py
 
 
 Displaying and analysing file sizes
@@ -79,10 +79,10 @@ Displaying and analysing file sizes
 
 See :func:`~vacumm.misc.file.strfsize` and :func:`~vacumm.misc.file.strpsize`
 
-.. literalinclude:: python/misc.file.strfsize.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.file.strfsize.py
     :language: python
 
-.. program-output:: tutorials/python/misc.file.strfsize.py
+.. program-output:: ../../../scripts/tutorials/misc.file.strfsize.py
 
 
 Creating directories
@@ -90,9 +90,9 @@ Creating directories
 
 See :func:`~vacumm.misc.file.mkdirs` and :func:`~vacumm.misc.file.mkfdirs`
 
-.. literalinclude:: python/misc.file.mkdirs.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.file.mkdirs.py
     :language: python
 
-.. program-output:: tutorials/python/misc.file.mkdirs.py
+.. program-output:: ../../../scripts/tutorials/misc.file.mkdirs.py
 
 

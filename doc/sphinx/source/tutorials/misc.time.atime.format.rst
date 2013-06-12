@@ -3,5 +3,5 @@
 Le formatage en ascii
 =====================
 
-.. literalinclude:: python/misc.time.atime.format.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.time.atime.format.py
 

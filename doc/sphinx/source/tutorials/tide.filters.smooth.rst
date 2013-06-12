@@ -9,10 +9,10 @@ Voir : :func:`~vacumm.tide.filters.demerliac` and :func:`~vacumm.tide.filters.go
 To come...
 
 ..
-    .. figure::  python/tide-filters-smooth.*
+    .. figure:: ../../../../scripts/tutorials/tide-filters-smooth.png
 
         Calcul des marées hautes et basses, et des zeros sur une série 
         temporelle de hauteur d'eau.
 
-    .. literalinclude:: python/tide.filters.smooth.py
+    .. literalinclude:: ../../../../scripts/tutorials/tide.filters.smooth.py
 

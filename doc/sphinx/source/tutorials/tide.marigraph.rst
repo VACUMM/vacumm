@@ -7,9 +7,9 @@ Diagnostics marégraphique de hauteur d'eau
 Voir : :class:`~vacumm.tide.marigraph.Marigraph`.
 
 
-.. figure:: python/tide-marigraph.*
+.. figure:: ../../../../scripts/tutorials/tide-marigraph.png
 
     Calcul des extremas en haut et surcotes/decotes en bas.
 
-.. literalinclude:: python/tide.marigraph.py
+.. literalinclude:: ../../../../scripts/tutorials/tide.marigraph.py
 

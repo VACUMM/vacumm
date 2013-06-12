@@ -3,5 +3,5 @@
 Les variables numériques
 ========================
 
-.. literalinclude:: python/misc.variables.bases.mv.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.variables.bases.mv.py
 

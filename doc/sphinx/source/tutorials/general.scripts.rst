@@ -31,7 +31,7 @@ computing the MLD and plotting it.
 All parameterd are defined from within the script.
 
 
-.. literalinclude:: ../../../../scripts/tutorials/
+.. literalinclude:: ../../../../scripts/tutorials//
 
 
 

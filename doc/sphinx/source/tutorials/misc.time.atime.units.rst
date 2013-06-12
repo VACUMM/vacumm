@@ -3,5 +3,5 @@
 Les unités de temps
 ===================
 
-.. literalinclude:: python/misc.time.atime.units.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.time.atime.units.py
 

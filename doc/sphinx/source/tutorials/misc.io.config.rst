@@ -8,14 +8,14 @@ Voir aussi le tutoriel :ref:`user.tut.misc.config.`.
 
 Fichier de configuration initial :
 
-.. literalinclude:: python/misc.io.config.in.ini 
+.. literalinclude:: ../../../../scripts/tutorials/misc.io.config.in.ini 
     :language: ini
 
 
-.. literalinclude:: python/misc.io.config.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.io.config.py
 
 Fichier de configuration final :
 
-.. literalinclude:: python/misc.io.config.out.ini
+.. literalinclude:: ../../../../scripts/tutorials/misc.io.config.out.ini
     :language: ini
 

@@ -29,10 +29,10 @@ configuration file.
 If you also need to do things at class initialization, below is the way you may
 redefine the :meth:`vacumm.misc.bases.Object.init_class` method:
 
-.. literalinclude:: python/misc.bases.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.bases.py
     :language: python
 
-.. program-output:: tutorials/python/misc.bases.py
+.. program-output:: ../../../scripts/tutorials/misc.bases.py
 
 
 Logging features
@@ -44,10 +44,10 @@ are called from the class and another one dedicated to each instance of this cla
 
 The following example introduce the basic usage of these features.
 
-.. literalinclude:: python/misc.bases.logging.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.bases.logging.py
     :language: python
 
-.. program-output:: tutorials/python/misc.bases.logging.py
+.. program-output:: ../../../scripts/tutorials/misc.bases.logging.py
 
 
 Configuration features
@@ -77,22 +77,22 @@ section named 'Logger'.
 
 Specification file:
 
-.. literalinclude:: python/misc.bases.config.ini
+.. literalinclude:: ../../../../scripts/tutorials/misc.bases.config.ini
     :language: ini
 
 Configuration file:
 
-.. literalinclude:: python/misc.bases.config.cfg
+.. literalinclude:: ../../../../scripts/tutorials/misc.bases.config.cfg
     :language: cfg
 
 Code using these specification and configuration:
 
-.. literalinclude:: python/misc.bases.config.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.bases.config.py
     :language: python
 
 The outputs of this code are:
 
-.. program-output:: tutorials/python/misc.bases.config.py
+.. program-output:: ../../../scripts/tutorials/misc.bases.config.py
 
 Note that MyObject attributes and logger have been changed by the loaded configuration.
 
@@ -103,9 +103,9 @@ Debugging features
 The following example shows some method calls you may use when writing your code
 to trace or debug it.
 
-.. literalinclude:: python/misc.bases.debug.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.bases.debug.py
     :language: python
 
-.. program-output:: tutorials/python/misc.bases.debug.py
+.. program-output:: ../../../scripts/tutorials/misc.bases.debug.py
 
 

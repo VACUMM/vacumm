@@ -3,5 +3,5 @@
 Axes et variables
 =================
 
-.. literalinclude:: python/misc.variables.bases.axes.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.variables.bases.axes.py
 

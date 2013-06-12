@@ -3,5 +3,5 @@
 Les différents types
 ====================
 
-.. literalinclude:: python/misc.time.bases.types.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.time.bases.types.py
 

@@ -3,5 +3,5 @@
 Les opérations sur le temps
 ===========================
 
-.. literalinclude:: python/misc.time.atime.operations.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.time.atime.operations.py
 

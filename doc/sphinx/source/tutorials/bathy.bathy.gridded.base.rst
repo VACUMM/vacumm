@@ -6,7 +6,7 @@ Les bases d'une bathy grillée
 Voir : :class:`~vacumm.bathy.bathy.GriddedBathy` :func:`~vacumm.bathy.bathy.plot_bathy` :class:`~vacumm.bathy.shorelines.GSHHS` :func:`~vacumm.misc.plot.map` :func:`~vacumm.misc.grid.regridding.regrid2d` :func:`~vacumm.misc.grid.masking.polygon_mask`
 
 .. _fig.bathy.bathy.gridded.base:
-.. figure:: python/bathy-bathy-gridded-base.*
+.. figure:: ../../../../scripts/tutorials/bathy-bathy-gridded-base.png
 
     En **a)**, topographie original ; 
     en **b)**, la même topographie, mais masquée sur
@@ -19,7 +19,7 @@ Voir : :class:`~vacumm.bathy.bathy.GriddedBathy` :func:`~vacumm.bathy.bathy.plot
     Cette dernière méthode évite d'interpoler un
     masque grossier et est donc préférable.
     
-.. literalinclude:: python/bathy.bathy.gridded.base.py
+.. literalinclude:: ../../../../scripts/tutorials/bathy.bathy.gridded.base.py
 
 
 

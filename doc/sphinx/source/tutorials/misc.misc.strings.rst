@@ -3,4 +3,4 @@
 Les chaines de caractères
 =========================
 
-.. literalinclude:: python/misc.misc.strings.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.misc.strings.py

@@ -9,8 +9,8 @@ Voir : ":ref:`user.tut.misc.grid.regridding.griddata`"  :func:`~vacumm.misc.grid
 
 
 .. _fig.misc.grid.regridding.curv2rect:
-.. figure:: python/misc-grid-regridding-curv2rect.*
+.. figure:: ../../../../scripts/tutorials/misc-grid-regridding-curv2rect.png
     
     Regrillage d'une grille curvilinéaire (SWAN) vers une grille rectangulaire, par plusieurs méthodes.
 
-.. literalinclude:: python/misc.grid.regridding.curv2rect.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.grid.regridding.curv2rect.py

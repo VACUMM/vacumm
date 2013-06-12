@@ -3,4 +3,4 @@
 ^^^^^^^^^^^^^^^^^^^^^
 Manipulation des axes
 ^^^^^^^^^^^^^^^^^^^^^
-.. literalinclude:: python/misc.variables.axes.py
+.. literalinclude:: ../../../../scripts/tutorials/misc.variables.axes.py
