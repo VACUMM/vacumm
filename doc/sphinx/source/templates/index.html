@@ -4,6 +4,8 @@
 {% block body %}
  
     <h1>VACUMM</h1>
+    
+    <p><b>Version:</b> {{release}}</p> 
 
     <blockquote>
         <p><i>"Validation, Analysis, Comparison - Utilities written in Python to validate and analyze
@@ -17,7 +19,7 @@
         the MARS model from IFREMER.
         The heart of VACUMM is a <a href="{{ pathto('library/index') }}">library</a> written mainly
         in the <a href="http://www.python.org">Python</a> language, 
-        whose <a href="{{ pathto('library/misc') }}">core</a> can be used for the <b>preprocessing</b> et le 
+        whose <a href="{{ pathto('library/misc') }}">core</a> can be used for the <b>preprocessing</b> and the 
         <b>postprocessing</b> of oceanic and atmospheric data coming from models or observations.
         The library for instance also has specialized modules for managing outputs from 
         <a href="{{ pathto('library/data/model') }}">models</a> and making advanced

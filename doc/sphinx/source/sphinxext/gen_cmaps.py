@@ -12,16 +12,13 @@ def gen_cmaps(app, rstfile):
     cmaps = {}
     # - direct
     for cmap_name in vacumm.misc.color.cmaps_act():
-        cmaps[cmap_name] = cmap_name, 'misc-color-'+cmap_name
+        cmaps[cmap_name] = cmap_name, app.config.gen_cmaps_prefix+cmap_name
     # - manual
-    for cmap_funcname, cmap_kwargs, savefigs in [
-        ('cmap_jets', dict(stretch=0.6), 'misc-color-vacumm_jets+60'), 
-        ('cmap_jets', dict(stretch=-0.6), 'misc-color-vacumm_jets-60'), 
-        ('cmap_magic', dict(n=10), 'misc-color-vacumm_magic-n10'), 
-        ('cmap_magic', dict(anomaly=True), 'misc-color-vacumm_magic-anom'), 
-        ('cmap_magic', dict(positive=True), 'misc-color-vacumm_magic-pos'),
-        ('cmap_magic', dict(negative=True), 'misc-color-vacumm_magic-neg'), 
-        ]:
+    extra = app.config.gen_cmaps_file
+    for cmap_funcname, cmap_kwargs, savefigs in app.config.gen_cmaps_extra_list:
+        if not savefigs.startswith(app.config.gen_cmaps_prefix):
+            savefigs = app.config.gen_cmaps_prefix+savefigs
+        if cmap_kwargs is None: cmap_kwargs = {}
         cmap_name = cmap_funcname.replace('cmap_', 'vacumm_')
         cmap_name += '('+','.join([('%s=%s'%item) for item in cmap_kwargs.items()])+')'
         cmaps[cmap_name] = (cmap_funcname, cmap_kwargs), savefigs
@@ -45,7 +42,7 @@ def gen_cmaps(app, rstfile):
     # Overview figure
     app.builder.info(bold("generating overview of colormaps..."), nonl=True)
     rc('font', size=8)
-    vacumm.misc.color.plot_cmaps(savefigs=os.path.join(outdir, 'misc-color-cmaps'), 
+    vacumm.misc.color.plot_cmaps(savefigs=os.path.join(outdir, app.config.gen_cmaps_prefix+'cmaps'), 
         show=False, figsize=(7, 7), savefigs_verbose=False, aspect=0.1)
     rcdefaults()
     app.builder.info('done')
@@ -73,5 +70,7 @@ def check_cmaps(app, env, added, changed, removed):
 
 def setup(app):
     app.add_config_value('gen_cmaps_file', 'library/misc.color', 'env')
+    app.add_config_value('gen_cmaps_prefix', 'misc-color-', 'html')
+    app.add_config_value('gen_cmap_extra_list', [], 'html')
 #    app.connect('env-updated', check_cmaps)
     app.connect('env-get-outdated', check_cmaps)

@@ -313,6 +313,18 @@ gen_gallery_paths = {
 #gen_gallery_root = 'gallery'
 #gen_gallery_skips = []
 
+# Colormaps
+gen_cmap_prefix = 'misc-color-'
+gen_cmaps_extra_list = [ 
+    # (function name, kwargs, figfile short name (no prefix+no ext)),
+    ('cmap_jets', dict(stretch=0.6), 'vacumm_jets+60'), 
+    ('cmap_jets', dict(stretch=-0.6), 'vacumm_jets-60'), 
+    ('cmap_magic', dict(), 'vacumm_magic'), 
+    ('cmap_magic', dict(n=10), 'vacumm_magic-n10'), 
+    ('cmap_magic', dict(anomaly=True), 'vacumm_magic-anom'), 
+    ('cmap_magic', dict(positive=True), 'vacumm_magic-pos'),
+    ('cmap_magic', dict(negative=True), 'vacumm_magic-neg'), 
+]
 
 # Autodoc (python)
 autodoc_default_flags = ['members', 'show-inheritance', 'undoc-members']

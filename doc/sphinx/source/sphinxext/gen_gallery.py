@@ -27,7 +27,7 @@ link_template = """\
 """
 
 header_template = """<div class="section" id="%(subdir)s">\
-<h4>%(title)s<a class="headerlink" href="#%(subdir)s" title="Permalink to this headline">¶</a></h4>"""
+<h3>%(title)s<a class="headerlink" href="#%(subdir)s" title="Permalink to this headline">¶</a></h3>"""
 
 toc_template = """\
 <li><a class="reference internal" href="#%(subdir)s">%(title)s</a></li>"""

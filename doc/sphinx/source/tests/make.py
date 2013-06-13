@@ -73,10 +73,7 @@ for i, script_path in enumerate(scfiles):
         title = title[3:-4]
     title = ':program:`%(script_name)s` -- %(title)s'%locals()
     content = title+'\n'
-    content += '='*len(title)+'\n'
-    
-    # Code content
-    content += "\n\n.. literalinclude:: %(script_path)s\n\n"%locals()
+    content += '='*len(title)+'\n\n\n'
     
     # Figure?
     figpaths = []
@@ -87,6 +84,9 @@ for i, script_path in enumerate(scfiles):
     for figpath in figpaths:
         content += '.. figure:: %(figpath)s\n\n'%locals()
         
+    # Code content
+    content += ".. literalinclude:: %(script_path)s\n\n"%locals()
+    
     
     # Check and write
     check_and_write(rstfile, content)

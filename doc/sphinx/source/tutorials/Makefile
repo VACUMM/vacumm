@@ -1,4 +1,4 @@
-all: cheks
+all: checks
 
 checks:
-	cd python && make checks
+	cd ../../../../scripts/tutorials && make checks
