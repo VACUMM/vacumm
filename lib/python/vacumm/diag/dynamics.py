@@ -154,7 +154,7 @@ def eddy_kinetic_energy(sshuv, gravity=default_gravity, format_axes=None, dxy=No
     # Init and get velocities
     if cdms2.isVariable(sshuv): # from SSH
         eke = sshuv*MV2.masked
-        u, v = barotropic_geostrophic_velocity(ssh, dxy=dxy, gravity=gravity, format_axes=format_axes)
+        u, v = barotropic_geostrophic_velocity(sshuv, dxy=dxy, gravity=gravity, format_axes=format_axes)
         if format_axes is None: format_axes = False
     else: # from (U,V)
         u, v = sshuv
