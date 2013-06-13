@@ -72,7 +72,8 @@ __all__ = ['isgrid', 'get_resolution', 'get_distances', 'get_closest', 'get_geo_
     'create_grid', 'rotate_grid', 'isregular', 'monotonic', 'transect_specs', 
     'depth2dz', 'isdepthup', 'makedepthup', 'dz2depth', 'get_axis_slices', 
     'xextend', 'xshift', 'curv2rect',  'isrect', 'create_grid2d', 'create_var2d', 'create_axes2d', 
-    'merge_axis_slice', 'merge_axis_slices', 'get_zdim', 'coord2slice', 'mask2ind']
+    'merge_axis_slice', 'merge_axis_slices', 'get_zdim', 'coord2slice', 'mask2ind', 
+    'varsel']
 __all__.sort()
 
 def isgrid(gg, curv=None):
@@ -961,7 +962,7 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
         - *yatts*, optional: Attributes for output 2D Y axis
         - **xbounds2d**, optional: 2D bounds of input xaxis
         - **ybounds2d**, optional: 2D bounds of input yaxis
-	- **nobounds**, optional: create (True) or not (False - default) bounds of axis
+        - **nobounds**, optional: create (True) or not (False - default) bounds of axis
         - **numeric**, optional: Only return numerical values instead of complete axes
         - **bounds**, optional: Return extended axes positioned on bounds (useful for pcolor). 
           Deprecated: use :func:`meshbounds` instead.
@@ -1034,14 +1035,13 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
         yaxis2d = TransientAxis2D(yy)
     
     # 2D bounds
-    if hasx:
-	if nobounds==False:
+    if not nobounds:
+        if hasx:
             if xbounds2d is not None:
                 xaxis2d.setBounds(xbounds2d)
             elif xaxis2d.getBounds() is None:
                 xaxis2d.setBounds(bounds2d(xx))
-    if hasy:
-	if nobounds==False:
+        if hasy:
             if ybounds2d is not None:
                 yaxis2d.setBounds(ybounds2d)
             elif yaxis2d.getBounds() is None:
@@ -1366,6 +1366,11 @@ def create_grid(lon, lat, mask=None, lonatts={}, latatts={}, curv=None, **kwargs
 def gridsel(gg, lon=None, lat=None):
     """Extract a subregion from an axis or a grid
     
+    Lat and lon generic selection are used for
+    spatial selections.
+    
+    .. note:: Properly works on curved grids thanks to :func:`coord2slice`.
+    
     :Params:
     
         - **gg**: 1D or 2D cdms2 axis, or a tuple of them , or a cdms2 grid.
@@ -1400,10 +1405,10 @@ def gridsel(gg, lon=None, lat=None):
     elif isgrid(gg): # grid
         outtype = 'grid'
     elif isaxis(gg): # axis
-        if len(gg.shape)==2 and (
-            (lon is not None and not isinstance(lon, slice)) or 
-            (lat is not None and not isinstance(lat, slice))):
-            raise VACUMMError("Can't apply geographical selection to a lonely 2D axis")
+#        if len(gg.shape)==2 and (
+#            (lon is not None and not isinstance(lon, slice)) or 
+#            (lat is not None and not isinstance(lat, slice))):
+#            raise VACUMMError("Can't apply geographical selection to a lonely 2D axis")
         if islon(gg, ro=True):
             outtype = 'lon'
         elif islat(gg, ro=True):
@@ -1416,25 +1421,40 @@ def gridsel(gg, lon=None, lat=None):
     # Selection
     if len((gg if outtype[0] not in ['g', 't'] else gg.getLongitude()).shape)==2: # Curvilinear
         
-        # Selection using slices
-        if isinstance(lon, slice):
-            if outtype=='lon':
-                gg = gg[:, lon]
-            else:
-                gg = create_grid(gg.getLongitude()[:, lon], gg.getLatitude()[:, lon])
-            lon = None
-        if isinstance(lat, slice):
-            if outtype=='lat':
-                gg = gg[lat, :]
-            else:
-                gg = create_grid(gg.getLongitude()[lat, :], gg.getLatitude()[lat, :])
-            lat = None
+        # Convert to slice
+        islice, jslice, mask = coord2slice(gg, lon=lon, lat=lat)
         
-        # Selection using coordinates
-        if lon is not None or lat is not None:
-            mask,select = gg.intersect([lon, lat, None])
-            gg = gg.subSlice(**select)
-            gg.setMask(mask)
+        # Grid
+        if outtype[0] not in ['g', 't']:
+            
+            islice = islice.indices(gg.shape[1])
+            jslice = jslice.indices(gg.shape[0])
+            gg = gg.subSlice(jslice, islice) 
+            if mask.any(): gg.setMask(mask)
+            
+        else: # Axis
+        
+            gg = gg[jslice, islice]
+        
+#        # Selection using slices
+#        if isinstance(lon, slice):
+#            if outtype=='lon':
+#                gg = gg[:, lon]
+#            else:
+#                gg = create_grid(gg.getLongitude()[:, lon], gg.getLatitude()[:, lon])
+#            lon = None
+#        if isinstance(lat, slice):
+#            if outtype=='lat':
+#                gg = gg[lat, :]
+#            else:
+#                gg = create_grid(gg.getLongitude()[lat, :], gg.getLatitude()[lat, :])
+#            lat = None
+#        
+#        # Selection using coordinates
+#        if lon is not None or lat is not None:
+#            mask,select = gg.intersect([lon, lat, None])
+#            gg = gg.subSlice(**select)
+#            gg.setMask(mask)
     
     else: # Rectangular
     
@@ -1483,7 +1503,41 @@ def gridsel(gg, lon=None, lat=None):
     return (gg.getLongitude(), gg.getLatitude())
 select_region = gridsel        
       
-
+def varsel(var, lon=None, lat=None, **kwargs):
+    """Extract a subregion of a variable
+    
+    Lat and lon generic selection are used for
+    spatial selections.
+    
+    If `var` has no grid or a rectangular grid, it simply
+    equivalent to::
+    
+        var(lon=lon, lat=lat, **kwargs)
+    
+    .. note:: Properly works on curved grids thanks to :func:`coord2slice`.
+    
+    :Params:
+    
+        - **var**: MV2 array.
+        - **lon/lat**: Coordinates intervals or slices.
+        - Extra keywords are passed to the variable.
+    
+    """
+    grid = var.getGrid()
+    
+    # Usual way
+    if not isgrid(grid, curved=True): 
+        return var(lon=lon, lat=lat, **kwargs)
+    
+    # Curved grid
+    islice, jslice, mask = coord2slice(grid, lon=lon, lat=lat)
+    xid = grid.getAxis(1).id
+    yid = grid.getAxis(0).id
+    var = var(**{xid:islice, yid:jslice})
+    if mask.any(): var[:] = MV2.masked_where(mask, var, copy=0)
+    if kwargs: var = var(**kwargs)
+    return var
+    
 
 def axis1d_from_bounds(axis1d,atts=None,numeric=False):
     """Create a numeric of formatted 1D axis from bounds
@@ -1788,7 +1842,9 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., **kwarg
     # Caching
     if cache and (isinstance(mode, tuple) or not mode.startswith('loc')):
         if isgrid(axy):
-            setattr(axy, '_x'+pres, res[0]), setattr(axy, '_y'+pres, res[1])
+            setattr(axy, '_x'+pres, res[0])
+            setattr(axy, '_y'+pres, res[1])
+            setattr(axy, '_mres', mode)
         elif isaxis(axy):
             setattr(axy, '_'+pres, res)
             setattr(axy, '_mres', mode)
