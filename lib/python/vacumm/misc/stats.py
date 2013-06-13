@@ -355,13 +355,13 @@ class StatAccum(object):
         if self.tstats:
             self._tcount += (~mask).astype('l').sum(axis=0)
             if self.tsum:
-                self._tsum[0] += item0
-                if self.dual: self._tsum[1] += item1
+                self._tsum[0] += item0.sum(axis=0)
+                if self.dual: self._tsum[1] += item1.sum(axis=0)
             if self.tsqr:
-                self._tsqr[0] += item0**2
-                if self.dual: self._tsqr[1] += item1**2
+                self._tsqr[0] += (item0**2).sum(axis=0)
+                if self.dual: self._tsqr[1] += (item1**2).sum(axis=0)
             if self.tprod:
-                self._tprod += item0*item1
+                self._tprod += (item0*item1).sum(axis=0)
                 
         # - spatial statistics
         if self.sstats:
@@ -375,14 +375,14 @@ class StatAccum(object):
             
             # Base
             if self.ssum:
-                ssum = item0.sum(), 
-                if self.dual: ssum += item1.sum(), 
+                ssum = item0.sum(axis=1), 
+                if self.dual: ssum += item1.sum(axis=1), 
             if self.ssqr:
-                ssqr = (item0**2).sum(), 
+                ssqr = (item0**2).sum(axis=1), 
                 if self.dual: 
-                    ssqr += (item1**2).sum(), 
+                    ssqr += (item1**2).sum(axis=1), 
             if self.sprod:
-                sprod = item0*item1
+                sprod = (item0*item1).sum(axis=1)
                 
             # Stats
             sstats = self._base2stats_(ssum if self.ssum else None, 
