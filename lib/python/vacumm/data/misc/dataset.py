@@ -641,7 +641,8 @@ class Dataset(Object):
         
         return split_selector(myselect) if split else myselect
         
-    def get_axis(self, name, select=None, select2=None, dataset=None, warn=True, getid=False):
+    def get_axis(self, name, select=None, select2=None, dataset=None, warn=True, 
+        getid=False, searchmode=None):
         """Retreive a 1D or 2D axis.
         
         :Params:
@@ -653,6 +654,7 @@ class Dataset(Object):
           - **dataset** optional: find axis based on this dataset.
           - **getid**, optional: If True, only return the id (netcdf name) or None.
           - **warn**, optional: Display a warning in case of problem.
+          - **searchmode**, optional: Search order (see :func:`~vacumm.misc.io.ncfind_obj`).
         
         :Return:
             - cdms2 axis or None if not found, or id
@@ -668,7 +670,8 @@ class Dataset(Object):
         if not getid: self.debug('Using reference dataset: %s', dataset.id)
             
         # Get specs
-        genname, search, base_select, squeeze, atts = self._get_ncobj_specs_(name, attsingle=False)
+        genname, search, base_select, squeeze, atts = self._get_ncobj_specs_(name, 
+            attsingle=False, searchmode=searchmode)
         if 'long_names' in atts:
             search['long_names'] = atts['long_names']
         if 'units' in atts and 'axis' in atts and atts['axis']!='Z':
@@ -683,7 +686,7 @@ class Dataset(Object):
             
             # Find
             try:
-                ncname = ncfind_obj(dataset, search, regexp=True)
+                ncname = ncfind_obj(dataset, search, regexp=True, searchmode=searchmode)
                 if getid: return ncname
                 if ncname is None:
                     if warn: self.warning('Generic axis not found with search specs: %s'%search)
@@ -852,7 +855,7 @@ class Dataset(Object):
         
     def get_variable(self, varname, time=None, lon=None, lat=None, level=None, 
         atts=None, squeeze=False, order=None, asvar=None, torect=True, depthup=None,
-        verbose=None, warn=True, **kwargs):
+        verbose=None, warn=True, searchmode=None, **kwargs):
         '''Load a variable in a best time serie fashion.
         
         :Params:
@@ -889,7 +892,7 @@ class Dataset(Object):
         # Search for the variable now
         ncvarid = self._get_cached_ncid_(genname)
         if ncvarid is None:
-            ncvarid = ncfind_var(self.dataset[0], search)
+            ncvarid = ncfind_var(self.dataset[0], search, searchmode=searchmode)
         self._set_cached_ncid_(genname, ncvarid)
         if ncvarid is None:
             if warn: 
@@ -2158,7 +2161,7 @@ class OceanDataset(OceanSurfaceDataset):
               
             - **subsamp**, optional: Subsampling with respect to grid cell.
             - **method**, optional: Interpolation method 
-              (see :func:`~vacumm.misc.gid.regridding.grid2xy`).
+              (see :func:`~vacumm.misc.grid.regridding.grid2xy`).
             - **getcoords**, optional: Also get computed coordiantes.
             - **outaxis**, optional: Output axis.
         

@@ -682,7 +682,7 @@ for all_specs in var_specs, axis_specs:
 
 del specs
 
-def cf2search(name, mode=None):
+def cf2search(name, mode=None, **kwargs):
     """Extract specs from :attr:`axis_specs` or :attr:`var_specs` to form a search dictionary
     
     :Params:
@@ -924,9 +924,9 @@ def format_grid(grid, pt, **kwargs):
     format_axis(lon, gs['lon'])
     format_axis(lat, gs['lat'])
 
-def match_var(var, name, mode=None, **kwargs):
+def match_var(var, name, searchmode=None, **kwargs):
     """Check if a variable match some specifications"""
-    search = cf2search(name, mode=mode)
+    search = cf2search(name, mode=searchmode)
     search.update(kwargs)
-    return ncmatch_obj(var, **search)
+    return ncmatch_obj(var, searchmode=searchmode, **search)
 
