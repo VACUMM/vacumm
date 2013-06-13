@@ -4,7 +4,7 @@
 
 .. seealso::
 
-    Tutorials: :ref:`tut.misc.variables.vacumm.axes`
+    Tutorials: :ref:`user.tut.misc.variables.vacumm.axes`
 """
 # Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
 # 

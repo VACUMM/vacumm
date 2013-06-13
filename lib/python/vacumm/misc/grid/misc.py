@@ -4,7 +4,7 @@ Grid utilities.
 
 It deals with bounds, areas, interpolations...
 
-See: :ref:`tut.misc.grid`.
+See: :ref:`user.tut.misc.grid`.
 """
 # Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
 # 

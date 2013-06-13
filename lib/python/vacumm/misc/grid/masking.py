@@ -3,7 +3,7 @@
 
 .. seealso::
 
-    Tutorials: :ref:`tut.misc.grid.masking`, :ref:`tut.misc.grid.polygons`
+    Tutorials: :ref:`user.tut.misc.grid.masking`, :ref:`user.tut.misc.grid.polygons`
 """
 # Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
 # 
@@ -213,7 +213,7 @@ def erode_coast(var, mask2d=None, copy=True, maxiter=10, corners=0., hardmask=No
     
         - A :mod:`MV2` variable
         
-    :Tutorial: :ref:`tut.misc.grid.masking.erode_coast`
+    :Tutorial: :ref:`user.tut.misc.grid.masking.erode_coast`
     """
     from vacumm.misc.filters import shapiro2d
     varo = var.clone() if copy else var

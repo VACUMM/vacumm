@@ -168,8 +168,12 @@ def lindates(first, last, incr, units):
     
         - **first**: first date
         - **last**: first date
-        - **incr**: first date
+        - **incr**: increment step
         - **units**: units like "days" (see :func:`unit_type`)
+        
+    :Example:
+    
+        >>> dates = lindates('2000', '2002-05', 3, 'months')
         
     :Return: 
     
