@@ -393,7 +393,7 @@ def ncfind_axis(f, name, ignorecase=True, regexp=False, **kwargs):
     del nfo
     return res
 
-def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, **kwargs):
+def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchorder=None, **kwargs):
     '''
     Find a variable or an axis in netcdf file using a name, list of names
     or matching attributes such as standard_name, long_name and units.
@@ -415,10 +415,13 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, **kwargs):
     
         - **f**: A cdms2.dataset.CdmsFile.
         - **name**: A string or list of string to look for, 
-          or a dictionnary with keys "name", "standard_name", "long_name".
+          or a dictionary with keys "name", "standard_name", "long_name", 'units' and 'axis'.
         - **ignorecase**, optional: Ignore name case when searching variable.
         - **regexp**, optional: Interpret long_names and units as regular expressions
           that must be compiled.
+        - **searchorder**, optional: Search order when ``name`` is a dictionary, defaults
+          to ``None`` or ``'snlua'`` which means: 
+          *standard_name -> name -> long_name -> units -> axis* (first letters).
     
     :Return:
     
@@ -437,7 +440,7 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, **kwargs):
     # Searched terms
     withdict = isinstance(name, dict)
     standard_names = long_names = units = axis = None
-    if withdict: # Using a dictionnary
+    if withdict: # Using a dictionary
     
         # Names and standard_name
         names = name.get("name", name.get('names', None))
@@ -476,10 +479,20 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, **kwargs):
         names = __builtins__['map'](str.strip, names)
         if ignorecase: 
             names = __builtins__['map'](str.lower, names)
+            
+    # Search order
+    keys = []
+    all_keys = ['standard_names', 'names', 'long_names', 'units', 'axis']
+    all_keys0 = [key[0] for key in all_keys]
+    if searchorder is None:
+        searchorder = 'snlua'
+    for key0 in searchorder:
+        if key0 in all_keys0:
+            keys.append(all_keys[all_keys0.index(key0)])        
     
     # Loop on objects
     # TODO: inherit order if name like OrderedDict
-    for key in ('standard_names', 'names', 'long_names', 'units'):
+    for key in keys:
         kwsearch = {key:eval(key)}
         for name in ids:
             v = f[name]
@@ -528,9 +541,9 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
         val = eval(key)
         search[key] = val
         if val is None: continue
-        if key=='axis' and isinstance(key, list):
-           search[key] = val[0]
-           continue 
+        if key=='axis':
+            search[key] = val if not isinstance(key, list) else val[0]
+            continue
         if not M.is_iterable(val): val = [val]
         for i, v in enumerate(val): # strings
             if isinstance(val, basestring):
@@ -538,7 +551,6 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
                 if ignorecase:
                     val[i] = val[i].strip()
         search[key] = val
-
 
     # Check standard_name first
     if search['standard_names'] is not None and hasattr(obj, "standard_name"):
@@ -673,6 +685,7 @@ def ncread_var(f, vname, *args, **kwargs):
     samp = kwargs.pop('samp', None)
     atts = kwargs.pop('atts', None)
     mode = kwargs.pop('mode', 'raise')
+    searchorder = kwargs.pop('searchorder', None)
     squeeze = kwargs.pop('squeeze', False)
     if not isinstance(squeeze, list):
         squeeze = [squeeze]
@@ -869,8 +882,11 @@ def ncget_fgrid(f, gg):
         if gg is None: return
         
     # Current grid
-    lon = gg.getLongitude()
-    lat = gg.getLatitude()
+    if isinstance(gg, tuple):
+        lon, lat = gg
+    else:
+        lon = gg.getLongitude()
+        lat = gg.getLatitude()
     if lon is None or lat is None: return
     lonid = getattr(lon, '_oldid', lon.id)
     latid = getattr(lat, '_oldid', lat.id)
@@ -1110,7 +1126,7 @@ def ncread_best_estimate(filepattern, varname, *args, **kwargs):
 
 def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, select=None, 
     atts=None, samp=None, grid=None, verbose=False, ignorecase=True, torect=True, 
-    squeeze=False, **kwargs):
+    squeeze=False, searchorder=None, **kwargs):
     """Read the best estimate of a variable through a set of netcdf files
    
     :Example:
@@ -1140,7 +1156,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
         - **toffset**: Skip the first time steps. See :class:`NcIterBestEstimate`
           for more information.
         - **select**, optional: An additional selector for reading
-          the variable. It can be a dictionnary or a :class:`~cdms2.selectors.Selector`
+          the variable. It can be a dictionary or a :class:`~cdms2.selectors.Selector`
           instance (see :func:`~vacumm.misc.misc.create_selector`).
         - **samp**, optional: Undersample rate as a list of the same size as
           the rank of the variable. Set values to 0, 1 for no undersampling.
@@ -1154,6 +1170,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
         - Extra kwargs are used to refine the **selector** initialized with ``select``.
         - **squeeze**, optional: Argument passed to :func:`ncread_var`
           to squeeze out singleton axes.
+        - **searchorder**, optional: Search order (see :func:`ncfind_obj`).
 
     :Raise: :class:`NcIterBestEstimateError` in case of error.
     """
@@ -1243,7 +1260,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
                 print '  Selecting:', sel
             try:
                 var = ncread_var(f, vn, sel, ignorecase=True, torect=torect, squeeze=squeeze,
-                                 grid=grid, samp=samp, 
+                                 grid=grid, samp=samp, searchorder=searchorder, 
                                  atts=atts[iv] if atts is not None and iv<len(atts) else None)
                 if verbose:
                     print '  Loaded:', var.shape
