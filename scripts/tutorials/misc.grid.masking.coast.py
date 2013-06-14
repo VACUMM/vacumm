@@ -11,7 +11,7 @@ import vacumm.misc.color as C
 P.figure(figsize=(6, 5))
 P.subplots_adjust(top=.92,left=.03,bottom=.03,wspace=.05,hspace=.2)
 kwplot = dict(colorbar=False,cmap=C.cmap_linear([(.6, .8, 1), C.land]), \
-    contour=False,show=False,fillcontinents=False,
+    contour=False,show=False,fillcontinents=False,fill='pcolor',
     drawmeridians=False, drawparallels=False)
 
 # Creation du mask avec trait de cote fin ('f')
