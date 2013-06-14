@@ -1,7 +1,6 @@
 # Makefile for Sphinx documentation
 #
-#APIFIG=source/library/misc-color-cmap_br.png
-TUTFIG=source/tutorials/python/misc-plot-basic-curve.png
+TUTFIG=../../scripts/tutorials/misc-plot-basic-curve.png
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
@@ -40,7 +39,7 @@ help:
 clean:
 	-rm -rf $(BUILDDIR)/*
 
-html: 
+html: $(TUTFIG)
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	-cd $(BUILDDIR)/html && rm -f VACUMM.pdf && cp -f ../latex/VACUMM.pdf .
 	-cd $(BUILDDIR)/html && rm -f VACUMM.epub && cp -f ../epub/VACUMM.epub .
@@ -142,4 +141,4 @@ doctest:
 #	-echo "cd source/library/ && python make.py"
 
 $(TUTFIG):
-	-cd source/tutorials/python && make
+	-cd $(dir $@) && make

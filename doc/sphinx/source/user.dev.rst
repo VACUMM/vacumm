@@ -21,75 +21,57 @@ Please follow the :ref:`appendix.conventions`.
 Architecture
 ============
 
-L'architecture doit de la librairie ne doit pas s'éloigner
-de celle mentionnée à la section :ref:`user.algo.arch`.
-Si un nouveau module est ajouté, celui-ci doit être intégré
-à :mod:`vacumm.misc` s'il est de nature générique.
-Si ce module est très spécialisé, il peut intégré au niveau supérieur, 
-c'est-à-dire directement dans :mod:`vacumm`.
+The architecture of the library must follow the spirit
+of what is explained at section :ref:`user.desc.basis.arch`.
+For instance, generic stuff must go in the :mod:`vacumm.misc`
+module.
+When a new module is specialized, it should find a place elsewhere.
 
 .. _user.dev.doc:
 
-Documentation
-=============
+Generation of the sphinx documentation
+======================================
+
+Generation of the figures of scripts
+------------------------------------
+
+Some of the scripts located in the :file:`scripts` directory 
+create figure that are included in the documentation.
+You must run them before compiling the documentation to make
+sure that all needed figures are available.
+For that, just run a :program:`make` in the :file:`scripts` directory:
+    
+    
+.. code-block:: bash
+
+    $ cd scripts
+    $ make
+
+
+.. note:: It is not necessary to re-generate these figure each time you compile!
+
 
 Compilation
 -----------
 
-La documentation est écrite en langage  `rst <http://docutils.sourceforge.net/rst.html>`_
-et est compilée par `Sphinx <http://sphinx.pocoo.org>`_ .
-Les sources se trouvent dans le sous-répertoire :file:`doc/sphinx/source`.
-Pour la compiler : 
+The documentation is written in `rst <http://docutils.sourceforge.net/rst.html>`_ language,
+and compilated with `Sphinx <http://sphinx.pocoo.org>`_ .
+Source files are located in the  :file:`doc/sphinx/source` directory.
+To compile it: 
 
 .. code-block:: bash
 
-    shell> cd doc/sphinx
-    shell> make      # html + pdf
-    shell> make html # html seul
-    shell> make pdf  # pdf seul via latex
+    $ cd doc/sphinx
+    $ make      # html + pdf
+    $ make html # html only
+    $ make pdf  # pdf only using pdflatex
 
-La documentation compilée se trouve alors dans les répertoires 
-:file:`doc/sphinx/build/html` et :file:`doc/sphinx/build/latex`.
-
-Les exemples de code présentés dans les :ref:`tutoriels <user.tut>` de la documentation 
-sont des scripts situés dans le sous répertoire :file:`doc/sphinx/source/tutorials/python`.
-Certains d'entre eux utilisent des fichiers de données situés dans le 
-sous répertoire :file:`data`.
+The documentation is generated in directories 
+:file:`doc/sphinx/build/html` and :file:`doc/sphinx/build/latex`.
 
 
-Dépendances
------------
-    
-Certains des scripts de tutoriel génèrent des figures ou fichiers inclus ensuite dans
-la documentation. Il est nécessaire de les exécuter afin de cette dernière puisse
-être compilée correctement.
-
-En outre, la documentation des modules peut aussi utiliser des figures
-(notamment :mod:`~vacumm.misc.color`).
-Celles-ci sont créées grâce au script :program:`doc/sphinx/source/library/make.py`,
-qui doit donc être exécuté avant la compilation de la documentation 
-(:file:`doc/sphinx/Makefile` s'en charge automatiquement).
-
-.. code-block:: bash
-
-    shell> cd doc/sphinx/library
-    shell> python make.py
-    
-Enfin, certaines figures de la documentation (comme le logo) sont créées par :command:`pdflatex`.  
-
-.. code-block:: bash
-
-    shell> cd doc/sphinx/source
-    shell> make
-
-Il est possible que certaines pages incluent des formules mathématiques.
-Afin qu'elle soit compilées et affichées correctement par l'extension sphinx
-:class:`sphinx.ext.pngmath`, vous devez avoir le programme :program:dvipng
-accessible.
-
-
-Génération des figures TikZ
----------------------------
+Regeneration of TikZ figures 
+----------------------------
 
 Cette documentation contient plusieurs figures 
 dessinées grâce à :program:`pdflatex` et 
@@ -104,11 +86,11 @@ Pour l'installation, procédez ainsi :
     
 .. code-block:: bash
 
-    shell> mkdir -p ~/texmf
-    shell> cd ~/texmf
-    shell> wget http://media.texample.net/pgf/builds/pgfCVS2010-09-28_TDS.zip
-    shell> unzip pgfCVS2010-09-28_TDS.zip
-    shell> rm pgfCVS2010-09-28_TDS.zip
+    $ mkdir -p ~/texmf
+    $ cd ~/texmf
+    $ wget http://media.texample.net/pgf/builds/pgfCVS2010-09-28_TDS.zip
+    $ unzip pgfCVS2010-09-28_TDS.zip
+    $ rm pgfCVS2010-09-28_TDS.zip
 
 .. sidebar:: Qu'est-ce que PGF/TikZ ?
 
@@ -121,20 +103,19 @@ Pour l'installation, procédez ainsi :
     C'est donc sur une *build* CVS que les figures de cette documentation
     sont basées.
 
-Les figures sont ensuite générées avec la commande suivante :  
+TikZ figure can now be generated with:  
 
 .. code-block:: bash
 
-    shell> cd doc/sphinx/sources
-    shell> make
+    $ cd doc/sphinx/sources
+    $ make
 
 Le code latex est alors compilé, générant un pdf qui est ensuite converti
 au format ppm, puis au format png.
 
 
-
-Tutoriels et vérifications
-==========================
+Writing tutorials
+=================
 
 Il fortement suggéré aux développeurs de la librairie de créer des tutoriels
 sur les fonctionnalités importantes qu'ils développent.
@@ -150,7 +131,7 @@ Son utilisation est la suivante :
 
 .. code-block:: bash
 
-    shell> check.py [options] [pattern1 [pattern2] ...]
+    $ check.py [options] [pattern1 [pattern2] ...]
     
 Celui-ci prend comme argument un (ou plusieurs) *global pattern*
 permettant de lister les scripts à tester.
@@ -168,8 +149,8 @@ Exemples d'utilisation :
 
 .. code-block:: bash
 
-    shell> check.py -e "misc.color.py" -e misc.grid.masking.* misc.*.py
-    shell> check.py --loglevel=debug
+    $ check.py -e "misc.color.py" -e misc.grid.masking.* misc.*.py
+    $ check.py --loglevel=debug
 
     
 .. rubric:: Options de :program:`check.py`
@@ -194,15 +175,15 @@ Exemples d'utilisation :
         - ``"error"``: Affiche le nom des scripts n'ayant pas passé le test.
 
 
-Distribution d'un paquet
-========================
+Distributing the library as a package
+=====================================
 
 Il est possible de créer des paquets correspondant typiquement à des versions précises (par exemple stables).
 La procédure est la suivante :
     
 .. code-block:: bash
 
-    shell> python setup.py bdist
+    $ python setup.py bdist
     
 Cette commande va alors créer un fichier distribuable, dont le nom est proche de 
 :file:`vacumm-0.9-svn128.linux-x86_64.tar.gz`.

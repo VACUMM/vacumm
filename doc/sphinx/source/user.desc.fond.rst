@@ -1,51 +1,56 @@
-.. _user.desc.fond:
+.. _user.desc.basis:
 
-Fondements de la librairie
-**************************
+Basis of the librairie
+**********************
 
+
+_user.desc.basis.arch:
     
-Architecture générale
-=====================
+General architecture
+====================
 
 .. _fig.arch:
     
 .. figure:: static/modules.*
 
-    Vue schématique des modules de la librairies (en vert), ainsi que de certains
-    paquets dont elle dépend.
+    Schematic view of (most of) the library modules (in green) 
+    and of some required external modules.
 
 
 
 La librairie générique :mod:`vacumm.misc` est organisée de la manière suivante :
 
-    - :mod:`~vacumm.misc.misc` : Contient ce qui n'est pas inclus dans les
-      autres modules.
-    - :mod:`~vacumm.misc.axes` : Utilitaires concernant les axes au sens de CDAT.
-    - :mod:`~vacumm.misc.atime` : Gestion des différents types de temps.
-    - :mod:`~vacumm.misc.color` : Couleurs et palettes de couleurs au sens de matplotlib.
-    - :mod:`~vacumm.misc.config` : Gestion de configurations avancées.
-    - :mod:`~vacumm.misc.core_plot` : Classes définissant le nouveau cœur des routines de plots de :mod:`~vacumm.misc.plot`.
-    - :mod:`~vacumm.misc.filters` : Filtres numériques 1D et 2D.
-    - :mod:`~vacumm.misc.plot` : Fonction graphiques.
-    - :mod:`~vacumm.misc.stats` : Quelques fonctions statistiques spéciales.
-    - :mod:`~vacumm.misc.grid` : À propos de données grillées.
+    - :mod:`~vacumm.misc.misc` : Generic place where to put what cannot be placed elsewhere.
+    - :mod:`~vacumm.misc.axes` : Utilities about CDAT axes.
+    - :mod:`~vacumm.misc.atime` : Working with time.
+    - :mod:`~vacumm.misc.color` : Working with colors and colorbars (:mod:`matplotlib`).
+    - :mod:`~vacumm.misc.config` : Managing advanced configuration (:mod:`configobj`).
+    - :mod:`~vacumm.misc.core_plot` : Core classes used by :mod:`~vacumm.misc.plot`.
+    - :mod:`~vacumm.misc.filters` : 1D et 2D filters.
+    - :mod:`~vacumm.misc.plot` : Plot functions.
+    - :mod:`~vacumm.misc.stats` : Special statistical functions.
+    - :mod:`~vacumm.misc.grid` : About CDAT grids.
 
-        - :mod:`~vacumm.misc.grid.misc` : Routines générales sur les grilles.
-        - :mod:`~vacumm.misc.grid.regridding` : Interpolation et regrillage.
-        - :mod:`~vacumm.misc.grid.masking` : Masquage des données.
-        - :mod:`~vacumm.misc.grid.basemap` : Objets et projections cartographiques.
+        - :mod:`~vacumm.misc.grid.misc` : General functions.
+        - :mod:`~vacumm.misc.grid.regridding` : Interpolation and regidding.
+        - :mod:`~vacumm.misc.grid.kriging` : Pure kriging.
+        - :mod:`~vacumm.misc.grid.masking` : Masking data.
+        - :mod:`~vacumm.misc.grid.basemap` : Utilities related to geographic maps 
+          (:mod:`~mpl_toolkits.basemap`).
 
-    - :mod:`~vacumm.misc.phys` : À propos de données physiques.
+    - :mod:`~vacumm.misc.phys` : About physics.
 
-        - :mod:`~vacumm.misc.phys.constants` : Quelques constantes utiles.
-        - :mod:`~vacumm.misc.phys.units` : Conversions d'unités.
+        - :mod:`~vacumm.misc.phys.constants` : Useful constants.
+        - :mod:`~vacumm.misc.phys.units` : Units conversions.
         
+    - :mod:`~vacumm.data` : Advanced data use.
+    - :mod:`~vacumm.diag` : Advanced diagnostics.
         
 
   .. _user.desc.cdat:
     
-CDAT comme base numérique
-=========================
+CDAT as numeirc basis
+=====================
 
 Le choix a été fait de prendre `CDAT <http://www2-pcmdi.llnl.gov/cdat>`_ comme base pour l'ensemble
 des développements de la librairie.
@@ -98,8 +103,8 @@ types de temps (chaîne de caractères, numérique, :class:`datetime.datetime`, 
 
 .. _user.desc.mpl:
     
-Matplotlib comme base graphique
-===============================
+Matplotlib as graphic basis
+===========================
 
 La librairie se base presque exclusivement sur `Matplotlib <http://matplotlib.sourceforge.net>`_ et
 `Basemap <http://matplotlib.sourceforge.net/basemap/doc/html/>`_ pour l'ensemble des graphiques.
