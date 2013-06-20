@@ -1736,10 +1736,10 @@ class ArgList(object):
         if so and not self.single:
             return [argso]
         return argso[0]
-
+ 
 def set_lang(default='en_US.UTF-8', num=None):
     """Set the default and numeric languages
-    
+
     The numeric language defaults to the default language
     """
     import locale
@@ -1748,14 +1748,14 @@ def set_lang(default='en_US.UTF-8', num=None):
     locale.setlocale(locale.LC_ALL, default)
     os.environ['LC_NUMERIC'] = num
     locale.setlocale(locale.LC_NUMERIC, num)
-
+    
 def set_lang_fr(ennum=True):
     """Set lang to french, except the numeric lang wich is set to en by default"""
     num = 'en_US.UTF-8' if ennum else 'fr_FR.UTF-8'
     set_lang(default='fr_FR.UTF-8', num=num)
 
-from phys.units import *
-from phys.constants import *
+#from phys.units import *
+#from phys.constants import *
 
 
 
