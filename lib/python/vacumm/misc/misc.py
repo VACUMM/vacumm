@@ -68,7 +68,7 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'grow_variables', 'grow_depth', 'grow_lat',
     'create_selector', 'selector2str', 'split_selector', 'squeeze_variable', 'dict_copy_items', 
     "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
-    'set_lang','set_lang_fr']
+    'set_lang','set_lang_fr', 'lunique', 'tunique']
 __all__.sort()
 
 def broadcast(set, n, mode='last', **kwargs):
@@ -858,6 +858,27 @@ def dict_check_defaults(kwargs, **defs):
     for item in defs.iteritems():
         kwargs.setdefault(*item)
     return kwargs
+    
+def lunique(mylist):
+    """Uniquify a list to a new list"""
+    ulist = []
+    seen = {}
+    for item in mylist:
+        if item in seen: continue
+        seen[item] = True 
+        ulist.append(item)
+    return ulist
+    
+def tunique(mytuple):
+    """Uniquify a tuple to a new tuple"""
+    utuple = []
+    seen = {}
+    for item in mytuple:
+        if item in seen: continue
+        seen[item] = True 
+        utuple += item, 
+    return utuple
+       
 
 def dict_merge(*dd, **kwargs):
     """Merge dictionaries
@@ -894,11 +915,11 @@ def dict_merge(*dd, **kwargs):
             elif mergelists and isinstance(outd[key], list) and isinstance(val, list): # Merge lists
                 outd[key] += val
                 if unique:
-                    outd[key] = list(set(outd[key] ))
+                    outd[key] = lunique(outd[key])
             elif mergetuples and isinstance(outd[key], tuple) and isinstance(val, tuple): # Merge tuples
                 outd[key] += val
                 if unique:
-                    outd[key] = tuple(set(outd[key]))
+                    outd[key] = tunique(outd[key])
                 
     return outd
 
