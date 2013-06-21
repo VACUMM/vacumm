@@ -2,6 +2,7 @@
 
 import cdms2, MV2, re
 from collections import OrderedDict
+import string
 
 from vacumm import VACUMMError
 from vacumm.misc import kwfilter, dict_merge
@@ -16,7 +17,7 @@ __all__ = ['var_specs', 'axis_specs',
 ]
 
 #: Specifications for variables
-var_specs = dict(
+var_specs = OrderedDict(
 
     # Thermodynamics
     temp = dict(
@@ -123,6 +124,12 @@ var_specs = dict(
         long_names = "Sea water barotropic geostrophic velocity along Y at V location", 
         units = "m s-1", 
     ),
+    ke = dict(
+        names = ['ke'], 
+        standard_names ='kinetic_energy', 
+        long_names = 'Kinetic energy', 
+        units = "m2 s-2", 
+    ), 
     eke = dict(
         names = ['eke'], 
         standard_names ='eddy_kinetic_energy', 
@@ -169,44 +176,22 @@ var_specs = dict(
         standard_names=['model_sea_floor_depth_below_sea_level', 'model_sea_floor_depth_below_geoid', "sea_floor_depth_below_geoid" ], 
         long_names = 'Bathymetry', 
         units = 'm', 
+        atlocs = ['u', 'v', 'f'], 
     ), 
     bathy_u = dict(
-        names=['bathy_u', 'hx'], 
-        standard_names=['model_sea_floor_depth_below_sea_level_at_u_location', 'model_sea_floor_depth_below_geoid_at_u_location', "sea_floor_depth_below_geoid_at_u_location" ], 
-        long_names = 'Bathymetry at U location', 
-        units = 'm', 
-        
+        names = ['hx'], 
     ), 
     bathy_v = dict(
-        names=['bathy_v', 'hy'], 
-        standard_names=['model_sea_floor_depth_below_sea_level_at_v_location', 'model_sea_floor_depth_below_geoid_at_v_location' "sea_floor_depth_below_geoid_at_v_location" ], 
-        long_names = 'Bathymetry at V location', 
-        units = 'm', 
+        names = ['hy'], 
     ), 
+    
     depth = dict(
         names = ['depth', 'dep', 'depthu', 'depthv'], 
         standard_names = ['ocean_layer_depth', 'ocean_layer_depth_at_t_location', 'ocean_layer_depth_at_u_location', 
             'ocean_layer_depth_at_v_location'], 
         long_names =  'Depth', 
         units = 'm', 
-    ), 
-    depth_u = dict(
-        names = ['depth_u', 'depthu'], 
-        standard_names = 'ocean_layer_depth_at_u_location', 
-        long_names =  'Depth at U location', 
-        units = 'm', 
-    ), 
-    depth_v = dict(
-        names = ['depthv', 'depth_v'], 
-        standard_names = 'ocean_layer_depth_at_v_location', 
-        long_names =  'Depth at V location', 
-        units = 'm', 
-    ), 
-    depth_w = dict(
-        names = ['depthw', 'depth_w'], 
-        standard_names = 'ocean_interface_depth_at_w_location', 
-        long_names =  'Depth of interfaces at W location', 
-        units = 'm', 
+        atlocs = ['u', 'v', 'w'], 
     ), 
         
     # Cell sizes
@@ -215,120 +200,35 @@ var_specs = dict(
         standard_names = 'cell_x_size',
         long_names = "Mesh size along x",
         units = 'm',
-    ),
-    dx_u = dict(
-        names = ['dx_u'],
-        standard_names = 'cell_x_size_at_u_location',
-        long_names = "Mesh size along x at u location",
-        units = 'm',
-    ),
-    dx_v = dict(
-        names = ['dx_v'],
-        standard_names = 'cell_x_size_at_v_location',
-        long_names = "Mesh size along x at v location",
-        units = 'm',
-    ),
-    dx_f = dict(
-        names = ['dx_f'],
-        standard_names = 'cell_x_size_at_f_location',
-        long_names = "Mesh size along x at f location",
-        units = 'm',
+        atlocs = ['u', 'v', 'f'], 
     ),
     dy = dict(
         names = ['dy', 'dy_u', 'dy_v', 'dy_f'],
         standard_names = 'cell_y_size',
         long_names = "Mesh size along y",
         units = 'm',
-    ),
-    dy_u = dict(
-        names = ['dy_u'],
-        standard_names = 'cell_y_size_at_u_location',
-        long_names = "Mesh size along y at u location",
-        units = 'm',
-    ),
-    dy_v = dict(
-        names = ['dy_v'],
-        standard_names = 'cell_y_size_at_v_location',
-        long_names = "Mesh size along y at v location",
-        units = 'm',
-    ),
-    dy_f = dict(
-        names = ['dy_f'],
-        standard_names = 'cell_y_size_at_f_location',
-        long_names = "Mesh size along y at f location",
-        units = 'm',
+        atlocs = ['u', 'v', 'f'], 
     ),
     dz = dict(
         names = ['dz'], 
         standard_names = 'ocean_layer_thickness', 
         long_names = "Ocean layer thickness", 
         units = "m", 
-    ), 
-    dz_u = dict(
-        names = ['dz_u'], 
-        standard_names = 'ocean_layer_thickness_at_u_location', 
-        long_names = "Ocean layer thickness at U location", 
-        units = "m", 
-    ), 
-    dz_v = dict(
-        names = ['dz_v'], 
-        standard_names = 'ocean_layer_thickness_at_v_location', 
-        long_names = "Ocean layer thickness at Vlocation", 
-        units = "m", 
-    ), 
-    dz_w = dict(
-        names = ['dz_w'], 
-        standard_names = 'ocean_layer_thickness_at_w_location', 
-        long_names = "Ocean layer thickness at W location", 
-        units = "m", 
+        atlocs = ['u', 'v', 'w'], 
     ), 
     dlon = dict(
         names = ['dlon', 'dlon_u', 'dlon_v', 'dlon_f'],
         standard_names = 'cell_x_size',
         long_names = "Mesh size along x",
         units = 'degrees',
-    ),
-    dlon_u = dict(
-        names = ['dlon_u'],
-        standard_names = 'cell_x_step_at_u_location',
-        long_names = "Mesh step along x at u location",
-        units = 'degrees',
-    ),
-    dlon_v = dict(
-        names = ['dlon_v'],
-        standard_names = 'cell_x_step_at_v_location',
-        long_names = "Mesh step along x at v location",
-        units = 'degrees',
-    ),
-    dlon_f = dict(
-        names = ['dlon_f'],
-        standard_names = 'cell_x_step_at_f_location',
-        long_names = "Mesh step along x at f location",
-        units = 'degrees',
+        atlocs = ['u', 'v', 'f'], 
     ),
     dlat = dict(
         names = ['dlat', 'dlat_u', 'dlat_v', 'dlat_f'],
         standard_names = 'cell_y_step',
         long_names = "Mesh step along y",
         units = 'degrees',
-    ),
-    dlat_u = dict(
-        names = ['dlat_u'],
-        standard_names = 'cell_y_step_at_u_location',
-        long_names = "Mesh step along y at u location",
-        units = 'degrees',
-    ),
-    dlat_v = dict(
-        names = ['dlat_v'],
-        standard_names = 'cell_y_step_at_v_location',
-        long_names = "Mesh step along y at v location",
-        units = 'degrees',
-    ),
-    dlat_f = dict(
-        names = ['dlat_f'],
-        standard_names = 'cell_y_step_at_f_location',
-        long_names = "Mesh step along y at f location",
-        units = 'degrees',
+        atlocs = ['u', 'v', 'f'], 
     ),
    
     # Cell volumes
@@ -337,32 +237,16 @@ var_specs = dict(
         standard_names = 'cell_volume', 
         long_names = "Volume of the cell", 
         units = "m3", 
-    ), 
-    vol_u = dict(
-        names = ['vol_u'], 
-        standard_names = 'cell_volume_at_u_location', 
-        long_names = "Volume of the cell at U location", 
-        units = "m3", 
-    ), 
-    vol_v = dict(
-        names = ['vol_v'], 
-        standard_names = 'cell_volume_at_v_location', 
-        long_names = "Volume of the cell at Vlocation", 
-        units = "m3", 
-    ), 
-    vol_w = dict(
-        names = ['vol_w'], 
-        standard_names = 'cell_volume_at_w_location', 
-        long_names = "Volume of the cell at W location", 
-        units = "m3", 
+        atlocs = ['u', 'v', 'w'], 
     ), 
    
     # Coriolis
-    f0 = dict(
-        names = [], 
+    corio = dict(
+        names = ['corio', 'f0'], 
         standard_names = "coriolis_parameter", 
         long_names = "Coriolis parameter", 
         units = "s-1", 
+        atlocs = ['u', 'v'], 
     ), 
     beta = dict(
         names = [], 
@@ -476,12 +360,9 @@ var_specs = dict(
 
 )
 
-#: List of generic variable names
-generic_var_names = var_specs.keys()
-
 
 #: Specifications for axes
-axis_specs = dict(
+axis_specs = OrderedDict(
 
     # Axes
     time = dict(
@@ -610,11 +491,6 @@ axis_specs = dict(
     
         
 )
-#: List of generic axis names
-generic_axis_names = axis_specs.keys()
-
-#: List of all generic names (axes and variables)
-generic_names= generic_var_names+generic_axis_names
 
 #: Specifications for grid formating
 grid_specs = {
@@ -625,6 +501,101 @@ grid_specs = {
 }
 grid_specs['r'] = grid_specs['t']
 
+_reloc =  dict(
+    name = re.compile('(_[a-z])?$', re.I).search, 
+    standard_name = re.compile('(_at_[a-z]_location)?$', re.I).search, 
+    long_name = re.compile('( at [a-z] location)?$', re.I).search, 
+)
+def no_loc_single(name, stype):
+    """Remove location specification
+    
+    :Params:
+    
+        - **name**: Generic ame of the variable or axis.
+        - **stype**: One of 'name', 'standard_name' or 'long_name'.
+    """
+    loc = _reloc[stype](name).group(1)
+    if loc is not None:
+        return name[:-len(loc)]
+    return name
+    
+def _loc_(loc=None):
+    """Get location as a single char or empty lowercase string"""
+    if loc is None: loc = ''
+    if loc.startswith('_'): loc = loc[1:]
+    loc = loc[:1]
+    if loc not in string.ascii_letters:
+        raise TypeError('Wrong location: '+loc)
+    return loc.lower()
+
+def change_loc_single(name, stype, loc):
+    """Change location specification"""
+    basename = no_loc_single(name, stype)
+    loc = _loc_(loc)
+    if loc:
+        if stype=='name':
+            return basename+'_'+loc
+        if stype=='standard_name':
+            return basename+'_at_%s_location'%loc
+        if stype=='long_name':
+            return basename+' at %s location'%loc.upper()
+    return basename
+        
+def change_loc(loc, names=None, standard_names=None, long_names=None, **kwargs):
+    """Change location specification in names, standard names or long names
+    
+    :Return: A dictionary
+    
+    TODO: change_loc: add axes
+    """
+    specs = kwargs.copy()
+    if 'atlocs' in specs: del specs['atlocs']
+    
+    for stype in 'name', 'standard_name', 'long_name':
+        values = eval(stype+'s')
+        if values is None: continue
+        if isinstance(values, list):
+            tmp = [change_loc_single(value, stype, loc) for value in values]
+            values = []
+            for value in tmp: # unique
+                values.append(value)
+                tmp.remove(value)
+          
+        else:
+            values = change_loc_single(values, stype, loc)
+        specs[stype+'s'] = values
+        
+    return specs
+    
+def specs_dup_loc(all_specs, fromname, toloc):
+    """Duplicate the specification for a variable or an axis to another or several locations
+    
+    :Example:
+    
+        >>> specs_dup_loc(var_specs, 'corio', 'u') # Create the 'corio_u' entry in var_specs
+        
+    """
+    if not fromname in all_specs:
+        raise KeyError('No such entry in specifications: '+fromname)
+    single = not isinstance(toloc, (list, tuple))
+    if single:
+        toloc = [toloc]
+    tonames = []
+    for loc in toloc:
+        
+        # New name (id)
+        toname = change_loc_single(fromname, 'name', loc)
+        tonames.append(toname)
+        
+        # New specs
+        tospecs = change_loc(loc, **all_specs[fromname])
+        if toname in all_specs:
+            tospecs = dict_merge(tospecs, all_specs[toname], mergelists=True)
+        all_specs[toname] = tospecs
+    
+    if single: return tonames[0]
+    return tonames
+
 def cp_suffix(idref, id, suffixes=['_u', '_v', '_w', '_z']):
     """Copy a suffix if found in an id to another id"""
     if isinstance(suffixes, basestring): suffixes = [suffixes]
@@ -633,9 +604,17 @@ def cp_suffix(idref, id, suffixes=['_u', '_v', '_w', '_z']):
     return id+m.group(1)
 
 # Format specifications
+# 1. Makes sure to have lists
+# 2. Check geo axes
+# 3. Check inheritance (generic name=id) the first name
+# 4. Check duplication to other locations
 for all_specs in var_specs, axis_specs:
     
+    from_atlocs = []
     for name, specs in all_specs.items():
+        
+        # Entry already generated with the atlocs key
+        if name in from_atlocs: continue
         
         # Always lists (except for dict and some keys)
         for key, value in specs.items():
@@ -660,11 +639,11 @@ for all_specs in var_specs, axis_specs:
             objname = specs['inherit']
             obj_specs = None
             if key==objname: # same name
-                if key in generic_var_names and objname in generic_axis_names:
-                    obj_specs = generic_axis_names
-                elif key in generic_axis_names and objname in generic_var_names:
-                    obj_specs = generic_var_names
-            elif objname in generic_var_names:
+                if key in var_specs and objname in axis_specs:
+                    obj_specs = axis_specs.keys()
+                elif key in axis_specs and objname in var_specs:
+                    obj_specs = var_specs.keys()
+            elif objname in var_specs:
                 obj_specs = var_specs 
             else:
                 obj_specs = axis_specs
@@ -675,12 +654,27 @@ for all_specs in var_specs, axis_specs:
         if all_specs is axis_specs and 'axes' in specs:
             del specs['axes']
         
-        # Key = first id
+        # Key = first name (id)
         if name in specs['names']:
             specs['names'].remove(name)
         specs['names'].insert(0, name)
+        
+        # Duplicate at other locations
+        if 'atlocs' in specs:
+            tonames =  specs_dup_loc(all_specs, name, specs['atlocs'])
+            from_atlocs.extend(tonames)
 
 del specs
+
+#: List of generic variable names
+generic_var_names = var_specs.keys()
+
+#: List of generic axis names
+generic_axis_names = axis_specs.keys()
+
+#: List of all generic names (axes and variables)
+generic_names= generic_var_names+generic_axis_names
+
 
 def cf2search(name, mode=None, **kwargs):
     """Extract specs from :attr:`axis_specs` or :attr:`var_specs` to form a search dictionary

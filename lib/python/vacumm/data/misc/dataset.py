@@ -483,7 +483,7 @@ class Dataset(Object):
             search = varname
             if isinstance(search, list): 
                 search = tuple(search)
-        
+
         # Get search, selector and attributes from specs
         if specs is not None:
             
@@ -1347,6 +1347,21 @@ class Dataset(Object):
         '''Get level axis, based on :func:`get_axis`'''
         return self.get_axis('depth', level=level, **kwargs)
     
+    @formatdoc_var
+    def get_corio(self, **kwargs):
+        '''Get Coriolis parameter'''
+        return self.get_variable('corio', **kwargs)
+    
+    @formatdoc_var
+    def get_corio_u(self, **kwargs):
+        '''Get Coriolis parameter'''
+        return self.get_variable('corio_u', **kwargs)
+    
+    @formatdoc_var
+    def get_corio_v(self, **kwargs):
+        '''Get Coriolis parameter'''
+        return self.get_variable('corio_v', **kwargs)
+    
     
     @classmethod
     def squeeze_variable(cls, var, spec=True):
@@ -1874,7 +1889,18 @@ class OceanDataset(OceanSurfaceDataset):
     def get_bathy(self, **kwargs):
         '''Get bathymetry'''
         return self.get_variable('bathy', **kwargs)
+
+    @formatdoc_var
+    def get_bathy_u(self, **kwargs):
+        '''Get bathymetry'''
+        return self.get_variable('bathy_u', **kwargs)
         
+    @formatdoc_var
+    def get_bathy_v(self, **kwargs):
+        '''Get bathymetry'''
+        return self.get_variable('bathy_v', **kwargs)
+        
+
     def get_uvgbt(self, **kwargs):
         """Get zonal and meridional geostrophic velocity from SSH"""
         ssh = self.get_ssh(**kwargs)
