@@ -80,9 +80,9 @@ def configuration(parent_package='',top_path=None):
     # Add special files
     config.add_data_files(('vacumm', ['LICENSE', 'install-cdat.sh']))
     config.add_subpackage('vacumm', 'lib/python/vacumm')
-    config.add_data_dir(('vacumm/vacumm-config', 'config')) 
+    config.add_data_dir(('vacumm/vacumm-config', 'config')) # not needed
     config.add_data_dir(('vacumm/vacumm-data', 'data')) # all data files
-    config.add_data_files(('vacumm/vacumm-tutorials', 'doc/sphinx/source/tutorials/python/*.py'))
+    config.add_data_dir(('vacumm/vacumm-scripts', 'scripts')) # tutorials, etc
     
        
     return config
