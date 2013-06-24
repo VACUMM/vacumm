@@ -1143,6 +1143,8 @@ class Plot(object):
         
         # Highlight days
         if kwargs.pop('hldays', hlitvs):
+            if kwargs.pop('hldays', False):
+                kw['hlitvs'].setdefault['units'] = 'day'
             self.hlitvs(**kw['hlitvs'])
     
         # Title
@@ -1347,7 +1349,7 @@ class Plot(object):
                     axis.set_major_formatter(FormatStrFormatter(props['fmt']))
             if props['locator']:
                 axis.set_major_locator(props['locator'])
-            if not props['minor_locator'] and props['type'] not in 'xyzt':
+            if props['minor_locator'] is not False and props['type'] not in 'xyzt':
                 props['minor_locator'] = AutoMinorLocator()
             if props['minor_locator']:
                 axis.set_minor_locator(props['minor_locator'])
@@ -1610,7 +1612,7 @@ class Plot(object):
         return self.set_axobj('key', add_key(key, **kwargs))
         
     def hlitvs(self, **kwargs):
-        """Highlight days with grey/white background alternance
+        """Highlight intervals with grey/white background alternance
         
         See :func:`~vacumm.misc.plot.hlitvs` for more information.
         """
@@ -1624,7 +1626,14 @@ class Plot(object):
                 obj = self.set_axobj('hlitvs', hlitvs(**kwargs), axis=xy)
                 self.register_obj(obj, **kwargs)
                 return obj
+     
+    def hldays(self, **kwargs):
+        """Alias for :
         
+            >>> myplot.hlitv(units='day')
+        """
+        kwargs.setdefault('units', 'day')
+        return self.hlitvs(**kwargs)
         
     def ptitle(self, title=None, force=None, **kwargs):
         """Add a title to the plot
