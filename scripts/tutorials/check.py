@@ -60,7 +60,7 @@ for script in files:
         logger.debug('%s: %s', os.path.basename(script), 'SKIPPED')
         continue
     out, err = subprocess.Popen(["python", script,  '--var=temp', '--zoom-lat-min=48',  data_sample('mars3d.xy.nc')], 
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     script = os.path.basename(script)
     if len(err)==0 or ('warning' in err.lower() and 'raise' not in err):
         logger.info('%s: %s', script, 'OK')
