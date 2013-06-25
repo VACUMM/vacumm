@@ -13,4 +13,3 @@ thisfile = realpath(__file__)
 # The directory containing this file
 thisdir = dirname(__file__)
 
-

@@ -14,23 +14,25 @@ thisfile = realpath(__file__)
 thisdir = dirname(__file__)
 
 # The vacumm's doc/sphinx/source directory
-# abspath() is also not really required in this example, but this will make paths
+# abspath() is also not really required in this example, but this would make paths
 # look nicer (without '..' in them)
-docsrcdir = abspath(join(dirname(__file__), '..', '..'))
+# docsrcdir = abspath(join(dirname(__file__), '..', '..'))
+docsrcdir = join(dirname(__file__), '..', '..')
 
+fkw = dict(abspath=False)
 
 # Using wildcard expressions
 # ==========================
 
 # A simple example
 print 'Searching any file starting with "misc.file." in this directory:\n'
-print ' ','\n  '.join(F.find('misc.file.*', thisdir))
+print ' ','\n  '.join(F.find('misc.file.*', thisdir, **fkw))
 print
 
 
 # Controlling the search depth
 print 'Searching any file starting with "misc.file." in the doc source directory:\n'
-print ' ','\n  '.join(F.find('misc.file.*', docsrcdir, depth=None))
+print ' ','\n  '.join(F.find('misc.file.*', docsrcdir, depth=None, **fkw))
 print
 # we've set the depth to None to supress the limit in recursion (which defaults
 # to 0 meaning 0 levels from the search directory)
@@ -38,13 +40,13 @@ print
 
 # Multiple patterns
 print 'Searching any file starting with "misc.file" and ending with ".py" or ".rst" in the doc source directory:\n'
-print ' ','\n  '.join(F.find(('misc.file*.py', 'misc.file*.rst',), docsrcdir, depth=None))
+print ' ','\n  '.join(F.find(('misc.file*.py', 'misc.file*.rst',), docsrcdir, depth=None, **fkw))
 print
 
 
 # How to exclude
 print 'Searching any file starting with "misc.file." in the doc source directory, excluding "library" and ".svn" directories and "*.rst" files:\n'
-print ' ','\n  '.join(F.find('*/misc.file.*', docsrcdir, depth=None, exclude=('*/library/*', '*/.svn/*', '*.rst'), matchall=True))
+print ' ','\n  '.join(F.find('*/misc.file.*', docsrcdir, depth=None, exclude=('*/library/*', '*/.svn/*', '*.rst'), matchall=True, **fkw))
 print
 # by default only file names are evaluated
 # we've set matchall to True because .svn is part of the whole paths to be evaluated
@@ -54,7 +56,7 @@ print
 # Search directories only
 # By default only files are looked up
 print 'Searching any directory named python in the doc source directory:\n'
-print ' ','\n  '.join(F.find('python', docsrcdir, depth=None, files=False, dirs=True))
+print ' ','\n  '.join(F.find('python', docsrcdir, depth=None, files=False, dirs=True, **fkw))
 print
 
 
@@ -73,7 +75,7 @@ def onfile(e):
         print '  - evaluating file:', e
 def onmatch(e):
     print '  * matching entry:', e
-F.find('*/misc.file.*', docsrcdir, depth=None, exclude=('*/library/*', '*/.svn/*', '*.rst'), matchall=True, ondir=ondir, onfile=onfile, onmatch=onmatch)
+F.find('*/misc.file.*', docsrcdir, depth=None, exclude=('*/library/*', '*/.svn/*', '*.rst'), matchall=True, ondir=ondir, onfile=onfile, onmatch=onmatch, **fkw)
 print
 # note that ondir and onfile callbacks are called even if the path does not matches
 
@@ -83,12 +85,12 @@ print
 
 # A simple example
 print 'Searching any file starting with "misc.file." in this directory:\n'
-print ' ','\n  '.join(F.efind('misc\.file\..*', thisdir))
+print ' ','\n  '.join(F.efind('misc\.file\..*', thisdir, **fkw))
 print
 
 # An advanced example which uses regex match results
 print 'Searching any file starting with "misc.file." in this directory and show matching groups:\n'
-for filepath, matchobj in F.xefind('misc\.file\.(.*)\.(?:py|rst)', thisdir, getmatch=True):
+for filepath, matchobj in F.xefind('misc\.file\.(.*)\.(?:py|rst)', thisdir, getmatch=True, **fkw):
     print '  file path: %s, match groups: %s'%(filepath, matchobj.groups())
 print
 # grouping is done with parenthesis (), we could also have used named group (?P<groupname1>groupexp) and matchobj.groupdict()

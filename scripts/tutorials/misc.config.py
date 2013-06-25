@@ -23,6 +23,8 @@ def main(argv=None):
     
     # FIXME: load method which currently apply defaults, make it as an option ?
     #cfg = cfgm.load(cfgfile)
+    # The ConfigManager currently set defaults from its specifications when using its load method.
+    # So in this example we'll directly use configobj to show you only the content of the configuration file
     import configobj
     cfg = configobj.ConfigObj(cfgfile)
     print '\n*** Content of the config file %r:\n\n%s\n'%(cfgfile, pprint.pformat(cfg.dict()))
@@ -37,8 +39,8 @@ def main(argv=None):
     print '\n*** Merged config: default, file and command:\n\n%s\n'%(pprint.pformat(cfg.dict()))
     
     # FIXME: because the load method applies defaults, the real order is command, default and file
-#    cfg = cfgm.opt_parse(args=argv, patch=True, cfgfilepatch='after')
-#    print '\n*** Merged config: default, command and file:\n\n%s\n'%(pprint.pformat(cfg.dict()))
+    #cfg = cfgm.opt_parse(args=argv, patch=True, cfgfilepatch='after')
+    #print '\n*** Merged config: default, command and file:\n\n%s\n'%(pprint.pformat(cfg.dict()))
 
 if __name__ =='__main__':
     main(sys.argv[1:])

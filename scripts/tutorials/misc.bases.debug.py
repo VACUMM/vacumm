@@ -6,7 +6,6 @@ import cdms2, numpy
 from vacumm.misc.axes import create_time, create_lat, create_lon
 from vacumm.misc.bases import Object
 
-
 class MyObject(Object):
     def do_something(self):
         num, den = 0, 0
@@ -23,13 +22,10 @@ class MyObject(Object):
         self.info('Longitude:\n%s', self.describe(x, stats=True))
         self.info('Variable:\n%s', self.describe(v, stats=True))
 
-
 def main():
     obj = MyObject()
     obj.do_something()
 
-
 if __name__ == '__main__':
     main()
-
 

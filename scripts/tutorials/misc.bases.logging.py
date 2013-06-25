@@ -8,7 +8,6 @@ class MyObject(Object):
 
 def main():
     
-    
     MyObject.debug('Call logging classmethod debug')
     MyObject.info('Call logging classmethod info')
     MyObject.set_loglevel('debug')
@@ -62,7 +61,6 @@ def main():
     obj.verbose(
         'you will not see this message as it is emitted with a "verbose" level and '
         'the logger is now configured with a %r minimum level', obj.get_loglevel())
-    
 
 if __name__ == '__main__':
     main()
