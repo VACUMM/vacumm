@@ -142,21 +142,22 @@ def code_base_name(iframe=0, ext=True):
     
 def stack_trace(iframe=0):
     def etrace(frame, pad=60):
-        o = frame.f_locals.get('self', '')
+        o = frame.f_locals.get('self', '') # not the perfect way...
         if o: o = '%s(%s).'%(o.__class__.__name__, id(o))
         else:
-            o = frame.f_locals.get('cls', '')
+            o = frame.f_locals.get('cls', '') # not the perfect way...
             if o: o = '%s.'%(o.__name__)
         o += frame.f_code.co_name
         return ('%%-%ds'%(pad)+'  (%s:%s)')%(o, frame.f_code.co_filename, frame.f_lineno)
     iframe = 1 + iframe
-    frame = sys._getframe(iframe)
+    stack = inspect.stack()
+    frame = stack[iframe][0]
     traces = []
     last = ' '+etrace(frame)
     while True:
         try:
             iframe += 1
-            frame = sys._getframe(iframe)
+            frame = stack[iframe][0]
             traces.append(' %s'%(etrace(frame)))
         except: break
     traces.reverse()
@@ -268,7 +269,7 @@ class Class(type):
     Vacumm's base metaclass used to initialize implementing classes.
     
     The implementing classes (in fact via the :class:`Object` class below) can have methods
-    called at the class definition (at present, the :meth:`Object.init_class()` classmethod).
+    called at the class definition (at present, the :meth:`Object._init_class()` classmethod).
     
     Usefull to initialize class attributes such like class configuration, logging, debugging...
     '''
@@ -288,7 +289,7 @@ class Class(type):
     
     def __init__(cls, name, bases, dct):
         type.__init__(cls, name, bases, dct)
-        cls.init_class(name, bases, dct)
+        cls._init_class(name, bases, dct)
 
 
 _logging_proxies = list(map(lambda f: (f.lower(),f.lower()), get_str_levels()+['exception']))
@@ -392,7 +393,7 @@ class Object(object):
     # Class initializer (not instance initializer !!!)
     # ==========================================================================
     @classmethod
-    def init_class(cls, name, bases, dct):
+    def _init_class(cls, name, bases, dct):
         '''
         Class initialization method, called when the class is defined.
         '''
@@ -405,6 +406,12 @@ class Object(object):
         if not hasattr(cls, '__config_defaults'):
             cls.__config_defaults = {}
         cls.load_default_config(nested=True)
+        cls.init_class(name, bases, dct)
+    
+    @classmethod
+    def init_class(cls, name, bases, dct):
+        '''Redefine this method if you need class initialization'''
+        pass
     
     # ==========================================================================
     # Logging features

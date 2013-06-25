@@ -850,8 +850,28 @@ class XmlConfig(object):
                 if f: v = f(v)
                 #attributes['{%s}%s'%(ns,a) if ns else a] = usafe(v)
                 attributes['%s:%s'%(ns,a) if ns else a] = usafe(v)
-        # Child nodes
         childnodes = []
+        # Text nodes
+        for name,spec in self.xml_textnodes.iteritems():
+            v = getattr(self, name, None)
+            if v is None: continue
+            if not spec: spec = {}
+            tagName = spec.get('tagName', self.xml_element_name(name))
+            f = spec.get('formatter', None)
+            if spec.get('single', False):
+                if f: v = f(v)
+                e = ElementTree.Element(tagName)
+                e.text = usafe(v)
+                childnodes.append(e)
+            else:
+                if not isinstance(v, (list, tuple)):
+                    raise TypeError('List of textnodes values expected for %s.%s (spec: %r), got %r'%(self.tag_name(), name, spec, type(v)))
+                for t in v:
+                    if f: t = f(t)
+                    e = ElementTree.Element(tagName)
+                    e.text = usafe(t)
+                    childnodes.append(e)
+        # Child nodes
         for child,spec in self.xml_childnodes.iteritems():
             tmpchildnodes = []
             log(self, 'to_xml_elt\n  %s', vars(self)) #####
@@ -881,26 +901,6 @@ class XmlConfig(object):
                         tmpchildnodes.extend((o.to_xml_elt(**kwargs) for o in getattr(self, child)))
             # Exclude empty nodes (no attributes and no child)
             childnodes.extend(c for c in tmpchildnodes if len(c.attrib) or len(c.getchildren()))
-        # Text nodes
-        for name,spec in self.xml_textnodes.iteritems():
-            v = getattr(self, name, None)
-            if v is None: continue
-            if not spec: spec = {}
-            tagName = spec.get('tagName', self.xml_element_name(name))
-            f = spec.get('formatter', None)
-            if spec.get('single', False):
-                if f: v = f(v)
-                e = ElementTree.Element(tagName)
-                e.text = usafe(v)
-                childnodes.append(e)
-            else:
-                if not isinstance(v, (list, tuple)):
-                    raise TypeError('List of textnodes values expected for %s.%s (spec: %r), got %r'%(self.tag_name(), name, spec, type(v)))
-                for t in v:
-                    if f: t = f(t)
-                    e = ElementTree.Element(tagName)
-                    e.text = usafe(t)
-                    childnodes.append(e)
         return create_xml_element(self.tag_name(), attributes=attributes, childnodes=childnodes, **kwargs)
     
     def to_xml_doc(self, **kwargs):

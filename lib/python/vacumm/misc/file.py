@@ -150,7 +150,7 @@ def strfsize(size, fmt=None, si=None):
         - **size**: the size in bytes
         - **fmt**: the format to use, will receive the size and the unit as format arguments
                    (None will automatically use "%.3f %s" or "%d %s")
-        - **si**: whether to use International System units (10^3, ...) or not (2**10, ...)
+        - **si**: whether to use SI (International System) units (10^3, ...) or CEI units (2**10, ...)
     
     :Return: a string
     """
