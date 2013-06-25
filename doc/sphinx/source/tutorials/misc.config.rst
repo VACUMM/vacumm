@@ -6,7 +6,7 @@ Configuration management
 See also the api documentation: :mod:`~vacumm.misc.config`
 
 Introduction
-------------
+~~~~~~~~~~~~
 
 The purpose of the :mod:`vacumm.misc.config` is to allow a script to use some 
 parameters stored in configuration files. These configurations are similar to 
@@ -58,7 +58,7 @@ access to the ``option2`` like this: ::
       of a section options.
 
 Example
--------
+~~~~~~~
 
 Specification file:
 
@@ -94,8 +94,10 @@ The outputs of this code with configuration setup with command line options and 
 
 
 
-L'exemple
----------
+
+
+(old example, need update and translation)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Pour ce tutoriel, nous créons d'abord le **fichier de spécifications** :file:`config.ini`,
 définissant la nature de toutes les options, leur description

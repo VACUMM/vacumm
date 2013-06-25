@@ -70,9 +70,10 @@ The :meth:`vacumm.misc.bases.Object.get_default_config` method will return the
 default configuration mentionned above.
 
 The :meth:`vacumm.misc.bases.Object.apply_config` method will be called each time a
-configuration is loaded using the :meth:`vacumm.misc.bases.Object.load_config` method.
+configuration is loaded using the :meth:`vacumm.misc.bases.Object.load_config` method,
+you may also want to redefine.
 
-Logging configuration related to your class may be customized usgin a nested
+Logging configuration related to your class may be customized using a nested
 section named 'Logger'.
 
 Specification file:
