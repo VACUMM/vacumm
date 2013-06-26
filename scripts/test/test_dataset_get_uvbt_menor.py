@@ -4,10 +4,10 @@
 ncfile = "menor.nc"
 
 # Imports
-from vcmq import *
+from vcmq import data_sample, DS, N, MV2, shapiro2d, map2, code_base_name
 
 # Read data
-ds = setup_dataset('mars', data_sample(ncfile))
+ds = DS(data_sample(ncfile), 'mars')
 u, v = ds.get_uvgbt()
 
 # Mask huge values

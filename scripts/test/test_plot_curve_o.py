@@ -1,7 +1,7 @@
 """Test :func:`~vacumm.misc.plot.curve2` with an arbitrary axis"""
 
 # Imports
-from vcmq import *
+from vcmq import MV2, code_base_name, os, code_base_name, curve2
 
 # Init
 var = MV2.arange(5.)

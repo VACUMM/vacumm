@@ -4,10 +4,10 @@
 ncfile = "mfs.nc"
 
 # Imports
-from vcmq import *
+from vcmq import DS, data_sample
 
 # Read data
-ds = setup_dataset('nemo', data_sample(ncfile))
+ds = DS(data_sample(ncfile), 'nemo')
 temp = ds.get_temp()
 depth = ds.get_depth(asvar=temp)
 

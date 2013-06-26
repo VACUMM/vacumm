@@ -6,16 +6,14 @@ lons = (3.125,5.5)
 lats = (43.4375,42.125)
 
 # Imports
-from vcmq import *
+from vcmq import DS, data_sample, os, code_base_name
 
 # Setup dataset
-ds = setup_dataset('nemo', data_sample(ncfile))
+ds = DS(data_sample(ncfile), 'nemo')
 
 # Plot transect
-figfile = 'test_dataset_plot_transect_mfs.png'
+figfile = code_base_name(ext='png')
 if os.path.exists(figfile): os.remove(figfile)
 ds.plot_transect('temp', lons, lats, outaxis='dist', show=False,
     figsize=(6,4), savefig=figfile, top=0.9, right=0.89, close=True)
 
-# For unittest
-result = dict(files=figfile)

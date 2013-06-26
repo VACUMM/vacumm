@@ -4,10 +4,10 @@
 ncfile = "menor.nc"
 
 # Imports
-from vcmq import *
+from vcmq import DS, data_sample
 
 # Read data
-ds = setup_dataset('mars', data_sample(ncfile))
+ds = DS(data_sample(ncfile), 'mars')
 temp = ds.get_temp()
 lon = temp.getLongitude()
 

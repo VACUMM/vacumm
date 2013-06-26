@@ -1,7 +1,7 @@
 """Test :func:`~vacumm.misc.plot.curve2` with a latitude axis"""
 
 # Imports
-from vcmq import *
+from vcmq import MV2, code_base_name, os, code_base_name, curve2, create_lat
 
 # Init
 var = MV2.arange(5.)
@@ -10,7 +10,7 @@ var.long_name = 'Precipitation'
 create_lat(var.getAxis(0))
 
 # Plot
-figfile = 'test_plot_curve_y.png'
+figfile = code_base_name(ext='png')
 if os.path.exists(figfile): os.remove(figfile)
 curve2(var, savefig=figfile, show=False, close=True, latex_units=True)
 

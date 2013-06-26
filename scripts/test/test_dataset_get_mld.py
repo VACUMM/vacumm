@@ -4,14 +4,14 @@
 ncfile = "menor.nc"
 
 # Imports
-from vcmq import *
+from vcmq import DS, os, map2, data_sample, code_base_name
 
 # Read data
-ds = setup_dataset('mars', data_sample(ncfile))
+ds = DS(data_sample(ncfile), 'mars')
 mld = ds.get_mld(mode='deltadens', squeeze=True)
 
 # Plot surface density
-figfile = 'test_dataset_get_mld.png'
+figfile = code_base_name(ext='png')
 if os.path.exists(figfile): os.remove(figfile)
 map2(mld, savefig=figfile, close=True, show=False, vmax=600)
 
