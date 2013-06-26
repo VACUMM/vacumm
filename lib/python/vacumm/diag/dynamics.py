@@ -132,7 +132,7 @@ def coriolis_parameter(lat, gravity=default_gravity, fromvar=False, format_axes=
     f0 = MV2.asarray(f0)
     if not fromvar and isaxis(lat) and f0.ndim==1:
         f0.setAxis(0, lat)
-    return format_var(f0, 'f0', format_axes=format_axes)
+    return format_var(f0, 'corio', format_axes=format_axes)
    
 
 def eddy_kinetic_energy(sshuv, gravity=default_gravity, format_axes=None, dxy=None):
