@@ -221,29 +221,24 @@ class StatAccum(object):
     _single_stats = 'avail', 'mean', 'std'
     _dual_stats = 'bias', 'rms', 'crms', 'corr'
     _all_stats = _single_stats + _dual_stats
-    def __init__(self, tmean=False, smean=False, tstd=False, sstd=False, tbias=False, sbias=False, 
-        trms=False, srms=False, 
-        tcrms=False, scrms=False, tcorr=False, scorr=False, tavail=False, savail=False, 
-        tmask=None, smask=None, withtime=None):
-        self.tmean = tmean
-        self.smean = smean
-        self.tstd = tstd
-        self.sstd = sstd
-        self.tbias = tbias
-        self.sbias = sbias
-        self.trms = trms
-        self.srms = srms
-        self.tcrms = tcrms
-        self.scrms = scrms
-        self.tcorr = tcorr
-        self.scorr = scorr
-        self.tavail = tavail
-        self.savail = savail
-        self.tmask = tmask
-        self.smask = smask
+    def __init__(self, 
+        tall=True, tavail=None, tmean=None, tstd=None, tbias=None, trms=None, tcrms=None, tcorr=None, 
+        sall=True, savail=None, smean=None, sstd=None, sbias=None, srms=None, scrms=None, scorr=None, 
+        
+        
+#        tmask=None, smask=None, 
+        withtime=None):
+        for st in 'st':
+            activate = False
+            for stype in self._all_stats:
+                value = eval(st+stype)
+                if value is None: value = eval(st+'all')
+                setattr(self, st+stype, value)
+                activate |= value
+            setattr(self, st+'stats', activate)
+#        self.tmask = tmask
+#        self.smask = smask
         self.iterindex = 0
-        self.tstats = self.tmean or self.tstd or self.tbias or self.trms or self.tcrms
-        self.sstats = self.smean or self.sstd or self.sbias or self.srms or self.scrms
         self.withtime = withtime
     
     def append(self, *items):
@@ -261,17 +256,17 @@ class StatAccum(object):
             # Init template for output temporal statistics
             if self.tstats:
                 self._ttemplates = []
-                selspace = 0 if self.withtime else ':'
+                selspace = 0 if self.withtime else slice(None)
                 for item in items:
-                    tpl = items[0][selspace].clone()
+                    tpl = item[selspace].clone()
                     for att in tpl.attributes:
                         delattr(tpl, att)
                     self._ttemplates.append(tpl) 
-                self._tbase = items[0].filled()[:1]*0.
-                self._tbase.shape = self._tbase.shape[0], -1
+                self._tbase = items[0].filled()[selspace]*0.
+                self._tbase.shape = self._tbase.size, 
                 
             # Check spatial statistics
-            if self.sstats and item.ndim<2:
+            if self.sstats and items[0].ndim<2:
                 self.sstats = self.smean = self.sstd = self.sbias = self.srms = self.scrm = self.scorr = self.savail = False
                     
             # Save some attributes
@@ -314,15 +309,18 @@ class StatAccum(object):
                 self._tcount = [self._tbase.copy().astype('l')]
                 if self.dual:
                     self._tcount.append(self._tbase.copy().astype('l'))
+                self._tsize = 0l
                 
             # - spatial statistics
             if self.sstats:
                 self._sstats = {}
-                for name in self._all_stats:
-                    if name=='avail' or not getattr(self, 's'+name): continue
-                    self._sstats[key] = []
-                self._stimes = [] if self.withtime else None
+#                for name in self._all_stats:
+#                    if not getattr(self, 's'+name): continue
+#                    self._sstats[name] = []
+#                    setattr(self, '_s'+name, [])
+                self._stimes = [[] for i in xrange(len(items))] if self.withtime else None
                 self._scount = []
+                self._ssize = items[0].size/items[0].shape[0]
         
         # Checks
         if not self.tstats and not self.sstats:
@@ -335,10 +333,11 @@ class StatAccum(object):
                     items[0].shape, items[1].shape))
             
         # As 2D (time-space) zero-filled arrays
-        item0 = items[0].asma().reshape(items[0].shape[0], -1)
+        nt = items[0].shape[0] if self.withtime else 1            
+        item0 = items[0].asma().reshape(nt, -1)
         mask0 = N.ma.getmaskarray(item0)
         if self.dual: 
-            item1 = items[1].asma().reshape(items[1].shape[0], -1)
+            item1 = items[1].asma().reshape(nt, -1)
             mask1 = N.ma.getmaskarray(item1)
             mask = mask0 | mask1
         else:
@@ -354,6 +353,7 @@ class StatAccum(object):
         # - temporal statistics
         if self.tstats:
             self._tcount += (~mask).astype('l').sum(axis=0)
+            self._tsize += items[0].shape[0]
             if self.tsum:
                 self._tsum[0] += item0.sum(axis=0)
                 if self.dual: self._tsum[1] += item1.sum(axis=0)
@@ -368,10 +368,8 @@ class StatAccum(object):
             
             # Count
             scount = (~mask).astype('l').sum(axis=1)
-            scountd = 0. if scount ==0 else 1/scount
-            scountdm1 = 0. if scount < 2 else 1/(scount-1)
 #            if self.savail:
-            self._avail.append(scount)
+            self._scount.append(scount)
             
             # Base
             if self.ssum:
@@ -385,15 +383,24 @@ class StatAccum(object):
                 sprod = (item0*item1).sum(axis=1)
                 
             # Stats
-            sstats = self._base2stats_(ssum if self.ssum else None, 
-                ssqr if seld.ssqr else None, sprod if self.sprod else None, 
-                scount, self.smean, self.sstd, self.sbias, self.srms, self.scrms, self.scorr)
+            sstats = self._base2stats_(self._ssize, scount, ssum if self.ssum else None, 
+                ssqr if self.ssqr else None, sprod if self.sprod else None, 
+                self.smean, self.sstd, self.sbias, self.srms, self.scrms, self.scorr, self.savail)
             for key, val in sstats.iteritems():
-                getattr(self, '_s'+key).append(val)
-                
+#                self._sstats[key].append(val)
+#                getattr(self, '_s'+key).append(val)
+                if isinstance(val, tuple):
+                    self._sstats.setdefault(key, ([], []))
+                    for i, v in enumerate(val):
+                        self._sstats[key][i].append(val)
+                else:
+                    self._sstats.setdefault(key, [])
+                    self._sstats[key].append(val)
+                    
             # Time axes (for concatenation)
             if self.withtime:
-                self._stimes.append([item.getAxis(0) for item in items])
+                for i, item in enumerate(items):
+                    self._stimes[i].append(item.getAxis(0))
     
         self.iterindex += 1
             
@@ -408,33 +415,37 @@ class StatAccum(object):
         
         
     @staticmethod
-    def _base2stats_(sum, sqr, prod, count, 
-        domean, dostd, dobias, dorms, docrms, docorr): 
+    def _base2stats_(size, count, sum, sqr, prod, 
+        domean, dostd, dobias, dorms, docrms, docorr, doavail): 
             
         # Denominators
         if isinstance(count, N.ndarray):
             bad = count==0
             count = N.where(bad, 1, count)
             countd =  N.where(bad, 0., 1./count)
-            bad = count<2
-            count = N.where(bad, 2, count)
-            countdm1 =  N.where(bad, 0., 1./(count-1))
-            del count
+#            bad = count<2
+#            count = N.where(bad, 2, count)
+#            countdm1 =  N.where(bad, 0., 1./(count-1))
+#            del count
         else:
-            countd = 0. if scount == 0 else 1./count
-            countdm1 = 0. if scount < 2 else 1./(count-1)
-        
+            countd = 0. if count == 0 else 1./count
+#            countdm1 = 0. if scount < 2 else 1./(count-1)
+
         # Dual inputs
         dual = len(sum)==2 or len(sqr)==2
         if dual:
             sum0, sum1 = sum
             sqr0, sqr1 = sqr
         else:
-            sum0 = sum
-            sqr0 = sqr
+            sum0 = sum[0]
+            sqr0 = sqr[0]
             
         # Init
         results = {}
+        
+        # Availability
+        if doavail:
+            results['avail'] = 1.* count / size
         
        # Mean
         if domean:
@@ -448,7 +459,7 @@ class StatAccum(object):
             sqrp0 = - sum0**2 * countd # sum(Xi'^2)
             sqrp0 += sqr0
             if dostd: 
-                results['std'] = N.sqrt(sqrp0 * countdm1)
+                results['std'] = N.sqrt(sqrp0 * countd)#m1)
             if not docorr: del sqrp0
             if dual: 
                 sqrp1 = - sum1**2 * countd # sum(Yi'^2)
@@ -465,7 +476,7 @@ class StatAccum(object):
         if dorms:
             rms = sqr0 + sqr1 
             rms -= prod * 2
-            results['rms'] = N.sqrt(rms * countdm1)
+            results['rms'] = N.sqrt(rms * countd)#m1)
             del sqr0, sqr1, rms
         
         # sum(Xi'Yi')
@@ -477,7 +488,7 @@ class StatAccum(object):
             crms = sqrp0 + sqrp1 
             crms -= prodp * 2
             if not self.corr: del prodp
-            results['rms'] = N.sqrt(crms * countdm1)
+            results['rms'] = N.sqrt(crms * countd)#m1)
             del crms
             
         # Correlation
@@ -495,21 +506,24 @@ class StatAccum(object):
         
     def _get_masks_(self, stats, count):
         masks = {}
+        count = N.asarray(count)
         mask0 = count<1
-        mask1 = count<2
+#        mask1 = count<2
+        del count
         for key in stats:
             if key in ['mean', 'bias']:
                 masks[key] = mask0
             elif key in ['avail']:
                 masks[key] = None
             else:
-                masks[key] = mask1
+                masks[key] = mask0
         return masks
         
         
 
     @staticmethod
-    def _format_var_(vv, name, mask=None, prefix=True, suffix=True, templates=None, attributes=None, single=True, **kwargs):
+    def _format_var_(vv, name, mask=None, prefix=True, suffix=True, templates=None, 
+        attributes=None, single=True, **kwargs):
         # Some inits
         ist = name.startswith('t')
         name = name[1:]
@@ -604,26 +618,28 @@ class StatAccum(object):
                 
     def get_tstats(self, **kwargs):
         """Get all temporal statistics as a dictionary"""
+        if not self.tstats: return {}
+        
         # From cache
         if getattr(self, '_cache_titerindex', None)==self.iterindex:
             return self._cache_tstats
                 
         # Compute stats
-        tstats = self._base2stats_(self._tsum if self.tsum else None, 
+        tstats = self._base2stats_(self._tsize, self._tcount, self._tsum if self.tsum else None, 
             self._tsqr if self.tsqr else None, self._tprod if self.tprod else None, 
-            self._tcount, self.tmean, self.tstd, self.tbias, 
-            self.trms, self.tcrms, self.tcorr)
+            self.tmean, self.tstd, self.tbias, 
+            self.trms, self.tcrms, self.tcorr, self.tavail)
             
-        # Availability
-        if self.tavail: 
-            if self.tmask is not None:
-                if isinstance(self.tmask , N.ndarray):
-                    maxcount =  (~self.tmask).astype('l').sum()
-                else:
-                    maxcount = self.tmask
-            else:
-                maxcount = self._tcount.max()
-            tstats['avail'] = self._tcount*1./maxcount
+#        # Availability
+#        if self.tavail: 
+##            if self.tmask is not None:
+##                if isinstance(self.tmask , N.ndarray):
+##                    maxcount =  (~self.tmask).astype('l').sum()
+##                else:
+##                    maxcount = self.tmask
+##            else:
+##                maxcount = self._tcount.max()
+#            tstats['avail'] = self._tcount*1./self._tsize
         
         # Masks
         masks = self._get_masks_(tstats, self._tcount)
@@ -672,8 +688,10 @@ class StatAccum(object):
         self._checkstat_('tcorr')
         return self.get_tstats()['corr']
 
-    def get_sstats(self, **kargs):
+    def get_sstats(self, **kwargs):
         """Get all spatial statistics as a dictionary"""
+        if not self.sstats: return {}
+        
         # From cache
         if getattr(self, '_cache_siterindex', None)==self.iterindex:
             return self._cache_sstats
@@ -681,33 +699,34 @@ class StatAccum(object):
         # Compute stats
         sstats = {}
         for stype, vals in self._sstats.items():
-            if isinstance(vals[0], list):
+            if isinstance(vals[0], tuple):
                 sstats[stype] = N.concatenate(vals[0]), N.concatenate(vals[1])
             else:
-                sstats[stype] = N.concatenate(vals[0])
+                sstats[stype] = N.concatenate(vals)
             
-        # Availability
-        if self.savail: 
-            if self.smask is not None:
-                if isinstance(self.smask , N.ndarray):
-                    maxcount =  (~self.smask).astype('l').sum()
-                else:
-                    maxcount = self.smask
-            else:
-                maxcount = self._scount.max()
-            sstats['avail'] = self._scount*1./maxcount
+#        # Availability
+#        if self.savail: 
+#            if self.smask is not None:
+#                if isinstance(self.smask , N.ndarray):
+#                    maxcount =  (~self.smask).astype('l').sum()
+#                else:
+#                    maxcount = self.smask
+#            else:
+#                maxcount = self._scount.max()
+#            sstats['avail'] = self._scount*1./maxcount
         
         # Masks
         masks = self._get_masks_(sstats, self._scount)
         
         # Time axes
-        stimes = None if self._stimes is None else MV2_axisConcatenate(self._stimes)
+        stimes = None if self._stimes is None else \
+            [MV2_axisConcatenate(stime) for stime in self._stimes]
         
         # Format and cache
         kwargs.update(templates=stimes, attributes=self._atts)
         self._cache_sstats = dict([(name, 
             self._format_var_(var, 's'+name, masks[name], **kwargs)) 
-            for name, var in tstats.iteritems()])
+            for name, var in sstats.iteritems()])
         self._cache_siterindex = self.iterindex
         del masks
         return self._cache_sstats
@@ -747,3 +766,11 @@ class StatAccum(object):
         self._checkstat_('scorr')
         return self.get_sstats()['corr']
 
+    def get_stats(self):
+        """Get all statistics as dict"""
+        stats = {}
+        for key, val in self.get_tstats().items():
+            stats['t'+key] = val
+        for key, val in self.get_sstats().items():
+            stats['s'+key] = val
+        return stats
