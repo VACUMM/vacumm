@@ -1411,7 +1411,7 @@ class ProfilesMerger(Object):
             for d in dataset:
                 self.load(d, **kwargs)
             return
-        self.psinfo()
+        # self.psinfo()
         try:
             spec = self.spec.copy()
             spec.update(kwargs)
@@ -1437,28 +1437,28 @@ class ProfilesMerger(Object):
         if isinstance(filter, type):
             filter = filter()
         self.notice('Merging %s profiles with filter %s', len(self.profiles), filter.__class__.__name__)
-        self.psinfo()
+        # self.psinfo()
         if filter:
             filtered, rejected = filter.filter(self.profiles)
         else:
             filtered, rejected = self.profiles , Profiles(self.spec)
         self.notice('Number of filtered profiles: %s', len(filtered))
         self.notice('Number of rejected profiles: %s', len(rejected))
-        self.psinfo()
+        # self.psinfo()
         if filtered and filter_file:
             if filter_sort:
                 self.notice('Sorting filtered profiles with method: %s', filter_sort)
                 filtered.sort(filter_sort)
             self.notice('Saving filtered profiles in file: %s', filter_file)
             filtered.save(filter_file)
-            self.psinfo()
+            # self.psinfo()
         if rejected and reject_file:
             if reject_sort:
                 self.notice('Sorting rejected profiles with method: %s', reject_sort)
                 rejected.sort(reject_sort)
             self.notice('Saving rejected profiles in file: %s', reject_file)
             rejected.save(reject_file)
-            self.psinfo()
+            # self.psinfo()
         return filtered, rejected
     
     @classmethod
@@ -1649,7 +1649,7 @@ class ProfilesDataset(OceanDataset):
             ax = cdms2.createAxis(MV2.concatenate(allaxes), id=refax.id)
             for k,v in attrs.items(): setattr(ax, k, v)
             self.verbose('Loaded axis: %s', self.describe(ax))
-            self.psinfo()
+            # self.psinfo()
             return ax
         self.warning('No data found for axis: %s, select: %s', axname, orgselect)
     
@@ -1722,7 +1722,7 @@ class ProfilesDataset(OceanDataset):
             self.verbose('Loaded variable: %s', self.describe(var))
             if squeeze:
                 var = self.squeeze_variable(var)
-            self.psinfo()
+            # self.psinfo()
             return var
         self.warning('No data found for variable: %s, select: %s', varname, orgselect)
     
@@ -2379,7 +2379,7 @@ Examples:
         '''
         mld, lat, lon = self.get_mld(select)
         # Plot
-        self.psinfo()
+        #self.psinfo()
         vmin, vmax = numpy.min(mld), numpy.max(mld)
         m = kwargs.pop('map', None)
         c = kwargs.pop('cmap', 'magic')
@@ -2429,7 +2429,7 @@ Examples:
         '''
         ped, lat, lon = self.get_ped(select)
         # Plot
-        self.psinfo()
+        #self.psinfo()
         vmin, vmax = numpy.min(ped), numpy.max(ped)
         m = kwargs.pop('map', None)
         c = kwargs.pop('cmap', 'magic')
