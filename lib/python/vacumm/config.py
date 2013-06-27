@@ -127,7 +127,7 @@ def get_tut_dir(raiseerr=True):
     It can be at two different places, depending on if the library is 
     an installed version or developers version.
     
-    - If installed : in :file:`vacumm-tutorials` subdirectory in the 
+    - If installed : in :file:`vacumm-scripts/tutorials` subdirectory in the 
       installed package directory (see :meth:`get_lib_dir`).
     - Else in the :file:`doc/sphinx/source/tutorials/python` 
       subdirectory of the main distribution tree
@@ -137,7 +137,7 @@ def get_tut_dir(raiseerr=True):
     """
     # Installed librairy
     lib_dir = get_lib_dir()
-    tut_dir = os.path.join(lib_dir, 'vacumm-tutorials')
+    tut_dir = os.path.join(lib_dir, 'vacumm-scripts', 'tutorials')
     if os.path.exists(tut_dir):
         return tut_dir
         
