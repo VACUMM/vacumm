@@ -1389,6 +1389,8 @@ def MV2_concatenate(arrays, axis=0, axisid=None, axisattributes=None, copy=True)
         if copy: arrays = [arrays[0].clone()]
         return arrays[0]
     var = MV2.concatenate(arrays, axis=axis, axisid=None, axisattributes=None)
+    var.setAxis(0, MV2_axisConcatenate([v.getAxis(0) for v in arrays], 
+        id=axisid, attributes=axisattributes, copy=copy))
     if arrays:
         cp_atts(arrays[0], var)
     return var
@@ -1402,7 +1404,7 @@ def MV2_axisConcatenate(axes, id=None, attributes=None, copy=True):
         if copy: axes = axes.clone()
         return axes
     if len(axes)==1:
-        if copy: axes = [axes.clone()]
+        if copy: axes = [axes[0].clone()]
         return axes[0]
     
     # Attributes
