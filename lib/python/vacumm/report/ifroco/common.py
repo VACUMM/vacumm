@@ -54,7 +54,7 @@ class PREVIMERError(Exception):
 
 # Load configuration here
 cfgfiles = [
-    os.path.join(os.path.dirname(__file__[:-2]), 'config.cfg'), 
+    os.path.join(os.path.dirname(__file__[:-2]), 'ifroco.cfg'), 
     'previmer.cfg'
 ]
 cfg = SafeConfigParser()
