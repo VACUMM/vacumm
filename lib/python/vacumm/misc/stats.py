@@ -306,9 +306,7 @@ class StatAccum(object):
                 # - product
                 if self.tprod: self._tprod = self._tbase.copy()
                 # - count
-                self._tcount = [self._tbase.copy().astype('l')]
-                if self.dual:
-                    self._tcount.append(self._tbase.copy().astype('l'))
+                self._tcount = self._tbase.copy().astype('l')
                 self._tsize = 0l
                 
             # - spatial statistics
@@ -392,7 +390,7 @@ class StatAccum(object):
                 if isinstance(val, tuple):
                     self._sstats.setdefault(key, ([], []))
                     for i, v in enumerate(val):
-                        self._sstats[key][i].append(val)
+                        self._sstats[key][i].append(v)
                 else:
                     self._sstats.setdefault(key, [])
                     self._sstats[key].append(val)
@@ -465,7 +463,7 @@ class StatAccum(object):
                 sqrp1 = - sum1**2 * countd # sum(Yi'^2)
                 sqrp1 += sqr1
                 if dostd: 
-                    results['std'] = results['std'], N.sqrt(sqrp1)
+                    results['std'] = results['std'], N.sqrt(sqrp1 * countd)
                 if not docorr: del sqrp1
                 
         # Bias
@@ -487,13 +485,13 @@ class StatAccum(object):
         if docrms:
             crms = sqrp0 + sqrp1 
             crms -= prodp * 2
-            if not self.corr: del prodp
-            results['rms'] = N.sqrt(crms * countd)#m1)
+            if not docorr: del prodp
+            results['crms'] = N.sqrt(crms * countd)#m1)
             del crms
             
         # Correlation
         if docorr:
-            results['corr'] = sprodp / N.sqrt(sqrp0*sqrp1)
+            results['corr'] = prodp / N.sqrt(sqrp0*sqrp1)
             del prodp, sqrp0, sqrp1
     
         return results
@@ -524,6 +522,8 @@ class StatAccum(object):
     @staticmethod
     def _format_var_(vv, name, mask=None, prefix=True, suffix=True, templates=None, 
         attributes=None, single=True, **kwargs):
+        if name=='tstd':
+            pass
         # Some inits
         ist = name.startswith('t')
         name = name[1:]
@@ -536,6 +536,7 @@ class StatAccum(object):
         # Aways have a list
         if isinstance(vv, tuple):
             vv = list(vv)
+            single = False
         elif not isinstance(vv, list):
             vv = [vv]
             single = True
@@ -574,8 +575,10 @@ class StatAccum(object):
                 # From axis (sstats)
                 if isaxis(templates[i]): 
                     var = MV2.asarray(v)
-                    var.setAxis(0, templates[i])
-                    
+                    try:
+                        var.setAxis(0, templates[i])
+                    except:
+                        pass
                  # From variable (tstats)   
                 else: 
                     var = templates[i].clone()
@@ -699,7 +702,7 @@ class StatAccum(object):
         # Compute stats
         sstats = {}
         for stype, vals in self._sstats.items():
-            if isinstance(vals[0], tuple):
+            if isinstance(vals, tuple):
                 sstats[stype] = N.concatenate(vals[0]), N.concatenate(vals[1])
             else:
                 sstats[stype] = N.concatenate(vals)
