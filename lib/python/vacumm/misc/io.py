@@ -3862,8 +3862,12 @@ class TermColors(object):
         try: import curses
         except ImportError: curses = None
         import sys
-        if curses: curses.setupterm()
-        if not sys.stdout.isatty() or not curses or curses.tigetstr('setf') is None:
+        if curses:
+            # This is a feature test which may end with an exception (eg. exec through ssh session, unset TERM env var)
+            # We don't want to see this kind error (but we are masking other potential errors...)
+            try: curses.setupterm()
+            except: pass
+        if not sys.stdout.isatty() or not curses or (curses.tigetstr('setf') is None and curses.tigetstr('setaf') is None):
             self.disable()
     
     def disable(self):
