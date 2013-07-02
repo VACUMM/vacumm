@@ -361,8 +361,8 @@ class GSHHS_BM(Shapes):
                 poly = pp
             else:
                 if m.coastpolygontypes[i] in [2,4]: continue # Skip lakes
-                if callable(self._proj):
-                    pp = self._proj(pp[0], pp[1])
+#                if callable(self._proj):
+#                    pp = self._proj(pp[0], pp[1])
                 poly = Polygon(N.asarray(pp,'float64').transpose())
             
             # Clip it
