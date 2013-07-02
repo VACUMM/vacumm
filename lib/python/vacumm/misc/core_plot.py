@@ -5137,6 +5137,11 @@ class Map(Plot2D):
         Plot2D.post_plot(self, **kwargs)
         
         
+    def get_best_loc(self, onland=True, **kwargs):
+        """Best location on the plot for an object according to land/sea mask"""
+        return best_loc_map(self, onland=onland, **kwargs)
+        
+        
     
 ############################################################
 ## Utilities
@@ -5693,6 +5698,94 @@ def add_bottom_label(text, pos=.1, ax=None, va='top', ha='center',
     """Add a text label to the left of a plot"""
     return _add_label_(text, .5, .5, 1-pos, pos, ax, va, ha, rotation, shadow, glow, **kwargs)
 
+_locations = ['upper right',
+         'upper left',
+         'lower left',
+         'lower right',
+         'center left',
+         'center right',
+         'lower center',
+         'upper center',
+         'center']
+         
+def loc2tuple(loc, xpad=0.02, ypad=0.02):
+    """Location as tuple of (x,y)"""
+    if isinstance(loc, tuple): return loc
+    if isinstance(loc, basestring):
+        if len(loc.split())==1:
+            loc = loc+' '+loc
+    assert loc in _locations, 'loc must be a tuple or a string (%s)'% (", ".join(_locations))
+    sy, sx = loc.split()
+    x = {"left":xpad, 'center':.5, 'right':1-ypad}[sx]
+    y = {"lower":xpad, 'center':.5, 'upper':1-ypad}[sy]
+    return x, y
+    
+def loc2align(loc, ha=None, va=None):
+    """From location to dict of ha and va
+    
+    :Params:
+    
+        - **loc**: (x,y) or string like "upper right.
+        - **ha/va**, optional: alignments.
+        
+    :Return: dict(ha=ha, va=va)
+    """
+    x, y = loc2tuple(loc)
+    if ha is None:
+        if x<1/3.:
+            ha = 'left'
+        elif x>2./3:
+            ha = 'right'
+        else:
+            ha = 'center'
+    if va is None:
+        if y<1/3.:
+            va = 'bottom'
+        elif y>2./3:
+            va = 'top'
+        else:
+            va = 'center'
+    return dict(ha=ha, va=va)
+
+def best_loc_map(m, onland=True, allowed=_locations):
+    """Find the best location on a plot map according to the land/ocean repartition"""
+    from collections import OrderedDict
+    if isinstance(m, Map): m = m.map
+    if not hasattr(m, 'coastpolygons'): 
+        sloc = allowed[0]
+    else:
+        from grid.masking import polygons
+        from grid import bounds2d
+        from _geoslib import Polygon
+        fractions = N.zeros((3, 3))
+        polys = polygons(m)
+        x = m.xmin + (m.xmax-m.xmin)*(0.5+N.arange(3))/3.
+        y = m.ymin + (m.ymax-m.ymin)*(0.5+N.arange(3))/3.
+        xxb, yyb = bounds2d(x, y)
+        for j in xrange(3):
+            for i in xrange(3):
+                pcell = Polygon(N.array([xxb[j, i], yyb[j, i]]).T)
+                for pcoast in polys:
+                    if pcell.within(pcoast):
+                        fractions[j, i] = 1.
+                        break
+                    if not pcell.intersects(pcoast):
+                        continue
+                    for p in pcell.intersection(pcoast):
+                        fractions[j, i] += p.area()
+        return fractions
+        
+        if not onland:
+            fractions = 1-fractions
+        jmax, imax = N.unravel_index(fractions.argmax())
+        sloc = '%s %s'%(['left', 'center', 'right'][imax], ['bottom', 'center', 'top'][jmax])
+        
+    return _loc2tuple_(sloc)
+
+
+    
+        
+    
 
 class Animator(object):
     def __init__(self, fig=None):
