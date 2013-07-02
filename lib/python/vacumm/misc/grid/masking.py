@@ -386,7 +386,9 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75], ocean=False,
         - **polys**: A list of polygons or GMT resolutions or Shapes instance like shorelines.
         - **mode**, optional: Way to decide if a grid point is masked. Possible values are:
         
-            - ``intersect``, 1, ``area`` (default): Masked if land area fraction is > ``thresholds[0]``. If more than one intersections, leand area fraction must be > ``thresholds[1]`` to prevent masking straits.
+            - ``intersect``, 1, ``area`` (default): Masked if land area fraction is > ``thresholds[0]``. 
+              If more than one intersections, leand area fraction must be > ``thresholds[1]`` 
+              to prevent masking straits.
             - else: Masked if grid point inside polygon.
             
         - **thresholds**, optional: See ``intersect`` mode [default: [.5, .75]]
@@ -409,10 +411,14 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75], ocean=False,
         thresholds += thresholds
             
     # Bounds if mode is 'intersect'
-    mask = N.zeros(xx.shape, dtype='?')
     bmode = mode in ['intersect', 1, 'area']
-    fmode = mode in [2, 'fractions', 3]
-    if fmode: bmode = True
+    fmode = fractions #mode in [2, 'fractions', 3]
+    if fmode: 
+        bmode = True
+        mask = N.zeros(xx.shape)
+    else:
+        mask = N.zeros(xx.shape, dtype='?')
+
     xxb = M.bounds2d(xx)
     yyb = M.bounds2d(yy)
     if bmode:
