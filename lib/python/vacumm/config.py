@@ -1018,8 +1018,8 @@ def edit_file(fname, editor=None, verbose=True):
     :Source: Mercurial code
     """
     # File name
-    if not os.path.exists(fname):
-        raise IOError('File not found: '+fname)
+    if not os.path.exists(os.path.dirname(fname)):
+        os.makedirs(os.path.dirname(fname))
     
     # Guess editor
     if editor is None:
