@@ -792,7 +792,7 @@ class Dataset(Object):
                 local_select = None
             else:
                 lon = lat = None
-                axtarget = axis[0] if isinstance(axis, tupe) else axis
+                axtarget = axis[0] if isinstance(axis, tuple) else axis
                 axtype = get_axis_type(axtarget, genname=True, ro=True, checkatts=False)
                 if select1 is not None and select2 is not None: # Along X and Y
                     lon, lat = select1, select2
