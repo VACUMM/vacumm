@@ -718,19 +718,48 @@ def cf2search(name, mode=None, **kwargs):
                 break
     return OrderedDict((k, specs[k]) for k in keys if k in specs)
 
-def cf2atts(name):
+
+_attnames_plurals = ['standard_name', 'long_name']
+_attnames_exclude = ['names', 'atlocs', 'inherit', 'axes']
+_attnames_firsts = ['standard_name', 'long_name', 'units', 'axis', 'valid_min', 'valid_max']
+def cf2atts(name, select=None, exclude=None, ordered=True):
     """Extract specs from :attr:`axis_specs` or :attr:`var_specs` to form
-    a dictionary of atrributes (units and long_name)"""
+    a dictionary of attributes (units and long_name)"""
     # Get specs
     if name in var_specs:
         specs = var_specs[name]
     elif name in axis_specs:
         specs = axis_specs[name]
     else:
-        VACUMMError("Wrong generic name. It should be one of: "+' '.join(generic_axis_names+generic_var_names))
+        raise VACUMMError("Wrong generic name: %s. It should be one of: "%name+' '.join(generic_axis_names+generic_var_names))
     
-    # Form search dict
-    return dict((k, specs[k]) for k in ['long_names', 'units', 'axis'] if k in specs)
+    # Which attributes
+    atts = OrderedDict() if ordered else {}
+    for attname in _attnames_firsts+specs.keys():
+        
+        # Distinction between specs key and attribute name
+        if attname in _attnames_plurals:
+            key = attname+'s'
+        elif attname[:-1] in _attnames_plurals:
+            key = attname
+            attname = attname[:-1]
+        else:
+            key = attname
+        
+        # Skip some attributes
+        if key not in specs or attname in _attnames_exclude or attname in atts or \
+            (select is not None and attname not in select):
+            continue
+        
+        # No lists or tuples
+        value = specs[key]
+        if isinstance(value, (list, tuple)): value = value[0]
+        
+        # Store it
+        atts[attname] = value
+
+
+    return atts
 
 
 
