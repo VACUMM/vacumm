@@ -313,6 +313,7 @@ def mpl(mytimes, copy=True):
     # Time axis
     if istime(mytimes):
         if copy: mytimes = mytimes.clone()
+        mytimes._data_ = mytimes._data_ .astype('d')
         if hasattr(mytimes, 'matplotlib_compatible') and mytimes.matplotlib_compatible: 
             return mytimes
         # Values
