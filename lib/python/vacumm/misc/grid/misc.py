@@ -458,12 +458,14 @@ def meshgrid(x,y,copy=1):
     """
 
     # Be sure to have numpy arrays and make a copy
+    x = _cdat2num_(x)
     if N.ma.isMA(x):
         if copy: x = x.copy()
         xmask = N.ma.getmaskarray(x)
     else:
         x = N.array(x[:],copy=copy)
         xmask = None
+    y = _cdat2num_(y)
     if N.ma.isMA(y):
         if copy: y = y.copy()
         ymask = N.ma.getmaskarray(y)
@@ -474,7 +476,7 @@ def meshgrid(x,y,copy=1):
     # All is ok
     if x.ndim == 2 and x.shape == y.shape:
         return x,y
-
+    
     # From regular grid
     if x.ndim == 1 and y.ndim == 1:
         x, y = N.meshgrid(x,y)
@@ -1622,10 +1624,8 @@ def get_xy(gg, proj=False, mesh=None, num=False, **kwargs):
             
     # Pure numeric?
     if num:
-        if hasattr(xx, 'getValue'): xx = xx.getValue()
-        if hasattr(xx, 'asma'): xx = xx.asma()
-        if hasattr(yy, 'getValue'): yy = yy.getValue()
-        if hasattr(yy, 'asma'): yy = yy.asma()
+        xx = _cdat2num_(xx)
+        yy = _cdat2num_(yy)
         
     # Convert to meters?
     proj = kwargs.pop('m', proj)
@@ -1639,14 +1639,18 @@ def get_xy(gg, proj=False, mesh=None, num=False, **kwargs):
         return meshgrid(xx[:], yy[:])
     elif mesh is False:
         if xx[:].ndim == 2:
-            if hasattr(xx, 'filled'): xx = xx.filled()
-            xx = N.array(xx[0])
+            xx = _cdat2num_(xx)[0]
         if yy[:].ndim == 2:
-            if hasattr(yy, 'filled'): yy = yy.filled()
-            yy = N.array(yy[:, 0])
+            yy = _cdat2num_[:, 0]
 
     return  xx, yy
-    
+
+def _cdat2num_(xy):
+    """Convert CDAT axis or variable to numeric (masked) form"""
+    if hasattr(xy, 'asma'): xy = xy.asma()
+    elif hasattr(xy, 'getValue'): xy = xy.getValue()
+    if not isinstance(xy, N.ndarray): xy = N.asarray(xy)
+    return xy
 
 def deg2xy(lon, lat, proj=None, inverse=False, mesh=None, **kwargs):
     """Convert from degrees to map (m) coordinates using map projection, and reverse
@@ -2179,7 +2183,7 @@ def curv2rect(gg, mode="warn", tol=1.e-2, f=None):
     if gg is None: return
     if not isrect(gg, tol=tol, f=f):
         if mode=="warn":
-            warn("Grid seems not trully rectangular", VACUMMWarning)
+            warn("Grid seems not trully rectangular. Not converted.", VACUMMWarning)
             return gg
         elif mode=="raise":
             raise VACUMMError('Cannot convert to rectangular grid')
@@ -2192,7 +2196,7 @@ def curv2rect(gg, mode="warn", tol=1.e-2, f=None):
     y = yy.mean(axis=1)
     return create_grid(x, y)
     
-def isrect(gg, tol=1.e-2, mode="real", f=None):
+def isrect(gg, tol=1.e-2, mode="real", f=None, nocache=False):
     """Check wether a grid is trully rectangular
     
     :Params:
@@ -2218,16 +2222,17 @@ def isrect(gg, tol=1.e-2, mode="real", f=None):
     if is1d: return True
     
     # File grid
-    if f is not None:
+    if not nocache and f is not None:
         from ...misc.io import ncget_fgrid
         fgrid = ncget_fgrid(f, gg)
     else:
         fgrid = None
     
     # From cache
-    for grid in fgrid, gg:
-        if hasattr(grid, '_vacumm_isrect'):
-            return grid._vacumm_isrect
+    if not nocache:
+        for grid in fgrid, gg:
+            if hasattr(grid, '_vacumm_isrect'):
+                return grid._vacumm_isrect
         
     # Check if this grid is really rectangular  
     # - resolution from cache 
