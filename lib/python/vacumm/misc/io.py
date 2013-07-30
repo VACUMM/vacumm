@@ -40,6 +40,7 @@ __all__ = ['list_forecast_files', 'NcIterBestEstimate', 'NcIterBestEstimateError
     'ncfind_var', 'ncfind_axis', 'ncfind_obj', 'ncget_var', 'ncread_var', 'ncread_files', 'ncread_best_estimate', 
     'ncget_grid', 'ncget_time','ncget_lon','ncget_lat','ncget_level', 'ncmatch_obj', 
     'ncget_axis', 'netcdf3', 'netcdf4', 'ncread_axis', 'ncread_obj', 'ncget_fgrid', 
+    'grib_read_files',
     'Shapes', 'XYZ', 'XYZMerger', 'write_snx', 'ColoredFormatter', 'Logger', 'TermColors' 
     ]
 __all__.sort()
@@ -1312,7 +1313,104 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
         allvars[iv] = MV2_concatenate(allvars[iv], axis=itaxes.get(iv, 0), copy=False)
         
     return allvars[0] if single else allvars
-        
+
+
+
+def grib_get_names(gribfile):
+    '''
+    Return a list of a grib file parameter names.
+    '''
+    import pygrib
+    names = []
+    with pygrib.open(gribfile) as g:
+        for i in xrange(g.messages):
+            m = g.read(1)[0]
+            if m.name not in names:
+                names.append(m.name)
+    return names
+
+
+def grib_read_files(files, params, verbose=False):
+    '''
+    Read one ore more parameters from one or more grib1|2 files.
+    
+    Load requested parameters from all grib files then sort by validDate and
+    create a cdms2 variable with axes/grid.
+    
+    :Params:
+        - *files*: one or more string(s) of the files(s) to be processed.
+            string(s) may contain wildcard characters.
+        - *params*: one or more string(s) of the parameter(s) name to be loaded.
+        - *verbose*: function to be called for logging (sys.stderr if True, 
+            disabled with False)
+    
+    :Return:
+        a dict of loaded parameters as :class:`cdms2.tvariable.TransientVariable`
+    '''
+    import datetime, glob, numpy, os, sys, traceback
+    import cdms2, pygrib
+    from axes import create_lat, create_lon
+    from atime import create_time
+    from grid import create_grid, set_grid
+    if not isinstance(files, (list, tuple)): files = (files,)
+    if not isinstance(params, (list, tuple)):
+        params = (params,)
+    varlist = dict((n,[]) for n in params)
+    files = tuple(f for l in map(lambda p: glob.glob(p), files) for f in l)
+    if not verbose: verbose = lambda s:s
+    if verbose and not callable(verbose):
+        verbose = lambda s: sys.stderr.write(('%s\n')%s)
+    for f in files:
+        verbose('- Processing grib file %r'%(f))
+        with pygrib.open(f) as g:
+            for p in params:
+                ms = g.select(name=p)
+                verbose('  File has %s message%s matching name=%r'%(len(ms), 's' if len(ms)>1 else '',p))
+                for m in ms:
+                    latlons = m.latlons()
+                    varlist[p].append(dict(
+                        lat=latlons[0], lon=latlons[1],
+                        validDate=m.validDate,
+                        values=m.values
+                    ))
+                    verbose('    %s'%(m.validDate))
+    for n,p in varlist.iteritems():
+        if not p:
+            varlist[n] = None
+            continue
+        p = sorted(p, lambda a,b: cmp(a['validDate'], b['validDate']))
+        time = create_time([pp['validDate'] for pp in p])
+        lat = create_lat(p[0]['lat'])
+        lon = create_lon(p[0]['lon'])
+        var = cdms2.createVariable(
+            [pp['values'] for pp in p],
+            id='_'.join(n.split()), long_name=n,
+        )
+        var.setAxis(0, time)
+        set_grid(var, create_grid(lon, lat))
+        varlist[n] = var
+    return varlist
+
+def grib2nc(files, params, seltimencoutfile=None):
+    '''
+    ***Currently for test purpose only***
+    '''
+    varlist = grib_read_files(files, params, verbose=True)
+    if ncoutfile:
+        print>>sys.stderr, 'Writing to netcdf file:', ncoutfile
+        netcdf3()
+        if os.path.exists(ncoutfile):
+            print>>sys.stderr, 'File already exists:', ncoutfile
+            sys.exit(1)
+        f = cdms2.open(ncoutfile, 'w')
+        try:
+            for n,v in varlist.iteritems():
+                if v is None:
+                    print>>sys.stderr, '  %r not found'%(n)
+                    continue
+                print>>sys.stderr, '  %r (%r)'%(v.id, n)
+                f.write(v)
+        finally: f.close()
 
 
 

@@ -8,6 +8,7 @@ Voir le module :mod:`~vacumm.misc.io`.
 .. toctree::
 
     misc.io.netcdf
+    misc.io.grib
     misc.io.ascii
     misc.io.xyz
     misc.io.fortran
