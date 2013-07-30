@@ -68,7 +68,7 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'grow_variables', 'grow_depth', 'grow_lat',
     'create_selector', 'selector2str', 'split_selector', 'squeeze_variable', 'dict_copy_items', 
     "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
-    'set_lang','set_lang_fr', 'lunique', 'tunique']
+    'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod']
 __all__.sort()
 
 def broadcast(set, n, mode='last', **kwargs):
@@ -1386,12 +1386,12 @@ def MV2_concatenate(arrays, axis=0, axisid=None, axisattributes=None, copy=True)
         if copy: arrays = arrays.clone()
         return arrays
     if len(arrays)==1:
-        if copy: arrays = [arrays[0].clone()]
+        if copy: return arrays[0].clone()
         return arrays[0]
     var = MV2.concatenate(arrays, axis=axis, axisid=None, axisattributes=None)
     var.setAxis(0, MV2_axisConcatenate([v.getAxis(0) for v in arrays], 
         id=axisid, attributes=axisattributes, copy=copy))
-    if arrays:
+    if len(arrays)>1:
         cp_atts(arrays[0], var)
     return var
 MV2_concatenate.__doc__ = MV2.concatenate.__doc__
@@ -1776,6 +1776,20 @@ def set_lang_fr(ennum=True):
     """Set lang to french, except the numeric lang wich is set to en by default"""
     num = 'en_US.UTF-8' if ennum else 'fr_FR.UTF-8'
     set_lang(default='fr_FR.UTF-8', num=num)
+    
+    
+def numod(*vv):
+    """Get the needed numeric module to be able to handle all specified variables
+    
+    :Params: Scalars or numeric arrays.
+    
+    :Return: :mod:`numpy`, :mod:`numpy.ma` or :mod:`MV2`.
+    """
+    nm = N
+    for v in vv:
+        if cdms2.isVariable(v): return MV2
+        if N.ma.isMA(v): nm = N.ma
+    return nm
 
 #from phys.units import *
 #from phys.constants import *
