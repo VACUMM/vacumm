@@ -118,17 +118,16 @@ def coriolis_parameter(lat, gravity=default_gravity, fromvar=False, format_axes=
                 new_shape[yaxis] = latv.shape[yaxis]
                 tile_shape = list(latv.shape)
                 tile_shape[yaxis] = 1
-                latv[:] = N.tile(lat.getValue().reshape(new_shape), tile_shape)
+                latv[:] = N.tile(lat[:].reshape(new_shape), tile_shape)
     else:
-        latv = lat.getValue() if isaxis(lat) else lat
+        latv = lat if N.isscalar(lat) else lat[:]
     
     # Compute
-    f0 = 2*N.sin(N.pi*latv/180.)
+    f0 = 2*N.ma.sin(N.pi*latv/180.)
     f0 *= 2*N.pi/(24.*3600.)
     
-    
     # Format
-    if not hasattr(f0, '__len__'): return f0
+    if N.isscalar(f0): return f0
     f0 = MV2.asarray(f0)
     if not fromvar and isaxis(lat) and f0.ndim==1:
         f0.setAxis(0, lat)

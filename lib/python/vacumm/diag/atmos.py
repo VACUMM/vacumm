@@ -41,8 +41,8 @@ def wind_stress(u, v, rhoa=1.25, cd=0.016, format_axes=False, alongxy=None):
     
     # Compute
     uvmod = N.ma.sqrt(u**2+v**2)
-    us[:] = cd*rhoa*uvmod*u
-    vs[:] = cd*rhoa*uvmod*v
+    us.assignValue(cd*rhoa*uvmod*u)
+    vs.assignValue(cd*rhoa*uvmod*v)
     del uvmod
     return us, vs
     
@@ -91,10 +91,10 @@ def ws2w(us, vs, rhoa=1.25, cd=0.016, format_axes=False, alongxy=None):
     zero &= vs.filled(1)==0.
     uvsmod = (us**2+vs**2)**-0.25
     uvsmod /= N.sqrt(rhoa*cd)
-    u[:] = uvsmod*us
-    v[:] = uvsmod*vs
-    u[:] = MV2.where(zero, 0., u)
-    v[:] = MV2.where(zero, 0., v)
+    u.assignValue(uvsmod*us)
+    v.assignValue(uvsmod*vs)
+    u.assignValue(MV2.where(zero, 0., u))
+    v.assignValue(MV2.where(zero, 0., v))
     del uvsmod
     return u, v
     
