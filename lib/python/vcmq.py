@@ -36,14 +36,17 @@ from matplotlib.ticker import AutoLocator, MaxNLocator, FixedLocator, IndexLocat
 
 from vacumm import VACUMMError, VACUMMWarning
 
+
+# - config
+
+from vacumm.config import \
+    edit_user_conf_file, print_config, get_config_value, data_sample
+
 # - misc 
 
 from vacumm.misc.misc import \
     lonlab, latlab, deplab, kwfilter, broadcast, ArgList, \
-    dict_check_defaults, cp_atts, dict_filter,  cp_props
-    
-from vacumm.config import \
-    edit_user_conf_file, print_config, get_config_value, data_sample
+    dict_check_defaults, cp_atts, dict_filter,  cp_props, numod
     
 from vacumm.misc.plot import \
     map2, section2, hov2, curve2, bar2, plot2d, \
