@@ -1351,6 +1351,11 @@ def darken(c, f):
     if isinstance(c, Colormap):
         c._init()
         c._lut[:-3, :-1] = [darken(rgb,f) for rgb in c._lut[:-3, :-1]]
+        for att in '_under', '_over', '_bad':
+            col = getattr(c, '_rgba'+att, None)
+            if col is not None:
+                func = getattr(c, 'set'+att)
+                func(darken(col,f)+(col[3], ))             
         return c
     r,g,b,a = RGBA(c)
     f = 1-f
@@ -1379,6 +1384,11 @@ def whiten(c, f):
     if isinstance(c, Colormap):
         c._init()
         c._lut[:-3, :-1] = [whiten(rgb,f) for rgb in c._lut[:-3, :-1]]
+        for att in '_under', '_over', '_bad':
+            col = getattr(c, '_rgba'+att, None)
+            if col is not None:
+                func = getattr(c, 'set'+att)
+                func(whiten(col,f)+(col[3], ))             
         return c
     r,g,b,a = RGBA(c)
     f = 1-f
