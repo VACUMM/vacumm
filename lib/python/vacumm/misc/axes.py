@@ -188,6 +188,7 @@ def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None,
     else:
         name = 'Longitude'
         atype = 'x'
+    if getattr(axis, 'axis', '-') not in ['-', atype]: return
     sis = 'axis.is%s()' % name
     ok = 'axis.designate%s();check_id(axis)' % name
     try:
