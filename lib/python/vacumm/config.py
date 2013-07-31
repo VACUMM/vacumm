@@ -87,9 +87,37 @@ def get_data_dir(raiseerr=True):
         
     if raiseerr: raise VACUMMError("Can't find a valid data directory")
     
-def data_sample(data_file):
-    """Transform the relative path of a sample file to an absolute path"""
-    return os.path.join(get_data_dir(), data_file)
+def data_sample(data_file, mode='all'):
+    """Transform the relative path of a sample file to an absolute path
+    
+    This can be either in the VACUMM data directory (:func:`get_data_dir`),
+    or in the UVCDAT data directory.
+    
+    :Params:
+    
+        - **data_file**: File basename.
+        - **mode**, optional:
+        
+            - ``"all"`` or ``None``: Look first into VACUMM dir then        
+              and into UVCDAT dir if not found. If finally not found, 
+              return the VACUMM sample path.
+            - ``"vacumm"``: Look only into the VACUMM data dir only.
+            - ``"uvcdat"``: Look only into the UVCDAT data dir only.
+    
+    """
+    if mode is None: mode = 'all'
+    mode = str(mode)
+    
+    # VACUMM
+    if mode.startswith('a') or not mode.startswith('u'):
+        path = vacpath = os.path.join(get_data_dir(), data_file)
+        if os.path.exists(path) or not mode.startswith('a'): return path
+        
+    # UVCDAT
+    path = os.path.join(sys.prefix, 'sample_data', data_file)
+    if os.path.exists(path) or mode.startswith('u'): return path
+    return vacpath
+        
     
 def get_scripts_dir(raiseerr=False):
     """Get the scripts directory absolute path
