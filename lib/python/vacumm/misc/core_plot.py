@@ -396,13 +396,14 @@ class Plot(object):
         # Check all variables and axes
         units = [None]*self.rank
         for ivar,var in enumerate(self.data):
-            
+
             # Check rank
             if var.rank() != self.rank:
                 raise PlotError('Your variable must have a rank = %i (current rank is %i)' % (self.rank, var.rank()))
                 
             # Guess axis types
-            check_axes(var)
+            if '-' in var.getOrder():
+                check_axes(var)
             
             # Make time axes comptatible with matplotlib
             mpl(var, copy=True)
@@ -517,6 +518,7 @@ class Plot(object):
             # Loop on variables
             data_order = None
             for i, var in enumerate(self.data):
+
                 self.data[i], this_order, _reordered = check_order(var, 
                     self._order, reorder=True, 
                     vertical=vertical, extended=True, getorder=True)
@@ -573,17 +575,17 @@ class Plot(object):
         """Get the data mask projected along X"""
         if self.mask is None: return
         if self.xtype == 'd': return self.mask
-        xdata = self.get_xdata()
-        if xdata.ndim==self.mask.ndim:
+        xdata = self.get_xdata(masked=False)
+        if xdata.ndim==self.mask.ndim==1:
             return self.mask
         return self.mask.min(axis=0)
         
     def get_ymask(self):
-        """Get the data mask projected along X"""
+        """Get the data mask projected along Y"""
         if self.mask is None: return
         if self.ytype == 'd': return self.mask
-        ydata = self.get_ydata()
-        if ydata.ndim==self.mask.ndim:
+        ydata = self.get_ydata(masked=False)
+        if ydata.ndim==self.mask.ndim==1:
             return self.mask
         return self.mask.min(axis=-1)
         
