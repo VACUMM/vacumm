@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- utf8 -*- 
 """
 Utilitaires intégrés à UVCDAT
