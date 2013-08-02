@@ -7,6 +7,7 @@ import vacumm.misc.color
 from sphinx.util.console import bold
 
 def gen_cmaps(app, rstfile):
+    print dir(app.config)
     
     # Generate specs
     cmaps = {}
@@ -15,6 +16,8 @@ def gen_cmaps(app, rstfile):
         cmaps[cmap_name] = cmap_name, app.config.gen_cmaps_prefix+cmap_name
     # - manual
     extra = app.config.gen_cmaps_file
+    print dir(app.config)
+
     for cmap_funcname, cmap_kwargs, savefigs in app.config.gen_cmaps_extra_list:
         if not savefigs.startswith(app.config.gen_cmaps_prefix):
             savefigs = app.config.gen_cmaps_prefix+savefigs
@@ -71,6 +74,6 @@ def check_cmaps(app, env, added, changed, removed):
 def setup(app):
     app.add_config_value('gen_cmaps_file', 'library/misc.color', 'env')
     app.add_config_value('gen_cmaps_prefix', 'misc-color-', 'html')
-    app.add_config_value('gen_cmap_extra_list', [], 'html')
+    app.add_config_value('gen_cmaps_extra_list', [], 'html')
 #    app.connect('env-updated', check_cmaps)
     app.connect('env-get-outdated', check_cmaps)

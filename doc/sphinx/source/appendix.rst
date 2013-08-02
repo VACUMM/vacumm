@@ -9,4 +9,5 @@ Appendix
     tests/index
     appendix.license
     appendix.biblio
+    courses/index
     

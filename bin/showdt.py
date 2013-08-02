@@ -2,31 +2,27 @@
 """Show time axis dates of netcdf file"""
 
 # Arguments
-from optparse import OptionParser
+from argparse import ArgumentParser
 import sys, os, shutil
-parser = OptionParser(usage="Usage: %prog [options] ncfile", 
-    description="Show time step of a netcdf file.")
-parser.add_option('-t', '--time', action='store', dest='tname',
-    help='Name of the time axis variable')
-parser.add_option('-v', '--var', action='store', dest='vname',
+parser = ArgumentParser(description="Show time step of a netcdf file.")
+parser.add_argument('ncfile', help='Netcdf file name')
+parser.add_argument('-t', '--time', help='Name of the time axis variable')
+parser.add_argument('-v', '--var', dest='vname',
     help='Name of the variable from which to guess time')
-parser.add_option('-u', '--units', action='store', dest='units', default="a", 
+parser.add_argument('-u', '--units', default="a", 
     help='Units as one of "s" for seconds, "m" for minutes, "h" for hours, "d" for days,'
         ' "a" for auto (the defaults), and time axis units if empty ""')
-parser.add_option('-s', '--stat', action='store', default='median', dest='stat',
+parser.add_argument('-s', '--stat', default='median', 
     help='Statistics to guess time step, as one of "min", "max" ,"mean" or "median" (default: %default)')
-parser.add_option('-f', '--format', action='store', default='%(value)g %(units)s', dest='format',
+parser.add_argument('-f', '--format', default='%(value)g %(units)s', 
     help='Output format (default: %default)')
    
     
 # Parse
-(options, args) = parser.parse_args()
-if len(args)==0:
-    parser.error('you must provide a valid netcdf file as first argument')
+args = parser.parse_args()
 
 # Netcdf file
-ncfile = args[0]
-if not os.path.exists(ncfile):
+if '://' not in args.ncfile and not os.path.exists(args.ncfile):
     sys.exit('File not found: '+ncfile)
 try:
     import cdms2, cdtime
@@ -37,20 +33,20 @@ except:
 # Guess time
 taxis = None
 # - from specified axis
-if options.tname is not None:
-    if options.tname in f.listdimension():
-        taxis = f.getAxis(options.tname)
+if args.tname is not None:
+    if args.tname in f.listdimension():
+        taxis = f.getAxis(args.tname)
     else:
-        sys.exit('Time axis "%s" does not exist'%options.tname)
+        sys.exit('Time axis "%s" does not exist'%args.tname)
 # -from specified variable
-if taxis is None and options.vname is not None:
-    if options.vname in f.listvariables():
-        var = f[options.vname]
+if taxis is None and args.vname is not None:
+    if args.vname in f.listvariables():
+        var = f[args.vname]
         taxis = var.getTime()
         if taxis is None:
-            sys.exit('Variable "%s" found but has no time axis'%options.vname)
+            sys.exit('Variable "%s" found but has no time axis'%args.vname)
     else:
-        sys.exit('Variable "%s" not found'%options.vname)
+        sys.exit('Variable "%s" not found'%args.vname)
 # - guess through variables
 if taxis is None:
     for vname in f.listvariables():
@@ -75,7 +71,7 @@ units = taxis.units.split()[0].lower()
 
 # Numeric values
 for uu in ['seconds', 'minutes', 'hours', 'days']:
-    if options.units and options.units[0] != uu[0]: continue
+    if args.units and args.units[0] != uu[0]: continue
     if uu != units:
         taxis.toRelativeTime(uu+' since 2000')
         units = uu
@@ -83,13 +79,13 @@ for uu in ['seconds', 'minutes', 'hours', 'days']:
 tt = taxis.getValue()
 
 # Time step
-if not options.stat in ['min', 'max', 'mean', 'median']:
-    options.stat = "median"
+if not args.stat in ['min', 'max', 'mean', 'median']:
+    args.stat = "median"
 import numpy 
-value = getattr(numpy, options.stat)(numpy.abs(numpy.diff(tt)))
+value = getattr(numpy, args.stat)(numpy.abs(numpy.diff(tt)))
 
 # Auto units
-if options.units[0].startswith('a') and units not in ['months', 'years'] and \
+if args.units[0].startswith('a') and units not in ['months', 'years'] and \
     (value<1 or value>100):
     testlist =  ['seconds', 'minutes', 'hours', 'days'][::1-2*int(value>100)]
     rt0 = taxis.asRelativeTime()[0]
@@ -106,6 +102,6 @@ if options.units[0].startswith('a') and units not in ['months', 'years'] and \
 # Display
 if value<=1 and units.endswith('s'): units = units[:-1]
 try:
-    print options.format%locals()
+    print args.format%locals()
 except:
-    parser.error("Can't format result with this pattern: %s"%options.format)
+    parser.error("Can't format result with this pattern: %s"%args.format)

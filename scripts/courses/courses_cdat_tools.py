@@ -1,7 +1,9 @@
 #!/usr/bin/env python
-# -*- utf8 -*- 
+# -*- coding: utf8 -*- 
 """
 Utilitaires intégrés à UVCDAT
+
+Modules: :mod:`cdtime`, :mod:`cdutil`, :mod:`genutil`
 """
 
 

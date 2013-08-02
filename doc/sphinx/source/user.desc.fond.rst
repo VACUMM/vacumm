@@ -47,13 +47,13 @@ La librairie générique :mod:`vacumm.misc` est organisée de la manière suivan
     - :mod:`~vacumm.diag` : Advanced diagnostics.
         
 
-  .. _user.desc.cdat:
+.. _user.desc.cdat:
     
-CDAT as numeirc basis
+CDAT as numeric basis
 =====================
 
-Le choix a été fait de prendre `CDAT <http://www2-pcmdi.llnl.gov/cdat>`_ comme base pour l'ensemble
-des développements de la librairie.
+Le choix a été fait de prendre `CDAT <http://www2-pcmdi.llnl.gov/cdat>`_ 
+comme base pour l'ensemble des développements de la librairie.
 
 Les tableaux [:mod:`MV2`]
 -------------------------
