@@ -1581,7 +1581,8 @@ def get_xy(gg, proj=False, mesh=None, num=False, **kwargs):
     
     :Params:
     
-        - **gg**: (xx,yy) or grid (1D or 2D), cdms variable (see :func:`get_grid`), or a dict of lon/lat/x/y.
+        - **gg**: (xx,yy) or grid (1D or 2D), cdms variable (see :func:`get_grid`), 
+          or a dict of lon/lat/x/y, or a (2,npts) numpy array.
         - *proj*: If True or basemap instance, convert to meters. If None, check if lon and lat axes to force conversion. [default: False]
     
     :Example:
@@ -1594,6 +1595,9 @@ def get_xy(gg, proj=False, mesh=None, num=False, **kwargs):
     if hasattr(gg, 'xy') and callable(gg.xy):
         xx, yy = gg.xy()
     elif isinstance(gg, (tuple, list)):
+        xx, yy = gg
+    elif isinstance(gg, N.ndarray) and not cdms2.isVariable(gg) and \
+        gg.ndim==2 and gg.shape[0]==2:
         xx, yy = gg
     elif isinstance(gg, dict):
         xy = []
@@ -1618,7 +1622,7 @@ def get_xy(gg, proj=False, mesh=None, num=False, **kwargs):
             if yy is None: yy = gg.getAxis(-2)
         except:
             gg = cdms.createVariable(gg)
-            assert gg.ndim > 2,  'Input must be at least a 2D array in this case'
+            assert gg.ndim > 1,  'Input must be at least a 2D array in this case'
             xx = gg.getAxis(-1)
             yy = gg.getAxis(-2)
             
