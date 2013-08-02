@@ -177,7 +177,7 @@ def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None,
     from misc import check_def_atts
     if not isaxis(axis): return False
     if defaults is None: defaults = {}
-    
+
     # Use for instance axis.isLongitude()
     if atype == 't':
         name = 'Time'
@@ -188,7 +188,7 @@ def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None,
     else:
         name = 'Longitude'
         atype = 'x'
-    if getattr(axis, 'axis', '-') not in ['-', atype]: return
+    if getattr(axis, 'axis', '-').lower() not in ['-', atype]: return False
     sis = 'axis.is%s()' % name
     ok = 'axis.designate%s();check_id(axis)' % name
     try:
@@ -199,14 +199,14 @@ def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None,
             return True
     except:
         pass
-        
+
     # Check axis attribute
     if getattr(axis,'axis','') == atype.upper():
         if not ro:
             exec ok
             check_def_atts(axis, **defaults)
         return True
-        
+
     # Check attributes
     if not checkatts: return False
     uu = getattr(axis,'units','').lower()
@@ -228,6 +228,7 @@ def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None,
                     except:
                         pass
                 return True
+
     return False
 _isgeoaxis_ = is_geo_axis_type # Backward compat
 

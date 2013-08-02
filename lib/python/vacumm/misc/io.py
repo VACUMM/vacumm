@@ -1144,7 +1144,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
             timeid='TIME', toffset=(1, 'day'))
         >>> var = ncread_files("r0_2010-??-??_00.nc", 'xe', 
             select=dict(lon=(-10,-5), z=slice(23,24)), grid=smallgrid)
-        >>> xe, sst = ncread_files("myfiles*.nc", [['xe', 'sla'],['sst','temp']])
+        >>> xe, sst = ncread_files("myfiles*.nc", [('xe', 'sla'),('sst','temp'),'u'])
             
     :Params:
    

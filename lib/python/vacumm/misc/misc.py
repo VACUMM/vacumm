@@ -1766,7 +1766,7 @@ def set_lang(default='en_US.UTF-8', num=None):
     The numeric language defaults to the default language
     """
     import locale
-    if num is None: num = base
+    if num is None: num = default
     os.environ['LANG'] = default
     locale.setlocale(locale.LC_ALL, default)
     os.environ['LC_NUMERIC'] = num
