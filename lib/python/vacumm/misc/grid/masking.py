@@ -610,20 +610,22 @@ def masked_ocean(vv, polys=None, **kwargs):
 def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     """Return a list of Polygon instances
     
-    - **polys**: A tuple or list of polygon proxies (see examples).
-    - *shapetype*: 1 = Polygons, 2=Polylines(=LineStrings) [default: 2]
-    - *proj*: Geographical projection to convert positions.
+    :Params:
     
-    Example :
+        - **polys**: A tuple or list of polygon proxies (see examples).
+        - **shapetype**: 1 = Polygons, 2=Polylines(=LineStrings) [default: 2]
+        - **proj**: Geographical projection to convert positions.
+        - **clip**, optional: Clip all polygons with this one.
     
-    >>> from vacumm.misc.grid.masking import polygons
-    >>> import numpy as N
-    >>> X = [0,1,1,0]
-    >>> Y = N.array([0,0,1,1])
-    >>> polygons( ([X,Y],) )
-    >>> polygons( (zip(X,Y), [X,Y], N.array([X,Y]) )
-    >>> polygons( (polygons(([X,Y],), polygons(([X,Y],)))
-    >>> polygons( ([min(X),min(Y),max(X),max(Y)],) )
+    :Example:
+    
+        >>> import numpy as N
+        >>> X = [0,1,1,0]
+        >>> Y = N.array([0,0,1,1])
+        >>> polygons( [(X,Y)]] )                                # from like grid bounds
+        >>> polygons( [zip(X,Y), [X,Y], N.array([X,Y])] )       # cloud
+        >>> polygons( [polygons(([X,Y],), polygons(([X,Y],)])   # from polygins
+        >>> polygons( [[min(X),min(Y),max(X),max(Y)],] )        # from bounds
     """
     
     # Input
@@ -803,8 +805,8 @@ def polygon_select(xx, yy, polys, zz=None, mask=False,):
     xsel = xx[good]
     ysel = yy[good]
     ret = (xsel, ysel)
-    if vv is not None:
-        ret += (vv[good], )
+    if zz is not None:
+        ret += (zz[good], )
     del good
     return ret
 
@@ -812,21 +814,23 @@ def polygon_select(xx, yy, polys, zz=None, mask=False,):
 def convex_hull(xy, poly=False, method='delaunay'):
     """Get the envelop of cloud of points
     
-    - **xy**: (x,y) or array of size (2,nxy)
-    - *poly*: 
+    :Params:
     
-        - ``True``: Return as Polygon instance.
-        - ``False``: Return two 1D arrays ``xpts,ypts``
+        - **xy**: (x,y) or array of size (2,nxy) (see :func:`~vacumm.misc.grid.misc.get_xy`).
+        - *poly*: 
         
-        - *method*: 
-        
-            - ``"angles"``: Recursive scan of angles between points.
-            - ``"delaunay"``: Use Delaunlay triangulation.
+            - ``True``: Return as Polygon instance.
+            - ``False``: Return two 1D arrays ``xpts,ypts``
+            
+            - *method*: 
+            
+                - ``"angles"``: Recursive scan of angles between points.
+                - ``"delaunay"``: Use Delaunlay triangulation.
             
     """
     
     # Points
-    xx, yy = M.get_xy(xy, m=False)
+    xx, yy = M.get_xy(xy, proj=False)
     xx = N.asarray(xx)
     yy = N.asarray(yy)
     if xx.ndim>1:
