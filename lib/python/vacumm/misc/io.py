@@ -1450,7 +1450,7 @@ def grib_read_files(
                     elif m.dataDate: dt = m.dataDate
                     else:
                         raise Exception('Don\'t know how to handle datetime for message:\n%r'%(m))
-                    if time and dt < time[0] or dt > time[1]:
+                    if time and (dt < time[0] or dt > time[1]):
                         continue
                     verbose('  - %s'%(dt))
                     latlons = m.latlons()
@@ -1483,6 +1483,8 @@ def grib_read_files(
         var.setAxis(0, time)
         set_grid(var, create_grid(lon, lat))
         vatts = atts=atts[iv] if atts is not None and iv<len(atts) else None
+        if select:
+            var = var(**select)
         var = _process_var(var, torect, samp, grid, kwgrid, squeeze, atts)
         vardict[n] = var
     return vardict
