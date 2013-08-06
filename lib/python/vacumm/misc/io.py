@@ -666,9 +666,10 @@ def ncread_var(f, vname, *args, **kwargs):
     
         - **f**: File descriptor.
         - **vname**: Variable name(s) (see :func:`ncfind_var`).
-        - **atts**: Dictionary of attributes to apply.
         - **ignorecase**, optional: Case insensitive search for the name of variable.
         - Other arguments and keywords are passed to ``f``.
+        - **atts**: Dictionary of attributes to apply.
+        
         - **squeeze**, optional: A single argument (or a list of them) interpreted
           as a squeeze specification passed to :func:`~vacumm.misc.misc.squeeze_variable`,
           to squeeze out singleton axes.
@@ -688,6 +689,7 @@ def ncread_var(f, vname, *args, **kwargs):
     ignorecase = kwargs.pop('ignorecase', True)
     torect = kwargs.pop('torect', True)
     grid = kwargs.pop('grid', None)
+    kwgrid = M.kwfilter(kwargs, 'grid')
     samp = kwargs.pop('samp', None)
     atts = kwargs.pop('atts', None)
     mode = kwargs.pop('mode', 'raise')
@@ -696,20 +698,41 @@ def ncread_var(f, vname, *args, **kwargs):
     if not isinstance(squeeze, list):
         squeeze = [squeeze]
     oldvname = vname
+    
+    # Find
     vname = ncfind_var(f, vname, ignorecase=ignorecase)
     if vname is None:
         del nfo
         if mode=='raise':
             raise VACUMMError('Variable not found %s in file %s'%(oldvname, f.id))
         return
-        
+    
     # Read
     var = f(vname, *args, **kwargs)
+    
+    # Extra stuff
+    var = _process_var(var, torect, samp, grid, kwgrid, squeeze, atts)
+    
+    del nfo
+    return var
 
+def _process_var(var, torect, samp, grid, kwgrid, squeeze, atts):
+    '''
+    - **samp**, optional: Undersample rate as a list of the same size as
+      the rank of the variable. Set values to 0, 1 for no undersampling.
+    - **torect**, optional: If True, try to convert output grid to rectanguar
+      using :func:`~vacumm.misc.grid.misc.curv2rect`. 
+    - **grid**, optional: A grid to regrid the variable on.
+    - **grid_<keyword>**, optional: ``keyword`` is passed to 
+      :func:`~vacumm.misc.grid.regridding.regrid`.
+    - **squeeze**, optional: Argument passed to :func:`squeeze_variable` to squeeze out singleton axes.
+            - Extra kwargs are used to refine the **selector** initialized with ``select``.
+    - **atts**: attributes dict (or list of attributes dict for each varname)
+    '''
     # To rectangular grid?
     if torect: 
         curv2rect(var, mode="none")
-
+    
     # Undersample
     if samp is not None:
         if len(samp)!=var.ndim:
@@ -726,22 +749,21 @@ def ncread_var(f, vname, *args, **kwargs):
     # Regrid
     if grid is not None:
         var = regrid2d(var, grid, **kwgrid)
-        
+    
     # Squeeze
-    for ss in squeeze:
-        if ss is False: break
-        var = M.squeeze_variable(var, ss)
-        if ss in [True, None]:
-            break
-        
+    if squeeze:
+        for ss in squeeze:
+            if ss is False: break
+            var = M.squeeze_variable(var, ss)
+            if ss in [True, None]:
+                break
+    
     # Attributes
     if atts is not None:
         M.set_atts(var, atts)
-            
-    del nfo
-
-    return var
     
+    return var
+
 def ncget_axis(f, checker, ids=None, **kwargs):
     """Get an axis in a netcdf file by searching all axes and variables
     
@@ -1164,6 +1186,8 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
         - **select**, optional: An additional selector for reading
           the variable. It can be a dictionary or a :class:`~cdms2.selectors.Selector`
           instance (see :func:`~vacumm.misc.misc.create_selector`).
+        - **atts**: attributes dict (or list of attributes dict for each varname)
+          (see :func:`ncread_var`.)
         - **samp**, optional: Undersample rate as a list of the same size as
           the rank of the variable. Set values to 0, 1 for no undersampling.
         - **grid**, optional: A grid to regrid the variable on.
@@ -1318,84 +1342,157 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
 
 def grib_get_names(gribfile):
     '''
-    Return a list of a grib file parameter names.
+    Return a list of a grib file parameter unique names (using grib message's shortName).
     '''
     import pygrib
     names = []
     with pygrib.open(gribfile) as g:
         for i in xrange(g.messages):
             m = g.read(1)[0]
-            if m.name not in names:
-                names.append(m.name)
+            if m.shortName not in names:
+                names.append(m.shortName)
     return names
 
 
-def grib_read_files(files, params, verbose=False):
-    '''
-    Read one ore more parameters from one or more grib1|2 files.
+def grib_read_files(
+    filepattern, varname, time=None, select=None,
+    torect=None, samp=None, grid=None, squeeze=None, atts=None,
+    timeid=None, verbose=False, **kwargs):
+    """Read the best estimate of a variable through a set of grib files
+   
+    :Example:
     
-    Load requested parameters from all grib files then sort by validDate and
-    create a cdms2 variable with axes/grid.
-    
+        >>> vardict = grib_read_files("r0_2010-%m-%d_00.grb", 'u',
+            ('2010-08-10', '2010-08-15', 'cc'), samp=[2, 1, 3])
+        >>> vardict = grib_read_files("r0_2010-??-??_00.grb", dict(shortName:'u'), 
+            select=dict(lon=(-10,-5), z=slice(23,24)), grid=smallgrid)
+        >>> vardict = grib_read_files("myfiles*.grb", [dict(shortName=['u', 'u10']), dict(shortName=['v','v10'])])
+            
     :Params:
-        - *files*: one or more string(s) of the files(s) to be processed.
-            string(s) may contain wildcard characters.
-        - *params*: one or more string(s) of the parameter(s) name to be loaded.
+   
+        - **filepattern**: must be:
+            - File pattern. See :func:`list_forecast_files` for more information.
+            - One or more string(s) of the files(s) to be processed. string(s) may contain wildcard characters.
+        - **varname**: Name of the grib variable to read. 
+            - If a simple name, it reads this variable **using the grib message's shortName**.
+            - If a list of names, it reads them all.
+            - If a name is a dict, then it is used as grib selector in which case
+            the user should not specify selectors which may interfer with the select keyword
+            (see :func:`~pygrib.open.select`).
+        - **time**, optional: Time selector. This keyword is *mandatory*
+          if ``filepattern`` has date patterns.
+        
+        ###- **select**, optional: An additional selector for reading
+        ###  the variable. It can be a dictionary or a :class:`~cdms2.selectors.Selector`
+        ###  instance (see :func:`~vacumm.misc.misc.create_selector`).
+        
+        - **timeid**, optional: Time message attribute to use ("validDate", "dataDate", otherwise it is guessed).
         - *verbose*: function to be called for logging (sys.stderr if True, 
             disabled with False)
+        
+        - **samp**, optional: Undersample rate as a list of the same size as
+          the rank of the variable. Set values to 0, 1 for no undersampling.
+        - **torect**, optional: If True, try to convert output grid to rectanguar
+          using :func:`~vacumm.misc.grid.misc.curv2rect` (see :func:`ncread_var`). 
+        - **grid**, optional: A grid to regrid the variable on.
+        - **grid_<keyword>**, optional: ``keyword`` is passed to 
+          :func:`~vacumm.misc.grid.regridding.regrid`.
+        - **squeeze**, optional: Argument passed to :func:`ncread_var` to squeeze out singleton axes.
+        - **atts**: attributes dict (or list of attributes dict for each varname)
     
     :Return:
-        a dict of loaded parameters as :class:`cdms2.tvariable.TransientVariable`
-    '''
+    
+        a dict of loaded variable(s) as :class:`cdms2.tvariable.TransientVariable`
+    
+    """
     import datetime, glob, numpy, os, sys, traceback
     import cdms2, pygrib
     from axes import create_lat, create_lon
-    from atime import create_time
+    from atime import create_time, datetime as adatetime
     from grid import create_grid, set_grid
-    if not isinstance(files, (list, tuple)): files = (files,)
-    if not isinstance(params, (list, tuple)):
-        params = (params,)
-    varlist = dict((n,[]) for n in params)
-    files = tuple(f for l in map(lambda p: glob.glob(p), files) for f in l)
-    if not verbose: verbose = lambda s:s
+    if not verbose:
+        verbose = lambda s:s
     if verbose and not callable(verbose):
         verbose = lambda s: sys.stderr.write(('%s\n')%s)
+    # List of variables
+    single = not isinstance(varname, (list,tuple))
+    varnames = [varname] if single else varname
+    verbose('Reading variables: ')
+    verbose('- %s'%('\n- '.join(['%r'%(v) for v in varnames])))
+    # List of files
+    if isinstance(filepattern, basestring):
+        files = list_forecast_files(filepattern, time)
+    else:
+        if not isinstance(filepattern, (list, tuple)):
+            filepattern = (filepattern,)
+        files = tuple(f for l in map(lambda p: glob.glob(p), filepattern) for f in l)
+    if len(files)==0:
+        raise Exception('No valid file found with pattern %r and time %r'%(filepattern, time))
+    verbose('Using files:')
+    verbose('- %s'%('\n- '.join(files)))
+    if time:
+        time = map(adatetime, time[:2])
+        verbose('Using time: %r'%(time))
+    vardict = dict()
+    verbose('Processing files')
+    # Load grib data
     for f in files:
-        verbose('- Processing grib file %r'%(f))
+        verbose('- File %s'%(f))
         with pygrib.open(f) as g:
-            for p in params:
-                ms = g.select(name=p)
-                verbose('  File has %s message%s matching name=%r'%(len(ms), 's' if len(ms)>1 else '',p))
+            verbose('  Processing variables')
+            for n in varnames:
+                kw = n if isinstance(n, dict) else dict(shortName=n)
+                ms = g.select(**kw)
+                verbose('  - %s message%s matching preselection %r'%(len(ms), 's' if len(ms)>1 else '', kw))
                 for m in ms:
+                    if timeid: dt = getattr(m, timeid)
+                    elif m.validDate: dt = m.validDate
+                    elif m.dataDate: dt = m.dataDate
+                    else:
+                        raise Exception('Don\'t know how to handle datetime for message:\n%r'%(m))
+                    if time and dt < time[0] or dt > time[1]:
+                        continue
+                    verbose('  - %s'%(dt))
                     latlons = m.latlons()
-                    varlist[p].append(dict(
-                        lat=latlons[0], lon=latlons[1],
-                        validDate=m.validDate,
+                    kn = n
+                    if isinstance(kn, dict):
+                        kn = n.get('shortName', n.get('name', n.get('parameterName', None)))
+                    if not kn: kn = m.shortName
+                    if not kn in vardict: vardict[kn] = []
+                    vardict[kn].append(dict(
+                        latitudes=latlons[0], longitudes=latlons[1],
+                        datetime=dt,
                         values=m.values
                     ))
-                    verbose('    %s'%(m.validDate))
-    for n,p in varlist.iteritems():
+                    del m
+                del ms
+    # Transform loaded data into cdms2 variable
+    kwgrid = M.kwfilter(kwargs, 'grid')
+    for n,p in vardict.iteritems():
         if not p:
-            varlist[n] = None
+            vardict[n] = None
             continue
-        p = sorted(p, lambda a,b: cmp(a['validDate'], b['validDate']))
-        time = create_time([pp['validDate'] for pp in p])
-        lat = create_lat(p[0]['lat'])
-        lon = create_lon(p[0]['lon'])
+        p = sorted(p, lambda a,b: cmp(a['datetime'], b['datetime']))
+        time = create_time([pp['datetime'] for pp in p])
+        lat = create_lat(p[0]['latitudes'])
+        lon = create_lon(p[0]['longitudes'])
         var = cdms2.createVariable(
             [pp['values'] for pp in p],
             id='_'.join(n.split()), long_name=n,
         )
         var.setAxis(0, time)
         set_grid(var, create_grid(lon, lat))
-        varlist[n] = var
-    return varlist
+        vatts = atts=atts[iv] if atts is not None and iv<len(atts) else None
+        var = _process_var(var, torect, samp, grid, kwgrid, squeeze, atts)
+        vardict[n] = var
+    return vardict
 
-def grib2nc(files, params, seltimencoutfile=None):
+
+def grib2nc(filepattern, varname):
     '''
     ***Currently for test purpose only***
     '''
-    varlist = grib_read_files(files, params, verbose=True)
+    varlist = grib_read_files(filepattern, varname, verbose=True)
     if ncoutfile:
         print>>sys.stderr, 'Writing to netcdf file:', ncoutfile
         netcdf3()
