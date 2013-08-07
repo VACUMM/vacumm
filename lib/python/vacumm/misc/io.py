@@ -1458,15 +1458,18 @@ def grib_read_files(
                     if time and (dt < time[0] or dt >= time[1]):
                         continue
                     verbose('  - %s'%(dt))
-                    latlons = m.latlons()
+                    if m.gridType == 'regular_ll':
+                        latitudes,longitudes = m.distinctLatitudes, m.distinctLongitudes
+                    else:
+                        latitudes,longitudes = m.latlons()
                     kn = n
                     if isinstance(kn, dict):
                         kn = n.get('shortName', n.get('name', n.get('parameterName', None)))
                     if not kn: kn = m.shortName
                     if not kn in vardict: vardict[kn] = []
                     vardict[kn].append(dict(
-                        latitudes=latlons[0], longitudes=latlons[1],
                         datetime=dt,
+                        latitudes=latitudes, longitudes=longitudes,
                         values=m.values
                     ))
                     del m
