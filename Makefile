@@ -1,9 +1,8 @@
 ################################################################################
-PYTHON_PACKAGE_NAME=vacumm
-################################################################################
+NAME=vacumm
 CURDIRNAME=$(shell basename $(CURDIR))
+PYTHON_PACKAGE_NAME=$(NAME)
 PYTHON_VERSION=$(shell  python -c 'import sys; print "%d.%d"%sys.version_info[:2]')
-NAME=$(shell PYTHONPATH=lib/python python -c 'import '$(PYTHON_PACKAGE_NAME)'; print '$(PYTHON_PACKAGE_NAME)'.__project__')
 VERSION=$(shell PYTHONPATH=lib/python python -c 'import '$(PYTHON_PACKAGE_NAME)'; print '$(PYTHON_PACKAGE_NAME)'.__version__')
 RELEASE=$(shell PYTHONPATH=lib/python python -c 'import '$(PYTHON_PACKAGE_NAME)'; print '$(PYTHON_PACKAGE_NAME)'.__release__')
 DATE=$(shell PYTHONPATH=lib/python python -c 'import '$(PYTHON_PACKAGE_NAME)'; print '$(PYTHON_PACKAGE_NAME)'.__date__')
@@ -77,7 +76,8 @@ pdf:
 lib:
 	cd lib/python/vacumm/misc/grid && make
 
-install: lib doc
+# install: lib doc
+install: lib
 
 uninstall: clean-lib clean-doc
 
@@ -100,7 +100,7 @@ dist: sdist rpm
 # TEST
 ################################################################################
 
-test-install: clean-build clean-test-install doc
+test-install: clean-build clean-test-install
 	python $(SETUP_FILE_NAME) install -O1 --prefix=$(TEST_SETUP_INST_DIR)
 	PYTHONPATH=$(TEST_SETUP_INST_DIR)/lib/python$(PYTHON_VERSION)/site-packages python -c "import "$(PYTHON_PACKAGE_NAME)"; "$(PYTHON_PACKAGE_NAME)".info()"
 

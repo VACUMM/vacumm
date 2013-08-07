@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Inits
 import sys, os, shutil
+sys.path.insert(0, os.path.abspath('lib/python'))
 sys.path.insert(0, os.path.abspath('doc/sphinx/source'))
 
 # Revision number
@@ -121,8 +122,25 @@ class vacumm_install(numpy_install):
     def finalize_options(self):
         numpy_install.finalize_options(self)
         self.distribution.cfgfiles = self.cfgfiles
-        
-        
+
+import distutils.command.bdist_rpm
+class vacumm_bdist_rpm(distutils.command.bdist_rpm.bdist_rpm):
+    def initialize_options (self, *args, **kwargs):
+        distutils.command.bdist_rpm.bdist_rpm.initialize_options(self)
+        import vacumm
+        self.distribution_name = name
+        self.group = 'Utilities'
+        self.release = vacumm.__release__
+        self.vendor = vacumm.__copyright__
+        self.requires = [
+            'python >= 2.6',
+            'python-configobj >= 4.6',
+            'cdat-lite >= 6.0rc2',
+        ]
+        #self.install_script = 'rpm-install'
+        #self.post_install = 'rpm-post-install'
+        #self.pre_uninstall = 'rpm-pre-uninstall'
+
 if __name__ == '__main__':
     
     # Lauch setup
@@ -139,7 +157,7 @@ if __name__ == '__main__':
         package_dir= {'':'lib/python'}, 
         py_modules = ['vcmq'], 
         classifiers = classifiers, 
-        cmdclass={'install':vacumm_install, 'install_data':vacumm_install_data}, 
+        cmdclass={'install':vacumm_install, 'install_data':vacumm_install_data, 'bdist_rpm':vacumm_bdist_rpm}, 
         configuration=configuration
           
     )
