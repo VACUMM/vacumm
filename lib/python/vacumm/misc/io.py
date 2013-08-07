@@ -1357,7 +1357,7 @@ def grib_get_names(gribfile):
 def grib_read_files(
     filepattern, varname, time=None, select=None,
     torect=None, samp=None, grid=None, squeeze=None, atts=None,
-    timeid=None, verbose=False, **kwargs):
+    verbose=False, **kwargs):
     """Read the best estimate of a variable through a set of grib files
    
     :Example:
@@ -1386,7 +1386,6 @@ def grib_read_files(
         ###  the variable. It can be a dictionary or a :class:`~cdms2.selectors.Selector`
         ###  instance (see :func:`~vacumm.misc.misc.create_selector`).
         
-        - **timeid**, optional: Time message attribute to use ("validDate", "dataDate", otherwise it is guessed).
         - *verbose*: function to be called for logging (sys.stderr if True, 
             disabled with False)
         
@@ -1445,12 +1444,18 @@ def grib_read_files(
                 ms = g.select(**kw)
                 verbose('  - %s message%s matching preselection %r'%(len(ms), 's' if len(ms)>1 else '', kw))
                 for m in ms:
-                    if timeid: dt = getattr(m, timeid)
-                    elif m.validDate: dt = m.validDate
-                    elif m.dataDate: dt = m.dataDate
+                    # use provided special datetime object if present
+                    if m.validDate:
+                        dt = m.validDate
+                    # use validityDate exposed as YYYYMMDD and validityTime exposed as HHMM (or HMM or HH or H)
+                    elif m.validityDate != None and m.validityTime != None:
+                        dt = '%s%04d00'%(m.validityDate, m.validityTime) # pad validityTime and add 00 seconds
+                    # or use dataDate & dataTime & forecastTime ??
                     else:
                         raise Exception('Don\'t know how to handle datetime for message:\n%r'%(m))
-                    if time and (dt < time[0] or dt > time[1]):
+                    if isinstance(dt, basestring):
+                        dt = datetime.datetime.strptime(dt, '%Y%m%d%H%M%S')
+                    if time and (dt < time[0] or dt >= time[1]):
                         continue
                     verbose('  - %s'%(dt))
                     latlons = m.latlons()
