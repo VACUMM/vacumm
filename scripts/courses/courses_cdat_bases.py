@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# encoding: utf-8
+# -*- coding: utf8 -*- 
 """UV-CDAT - First commands (MV2 variables, grid, links with numpy arrays)"""
 
 # Imports
@@ -22,11 +22,23 @@ print 'Array type - ncarr - :',type(ncarr)
 # print 'Longitude :',ncarr.getLongitude()
 # print 'Latitude :',ncarr.getLatitude()
 
+# ---- Copy or not copy !!!!
+print 'An example: ',ncarr[50,50]
+
+# ==> Practice: test and understant the differences WITH and WITHOUT copy.
+newnccarr = ncarr.clone() # WITH COPY
+newnccarr = ncarr # WITHOUT COPY
+print '+ nccarr: ',ncarr[50,50]
+print '+ newnccarr: ',newnccarr[50,50]
+newnccarr[50,50] = 25.
+print '+ newnccarr modified: ',newnccarr[50,50]
+print '+ nccarr after modification of newnccarr: ',ncarr[50,50]
+
 # Back to numpy array ...
 nparr=ncarr.getValue()
 print 'Array type - nparr - :',type(nparr)
 
-# sys.exit() # End of the execution
+sys.exit() # End of the run
 # -----------------------------------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------------
 
@@ -68,17 +80,17 @@ ax1 = create_lon(N.arange(10)-7.,id='longitude')
 # - latitude
 ax2 = create_lat(N.arange(15)*.5+44.)
 
-# ==> Practice: Create cdarr with depth/lat axes. - voir doc Vacumm -
+# ==> Practice: Create cdarr with depth/lat axes. - see doc Vacumm -
 # # - depth
 # ax1 = create_dep(N.linspace(-1000,0,10))
 # # - latitude
 # ax2 = create_lat(N.arange(15)*.5+44.)
 
 
-# ==> Practice: Crate cdarr with time/lat axes. - voir doc Vacumm -
+# ==> Practice: Create cdarr with time/lat axes. - see doc Vacumm -
 # # - time
 # ax1 = create_time(N.arange(10.),
-#     'days since 2006-10-01',long_name='Mon axe de temps')
+    # 'days since 2006-10-01',long_name='Mon axe de temps')
 # # - latitude
 # ax2 = create_lat(N.arange(15)*.5+44.)
 
