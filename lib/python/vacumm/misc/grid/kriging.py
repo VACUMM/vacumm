@@ -619,9 +619,9 @@ class OrdinaryKriger(object):
     
     __call__ = interp
 
-def krig(xi, yi, zi, xo, yo, vgf=None, geterr=False):
+def krig(xi, yi, zi, xo, yo, vgf=None, geterr=False, **kwargs):
     """Quickly krig data"""
-    return OrdinaryKriger(xi, yi, zi, vgf=vgf)(xo, yo, geterr=False)
+    return OrdinaryKriger(xi, yi, zi, vgf=vgf, **kwargs)(xo, yo, geterr=geterr)
 
 def gauss3(x, y, 
     x0=-1, y0=0.5, dx0=1, dy0=1, f0=1., 
