@@ -799,7 +799,8 @@ class GridData(object):
     >>> varo2 = r(vari2)
     """
     
-    def __init__(self, xi, yi, ggo, nl=False, ext=False, geo=None, method='nat', sub=30, margin=.5, compress=False, **kwargs):
+    def __init__(self, xi, yi, ggo, nl=False, ext=False, geo=None, method='nat', 
+        sub=30, margin=.5, compress=False, **kwargs):
 
         # Helper
         self._GDH = _GridDataHelper_(xi, yi, ggo, geo=geo, compress=compress)
@@ -1210,7 +1211,7 @@ def xy2xy(xi, yi, zi, xo, yo, nl=False, proj=True, **kwargs):
     
     :Params:
     
-        - **xi?yi**: 1D input positions
+        - **xi/yi**: 1D input positions
         - **zi**: atleast-1D input values
         - **xo,yo**: 1D output positions
         - *nl*: Non linear interpolation using natural neighbours
@@ -1234,6 +1235,7 @@ def xy2xy(xi, yi, zi, xo, yo, nl=False, proj=True, **kwargs):
         outtype = 2
         axes = zi.getAxisList()
         atts = get_atts(zi)
+        zi = zi.asma()
     elif N.ma.isMA(zi):
         if zi.mask is not N.ma.nomask and zi.mask.any():
             outtype = 1
@@ -1282,7 +1284,9 @@ def xy2xy(xi, yi, zi, xo, yo, nl=False, proj=True, **kwargs):
         
         # Regridding
         # - values
-        zo[iex][go] = r.rgrd(zi[iex][gi].filled())
+        zin = zi[iex][gi]
+        if N.ma.isMA(zin): zin = zin.filled()
+        zo[iex][go] = r.rgrd(zin)
         # - mask
         if outtype:
             mo[iex][go] = rm.rgrd(mi)
