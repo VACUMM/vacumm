@@ -11,7 +11,7 @@ zzr -= zzr.min()
 vminmax=dict(vmin=zzr.min(), vmax=zzr.max())
 
 # On construit un echantillon irregulier a partir du regulier
-ij = (N.random.rand(50)*zzr.size).astype('i')
+ij = N.unique((N.random.rand(50)*zzr.size).astype('i'))
 xi, yi, zi = xxr.flat[ij], yyr.flat[ij], zzr.flat[ij]
 
 # Interpolation sur la grille reguliere
@@ -45,4 +45,3 @@ P.plot(xi, yi, 'ko')
 P.xlim(xrb.min(), xrb.max()) ; P.ylim(yrb.min(), yrb.max())
 P.title('Minicargen (err = %02i%%)'%((zzr-zirk).std()*100/stdref))
 savefigs(__file__)
-
