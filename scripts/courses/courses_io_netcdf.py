@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
 """Testing to read/modidy/(re)write NEtCDF files without loosing attributes"""
 
 # Inits
@@ -27,11 +29,8 @@ for var in f.listvariable():
     try: # - Variable is an n-dimension array
         data.getValue()
         # - Example of moficiation - mask an area
-        
         if var == 'TEMP':
             data[:,:,:,80:200].mask=True
-        
-        
     except: # - Variable is a single float
         interm = f[var]
         # For single float, need to re-allocate attributes
