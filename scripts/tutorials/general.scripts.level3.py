@@ -2,7 +2,7 @@
 """Plot mixed layer depth from netcdf file"""
 
 # Arguments
-import argparse
+import argparse, os
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("ncfile", help="Model file", nargs="*", 
     default="menor.nc")
@@ -32,6 +32,8 @@ for selname in 'lon', 'lat', 'time':
 # Imports
 from vcmq import setup_dataset, map2, MV2, data_sample
 
+ncfile='menor.nc'
+
 # The file
 ncfile = data_sample(ncfile)
 if not os.path.exists(ncfile):
@@ -43,7 +45,7 @@ if not os.path.exists(ncfile):
 ds = setup_dataset(options.model, options.ncfile, **select)
 mld = ds.get_mld(mode='deltatemp', squeeze=1)
 
-# Time avegage (if needed)
+# Time average (if needed)
 if mld.ndim==3:
     mld = MV2.average(mld, axis=0)
 

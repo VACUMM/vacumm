@@ -12,6 +12,7 @@ ncfile = data_sample(ncfile)
 ds = setup_dataset('mars', ncfile, lon=lon, lat=lat)
 temp = ds.get_temp(squeeze=1)
 depth = ds.get_depth(squeeze=1)
+depth = depth(lon=lon, lat=lat)
 
 # Compute MLD
 mld = mixed_layer_depth(temp, depth, mode='deltatemp')

@@ -8,7 +8,7 @@ from vcmq import setup_dataset, map2, data_sample
 
 # Read temperature and depth
 ncfile = data_sample(ncfile)
-ds = setup_dataset('mars', ncfile, lon=lon, lat=lat)
+ds = setup_dataset('mars', ncfile) # lon=lon, lat=lat)
 mld = ds.get_mld(mode='deltatemp', squeeze=1)
 
 # Plot
