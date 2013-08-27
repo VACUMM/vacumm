@@ -550,7 +550,8 @@ class ConfigManager(object):
         return cfg
 
     def arg_parse(
-            self, parser=None, exc=[], parse=True, args=None, getparser=None,
+            self, parser=None, exc=[], parse=True, args=None, 
+            getparser=False, getargs=False, 
             patch=None, cfgfileopt='--cfgfile', cfgfilepatch=None):
         """Options (:mod:`argparse`) and config mixer.
         
@@ -582,6 +583,7 @@ class ConfigManager(object):
             - **parse**, optional: If ``True``, parse commande line options and arguments
             - **args**, optional: List of arguments to parse instead of default sys.argv[1:]
             - **getparser**: allow getting the parser in addition to the config if parse=True
+            - **getargs**: allow getting the parsed arguments in addition to the config if parse=True
             - **patch**, optional: used if parse is True.
                 Can take the following values:
                 - a :class:`bool` value indicating wheter to apply defaults on the returned config
@@ -608,29 +610,29 @@ class ConfigManager(object):
         elif isinstance(parser, dict):
             parser = ArgumentParser(**parser)
         
-        # Add (or override!) option types checkers
-        # Define a new Option class
-        class option_class(Option):
-            TYPES = tuple(list(parser.option_class.TYPES) + list(self._validator.functions.keys()))
-            TYPE_CHECKER = parser.option_class.TYPE_CHECKER.copy()
-        # Define the wrapping function which also handle list values
-        def wrap_option_type_checker(func, islist):
-            def wrapper_option_type_checker(opt, name, value):
-                if islist:
-                    # Use configobj list parser
-                    value,comment = ConfigObj(list_values=True, interpolation=False)._handle_value(value)
-                    return func(value)
-                else:
-                    return func(value)
-            return wrapper_option_type_checker
-        # Setup type checkers  into the new Option class
-        for name,func in self._validator.functions.items():
-            if name in option_class.TYPE_CHECKER:
-                pass # warn('Overriding Option type checker %s'%(name))
-            islist = _validator_specs_.get(name, {}).get('iterable', None)
-            option_class.TYPE_CHECKER[name] = wrap_option_type_checker(func, islist)
-        # Replace the parser Option class
-        parser.option_class = option_class
+#        # Add (or override!) option types checkers
+#        # Define a new Option class
+#        class option_class(Option):
+#            TYPES = tuple(list(parser.option_class.TYPES) + list(self._validator.functions.keys()))
+#            TYPE_CHECKER = parser.option_class.TYPE_CHECKER.copy()
+#        # Define the wrapping function which also handle list values
+#        def wrap_option_type_checker(func, islist):
+#            def wrapper_option_type_checker(opt, name, value):
+#                if islist:
+#                    # Use configobj list parser
+#                    value,comment = ConfigObj(list_values=True, interpolation=False)._handle_value(value)
+#                    return func(value)
+#                else:
+#                    return func(value)
+#            return wrapper_option_type_checker
+#        # Setup type checkers  into the new Option class
+#        for name,func in self._validator.functions.items():
+#            if name in option_class.TYPE_CHECKER:
+#                pass # warn('Overriding Option type checker %s'%(name))
+#            islist = _validator_specs_.get(name, {}).get('iterable', None)
+#            option_class.TYPE_CHECKER[name] = wrap_option_type_checker(func, islist)
+#        # Replace the parser Option class
+#        parser.option_class = option_class
         
         # Add the cfgfile option (configurable)
         if cfgfileopt:
@@ -717,24 +719,32 @@ class ConfigManager(object):
             # Feed config with cfgfile after command line options
             if cfgfilepatch == 'after' and getattr(options, 'cfgfile', None):
                 self.patch(cfg, self.load(options.cfgfile))
-                
-            return (cfg, parser) if getparser else cfg
+              
+            if not getparser and not getargs: return cfg
+            out = cfg, 
+            if getparser: out += parser, 
+            if getargs: out += options, 
+            return out
+            
         else:
             return parser
 
     def arg_patch(self, parser, exc=[], cfgfileopt='cfgfile'):
-        """Call to :meth:`arg_parse` with an automatic patching of current configuration"""
+        """Call to :meth:`arg_parse` with an automatic patching of current configuration
+        
+        :Return: ``cfg, args``
+        """
         
         # Create a patch configuration from commandline arguments
-        cfgpatch = self.arg_parse(parser, exc=exc, cfgfileopt=cfgfileopt)
+        cfgpatch, args = self.arg_parse(parser, exc=exc, cfgfileopt=cfgfileopt, getargs=True)
         
         #  Load personal config file and default values
-        cfg = cfgm.load(opts.cfgfile)
+        cfg = self.load(args.cfgfile)
         
         #  Patch it with commandeline options
         self.patch(cfg, cfgpatch)
         
-        return cfg
+        return cfg, args
 
 
     def opt_parse(
@@ -954,8 +964,41 @@ class ConfigManager(object):
             
         return shelp
 
+
+def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', exc=[], **kwargs):
+    """Merge configuration and commandline arguments
+    
+    :Params:
+    
+        - **cfgspecfile**: Config specification file (.ini).
+        - **parser**: :class:`~argpase.ArgumentParser` instance.
+        - **cfgfileopt**, optional: Name of the option used to specify the 
+          user config file. Example: ``'cfgfile'`` creates the option
+          ``--cfgfile=<config file>``.
+        - **exc**, optional: Config option name that must not be used to generated
+          a commandline option.
+        - Extra params are passed to :class:`ConfigManager` initialization.
+    
+    :Tasks:
+    
+        1. Initialize a default configuration (:class:`ConfigManager`) 
+           from the specification file given by ``cfgspecfile``.
+        2. Generate associated commandline options.
+        3. Load a user configuration file (specified with the option 
+           whose name is given by ``cfgfileopt``).
+        4. Patch this configuration with user supplied options retrieved
+           using the :class:`~argpase.ArgumentParser` parser ``parser``.
+           
+        Technically it combines :class:`ConfigManager` and :meth:`ConfigManager.arg_patch`
+    """
+    return ConfigManager(cfgspecfile, **kwargs).arg_patch(parser, cfgfileopt='cfgfile', exc=exc)
+   
+        
+
 def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
     """Convert options displayed in an help string to rst declarations of options
+    
+    This is useful for autodocumenting executable python scripts that show a formatted help.
     
     :Params:
     
@@ -1071,7 +1114,7 @@ def getspec(spec, validator=None):
             validator = Validator()
             validator.functions.update(_validator_functions_)
         funcname, args, kwargs, default = validator._parse_with_caching(spec)
-        spec = _validator_specs_.get(funcname, dict(func=None, iterable=None, opttype=None)).copy()
+        spec = _validator_specs_.get(funcname, dict(func=None, iterable=None, opttype=None, argtype=None)).copy()
         spec.update(dict(funcname=funcname, args=args, kwargs=kwargs, default=default))
         return _attdict_(spec)
 
@@ -1138,12 +1181,12 @@ def _walker_optcfg_setopt_(sec, key, group=None, exc=None):
             help=_shelp_(sec, key)
     )
 
-def _walker_argcfg_setcfg_(sec, key, cfg=None, args=None):
+def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None):
     """Walker to set config values"""
     # Find genealogy
     parents = _parent_list_(sec, names=False)
     cfgkey = '_'.join([p.name.strip('_') for p in parents]+[key])
-    for option, value in args._get_kwargs():
+    for option, value in options._get_kwargs():
         
         # Option not set
         if value is None: continue
@@ -1174,7 +1217,7 @@ def _walker_argcfg_setarg_(sec, key, group=None, exc=None):
         '--'+optkey,
             #action='append' if spec.get('iterable', None) else 'store',
             action='store',
-            type=spec.get('opttype', str), #FIXME: type must be a callable
+            type=spec.get('argtype', str), #FIXME: type must be a callable
             help=_shelp_(sec, key)
     )
 
