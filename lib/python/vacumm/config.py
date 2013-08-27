@@ -119,7 +119,7 @@ def data_sample(data_file, mode='all'):
     return vacpath
         
     
-def get_scripts_dir(raiseerr=False):
+def get_scripts_dir(subdir=None, raiseerr=False):
     """Get the scripts directory absolute path
     
     This directory contains examples of script.
@@ -136,17 +136,27 @@ def get_scripts_dir(raiseerr=False):
     # Installed librairy
     lib_dir = get_lib_dir()
     scripts_dir = os.path.join(lib_dir, 'vacumm-scripts')
-    if os.path.exists(scripts_dir):
-        return scripts_dir
+    if not os.path.exists(scripts_dir): scripts_dir = None
         
     # Distributed library (dev)
-    dist_dir = get_dist_dir()
-    if dist_dir is not None:
-        scripts_dir = os.path.join(dist_dir, 'scripts')
-        if os.path.exists(scripts_dir):
-            return scripts_dir
+    if scripts_dir is None:
+        dist_dir = get_dist_dir()
+        if dist_dir is not None:
+            scripts_dir = os.path.join(dist_dir, 'scripts')
+            if not os.path.exists(scripts_dir): scripts_dir = None
+      
+    # Not found
+    if scripts_dir is None:
+        if raiseerr: raise VACUMMError("Can't find a valid scripts directory")
+    
+    # Subdir
+    if subdir and isinstance(subdir, basestring):
+        scripts_dir = os.path.join(scripts_dir, subdir)
+        if not os.path.exists(scripts_dir):
+            raise VACUMMError("Invalid subdirectory of the scripts directory: "+subdir)
+    
+    return scripts_dir
         
-    if raiseerr: raise VACUMMError("Can't find a valid scripts directory")
  
 def get_tut_dir(raiseerr=True):
     """Get the tutorials directory absolute path
