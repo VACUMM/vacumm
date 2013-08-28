@@ -1914,11 +1914,11 @@ def _regrid2d_griddata_(vari3d, xi, yi, xo, yo, method, **kwargs):
         #good = vari2d.mask
     #else:
         #good = N.zeros(vari2d.shape, '?')
-    good = (xxi.flat>=(xo.min()-dxo)) & (xxi.flat<=(xo.max()+dxo)) & \
-        (yyi.flat>=(yo.min()-dyo)) & (yyi.flat<=(yo.max()+dyo))
-    varitmp = vari2d.compress(good.flat, axis=1)
-    xxitmp = xxi.compress(good.flat)
-    yyitmp = yyi.compress(good.flat)
+    good = (xxi.ravel()>=(xo.min()-dxo)) & (xxi.ravel()<=(xo.max()+dxo)) & \
+        (yyi.ravel()>=(yo.min()-dyo)) & (yyi.ravel()<=(yo.max()+dyo))
+    varitmp = vari2d.compress(good.ravel(), axis=1)
+    xxitmp = xxi.compress(good.ravel())
+    yyitmp = yyi.compress(good.ravel())
     del vari2d
     varo2d =  griddata(xxitmp, yyitmp, varitmp, (N.asarray(xo), N.asarray(yo)), method=method, **kwargs)
     del xxitmp, yyitmp, varitmp
@@ -1951,7 +1951,7 @@ def _regrid2d_natgridlist_(vari3d, xi, yi, xxo, yyo, ext, **kwargs):
     xxitmp = xxi.compress(good).astype('d')
     yyitmp = yyi.compress(good).astype('d')
     del vari2d
-    r = Natgrid(xxitmp, yyitmp, xo.astype('d').flat, yo.astype('d'), listOutput = 'yes')
+    r = Natgrid(xxitmp, yyitmp, xo.astype('d').ravel(), yo.astype('d').ravel(), listOutput = 'yes')
     r.ext = int(ext)
     r.nul = -10.
     r.dup = 0
