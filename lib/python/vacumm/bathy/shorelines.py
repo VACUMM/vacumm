@@ -105,7 +105,7 @@ class _CoastalBathy_:
         # Interpolate to coastal positions
         cb = msl.interp(self, ext=ext, nl=nl, xyz=xyz, **kwargs)
         # Rectification
-        if factor is None: factor = self._factor
+        if factor is None: factor = self.factor
         cb *= factor
         
         return cb
@@ -121,6 +121,7 @@ class _CoastalBathy_:
     def set_factor(self, factor):
         """Set factor to apply to the sea level on the shoreline to convert to bathymetic 'depth'"""
         self._factor = factor
+    factor = property(get_factor, set_factor, doc='Factor to apply to the sea level on the shoreline to convert to bathymetic "depth"')
 
 class _PolyShapes_:
     
@@ -202,11 +203,11 @@ class GSHHS_SF(ShoreLine):
     
         HUGE! Please use :class:`GSHHS` instead 
     """
-    _factor = 0.
+    _factor = 1.
     _name = 'gshhs'
         
 class GSHHS(_CoastalBathy_, _PolyShapes_, GSHHS_BM):
-    _factor = 0.
+    _factor = 1.
 
 def get_bestres(gg):
     """Get the best shoreline resolution as letter, for my grid or (lon,lat)"""
