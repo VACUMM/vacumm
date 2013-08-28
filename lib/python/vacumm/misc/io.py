@@ -3700,7 +3700,7 @@ class XYZMerger(object):
             key = self.ids().find(key)
         return key
         
-    def xyz(self, mask=True, **kwargs):
+    def get_xyz(self, mask=True, **kwargs):
         """Merge current dataset"""
         assert len(self), 'You must add at least one dataset to the merger'
         xyz = self._XYZ(self._datasets[0], **kwargs)
@@ -3720,6 +3720,7 @@ class XYZMerger(object):
         xyz.long_name = self.long_name
         xyz.units = self.units
         return xyz
+    xyz = property(get_xyz, doc='Coordinates and data as a (3, npts) array')
     
     def merge(self, **kwargs):
         """Shortcut to :meth:`xyz`"""

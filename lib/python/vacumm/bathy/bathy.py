@@ -637,7 +637,7 @@ class XYZBathyBankClient(object):
                 else:
                     xyz = self._xyz = XYZBathy(self.xyzfile)
                 if att.startswith('x') or att.startswith('y'):
-                    self._set_(att, getattr(xyz, att)())
+                    self._set_(att, getattr(xyz, att))
 #               elif xyz.long_name is not None:
 #                   self.long_name = xyz.long_name
 #               elif xyz.units is not None:
