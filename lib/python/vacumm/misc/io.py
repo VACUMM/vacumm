@@ -2956,7 +2956,7 @@ class XYZ(object):
         
             :meth:`exclude`  :meth:`selections` 
         """
-        self._selections.extend(polygons(zones))
+        self._selections.extend(polygons(list(zones)))
         self._update_()
     def reset_selections(self):
         """Remove all selections"""
