@@ -1167,12 +1167,12 @@ def get_grid(gg, geo=True, intercept=False, strict=False):
         
         # Check axis is compatible
         if isaxis(xx):
-            if getattr(xx, 'axis', 'x')!='x':
+            if getattr(xx, 'axis', 'x').upper()!='X':
                 if not intercept: return
                 raise VACUMMError("Can't make a grid with %s axis as longitude"%xx.axis)
             xx.designateLongitude()
         if isaxis(yy):
-            if getattr(yy, 'axis', 'y')!='y':
+            if getattr(yy, 'axis', 'y').upper()!='Y':
                 if not intercept: return
                 raise VACUMMError("Can't make a grid with %s axis as latitude"%yy.axis)
             yy.designateLatitude()
@@ -1183,7 +1183,7 @@ def get_grid(gg, geo=True, intercept=False, strict=False):
             return create_grid(xx, yy)
             
         elif xx[:].ndim == 2 or yy[:].ndim == 2: # Curvilinear
-        
+            
             return curv_grid(xx, yy)
             
         else: # Generic
@@ -1419,7 +1419,7 @@ def gridsel(gg, lon=None, lat=None):
             raise VACUMMError("Axis must be longitude or latitude")
     else:
         raise TypeError('Please provide a grid,  a tuple of axes or an axis')
-        
+
     # Selection
     if len((gg if outtype[0] not in ['g', 't'] else gg.getLongitude()).shape)==2: # Curvilinear
         
