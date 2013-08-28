@@ -1,21 +1,20 @@
 # -*- coding: utf8 -*-
 # Read sea level at Brest
-from vacumm.tide.sonel_mareg import get_slv_shom
-import MV2
-sea_level = get_slv_shom('BREST', time_range=('2006-08', '2006-09', 'co'))
-sea_level[:] -= MV2.average(sea_level)
+from vcmq import cdms2, P, curve2, savefigs, data_sample
+import cdms2
+f = cdms2.open(data_sample("tide.sealevel.BREST.mars.nc"))
+sea_level = f('sea_level')
+f.close()
 
 # Filtering
-from vacumm.tide.filters import demerliac, godin
+from vacumm.tide.filters import demerliac
 cotes, tide = demerliac(sea_level, get_tide=True)
 
 # Plots
-from vacumm.misc.plot import curve, savefigs
-import pylab as P
 kwplot = dict(date_fmt='%d/%m', show=False, date_rotation=0)
 # - tidal signal
-curve(sea_level, 'k', subplot=211, label='Original', title='Sea level at Brest',**kwplot)
-curve(tide, 'b', label='Tidal signal', **kwplot)
+curve2(sea_level, 'k', subplot=211, label='Original', title='Sea level at Brest',**kwplot)
+curve2(tide, 'b', label='Tidal signal', **kwplot)
 P.legend().legendPatch.set_alpha(.7)
 # - surcotes/decotes
 curve(cotes, 'r', subplot=212, hspace=.3, label='Demerliac', **kwplot)
