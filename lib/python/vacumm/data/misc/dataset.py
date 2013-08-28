@@ -715,7 +715,7 @@ class Dataset(Object):
                 setattr(axis, key, val)
         
         # Select
-        if select is not False:
+        if select is not False and select2 is not False:
             
             # Curv case
             if len(axis.shape)==2:
@@ -754,7 +754,6 @@ class Dataset(Object):
             - **global_select**: also apply a global selection (using self.selects).
         
         """
-        
         if select1 is False: return axis
         if not isinstance(axis, tuple) and len(axis.shape)==1: # 1D axis
             
@@ -822,36 +821,6 @@ class Dataset(Object):
         if genname is None: return
         self._ncids[genname] = ncid
     
-    @staticmethod
-    def _extract_geosels_(select):
-        """Convert select to a list of (lon,lat) selection specs"""
-        lons = []
-        lats = []
-        for c in select.components():
-            id = getattr(c, 'id', None)
-            if id is None: continue
-            if id=='lon':
-                lons.append(c.spec)
-            if id=='lat':
-                lats.append(c.spec)
-            continue
-        n = max(len(lons), len(lats))
-        if n==0: return []
-        lons = broadcast(lons, n, fillvalue=None)
-        lats = broadcast(lats, n, fillvalue=None)
-        return zip(lons, lats)
-        
-    @staticmethod
-    def _remove_geosels_(select):
-        """Remove lon and lat component selections"""
-        for c in select().components():
-            id = getattr(c, 'id', None)
-            if id is None: continue
-            if id in ['lon', 'lat']:
-                select._Selector__components.remove(c)
-        return select
-            
-        
         
     def get_variable(self, varname, time=None, lon=None, lat=None, level=None, 
         atts=None, squeeze=False, order=None, asvar=None, torect=True, depthup=None,
@@ -902,20 +871,7 @@ class Dataset(Object):
         # TODO: if grid not found and specs say that there must have a grid, create it with get_lon/get_lat
             
         # Curved grid case
-        geosels = self._extract_geosels_(select)
-        post_sel = False
-        if geosels:
-            grid = self.dataset[0][ncvarid].getGrid()
-            if grid is not None and len(grid.getLongitude().shape)==2:
-                islice, jslice, mask =  coord2slice(grid, *geosels[0])
-                if islice is None: islice = ':'
-                if jslice is None: jslice = ':'
-                self._remove_geosels_(select)
-                xid = grid.getAxis(1).id
-                yid = grid.getAxis(0).id
-                select.refine(**{xid:islice, yid:jslice})
-                post_sel = True
-            
+        curvsel = CurvedSelector(self.dataset[0][ncvarid].getGrid(), select)
             
         # Read
         kwargs['torect'] = False
@@ -934,21 +890,9 @@ class Dataset(Object):
             return 
         if isinstance(var, list): var = var[0]
             
-        # Curved grid finalization (mask+local_select+mask)
-        #TODO: Put it in finalize_variable?
-        if var is not None and post_sel:
-            if mask.any():
-                var[:] = MV2.masked_where(N.resize(mask, var.shape), var, copy=0)
-            if len(geosels)==2:
-                islice, jslice, mask =  coord2slice(var, *geosels[1])
-                var = var(**{xid:islice, yid:jslice})
-                if mask.any():
-                    var[:] = MV2.masked_where(N.resize(mask, var.shape), var, copy=0)
-            del mask
-                
         # Post process
         var = self.finalize_variable(var, genname=genname, atts=atts, order=order, 
-            squeeze=squeeze, asvar=asvar, torect=torect, depthup=depthup)
+            squeeze=squeeze, asvar=asvar, torect=torect, depthup=depthup, curvsel=curvsel)
         self.verbose('Loaded variable: %s', self.describe(var))
             
         return var
@@ -1381,7 +1325,7 @@ class Dataset(Object):
         #return var
     
     def finalize_variable(self, var, genname=None, squeeze=False, order=None, 
-        asvar=None, torect=True, atts=None, lon=None, lat=None, **kwargs):
+        asvar=None, torect=True, atts=None, lon=None, lat=None, curvsel=None, **kwargs):
         """Finalize a variable
         
         :Params:
@@ -1398,7 +1342,8 @@ class Dataset(Object):
             - **asvar_<param>**: Param passed to :func:`~vacumm.misc.misc.grow_variables`.
             - **torect**, optinal: Try to convert curvilinear grid to rectangular
               grid using :func:`~vacumm.misc.grid.misc.curv2rect`.
-            - **lon/lat**, optional: Additional spatia selection.
+            - **lon/lat**, optional: Additional spatial selection.
+            - **curvsel**, optional: :class:`CurvedSelector` instance.
         """
         if var is None: return
         kwasvar = kwfilter(kwargs, 'asvar_')
@@ -1406,6 +1351,10 @@ class Dataset(Object):
         if atts is None: atts = {}
         
         if not isaxis(var):
+            
+            # Curved selector
+            if curvsel is not None:
+                var = curvsel.finalize(var)
             
             # Format
             if genname is not None:
@@ -1720,9 +1669,10 @@ class OceanDataset(OceanSurfaceDataset):
         
     def _get_depth_(self, at='t', level=None, time=None, lat=None, lon=None, 
         order=None, squeeze=None, asvar=None, torect=True, warn=True, mode=None, **kwargs):
-                    
+
         # Where?
         atp = _at_(at, squeezet=True, prefix=True)
+        ath = _at_(at, squeezet=True, prefix=True, focus='hor')
         
         # First, try to find a depth variable
         kwfinal = dict(order=order, squeeze=squeeze, asvar=asvar, torect=torect)
@@ -1732,9 +1682,13 @@ class OceanDataset(OceanSurfaceDataset):
             depth = self.get_variable('depth'+atp, depth=False, **kwvar)
             if depth is not None or check_mode('var', mode, strict=True): 
                 return self._makedepthup_(depth, depth)
-        
+
         # Get selector for other tries
-        selector = self.get_selector(lon=lon, lat=lat, level=level, time=time, merge=True)    
+        selector = self.get_selector(lon=lon, lat=lat, level=level, time=time, merge=True) 
+        gridmet = 'get_grid'+ath
+        grid = getattr(self, gridmet)(False)
+        curvsel = CurvedSelector(grid, selector)
+        kwfinal['curvsel'] = curvsel
         
         # Second, find sigma coordinates
         sigma_converter = NcSigma.factory(self.dataset[0])
@@ -1746,7 +1700,7 @@ class OceanDataset(OceanSurfaceDataset):
                 self.debug('Found depth refer to a sigma level, processing sigma to depth conversion')
                 allvars = []
                 for f,t in NcIterBestEstimate(self.dataset, self.selects['time']):
-                    if t is None: continue
+                    if t is None: continue # and when no time???
                     sigma = NcSigma.factory(f)
                     sel = selector(time=t)
                     self.debug('- dataset: %s: sigma: %s, select: %s', os.path.basename(f.id), sigma.__class__.__name__, sel)
@@ -3128,3 +3082,63 @@ class GenericDataset(AtmosDataset, OceanDataset):
     """Generic :class:`Dataset` class to load everything"""
     pass
     
+class CurvedSelector(object):
+    """Curved grid multiple selector"""
+
+    def __init__(self, grid, select):
+    
+        self.geosels = self.extract_geosels(select)
+        self._post_sel = False
+        if self.geosels and grid is not None and len(grid.getLongitude().shape)==2:
+            islice, jslice, mask =  coord2slice(grid, *self.geosels[0])
+            if islice is None: islice = ':'
+            if jslice is None: jslice = ':'
+            self.remove_geosels(select)
+            xid = grid.getAxis(1).id
+            yid = grid.getAxis(0).id
+            select.refine(**{xid:islice, yid:jslice})
+            self._post_sel = True
+            self.mask = mask
+
+        
+    def finalize(self, var):
+        if var is None or not self._post_sel: return var
+        if self.mask.any():
+            var[:] = MV2.masked_where(N.resize(self.mask, var.shape), var, copy=0)
+        if len(self.geosels)==2:
+            islice, jslice, mask =  coord2slice(var, *self.geosels[1])
+            var = var(**{xid:islice, yid:jslice})
+            if self.mask.any():
+                var[:] = MV2.masked_where(N.resize(mask, var.shape), var, copy=0)
+            return var
+        return var
+
+    @staticmethod
+    def extract_geosels(select):
+        """Convert select to a list of (lon,lat) selection specs"""
+        lons = []
+        lats = []
+        for c in select.components():
+            id = getattr(c, 'id', None)
+            if id is None: continue
+            if id=='lon':
+                lons.append(c.spec)
+            if id=='lat':
+                lats.append(c.spec)
+            continue
+        n = max(len(lons), len(lats))
+        if n==0: return []
+        lons = broadcast(lons, n, fillvalue=None)
+        lats = broadcast(lats, n, fillvalue=None)
+        return zip(lons, lats)
+        
+    @staticmethod
+    def remove_geosels(select):
+        """Remove lon and lat component selections"""
+        for c in select().components():
+            id = getattr(c, 'id', None)
+            if id is None: continue
+            if id in ['lon', 'lat']:
+                select._Selector__components.remove(c)
+        return select
+            
