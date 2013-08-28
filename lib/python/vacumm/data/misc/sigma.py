@@ -119,6 +119,12 @@ class NcSigma(object):
 #        depthv = "model_sea_floor_depth_below_geoid_at_v_location", 
 #        eta = ["sea_surface_height_above_geoid"],
     )
+    gridvars = dict(
+        t = ['eta', 'depth'], 
+        u = ['depthu'], 
+        v = ['depthv'], 
+    )
+    gridvars['all'] = gridvars['t']+gridvars['u']+gridvars['v']
     names = {}
     horiz_terms = ['depth', 'eta']
     sigma_name = None
@@ -347,6 +353,17 @@ class NcSigma(object):
     def clean_cache(self):
         if '_cache' in self: del self._cache
 
+    def _get_ncname_(self, name):
+        """Get netcdf var name from name"""
+        if name is None: return
+        name = name.lower()
+        if not name.startswith('+') and name not in self.names: return
+        if name.startswith('+'):
+            ncname = name[1:]
+        else:
+            ncname = self.names[name]
+        return ncname
+
     def _get_from_name_(self, name, selector=None):
         """Load axis or variable from its generic name
         
@@ -357,14 +374,9 @@ class NcSigma(object):
         """
 
         # Inits
-        if name is None: return
-        name = name.lower()
-        if not name.startswith('+') and name not in self.names: return
+        ncname = self._get_ncname_(name)
+        if ncname is None: return
         selector = as_selector(selector)
-        if name.startswith('+'):
-            ncname = name[1:]
-        else:
-            ncname = self.names[name]
             
         # Axes
         var = ncread_axis(self.f, ncname, mode=None)
@@ -375,12 +387,16 @@ class NcSigma(object):
       
         # Variables
 #        var = self.f(ncname, selector)
-        var = ncread_var(self.f, ncname, mode=None)
+        args = [ncname]
+        if selector: args.append(selector)
+        kwargs = {'mode':None}
+#        print ncread_var(self.f, ncname, **kwargs)(selector)
+        var = ncread_var(self.f, *args, **kwargs)
         if var is None: return
         if hasattr(self.f[ncname], '_FillValue') and cdms2.isVariable(var):
             var[:] = MV2.masked_values(var, self.f[ncname]._FillValue, copy=0)
         return var
-        
+      
        
     def load_sigma(self, selector=None, at=None):
         """Scan variables to find sigma (or s), and set :attr:`sigma` (or :attr:`s`) attributes"""
@@ -414,7 +430,7 @@ class NcSigma(object):
         """Check if W sigma coordinates are available"""
         return 't' in self.sigma
     
-    def get_depth(self, selector, at='t', mode='error'):
+    def get_depth(self, selector=None, at='t', mode='error'):
         """Read bottom depth at T, U or V points"""
         at = self._at_(at, squeezet=True)
         if at=="w": at = 't'
@@ -424,7 +440,7 @@ class NcSigma(object):
         return var
         
         
-    def get_eta(self, selector, mode='error'):
+    def get_eta(self, selector=None, mode='error'):
         """Scan variables to find eta and read it"""
         var = self._get_from_cache_('eta', selector)
         if var is None and mode=='error':
@@ -445,7 +461,7 @@ class NcSigma(object):
 #            standard_name = sef.standard_names["dz"+at]
 #            self.names["dz"+at] = self._get_from_standard_name_(standard_name, mode='id')
         
-    def get_dz(self, selector, at='t'):
+    def get_dz(self, selector=None, at='t'):
         """Load thickness at T or W if availables
         
         :Params:
@@ -843,7 +859,7 @@ class  NcSigmaGeneralized(NcSigma):
                     
         # From sigma
         if mode=='auto' or mode=='sigma':
-            
+
             try:
             
                 # Read variables      
