@@ -4625,6 +4625,16 @@ class Map(Plot2D):
     _order = 'YX'
     map = None
     
+    def _set_axes_(self, xaxis=None, yaxis=None, xatts=None, yatts=None, **kwargs):
+        Plot2D._set_axes_(self, xaxis=xaxis, yaxis=yaxis, xatts=xatts, yatts=yatts, **kwargs)
+        if xaxis is not None:
+            for var in self.data:
+                var.getAxis(1).designateLongitude()
+        if yaxis is not None:
+            for var in self.data:
+                var.getAxis(0).designateLatitude()
+    _set_axes_.__doc__ = Plot2D._set_axes_.__doc__ 
+        
     def format_axes(self, **kwargs):
         pass
     
