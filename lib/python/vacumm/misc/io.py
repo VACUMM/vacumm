@@ -2281,9 +2281,11 @@ class Shapes(object):
         if proj: return N.asarray(proj(xx, yy))
         return N.asarray([xx, yy])
         
-    def xy(self, key=None,  proj=False):
+    def get_xy(self, key=None,  proj=False):
         """Shortcut to ``get_points(split=false)``"""
         return self.get_points(split=False, key=key, proj=proj)
+    xy = property(get_xy, doc="XY coordinates as a (2,npts) array")
+    
         
     def resol(self, deg=True):
         """Compute the mean "resolution" of the shapes based on the first shape
@@ -2448,7 +2450,8 @@ class XYZ(object):
     >>> xyz3 = xyz1 + xyz2/2. # concatenation
     """
     
-    def __init__(self, xyz, m=None,  units=None, long_name=None, transp=True, trans=False, magnet=0, rsamp=0, id=None, **kwargs):
+    def __init__(self, xyz, m=None,  units=None, long_name=None, transp=True, 
+        trans=False, magnet=0, rsamp=0, id=None, **kwargs):
         # Load data
         self._selections = []
         self._exclusions = []
@@ -2887,27 +2890,27 @@ class XYZ(object):
     def get_xmin(self, mask=True): 
         if mask is True or mask == 'masked': return self._xmin
         return self.get_x(mask).min()
-    xmin = property(get_xmin, "X min")
+    xmin = property(get_xmin, doc="X min")
     def get_xmax(self, mask=True): 
         if mask is True or mask == 'masked': return self._xmax
         return self.get_x(mask).max()
-    xmax = property(get_xmax, "X max")
+    xmax = property(get_xmax, doc="X max")
     def get_ymin(self, mask=True): 
         if mask is True or mask == 'masked': return self._ymin
         return self.get_y(mask).min()
-    ymin = property(get_ymin, "Y min")
+    ymin = property(get_ymin, doc="Y min")
     def get_ymax(self, mask=True): 
         if mask is True or mask == 'masked': return self._ymax
         return self.get_y(mask).max()
-    ymax = property(get_ymax, "Y max")
+    ymax = property(get_ymax, doc="Y max")
     def get_zmin(self, mask=True): 
         if mask is True or mask == 'masked': return self._zmin
         return self.get_z(mask).min()
-    zmin = property(get_zmin, "Z min")
+    zmin = property(get_zmin, doc="Z min")
     def get_zmax(self, mask=True): 
         if mask is True or mask == 'masked': return self._zmax
         return self.get_z(mask).max()
-    zmax = property(get_zmax, "Z max")
+    zmax = property(get_zmax, doc="Z max")
     
     def exclude(self, *zones):
         """Add one or more zones where data are not used.
@@ -3045,14 +3048,17 @@ class XYZ(object):
             return x, y, z
         return zip(x, y, z)
         
-    def interp(self, xyo, xyz=False, ext=True, nl=True, **kwargs):
+    def interp(self, xyo, xyz=False, **kwargs):
         """Interpolate to (xo,yo) positions using :class:`nat.Natgrid`
         
-        - **xo**: Output X
-        - **yo**: Output Y
-        - *xyz*: If True, return a :class:`XYZ` instance instead of a :mod:`numpy` array
-        - *ext*: Allow extrapolation
-        - *nl*: Nonlinear interpolation
+        :Params:
+        
+            - **xo**: Output X
+            - **yo**: Output Y
+            - *xyz*: If True, return a :class:`XYZ` instance instead of a :mod:`numpy` array
+            - **interp_<param>**, optional: ``<param>`` is passed to the
+              :func:`~vacumm.misc.grid.regridding.xy2xy` interpolation routine.
+            - Other params are passed to XYZ initialization for the output dataset.
         
         :Returns: An XYZ instance
         """
@@ -3067,10 +3073,9 @@ class XYZ(object):
             xo, yo, tmp = xyo.xyz
         else:
             raise TypeError, 'Wrong input type'
-        r = Natgrid(self.x, self.y, N.asarray(xo, 'd'), N.asarray(yo, 'd'), listOutput = 'yes')
-        r.ext = int(ext)
-        r.nl = int(nl)
-        zo = r.rgrd(self.z)
+        kwinterp = M.kwfilter(kwargs, 'interp_')
+        from grid.regridding import xy2xy
+        zo = xy2xy(self.x, self.y, self.z, xo, yo, **kwinterp)
         if not xyz: return zo
         kwargs.setdefault('units', self.units)
         kwargs.setdefault('long_name', self.long_name)
@@ -3571,7 +3576,7 @@ class XYZ(object):
         kwargs.setdefault('linewidth', 0)
         if kwargs.get('marker', None) is None:
             kwargs['marker'] = 'o'
-        return  G.scatter(x, y, size, color, **kwargs)
+        return  G.scatter(x, y, s=size, c=color, **kwargs)
 
     def save(self, xyzfile, **kwargs):
         """Save to a file
