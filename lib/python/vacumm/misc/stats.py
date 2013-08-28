@@ -207,6 +207,17 @@ class StatAccumError(VACUMMError):
 class StatAccum(object):
     """Statistics accumulator
     
+    Single statistics available:
+        * 'tavail'/'savail': Percentage of available observations
+        * 'tmean'/'smean': Temporal (t) / Spatial (s) average
+        * 'tstd'/'sstd': Temporal (t) / Spatial (s) std
+        
+    Dual statistics available:
+        * 'tbias'/'sbias': Temporal (t) / Spatial (s) bias
+        * 'trms'/'srms': Temporal (t) / Spatial (s) RMS
+        * 'tcrms'/'scrms': Temporal (t) / Spatial (s) centered RMS
+        * 'tcorr'/'scorr': Temporal (t) / Spatial (s) Correlation
+    
     :Example:
     
     
@@ -299,7 +310,7 @@ class StatAccum(object):
                 if self.tsum: 
                     self._tsum = [self._tbase.copy()]
                     if self.dual: self._tsum.append(self._tbase.copy()) 
-                # - sqare
+                # - square
                 if self.tsqr: 
                     self._tsqr = [self._tbase.copy()] 
                     if self.dual: self._tsqr.append(self._tbase.copy())
