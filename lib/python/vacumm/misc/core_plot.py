@@ -638,7 +638,10 @@ class Plot(object):
             if masked is None:
                 masked = self.xmasked
             if masked:
-                x = N.ma.masked_array(x, mask=self.get_xmask())
+                mask = self.get_xmask()
+                if mask.shape!=x.shape:
+                    mask = N.resize(mask, x.shape)
+                x = N.ma.masked_array(x, mask=mask)
             if bounds: 
                 if not hasattr(self, '_xb'): 
                     self._xb = meshcells(x)
@@ -678,7 +681,10 @@ class Plot(object):
             if masked is None:
                 masked = self.ymasked
             if masked:
-                y = N.ma.masked_array(y, mask=self.get_ymask())
+                mask = self.get_ymask()
+                if mask.shape!=y.shape:
+                    mask = N.resize(mask, y.shape[::-1]).T
+                y = N.ma.masked_array(y, mask=mask)
             if bounds: 
                 if not hasattr(self, '_yb'): 
                     self._yb = meshcells(y)
