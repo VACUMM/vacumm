@@ -4,11 +4,11 @@ lon=(3.,4.5)
 lat=(42, 42.8)
 
 # Imports
-from vcmq import setup_dataset, map2, data_sample
+from vcmq import DS, map2, data_sample
 
 # Read temperature and depth
 ncfile = data_sample(ncfile)
-ds = setup_dataset('mars', ncfile) # lon=lon, lat=lat)
+ds = DS(ncfile, 'mars', lon=lon, lat=lat)
 mld = ds.get_mld(mode='deltatemp', squeeze=1)
 
 # Plot

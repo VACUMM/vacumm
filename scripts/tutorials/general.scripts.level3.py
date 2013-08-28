@@ -30,7 +30,7 @@ for selname in 'lon', 'lat', 'time':
     select[selname] = val
 
 # Imports
-from vcmq import setup_dataset, map2, MV2, data_sample
+from vcmq import DS, map2, MV2, data_sample
 
 # The file
 ncfile = options.ncfile
@@ -40,7 +40,7 @@ if not os.path.exists(ncfile):
     parser.error('File not found: '+ncfile)
 
 # Read temperature and depth
-ds = setup_dataset(options.model, ncfile, **select)
+ds = DS(ncfile, options.model, **select)
 mld = ds.get_mld(mode='deltatemp', squeeze=1)
 
 # Time average (if needed)
