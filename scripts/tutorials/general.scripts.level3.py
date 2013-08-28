@@ -4,9 +4,9 @@
 # Arguments
 import argparse, os
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("ncfile", help="Model file", nargs="*", 
+parser.add_argument("ncfile", help="model file", nargs="?", 
     default="menor.nc")
-parser.add_argument("-m", "--model", help="Model type [default: %(default)s]",
+parser.add_argument("-m", "--model", help="model type [default: %(default)s]",
     choices = ['ocean', 'mars', 'nemo'], default='mars')
 parser.add_argument('-t', '--time', help='time selection, like \'("2000","2001","co")\'')
 parser.add_argument('-x', '--lon', help='longitude selection, like \'(40,42)\'')
@@ -32,10 +32,8 @@ for selname in 'lon', 'lat', 'time':
 # Imports
 from vcmq import setup_dataset, map2, MV2, data_sample
 
-ncfile='menor.nc'
-
 # The file
-ncfile = data_sample(ncfile)
+ncfile = data_sample(options.ncfile)
 if not os.path.exists(ncfile):
     ncfile = options.ncfile
 if not os.path.exists(ncfile):
