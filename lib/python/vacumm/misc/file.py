@@ -148,22 +148,22 @@ def strfsize(size, fmt=None, si=None):
     :Params:
         
         - **size**: the size in bytes
-        - **fmt**: the format to use, will receive the size and the unit as format arguments
-                   (None will automatically use "%.3f %s" or "%d %s")
+        - **fmt**: the format to use, will receive size and unit arguments
+                   (None will automatically use "%(size).3f %(unit)s" or "%(size)d %(unit)s")
         - **si**: whether to use SI (International System) units (10^3, ...) or CEI units (2**10, ...)
     
     :Return: a string
     """
     if fmt is None:
-        fmt = '%.3f %s' if float(size) % 1 else '%d %s'
+        fmt = '%(size).3f %(unit)s' if float(size) % 1 else '%(size)d %(unit)s'
     sortsizedict = lambda sd: reversed(sorted(sd.items(), lambda a, b: cmp(a[1],b[1])))
     if si is None: units,usfx = sortsizedict(sisizeunits),'o' # naive usage
     else: units,usfx = (sortsizedict(sisizeunits),'io') if si else (sortsizedict(sizeunits),'o')
     size = float(size)
     for unit,thresh in units:
         if size >= thresh:
-            return fmt%(size/thresh, unit) + usfx
-    return fmt%(size) + usfx
+            return fmt%{'size':size/thresh, 'unit':unit+usfx}
+    return fmt%{'size':size, 'unit':usfx}
 
 _strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?'%('|'.join(sizeunits.keys())), re.IGNORECASE)
 
@@ -172,8 +172,8 @@ def strpsize(size, si=True):
     
     :Params:
         
-        - **size**: the size string
-        - **si**: whether to use International System units (10^3, ...) or not (2**10, ...)
+        - **size**: the size string (eg. "1Ko", "2 Mo", " 10 Go"
+        - **si**: whether to use International System units (10^3, ...) or CEI units (2**10, ...)
     
     :Return: the float number of bytes
     """
