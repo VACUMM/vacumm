@@ -2227,7 +2227,8 @@ class Shapes(object):
         elif callable(self._proj): # already projected
             
             if proj is not self._proj: #re-projection
-                proj = lambda x, y: proj(*self._proj(x, y, inverse=True))
+                old_proj = proj
+                proj = lambda x, y: old_proj(*self._proj(x, y, inverse=True))
                 
             else: # no need to project
                 proj = False
@@ -2309,11 +2310,11 @@ class Shapes(object):
         """
         if not len(self): return 0,0
         from vacumm.misc.grid.misc import resol
-        x, y = self.xy(key=0)
+        x, y = self.get_xy(key=0)
         if deg and callable(self._proj): # m->deg
-            dx, dy = resol(x, y, proj=False)
+            dx, dy = resol((x, y), proj=False)
             x0 = x.mean()
-            y0 = Y.mean()
+            y0 = y.mean()
             x1, y1 = self._proj(x0+dx, y0+dx, inverse=True)
             return x1-x0, y1-y0
         elif not deg and not callable(self._proj): 
@@ -2539,6 +2540,7 @@ class XYZ(object):
             
     def copy(self):
         """Deep copy"""
+        self._m = None
         return copy.deepcopy(self)
 
     def __iadd__(self, other):
@@ -3461,6 +3463,7 @@ class XYZ(object):
         
         :Params:
         
+            - **mode**, optional: 'valid', 'masked' or 'both'.
             - **size**, optional: Size of markers.
             - **color**, optional: Color of markers.
             - **alpha**, optional: Alpha transparency of markers.
