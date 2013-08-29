@@ -24,8 +24,8 @@ following concepts:
     #) Then users can provide a configuration file with all or some of the sections 
        and options (missing options will use the default values defined in the 
        specifications).
-    #) Finally the configuration can also be overriden by command line options.
-       
+    #) Finally the configuration can also be overriden by command line options 
+       using the standard modules :module:`optparse` or :module:`argparse`.
 
 The configuration management is made with :class:`~vacumm.misc.config.ConfigManager` .
 
@@ -60,6 +60,10 @@ access to the ``option2`` like this: ::
 Example
 ~~~~~~~
 
+In this example we'll show you how to use the :class:`~vacumm.misc.config.ConfigManager`
+to handle defaults, command line arguments and a configuration file.
+The command line arguments may be used through optparse or argparse module.
+
 Specification file:
 
 .. literalinclude:: ../../../../scripts/tutorials/misc.config.ini
@@ -75,21 +79,21 @@ Sample code using these specification and configuration:
 .. literalinclude:: ../../../../scripts/tutorials/misc.config.py
     :language: python
 
-The outputs of this code are:
-
-.. program-output:: ../../../scripts/tutorials/misc.config.py
-
 The help generated is:
 
-.. program-output:: ../../../scripts/tutorials/misc.config.py --help
+.. command-output:: ../../../scripts/tutorials/misc.config.py --help
+
+The outputs of this code are:
+
+.. command-output:: ../../../scripts/tutorials/misc.config.py
 
 The outputs of this code with configuration setup with command line options:
 
-.. program-output:: ../../../scripts/tutorials/misc.config.py --scalars-string="foo, 'hello world'" --lists-floats="42,3.14"
+.. command-output:: ../../../scripts/tutorials/misc.config.py --scalars-string="foo, 'hello world'" --lists-floats="42,3.14"
 
 The outputs of this code with configuration setup with command line options and a configuration file :
 
-.. program-output:: ../../../scripts/tutorials/misc.config.py --scalars-string="foo, 'hello world'" --lists-floats="42,3.14" --cfgfile=tutorials/python/misc.config.cfg
+.. command-output:: ../../../scripts/tutorials/misc.config.py --scalars-string="foo, 'hello world'" --lists-floats="42,3.14" --cfgfile=tutorials/python/misc.config.cfg
 
 
 

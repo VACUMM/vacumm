@@ -330,7 +330,7 @@ gen_cmaps_extra_list = [
 autodoc_default_flags = ['members', 'show-inheritance', 'undoc-members']
 
 # Configuration for programoutput extension
-programoutput_prompt_template = '$ %(command)s\n%(output)s' # default is: '$ %(command)s\n%(output)s'
+#doesn't works...#programoutput_prompt_template = '[user@host ~]$ %(command)s\n\n%(output)s' # default is: '$ %%(command)s\n%%(output)s'
 programoutput_use_ansi = True # default is: False
 
 

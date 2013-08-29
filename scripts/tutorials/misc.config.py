@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import os, os.path as P, pprint, sys
 import vacumm.misc.config as C
@@ -18,6 +19,8 @@ def main(argv=None):
     print '*** the config file'
     print '***'
     
+    print '\n### Using the config manager\n'
+    
     cfg = cfgm.defaults()
     print '\n*** Default config from specfile %r:\n\n%s\n'%(specfile, pprint.pformat(cfg.dict()))
     
@@ -29,18 +32,43 @@ def main(argv=None):
     cfg = configobj.ConfigObj(cfgfile)
     print '\n*** Content of the config file %r:\n\n%s\n'%(cfgfile, pprint.pformat(cfg.dict()))
     
-    cfg = cfgm.opt_parse(args=argv)
-    print '\n*** Command line config only:\n\n%s\n'%(pprint.pformat(cfg.dict()))
+    optcfg = argcfg = None
     
-    cfg = cfgm.opt_parse(args=argv, cfgfilepatch=True)
-    print '\n*** Merged config: file and command:\n\n%s\n'%(pprint.pformat(cfg.dict()))
+    print '\n### Using the config manager with optparse\n'
     
-    cfg = cfgm.opt_parse(args=argv, patch=True, cfgfilepatch=True)
-    print '\n*** Merged config: default, file and command:\n\n%s\n'%(pprint.pformat(cfg.dict()))
+    try:
     
-    # FIXME: because the load method applies defaults, the real order is command, default and file
-    #cfg = cfgm.opt_parse(args=argv, patch=True, cfgfilepatch='after')
-    #print '\n*** Merged config: default, command and file:\n\n%s\n'%(pprint.pformat(cfg.dict()))
+        cfg = optcfg = cfgm.opt_parse(args=argv)
+        print '\n*** Command line config only:\n\n%s\n'%(pprint.pformat(cfg.dict()))
+        
+        cfg = cfgm.opt_parse(args=argv, cfgfilepatch=True)
+        print '\n*** Merged config: file and command:\n\n%s\n'%(pprint.pformat(cfg.dict()))
+        
+        cfg = cfgm.opt_parse(args=argv, patch=True, cfgfilepatch=True)
+        print '\n*** Merged config: default, file and command:\n\n%s\n'%(pprint.pformat(cfg.dict()))
+        
+        # FIXME: because the load method applies defaults, the real order is command, default and file
+        #cfg = cfgm.opt_parse(args=argv, patch=True, cfgfilepatch='after')
+        #print '\n*** Merged config: default, command and file:\n\n%s\n'%(pprint.pformat(cfg.dict()))
+    
+    except SystemExit: pass
+    
+    print '\n### Using the config manager with argparse\n'
+    
+    try:
+    
+        cfg = argcfg = cfgm.arg_parse(args=argv)
+        print '\n*** Command line config only:\n\n%s\n'%(pprint.pformat(cfg.dict()))
+        
+        cfg = cfgm.arg_parse(args=argv, cfgfilepatch=True)
+        print '\n*** Merged config: file and command:\n\n%s\n'%(pprint.pformat(cfg.dict()))
+        
+        cfg = cfgm.arg_parse(args=argv, patch=True, cfgfilepatch=True)
+        print '\n*** Merged config: default, file and command:\n\n%s\n'%(pprint.pformat(cfg.dict()))
+    
+    except SystemExit: pass
+    
+    assert optcfg == argcfg, 'optparse and argparse configurations differ !'
 
 if __name__ =='__main__':
     main(sys.argv[1:])
