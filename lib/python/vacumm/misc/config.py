@@ -86,7 +86,7 @@ def _valwrap_(validator):
             if k not in argspec.args:
                 kwargs.pop(k)
         return validator(value, *args, **kwargs)
-    validator_wrapper.__name__ += '_'+validator.__name__
+    validator_wrapper.__name__ += '-'+validator.__name__
     return validator_wrapper
 
 def _valwraplist_(validator):
@@ -136,7 +136,7 @@ def _valwraplist_(validator):
         # Validate each values
         value = map(lambda v: validator(v, *args[1:], **kwargs), value)
         return tuple(value) if istuple else value
-    list_validator_wrapper.__name__ += '_'+validator.__name__
+    list_validator_wrapper.__name__ += '-'+validator.__name__
     return list_validator_wrapper
 
 def _validator_minmax_(value, min=None, max=None, default=(0, 100), type='float'):
@@ -610,30 +610,6 @@ class ConfigManager(object):
         elif isinstance(parser, dict):
             parser = ArgumentParser(**parser)
         
-#        # Add (or override!) option types checkers
-#        # Define a new Option class
-#        class option_class(Option):
-#            TYPES = tuple(list(parser.option_class.TYPES) + list(self._validator.functions.keys()))
-#            TYPE_CHECKER = parser.option_class.TYPE_CHECKER.copy()
-#        # Define the wrapping function which also handle list values
-#        def wrap_option_type_checker(func, islist):
-#            def wrapper_option_type_checker(opt, name, value):
-#                if islist:
-#                    # Use configobj list parser
-#                    value,comment = ConfigObj(list_values=True, interpolation=False)._handle_value(value)
-#                    return func(value)
-#                else:
-#                    return func(value)
-#            return wrapper_option_type_checker
-#        # Setup type checkers  into the new Option class
-#        for name,func in self._validator.functions.items():
-#            if name in option_class.TYPE_CHECKER:
-#                pass # warn('Overriding Option type checker %s'%(name))
-#            islist = _validator_specs_.get(name, {}).get('iterable', None)
-#            option_class.TYPE_CHECKER[name] = wrap_option_type_checker(func, islist)
-#        # Replace the parser Option class
-#        parser.option_class = option_class
-        
         # Add the cfgfile option (configurable)
         if cfgfileopt:
             if isinstance(cfgfileopt, basestring):
@@ -691,10 +667,10 @@ class ConfigManager(object):
             cfg = ConfigObj(interpolation=self._interpolation)
             
             # Intercept helps
-            if options.long_help:
+            if getattr(options, 'long_help', None):
                 parser.print_help()
                 sys.exit()
-            elif options.help:
+            elif getattr(options, 'help', None):
                 print_short_help(parser)
                 sys.exit()
 
@@ -811,15 +787,15 @@ class ConfigManager(object):
         class option_class(Option):
             TYPES = tuple(list(parser.option_class.TYPES) + list(self._validator.functions.keys()))
             TYPE_CHECKER = parser.option_class.TYPE_CHECKER.copy()
-        # Define the wrapping function which also handle list values
+        # Define the wrapping function for optparse option types which also handle list values
         def wrap_option_type_checker(func, islist):
             def wrapper_option_type_checker(opt, name, value):
-                if islist:
-                    # Use configobj list parser
+                if islist: # Use configobj list parser
                     value,comment = ConfigObj(list_values=True, interpolation=False)._handle_value(value)
                     return func(value)
                 else:
                     return func(value)
+            wrapper_option_type_checker.__name__ += '-'+func.__name__
             return wrapper_option_type_checker
         # Setup type checkers  into the new Option class
         for name,func in self._validator.functions.items():
@@ -1211,13 +1187,22 @@ def _walker_argcfg_setarg_(sec, key, group=None, exc=None):
     optkey = _cfg2optname_(varname)
     # Check exceptions
     if key in exc: return
-    # Add option to group
     spec = _validator_specs_.get(sec.configspec[key].split('(', 1)[0], {})
+    # Define the wrapping function for argparse argument types which also handle list values
+    def wrap_argparse_type(func, islist):
+        def wrapper_argparse_type(value):
+            if islist: # Use configobj list parser
+                value,comment = ConfigObj(list_values=True, interpolation=False)._handle_value(value)
+                return func(value)
+            else:
+                return func(value)
+        wrapper_argparse_type.__name__ += '-'+func.__name__
+        return wrapper_argparse_type
+    # Add argument to group
     group.add_argument(
         '--'+optkey,
-            #action='append' if spec.get('iterable', None) else 'store',
             action='store',
-            type=spec.get('argtype', str), #FIXME: type must be a callable
+            type=wrap_argparse_type(spec.get('func', lambda s:s), spec.get('iterable', None)),
             help=_shelp_(sec, key)
     )
 
