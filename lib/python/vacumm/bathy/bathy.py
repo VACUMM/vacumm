@@ -1075,10 +1075,10 @@ class GriddedBathyMerger(GriddedMerger, GriddedBathy):
     >>> merger.set_shoreline('i')
     >>> merged_bathy = merger.bathy()   
     """
-    def __init__(self, grid, shoreline=None, id=None, long_name=None):
+    def __init__(self, grid, shoreline=None, id=None, long_name=None, maxvalue=0., fillvalue=0.):
         
         GriddedMerger.__init__(self, grid, id=id, long_name=long_name, units='m')
-        _GriddedBathyMasked_.__init__(self, shoreline)
+        _GriddedBathyMasked_.__init__(self, shoreline=shoreline, maxvalue=maxvalue, fillvalue=fillvalue)
         self._bathy = self._masked_bathy = None
             
     def _load_(self, var, method, mask=False):
@@ -1087,7 +1087,7 @@ class GriddedBathyMerger(GriddedMerger, GriddedBathy):
         return GriddedMerger._load_(self, var, method)
     
     def merge(self, res_ratio=.5, mask=True, id=None, long_name=None):
-        """Merge all variable onto the grid and apply final mask"""
+        """Merge all variables onto the grid and apply final mask"""
         # Merge
         self._bathy = GriddedMerger.merge(self, res_ratio=res_ratio)
         
