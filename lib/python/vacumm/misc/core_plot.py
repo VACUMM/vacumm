@@ -2565,7 +2565,7 @@ class Plot(object):
         
         
     # Generic attribute management
-    def _get_xyattr_(self, xy, att):
+    def _get_xyattr_(self, xy, att, idata=None):
         """Get an attribute of an X/Y axis or current data"""
         
         # Nothing
@@ -2573,15 +2573,19 @@ class Plot(object):
         
         # From a variable
         if xy=='d' or getattr(self, xy+'type')=='d':
-            for var in self.data:
-                if hasattr(var, att):
-                    return getattr(var, att)
+            if idata is None: 
+                idata = range(len(self.data))
+            elif not isinstance(idata, (list, tuple)): 
+                idata = [idata]
+            for i in idata:
+                if hasattr(self.data[i], att):
+                    return getattr(self.data[i], att)
             return
             
         # From an axis
         return getattr(getattr(self, xy), att, None)
         
-    def _set_xyattr_(self, xy, att, value):
+    def _set_xyattr_(self, xy, att, value, idata=0):
         """Set an attribute to an X/Y axis or current data"""
         
         # Nothing
@@ -2593,15 +2597,15 @@ class Plot(object):
         
         # Variable or axis?
         if xy=='d' or getattr(self, xy+'type')=='d':
-            target = self.data[0]
+            target = self.data[idata]
         else:
             target = getattr(self, xy)
-            setattr(self.data[0], att, value)
+            setattr(self.data[idata], att, value)
             
         # Set   
         setattr(target, att, value)
         
-    def _del_xyattr_(self, xy, att):
+    def _del_xyattr_(self, xy, att, idata=0):
         """Del an attribute from an X/Y axis or current data"""
         
         # Nothing
@@ -2609,7 +2613,7 @@ class Plot(object):
         
         # To a variable
         if xy=='d' or getattr(self, xy+'type')=='d':
-            target = self.data[0]
+            target = self.data[idata]
         else:
             target = getattr(self, xy)
             
@@ -2621,9 +2625,9 @@ class Plot(object):
 
     # LONG_NAME
     
-    def get_long_name(self):
+    def get_long_name(self, idata=None):
         """Get :attr:`long_name`"""
-        return self._get_xyattr_('d', 'long_name')
+        return self._get_xyattr_('d', 'long_name', idata=idata)
     def set_long_name(self, long_name=None):
         """Set :attr:`long_name`"""
         self._set_xyattr_('d', 'long_name', long_name)
@@ -2660,9 +2664,9 @@ class Plot(object):
     
     # UNITS
 
-    def get_units(self):
+    def get_units(self, idata=None):
         """Get :attr:`units`"""
-        units = self._get_xyattr_('d', 'units')
+        units = self._get_xyattr_('d', 'units', idata)
         if not isinstance(units, basestring):
             return
         if units[0]=='$' and units[-1]=='$':
@@ -3599,7 +3603,7 @@ class QuiverKey:
             
         # Text
         if units is None:
-            units = self.units
+            units = self.quiverkey_units
         elif cdms2.isVariable(units) and  hasattr(units,'units'):
             units = units.units
         elif not isinstance(units, basestring):
@@ -3617,6 +3621,21 @@ class QuiverKey:
         pos = kwargs.pop('loc', pos)
         qvk = self.axes.quiverkey(qv, pos[0], pos[1], value, text, **kwargs)
         return self.register_obj(qvk, 'quiverkey', **kwargs)
+        
+    def get_quiverkey_units(self):
+        """Get :attr:`quiverkey_units`"""
+        units = self.get_obj('quiverkey_units')
+        if units is None:
+            units = self.get_units(idata=[-2, -1])
+        return units
+    def set_quiverkey_units(self, value):
+        """Set :attr:`quiverkey_units`"""
+        self.set_axobj('quiverkey_units', value)
+    def del_quiverkey_units(self):
+        """Del :attr:`quiverkey_units`"""
+        self.del_axobj('quiverkey_units')
+    quiverkey_units = property(get_quiverkey_units, set_quiverkey_units, 
+        del_quiverkey_units, doc="Units used for quiverkey")
            
 class Stick(ScalarMappable, Curve, QuiverKey):
     """Class for makeing a stick plot (vectors on a line)
