@@ -259,7 +259,7 @@ def _get_anomaly_(var,ref='mean',mean=None):
     return vara, var_ref
 
 
-def zeros(var, ref='mean',mean=None, getref=True):
+def zeros(var, ref='mean',mean=None, getref=True, **kwargs):
     """Get the zeros of a tidal signal
     
     :Returns: A :mod:`cdms2` variable of signs (-1,1) with a time axis
@@ -271,6 +271,7 @@ def zeros(var, ref='mean',mean=None, getref=True):
     >>> print tidal_zeros[0:1].getTime().asComponentTime()
     """
     # Get anomaly
+    ref = kwargs.pop('reference', ref)
     vara, varref = _get_anomaly_(var, ref=ref,mean=mean)
     taxis = vara.getTime()
     vara = vara.filled()
@@ -329,6 +330,7 @@ def extrema(var,ref='mean',mean=None,getmax=True,getmin=True,getsign=False,splin
     """
     
     # Get anomaly
+    ref = kwargs.pop('reference', ref)
     vara, varref = _get_anomaly_(var, ref=ref,mean=mean)
     ctimes = vara.getTime().asComponentTime()
     varn = (vara+varref).filled()
