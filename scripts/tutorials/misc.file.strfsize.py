@@ -1,15 +1,23 @@
 #!/usr/bin/env python
-
-from os.path import abspath, dirname, join, realpath
+# -*- coding: utf-8 -*-
 
 import vacumm.misc.file as F
 
-# This file
-# realpath() is not really required in this example, this is to advice that in case
-# you were executing a link to this file, the code would still work (it can be a good
-# practice to do so in your scripts if you want that kind of support)
-thisfile = realpath(__file__)
+sizes = (
+    1 * 10**3,
+    1 * 2**10,
+    1 * 10**6,
+    1 * 2**20,
+    1 * 10**9,
+    1 * 2**30,
+    1 * 10**12,
+    1 * 2**40,
+    1 * 10**15,
+    1 * 2**50,
+)
 
-# The directory containing this file
-thisdir = dirname(__file__)
+for size in sizes:
+    fsize = F.strfsize(size, si=False)
+    fsisize = F.strfsize(size, si=True)
+    print 'size: %(size)14d, formatted: %(fsize)8s (CEI, SI: %(fsisize)8s)'%vars()
 
