@@ -1358,14 +1358,15 @@ def grib_read_files(
     filepattern, varname, time=None, select=None,
     torect=None, samp=None, grid=None, squeeze=None, atts=None,
     verbose=False, **kwargs):
-    """Read the best estimate of a variable through a set of grib files
+    """
+    Read cdms2 variables through one or a set of grib files.
    
-    :Example:
+    :Examples:
     
         >>> vardict = grib_read_files("r0_2010-%m-%d_00.grb", 'u',
-            ('2010-08-10', '2010-08-15', 'cc'), samp=[2, 1, 3])
+                ('2010-08-10', '2010-08-15', 'cc'), samp=[2, 1, 3])
         >>> vardict = grib_read_files("r0_2010-??-??_00.grb", dict(shortName:'u'), 
-            select=dict(lon=(-10,-5), z=slice(23,24)), grid=smallgrid)
+                select=dict(lon=(-10.0,-5.0), lat=slice(100,200)), grid=smallgrid)
         >>> vardict = grib_read_files("myfiles*.grb", [dict(shortName=['u', 'u10']), dict(shortName=['v','v10'])])
             
     :Params:
@@ -1373,38 +1374,43 @@ def grib_read_files(
         - **filepattern**: must be:
             - File pattern. See :func:`list_forecast_files` for more information.
             - One or more string(s) of the files(s) to be processed. string(s) may contain wildcard characters.
-        - **varname**: Name of the grib variable to read. 
+        - **varname**: Name of the grib variable(s) to read. 
             - If a simple name, it reads this variable **using the grib message's shortName**.
             - If a list of names, it reads them all.
-            - If a name is a dict, then it is used as grib selector in which case
+            If a name is a dict, then it is used as grib selector in which case
             the user should not specify selectors which may interfer with the select keyword
             (see :func:`~pygrib.open.select`).
-        - **time**, optional: Time selector. This keyword is *mandatory*
+        - **time**, optional: Time selector for files and data. This keyword is *mandatory*
           if ``filepattern`` has date patterns.
         
-        ###- **select**, optional: An additional selector for reading
-        ###  the variable. It can be a dictionary or a :class:`~cdms2.selectors.Selector`
-        ###  instance (see :func:`~vacumm.misc.misc.create_selector`).
+        - **select**, optional: An additional selector applied after data have been loaded.
+          It can be a dictionary or a :class:`~cdms2.selectors.Selector`
+          instance (see :func:`~vacumm.misc.misc.create_selector`).
         
-        - *verbose*: function to be called for logging (sys.stderr if True, 
-            disabled with False)
-        
-        - **samp**, optional: Undersample rate as a list of the same size as
-          the rank of the variable. Set values to 0, 1 for no undersampling.
         - **torect**, optional: If True, try to convert output grid to rectanguar
           using :func:`~vacumm.misc.grid.misc.curv2rect` (see :func:`ncread_var`). 
+        - **samp**, optional: Undersample rate as a list of the same size as
+          the rank of the variable. Set values to 0, 1 for no undersampling.
         - **grid**, optional: A grid to regrid the variable on.
         - **grid_<keyword>**, optional: ``keyword`` is passed to 
           :func:`~vacumm.misc.grid.regridding.regrid`.
         - **squeeze**, optional: Argument passed to :func:`ncread_var` to squeeze out singleton axes.
         - **atts**: attributes dict (or list of attributes dict for each varname)
+        
+        - *verbose*: function to be called for logging (sys.stderr if True, 
+            disabled with False)
     
     :Return:
     
-        a dict of loaded variable(s) as :class:`cdms2.tvariable.TransientVariable`
+        If varname is a list of names or dicts:
+        - a dict of loaded variables as :class:`cdms2.tvariable.TransientVariable`
+          this dict keys are are filled with the corresponding varname value if it is a string, or wiht 
+          the loaded message's shortName/name/parameterName.
+        Else:
+        - the loaded variable as :class:`cdms2.tvariable.TransientVariable`
     
     """
-    import datetime, glob, numpy, os, sys, traceback
+    import datetime, glob, numpy, os, sys, time as _time, traceback
     import cdms2, pygrib
     from axes import create_lat, create_lon
     from atime import create_time, datetime as adatetime
@@ -1416,8 +1422,12 @@ def grib_read_files(
     # List of variables
     single = not isinstance(varname, (list,tuple))
     varnames = [varname] if single else varname
-    verbose('Reading variables: ')
-    verbose('- %s'%('\n- '.join(['%r'%(v) for v in varnames])))
+    verbose(
+        'grib_read_files:\n'
+        '  filepattern: %s\n'
+        '  time: %s\n'
+        '  varname: %s'
+    %(filepattern, time, '\n- '.join(['%r'%(v) for v in varnames])))
     # List of files
     if isinstance(filepattern, basestring):
         files = list_forecast_files(filepattern, time)
@@ -1427,23 +1437,23 @@ def grib_read_files(
         files = tuple(f for l in map(lambda p: glob.glob(p), filepattern) for f in l)
     if len(files)==0:
         raise Exception('No valid file found with pattern %r and time %r'%(filepattern, time))
-    verbose('Using files:')
-    verbose('- %s'%('\n- '.join(files)))
+    verbose('number of matching files: %s'%(len(files)))
+    #verbose('- %s'%('\n- '.join(files)))
     if time:
         time = map(adatetime, time[:2])
-        verbose('Using time: %r'%(time))
     vardict = dict()
-    verbose('Processing files')
     # Load grib data
     for f in files:
-        verbose('- File %s'%(f))
+        verbose('file: %s'%(f))
         with pygrib.open(f) as g:
-            verbose('  Processing variables')
             for n in varnames:
                 kw = n if isinstance(n, dict) else dict(shortName=n)
+                st = _time.time()
                 ms = g.select(**kw)
-                verbose('  - %s message%s matching preselection %r'%(len(ms), 's' if len(ms)>1 else '', kw))
+                verbose('  select: %s message%s matching preselection %r (took %s)'%(
+                    len(ms), 's' if len(ms)>1 else '', kw, datetime.timedelta(seconds=_time.time()-st)))
                 for m in ms:
+                    st = _time.time()
                     # use provided special datetime object if present
                     if m.validDate:
                         dt = m.validDate
@@ -1457,7 +1467,6 @@ def grib_read_files(
                         dt = datetime.datetime.strptime(dt, '%Y%m%d%H%M%S')
                     if time and (dt < time[0] or dt >= time[1]):
                         continue
-                    verbose('  - %s'%(dt))
                     if m.gridType == 'regular_ll':
                         latitudes,longitudes = m.distinctLatitudes, m.distinctLongitudes
                     else:
@@ -1472,6 +1481,8 @@ def grib_read_files(
                         latitudes=latitudes, longitudes=longitudes,
                         values=m.values
                     ))
+                    verbose('    message name: %r, shortName: %r, datetime: %s, gridType: %r, latitude%s, longitude%s (took %s)'%(
+                        m.name, m.shortName, dt, m.gridType, latitudes.shape, longitudes.shape, datetime.timedelta(seconds=_time.time()-st)))
                     del m
                 del ms
     # Transform loaded data into cdms2 variable
@@ -1495,7 +1506,8 @@ def grib_read_files(
             var = var(**select)
         var = _process_var(var, torect, samp, grid, kwgrid, squeeze, atts)
         vardict[n] = var
-    return vardict
+    # Return variable or dict of variables
+    return vardict.values()[0] if (single and vardict) else vardict
 
 
 def grib2nc(filepattern, varname):
