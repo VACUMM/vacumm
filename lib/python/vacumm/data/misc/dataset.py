@@ -3094,9 +3094,9 @@ class CurvedSelector(object):
             if islice is None: islice = ':'
             if jslice is None: jslice = ':'
             self.remove_geosels(select)
-            xid = grid.getAxis(1).id
-            yid = grid.getAxis(0).id
-            select.refine(**{xid:islice, yid:jslice})
+            self.xid = grid.getAxis(1).id
+            self.yid = grid.getAxis(0).id
+            select.refine(**{self.xid:islice, self.yid:jslice})
             self._post_sel = True
             self.mask = mask
 
@@ -3107,7 +3107,7 @@ class CurvedSelector(object):
             var[:] = MV2.masked_where(N.resize(self.mask, var.shape), var, copy=0)
         if len(self.geosels)==2:
             islice, jslice, mask =  coord2slice(var, *self.geosels[1])
-            var = var(**{xid:islice, yid:jslice})
+            var = var(**{self.xid:islice, self.yid:jslice})
             if self.mask.any():
                 var[:] = MV2.masked_where(N.resize(mask, var.shape), var, copy=0)
             return var
