@@ -46,7 +46,6 @@ from ConfigParser import ConfigParser
 from vacumm.misc.io import Shapes
 from vacumm.misc.grid import get_xy
 from vacumm.misc.grid.basemap import GSHHS_BM, gshhs_reslist, gshhs_autores
-from nat import Natgrid
 from vacumm import config
 import numpy as N
 

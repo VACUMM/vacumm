@@ -109,7 +109,7 @@ Two classes may be used as a program entry point using their main class method:
 #   - Export variable mapping functionnality to a dedicated module
 # ==============================================================================
 
-import copy, datetime, glob, optparse, os, pprint, sys, time
+import copy, datetime, glob, optparse, os, pprint, sys, time, warnings
 
 import cdms2, cdtime, MV2, numpy, pylab
 from _geoslib import Point, Polygon
@@ -132,10 +132,9 @@ from vacumm.misc.log import Logger
 from vacumm.misc.misc import kwfilter, is_iterable
 from vacumm.misc.plot import bar2, curve2, map2
 
-try:
-    import seawater.csiro
+try: import seawater.csiro
 except ImportError:
-    Logger.default.exception('Failed to import seawater.csiro, depth<=>pressure conversions not available')
+    warnings.warn('Failed to import seawater.csiro, depth<=>pressure conversions not available')
 
 # ==============================================================================
 

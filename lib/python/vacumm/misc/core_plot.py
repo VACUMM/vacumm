@@ -53,7 +53,6 @@ from matplotlib.patheffects import Normal
 from matplotlib.text import Text
 from mpl_toolkits.basemap import Basemap
 from matplotlib.axes import Subplot, Axes
-from matplotlib.animation import ArtistAnimation
 
 
 from atime import mpl, comptime, strftime
@@ -5855,6 +5854,7 @@ class Animator(object):
         """Create the animation object"""
         if self.fig is None: return
         if not self.objs: return
+        from matplotlib.animation import ArtistAnimation
         self.animation = ArtistAnimation(self.fig, self.objs, **kwargs)
         return self.animation
 

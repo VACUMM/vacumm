@@ -10,7 +10,11 @@ from vacumm.misc.grid import get_zdim, get_axis_slices, get_grid, set_grid
 from vacumm.misc.axes import islat
 from vacumm.misc import N_choose, grow_depth, grow_lat
 from vacumm.misc.misc import grow_variables
-from seawater.csiro import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0 
+
+try:
+    from seawater.csiro import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0
+except:
+    warn('Failed to import seawater.csiro')
 
 
 def density(temp, sal, depth=None, lat=None, potential=True, 
@@ -51,7 +55,7 @@ def density(temp, sal, depth=None, lat=None, potential=True,
         
     else: # Potential
         
-        dens = sw_dens0(sal, temp)       
+        dens = sw_dens0(sal, temp)
         getdepth = getlat = False
     
     # Format

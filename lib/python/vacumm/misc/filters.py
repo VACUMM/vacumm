@@ -52,10 +52,12 @@ from misc import cp_atts
 from phys.units import deg2m
 from pylab import meshgrid
 from axes import islon,islat
-from numpy import ComplexWarning
 import warnings
 
-warnings.filterwarnings('ignore', 'Casting complex values', ComplexWarning)
+try:
+    from numpy import ComplexWarning
+    warnings.filterwarnings('ignore', 'Casting complex values', ComplexWarning)
+except ImportError: pass
 
 
 def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):

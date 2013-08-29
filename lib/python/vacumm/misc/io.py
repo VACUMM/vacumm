@@ -48,7 +48,7 @@ __all__.sort()
 from traceback import format_exc
 from collections import OrderedDict
 import numpy as N,MV2,cdms2,cdutil,cdtime
-import os,gc,glob, logging, re, sys
+import os,gc,glob, logging, re, sys, warnings
 import logging.handlers
 MA = N.ma
 MV = MV2
@@ -57,7 +57,6 @@ from _geoslib import Point, LineString, Polygon
 import pylab as P, operator
 from matplotlib.collections import LineCollection, PolyCollection
 from warnings import warn
-from nat import Natgrid
 from mpl_toolkits.basemap import Basemap
 import copy
 from datetime import datetime
@@ -3074,6 +3073,8 @@ class XYZ(object):
         
         :Returns: An XYZ instance
         """
+        # FIXME: Natgrid still required by this module ??
+        # from nat import Natgrid
         if isinstance(xyo, (tuple, N.ndarray)):
             xo, yo = xyo
         elif hasattr(xyo, 'x'):
