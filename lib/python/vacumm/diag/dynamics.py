@@ -78,7 +78,7 @@ def barotropic_geostrophic_velocity(ssh, dxy=None, gravity=default_gravity, cycl
 
     # Computes
     sshm = ssh.asma()
-    sshm *= gf ; del gf
+    sshm = sshm*gf ; del gf
     if getu: ugbt[..., :-1, :] = -N.ma.diff(sshm, axis=-2)/dyv ; del dyv
     if getv: vgbt[..., :-1] = N.ma.diff(sshm, axis=-1)/dxu ; del dxu
     del sshm
@@ -134,44 +134,44 @@ def coriolis_parameter(lat, gravity=default_gravity, fromvar=False, format_axes=
     return format_var(f0, 'corio', format_axes=format_axes)
    
 
-def eddy_kinetic_energy(sshuv, gravity=default_gravity, format_axes=None, dxy=None):
-    """Compute EKE either from SSH or velocity on  C-grid
+def kinetic_energy(sshuv, gravity=default_gravity, format_axes=None, dxy=None):
+    """Compute kinetic energy in m2.s-2 either from SSH or velocity on C-grid
     
     :Params:
     
         - **sshuv**: SSH or (U,V).
         
-            - If SSH, velocity are computed at U and V points
+            - If SSH, geostrophic velocity is computed at U and V points
               using :func:`barotropic_geostrophic_velocity`.
             - If (U,V), velocities are supposed to be at V and U points.
             
         - **dxy**, optional: Horizontal resolutions (see :func:`barotropic_geostrophic_velocity`).
             
-    :Return: EKE at T points.
+    :Return: KE at T points.
     """
     
     # Init and get velocities
     if cdms2.isVariable(sshuv): # from SSH
-        eke = sshuv*MV2.masked
+        ke = sshuv*MV2.masked
         u, v = barotropic_geostrophic_velocity(sshuv, dxy=dxy, gravity=gravity, format_axes=format_axes)
         if format_axes is None: format_axes = False
     else: # from (U,V)
         u, v = sshuv
-        eke = u*MV2.masked
+        ke = u*MV2.masked
         if format_axes is None: format_axes = True
         gridt = shiftgrid(u.getGrid(), jshift=1)
-        set_grid(eke, gridt)
+        set_grid(ke, gridt)
     
     # Sum contributions
     uf = u.filled(0.)
     vf = v.filled(0.)
-    eke[..., 1:, :] =  uf[..., 1:,  :]**2
-    eke[..., 1:, :] += uf[..., :-1, :]**2
-    eke[..., 1:]    += vf[..., :-1]**2
-    eke[..., 1:]    += vf[..., :-1]**2
+    ke[..., 1:, :] =  uf[..., 1:,  :]**2
+    ke[..., 1:, :] += uf[..., :-1, :]**2
+    ke[..., 1:]    += vf[..., :-1]**2
+    ke[..., 1:]    += vf[..., :-1]**2
     
     # Weight and mask
-    count = N.zeros(eke.shape, 'i')
+    count = N.zeros(ke.shape, 'i')
     gu = 1-N.ma.getmaskarray(u).astype('i')
     gv = 1-N.ma.getmaskarray(v).astype('i')
     count[1:] = gu[:-1]
@@ -181,13 +181,13 @@ def eddy_kinetic_energy(sshuv, gravity=default_gravity, format_axes=None, dxy=No
     del gu, gv
     mask = count==0
     count[mask] = 1
-    eke[:] /= count
-    eke[:] = MV2.masked_where(mask, eke, copy=0)
+    ke[:] /= count
+    ke[:] = MV2.masked_where(mask, ke, copy=0)
     del mask, count
     
     # Format
     if format_axes:
         format_grid(gridt, 't')
-    return format_var(eke, "eke", format_axes=False)
+    return format_var(ke, "ke", format_axes=False)
     
-        
+eddy_kinetic_energy = kinetic_energy
