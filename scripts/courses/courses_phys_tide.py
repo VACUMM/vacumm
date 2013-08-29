@@ -6,6 +6,14 @@ from vcmq import cdms2, P, curve2, savefigs, data_sample
 from vacumm.tide.filters import demerliac, godin
 from vacumm.tide.filters import extrema, zeros
 from vacumm.tide.marigraph import Marigraph
+from vacumm.tide.station_info import StationInfo
+
+# Stations
+station = StationInfo('Bre')
+print station.attributes()
+print station.name, station.longitude
+print 'Niveau moyen a Brest:', station.nm
+
 
 # Read sea level at Brest
 f = cdms2.open(data_sample("tide.sealevel.BREST.mars.nc"))
@@ -14,15 +22,16 @@ f.close()
 
 
 # Surcotes/decotes
-cotes, tide = demerliac(sea_level, get_tide=True)           # -> ESSAYER GODIN
+cotes, tide = demerliac(sea_level, get_tide=True)            # -> ESSAYER GODIN
 kwp = dict(date_fmt='%b', date_locator='month')
 curve2(sea_level, 'b', show=False, figsize=(15, 4), **kwp)
 curve2(tide, 'r', **kwp)
 curve2(cotes, figsize=(15, 4), **kwp)
 
+
 # Extremas
 slzoom1 = sea_level(('2006-10-01', '2006-10-02'))[::4] # Toutes les heures
-bm, pm = extrema(slzoom1, spline=True, ref='mean')        # -> SANS SPLINES
+bm, pm = extrema(slzoom1, spline=True, ref='mean')           # -> SANS SPLINES
 zz = zeros(slzoom1, ref='mean')                              # -> AUTRES REFERENCE ?
 curve2(slzoom1, 'ko', markersize=3, figsize=(6, 4), show=False)
 curve2(zz, 'go', linewidth=0, show=False, xstrict=False)
