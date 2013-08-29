@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 # -*- coding: utf8 -*-
+"""Manipulation de bathymetrie sur grille (:mod:`vacumm.bathy.bathy`)"""
 
 from vcmq import cdms2, data_sample, create_grid
 from vacumm.bathy.bathy import GriddedBathy, NcGriddedBathy, bathy_list, GriddedBathyMerger, plot_bathy

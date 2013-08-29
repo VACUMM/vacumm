@@ -27,6 +27,9 @@ map2(sst)
 sal = ds.get_sal(lon=(4., 4.5))
 print temp.shape, sal.shape
 
+# Generique
+ds2 = DS(data_sample('mfs.nc'), 'nemo', lon=(4, 5), lat=(42.5, 43.5))
+sst2 = ds2.get_sst(squeeze=True)                      # -> VERIFIER ATTRIBUTS
 
 # Plus evolue
 depth = ds.get_depth() # sigma
