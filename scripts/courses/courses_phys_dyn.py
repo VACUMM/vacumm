@@ -26,7 +26,7 @@ map2(mld, vmax=600.)
 # - vitesses
 ug, vg = barotropic_geostrophic_velocity(ssh)
 # - energie cinetique
-ke = kinetic_energy(ug, vg)                                 # -> TESTER AVEC SSH
+ke = kinetic_energy((ug, vg))                                 # -> TESTER AVEC SSH
 ke.long_name = 'Surface geostrophique kinetic energy'
 ke = shapiro2d(ke)
 # - plot
