@@ -1427,7 +1427,7 @@ def gridsel(gg, lon=None, lat=None):
         islice, jslice, mask = coord2slice(gg, lon=lon, lat=lat)
         
         # Grid
-        if outtype[0] not in ['g', 't']:
+        if outtype[0] in ['g', 't']:
             
             islice = islice.indices(gg.shape[1])
             jslice = jslice.indices(gg.shape[0])
