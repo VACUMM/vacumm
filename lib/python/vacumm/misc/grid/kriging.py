@@ -451,6 +451,13 @@ class OrdinaryKriger(object):
             self.npc = [self.np]
             self.cwfunc = [lambda x, y: 1.]
             
+    def plot_clouds(self, **kwargs):
+        """Quickly Plot inputs points splitted in clouds"""
+        P.figure()
+        for x, y in zip(self.xc, self.yc):
+            P.plot(x, y, **kwargs)
+        P.show()
+            
     def variogram_fit(self, x=None, y=None, z=None):
         """Estimate the variogram function by using :func:`variogram_fit`"""
         x, y, z = self._get_xyz_(x, y, z)
