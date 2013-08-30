@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-"""Diagnostics thermodynamiques (:mod:`vacumm.diag.thermdyn`)"""
+"""Diagnostics thermodynamiques et dynamiques (:mod:`vacumm.diag.thermdyn` et :mod:`vacumm.diag.dynamics`)"""
 
-from vcmq import DS, data_sample, NcSigma, map2, density, mixed_layer_depth,  barotropic_geostrophic_velocity, kinetic_energy, shapiro2d
+from vcmq import DS, data_sample, map2, density, mixed_layer_depth,  barotropic_geostrophic_velocity, kinetic_energy, shapiro2d
 
 # Lecture des données de base
 ds = DS(data_sample('menor.nc'))
@@ -32,7 +32,7 @@ ke = shapiro2d(ke)
 # - plot
 map2((ke, ug, vg), fill='pcolormesh', vmax=0.2, quiver_vmax=1.5, figsize=(10, 8), 
     quiver_samp=2, quiver_width=2, contour=False, cmap_tint=0.3, 
-    quiverkey_units=ug.units, quiverkey_value=1, quiver_scale=13)
+    quiverkey_value=1, quiver_scale=13)
     
     
     
