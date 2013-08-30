@@ -314,7 +314,7 @@ gen_gallery_paths = {
 #gen_gallery_skips = []
 
 # Colormaps
-gen_cmap_prefix = 'misc-color-'
+gen_cmaps_prefix = 'misc-color-'
 gen_cmaps_extra_list = [ 
     # (function name, kwargs, figfile short name (no prefix+no ext)),
     ('cmap_jets', dict(stretch=0.6), 'vacumm_jets+60'), 
@@ -332,5 +332,6 @@ autodoc_default_flags = ['members', 'show-inheritance', 'undoc-members']
 # Configuration for programoutput extension
 #doesn't works...#programoutput_prompt_template = '[user@host ~]$ %(command)s\n\n%(output)s' # default is: '$ %%(command)s\n%%(output)s'
 programoutput_use_ansi = True # default is: False
+
 
 
