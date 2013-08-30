@@ -72,6 +72,7 @@ def help(text=None, recent=False):
     from config import get_config_value
     key = 'url_recent' if recent else 'url'
     url = get_config_value('vacumm', key)
+    if url is None: url = 'http://www.ifremer.fr/vacumm'
     from webbrowser import open
     if text is not None:
         if not isinstance(text, basestring):
