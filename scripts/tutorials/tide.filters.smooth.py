@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
 # Read sea level at Brest
 from vcmq import cdms2, P, curve2, savefigs, data_sample
-import cdms2
 f = cdms2.open(data_sample("tide.sealevel.BREST.mars.nc"))
 sea_level = f('sea_level')
 f.close()

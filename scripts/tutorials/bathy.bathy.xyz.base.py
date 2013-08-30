@@ -56,7 +56,7 @@ print 'Resolution grille auto :', resol(grid_auto)
 print 'Interpolation auto'
 gridded_auto = xyz.togrid()
 #  equivalent a :
-#  >>> gridded_auto = xyz.togrid(xyz.grid())
+#  >>> gridded_auto = xyz.togrid(xyz.grid)
 
 # Interpolation sur grille manuelle
 print 'Interpolation et masquage manuels puis extraction'
