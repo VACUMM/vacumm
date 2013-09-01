@@ -7,7 +7,7 @@ import matplotlib
 matplotlib.use('qt4agg')
 
 import time, datetime, cdtime
-from vacumm.misc.atime import strftime,strptime, create_time, ch_units
+from vacumm.misc.atime import lindates, IterDates, Intervals,strftime,strptime, create_time, ch_units
 import numpy as N
 
 # -----------------------------------------------------------------------------------------------------------
@@ -89,7 +89,28 @@ ch_units(taxis, 'days since 2000-1-15 06:00', copy=0)
 print taxis.getValue()
 print 'Units after change: ',taxis.units
 
+# ------------------------------------------------------------------------------------------------------------
+# ---- lindates ----
+print 10*'-'+' lindates '+10*'-'
+dates = lindates('2000', '2002-05', 3, 'months')
+print dates
+# => Practice: Try different arguments.
 
+# ---- Intervals ----
+print 10*'-'+' Intervals '+10*'-'
+for itv in Intervals(('2000','2001','co'),(2,'month')): print itv # => Practice: try different Intervals (2 days, 2 hours)
+print '-- List ...'
+print Intervals(('2000','2001','co'),12).tolist()
+
+print '-- Reverse ...'
+for itv in Intervals((cdtime.comptime(2000), '2001'), 
+    'month',reverse=True): print itv
+
+# ---- IterDates ----
+print 10*'-'+' IterDates '+10*'-'
+print '-- Example 1 --'
+for date in IterDates(('2000','2001'),(1,'month')): print date
+# => Practice: Iteration on every days in January 2012.
 
 
 
