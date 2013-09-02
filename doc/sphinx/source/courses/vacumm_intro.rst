@@ -12,7 +12,7 @@ Pourquoi VACUMM ?
 -----------------
 
 - Origine : :file:`srtools.py`
-- Une librairie et des scripts orientés océano/météo qui regroupe le plus important.
+- Une librairie et des scripts orientés océano/météo qui regroupent le plus important.
 - Quand l'utiliser :
 
     - Vous utilisez à la fois UVCDAT et Matplotlib.
