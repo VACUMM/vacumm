@@ -19,7 +19,7 @@ Environnement
 
 Choisissez celui qui vous convient.
 
-- **vim :** notamment pour les anciens ou les bourrins.
+- **vim :** notamment pour les anciens.
 - **emacs :** possibilité d'exécution directe + édition à distance.
 - **ipython :** console pratique avec interface vim.
 - **eric4 :** environnement complet avec gestion de projet, exécution et deboguage.
@@ -119,7 +119,7 @@ Sources génériques :
 
 - Google.
 - Les documentations (générée avec sphinx) des paquets (modules).
-- Les didactiels.
+- Les didactitiels.
 
 Documentation importantes :
 
