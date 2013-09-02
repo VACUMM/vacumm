@@ -21,13 +21,13 @@ l = L.Logger(
     level='debug',
     logfile=dict(
         filePath=lf, maxFileSize=1024*50, maxFileBkp=1,
-        format='%(asctime)s - %(name)s - %(level)s - %(message)s',
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         date_format='%Y-%m-%d %H:%M:%S %Z',
         level='info'
     ),
     console=dict(
         stream=sys.stdout, colorize=False,
-        format='%(name)s - %(level)s - %(message)s',
+        format='%(name)s - %(levelname)s - %(message)s',
         #level='verbose'
     )
 )

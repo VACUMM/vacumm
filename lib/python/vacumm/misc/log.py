@@ -216,13 +216,15 @@ class Logger(logging.getLoggerClass()):
     initial_level = logging.INFO # The initial default level, which would not be changed by set_default_level
     default_level = initial_level
     default_format = dict(
-        console='[%(asctime)s %(name)s %(levelname)s] %(message)s',
+        default='[%(asctime)s %(name)s %(levelname)s] %(message)s',
+        console='[%(name)s %(levelname)s] %(message)s',
         logfile='[%(asctime)s %(name)s %(levelname)s] %(message)s',
     )
     # '%Y-%m-%d %H:%M:%S %Z'
     # '%a %d %b %Y %H:%M:%S %Z'
     default_date_format = dict(
-        console='%H:%M:%S',
+        default='%Y-%m-%d %H:%M:%S %Z',
+        console='',#%H:%M:%S',
         logfile='%Y-%m-%d %H:%M:%S %Z',
     )
     default_max_file_size = (2**10) * 500
@@ -290,27 +292,22 @@ class Logger(logging.getLoggerClass()):
                 ),
                 console=dict(
                     stream=sys.stdout, colorize=False,
-                    format='%(name)s - %(level)s - %(message)s'
+                    format='%(name)s - %(levelname)s - %(message)s'
                 )
             )
         
         '''
         if name is None: name = '%s(%s)'%(self.__class__.__name__, id(self))
-#        if level is None: level = self.default_level
-#        if format is None: format = self.default_format
-#        if date_format is None: date_format = self.default_date_format
-#        if colorize is None: colorize = self.default_colorize
         if name_filters is None: name_filters = []
         self.__name_filters = name_filters
         self.__logger_class = logging.getLoggerClass()
+        
         # We must set the level both at init and with set_level below
         # because set_level will use get_level if filtered level doesn't match
         self.__logger_class.__init__(self, name, level=self.initial_level)
         
-        # __format and __date_format are interdependant and must be set before
-        # calling set_format or set_date_format
-        self.__format = format
-        self.__date_format = date_format
+        self.__format = format.get('default', self.default_format['default']) if isinstance(format, dict) else format
+        self.__date_format = date_format.get('default', self.default_date_format['default']) if isinstance(date_format, dict) else date_format
         
         # Setup stream handler (console)?
         self.console_handler = None
@@ -331,9 +328,9 @@ class Logger(logging.getLoggerClass()):
             else: self.file_handler = self.new_rotating_file_handler(logfile if isinstance(logfile, basestring) else None)
             self.add_handler(self.file_handler)
         
-        self.config(name=name, level=level, format=format, date_format=date_format)
+        #self.config(name=name, level=level, format=format, date_format=date_format)
         self.set_level(level, filter=True)
-        if config: self.config(config)
+        #if config: self.config(config)
         
         # Add global handlers: handlers registered for all Logger
         for hdlr in self.__class__.shared_handlers:
@@ -419,17 +416,19 @@ class Logger(logging.getLoggerClass()):
         if format is None:
             if formatter and formatter.format:
                 format = formatter._fmt
-            #else:
-                #format = cls.default_format
+            else:
+                format = cls.default_format['default']
         if date_format is None:
             if formatter and formatter.datefmt:
                 date_format = formatter.datefmt
-            #else:
-                #date_format = cls.default_date_format
+            else:
+                date_format = cls.default_date_format['default']
         return Formatter(fmt=format, datefmt=date_format)
     
     @classmethod
     def set_handler_formats(cls, handler, format=None, date_format=None):
+        #print 'set_handler_formats(%r, %r, %r)'%(handler, format, date_format)
+        #import pdb; pdb.set_trace()
         f = cls.new_formatter(format=format, date_format=date_format, formatter=handler.formatter)
         handler.setFormatter(f)
         return f
@@ -460,9 +459,10 @@ class Logger(logging.getLoggerClass()):
             self.remove_handler(hdlr)
     
     @classmethod
-    def new_stream_handler(cls, stream=sys.stderr, colorize=False, level=None, **kwargs):
-        handler = (ColoredStreamHandler if colorize else logging.StreamHandler)(stream)
+    def new_stream_handler(cls, stream=sys.stderr, colorize=False, level=None, format=None, date_format=None, **kwargs):
+        handler = ColoredStreamHandler(stream, colorize=colorize)
         if level: handler.setLevel(get_int_level(level))
+        if format or date_format: cls.set_handler_formats(handler, format=format, date_format=date_format)
         return handler
     
     def add_stream_handler(self, *args, **kwargs):
@@ -476,7 +476,7 @@ class Logger(logging.getLoggerClass()):
             return self.console_handler.colorize
         
     @classmethod
-    def new_rotating_file_handler(cls, filePath=None, mode='a', maxFileSize=None, maxFileBkp=None, encoding=None, level=None, **kwargs):
+    def new_rotating_file_handler(cls, filePath=None, mode='a', maxFileSize=None, maxFileBkp=None, encoding=None, level=None, format=None, date_format=None, **kwargs):
         if maxFileSize is None: maxFileSize = cls.default_max_file_size
         if maxFileBkp is None: maxFileBkp = cls.default_max_file_backup
         if encoding is None: encoding = cls.default_encoding
@@ -489,6 +489,7 @@ class Logger(logging.getLoggerClass()):
             os.makedirs(fileDir)
         handler = logging.handlers.RotatingFileHandler(filename=filePath, mode=mode, maxBytes=maxFileSize, backupCount=maxFileBkp, encoding=encoding)
         if level: handler.setLevel(get_int_level(level))
+        if format or date_format: cls.set_handler_formats(handler, format=format, date_format=date_format)
         return handler
     
     def add_rotating_file_handler(self, *args, **kwargs):
