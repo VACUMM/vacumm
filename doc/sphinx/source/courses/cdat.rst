@@ -13,6 +13,10 @@ CDAT est destiné à la communauté océano/météo/climat.
       ces outils n'ont pas besoin de recevoir les coordonnées
       en argument.
 
+.. figure:: numpy2mv.png
+
+    Le passage de :mod:`numpy` à :mod:`MV2` (CDAT).
+
 
 .. note:: Parallèle avec le netcdf.
 

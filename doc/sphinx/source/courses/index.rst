@@ -7,6 +7,7 @@ avec quelques généralités en guise d'introductions.
 .. toctree::
 
     python
+    numpy
     cdat
     vacumm_intro
     time

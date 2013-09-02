@@ -54,6 +54,8 @@ it automatically read the temperature and the depths before computing the MLD.
 .. literalinclude:: ../../../../scripts/tutorials/general.scripts.level2b.py
 
 
+.. _user.tut.generic.scripts.cfgarg:
+    
 Third level: add commandline arguments and options
 --------------------------------------------------
 

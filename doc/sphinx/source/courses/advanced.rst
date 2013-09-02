@@ -8,3 +8,4 @@ Outils avancés
     cf
     sigma
     log
+    cfgm

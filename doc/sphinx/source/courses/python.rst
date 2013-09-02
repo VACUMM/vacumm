@@ -55,7 +55,7 @@ Soit en soumission de job ::
     
 .. warning:: Si vous passez par un job, placez la ligne suivante en début de script en cas de tracés
 
-    from matplotlib import use ; use('Agg')
+    >>> from matplotlib import use ; use('Agg')
 
 Le language
 -----------
@@ -66,6 +66,27 @@ Fichier :file:`courses_python.py`
 
 
 Attention aux règles de codage : :ref:`appendix.conventions`.
+
+
+Modules importants
+------------------
+
+Librairie standard :
+
+- Outils système : :mod:`os`, :mod:`sys`, :mod:`shutil`, :mod:`glob`, :mod:`stat`, :mod:`subprocess`, :mod:`popen2`.
+- Entrées sorties : :mod:`ConfigParser`, :mod:`argparse`, :mod:`csv`, :mod:`logging`.
+- Divers : :mod:`re`, :mod:`collections`, :mod:`pickle`, :mod:`datetime`, :mod:`time`.
+
+Librairies scientifiques :
+
+- Numérique : :mod:`numpy`.
+- Scientifique : :mod:`scipy`.
+- Graphiques : :mod:`matplotlib`, :mod:`basemap`.
+- Océano/Météo (UVCDAT) : :mod:`cdms2`, :mod:`cdutil`, :mod:`genutil`.
+
+Divers :
+
+- Configurations avancées : :mod:`configobj`.
 
 
 Avoir sa propre librairie

@@ -46,6 +46,14 @@ print c.keys()
 print c
 
 
+# Slicing
+a = range(10)
+print a[0], a[-1]
+print a[-2:]
+print a[::2]                # -> COMMENCER A 3
+print a[slice(None, None, 2)]
+
+
 # Boucles
 
 # - for
