@@ -187,7 +187,7 @@ class ColoredStreamHandler(logging.StreamHandler):
         # setaf: set foreground color using ansi escape
         # setb/setab: same for background
         self.colorable = hascurses and stream.isatty() and (curses.tigetstr('setf') or curses.tigetstr('setaf'))
-        self.colorize = self.colorable and kwargs.pop('colorize', True)
+        self.colorize = kwargs.pop('colorize', True) and self.colorable
         # TODO: add per log record components colorization
         logging.StreamHandler.__init__(self, stream, *args, **kwargs)
     

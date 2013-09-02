@@ -13,9 +13,9 @@ parameters stored in configuration files. These configurations are similar to
 the 'ini' files (https://en.wikipedia.org/wiki/INI_file) but in a much more 
 flexible way than what the standard module :mod:`ConfigParser` provides.
 
-:mod:`vacumm.misc.config` rely on the :mod:`configobj`
+:mod:`vacumm.misc.config` rely on the :mod:`~configobj`
 (http://www.voidspace.org.uk/python/configobj.html) and 
-:mod:`optparse` modules and mixes these module to handle configurations with the 
+:mod:`optparse` or :mod:`argparse` modules and mixes these modules to handle configurations with the 
 following concepts:
     
     #) The entry point is to define a specification file which contains sections
@@ -25,7 +25,7 @@ following concepts:
        and options (missing options will use the default values defined in the 
        specifications).
     #) Finally the configuration can also be overriden by command line options 
-       using the standard modules :module:`optparse` or :module:`argparse`.
+       using the standard modules :mod:`optparse` or :mod:`argparse`.
 
 The configuration management is made with :class:`~vacumm.misc.config.ConfigManager` .
 
@@ -50,8 +50,8 @@ access to the ``option2`` like this: ::
     value11
 
 .. warning::
-    - Although encapsulating string values with quotes is not always required, we
-      strongly encourage to do it.
+    - Although encapsulating string values with quotes in configuration files 
+      and command line options is not always required, we strongly encourage to do it.
     - Note that option2 will be bound to secion11, despite indentation, any options
       for a section that appear below a nested section will be loaded as this 
       subsection option, that's why you have to always write subsections after all
@@ -62,7 +62,7 @@ Example
 
 In this example we'll show you how to use the :class:`~vacumm.misc.config.ConfigManager`
 to handle defaults, command line arguments and a configuration file.
-The command line arguments may be used through optparse or argparse module.
+The command line arguments may be used through :mod:`optparse` or :mod:`argparse` module.
 
 Specification file:
 
@@ -95,87 +95,3 @@ The outputs of this code with configuration setup with command line options and 
 
 .. command-output:: ../../../scripts/tutorials/misc.config.py --scalars-string="foo, 'hello world'" --lists-floats="42,3.14" --cfgfile=tutorials/python/misc.config.cfg
 
-
-
-
-
-
-(old example, need update and translation)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Pour ce tutoriel, nous créons d'abord le **fichier de spécifications** :file:`config.ini`,
-définissant la nature de toutes les options, leur description
-et leur valeur par défaut :
-
-.. literalinclude:: ../../../../scripts/tutorials/config.ini
-    :language: cfg
-
-.. note:: Ce fichier doit être tout le temps accessible par le script.
-
-Nous créons aussi le **fichier de configuration personnel** :file:`config.cfg` 
-qui sera lu
-à chaque exécution du script afin de définir nos propres valeurs
-par défaut :
-
-.. literalinclude:: ../../../../scripts/tutorials/config.cfg
-    :language: ini
-
-Et voici le script executable (:file:`config-plot.py`) qui fera le travail :
-    
-.. literalinclude:: ../../../../scripts/tutorials/misc.config.plot.py
-
-Voici l'**aide courte** obtenue avec l'option :option:`--help` : ::
-    
-    Usage: config.plot.py [options] ncfile
-
-    Script to plot a 2D netcdf variable
-
-    Options:
-      -h, --help            show a reduced help
-      --long-help           show an extended help
-
-Et voici l'**aide longue** avec l'option :option:`--long-help` : ::
-    
-    Usage: config.plot.py [options] ncfile
-
-    Script to plot a 2D netcdf variable
-
-    Options:
-      -h, --help            show a reduced help
-      --long-help           show an extended help
-
-      Global options:
-        General configuration options
-
-        --cfgfile=CFGFILE   Configuration file [default: "config.cfg"]
-        --var=VAR           Name of the netcdf variable [ex: "TEMP"]
-        --title=TITLE       Title of the plot [ex: "%(long_name)s [TEMP]"]
-
-      Zoom:
-         zoom extensions in space
-
-        --zoom-lon-min=ZOOM_LON_MIN
-                            Min logitude [ex: "-5.5"]
-        --zoom-lon-max=ZOOM_LON_MAX
-                            Max longitude [ex: "-4.0"]
-        --zoom-lat-min=ZOOM_LAT_MIN
-                            Min latitude [ex: "47.0"]
-        --zoom-lat-max=ZOOM_LAT_MAX
-                            Max latitude [ex: "49.0"]
-
-
-Nous exécutons alors le script avec un changement d'une des options (la latitude maximale) : 
-
-.. code-block:: bash
-    
-    prompt> config.plot.py --zoom-lat-min=48 ../../../../../data/mars3d.xy.nc
-    Current configuration: {'var': 'temp', 'title': '%(long_name)s [temp]', 'zoom': {'lon': {'min': -5.5, 'max': -4.0}, 'lat': {'min': 48.0, 'max': 49.0}}}
-    Wrote to ./config-plot.png
-
-Au final, le fichier :file:`config.cfg` a modifié le nom de la variable netcdf, et la ligne de commande a modifié la latitude maximale, le reste des options ayant pris les valeurs par défaut du fichier de spécifications.
-
-La figure ainsi créée :
-    
-.. figure:: ../../../../scripts/tutorials/misc-config-plot.png
-
-    Figure créé par le script :file:`misc.config.plot.py`.
