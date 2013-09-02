@@ -16,7 +16,6 @@ avec quelques généralités en guise d'introductions.
     shorelines
     phys
     dataset
-    remote
-    cf
+    advanced
     
     

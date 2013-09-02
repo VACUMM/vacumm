@@ -14,7 +14,6 @@
 from vcmq import os, InputWorkFiles, OutputWorkFile
 
 host = 'caparmor-sftp'
-host = 'kostez'
 
 # Materiel
 if not os.path.exists('local'): os.mkdir('local')
