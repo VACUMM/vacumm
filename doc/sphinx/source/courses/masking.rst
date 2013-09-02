@@ -2,6 +2,8 @@ Leçon sur les masques et polygones
 ==================================
 
 
+Fichier :file:`courses_masking.py`
+
 .. literalinclude:: ../../../../scripts/courses/courses_masking.py
 
 

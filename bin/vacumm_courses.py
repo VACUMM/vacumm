@@ -18,6 +18,7 @@ try:
     cdir = get_scripts_dir('courses')
 except:
     sys.exit("Can't find the directory hosting the courses script files")
+print 'Source directory: '+cdir
 from glob import glob
 cfiles = glob(os.path.join(cdir, "courses_*.py"))
 if not cfiles:
@@ -32,7 +33,7 @@ else:
     print "Working directory: "+os.path.realpath(args.workdir)
 
 # Copy files
-import shutil
+import shutil, stat
 for cfile in cfiles:
     
     # Local file
@@ -57,3 +58,5 @@ for cfile in cfiles:
     # Get it
     shutil.copy(cfile, cwfile)
     print msg
+    os.chmod(cwfile, stat.S_IXUSR)
+    

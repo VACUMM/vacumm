@@ -60,3 +60,20 @@ Où trouver de l'aide
 
 
 
+Utilisation
+-----------
+
+
+Par sa librairie :
+
+>>> from vacumm.misc.plot import map2   # import complet
+>>> from vcmq import map2               # raccourci
+
+
+Par ses scripts :
+
+.. code-block:: shell
+
+    $ vacumm_print_config.py
+    $ showtime.py -m myfile.nc
+    

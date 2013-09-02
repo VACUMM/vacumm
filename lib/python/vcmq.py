@@ -34,7 +34,7 @@ from matplotlib.ticker import AutoLocator, MaxNLocator, FixedLocator, IndexLocat
 
 # VACUMM
 
-from vacumm import VACUMMError, VACUMMWarning
+from vacumm import VACUMMError, VACUMMWarning, help as vchelp
 
 
 # - config
@@ -72,11 +72,13 @@ from vacumm.misc.io import list_forecast_files, netcdf3, netcdf4, ncread_files, 
     ncget_fgrid
     
 from vacumm.misc.filters import generic1d, generic2d, shapiro1d, shapiro2d
+
+from vacumm.misc.remote import InputWorkFiles, OutputWorkFile
    
 # - grid
 
 from vacumm.misc.grid import \
-    get_grid, set_grid, create_grid, create_grid2d, \
+    get_grid, set_grid, create_grid, create_grid2d, resol, \
     meshcells, meshbounds, meshgrid, bounds1d, bounds2d, \
     isrect, curv2rect, isgrid, get_xy, create_axes2d
     
@@ -97,8 +99,14 @@ from vacumm.misc.grid.masking import \
 
 from vacumm.data import setup_dataset, DS
 
-from vacumm.data.cf import format_var, format_axis
+from vacumm.data.cf import format_var, format_axis, format_grid, match_var
+
+from vacumm.data.misc.sigma import NcSigma, sigma2depths, SigmaGeneralized, SigmaStandard
 
 # - diag
 
 from vacumm.diag.thermdyn import density, mixed_layer_depth
+
+from vacumm.diag.dynamics import \
+    barotropic_geostrophic_velocity, coriolis_parameter, kinetic_energy
+

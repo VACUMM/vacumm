@@ -472,10 +472,12 @@ def get_config_files(section=None, check=False, user=1):
             if 'config.cfg' in files:
                 mod_dirs.append(root)
     elif section:
+        if hasattr(section, '__name__'):
+            section = section.__name__
         if not isinstance(section, list):
             section = [section]
         for sec in section:
-            if sec.startswith('vacumm.'):
+            if sec.startswith('vacumm.') or sec=='vacumm':
                 subnames = sec.split('.')[1:] # skip "vacumm"
                 if len(subnames)>1: subnames = subnames[:-1] # skip file name
                 mod_dirs.append(os.path.join(lib_dir, *subnames))
