@@ -27,13 +27,13 @@ Configuration
 Voir :ref:`user.install.config`.
 
 La configuration définit les paramètres de la librairie.
-Un paramètres être par exemple le chemin d'accès au trait de côte du SHOM
+Un paramètre peut être par exemple le chemin d'accès au trait de côte du SHOM
 (pas inclus dans la librairie),
 ou le type de remplissage par défaut pour les plots 2D.
 
 Il existe des valeurs par défaut définies dans des fichiers 
 situés au même endroit que les sources.
-D'autres fichiers peuvent introduits à l'installation.
+D'autres fichiers peuvent être introduits à l'installation.
 Enfin, chaque utilisateur peut definir sa propre configuration
 dans :file:`~/.config/vacumm/vacumm.cfg`.
 
