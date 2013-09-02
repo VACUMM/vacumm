@@ -6,6 +6,7 @@ avec quelques généralités en guise d'introductions.
 
 .. toctree::
 
+    python
     cdat
     vacumm_intro
     time
@@ -15,7 +16,6 @@ avec quelques généralités en guise d'introductions.
     bathy
     shorelines
     phys
-    dataset
     advanced
     
     

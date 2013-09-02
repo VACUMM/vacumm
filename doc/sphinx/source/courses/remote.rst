@@ -1,5 +1,5 @@
-Leçon sur le travail avec des fichiers distants (:mod:`vacumm.misc.remote`)
-===========================================================================
+Leçon sur le travail avec des fichiers distants
+===============================================
 
 Fichier :file:`courses_advanced_remote.py`
 
