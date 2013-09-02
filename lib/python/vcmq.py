@@ -74,6 +74,12 @@ from vacumm.misc.io import list_forecast_files, netcdf3, netcdf4, ncread_files, 
 from vacumm.misc.filters import generic1d, generic2d, shapiro1d, shapiro2d
 
 from vacumm.misc.remote import InputWorkFiles, OutputWorkFile
+
+from vacumm.misc.log import Logger
+
+from vacumm.misc.config import ConfigManager, cfgargparse
+
+from vacumm.misc.stats import StatAccum
    
 # - grid
 

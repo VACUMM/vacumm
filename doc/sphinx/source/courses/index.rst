@@ -13,6 +13,7 @@ avec quelques généralités en guise d'introductions.
     masking
     regrid
     interp
+    bigfiles
     bathy
     shorelines
     phys

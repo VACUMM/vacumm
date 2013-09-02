@@ -26,8 +26,39 @@ Choisissez celui qui vous convient.
 - Plein d'autres IDE.
 
 
-Comment python fonctionne ?
----------------------------
+Exécution
+---------
+
+Soit en direct ::
+
+    $ python
+    Python 2.7.3 (default, Jan 25 2013, 15:38:17) 
+    [GCC 4.5.1 20100924 (Red Hat 4.5.1-4)] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> 
+    
+Soit en exécution de script via python ::
+
+    $ python myscript.py
+    
+
+Soit en direct exécution de script (si exécutable avec entête) ::
+
+    $ myscript.py
+
+Soit en soumission de job ::
+
+    PBS -q sequentiel
+    PBS -N mypython
+    module load mypython
+    python myscript.py
+    
+.. warning:: Si vous passez par un job, placez la ligne suivante en début de script en cas de tracés
+
+    from matplotlib import use ; use('Agg')
+
+Le language
+-----------
 
 Fichier :file:`courses_python.py`
 
@@ -35,6 +66,29 @@ Fichier :file:`courses_python.py`
 
 
 Attention aux règles de codage : :ref:`appendix.conventions`.
+
+
+Avoir sa propre librairie
+-------------------------
+
+Créez le répertoire :file:`myscripts`::
+
+    mkdir myscripts
+    
+    
+Créez un module ::
+
+    $ echo "earth_radius = 6371006." > myscripts/mydata.py
+ 
+ 
+Ajustez votre variable :envvar:`PYTHONPATH` ::
+
+    $ setenv PYTHONPATH $PWD/myscripts
+    
+    
+Testez ::
+
+    $ python -c 'import mydata; print mydata.earth_radius`
 
 
 Où trouver de l'aide ?
