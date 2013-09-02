@@ -177,15 +177,18 @@ class ColoredStreamHandler(logging.StreamHandler):
     }
     
     def __init__(self, stream, *args, **kwargs):
+        '''
+        :Params:
+            - **kwargs**: may contain:
+                - **colorize**: True/False: whether to colorize message if possible (curses)
+        '''
         # terminal capabilities (man 5 terminfo)
         # setf: set foreground color
         # setaf: set foreground color using ansi escape
         # setb/setab: same for background
         self.colorable = hascurses and stream.isatty() and (curses.tigetstr('setf') or curses.tigetstr('setaf'))
-        #####
-        if os.environ.get('LOG_FORCE_COLORIZE', None): self.colorable = True
-        #####
-        self.colorize = self.colorable and True
+        self.colorize = self.colorable and kwargs.pop('colorize', True)
+        # TODO: add per log record components colorization
         logging.StreamHandler.__init__(self, stream, *args, **kwargs)
     
     def get_level_color(self, level):
@@ -200,7 +203,6 @@ class ColoredStreamHandler(logging.StreamHandler):
         if color:
             colors = str(color).strip().lower().split(',')
             formatted = '%s%s\033[%dm'%(
-                #''.join('\033[%dm'%self.colors.get(c, self.colors['reset']) for c in colors if c),
                 '\033[%sm'%(';'.join('%s'%self.colors.get(c, self.colors['reset']) for c in colors if c)),
                 formatted,
                 self.colors['reset'])
@@ -209,121 +211,238 @@ class ColoredStreamHandler(logging.StreamHandler):
 class Formatter(logging.Formatter): pass
 
 class Logger(logging.getLoggerClass()):
-    '''Logger based on the standard python logging package.
+    '''Logger based on the standard python logging package.'''
     
-    :Params:
-        - **name**: Logger name
-        - **level**: Initial logging level, case insensitive. One of:
-            - debug
-            - verbose
-            - info
-            - notice
-            - warning
-            - error
-            - critical
-        - **format**: logs format
-        - **date_format**: logs date format
-        - **console**: add a stream handler using sys.stderr
-        - **colorize**: colorize terminal stream handlers if possible
-        - **name_filters**: optional, for named based configuration, see :meth:`filter_name`
-        
-    '''
     initial_level = logging.INFO # The initial default level, which would not be changed by set_default_level
     default_level = initial_level
-    default_format = '[%(asctime)s %(name)s %(levelname)s] %(message)s'
-    default_date_format = '%Y-%m-%d %H:%M:%S %Z' # '%a %d %b %Y %H:%M:%S %Z'
+    default_format = dict(
+        console='[%(asctime)s %(name)s %(levelname)s] %(message)s',
+        logfile='[%(asctime)s %(name)s %(levelname)s] %(message)s',
+    )
+    # '%Y-%m-%d %H:%M:%S %Z'
+    # '%a %d %b %Y %H:%M:%S %Z'
+    default_date_format = dict(
+        console='%H:%M:%S',
+        logfile='%Y-%m-%d %H:%M:%S %Z',
+    )
     default_max_file_size = (2**10) * 500
     default_max_file_backup = 0
     default_encoding = None # 'utf-8'
     default_colorize = True
     shared_handlers = []
     
-    # Avoid memory leaks !
+    # Store instances of this class, used to configure already created loggers
+    # through the apply_class_optparser_options
+    # Avoid memory leaks by using WeakSet !
     instances = WeakSet()
     
-    def __init__(self, name=None, level=None,
-            format=None, date_format=None,
-            console=True, colorize=None,
-            name_filters=None):
+    def __init__(self,
+            name=None, level=default_level,
+            format=default_format, date_format=default_date_format,
+            console=True, colorize=True,
+            logfile=None,
+            
+            name_filters=None,
+            config=None):
+        '''
+        Initialize the logger (level, formats) and its default handlers.
+        
+        :Params:
+            - **name**: Logger name
+            - **level**: Initial logging level name (case insensitive) or number.
+            - **format**: logs format
+            - **date_format**: logs date format
+            - **console**: add a stream handler (see below) 
+            - **colorize**: colorize terminal stream handlers if possible
+            - **logfile**: add a rotating file handler (see below)
+        
+        - **name_filters**: for named based configuration, see :meth:`filter_name`
+        - **config**: see :meth:`config`
+        
+        Available log levels: **debug, verbose, info, notice, warning, error, critical**.
+        
+        Console handler, accessible through **self.console_handler**, is enabled 
+        by default and uses sys.stderr and is created with :meth:`new_rotating_file_handler`.
+        
+        Rotating file handler, accessible through **self.file_handler**, is disabled 
+        by default  and is created with :meth:`new_stream_handler`.
+        **Note: for applications with a large number of loggers, you may create the 
+        file handler with :meth:`new_rotating_file_handler` and pass this handler to 
+        the constructor of all loggers, this will avoid opening the same file multiple times.**
+        
+        The **logfile** and **console** arguments can take the form of:
+            - a list or tuple: interpreted as positionnal arguments for the corresponding method.
+            - a dict: interpreted as named arguments for the corresponding method.
+            - a boolean for stream handler, True to create the handler
+            - a string for the file handler, specifying the log file path
+            - an existing handler
+        
+        For example, you may customize logger creation:
+        
+        >>> l = Logger(
+                name=os.path.basename(sys.argv[0]),
+                level='debug',
+                logfile=dict(
+                    filePath='output.log', maxFileSize=1024*50, maxFileBkp=1,
+                    format='%(asctime)s - %(name)s - %(level)s - %(message)s',
+                    date_format='%Y-%m-%d %H:%M:%S %Z',
+                    level='info'
+                ),
+                console=dict(
+                    stream=sys.stdout, colorize=False,
+                    format='%(name)s - %(level)s - %(message)s'
+                )
+            )
+        
+        '''
         if name is None: name = '%s(%s)'%(self.__class__.__name__, id(self))
-        if level is None: level = self.default_level
-        if format is None: format = self.default_format
-        if date_format is None: date_format = self.default_date_format
-        if colorize is None: colorize = self.default_colorize
+#        if level is None: level = self.default_level
+#        if format is None: format = self.default_format
+#        if date_format is None: date_format = self.default_date_format
+#        if colorize is None: colorize = self.default_colorize
         if name_filters is None: name_filters = []
-        self.name_filters = name_filters
+        self.__name_filters = name_filters
         self.__logger_class = logging.getLoggerClass()
         # We must set the level both at init and with set_level below
         # because set_level will use get_level if filtered level doesn't match
         self.__logger_class.__init__(self, name, level=self.initial_level)
+        
+        # __format and __date_format are interdependant and must be set before
+        # calling set_format or set_date_format
         self.__format = format
         self.__date_format = date_format
-        self.__formatter = Formatter(fmt=self.__format, datefmt=self.__date_format)
-        self.set_level(level, filter=True)
-        # If stderr is True, define a default handler to sys.stderr
+        
+        # Setup stream handler (console)?
         self.console_handler = None
-        if console: self.console_handler = self.add_stream_handler(colorize=colorize)
+        if console:
+            if isinstance(console, logging.Handler): self.console_handler = console
+            elif isinstance(console, (list, tuple)): self.console_handler = self.new_stream_handler(*console)
+            elif isinstance(console, dict): self.console_handler = self.new_stream_handler(**console)
+            else: self.console_handler = self.new_stream_handler(colorize=colorize if colorize is not None else self.default_colorize)
+            self.add_handler(self.console_handler)
+        
+        # Setup file handler (logfile) ?
+        # This sould be carefully used: 1 file handler = 1 opened file !
+        self.file_handler = None
+        if logfile:
+            if isinstance(logfile, logging.Handler): self.file_handler = logfile
+            elif isinstance(logfile, (list, tuple)): self.file_handler = self.new_rotating_file_handler(*logfile)
+            elif isinstance(logfile, dict): self.file_handler = self.new_rotating_file_handler(**logfile)
+            else: self.file_handler = self.new_rotating_file_handler(logfile if isinstance(logfile, basestring) else None)
+            self.add_handler(self.file_handler)
+        
+        self.config(name=name, level=level, format=format, date_format=date_format)
+        self.set_level(level, filter=True)
+        if config: self.config(config)
+        
         # Add global handlers: handlers registered for all Logger
         for hdlr in self.__class__.shared_handlers:
             self.add_handler(hdlr)
+        
+        # Store new instance
         self.instances.add(self)
     
-    # PARTIAL IMPLEMENTATION: handlers also have a level check ...!
-#    def log(self, level, msg, *args, **kwargs):
-#        ''' Add a keyword argument 'force' to bypass the isEnabledFor(level) check.
-#        '''
-#        if not isinstance(level, int):
-#            if logging.raiseExceptions:
-#                raise TypeError('level must be an integer')
-#            else:
-#                return
-#        if self.isEnabledFor(level) or kwargs.get('force', False):
-#            self._log(level, msg, args, **kwargs)
+    def set_name(self, name):
+        self.name = name
     
-    def set_name(self, name): self.name = name
-    def get_name(self): return self.name
+    def get_name(self):
+        return self.name
+    
+    def set_name_filters(self, filters):
+        self.__name_filters = filters
+    
+    def get_name_filters(self):
+        return list(self.filters)
     
     def filter_name(self, value, default):
         '''
         Used by the set_{level,format,date_format} instance methods.
-        The logger get_name() and instance variable self.name_filters are evaluated against the
+        The logger get_name() and instance variable self.__name_filters are evaluated against the
         couples name1=value1[,name2=value2,...] in value to determine the value to return, default
         is returned if nothing match, value is return if it isn't a filter expression.
         '''
-        return filter_name([self.get_name()]+self.name_filters, value, default)
+        return filter_name([self.get_name()]+self.__name_filters, value, default)
     
     def set_level(self, level, filter=False):
-        if filter: level = self.filter_name(level, self.get_level_name())
-        self.__logger_class.setLevel(self, get_int_level(level))
+        if isinstance(level, dict):
+            if 'console' in level and self.console_handler:
+                self.console_handler.setLevel(get_int_level(level['console']))
+            if 'logfile' in level and self.file_handler:
+                self.file_handler.setLevel(get_int_level(level['logfile']))
+        else:
+            if filter: # warn: '=' character in fmt are not allowed ...
+                level = self.filter_name(level, self.get_level_name())
+            self.__logger_class.setLevel(self, get_int_level(level))
+        
     setLevel = set_level # do not delete, redefinition of logging.Logger.setLevel
-    def get_level(self): return get_int_level(self.level)
-    def get_level_name(self): return get_str_level(self.level)
+    
+    def get_level(self):
+        return get_int_level(self.level)
+    
+    def get_level_name(self):
+        return get_str_level(self.level)
     
     def set_format(self, format, filter=False):
-        if filter: format = self.filter_name(format, self.get_format())
-        self.__format = format
-        self.__formatter = Formatter(fmt=self.__format, datefmt=self.__date_format)
-        for h in self.handlers:
-            h.setFormatter(self.__formatter)
-    def get_format(self): return self.__format
+        if isinstance(format, dict):
+            if 'console' in format and self.console_handler:
+                self.set_handler_formats(self.console_handler, format=format['console'])
+            if 'logfile' in format and self.file_handler:
+                self.set_handler_formats(self.file_handler, format=format['logfile'])
+        else:
+            if filter: # warn: '=' character in fmt are not allowed ...
+                format = self.filter_name(format, self.get_format())
+            self.__format = format
+            for h in self.handlers:
+                self.set_handler_formats(h, format=format)
     
-    def set_date_format(self, date_format, filter=False):
-        # warn: '=' character in fmt are then not allowed ...
-        if filter: format = self.filter_name(format, self.get_date_format())
-        self.__date_format = date_format
-        self.__formatter = Formatter(fmt=self.__format, datefmt=self.__date_format)
-        for h in self.handlers:
-            h.setFormatter(self.__formatter)
-    def get_date_format(self): return self.__date_format
+    def get_format(self):
+        return self.__format
+    
+    def set_date_format(self, format, filter=False):
+        if isinstance(format, dict):
+            if 'console' in format and self.console_handler:
+                self.set_handler_formats(self.console_handler, date_format=format['console'])
+            if 'logfile' in format and self.file_handler:
+                self.set_handler_formats(self.file_handler, date_format=format['logfile'])
+        else:
+            if filter: # warn: '=' character in fmt are not allowed ...
+                format = self.filter_name(format, self.get_date_format())
+            self.__date_format = format
+            for h in self.handlers:
+                self.set_handler_formats(h, date_format=format)
+    
+    def get_date_format(self):
+        return self.__date_format
+    
+    @classmethod
+    def new_formatter(cls, format=None, date_format=None, formatter=None):
+        if format is None:
+            if formatter and formatter.format:
+                format = formatter._fmt
+            #else:
+                #format = cls.default_format
+        if date_format is None:
+            if formatter and formatter.datefmt:
+                date_format = formatter.datefmt
+            #else:
+                #date_format = cls.default_date_format
+        return Formatter(fmt=format, datefmt=date_format)
+    
+    @classmethod
+    def set_handler_formats(cls, handler, format=None, date_format=None):
+        f = cls.new_formatter(format=format, date_format=date_format, formatter=handler.formatter)
+        handler.setFormatter(f)
+        return f
     
     def is_verbose(self):
         return self.get_level() <= logging.VERBOSE
+    
     def is_debug(self):
         return self.get_level() <= logging.DEBUG
     
     def add_handler(self, handler, **kwargs):
         if not handler.formatter:
-            handler.setFormatter(self.__formatter)
+            handler.setFormatter(self.new_formatter())
         if kwargs.pop('shared', False):
             self.add_shared_handler(handler)
         self.__logger_class.addHandler(self, handler)
@@ -341,8 +460,10 @@ class Logger(logging.getLoggerClass()):
             self.remove_handler(hdlr)
     
     @classmethod
-    def new_stream_handler(cls, stream=sys.stderr, colorize=False, **kwargs):
-        return (ColoredStreamHandler if colorize else logging.StreamHandler)(stream)
+    def new_stream_handler(cls, stream=sys.stderr, colorize=False, level=None, **kwargs):
+        handler = (ColoredStreamHandler if colorize else logging.StreamHandler)(stream)
+        if level: handler.setLevel(get_int_level(level))
+        return handler
     
     def add_stream_handler(self, *args, **kwargs):
         handler = self.new_stream_handler(*args, **kwargs)
@@ -350,21 +471,25 @@ class Logger(logging.getLoggerClass()):
         return handler
     
     def colorize(self, active=None):
-        if self.console_handler:
+        if self.console_handler and isisntance(self.console_handler, ColoredStreamHandler):
             if active is not None: self.console_handler.colorize = bool(active)
             return self.console_handler.colorize
         
     @classmethod
-    def new_rotating_file_handler(cls, filePath=None, mode='a', maxFileSize=None, maxFileBkp=None, encoding=None, **kwargs):
+    def new_rotating_file_handler(cls, filePath=None, mode='a', maxFileSize=None, maxFileBkp=None, encoding=None, level=None, **kwargs):
         if maxFileSize is None: maxFileSize = cls.default_max_file_size
         if maxFileBkp is None: maxFileBkp = cls.default_max_file_backup
         if encoding is None: encoding = cls.default_encoding
         if not filePath:
-            filePath = self.name+'.log'
+            if sys.argv[0] in ['', '-', '-c']: filePath = 'python'
+            else: filePath = os.path.splitext(os.path.basename(sys.argv[0]))[0]
+            filePath += '.log'
         fileDir = os.path.dirname(filePath)
         if fileDir and not os.path.isdir(fileDir):
             os.makedirs(fileDir)
-        return logging.handlers.RotatingFileHandler(filename=filePath, mode=mode, maxBytes=maxFileSize, backupCount=maxFileBkp, encoding=encoding)
+        handler = logging.handlers.RotatingFileHandler(filename=filePath, mode=mode, maxBytes=maxFileSize, backupCount=maxFileBkp, encoding=encoding)
+        if level: handler.setLevel(get_int_level(level))
+        return handler
     
     def add_rotating_file_handler(self, *args, **kwargs):
         handler = self.new_rotating_file_handler(*args, **kwargs)
@@ -380,6 +505,9 @@ class Logger(logging.getLoggerClass()):
 #    def _log(self, level, msg, *args, **kwargs):
 #        msg = msg.encode('utf-8', 'replace')
 #        return super(self.__class__, self)._log(level, msg, *args, **kwargs)
+    
+    
+    
     
     @classmethod
     def set_default_level(cls, level, filter=False):
@@ -458,6 +586,56 @@ class Logger(logging.getLoggerClass()):
             for logger in cls.instances:
                 logger.apply_optparser_options(options)
     
+    def config(self, *args, **kwargs):
+        '''
+        Get or set logging configuration
+        
+        This method uses the get_* and set_* methods.
+        
+        :Params:
+            - **args**: depending of the type:
+                - basestring: (getter) return the corresponding value(s)
+                - Logger: (setter) use this logger's configuration
+                - dict: (setter) use this dict's configuration
+            - **kwargs**: key/value pairs of configuration which are to be set
+        
+        Getter:
+        
+            >>> logger.config('level')
+            %(default_level)r
+            >>> logger.config('level', 'format')
+            (%(default_level)r, %(default_format)r)
+            >>> logger.config() # return complete configuration as a dict
+            TODO
+        
+        Setter:
+        
+            >>> logger.config(level=%(default_level)r)
+            >>> logger.config(level=%(default_level)r, format=%(default_format)r)
+            >>> logger.config(configdict) # use a dict as config key/value pairs
+            >>> logger.config(otherlogger) # use another logger's configuration
+        
+        '''
+        args = list(args)
+        if kwargs:
+            args.insert(0, kwargs)
+        if not args:
+            # 'name' should not appear in this list
+            args = ['level', 'format', 'date_format']
+        c = {}
+        for arg in args:
+            if isinstance(arg, basestring):
+                c[arg] = getattr(self, 'get_'+arg)()
+            elif isinstance(arg, dict):
+                for k,v in arg.iteritems():
+                    getattr(self, 'set_'+k)(v)
+            elif isinstance(arg, Logger):
+                self.config(arg.config())
+            else:
+                raise ValueError('Cannot configure using objects of type %r'%(arg))
+        return c
+    
+    # TODO: merge with config method above
     def load_config(self, cfgo=None, nested=True):
         if cfgo is None: return
         if nested:
@@ -558,8 +736,10 @@ default = logger = Logger.default = Logger(name=os.path.basename(sys.argv[0] in 
 if '--verbose' in sys.argv: default.set_level('verbose')
 if '--debug' in sys.argv: default.set_level('debug')
 # Register logging function using the default logger
-for l in get_str_levels():
-    globals()[l.lower()] = getattr(default, l.lower(), None)
+for l in map(str.lower, get_str_levels()):
+    f = getattr(default, l, None)
+    if callable(f): globals()[l] = f
+del l
 # Plus the special exception log func
 exception = default.exception
 

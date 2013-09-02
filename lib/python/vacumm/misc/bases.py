@@ -725,6 +725,8 @@ class Object(object):
         '''
         # Setup logging
         lkw = kwfilter(kwargs, 'logger', {'name':self.__class__.__name__})
+        if isinstance(lkw.get('config', None), self.__class__):
+            lkw['config'] = lkw['config'].get_logger()
         lkw['name_filters'] = list(lkw.get('name_filters', [])) + [self.__class__.__name__]
         self._logger = Logger(**lkw)
         # Load passed or default configuration

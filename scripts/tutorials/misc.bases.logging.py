@@ -61,6 +61,9 @@ def main():
     obj.verbose(
         'you will not see this message as it is emitted with a "verbose" level and '
         'the logger is now configured with a %r minimum level', obj.get_loglevel())
+    
+    obj.notice('Using the config method:\n  obj.logger.config(): %s\n  MyObject().logger.config(): %s\n  MyObject(logger_config=obj).logger.config(): %s',
+        obj.logger.config(), MyObject().logger.config(), MyObject(logger_config=obj).logger.config())
 
 if __name__ == '__main__':
     main()
