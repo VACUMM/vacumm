@@ -126,5 +126,5 @@ Documentation importantes :
 - Librairies de base : http://docs.python.org/2.7/library/index.html
 - Manuel de référence de :mod:`numpy` : http://docs.scipy.org/doc/numpy/reference
 - Manuel de référence de :mod:`scipy` : http://docs.scipy.org/doc/scipy/reference
-- Galerie de :mod:`matplotlib`.
+- Galerie de :mod:`matplotlib` : http://matplotlib.org/gallery.html
 - CDAT (5) : http://www2-pcmdi.llnl.gov/cdat/manuals/cdms5.pdf
