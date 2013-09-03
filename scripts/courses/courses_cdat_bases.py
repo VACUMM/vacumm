@@ -22,6 +22,8 @@ print 'Array type - ncarr - :',type(ncarr)
 # print 'Longitude :',ncarr.getLongitude()
 # print 'Latitude :',ncarr.getLatitude()
 
+print '2D Grid: ',ncarr.getGrid()
+
 # ---- Copy or not copy !!!!
 print 'An example: ',ncarr[50,50]
 

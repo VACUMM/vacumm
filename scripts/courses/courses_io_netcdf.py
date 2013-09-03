@@ -31,6 +31,8 @@ for var in f.listvariable():
         # - Example of moficiation - mask an area
         if var == 'TEMP':
             data[:,:,:,80:200].mask=True
+        # => Practice: Try to modify the variable and its mask before writing.
+        # => Practice: Change attributes of the variable.
     except: # - Variable is a single float
         interm = f[var]
         # For single float, need to re-allocate attributes
@@ -44,6 +46,7 @@ for var in f.listvariable():
 ga = f.listglobal()
 for att in ga:
     setattr(fw,att,f.getglobal(att))
+# => Practice: Add new global attributes to the file.
 
 # Close files
 f.close()
@@ -53,4 +56,8 @@ fw.close()
 fn = cdms2.open(outfile)
 fn.showvariable()
 fn.close
+
+
+
+
     
