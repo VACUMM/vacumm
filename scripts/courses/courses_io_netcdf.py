@@ -57,7 +57,10 @@ fn = cdms2.open(outfile)
 fn.showvariable()
 fn.close
 
-
+# -----------------------------------------------------------
+# ---- Read large datasets ----
+# - Example with previmer files
+# TO DO ncread_files
 
 
     
