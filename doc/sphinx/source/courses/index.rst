@@ -8,6 +8,7 @@ avec quelques généralités en guise d'introductions.
 
     python
     numpy
+    f2py
     cdat
     vacumm_intro
     time
