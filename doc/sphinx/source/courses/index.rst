@@ -20,5 +20,6 @@ avec quelques généralités en guise d'introductions.
     shorelines
     phys
     advanced
+    sphinx
     
     

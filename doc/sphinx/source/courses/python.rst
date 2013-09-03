@@ -89,6 +89,30 @@ Divers :
 - Configurations avancées : :mod:`configobj`.
 
 
+La librairie :mod:`scipy` regroupe beaucoup d'algorithmes scientifiques intéressants.
+Il est important de parcourir son contenu avant d'aller voir ailleur.
+
+-  Clusters (:mod:`~scipy.cluster`)
+-  Constantes (:mod:`~scipy.constants`)
+-  Transformées de Fourier (:mod:`~scipy.fftpack`)
+-  Integration et ODEs (:mod:`~scipy.integrate`)
+-  Interpolation (:mod:`~scipy.interpolate`)
+-  Entrés/sorties (:mod:`~scipy.io`)
+-  Algèbre linéaire (:mod:`~scipy.linalg`)
+-  Modèle d'entropie max (:mod:`~scipy.maxentropy`)
+-  Traitement d'images (:mod:`~scipy.ndimage`)
+-  *Orthogonal distance regression* (:mod:`~scipy.odr`)
+-  Optimisation  (:mod:`~scipy.optimize`)
+-  Traitement du signal (:mod:`~scipy.signal`)
+-  Matrices creuses (:mod:`~scipy.sparse`)
+-  Algèbre linéaire pour matrices creuses (:mod:`~scipy.sparse.linalg`)
+-  Algorithmes spatiaux (:mod:`~scipy.spatial`)
+-  Statistiques (:mod:`~scipy.stats`)
+-  Manipulation de tableaux d'image (:mod:`~scipy.stsci`)
+-  C/C++ integration (:mod:`~scipy.weave`)
+
+
+
 Avoir sa propre librairie
 -------------------------
 

@@ -1,6 +1,7 @@
 Leçon sur les masques et polygones
 ==================================
 
+Voir :mod:`vacumm.misc.grid.masking.
 
 Fichier :file:`courses_masking.py`
 

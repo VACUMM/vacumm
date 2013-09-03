@@ -1,5 +1,5 @@
-Introduction à VACUMM
-=====================
+Leçon d'introduction à VACUMM
+=============================
 
 Organisation
 ------------

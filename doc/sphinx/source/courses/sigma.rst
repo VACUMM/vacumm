@@ -1,5 +1,7 @@
-Leçon sur les coordonnées sigma (:mod:`vacumm.misc.sigma`)
-==========================================================
+Leçon sur les coordonnées sigma
+================================
+
+Voir :mod:`vacumm.misc.sigma`.
 
 Fichier :file:`courses_advanced_sigma.py`
 

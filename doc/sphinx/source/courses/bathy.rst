@@ -1,6 +1,8 @@
 Leçon sur les bathymétries
 ==========================
 
+Voir :mod:`vacumm.bathy`.
+
 
 Leçon 1 : les bathymétries grillées
 -----------------------------------

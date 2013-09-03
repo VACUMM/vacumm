@@ -235,6 +235,7 @@ intersphinx_mapping = {
     'sphinx':('http://sphinx.pocoo.org', None),
     'actimar':('http://relay.actimar.fr/~raynaud/pydoc', None),
     'interpsig2z':('http://relay.actimar.fr/~raynaud/interpsig2z', None),
+    'http://docs.python.org/dev': None, 
     }
 
 # Extlinks
