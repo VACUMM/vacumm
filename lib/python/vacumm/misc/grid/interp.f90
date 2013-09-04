@@ -375,6 +375,179 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
 
 end subroutine interp1dx
 
+subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
+    ! Interpolation along the second axis (y)
+    !
+    ! - vari: input variable
+    ! - varo: output variable
+    ! - yi: input y axis
+    ! - yo: output y axis
+    ! - mv: missing value (used only for initialisation)
+    ! - method: 0 = nearest, 1 = linear, 2 = cubic, 3 = hermit
+    !
+    ! See: http://local.wasp.uwa.edu.au/~pbourke/miscellaneous/interpolation/
+
+    implicit none
+    
+    ! Extrernal
+    integer, intent(in) :: nx,nyi,nyo,method,nxb
+    real(kind=8), intent(in) :: vari(nx,nyi)
+    real(kind=8), intent(in) :: yi(nxb,nyi), yo(nxb,nyo)
+    real(kind=8), intent(in) :: mv
+    real(kind=8), intent(out) :: varo(nx,nyo)
+    integer, intent(in), optional :: extrap
+    
+    ! Internal
+    integer :: iyi,iyo,ib
+    real(kind=8) :: dy0(nxb),dy1(nxb)
+    real(kind=8) :: tension,bias !
+    real(kind=8) :: zyi(nxb,nyi),zyo(nxb,nyo),mu(nxb)
+    real(kind=8),allocatable :: vc0(:),vc1(:),a0(:),a1(:),a2(:),a3(:)
+    integer :: ix0,ix1
+    logical :: bitv(nxb)
+
+    ! Treat only monotonically increasing grids
+    do ib = 1,nxb
+        if(all(vari(ib,:)==mv))cycle
+        if (yi(ib,nyi)<yi(ib,1)) then
+            zyi = -yi
+        else
+            zyi = yi
+        endif
+        if (yo(ib,nyo)<yo(ib,1)) then
+            zyo = -yo
+        else
+            zyo = yo
+        endif
+        exit
+    enddo
+!    if (maxvalyo(nyo)<yo(1)) then
+!        zyo = -yo
+!    else
+!        zyo = yo
+!    endif
+    
+    ! Initialisation
+    varo = mv
+    if(method>1) allocate(vc0(nxb),vc1(nxb))
+    if(method==3)allocate(a0(nxb),a1(nxb),a2(nxb),a3(nxb))
+    bias = 0.
+    tension = 0.
+        
+    ! Loop on input grid
+    do iyi = 1, nyi-1
+    
+        ! Loop on output grid
+        do iyo = 1,nyo
+        
+            dy0 = zyo(:,iyo)-zyi(:,iyi)
+            dy1 = zyi(:,iyi+1)-zyo(:,iyo)
+            bitv = zyo(:,iyo)>=zyi(:,iyi).and.zyo(:,iyo)<=zyi(:,iyi+1)
+            mu = dy0/(dy0+dy1)
+                
+            ! Loop on blocks
+            do ib = 1, nx/nxb
+            
+                ! Block
+                ix0 = 1+(ib-1)*nxb
+                ix1 = ix0+nxb-1
+        
+                if (method==0) then
+                
+                    ! Nearest
+                    where(bitv)
+                        where(dy0<dy1)
+                            varo(ix0:ix1,iyo) = vari(ix0:ix1,iyi)
+                        elsewhere
+                            varo(ix0:ix1,iyo) = vari(ix0:ix1,iyi+1)
+                        end where
+                    end where
+                    
+                elseif(method==1)then
+                
+                    ! Linear
+                    where(bitv)
+                        varo(ix0:ix1,iyo) = &
+                        &    (vari(ix0:ix1, iyi)*dy1 + vari(ix0:ix1, iyi+1)*dy0) / &
+                        &    (dy0+dy1)
+                    end where
+                    
+                else
+
+                    ! Extrapolations
+                    if (iyi==1)then ! y0
+                        vc0 = 2*vari(ix0:ix1, iyi)-vari(ix0:ix1, iyi+1)
+                    else
+                        vc0 = vari(ix0:ix1, iyi-1)
+                    endif
+                    if (iyi==nyi-1)then ! y3
+                        vc1 = 2*vari(ix0:ix1, iyi+1)-vari(ix0:ix1, iyi)
+                    else
+                        vc1 = vari(ix0:ix1, iyi+2)
+                    endif
+
+                    if (method==2)then
+                
+                        ! Cubic
+                        where(bitv)
+                            varo(ix0:ix1,iyo) = vc1 - vari(ix0:ix1, iyi+1) - vc0 + vari(ix0:ix1, iyi)
+                            varo(ix0:ix1,iyo) = mu**3*varo(ix0:ix1,iyo) + mu**2*(vc0-vari(ix0:ix1, iyi)-varo(ix0:ix1,iyo))
+                            varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + mu*(vari(ix0:ix1, iyi+1)-vc0)
+                            varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1, iyi)
+                        end where
+                    
+                    else
+                    
+                        ! Hermit
+                        a0 = 2*mu**3 - 3*mu**2 + 1
+                        a1 =    mu**3 - 2*mu**2 + mu
+                        a2 =    mu**3 -   mu**2
+                        a3 = -2*mu**3 + 3*mu**2
+                        where(bitv)
+                            varo(ix0:ix1,iyo) = a0*vari(ix0:ix1, iyi)
+                            varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + a1*( &
+                            &    (vari(ix0:ix1,iyi)-vc0)           *(1+bias)*(1-tension)/2 + &
+                            &    (vari(ix0:ix1, iyi+1)-vari(ix0:ix1,iyi))*(1-bias)*(1-tension)/2)
+                            varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + a2*(&
+                            &    (vari(ix0:ix1, iyi+1)-vari(ix0:ix1,iyi))*(1+bias)*(1-tension)/2 + &
+                            &    (vc1-vari(ix0:ix1, iyi+1))        *(1-bias)*(1-tension)/2)
+                            varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + a3*vari(ix0:ix1, iyi+1)
+                        end where
+                        
+                    endif
+                endif
+            end do
+        end do
+    end do
+
+    ! Extrapolation with nearest
+    if(method==0 .and.present(extrap).and.extrap/=0)then
+        do iyo = 1,nyo
+            if(extrap==-1 .or. extrap==2)then
+                bitv = zyo(:,iyo)<zyi(:,1) ! below
+                do ib = 1, nx/nxb
+                    ix0 = 1+(ib-1)*nxb
+                    ix1 = ix0+nxb-1
+                    where(bitv) varo(ix0:ix1,iyo) = vari(ix0:ix1, 1)
+                enddo
+            endif
+            if(extrap==1 .or. extrap==2)then
+                bitv = zyo(:,iyo)>zyi(:,nyi) ! above
+                do ib = 1, nx/nxb
+                    ix0 = 1+(ib-1)*nxb
+                    ix1 = ix0+nxb-1
+                    where(bitv) varo(ix0:ix1,iyo) = vari(ix0:ix1, nyi)
+                enddo
+            endif
+        enddo
+    endif
+    
+    ! Deallocations
+    if(method>1) deallocate(vc0,vc1)
+    if(method==3)deallocate(a0,a1,a2,a3)
+
+end subroutine interp1dxx
+
 ! =============================================================================
 
 subroutine remap1d(vari, yi, varo, yo, mv, conserv, nx, nyi, nyo, yib, yob)
