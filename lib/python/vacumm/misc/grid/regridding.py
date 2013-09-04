@@ -54,6 +54,7 @@ from copy import deepcopy
 from _geoslib import Point, Polygon
 MV=MV2
 cdms=cdms2
+from vacumm import VACUMMError
 
 # Python functions
 __all__ = ['fill1d', 'regular', 'regular_fill1d', 'cellave1d', 'spline_interp1d', 
@@ -62,7 +63,7 @@ __all__ = ['fill1d', 'regular', 'regular_fill1d', 'cellave1d', 'spline_interp1d'
     'xy2grid', 'grid2xy', 'fill1d', 'GriddedMerger', 'regrid_method', 
     'cellave2d', 'interp2d', 'xy2xy', 'krigdata', 'shift1d', 'shift2d', 
     'shiftgrid',  'transect', 'CDATRegridder', 'extend1d', 'extend2d', 
-    'extendgrid']
+    'extendgrid', 'regrid2d_method_name', 'fill1d2']
 __all__.sort()
 
 # Fortran functions
@@ -93,7 +94,7 @@ except Exception, e:
 # 2d interpolation methods
 _griddata_methods = ['nat', 'natgrid', 'css', 'splines', 'carg', 'krig']
 _cellave_methods = ['conservative', 'remap', 'cellave', 'conserv']
-_cdat_methods = _cellave_methods+['bilinear']
+_cdat_methods = _cellave_methods+['bilinear', 'patch']
 _regrid2d_methods = ['nearest', 'mixt', 'interp', 'bining']+_griddata_methods+_cdat_methods
 
 
@@ -1588,18 +1589,42 @@ def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
                     varo.setAxis(i, (yo, xo)[i])
 
     return varo
+_cellave_methods = ['conservative', 'remap', 'cellave', 'conserv']
+_cdat_methods = _cellave_methods+['bilinear']
+_regrid2d_methods = ['nearest', 'mixt', 'interp', 'bining']+_griddata_methods+_cdat_methods
 
+def regrid2d_method_name(method, raiseerr=True):
+    """Check the method name and return its generic name"""
+    if method is None or method.lower()=='auto': return 'auto'
+    method = method.lower()
+    if method.startswith('cons'): return 'conserv'
+    if method.startswith('cell') or method.startswith('remap'): return 'cellave'
+    if 'lin' in method or method=='interp': return 'bilinear'
+    if method.startswith('bin'): return 'bining'
+    if method.startswith('nat'): return 'nat'
+    if method.startswith('near'): return 'nearest'
+    if method.startswith('carg') or method.startswith('krig'): return 'carg'
+    if method.startswith('dst'): return "dstwgt"
+    if method.startswith('pat'): return "patch"
+    if raiseerr:
+        raise VACUMMError('Invalid regrid2d method. Please use for example one of these: '+
+            ', '.join(_regrid2d_methods))
+    else:
+        return method
 
 def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False, 
-    use_scrip=None, bilinear_masking='dstwgt', ext_masking='poly', 
+    bilinear_masking='dstwgt', ext_masking='poly', cdr=None, getcdr=False, usecdr=None, useoldcdr=True, 
     mixt_fill=True,  check_mask=True, clipminmax=False, geo=None, **kwargs):
     """Regrid a variable from a regular grid to another
+    
+    If the input or output grid is curvilinear and ``method`` is set to
+    ``"linear"``, ``"cellave"`` or ``"conserv"``, the :class:`CDATRegridder` is used.
     
     :Params:
     
         - **vari**: Variable cdms on regular grid
         - **ggo**: Tuple of (x,y) or a cdms grid or a cdms variable with a grid
-        - **method**: One of:
+        - **method**, optiona: One of:
         
             - ``"auto"``: method guessed according to resolution of input and output grid (see :func:`regrid_method`)
             - ``"nearest"``: nearest neighbour
@@ -1611,19 +1636,26 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
             - ``"nat"`` : Natgrid interpolation (low res. to high res.) (see :class:`GridData` for more info)
             - ``"carg"`` : Interpolation with minicargen(low res. to high res.) (see :func:`cargen` for more info)
             
-        - *ext*: Perform extrapolation when possible
-        - *use_scrip*: Use :class:`SCRIP` interpolator when possible
-        - *bilinear_masking*: the way to handle interpolation near masked values
+        - **cdr**, optional: :class:`CDATRegridder` instance.
+        - **getcdr**, optional: Also return the computed :class:`CDATRegridder` instance.
+        - **usecdr**, optional: Force the use or not of a :class:`CDATRegridder` instance,
+          even for rectangular grids.
+        - **useoldcdr**, optional: Force the use the old CDAT regridder (rectangular grids only).
+        - **ext**, optional: Perform extrapolation when possible
+        - **bilinear_masking**: the way to handle interpolation near masked values
         
             - ``"nearest"``: brut masking using nearest neighbor
             - ``"dstwgt"`` : distance weight data are used where interpolated mask is lower ``mask_thres``
         
-        - *mask_thres*: Threshold for masking points for some methods (~ land fraction):
+        - **mask_thres**, optional: Threshold for masking points for some methods (~ land fraction) for
+          **rectangular grids only*:
             
             - ``method="bilinear"`` and ``bilinear_masking="dstwght"``
             - ``method="cellave"`` or ``method="bining"``
             
-        - *ext_masking*: Manual masking method when ``ext=False`` (when needed) with methods ["carg",] (see :func:`~vacumm.misc.grid.masking.grid_envelop_mask`) if input grid is not rectangular
+        - **ext_masking**, optional: Manual masking method when ``ext=False`` (when needed) 
+            with methods ["carg",] (see :func:`~vacumm.misc.grid.masking.grid_envelop_mask`) 
+            if input grid is not rectangular
         
             - ``"poly"``: use the polygon defined by the input grid envelopp and check if output points are inside
             - ``"nearest"``: use hack with nearest 2d interpolation
@@ -1642,13 +1674,9 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
     """ 
     
     # Method
-    if method is None: method = 'auto'
-    method = method.lower()
-    if method == 'auto' or method is None:
-        method = regrid_method(vari, ggo)
-    assert method in _regrid2d_methods,  'Wrong method: %s. Should be one of: %s'%(method, str(_regrid2d_methods))
-    if method == 'interp' or method == 'linear': method = 'bilinear'
-    
+    method = regrid2d_method_name(method)
+    if method == 'auto':
+        method = regrid2d_method_name(regrid_method(vari, ggo))
     
     # Check mask, grids and method
     vari = MV.asarray(vari)
@@ -1731,7 +1759,8 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
         varo3d = _regrid2d_nearest2d_(vari3d.filled(mv), xxi, yyi, xxo, yyo, geo, maskoext, mv)
         
     
-    elif not curved and method in ['bilinear', 'mixt', 'dstwgt']:
+    elif (not curved and method in ['mixt', 'dstwgt']) or \
+        (method=='bilinear' and not curved and usecdr is not True):
         
         
         # Method
@@ -1762,24 +1791,32 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
 
     elif method in _cdat_methods:
         
+        # Old regridder ?
+        if useoldcdr or useoldcdr is None and not curved and method in ['cellave', 'conserv']:
+            
+            tool = 'regrid2'
+        
         # ESMF regridder
-        esmfcons = curved #and method in _cellave_methods
-        if esmfcons:
-            check_mask = True
-            vari3d = MV2.where(maski3d, 0., vari3d) 
-            set_grid(vari3d, ggi)
+        else:
+            esmfcons = curved #and method in _cellave_methods
+            if esmfcons:
+                check_mask = True
+                vari3d = MV2.where(maski3d, 0., vari3d) 
+                set_grid(vari3d, ggi)
+            tool = None
         
         # Regridder
-        R = CDATRegridder(vari3d, ggor, method=method)
+        if cdr is None:
+            cdr = CDATRegridder(vari3d, ggor, method=method, tool=None)
         
         # Regrid data
-        varo3d = R(vari3d)        
+        varo3d = cdr(vari3d)        
             
         # Masking
         if check_mask:# and not method.startswith('cons'):
             good = vari3d.clone()
             good[:] = 1-maski3d ;  del maski3d
-            goodo = R(good).filled(0.) ; del good
+            goodo = cdr(good).filled(0.) ; del good
 #           varo3d_nearest = _regrid2d_nearest2d_(vari3d.filled(mv),xxi,yyi,xxo,yyo,geo,maskoext,mv)
 #           varo3d[:] = MV2.where(masko!=0., varo3d_nearest, varo3d)
             varo3d[:] = MV2.masked_where((goodo<0.9999), varo3d, copy=0) ; del goodo
@@ -1834,6 +1871,8 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
         for iaxis in range(vari.ndim-2):
             varo.setAxis(iaxis, vari.getAxis(iaxis))
     cp_atts(vari, varo, id=True)
+    
+    if getcdr: return varo, cdr
     return varo
 
 
@@ -2680,12 +2719,14 @@ def extendgrid(gg, iext=0, jext=0, mode='extrap'):
 class CDATRegridder(object):
     """Regridding using CDAT regridders
     
+    .. note:: This code is adapted from the :meth:`regrid` method of MV2 arrays.
+    
     :Params:
     
         - **fromgrid**: Input grid, or variable with a grid.
         - **togrid**: Output grid.
         - **tool**, optional: One of ``"esmf"``, ``"libcf"`` and ``"regrid2"``.
-        - **method**, optional: One of ``"linear"``, ``"conservative"`` and ``"cellave"``.
+        - **method**, optional: One of ``"linear"``, ``"path"``, ``"conservative"`` and ``"cellave"``.
     """
     
     def __init__(self, fromgrid, togrid, missing=None, order=None, mask=None, **keywords):
@@ -2722,16 +2763,18 @@ class CDATRegridder(object):
         userSpecifiesMethod = False
         for rm in 'rm', 'method', 'regridmethod', 'regrid_method', 'regridMethod':
             if keywords.has_key(rm):
-                regridMethod = keywords[rm]
+                if keywords[rm] is not None:
+                    regridMethod = keywords[rm]
+                    userSpecifiesMethod = True
                 del keywords[rm]
-                userSpecifiesMethod = True
         # - tool
         userSpecifiesTool = False
         for rt in 'rt', 'tool', 'regridtool', 'regrid_tool', 'regridTool':
             if keywords.has_key(rt):
-                regridTool = keywords[rt]
+                if keywords[rt] is not None:
+                    regridTool = keywords[rt]
+                    userSpecifiesTool = True
                 del keywords[rt]
-                userSpecifiesTool = True
 
         # The method determines the tool
         if re.search('(cons|cell|patch)', regridMethod, re.I):
@@ -2772,14 +2815,18 @@ class CDATRegridder(object):
             self._divdstfracs = True
             
         # Clean method names
-        if re.search('lin',regridMethod, re.I):
+        regridMethod = regrid2d_method_name(regridMethod, raiseerr=False)
+        if regridMethod=='bilinear':
             regridMethod = 'linear'
         elif re.search('patch',regridMethod, re.I):
             regridMethod = 'patch'
-        else:
+        elif regridMethod=='conserv':
             regridMethod = 'conservative'
+        else:
+            raise VACUMMError('Wrong CDATRegridder regrid method. Please one of: '+
+                'linear, conserv, patch, cellave')
         self.method = regridMethod
-            
+
         # Setup regridder
         if regridTool=='regrid2': # Origignal CDMS regridder
             
