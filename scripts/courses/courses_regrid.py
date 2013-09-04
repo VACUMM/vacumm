@@ -17,10 +17,11 @@ dxi, dyi = resol(gridi)
 
 
 # Nouvelle grille
-factor = 0.6                                                # -> CHANGEZ LE FACTEUR
+factor = 0.634                                                # -> CHANGEZ LE FACTEUR
 dxo = dxi*factor
 dyo = dyi*factor
-grido = create_grid((3.1, 3.8, dxo), (42.6, 43.4, dyo))
+grido = create_grid((3.13, 3.8, dxo), (42.62, 43.4, dyo))
+
 
 # Quelle méthode ?
 method = regrid_method(gridi, grido)
@@ -38,9 +39,10 @@ ssto2 = regridder.regrid(ssti)
 ssto3, cdr = regrid2d(ssti, grido, cdr=regridder, getcdr=True)  
 # -> VERIFIEZ LE TYPE
 
+
 # Plots
 kwp = dict(vmin=ssti.min(), vmax=ssti.max(), res=None, show=False, colorbar=False, 
-    drawmeridians_linewidth=0, drawparallels_linewidth=0, grid=False, **select)
+    drawmeridians_linewidth=0, drawparallels_linewidth=0, grid=False, yhide='auto', **select)
 map2(ssti, title='Original',figsize=(15, 5), subplot=131, **kwp)
 add_grid(gridi, alpha=1)
 map2(ssto, title='Avec regrid2d', subplot=132, **kwp)

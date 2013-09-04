@@ -2873,17 +2873,34 @@ class CDATRegridder(object):
                             **keywords)
             self._kwargs = keywords
             
-    def regrid(self, vari, weidstfracs=None, check_mask=True, **keywords):
-        """Regrid the variable"""
+    def regrid(self, vari, weidstfracs=None, check_mask=True, csvhack=False, **keywords):
+        """Regrid the variable
+        
+        :Params:
+        
+            - **vari**: Input variable.
+            - **weidstfracs**, optional: Specify how to apply weights computed using 
+              destination fractions. Divide if <0, else multiply. It is not used with
+              linear and match methods.
+            - **check_mask**, optional: Mask point using masked data (the algo 
+              interpolate the mask and check level 0.999). MUST BE IMPROVED!
+            - **csvhack**, optional: Hack to prevent a bug with conservative-like method
+              of the ESMF regridder. Use it if you have strange result in the output
+              most right longitude.
+              
+              .. warning:: The algo mask the must right longitude of input data before
+                processing.
+        
+        """
         # Float type
         if vari.dtype.kind!='f':
             vari = vari.astype('d')
         
-        # Hack for conservative
-        if self.method=='conservative':  
+        # Hack for conservative method bug
+        if csvhack and self.method=='conservative':  
             mask = N.zeros(vari.shape, '?')
             mask[..., -1] = True
-            vari = MV2.masked_where(mask, vari, copy=0)
+            vari = MV2.masked_where(mask, vari)
             del mask
             
         # Regrid
@@ -2896,7 +2913,7 @@ class CDATRegridder(object):
             varo = res
             if self._getdstfracs:
                 wo = N.resize(kwargs['diag']['dstAreaFractions'], varo.shape)
-        else:
+        else: # regrid2 old regridder
             varo, wo = res
             
         # Working with destination fractions
@@ -2907,12 +2924,11 @@ class CDATRegridder(object):
             if self._mskdstfracs:
                 varo[:] = MV2.masked_where(mask, varo, copy=0)
                 
-                
             # Scaling
             if weidstfracs is None:
                 weidstfracs = self._weidstfracs
             if weidstfracs:
-                if self._weidstfracs==1:
+                if weidstfracs==1:
                     varo[:] *= wo
                 else:
                     wo[mask] = 1.
@@ -2923,7 +2939,7 @@ class CDATRegridder(object):
         if check_mask:
             good = vari.clone()
             good[:] = 1-N.ma.getmaskarray(vari)
-            goodo = self._regridder(good)
+            goodo = self.regrid(good, weidstfracs=weidstfracs, check_mask=False, csvhack=csvhack, **keywords)
             del good
             if isinstance(goodo, tuple): goodo = goodo[0]
             goodo = goodo.filled(0.)
@@ -2931,10 +2947,10 @@ class CDATRegridder(object):
             
         # Finalize
         cp_atts(vari, varo)
-        
         return varo
         
     __call__ = regrid
+
 
 ######################################################################
 ######################################################################
