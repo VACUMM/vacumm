@@ -5039,7 +5039,7 @@ class Map(Plot2D):
             - **drawmeridians**: Display or hide medidians and associated labels using
               method :meth:`~mpl_toolkits.basemap.Basemap.drawmeridians`.
             - **drawmeridians_<param>**: Pass ``<param>`` to the method.
-            - **meridians**: Merdiians to plot.
+            - **meridians**: Meridians to plot.
             - **meridional/zonal_labels**: Display or hide meridional/zonal labels. 
               ``meridional/zonal_labels=False`` is equivalent to ``y/xhide=True``.
             - **no_seconds**: Do not display seconds in labels.

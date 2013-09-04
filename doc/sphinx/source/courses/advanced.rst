@@ -1,5 +1,5 @@
-Outils avancés
-==============
+Leçons sur les outils avancés
+=============================
 
 .. toctree::
 

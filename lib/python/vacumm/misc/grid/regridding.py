@@ -1810,18 +1810,19 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
             cdr = CDATRegridder(vari3d, ggor, method=method, tool=None)
         
         # Regrid data
-        varo3d = cdr(vari3d)        
+        varo3d = cdr(vari3d, check_mask=check_mask)   
+        del maski3d
             
-        # Masking
-        if check_mask:# and not method.startswith('cons'):
-            good = vari3d.clone()
-            good[:] = 1-maski3d ;  del maski3d
-            goodo = cdr(good).filled(0.) ; del good
-#           varo3d_nearest = _regrid2d_nearest2d_(vari3d.filled(mv),xxi,yyi,xxo,yyo,geo,maskoext,mv)
-#           varo3d[:] = MV2.where(masko!=0., varo3d_nearest, varo3d)
-            varo3d[:] = MV2.masked_where((goodo<0.9999), varo3d, copy=0) ; del goodo
-#            varo3d[:] = MV2.masked_where((masko>mask_thres).astype('b') & (masko>0.).astype('b'), varo3d, copy=0)
-#            del varo3d_nearest
+#        # Masking
+#        if check_mask:# and not method.startswith('cons'):
+#            good = vari3d.clone()
+#            good[:] = 1-maski3d ;  del maski3d
+#            goodo = cdr(good).filled(0.) ; del good
+##           varo3d_nearest = _regrid2d_nearest2d_(vari3d.filled(mv),xxi,yyi,xxo,yyo,geo,maskoext,mv)
+##           varo3d[:] = MV2.where(masko!=0., varo3d_nearest, varo3d)
+#            varo3d[:] = MV2.masked_where((goodo<0.9999), varo3d, copy=0) ; del goodo
+##            varo3d[:] = MV2.masked_where((masko>mask_thres).astype('b') & (masko>0.).astype('b'), varo3d, copy=0)
+##            del varo3d_nearest
 
     
             
@@ -2872,7 +2873,7 @@ class CDATRegridder(object):
                             **keywords)
             self._kwargs = keywords
             
-    def regrid(self, vari, weidstfracs=None, **keywords):
+    def regrid(self, vari, weidstfracs=None, check_mask=True, **keywords):
         """Regrid the variable"""
         # Float type
         if vari.dtype.kind!='f':
@@ -2918,6 +2919,16 @@ class CDATRegridder(object):
                     varo[:] /= wo
             del wo, mask
 
+        # Check mask
+        if check_mask:
+            good = vari.clone()
+            good[:] = 1-N.ma.getmaskarray(vari)
+            goodo = self._regridder(good)
+            del good
+            if isinstance(goodo, tuple): goodo = goodo[0]
+            goodo = goodo.filled(0.)
+            varo[:] = MV2.masked_where((goodo<0.9999), varo, copy=0) ; del goodo
+            
         # Finalize
         cp_atts(vari, varo)
         
