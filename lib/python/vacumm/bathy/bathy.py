@@ -688,12 +688,12 @@ class XYZBathyBank(object):
             f.read(get_config_value(__name__, 'cfgfile_xyz'))
             if f.has_option('banks', 'main'):
                 cfgfile = f.get('banks', 'main')
-            else:
-                raise Exception, 'Cannot read config file to guess bank file name'
+            #else:
+            #    raise Exception, 'Cannot read config file to guess bank file name'
         # Read file
         self.cfg = SafeConfigParser()
         self.cfgfile = cfgfile
-        if os.path.exists(cfgfile): self.cfg.read(cfgfile)
+        if cfgfile and os.path.exists(cfgfile): self.cfg.read(cfgfile)
         self._clients = {}
         for id in self.cfg.sections():
             self._clients[id] = XYZBathyBankClient(self, id)
@@ -826,6 +826,8 @@ class XYZBathyBank(object):
             cfgfile = self.cfgfile
         else:
             self.cfgfile = cfgfile
+        if cfgfile is None:
+            raise VACUMMError('You must provide a valid file name')
         f = open(cfgfile, 'w')
         self.cfg.write(f)
         f.close()
