@@ -1,8 +1,10 @@
-Leçon d'introduction à (UV)CDAT
-===============================
+Leçon d'introduction à UV-CDAT
+==============================
 
 Introduction
 ------------
+
+Site web : http://uv-cdat.llnl.gov/
 
 CDAT est destiné à la communauté océano/météo/climat.
 
@@ -84,6 +86,14 @@ Les bases
 Fichier :file:`courses_cdat_bases.py`
 
 .. literalinclude:: ../../../../scripts/courses/courses_cdat_bases.py
+
+
+Les grilles
+-----------
+
+Fichier :file:`courses_cdat_grids.py`
+
+.. literalinclude:: ../../../../scripts/courses/courses_cdat_grids.py
 
 
 

@@ -12,6 +12,7 @@ avec quelques généralités en guise d'introductions.
     cdat
     vacumm_intro
     time
+    grids
     masking
     regrid
     interp
