@@ -1,64 +1,68 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*- 
-"""UV-CDAT - Axes and grids (creating, modifying, axes ...)"""
+"""Axes et grilles avec VACUMM"""
 
-# Imports
-import numpy as N, cdms2, MV2
+from vcmq import N, create_lon, create_lat, create_grid, isgrid, isrect, islon, set_grid,  get_grid, gridsel, varsel, resol, curv2rect, get_xy, meshgrid, meshcells, create_dep, isregular, P, rotate_grid
 
-# -----------------------------------------------------------------------------------------------------------
-# Longitude axis creation
-# - base
-lon = cdms2.createAxis([-5.,-4.,-3.],id='lon')
-lon.long_name = 'Longitude'
-lon.units = 'degree_east'
-# - add lon.axis='X' and lon.modulo = '360.'
-lon.designateLongitude()
+# Créer
 
-# Latitude
-lat = cdms2.createAxis([46.,47.,48.],id='lat')
-lat.long_name = 'Latitude'
-lat.units = 'degree_north'
-lat.designateLatitude() # lat.axis = 'Y'
+# - axes
+lon = create_lon((2., 11, 2.))  # -> SPECIFIEZ LE LONG_NAME
+lat = create_lat(N.arange(43, 50.))
+dep = create_dep((0., 10))
+# -> AFFICHEZ LES INFOS
+xx, yy = N.meshgrid(N.arange(5.), N.arange(4.))
+lon2d, lat2d = create_axes2d(xx, yy)
+ii = lon2d.getAxis(1)
 
-# Depth
-depth = cdms2.createAxis([-200.,-100.,-0.],id='depth')
-depth.long_name = 'Depth'
-depth.units = 'm'
-depth.designateLevel() # depth.axis = 'Z'
-
-# Time
-# - creation
-time = cdms2.createAxis([0.,1.,2.],id='time')
-time.long_name = 'Time'
-time.units = 'days since 2006-08-01'
-time.designateTime() # time.axis = 'T'
-# - check
-ctime = time.asComponentTime()
-print ctime,ctime[1].day
-#  -> [2006-8-1 0:0:0.0, 2006-8-2 0:0:0.0, 2006-8-3 0:0:0.0] 2
-rtime = time.asRelativeTime()
-print rtime,rtime[1].value
-#  -> [0.00 days since 2006-08-01, 1.00 days since 2006-08-01,
-#      2.00 days since 2006-08-01] 1.0
+# - grille
+grid = create_grid(lon, lat)    # -> ESSAYEZ AVEC LON EXPLICITE
+gridc = create_grid(lon2d, lat2d)
 
 
-# Now, we create a variable using these axes.
-#- straightforward method
-temp1 = cdms2.createVariable(N.ones((3,3,3,3)),typecode='f',id='temp',
-    fill_value=1.e20,axes=[time,depth,lat,lon],copyaxes=0,
-    attributes=dict(long_name='Temperature',units='degC'))
-# - Remark
-print cdms2.createVariable is MV2.array
-#  -> True         (These are the same functions !)
-# - other methos
-#   . initialization
-temp2 = MV2.array(N.ones((3,3,3,3))).astype('f')
-#   . attributes
-temp2.id = 'temp'
-temp2.long_name = 'Temperature'
-temp2.units = 'degC'
-temp2.set_fill_value(1.e20) # <=> temp2.setMissing(1.e20)
-#   . axes
-temp2.setAxisList([time,depth,lat,lon])
-#   . or for example for each axis individually
-temp2.setAxis(1,depth)
+# Verifier
+print islon(lon)
+print isgrid(grid)              # -> TEST PARAM CURV=...
+print isrect(gridc)             # -> CREEZ GRILLE NON RECT ET RETESTER
+print isdepthup(dep)            # -> TESTEZ EN CHANGEANT ATTRIBUT POSITIVE ET VALEURS
+print isregular(lon)            
+
+
+# Affecter
+var = MV2.ones(grid.shape)
+set_grid(var, grid)
+varc = MV2.ones(gridc.shape)
+set_grid(varc, gridc)            # -> VERIFIEZ ID DES AXES
+
+
+# Récupérer
+mygrid = get_grid(gridc)        # -> TESTEZ AVEC (LON,LAT) ET PARAMS STRICT ET INTERCEPT
+mylon2d = get_grid(gridc, 1)    # -> COMPAREZ AVEC .GETAXIS()
+
+
+# Sélectionner
+print coord2slice(lon, lon=(2, 4.5))# -> COMPAREZ AVEC .GETINTERVALEXT(...)
+print coord2slice(grid, lon=(4, 8), lat=(44, 46)) # -> TESTEZ SUR GRIDC
+# -> TESTEZ VARSEL
+
+
+# Transformer
+gridcr = curv2rect(gridc)       # -> TESTEZ AVEC VOTRE GRILLE NON RECT 
+ax = create_lon([350, 0, 10.])
+print monotonic(ax)
+print xshift(var, 2)[0]         # -> COMPAREZ A VAR ET VERIFIEZ AXE
+# -> TESTEZ XEXTEND
+grido = rotate_grid(grid, 30)   # -> TRACEZ LES LONGITUDE (PCOLOR)
+grids = shiftgrid(grid, 1, -1)  # -> VERIFIEZ PUIS TESTEZ SUR GRIDC + PASSER DE T À U
+gride = extendgrid(grid, iext=(2, 3))   # -> VERIFIER PUIS TESTEZ LE MODE 
+
+
+# Exploiter
+print resol(grid)               # -> TESTEZ EN METRES ET SUR AXE
+print depth2dz(dep)
+print get_closest(lon2d, lat2d, 2.3, 1.2)
+
+
+# Utilitaires sut les coordonnées
+xx, yy = meshgrid(xx, x)
+xxb, yyb = meshcells(x, y)      # -> EN 1D?
