@@ -84,15 +84,16 @@ from vacumm.misc.stats import StatAccum
 # - grid
 
 from vacumm.misc.grid import \
-    get_grid, set_grid, create_grid, create_grid2d, resol, \
-    meshcells, meshbounds, meshgrid, bounds1d, bounds2d, \
-    isrect, curv2rect, isgrid, get_xy, create_axes2d
+    get_grid, set_grid, create_grid, create_grid2d, resol, monotonic, isdepthup, depth2dz, \
+    meshcells, meshbounds, meshgrid, bounds1d, bounds2d, coord2slice, isregular, \
+    isrect, curv2rect, isgrid, get_xy, create_axes2d, gridsel, varsel, xshift, rotate_grid, \
+    get_closest, makedepthup
     
 from vacumm.misc.grid.regridding import \
     regrid1d, regrid2d, interp1d, interp2d, cellave1d, cellave2d, \
     cargen, xy2xy, shift1d, shift2d, extend1d, extend2d, regrid_method, \
     transect, griddata, CDATRegridder, grid2xy, \
-    nearest1d
+    nearest1d, shiftgrid, extendgrid
 
 from vacumm.misc.grid.basemap import \
     merc, create_map, get_proj, reset_cache

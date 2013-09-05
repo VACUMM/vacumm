@@ -326,13 +326,14 @@ def isregular(axis, tol=.05, iaxis=None, dx=None):
     else:
         xx = axis[:]
     if iaxis is None:
-        if xx.nim == 1 or not cdaxis:
+        if xx.ndim == 1 or not cdaxis:
             iaxis = 0
         else:
             iaxis = int(islon(axis))
-    ddx = N.abs(N.diff(dx, axis=iaxis))
+    thisdx = N.diff(xx, axis=iaxis)
+    dxx = N.abs(N.diff(thisdx, axis=iaxis))
     if dx is None:
-        dx = N.median(dxx)
+        dx = N.median(thisdx)
     return not ((dxx/dx)%1.>tol).any()
     
 
