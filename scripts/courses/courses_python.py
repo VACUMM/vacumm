@@ -10,7 +10,7 @@ b = arange(5)
 
 
 # Inspection
-help(numpy.arange)
+# -> help(numpy.arange)
 print dir(numpy)
 print type('3')
 print callable(numpy.arange)
