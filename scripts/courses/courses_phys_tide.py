@@ -9,7 +9,7 @@ from vacumm.tide.marigraph import Marigraph
 from vacumm.tide.station_info import StationInfo
 
 # Stations
-station = StationInfo('Bre')
+station = StationInfo('Brest')
 print station.attributes()
 print station.name, station.longitude
 print 'Niveau moyen a Brest:', station.nm
