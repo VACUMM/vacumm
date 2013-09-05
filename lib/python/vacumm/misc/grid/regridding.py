@@ -2656,12 +2656,6 @@ def extend2d(vari, iext=0, jext=0, mode=None, copy=False):
             - ``"same"``: Constant extrapolation.
             - ``"masked"``: Masked.
             
-        - **mode**, optional: Interpolation mode for boundary point outside initial positions.
-        
-            - ``"extrap"``: Linear extrapolation.
-            - ``"same"``: Constant extrapolation.
-            - ``"masked"``: Masked.
-            
         - **copy**, optional: Always input copy data.
     
     """ 
@@ -2702,6 +2696,12 @@ def extendgrid(gg, iext=0, jext=0, mode='extrap'):
     
         - **gg**: cdms2 grid.
         - **i/jext**: Size of extrapolation along i/j.
+        - **mode**, optional: Interpolation mode for boundary point outside initial positions.
+        
+            - ``"extrap"``: Linear extrapolation.
+            - ``"same"``: Constant extrapolation.
+            - ``"masked"``: Masked.
+            
     """
     xx, yy = get_xy(gg)
     

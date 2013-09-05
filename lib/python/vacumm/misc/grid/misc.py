@@ -1063,19 +1063,21 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
     
     # Format
     if hasx: 
-        xaxis2d = create_lon(xaxis2d, id=lonid or 'lon')
+        xaxis2d.id = lonid or 'lon'
+#        xaxis2d = create_lon(xaxis2d, id=lonid or 'lon')
         xaxis2d.getAxis(1).designateLongitude()
         xaxis2d.getAxis(0).designateLatitude()
-        del xaxis2d.axis
+        if hasattr(xaxis2d, 'axis'): del xaxis2d.axis
         if xatts is not None:
             xa = get_atts(x)
             xa.update(xatts)
             set_atts(xaxis2d, xatts)
     if hasy: 
-        yaxis2d = create_lat(yaxis2d, id=latid or 'lat')
+        yaxis2d.id = latid or 'lat'
+#        yaxis2d = create_lat(yaxis2d, id=latid or 'lat')
         yaxis2d.getAxis(1).designateLongitude()
         yaxis2d.getAxis(0).designateLatitude()
-        del yaxis2d.axis
+        if hasattr(yaxis2d, 'axis'): del yaxis2d.axis
         if yatts is not None:
             ya = get_atts(y)
             ya.update(yatts)
@@ -2492,7 +2494,7 @@ def merge_axis_slice(sel1, sel2):
 def get_zdim(var, axis=None, default=None, strict=True):
     """Get the index of the Z dimension"""
     ndim = len(var.shape)
-    if ndim==1 and not strict:
+    if ndim==1 and (not strict or isdep(var)):
         return 0
     if isaxis(axis) and cdms2.isVariable(var):
         i = var.getAxisList().index(axis)
@@ -2513,7 +2515,8 @@ _getzdim_ = get_zdim
 def isdepthup(depth, axis=None, ro=True):
     """Guess if depth is positive up 
     
-    It first check "positive" attribute, then guess from values
+    It first check "positive" attribute, then guess from values:
+    more positive values means positive down.
     
     ..warning:: Bad values must be masked
     
@@ -2715,7 +2718,7 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
 ######################################################################
 from ...misc.atime import ch_units,compress
 from ...misc import cp_atts,get_atts,set_atts,intersect
-from ...misc.axes import check_axes, islon, islat, islev, istime, create_lon, create_lat, isaxis
+from ...misc.axes import check_axes, islon, islat, islev, istime, create_lon, create_lat, isaxis, isdep
 from ...misc.phys import units
 from basemap import get_map, cached_map, cache_map, get_proj
 from masking import t2uvmasks

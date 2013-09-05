@@ -377,6 +377,10 @@ def create_lon(values,**atts):
         - **values**: Numeric values
         - Keywords are passed as attributes to the axis.
     """ 
+    if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
+        from grid.misc import create_axes2d
+        atts.setdefault('long_name', 'Longitude')
+        return create_axes2d(x=values, lonid=atts.pop('id', None), xatts=atts)
     return create(values,'x',**atts)
     
 def create_lat(values,**atts):
@@ -387,6 +391,10 @@ def create_lat(values,**atts):
         - **values**: Numeric values
         - Keywords are passed as attributes to the axis.
     """ 
+    if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
+        from grid.misc import create_axes2d
+        atts.setdefault('long_name', 'Latitude')
+        return create_axes2d(y=values, latid=atts.pop('id', None), yatts=atts)
     return create(values,'y',**atts)
     
 def create_dep(values,**atts):
