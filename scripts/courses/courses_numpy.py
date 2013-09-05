@@ -32,9 +32,6 @@ a, b = N.meshgrid([0,1,2],[3,4])
 
 
 # Générateurs
-def myfunc(i, j):
-    return (i+1)*(j+4-i)
-a = N.fromfuncion(myfunc, (2,3))
 a = N.random.random((2,2)) # -> TESTER RANDINT, NORMAL, WEIBULL
 
 
