@@ -32,6 +32,6 @@ print cfg
 cfg2 = SafeConfigParser()
 cfg2.read('courses_advanced_cfgm.cfg')
 print cfg2 
-print cfg.get('plot', 'linewidth')
-print cfg.getfloat('plot', 'linewidth')
+print cfg2.get('plot', 'linewidth')
+print cfg2.getfloat('plot', 'linewidth')
 

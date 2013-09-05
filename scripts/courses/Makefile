@@ -1,2 +1,2 @@
 all:
-	@for fn in test_*.py; do echo $$fn ; python $$fn; done
+	@for fn in courses_*.py; do echo $$fn ; python $$fn; done

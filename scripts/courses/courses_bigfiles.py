@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 """Calculs sur les gros fichiers"""
 
-from vcmq import cdms2, Intervals, data_sample, StatAccum, cdtime, curve2
+from vcmq import cdms2, Intervals, data_sample, StatAccum, cdtime, curve2, N
 
 
 # Initialisations

@@ -53,7 +53,7 @@ udjf = djf(u)                                           # extraction
 dfj = cdutil.DJF                                        # des saisons existent déjà
 
 # - averager
-ut = cdutil.averaged(u, axis='yx',  weights=cdutil.area_weights(V)) # moyenne spatiale
+ut = cdutil.averager(u, axis='yx',  weights=cdutil.area_weights(u)) # moyenne spatiale
 help(cdutil.averager)
 #  -> essayez la moyenne temporelle
 
