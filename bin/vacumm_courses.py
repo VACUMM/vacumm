@@ -20,7 +20,9 @@ except:
     sys.exit("Can't find the directory hosting the courses script files")
 print 'Source directory: '+cdir
 from glob import glob
-cfiles = glob(os.path.join(cdir, "courses_*.py"))
+cfiles = []
+for pattern in ["courses_*.py", "courses_*.txt", "myfile.f90"]:
+    cfiles.extend(glob(os.path.join(cdir, pattern)))
 if not cfiles:
     print "No script files found in directory: "+cdir
     sys.exit()
