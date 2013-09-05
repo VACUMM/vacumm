@@ -35,4 +35,4 @@ sst2 = ds2.get_sst(squeeze=True)                      # -> VERIFIER ATTRIBUTS
 depth = ds.get_depth() # sigma
 print depth.shape
 mld = ds.get_mld()
-ds.plot_transect('temp', lons=(4.1, 7.9), lats=(42.6, 43.4), figsize=(12, 6)) # -> OUTAXIS=
+ds.plot_transect('temp', lons=(4.1, 4.9), lats=(43.3, 42.6), figsize=(12, 6)) # -> OUTAXIS=
