@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*- 
 """Axes et grilles avec VACUMM"""
 
-from vcmq import N, create_lon, create_lat, create_grid, isgrid, isrect, islon, set_grid,  get_grid, gridsel, varsel, resol, curv2rect, get_xy, meshgrid, meshcells, create_dep, isregular, P, rotate_grid
+from vcmq import N, MV2, create_lon, create_lat, create_grid, isgrid, isrect, islon, set_grid,  get_grid,  varsel, resol, curv2rect, get_xy, meshgrid, meshcells, create_dep, isregular, P, rotate_grid, shiftgrid, extendgrid, create_axes2d, isdepthup, coord2slice, monotonic, xshift, depth2dz, get_closest
 
 # Créer
 
@@ -64,5 +64,5 @@ print get_closest(lon2d, lat2d, 2.3, 1.2)
 
 
 # Utilitaires sut les coordonnées
-xx, yy = meshgrid(xx, x)
-xxb, yyb = meshcells(x, y)      # -> EN 1D?
+xx, yy = meshgrid(xx, yy[:, 0])
+xxb, yyb = meshcells(xx, yy)      # -> EN 1D?
