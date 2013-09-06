@@ -7,6 +7,14 @@ Organisation
 .. figure:: ../static/modules.*
 
     Architecture (incomplète) de VACUMM
+    
+    
+    
+.. figure:: code_metrics.png
+
+    Métrique du code
+    
+
 
 Pourquoi VACUMM ?
 -----------------

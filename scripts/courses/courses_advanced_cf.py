@@ -1,13 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-"""Utilitaires et conventions de formatage (:mod:`vacumm.data.cf`) :
-
-- Définitions des prioriétés standards de variables usuelles comme une
-  extension aux convention CF.
-- Outils de formatage.
-
-
-.. note:: Les spécifications seront probablement converties au format xml à l'avenir.
+"""Utilitaires et conventions de formatage
 
 """
 

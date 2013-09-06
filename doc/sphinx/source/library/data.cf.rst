@@ -1,7 +1,7 @@
 .. _lib.data.cf:
     
-:mod:`vacumm.cf` -- Standards and conventions
-*********************************************
+:mod:`vacumm.data.cf` -- Standards and conventions
+**************************************************
 
 .. automodule:: vacumm.data.cf
     :members:
