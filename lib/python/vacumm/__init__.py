@@ -80,7 +80,9 @@ def help(text=None, recent=False):
                 text = text.func_name
             else:
                 text = text.__class__.__name__
-        url += '/search.html?q=%s&check_keywords=yes&area=default'%text
+        if not text.startswith('/'):
+            text = '/search.html?q=%s&check_keywords=yes&area=default'%text
+        url += text
     open(url,  new=2)
     
 class VACUMMError(Exception):
