@@ -2,7 +2,7 @@
 ============================================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_dataset_get_dens.py
-
 .. figure:: ../../../../scripts/test/test_dataset_get_dens.png
+
+.. literalinclude:: ../../../../scripts/test/test_dataset_get_dens.py
 

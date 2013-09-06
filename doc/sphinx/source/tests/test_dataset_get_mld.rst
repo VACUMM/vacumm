@@ -2,7 +2,7 @@
 =========================================================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_dataset_get_mld.py
-
 .. figure:: ../../../../scripts/test/test_dataset_get_mld.png
+
+.. literalinclude:: ../../../../scripts/test/test_dataset_get_mld.py
 

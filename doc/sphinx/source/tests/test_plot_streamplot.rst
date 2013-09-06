@@ -2,7 +2,7 @@
 ================================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_plot_streamplot.py
-
 .. figure:: ../../../../scripts/test/test_plot_streamplot.png
+
+.. literalinclude:: ../../../../scripts/test/test_plot_streamplot.py
 

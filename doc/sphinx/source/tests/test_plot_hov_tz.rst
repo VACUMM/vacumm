@@ -2,7 +2,7 @@
 ========================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_plot_hov_tz.py
-
 .. figure:: ../../../../scripts/test/test_plot_hov_tz.png
+
+.. literalinclude:: ../../../../scripts/test/test_plot_hov_tz.py
 

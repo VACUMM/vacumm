@@ -9,3 +9,4 @@ Leçons sur les outils avancés
     sigma
     log
     cfgm
+    argparse

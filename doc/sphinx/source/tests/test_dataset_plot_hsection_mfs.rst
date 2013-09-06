@@ -2,7 +2,7 @@
 ==================================================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_dataset_plot_hsection_mfs.py
-
 .. figure:: ../../../../scripts/test/test_dataset_plot_hsection_mfs.png
+
+.. literalinclude:: ../../../../scripts/test/test_dataset_plot_hsection_mfs.py
 

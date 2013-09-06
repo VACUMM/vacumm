@@ -30,6 +30,8 @@ In this example, we import all the needed functions for reading file,
 computing the MLD and plotting it.
 All parameterd are defined from within the script.
 
+File: :file:`general.scripts.level1.py`.
+
 
 .. literalinclude:: ../../../../scripts/tutorials/general.scripts.level1.py
 
@@ -44,12 +46,16 @@ and in particular in the :class:`~vacumm.data.model.mars.MARS3D` class.
 This new formulation of the script takes advantage of this.
 
 
+File: :file:`general.scripts.level2a.py`.
+
 .. literalinclude:: ../../../../scripts/tutorials/general.scripts.level2a.py
 
 
 In this the follwing formulation of the script, the mixed layer depth is also
 directly computed by the :class:`~vacumm.data.model.mars.MARS3D`: 
 it automatically read the temperature and the depths before computing the MLD.
+
+File: :file:`general.scripts.level2b.py`.
 
 .. literalinclude:: ../../../../scripts/tutorials/general.scripts.level2b.py
 
@@ -61,6 +67,8 @@ Third level: add commandline arguments and options
 
 We know want the script to be generic and use it without editing it.
 Therefore we add options and arguments management using the :mod:`argparse` module.
+
+File: :file:`general.scripts.level3.py`.
 
 .. literalinclude:: ../../../../scripts/tutorials/general.scripts.level3.py
 

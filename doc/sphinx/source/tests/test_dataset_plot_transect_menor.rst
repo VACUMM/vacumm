@@ -2,7 +2,7 @@
 ======================================================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_dataset_plot_transect_menor.py
-
 .. figure:: ../../../../scripts/test/test_dataset_plot_transect_menor.png
+
+.. literalinclude:: ../../../../scripts/test/test_dataset_plot_transect_menor.py
 

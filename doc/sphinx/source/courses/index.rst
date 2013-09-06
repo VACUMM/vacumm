@@ -13,6 +13,7 @@ avec quelques généralités en guise d'introductions.
     vacumm_intro
     time
     grids
+    filters
     masking
     regrid
     interp

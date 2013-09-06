@@ -2,6 +2,8 @@
 # -*- coding: utf8 -*-
 """Get or update scripts used for the VACUMMM courses"""
 
+targets = ["courses/courses_*.py", "courses/courses_*.txt", "courses/myfile.f90", 
+    "tutorials/general.scripts.*.py", "tutorials/misc.config.argparse.*"]
 
 # Arguments
 import argparse, os, sys
@@ -15,14 +17,14 @@ args = parser.parse_args()
 # Get the list of scripts
 from vacumm.config import get_scripts_dir
 try:
-    cdir = get_scripts_dir('courses')
+    sdir = get_scripts_dir()
 except:
-    sys.exit("Can't find the directory hosting the courses script files")
-print 'Source directory: '+cdir
+    sys.exit("Can't find the directory hosting the script files")
+print 'Source directory for scripts: '+sdir
 from glob import glob
 cfiles = []
-for pattern in ["courses_*.py", "courses_*.txt", "myfile.f90"]:
-    cfiles.extend(glob(os.path.join(cdir, pattern)))
+for pattern in targets:
+    cfiles.extend(glob(os.path.join(sdir, pattern)))
 if not cfiles:
     print "No script files found in directory: "+cdir
     sys.exit()

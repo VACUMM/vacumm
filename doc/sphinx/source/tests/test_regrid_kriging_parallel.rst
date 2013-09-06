@@ -2,7 +2,7 @@
 =============================================================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_regrid_kriging_parallel.py
-
 .. figure:: ../../../../scripts/test/test_regrid_kriging_parallel.png
+
+.. literalinclude:: ../../../../scripts/test/test_regrid_kriging_parallel.py
 

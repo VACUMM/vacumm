@@ -2,7 +2,7 @@
 =====================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_transect_mld.py
-
 .. figure:: ../../../../scripts/test/test_transect_mld.png
+
+.. literalinclude:: ../../../../scripts/test/test_transect_mld.py
 

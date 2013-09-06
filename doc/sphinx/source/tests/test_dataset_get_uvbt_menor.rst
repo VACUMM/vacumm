@@ -2,7 +2,7 @@
 ===================================================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_dataset_get_uvbt_menor.py
-
 .. figure:: ../../../../scripts/test/test_dataset_get_uvbt_menor.png
+
+.. literalinclude:: ../../../../scripts/test/test_dataset_get_uvbt_menor.py
 

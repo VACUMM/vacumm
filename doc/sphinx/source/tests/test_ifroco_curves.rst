@@ -2,7 +2,7 @@
 =========================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_ifroco_curves.py
-
 .. figure:: ../../../../scripts/test/test_ifroco_curves.png
+
+.. literalinclude:: ../../../../scripts/test/test_ifroco_curves.py
 

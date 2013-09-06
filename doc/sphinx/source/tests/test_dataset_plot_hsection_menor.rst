@@ -2,7 +2,7 @@
 ======================================================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_dataset_plot_hsection_menor.py
-
 .. figure:: ../../../../scripts/test/test_dataset_plot_hsection_menor.png
+
+.. literalinclude:: ../../../../scripts/test/test_dataset_plot_hsection_menor.py
 

@@ -2,7 +2,7 @@
 ====================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_ifroco_map.py
-
 .. figure:: ../../../../scripts/test/test_ifroco_map.png
+
+.. literalinclude:: ../../../../scripts/test/test_ifroco_map.py
 

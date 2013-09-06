@@ -2,7 +2,7 @@
 ================================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_plot_section_quiver.py
-
 .. figure:: ../../../../scripts/test/test_plot_section_quiver.png
+
+.. literalinclude:: ../../../../scripts/test/test_plot_section_quiver.py
 

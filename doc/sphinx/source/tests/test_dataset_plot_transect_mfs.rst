@@ -2,7 +2,7 @@
 ===================================================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_dataset_plot_transect_mfs.py
-
 .. figure:: ../../../../scripts/test/test_dataset_plot_transect_mfs.png
+
+.. literalinclude:: ../../../../scripts/test/test_dataset_plot_transect_mfs.py
 

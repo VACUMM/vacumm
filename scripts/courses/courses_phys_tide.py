@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-"""Diagnostics de maree (:mod:`vacumm.tide`)"""
+"""Diagnostics de maree"""
 
 from vcmq import cdms2, P, curve2, savefigs, data_sample
 from vacumm.tide.filters import demerliac, godin

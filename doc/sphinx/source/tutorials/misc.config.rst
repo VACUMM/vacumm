@@ -57,8 +57,8 @@ access to the ``option2`` like this: ::
       subsection option, that's why you have to always write subsections after all
       of a section options.
 
-Example
-~~~~~~~
+Example with :mod:`optparse`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In this example we'll show you how to use the :class:`~vacumm.misc.config.ConfigManager`
 to handle defaults, command line arguments and a configuration file.
@@ -94,4 +94,10 @@ The outputs of this code with configuration setup with command line options:
 The outputs of this code with configuration setup with command line options and a configuration file :
 
 .. command-output:: ../../../scripts/tutorials/misc.config.py --scalars-string="foo, 'hello world'" --lists-floats="42,3.14" --cfgfile=tutorials/python/misc.config.cfg
+
+
+.. toctree:: 
+
+    misc.config.argparse
+
 

@@ -2,7 +2,7 @@
 =========================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_plot_curve_t.py
-
 .. figure:: ../../../../scripts/test/test_plot_curve_t.png
+
+.. literalinclude:: ../../../../scripts/test/test_plot_curve_t.py
 

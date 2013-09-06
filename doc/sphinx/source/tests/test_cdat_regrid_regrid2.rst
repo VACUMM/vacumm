@@ -2,7 +2,7 @@
 ======================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_cdat_regrid_regrid2.py
-
 .. figure:: ../../../../scripts/test/test_cdat_regrid_regrid2.png
+
+.. literalinclude:: ../../../../scripts/test/test_cdat_regrid_regrid2.py
 

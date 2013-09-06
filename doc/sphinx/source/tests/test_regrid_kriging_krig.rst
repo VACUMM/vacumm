@@ -2,7 +2,7 @@
 ==============================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_regrid_kriging_krig.py
-
 .. figure:: ../../../../scripts/test/test_regrid_kriging_krig.png
+
+.. literalinclude:: ../../../../scripts/test/test_regrid_kriging_krig.py
 

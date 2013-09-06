@@ -2,7 +2,7 @@
 ============================================================================================================
 
 
-.. literalinclude:: ../../../../scripts/test/test_regrid_kriging_cloud_split.py
-
 .. figure:: ../../../../scripts/test/test_regrid_kriging_cloud_split.png
+
+.. literalinclude:: ../../../../scripts/test/test_regrid_kriging_cloud_split.py
 
