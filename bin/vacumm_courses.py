@@ -60,5 +60,5 @@ for cfile in cfiles:
     # Get it
     shutil.copy(cfile, cwfile)
     print msg
-    os.chmod(cwfile, stat.S_IXUSR)
+    os.chmod(cwfile, os.stat(cwfile).st_mode|stat.S_IXUSR)
     
