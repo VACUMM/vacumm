@@ -71,7 +71,8 @@ from vacumm.misc.io import list_forecast_files, netcdf3, netcdf4, ncread_files, 
     ncread_axis, ncget_var, ncget_axis, ncfind_var, ncfind_axis, NcIterBestEstimate,  \
     ncget_fgrid
     
-from vacumm.misc.filters import generic1d, generic2d, shapiro1d, shapiro2d
+from vacumm.misc.filters import generic1d, generic2d, shapiro1d, shapiro2d, blackman1d, \
+    bartlett1d, kaiser1d, hanning1d, blackman1d, gaussian1d, gaussian2d
 
 from vacumm.misc.remote import InputWorkFiles, OutputWorkFile
 

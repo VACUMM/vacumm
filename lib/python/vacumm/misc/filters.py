@@ -37,7 +37,7 @@
 # knowledge of the CeCILL license and that you accept its terms.
 # 
 __all__ = ['generic1d', 'shapiro1d', 'gaussian1d', 'hamming1d','generic2d', 'shapiro2d', 'gaussian2d', 'deriv', 'deriv2d', 
-    'norm_atan','running_average', 'bartlett1d', 'kaiser1d', 'hanning1d']
+    'norm_atan','running_average', 'bartlett1d', 'kaiser1d', 'hanning1d', 'blackman1d']
 __all__.sort()
 
 import numpy as N,MV2, cdms2
@@ -171,7 +171,6 @@ def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
         del ww, one2d, bad
     else:
         datao[:] = datan
-        del one1d
         
     if axis!=data.ndim-1:
         init_order = cdms2.order2index(datao.getAxisList(), init_order)
@@ -283,7 +282,7 @@ def gaussian1d(data,nxw,**kwargs):
     """
     assert nxw % 2 == 1 , 'nxw must be an odd number'
     tc = data.dtype.char
-    xx = N.arange(nxw)-nxw/2
+    xx = N.arange(nxw)-nxw/2.
     return generic2d(data, N.exp(-xx**2/nxw**2),**kwargs)
     
 
@@ -503,7 +502,7 @@ def gaussian2d(data,nxw,nyw=None,**kwargs):
     if nyw is None: nyw = nxw
     assert nxw % 2 == 1 and nyw % 2 == 1, 'nxw and nyw must be odd numbers'
     tc = data.dtype.char
-    xx,yy = meshgrid(N.arange(nxw)-nxw/2,N.arange(nyw)-nxw/2)
+    xx,yy = meshgrid(N.arange(nxw)-nxw/2.,N.arange(nyw)-nxw/2.)
     return generic2d(data,N.exp(-(xx**2/nxw**2+yy**2/nyw**2)),**kwargs)
     
 def deriv(data, axis=0, fast=True, fill_value=None, physical=True, lat=None):
