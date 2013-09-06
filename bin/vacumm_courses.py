@@ -71,7 +71,7 @@ import argparse, os, sys
 parser = argparse.ArgumentParser(description=__doc__)
 subparsers = parser.add_subparsers()
 # - init
-parser_init = subparsers.add_parser('init', help='initialize the courses by get all needed files')
+parser_init = subparsers.add_parser('init', help='initialize the courses by copying all needed files')
 parser_init.add_argument("workdir", help="working directory where to put files [default: %(default)s]", nargs="?", 
     default=os.getcwd())
 parser_init.add_argument("-r", "--replace", action='store_true', 
