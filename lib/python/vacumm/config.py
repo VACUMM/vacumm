@@ -165,28 +165,15 @@ def get_tut_dir(raiseerr=True):
     It can be at two different places, depending on if the library is 
     an installed version or developers version.
     
-    - If installed : in :file:`vacumm-tutorials` subdirectory in the 
+    - If installed : in :file:`vacumm-scripts/tutorials` subdirectory in the 
       installed package directory (see :meth:`get_lib_dir`).
-    - Else in the :file:`doc/sphinx/source/tutorials/python` 
+    - Else in the :file:`scripts/tutorials` 
       subdirectory of the main distribution tree
       (see :meth:`get_dist_dir`).
       
     .. warning:: It raises an :class:`VACUMMError` error if not found.
     """
-    # Installed librairy
-    lib_dir = get_lib_dir()
-    tut_dir = os.path.join(lib_dir, 'vacumm-tutorials')
-    if os.path.exists(tut_dir):
-        return tut_dir
-        
-    # Distributed library (dev)
-    dist_dir = get_dist_dir()
-    if dist_dir is not None:
-        tut_dir = os.path.join(dist_dir, 'scripts/tutorials')
-        if os.path.exists(tut_dir):
-            return tut_dir
-            
-    if raiseerr: raise VACUMMError("Can't find a valid tutorials directory")
+    return get_scripts_dir('tutorials', raiseerr=True)
     
 #def get_conf_dir():
 #    """Get directory of secondary configuration files
