@@ -33,6 +33,16 @@ Testing module :mod:`~vacumm.misc.grid.misc`.
 
     test_grid_*
     
+Stats
+-----
+
+Testing module :mod:`~vacumm.misc.grid.stats`.
+
+.. toctree::
+    :glob:
+
+    test_stats_*
+    
 Regridding
 ----------
 

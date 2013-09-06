@@ -12,13 +12,13 @@ et paramètres. La base des arguments :
 >>> import sys
 >>> print sys.argv
 
-Écrivez un script avec ce code puis testez le contenu de ``sys.argv``.
+Écrivez un script avec ce code puis testez le contenu de :attr:`sys.argv`.
 
 
-Utilisation de :mod:`argpase`
------------------------------
+Utilisation de :mod:`argparse`
+------------------------------
 
-On va maintenant utilisez le module :mod:`argpase` qui permet de gérer facilement les arguments
+On va maintenant utilisez le module :mod:`argparse` qui permet de gérer facilement les arguments
 de la ligne de commande et avoir un comportement à la linux.
 Pour comprendre l'intérêt et le fonctionnement, 
 **allez voir** le tutoriels :ref:`user.tut.generic.scripts`.

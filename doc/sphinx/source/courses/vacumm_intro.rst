@@ -72,7 +72,7 @@ Par sa librairie :
 
 Par ses scripts :
 
-.. code-block:: shell
+.. code-block:: bash
 
     $ vacumm_print_config.py
     $ showtime.py -m myfile.nc
