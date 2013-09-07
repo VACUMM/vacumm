@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 """Les bases numpy"""
 
-import numpy as N, scipy
+import numpy as N, scipy, scipy.io
 
 
 # Créations de base
@@ -45,7 +45,7 @@ print b[0], c[0], d[0]
 
 
 # Matrices
-a2 = N.ones((2, 2))
+a2 = N.random.random((2,2))
 m2 = N.matrix(a2)   # -> ESSAYER AVEC .ASMATRIX()
 # -> UTILISER MAT()
 # -> MULTIPLIER (CARRE)
@@ -79,7 +79,9 @@ print N.rot90(a)
 # Split
 print N.split(N.arange(6),2)
 print N.tile(b, [2,3])
-print  N.repeat(b, [3,2], axis=1)
+print 'b',b
+x = N.array([[1,2],[3,4]])
+print N.repeat(x, [3,2], axis=0)
 
 
 # Join
@@ -129,7 +131,7 @@ N.savetxt('courses_numpy2.txt.gz', data, fmt='%d')
 
 # - binaire
 N.save('courses_numpy.npy', data)
-data = N.load('data.npy')
+data2 = N.load('courses_numpy.npy')
 
 # - matlab
 vect = N.arange(10)
@@ -177,7 +179,7 @@ print N.interp(2.5,[1,2,3],[3,2,0])
 a = N.arange(12).reshape(3,4)
 print a.max(axis=0)
 print a.mean(axis=1)
-print N.average(a,axis=2, weights = [1,1,0])
+print N.average(a,axis=1, weights = [2,1,1,0])
 print a.std(axis=0,ddof=1)
 a = N.random.randn(10,3)
 print N.corrcoef(a,rowvar=0)
@@ -223,7 +225,7 @@ b = N.array([[4, 1.], [2, 2]])
 print N.dot(a,b), N.inner(a,b)
 x = N.linalg.solve(a, b)
 U,S,VH = N.linalg.svd(a)
-print N.allclose(N.pinv(a), N.matrix(a).I)
+print N.allclose(N.linalg.pinv(a), N.matrix(a).I)
 x,residues,rank,s =N.linalg.lstsq(a, b)
 # VOIR SCIPY AUSSI
 
