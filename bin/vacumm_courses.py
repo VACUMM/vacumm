@@ -3,7 +3,8 @@
 """Get/update scripts used for the VACUMMM courses or show the web page"""
 
 targets = ["courses/courses_*.py", "courses/courses_*.txt", "courses/myfile.f90", 
-    "tutorials/general.scripts.*.py", "tutorials/misc.config.argparse.*"]
+    "tutorials/general.scripts.*.py", "tutorials/misc.config.argparse.*", 
+    "courses/courses_advanced_cfgm.ini", "courses/courses_advanced_cfgm.cfg"]
 url = "/courses/index.html"
 
 # Init function
