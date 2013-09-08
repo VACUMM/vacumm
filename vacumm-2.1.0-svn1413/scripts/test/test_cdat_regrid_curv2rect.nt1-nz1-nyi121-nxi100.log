@@ -1,0 +1,8 @@
+MPI: NPROC=1
+NT=1, NZ=1
+NYI=121, NXI=100
+NYO=344, NXO=551
+ESMF linear :   5.9 seconds Ressources informations not available (no module psutil)
+ESMF patch :  17.8 seconds Ressources informations not available (no module psutil)
+ESMF conserv :   4.1 seconds Ressources informations not available (no module psutil)
+LIBCF linear :  32.0 seconds Ressources informations not available (no module psutil)

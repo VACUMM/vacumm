@@ -1,0 +1,21 @@
+Metadata-Version: 1.1
+Name: vacumm
+Version: 2.1.0-svn1413
+Summary: Outils python pour VACUMM
+Home-page: http://www.ifremer.fr/vacumm
+Author: Actimar / IFREMER
+Author-email: raynaud@actimar.fr
+License: CeCiLL
+Description: Validation, Analyse, Comparaison dU Modèle Mars Utilitaires pour valider, analyser les sorties du modèle MArs et comparer avec données in-situ 
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: CeCiLL
+Classifier: Programming Language :: Python :: 2
+Classifier: Topic :: Scientific/Engineering :: Physics
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Classifier: Topic :: Scientific/Engineering :: Atmospheric Science
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: UNIX
+Classifier: Operating System :: MacOS :: MacOS X

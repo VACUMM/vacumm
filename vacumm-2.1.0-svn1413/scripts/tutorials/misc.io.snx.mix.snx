@@ -1,0 +1,52 @@
+B S
+CN Semis
+CP 0 0
+CP 0
+0 0 0 A
+1 1 1 A
+2 2 2 A
+3 3 3 A
+B S
+CN Semis
+CP 0 0
+CP 0
+10 10 10 A
+11 11 11 A
+12 12 12 A
+13 13 13 A
+B N
+CN Niveau
+CP 0 1
+CP 99
+CP 0
+0 0 0 A
+1 1 1 A
+2 2 2 A
+3 3 3 A
+B N
+CN Niveau
+CP 0 1
+CP 99
+CP 0
+10 10 10 A
+11 11 11 A
+12 12 12 A
+13 13 13 A
+B N
+CN Niveau
+CP 1 1
+CP 99
+CP 0
+0 0 0 A
+1 1 1 A
+2 2 2 A
+3 3 3 A
+B N
+CN Niveau
+CP 1 1
+CP 99
+CP 0
+10 10 10 A
+11 11 11 A
+12 12 12 A
+13 13 13 A

@@ -1,0 +1,13 @@
+NY=300, NX=300
+ESMF linear
+ rect: ini=  3.2 s + reg= 0.01 s Ressources informations not available (no module psutil)
+ curv: ini=  4.0 s + reg= 0.01 s Ressources informations not available (no module psutil)
+ESMF patch
+ rect: ini=  9.6 s + reg= 0.02 s Ressources informations not available (no module psutil)
+ curv: ini= 50.0 s + reg= 0.02 s Ressources informations not available (no module psutil)
+ESMF conserv
+ rect: ini=  2.5 s + reg= 0.02 s Ressources informations not available (no module psutil)
+ curv: ini=  5.1 s + reg= 0.02 s Ressources informations not available (no module psutil)
+LIBCF linear
+ rect: ini=  0.2 s + reg= 0.01 s Ressources informations not available (no module psutil)
+ curv: ini=  3.3 s + reg= 0.01 s Ressources informations not available (no module psutil)

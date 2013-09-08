@@ -1,0 +1,1076 @@
+2013-08-27 21:59: [CHECK] *** Start log session ***
+2013-08-27 22:01: [CHECK] bathy.bathy.gridded.base.py: OK
+2013-08-27 22:01: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/bathy-bathy-gridded-base.png
+
+2013-08-27 22:02: [CHECK] bathy.bathy.gridded.merging.py: OK
+2013-08-27 22:02: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/bathy-bathy-gridded-merging.png
+
+2013-08-27 22:02: [CHECK] bathy.bathy.xyz.base.py: FAILED
+2013-08-27 22:02: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/bathy.bathy.xyz.base.py", line 27, in <module>
+    xyz.select([[-5.4, 48.1], [-4.8, 48.1], [-5.1, 48.5]])
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/io.py", line 2959, in select
+    self._selections.extend(polygons(zones))
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/masking.py", line 702, in polygons
+    poly = shaper(poly)
+  File "_geoslib.pyx", line 334, in _geoslib.Polygon.__init__ (src/_geoslib.c:2967)
+ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+
+2013-08-27 22:02: [CHECK] bathy.bathy.xyz.bathybank.py: FAILED
+2013-08-27 22:02: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/bathy.bathy.xyz.bathybank.py", line 29, in <module>
+    bank.add(fsouth, id='south', long_name='South')
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/bathy/bathy.py", line 733, in add
+    self._clients[id] = XYZBathyBankClient(self, id, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/bathy/bathy.py", line 575, in __init__
+    self._check_()
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/bathy/bathy.py", line 640, in _check_
+    self._set_(att, getattr(xyz, att)())
+TypeError: 'numpy.float64' object is not callable
+
+2013-08-27 22:02: [CHECK] bathy.bathy.xyz.merging.py: FAILED
+2013-08-27 22:02: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/bathy.bathy.xyz.merging.py", line 28, in <module>
+    xmin=xyz.xmin(), xmax=xyz.xmax(), ymin=xyz.ymin(), ymax=xyz.ymax())
+TypeError: 'numpy.float64' object is not callable
+
+2013-08-27 22:03: [CHECK] bathy.shorelines.compare.py: FAILED
+2013-08-27 22:03: [CHECK]  OUT: Can't find data file: /home1/caparmor/sraynaud/data/shorelines/EUROSION/CLEUER100kV2_2.shp
+If you know what is this file and where it is on your system,
+please enter its name here, or leave it empty: 
+
+2013-08-27 22:03: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/bathy.shorelines.compare.py", line 5, in <module>
+    euro = EUROSION(clip=zone)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/bathy/shorelines.py", line 147, in __init__
+    input = self._check_input_(input)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/bathy/shorelines.py", line 153, in _check_input_
+    suffix=['.shp', '.shx'])[0][:-4]
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/config.py", line 1094, in check_data_file
+    parent_option=parent_option, quiet=quiet, suffix=suf, check_license=i==0))
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/config.py", line 1120, in check_data_file
+    guessed = raw_input("If you know what is this file and where it is on your system,\n"
+EOFError: EOF when reading a line
+
+2013-08-27 22:04: [CHECK] bathy.shorelines.readplot.py: FAILED
+2013-08-27 22:04: [CHECK]  OUT: Can't find data file: /home1/caparmor/sraynaud/data/shorelines/Histolitt/TCHistolitt-V1-0-RGF93-polygone.shp
+If you know what is this file and where it is on your system,
+please enter its name here, or leave it empty: 
+
+2013-08-27 22:04: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/bathy.shorelines.readplot.py", line 10, in <module>
+    coast = Histolitt(m=m) # Chargement
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/bathy/shorelines.py", line 147, in __init__
+    input = self._check_input_(input)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/bathy/shorelines.py", line 153, in _check_input_
+    suffix=['.shp', '.shx'])[0][:-4]
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/config.py", line 1094, in check_data_file
+    parent_option=parent_option, quiet=quiet, suffix=suf, check_license=i==0))
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/config.py", line 1120, in check_data_file
+    guessed = raw_input("If you know what is this file and where it is on your system,\n"
+EOFError: EOF when reading a line
+
+2013-08-27 22:04: [CHECK] bathy.shorelines.sealevel.py: FAILED
+2013-08-27 22:04: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/bathy.shorelines.sealevel.py", line 10, in <module>
+    xyz = tc.bathy()
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/bathy/shorelines.py", line 106, in bathy
+    cb = msl.interp(self, ext=ext, nl=nl, xyz=xyz, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/io.py", line 3065, in interp
+    xo, yo = xyo.xy
+TypeError: 'instancemethod' object is not iterable
+
+2013-08-27 22:04: [CHECK] check.py: SKIPPED
+2013-08-27 22:04: [CHECK] data.misc.profile.py: OK
+2013-08-27 22:04: [CHECK]  ERR: [2013-08-27 22:04:32 CEST Profiles NOTICE] Profiles loading: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/data/data.misc.profile.nc
+[2013-08-27 22:04:32 CEST Profiles INFO] Loaded platform code from global attribute wmo_platform_code: DAJC
+[2013-08-27 22:04:32 CEST Profiles INFO] Loaded time from FileAxis: TIME, size: 4
+[2013-08-27 22:04:32 CEST Profiles INFO] Loaded time_qc from FileVariable: TIME_QC, shape:(TIME=4), order: t
+[2013-08-27 22:04:32 CEST Profiles INFO] Loaded latitude from FileAxis: LATITUDE, size: 4
+[2013-08-27 22:04:32 CEST Profiles INFO] Loaded longitude from FileAxis: LONGITUDE, size: 4
+[2013-08-27 22:04:32 CEST Profiles INFO] Loaded position_qc from FileVariable: POSITION_QC, shape:(POSITION=4), order: -
+[2013-08-27 22:04:32 CEST Profiles INFO] Loaded depth from FileVariable: DEPH, shape:(TIME=4,DEPTH=21), order: tz
+[2013-08-27 22:04:32 CEST Profiles WARNING] Depth of 4 profiles were converted to negative values
+[2013-08-27 22:04:32 CEST Profiles INFO] Loaded depth_qc from FileVariable: DEPTH_QC, shape:(DEPTH=21), order: z
+[2013-08-27 22:04:32 CEST Profiles INFO] Loaded temperature from FileVariable: TEMP, shape:(TIME=4,DEPTH=21), order: tz
+[2013-08-27 22:04:32 CEST Profiles NOTICE] Loaded 4 profiles
+[2013-08-27 22:04:32 CEST Profiles INFO] Saving profiles in: data.misc.profile.converted.nc
+[2013-08-27 22:04:32 CEST Profiles INFO] Number of profiles: 4
+[2013-08-27 22:04:32 CEST Profiles INFO] Number of levels:   21
+[2013-08-27 22:04:32 CEST Profiles INFO] Writing variable temperature
+[2013-08-27 22:04:32 CEST Catalog INFO] Searching datasets using pattern: ['data.misc.profile.converted.nc'], time: None
+[2013-08-27 22:04:32 CEST Catalog INFO] Found 1 datasets
+[2013-08-27 22:04:32 CEST ProfilesDataset INFO] Loading datasets:
+[2013-08-27 22:04:32 CEST ProfilesDataset INFO] - data.misc.profile.converted.nc
+[2013-08-27 22:04:32 CEST ProfilesDataset WARNING] Reversing data and level to go from bottom to surface
+Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/data.misc.profile.py", line 58, in <module>
+    p.plot_pro('temperature', -1, -2, plot_title='plot_pto')
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/data/misc/profile.py", line 2010, in plot_pro
+    self.logdesc(d)
+AttributeError: 'ProfilesDataset' object has no attribute 'logdesc'
+
+2013-08-27 22:04: [CHECK] data.misc.sigma.py: FAILED
+2013-08-27 22:04: [CHECK]  OUT: Begin : Tue, 27 Aug 2013 22:04:33
+
+2013-08-27 22:04: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/data.misc.sigma.py", line 49, in <module>
+    section2(data_in[0, :, 10], yaxis=depths_in[0, :, 10], subplot=211, title='Sigma', **kw)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/plot.py", line 3405, in section2
+    return Section(*args, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 251, in __init__
+    self.post_plot(**kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 3305, in post_plot
+    Plot.post_plot(self, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 1120, in post_plot
+    self.format_axes(**kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 1260, in format_axes
+    axmin = getattr(self, 'get_%smin'%xy)(glob=True)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 2457, in get_ymin
+    ymin = self.get_ydata(masked=masked).min()
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 681, in get_ydata
+    y = N.ma.masked_array(y, mask=self.get_ymask())
+  File "/Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/ma/core.py", line 2714, in __new__
+    raise MaskError, msg % (nd, nm)
+numpy.ma.core.MaskError: Mask and data not compatible: data size is 870, mask size is 30.
+
+2013-08-27 22:04: [CHECK] general.scripts.level1.py: OK
+2013-08-27 22:04: [CHECK]  OUT: Read
+depth
+mld
+(30, 73, 102) (30, 73, 102)
+plot
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/general-scripts-level1.png
+Done
+
+2013-08-27 22:04: [CHECK] general.scripts.level2a.py: FAILED
+2013-08-27 22:04: [CHECK]  ERR: [2013-08-27 22:04:48 CEST Catalog INFO] Searching datasets using pattern: ['/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/data/menor.nc'], time: None
+[2013-08-27 22:04:48 CEST Catalog INFO] Found 1 datasets
+[2013-08-27 22:04:48 CEST Mars3D INFO] Loading datasets:
+[2013-08-27 22:04:49 CEST Mars3D INFO] - /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/data/menor.nc
+Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/general.scripts.level2a.py", line 17, in <module>
+    mld = mixed_layer_depth(temp, depth, mode='deltatemp')
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/diag/thermdyn.py", line 192, in mixed_layer_depth
+    mld[:] = -_val2z_(temp, depth, tempcrit, zaxis, 1)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/diag/thermdyn.py", line 217, in _val2z_
+    dep = N.ma.masked_where(var.mask, dep, copy=False)
+  File "/Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/ma/core.py", line 1806, in masked_where
+    " (got %s and %s)" % (cshape, ashape))
+IndexError: Inconsistant shape between the condition and the input (got (30, 73, 102) and (30, 154, 154))
+
+2013-08-27 22:04: [CHECK] general.scripts.level2b.py: FAILED
+2013-08-27 22:04: [CHECK]  ERR: [2013-08-27 22:04:50 CEST Catalog INFO] Searching datasets using pattern: ['/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/data/menor.nc'], time: None
+[2013-08-27 22:04:50 CEST Catalog INFO] Found 1 datasets
+[2013-08-27 22:04:50 CEST Mars3D INFO] Loading datasets:
+[2013-08-27 22:04:50 CEST Mars3D INFO] - /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/data/menor.nc
+Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/general.scripts.level2b.py", line 12, in <module>
+    mld = ds.get_mld(mode='deltatemp', squeeze=1)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/data/misc/dataset.py", line 2617, in get_mld
+    mld = mixed_layer_depth(temp, depth=depth, mode='deltatemp', format_axes=True, **kwmld)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/diag/thermdyn.py", line 192, in mixed_layer_depth
+    mld[:] = -_val2z_(temp, depth, tempcrit, zaxis, 1)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/diag/thermdyn.py", line 217, in _val2z_
+    dep = N.ma.masked_where(var.mask, dep, copy=False)
+  File "/Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/ma/core.py", line 1806, in masked_where
+    " (got %s and %s)" % (cshape, ashape))
+IndexError: Inconsistant shape between the condition and the input (got (1, 30, 73, 102) and (1, 30, 154, 154))
+
+2013-08-27 22:04: [CHECK] general.scripts.level3.py: FAILED
+2013-08-27 22:04: [CHECK]  ERR: usage: general.scripts.level3.py [-h] [-m {ocean,mars,nemo}] [-t TIME]
+                                 [-x LON] [-y LAT] [--title TITLE]
+                                 [--fillmode {nofill,pcolormesh,contourf}]
+                                 [--nodisp] [-o OUTPUTFIG]
+                                 [ncfile [ncfile ...]]
+general.scripts.level3.py: error: unrecognized arguments: --var=temp --zoom-lat-min=48
+
+2013-08-27 22:05: [CHECK] misc.bases.config.py: FAILED
+2013-08-27 22:05: [CHECK]  ERR: [2013-08-27 22:04:52 CEST MyObject INFO] Default configuration:
+{ 'afloat': 0.0, 'somefloats': []}
+22:04:52 - MyObject - INFO - Loaded configuration (/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.bases.config.cfg):
+{ 'Logger': { 'date_format': '%H:%M:%S',
+              'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+              'level': 'debug'},
+  'afloat': 42.0,
+  'somefloats': [0.0, 42.0]}
+22:04:52 - MyObject - DEBUG - Debug message after configuration has been loaded
+
+2013-08-27 22:05: [CHECK] misc.bases.debug.py: FAILED
+2013-08-27 22:05: [CHECK]  ERR: [2013-08-27 22:05:05 CEST MyObject ERROR] Division by 0 failed !
+--------------------------------------------------------------------------------
+Exception details, locals by frame, innermost last
+--------------------------------------------------------------------------------
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.bases.debug.py", line 30, in <module>
+    main()
+
+	            MyObject <class 'vacumm.misc.bases.Class'> = <class '__main__.MyObject'>
+	              Object <class 'vacumm.misc.bases.Class'> = <class 'vacumm.misc.bases.Object'>
+
+--------------------------------------------------------------------------------
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.bases.debug.py", line 27, in main
+    obj.do_something()
+
+	                 obj <class '__main__.MyObject'> = <__main__.MyObject object at 0x10f007450>
+
+--------------------------------------------------------------------------------
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.bases.debug.py", line 13, in do_something
+    except: self.exception('Division by 0 failed !\n%s', self.exception_trace())
+
+	                 den <type 'int'> = 0
+	                 num <type 'int'> = 0
+	                self <class '__main__.MyObject'> = <__main__.MyObject object at 0x10f007450>
+
+--------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.bases.debug.py", line 12, in do_something
+    try: num / den
+ZeroDivisionError: integer division or modulo by zero
+
+--------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.bases.debug.py", line 12, in do_something
+    try: num / den
+ZeroDivisionError: integer division or modulo by zero
+[2013-08-27 22:05:05 CEST MyObject INFO] The function emitting this message is: do_something
+[2013-08-27 22:05:06 CEST MyObject INFO] The stack trace of the function emitting this message is:
+Stack trace (innermost last):
+ <module>                                                      (/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.bases.debug.py:30)
+ main                                                          (/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.bases.debug.py:27)
+ MyObject(4546655312).do_something                             (/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.bases.debug.py:15)
+[2013-08-27 22:05:06 CEST MyObject INFO] Time:
+TransientAxis: time, size: 2
+[2013-08-27 22:05:06 CEST MyObject INFO] Latitude:
+TransientAxis: lat, size: 180
+[2013-08-27 22:05:06 CEST MyObject INFO] Longitude:
+TransientAxis: lon, size: 360, min: -180, max: 179, avg: -0.5, count: 360
+[2013-08-27 22:05:06 CEST MyObject INFO] Variable:
+TransientVariable: data, shape:(time=2,lat=180,lon=360), order: tyx, min: 3.66060946193e-05, max: 0.999997394886, avg: 0.500882791519, count: 129600
+
+2013-08-27 22:05: [CHECK] misc.bases.logging.py: OK
+2013-08-27 22:05: [CHECK]  ERR: [2013-08-27 22:05:07 CEST MyObject INFO] Call logging classmethod info
+2013-08-27 22:05:07 CEST - MyObject - DEBUG - Call logging classmethod debug
+[2013-08-27 22:05:07 CEST MyObject NOTICE] These are the default instance logging configuration:
+  level:       'INFO' (20)
+  format:      '[%(asctime)s %(name)s %(levelname)s] %(message)s'
+  date format: '%Y-%m-%d %H:%M:%S %Z'
+22:05:07 - MyObject - NOTICE - Customizing instance logging configuration:
+  level:       'DEBUG' (10)
+  format:      '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  date format: '%H:%M:%S'
+22:05:07 - MyObject - DEBUG - debug message
+22:05:07 - MyObject - VERBOSE - verbose message
+22:05:07 - MyObject - INFO - info message
+22:05:07 - MyObject - NOTICE - notice message
+22:05:07 - MyObject - WARNING - warning message
+22:05:07 - MyObject - ERROR - error message
+22:05:07 - MyObject - CRITICAL - critical message
+22:05:07 - MyObject - ERROR - Division by 0 failed !
+Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.bases.logging.py", line 52, in main
+    try: 0 / 0
+ZeroDivisionError: integer division or modulo by zero
+2013-08-27 22:05:07 CEST - MyObject - VERBOSE - 
+  MyObject.get_logger(): <vacumm.misc.log.Logger object at 0x1146eef10>
+  MyObject.get_class_logger(): <vacumm.misc.log.Logger object at 0x1146eef10>
+  MyObject.logger: <property object at 0x11483a730>
+22:05:07 - MyObject - VERBOSE - 
+  obj.get_logger(): <vacumm.misc.log.Logger object at 0x11482aa10>
+  obj.get_class_logger(): <vacumm.misc.log.Logger object at 0x1146eef10>
+  obj.logger: <vacumm.misc.log.Logger object at 0x11482aa10>
+22:05:07 - MyObject - NOTICE - the loglevel is now 'NOTICE'
+
+2013-08-27 22:05: [CHECK] misc.bases.py: OK
+2013-08-27 22:05: [CHECK]  OUT: Stack trace (innermost last):
+ <module>                                                      (/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.bases.py:6)
+ MyObject.__init__                                             (/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/bases.py:292)
+ MyObject._init_class                                          (/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/bases.py:409)
+ MyObject.init_class                                           (/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.bases.py:11)
+{}
+
+2013-08-27 22:05: [CHECK] misc.config.plot.py: OK
+2013-08-27 22:05: [CHECK]  OUT: Current configuration: {'var': 'temp', 'title': '%(long_name)s [temp]', 'zoom': {'lon': {'min': -5.5, 'max': -4.0}, 'lat': {'min': 48.0, 'max': 49.0}}}
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-config-plot.png
+
+2013-08-27 22:05: [CHECK] misc.config.py: FAILED
+2013-08-27 22:05: [CHECK]  OUT: ***
+*** You can use the --help flag with this script to interact with it
+*** to test setting config values with command line options and/or
+*** the config file
+***
+
+*** Default config from specfile '/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.config.ini':
+
+{'lists': {'booleans': [False, True],
+           'floats': [0.0, 1.0],
+           'integers': [0, 1],
+           'strings': ['foo', 'bar']},
+ 'scalars': {'boolean': False, 'float': 0.0, 'integer': 0, 'string': 'string'}}
+
+
+*** Content of the config file '/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.config.cfg':
+
+{'lists': {'booleans': ['False', 'True', 'True', 'False'],
+           'floats': ['0.0', '1.0', '1.0', '0.0'],
+           'integers': ['0', '1', '1', '0'],
+           'strings': ['foo', 'bar', 'bar', 'foo', 'foo bar', ' foo bar ']},
+ 'scalars': {'boolean': 'True',
+             'float': '1.0',
+             'integer': '1',
+             'string': 'foo'}}
+
+
+2013-08-27 22:05: [CHECK]  ERR: Usage: misc.config.py [options]
+
+misc.config.py: error: no such option: --var
+
+2013-08-27 22:05: [CHECK] misc.file.find.py: OK
+2013-08-27 22:05: [CHECK]  OUT: Searching any file starting with "misc.file." in this directory:
+
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.file.find.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.file.mkdirs.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.file.rollover.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.file.strfsize.py
+
+Searching any file starting with "misc.file." in the doc source directory:
+
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/doctrees/library/misc.file.doctree
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/doctrees/tutorials/misc.file.doctree
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_sources/library/misc.file.txt
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_sources/tutorials/misc.file.txt
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/library/misc.file.html
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/tutorials/misc.file.html
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/library/misc.file.rst
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/library/.svn/text-base/misc.file.rst.svn-base
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/tutorials/misc.file.rst
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/tutorials/.svn/text-base/misc.file.rst.svn-base
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.find.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.mkdirs.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.rollover.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.strfsize.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/.svn/prop-base/misc.file.find.py.svn-base
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/.svn/prop-base/misc.file.mkdirs.py.svn-base
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/.svn/prop-base/misc.file.rollover.py.svn-base
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/.svn/prop-base/misc.file.strfsize.py.svn-base
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/.svn/text-base/misc.file.find.py.svn-base
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/.svn/text-base/misc.file.mkdirs.py.svn-base
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/.svn/text-base/misc.file.rollover.py.svn-base
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/.svn/text-base/misc.file.strfsize.py.svn-base
+
+Searching any file starting with "misc.file" and ending with ".py" or ".rst" in the doc source directory:
+
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/library/misc.file.rst
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/tutorials/misc.file.rst
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.find.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.mkdirs.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.rollover.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.strfsize.py
+
+Searching any file starting with "misc.file." in the doc source directory, excluding "library" and ".svn" directories and "*.rst" files:
+
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/doctrees/tutorials/misc.file.doctree
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_sources/tutorials/misc.file.txt
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/tutorials/misc.file.html
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.find.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.mkdirs.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.rollover.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.strfsize.py
+
+Searching any directory named python in the doc source directory:
+
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/temp.macosx-10.4-x86_64-2.7/lib/python
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/tutorials/python
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python
+
+Showing search results with callbacks:
+
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../bin
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../config
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../data
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../dist
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../etc
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../test
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../work
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../bin/testdev
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../bin/testdev/matlab_testdev
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../bin/testdev/misc
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../bin/testdev/scripts
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../bin/testdev/misc/coloc
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../bin/testdev/misc/stat
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../bin/testdev/scripts/examples
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../bin/testdev/scripts/scripts_old_chaine_sst
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/scripts.macosx-10.4-x86_64-2.7
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/src.macosx-10.4-x86_64-2.7
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/temp.macosx-10.4-x86_64-2.7
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/bathy
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/data
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/markup
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/misc
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/sphinxext
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/tide
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/validator
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/data/in_situ
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/data/misc
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/data/model
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/data/satellite
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/data/model/mars
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/misc/axml
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/misc/grid
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/misc/phys
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/lib.macosx-10.4-x86_64-2.7/vacumm/validator/valid
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/src.macosx-10.4-x86_64-2.7/vacumm
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/src.macosx-10.4-x86_64-2.7/vacumm/misc
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/src.macosx-10.4-x86_64-2.7/vacumm/misc/grid
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/temp.macosx-10.4-x86_64-2.7/build
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/temp.macosx-10.4-x86_64-2.7/lib
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/temp.macosx-10.4-x86_64-2.7/build/src.macosx-10.4-x86_64-2.7
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/temp.macosx-10.4-x86_64-2.7/build/src.macosx-10.4-x86_64-2.7/vacumm
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/temp.macosx-10.4-x86_64-2.7/build/src.macosx-10.4-x86_64-2.7/vacumm/misc
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/temp.macosx-10.4-x86_64-2.7/build/src.macosx-10.4-x86_64-2.7/vacumm/misc/grid
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/temp.macosx-10.4-x86_64-2.7/lib/python
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/temp.macosx-10.4-x86_64-2.7/lib/python/vacumm
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/temp.macosx-10.4-x86_64-2.7/lib/python/vacumm/misc
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../build/temp.macosx-10.4-x86_64-2.7/lib/python/vacumm/misc/grid
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../data/sea_level
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/doctrees
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/latex
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/doctrees/library
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/doctrees/tests
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/doctrees/tutorials
+  - evaluating file: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/doctrees/library/misc.file.doctree
+  - evaluating file: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/doctrees/tutorials/misc.file.doctree
+  * matching entry: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/doctrees/tutorials/misc.file.doctree
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_images
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_modules
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_sources
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_static
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/gallery
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/library
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/tests
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/tutorials
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_images/math
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_modules/vacumm
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_modules/vacumm/bathy
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_modules/vacumm/data
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_modules/vacumm/diag
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_modules/vacumm/misc
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_modules/vacumm/sphinxext
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_modules/vacumm/tide
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_modules/vacumm/data/misc
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_modules/vacumm/data/model
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_modules/vacumm/data/model/mars
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_modules/vacumm/misc/grid
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_modules/vacumm/misc/phys
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_sources/library
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_sources/tests
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_sources/tutorials
+  - evaluating file: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_sources/library/misc.file.txt
+  - evaluating file: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_sources/tutorials/misc.file.txt
+  * matching entry: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/_sources/tutorials/misc.file.txt
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/gallery/new tutorials
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/gallery/test
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/gallery/tutorials
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/gallery/new tutorials/thumbnails
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/gallery/test/thumbnails
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/gallery/tutorials/thumbnails
+  - evaluating file: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/library/misc.file.html
+  - evaluating file: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/tutorials/misc.file.html
+  * matching entry: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/build/html/tutorials/misc.file.html
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/bin
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/courses
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/library
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/sphinxext
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/static
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/templates
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/tests
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/themes
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/tutorials
+  - evaluating file: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/library/misc.file.rst
+  - evaluating file: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/tutorials/misc.file.rst
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../doc/sphinx/source/tutorials/python
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../etc/modulefiles
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/fortran
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/bathy
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/data
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/diag
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/markup
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/misc
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/report
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/sphinxext
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/tide
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/validator
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/data/in_situ
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/data/misc
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/data/model
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/data/satellite
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/data/model/mars
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/markup/markup-1.7
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/markup/markup-1.7/doc
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/misc/axml
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/misc/grid
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/misc/phys
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/report/ifroco
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../lib/python/vacumm/validator/valid
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/courses
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/test
+  + evaluating directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials
+  - evaluating file: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.find.py
+  - evaluating file: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.mkdirs.py
+  - evaluating file: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.rollover.py
+  - evaluating file: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.strfsize.py
+  * matching entry: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.find.py
+  * matching entry: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.mkdirs.py
+  * matching entry: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.rollover.py
+  * matching entry: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/../../scripts/tutorials/misc.file.strfsize.py
+
+Searching any file starting with "misc.file." in this directory:
+
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.file.find.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.file.mkdirs.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.file.rollover.py
+  /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.file.strfsize.py
+
+Searching any file starting with "misc.file." in this directory and show matching groups:
+
+  file path: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.file.find.py, match groups: ('find',)
+  file path: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.file.mkdirs.py, match groups: ('mkdirs',)
+  file path: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.file.rollover.py, match groups: ('rollover',)
+  file path: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.file.strfsize.py, match groups: ('strfsize',)
+
+
+2013-08-27 22:05: [CHECK] misc.file.mkdirs.py: OK
+2013-08-27 22:05: [CHECK]  OUT: Created directory: /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/tmpRcDhav/path/to/adir
+Created directories: ['/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/tmpRcDhav/path/to/anotherdir']
+
+2013-08-27 22:05: [CHECK] misc.file.rollover.py: OK
+2013-08-27 22:05: [CHECK] misc.file.strfsize.py: OK
+2013-08-27 22:05: [CHECK] misc.grid.masking.coast.py: FAILED
+2013-08-27 22:05: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.grid.masking.coast.py", line 22, in <module>
+    mask0 = polygon_mask((lon, lat), 'f', mode=0, ocean=False)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/masking.py", line 405, in polygon_mask
+    xx, yy = M.get_xy(gg, mesh=True, num=True)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/misc.py", line 1625, in get_xy
+    assert gg.ndim > 1,  'Input must be at least a 2D array in this case'
+AssertionError: Input must be at least a 2D array in this case
+
+2013-08-27 22:05: [CHECK] misc.grid.masking.erode_coast.py: OK
+2013-08-27 22:05: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-masking-erode_coast.png
+
+2013-08-27 22:05: [CHECK] misc.grid.masking.lakes.py: OK
+2013-08-27 22:05: [CHECK]  OUT: La routine ocean marche ?
+True
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-masking-lakes.png
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-masking-lakes.pdf
+
+2013-08-27 22:05: [CHECK] misc.grid.polygons.py: OK
+2013-08-27 22:05: [CHECK]  OUT: 300.0
+True
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-polygons.png
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-polygons.pdf
+
+2013-08-27 22:05: [CHECK] misc.grid.regridding.conserv1d.py: OK
+2013-08-27 22:05: [CHECK]  OUT: Total precip.:
+- original = 89.9572428328
+- remapped = 89.9572428328
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-regridding-conserv1d.png
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-regridding-conserv1d.pdf
+
+2013-08-27 22:05: [CHECK]  ERR: /Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/ma/core.py:3808: UserWarning: Warning: converting a masked element to nan.
+  warnings.warn("Warning: converting a masked element to nan.")
+
+2013-08-27 22:05: [CHECK] misc.grid.regridding.curv2curv.py: FAILED
+2013-08-27 22:05: [CHECK]  OUT: Regrillage
+ - par natgrid
+
+2013-08-27 22:05: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.grid.regridding.curv2curv.py", line 29, in <module>
+    hs_nat = regrid2d(hs, cgrido, 'nat')
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 1805, in regrid2d
+    varo3d = _regrid2d_griddata_(vari3d, xi, yi, xo, yo, method, ext=ext, missing_value=mv, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 1923, in _regrid2d_griddata_
+    varo2d =  griddata(xxitmp, yyitmp, varitmp, (N.asarray(xo), N.asarray(yo)), method=method, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 1019, in griddata
+    return GridData(xi, yi, ggo, method=method, **kwargs)(zi, **kwout)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 842, in __call__
+    zi2d, zo3d, mo3d, nex, compress, missing_value = self._GDH.init(zi, missing_value)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 1091, in init
+    nex = zi.size/zi.shape[-1]
+ZeroDivisionError: integer division or modulo by zero
+
+2013-08-27 22:05: [CHECK] misc.grid.regridding.curv2rect.py: FAILED
+2013-08-27 22:05: [CHECK]  OUT: Regridding
+ - nearest neighbours
+ - cell averages
+ - bilinear
+ - cargen
+
+2013-08-27 22:05: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.grid.regridding.curv2rect.py", line 28, in <module>
+    hs_carg = regrid2d(hs, rgrid, method='carg')
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 1805, in regrid2d
+    varo3d = _regrid2d_griddata_(vari3d, xi, yi, xo, yo, method, ext=ext, missing_value=mv, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 1923, in _regrid2d_griddata_
+    varo2d =  griddata(xxitmp, yyitmp, varitmp, (N.asarray(xo), N.asarray(yo)), method=method, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 1021, in griddata
+    return cargen(xi, yi, zi, ggo, cgrid=cgrid, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 976, in cargen
+    zi2d, zo3d, mo3d, nex, compress, missing_value = GDH.init(zi, missing_value)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 1091, in init
+    nex = zi.size/zi.shape[-1]
+ZeroDivisionError: integer division or modulo by zero
+
+2013-08-27 22:05: [CHECK] misc.grid.regridding.fill1d.py: OK
+2013-08-27 22:05: [CHECK]  OUT: 0.0640280246735
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-regridding-fill1d.png
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-regridding-fill1d.pdf
+
+2013-08-27 22:05: [CHECK] misc.grid.regridding.fill2d.py: FAILED
+2013-08-27 22:05: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.grid.regridding.fill2d.py", line 15, in <module>
+    tempf = fill2d(temp, method='carg')
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 652, in fill2d
+    filled = griddata(xi, yi, zi, (xo, yo), compress=True, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 1021, in griddata
+    return cargen(xi, yi, zi, ggo, cgrid=cgrid, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 972, in cargen
+    GDH = _GridDataHelper_(xi, yi, ggo, geo=geo, mask=mask, compress=compress)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 1057, in __init__
+    self.x = get_axis(ggo, -1)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/misc.py", line 1120, in get_axis
+    ndim = len(getfrom.shape)
+AttributeError: 'NoneType' object has no attribute 'shape'
+
+2013-08-27 22:07: [CHECK] misc.grid.regridding.grid2xy.py: OK
+2013-08-27 22:07: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-regridding-grid2xy.png
+
+2013-08-27 22:07: [CHECK] misc.grid.regridding.griddata.py: OK
+2013-08-27 22:07: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-regridding-griddata.png
+
+2013-08-27 22:07: [CHECK] misc.grid.regridding.interp1d.py: OK
+2013-08-27 22:07: [CHECK]  OUT: ok
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-regridding-interp1d.png
+
+2013-08-27 22:07: [CHECK] misc.grid.regridding.interp2d.py: FAILED
+2013-08-27 22:07: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.grid.regridding.interp2d.py", line 26, in <module>
+    varon = interp2d(vari, (xo, yo), method='nat')
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 1973, in interp2d
+    return regrid2d(vari, ggo, method=method, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/grid/regridding.py", line 1669, in regrid2d
+    nyo, nxo = ggo.shape
+AttributeError: 'NoneType' object has no attribute 'shape'
+
+2013-08-27 22:07: [CHECK] misc.grid.regridding.regrid1dx.py: FAILED
+2013-08-27 22:07: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.grid.regridding.regrid1dx.py", line 32, in <module>
+    section2(t, yaxis=depths, subplot=211, hspace=.3, **kwplot)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/plot.py", line 3405, in section2
+    return Section(*args, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 251, in __init__
+    self.post_plot(**kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 3305, in post_plot
+    Plot.post_plot(self, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 1120, in post_plot
+    self.format_axes(**kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 1260, in format_axes
+    axmin = getattr(self, 'get_%smin'%xy)(glob=True)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 2457, in get_ymin
+    ymin = self.get_ydata(masked=masked).min()
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 681, in get_ydata
+    y = N.ma.masked_array(y, mask=self.get_ymask())
+  File "/Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/ma/core.py", line 2714, in __new__
+    raise MaskError, msg % (nd, nm)
+numpy.ma.core.MaskError: Mask and data not compatible: data size is 645, mask size is 15.
+
+2013-08-27 22:07: [CHECK] misc.grid.regridding.regrid2d.py: OK
+2013-08-27 22:07: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-regridding-regrid2d.png
+
+2013-08-27 22:07: [CHECK] misc.grid.regridding.remap_vs_interp_1d.py: OK
+2013-08-27 22:07: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-regridding-remap_vs_interp_1d.png
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-regridding-remap_vs_interp_1d.pdf
+
+2013-08-27 22:07: [CHECK] misc.grid.regridding.xy2xy.py: OK
+2013-08-27 22:07: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-regridding-xy2xy.png
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-grid-regridding-xy2xy.pdf
+
+2013-08-27 22:07: [CHECK] misc.io.ascii.py: OK
+2013-08-27 22:07: [CHECK]  OUT: # Ligne de commentaire
+2008/01/07Z00:00 12.0672 0.359631 0.156422
+2008/01/07Z01:00 11.9421 0.493174 0.158244
+
+# Ligne de commentaire
+0.000	12.067	0.360	0.156
+
+0.0 0.359631 0.156422
+
+2013-08-27 22:07: [CHECK] misc.io.config.py: OK
+2013-08-27 22:07: [CHECK]  OUT: ['sst', 'wind']
+C
+50.
+51.0
+Wind on Iroise
+Wind on %(zone)s
+Wind on for Britanny
+False
+True
+
+2013-08-27 22:07: [CHECK] misc.io.fortran.py: FAILED
+2013-08-27 22:07: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.io.fortran.py", line 1, in <module>
+    from Scientific.IO.FortranFormat import FortranFormat,FortranLine
+ImportError: No module named Scientific.IO.FortranFormat
+
+2013-08-27 22:07: [CHECK] misc.io.grib.py: OK
+2013-08-27 22:07: [CHECK] misc.io.netcdf.py: OK
+2013-08-27 22:07: [CHECK]  OUT: ['bounds_lon', 'h0', 'v', 'xe', 'u', 'bounds_lat']
+[2008-8-15 0:0:0.0, 2008-8-15 23:0:0.0]
+(13, 29)
+
+2013-08-27 22:07: [CHECK]  ERR: /Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/cdms2/dataset.py:1709: Warning: Since CDAT Version 5.2 File are now written with compression and shuffling
+You can query different values of compression using the functions:
+cdms2.getNetcdfShuffleFlag() returning 1 if shuffling is enabled, 0 otherwise
+cdms2.getNetcdfDeflateFlag() returning 1 if deflate is used, 0 otherwise
+cdms2.getNetcdfDeflateLevelFlag() returning the level of compression for the deflate method
+
+If you want to turn that off or set different values of compression use the functions:
+cdms2.setNetcdfShuffleFlag(value) ## where value is either 0 or 1
+cdms2.setNetcdfDeflateFlag(value) ## where value is either 0 or 1
+cdms2.setNetcdfDeflateLevelFlag(value) ## where value is a integer between 0 and 9 included
+
+Turning all values to 0 will produce NetCDF3 Classic files
+
+  warnings.warn("Since CDAT Version 5.2 File are now written with compression and shuffling\nYou can query different values of compression using the functions:\ncdms2.getNetcdfShuffleFlag() returning 1 if shuffling is enabled, 0 otherwise\ncdms2.getNetcdfDeflateFlag() returning 1 if deflate is used, 0 otherwise\ncdms2.getNetcdfDeflateLevelFlag() returning the level of compression for the deflate method\n\nIf you want to turn that off or set different values of compression use the functions:\ncdms2.setNetcdfShuffleFlag(value) ## where value is either 0 or 1\ncdms2.setNetcdfDeflateFlag(value) ## where value is either 0 or 1\ncdms2.setNetcdfDeflateLevelFlag(value) ## where value is a integer between 0 and 9 included\n\nTurning all values to 0 will produce NetCDF3 Classic files\n",Warning)
+
+2013-08-27 22:07: [CHECK] misc.io.snx.py: OK
+2013-08-27 22:07: [CHECK]  OUT: Done
+
+2013-08-27 22:07: [CHECK] misc.io.xls.py: OK
+2013-08-27 22:07: [CHECK] misc.io.xyz.py: OK
+2013-08-27 22:07: [CHECK]  OUT: 23538
+[(-5.9345056999999999, 52.974060999999999, 25.0), (-5.9086870999999999, 52.974060999999999, 41.0), (-5.8570497000000001, 52.974060999999999, 33.0)]
+141.0
+12.4
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-io-xyz.png
+
+2013-08-27 22:07: [CHECK] misc.log.py: OK
+2013-08-27 22:07: [CHECK] misc.misc.strings.py: OK
+2013-08-27 22:07: [CHECK]  OUT: aaabbb
+--------------------------------------------------
+6
+00005 7.000000
+[ok] 20 !
+C'est pratique !
+########################################
+############### Centrage ###############
+########################################
+True
+True
+a b c d e
+
+2013-08-27 22:07: [CHECK] misc.plot.advanced.meteo.py: OK
+2013-08-27 22:07: [CHECK]  OUT: precip
+pres
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-advanced-meteo.png
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-advanced-meteo.pdf
+
+2013-08-27 22:08: [CHECK] misc.plot.advanced.meteo2d.py: FAILED
+2013-08-27 22:08: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-advanced-meteo2d.png
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-advanced-meteo2d.pdf
+
+2013-08-27 22:08: [CHECK]  ERR: Definition of "kt" in "/Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Externals/share/udunits/udunits2-common.xml", line 86, overrides prefixed-unit "1000000 kilogram"
+Definition of "microns" in "/Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Externals/share/udunits/udunits2-common.xml", line 304, overrides prefixed-unit "1e-15 second"
+Definition of "ft" in "/Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Externals/share/udunits/udunits2-common.xml", line 401, overrides prefixed-unit "1e-12 kilogram"
+Definition of "yd" in "/Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Externals/share/udunits/udunits2-common.xml", line 409, overrides prefixed-unit "8.64e-20 second"
+Definition of "pt" in "/Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Externals/share/udunits/udunits2-common.xml", line 630, overrides prefixed-unit "1e-09 kilogram"
+Definition of "at" in "/Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Externals/share/udunits/udunits2-common.xml", line 1027, overrides prefixed-unit "1e-15 kilogram"
+Definition of "ph" in "/Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Externals/share/udunits/udunits2-common.xml", line 1545, overrides prefixed-unit "3.6e-09 second"
+Definition of "nt" in "/Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Externals/share/udunits/udunits2-common.xml", line 1552, overrides prefixed-unit "1e-06 kilogram"
+
+2013-08-27 22:09: [CHECK] misc.plot.advanced.quiver_anim.py: OK
+2013-08-27 22:09: [CHECK]  OUT: 0
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-advanced-quiver_anim_png.png
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+ret 0 
+Done
+
+2013-08-27 22:09: [CHECK]  ERR: Warning: overflow encountered in power
+Warning: overflow encountered in power
+/Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/matplotlib/font_manager.py:1214: UserWarning: findfont: Font family ['courrier'] not found. Falling back to Bitstream Vera Sans
+  (prop.get_family(), self.defaultFamily[fontext]))
+
+2013-08-27 22:09: [CHECK] misc.plot.advanced.stepsnorm.py: OK
+2013-08-27 22:09: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-advanced-stepsnorm.png
+
+2013-08-27 22:09: [CHECK] misc.plot.advanced.swan.py: FAILED
+2013-08-27 22:09: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc.plot.advanced.swan.py", line 16, in <module>
+    savefigs=__file__, left=.12, right=1, show=False)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/plot.py", line 3288, in map2
+    return Map(*args, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 234, in __init__
+    self.load_data(data, **kwargs)   
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 4698, in load_data
+    Plot2D.load_data(self, data, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 3953, in load_data
+    Plot.load_data(self, data, **kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 418, in load_data
+    self._check_order_(**kwargs)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/core_plot.py", line 524, in _check_order_
+    vertical=vertical, extended=True, getorder=True)
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/axes.py", line 738, in check_order
+    raise VACUMMError('Wrong type of axes. Possible forms are: %s'%', '.join(allowed))
+vacumm.VACUMMError: Wrong type of axes. Possible forms are: YX
+
+2013-08-27 22:09: [CHECK] misc.plot.basic.curve.py: OK
+2013-08-27 22:09: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-basic-curve.png
+
+2013-08-27 22:10: [CHECK] misc.plot.basic.hov.py: OK
+2013-08-27 22:10: [CHECK]  OUT: <module 'vacumm.misc.plot' from '/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/lib/python/vacumm/misc/plot.pyc'>
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-basic-hov.png
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-basic-hov.pdf
+
+2013-08-27 22:11: [CHECK] misc.plot.basic.map2.py: OK
+2013-08-27 22:11: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-basic-map2.png
+
+2013-08-27 22:11: [CHECK] misc.plot.basic.stick.py: OK
+2013-08-27 22:11: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-basic-stick.png
+
+2013-08-27 22:11: [CHECK] misc.plot.basic.target.py: OK
+2013-08-27 22:11: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-basic-target.png
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-basic-target.pdf
+
+2013-08-27 22:11: [CHECK] misc.plot.basic.taylor.py: OK
+2013-08-27 22:11: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-basic-taylor.png
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-basic-taylor.pdf
+
+2013-08-27 22:11: [CHECK]  ERR: /Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/matplotlib/legend.py:628: UserWarning: Legend does not support [<matplotlib.lines.Line2D object at 0x10f4af150>]
+Use proxy artist instead.
+
+http://matplotlib.sourceforge.net/users/legend_guide.html#using-proxy-artist
+
+  (str(orig_handle),))
+/Users/guillaume/Logiciels/PYTHON/uvcdat1_3_1/install/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/matplotlib/legend.py:628: UserWarning: Legend does not support [<matplotlib.lines.Line2D object at 0x10f48ea50>]
+Use proxy artist instead.
+
+http://matplotlib.sourceforge.net/users/legend_guide.html#using-proxy-artist
+
+  (str(orig_handle),))
+
+2013-08-27 22:12: [CHECK] misc.plot.basic.vectors.py: OK
+2013-08-27 22:12: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-basic-vectors.png
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/misc-plot-basic-vectors.pdf
+
+2013-08-27 22:12: [CHECK] misc.time.atime.format.py: OK
+2013-08-27 22:12: [CHECK]  OUT: 1950 0
+ 1 janvier 1950 a 07h00
+
+2013-08-27 22:12: [CHECK] misc.time.atime.operations.py: OK
+2013-08-27 22:12: [CHECK]  OUT: 1
+[2000-1-1 0:0:0.0, 2001-1-1 0:0:0.0]
+730120.0
+730120.0
+['2000-1-1 0:0:0.0', '2000-1-1 0:0:0.0']
+[datetime.datetime(2000, 1, 1, 0, 0), datetime.datetime(2000, 1, 2, 0, 0), datetime.datetime(2000, 1, 3, 0, 0)]
+2000-1-3 0:0:0.0
+[ 31.  32.  33.]
+2000-1-1 13:0:0.0
+2000-6-1 14:0:0.0
+[-1. -1.]
+
+2013-08-27 22:12: [CHECK] misc.time.atime.units.py: OK
+2013-08-27 22:12: [CHECK]  OUT: True
+True
+hours since 2000-01-15 06:00 [  0.  48.]
+[2000-1-15 6:0:0.0, 2000-1-17 6:0:0.0]
+days since 2000-1-15 06 [ 0.  2.]
+[2000-1-15 6:0:0.0, 2000-1-17 6:0:0.0]
+730134.25 days since 1-1-2 0:0:0.0
+[  0.  48.]
+20:12 20
+22:12 22
+20
+2000-10-1 8:20:0.0
+
+2013-08-27 22:12: [CHECK] misc.time.bases.cdtime.py: OK
+2013-08-27 22:12: [CHECK]  OUT: 2000-1-1 0:0:0.0
+2000 1
+50.000000 years since 1950 | 50.0 | years since 1950
+50.0
+2001-1-1 0:0:0.0 | 49.00 years since 1950
+True
+False
+True True
+
+2013-08-27 22:12: [CHECK] misc.time.bases.types.py: OK
+2013-08-27 22:12: [CHECK]  OUT: time.struct_time(tm_year=2013, tm_mon=8, tm_mday=27, tm_hour=22, tm_min=12, tm_sec=24, tm_wday=1, tm_yday=239, tm_isdst=1)
+Tue Aug 27 22:12:24 2013
+1 0
+2 0
+2000 10
+True False
+True True
+
+2013-08-27 22:12: [CHECK] misc.variables.axes.py: OK
+2013-08-27 22:12: [CHECK]  OUT: time:t | longitude:x | lat:y | depth:z | pipo:-
+True False True
+True
+X True
+
+2013-08-27 22:12: [CHECK] misc.variables.bases.axes.py: OK
+2013-08-27 22:12: [CHECK]  OUT: [2006-8-1 0:0:0.0, 2006-8-2 0:0:0.0, 2006-8-3 0:0:0.0] 2
+[0.00 days since 2006-08-01, 1.00 days since 2006-08-01, 2.00 days since 2006-08-01] 1.0
+True
+
+2013-08-27 22:12: [CHECK] misc.variables.bases.mv.py: OK
+2013-08-27 22:12: [CHECK]  OUT: (3, 4)
+[ 1.  2.  3.]
+[1.0 -- 3.0]
+[1.0 2.0 --]
+[False  True False]
+False
+True True
+[False False False]
+[10.0 -- 3.0]
+yoman
+masked_array(data = [1.0 -- 3.0],
+             mask = [False  True False],
+       fill_value = 2.0)
+
+
+[1.0 -- 3.0]
+*** Description of Slab yoman ***
+id: yoman
+shape: (3,)
+filename: 
+missing_value: 2.0
+comments: 
+grid_name: N/A
+grid_type: N/A
+time_statistic: 
+long_name: 
+units: 
+tileIndex: None
+autoApiInfo: <AutoAPI.AutoAPI.Info instance at 0x10f1bc200>
+No grid present.
+** Dimension 1 **
+   id: axis_0
+   Length: 3
+   First:  0.0
+   Last:   2.0
+   Python id:  0x10f1b1c90
+*** End of description for yoman ***
+
+2013-08-27 22:12: [CHECK] misc.xml.py: OK
+2013-08-27 22:12: [CHECK] tide.filters.extrema.py: OK
+2013-08-27 22:12: [CHECK]  OUT: Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/tide-filters-extrema.png
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/tide-filters-extrema.pdf
+
+2013-08-27 22:12: [CHECK] tide.filters.smooth.py: FAILED
+2013-08-27 22:12: [CHECK]  ERR: Traceback (most recent call last):
+  File "/Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/tide.filters.smooth.py", line 3, in <module>
+    from vacumm.tide.sonel_mareg import get_slv_shom
+ImportError: No module named sonel_mareg
+
+2013-08-27 22:12: [CHECK] tide.marigraph.py: OK
+2013-08-27 22:12: [CHECK]  OUT: Computed tide signal using demerliac filter
+Computed low and high tides
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/tide-marigraph.png
+Wrote to /Users/guillaume/Logiciels/PYTHON/vacumm/vacumm_dev/trunk/scripts/tutorials/tide-marigraph.pdf
+
+2013-08-27 22:12: [CHECK] tide.station_info.infos.py: OK
+2013-08-27 22:12: [CHECK]  OUT: Chargement de la station suivante :
+  Nom        : Ile de Brehat (Port-Clos)
+  Position   : 3°W / 48.85°N
+  Zone       : http://www.shom.fr/fr_page/fr_act_oceano/maree/zone6_9.htm
+  BM45       : 3.8
+  BM95       : 1.35
+  NM         : 5.89
+  PBM        : 0.1
+  PHM        : 11.6
+  PM45       : 8
+  PM95       : 10.4
+  ZERO_HYDRO : -5.4
+Definition des termes accessible avec definitions()
+['igs', 'psmsl', 'uhslc', 'gloss', 'shom', 'legos', 'latitude', 'longitude', 'zone', 'phm', 'pm95', 'pm45', 'nm', 'bm45', 'bm95', 'pbm', 'zero_hydro']
+Ile de Brehat (Port-Clos) -3.0
+----------------------------------------------------------------------
+Liste des stations trouvees (max 5) :
+  Nom        : Ile de Brehat (Port-Clos)
+  Position   : 3°W / 48.85°N
+  Zone       : http://www.shom.fr/fr_page/fr_act_oceano/maree/zone6_9.htm
+  BM45       : 3.8
+  BM95       : 1.35
+  NM         : 5.89
+  PBM        : 0.1
+  PHM        : 11.6
+  PM45       : 8
+  PM95       : 10.4
+  ZERO_HYDRO : -5.4
+Definition des termes accessible avec definitions()
+  Nom        : Les Heaux-de-Brehat
+  Position   : 3.0833°W / 48.917°N
+  Zone       : http://www.shom.fr/fr_page/fr_act_oceano/maree/zone6_9.htm
+  BM45       : 3.65
+  BM95       : 1.3
+  NM         : 5.61
+  PBM        : 0.1
+  PHM        : 10.95
+  PM45       : 7.6
+  PM95       : 9.8
+  ZERO_HYDRO : -5.12
+Definition des termes accessible avec definitions()
+  Nom        : Brest
+  Position   : 4.4983°W / 48.383°N
+  Zone       : http://www.shom.fr/fr_page/fr_act_oceano/maree/zone6_9.htm
+  IGS        : BRST
+  PSMSL      : 190091
+  SHOM       : BREST
+  BM45       : 2.6
+  BM95       : 1.05
+  NM         : 4.02
+  PBM        : 0.2
+  PHM        : 7.8
+  PM45       : 5.4
+  PM95       : 6.95
+  ZERO_HYDRO : -3.636
+Definition des termes accessible avec definitions()
+----------------------------------------------------------------------
+Brest
+1.37388888889 50.0761111111
+
+2013-08-27 22:12: [CHECK] Results (76 checks): 53 OK, 23 FAILED
