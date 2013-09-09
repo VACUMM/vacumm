@@ -60,7 +60,9 @@ fn.close
 # -----------------------------------------------------------
 # ---- Read large datasets ----
 # - Example with previmer files
-# TO DO ncread_files
-
-
+rep='/home/oo4/oo/modeles_previmer/f1_e2500/best_estimate/2013'
+xe = ncread_files(os.path.join(rep,"PREVIMER_F1-MARS3D-MANGAE2500_%Y%m%dT%H00Z.nc"), 'xe',  
+    ('2010-08-10', '2010-08-15', 'cc'))
+    
+print xe.shape
     

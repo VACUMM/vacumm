@@ -54,6 +54,7 @@ Pour l'aide du script :
     vacumm_intro
     time
     grids
+    plot
     filters
     masking
     regrid
