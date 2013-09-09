@@ -63,7 +63,7 @@ fn.close
 print '10*-'+'How to use ncread_files ...'
 rep='/home/oo4/oo/modeles_previmer/f1_e2500/best_estimate/2013'
 xe = ncread_files(os.path.join(rep,"PREVIMER_F1-MARS3D-MANGAE2500_%Y%m%dT%H00Z.nc"), 'xe',  
-    ('2013-01-05', '2013-01-07', 'co'))
-    
+    ('2013-01-05', '2013-01-07', 'co'))    
 print xe.shape
+# => Practice: Try different parameters in ncread_files.
     
