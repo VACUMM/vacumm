@@ -4,6 +4,22 @@ Cours Python/CDAT/VACUMM
 Ce cours est consitué principalement de TP, 
 avec quelques généralités en guise d'introductions.
 
+Pour charger l'environnement Python/CDAT/VACUMM sous Caparmor:
+
+.. code-block:: bash
+
+    $ module purge
+    $ module use /home11/caparmor/mars/PYTHON/modulefiles
+    $ module load uvcdat121
+
+Vous pouvez créer un alias dans votre .cshrc pour vos futures utilisations:
+
+.. code-block:: bash
+
+    alias uvcdat121 'module purge ; module use /home11/caparmor/mars/PYTHON/modulefiles ; module load uvcdat121'
+
+(Vous pouvez retrouver l'environnement Python/CDAT/VACUMM sur ops en exécutant la commande: source /export/home/logiciels/modulefiles/uvcdat120.csh )
+
 Récupérez les scripts en exécutant le script :program:`vacumm_courses.py` :
 
 .. code-block:: bash

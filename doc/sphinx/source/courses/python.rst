@@ -125,15 +125,23 @@ Créez un module ::
 
     $ echo "earth_radius = 6371006." > myscripts/mydata.py
  
- 
-Ajustez votre variable :envvar:`PYTHONPATH` ::
+
+Deux solutions:
+(1) Ajustez votre variable :envvar:`PYTHONPATH` ::
 
     $ setenv PYTHONPATH $PWD/myscripts
+
+
+(2) Créer un fichier vide __init__.py dans myscripts.
     
     
 Testez ::
 
     $ python -c 'import mydata; print mydata.earth_radius`
+
+
+
+
 
 
 Où trouver de l'aide ?
