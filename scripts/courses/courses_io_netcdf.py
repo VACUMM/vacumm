@@ -62,7 +62,7 @@ fn.close
 # - Example with previmer files
 rep='/home/oo4/oo/modeles_previmer/f1_e2500/best_estimate/2013'
 xe = ncread_files(os.path.join(rep,"PREVIMER_F1-MARS3D-MANGAE2500_%Y%m%dT%H00Z.nc"), 'xe',  
-    ('2010-08-10', '2010-08-15', 'cc'))
+    ('2013-01-05', '2013-01-15', 'co'))
     
 print xe.shape
     
