@@ -76,6 +76,10 @@ print a[slice(None, None, 2)]
 a = range(6)
 for i in a:
     print i
+    if i==2:
+         continue
+    elif i==4:
+         break
 d = {'a':1,  'b':2}
 for key, val in d.items():
     print key, val
@@ -102,9 +106,10 @@ print a is b
 b[0] = 100
 print a
 
-# - copy
+# - copy (rarement utilisé)
 from copy import copy, deepcopy
 ac = copy(a)
+ec2 = list(a)
 adc = deepcopy(a)
 
 
@@ -127,6 +132,7 @@ def myfunc3(*args, **kwargs):
     print 'kwargs', kwargs
 def myfunc4(a, b=1, **kwargs):
     print a, b, kwargs
+myfunc4(1, **dict(b=3, c=5))
 # -> TESTER
 
 
