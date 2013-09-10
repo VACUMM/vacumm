@@ -15,7 +15,7 @@ from vacumm.config import data_sample
 # ---- From a NetCDF file ...
 print 10*'-'+' ... From a NetCDF File ... '+10*'-'
 f = cdms2.open(data_sample('mars3d.xy.nc'))
-ncarr=f('temp')
+ncarr=f('temp', lat=slice(5,-1), lon=(-6.2, -4))
 f.close()
 print 'Array dimension :', ncarr.shape
 print 'Array type - ncarr - :',type(ncarr)
