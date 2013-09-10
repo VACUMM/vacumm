@@ -88,7 +88,7 @@ from vacumm.misc.grid import \
     get_grid, set_grid, create_grid, create_grid2d, resol, monotonic, isdepthup, depth2dz, \
     meshcells, meshbounds, meshgrid, bounds1d, bounds2d, coord2slice, isregular, \
     isrect, curv2rect, isgrid, get_xy, create_axes2d, gridsel, varsel, xshift, rotate_grid, \
-    get_closest, makedepthup
+    get_closest, makedepthup, get_axis
     
 from vacumm.misc.grid.regridding import \
     regrid1d, regrid2d, interp1d, interp2d, cellave1d, cellave2d, \
