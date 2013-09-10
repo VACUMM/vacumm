@@ -37,6 +37,7 @@ for var in f.listvariable():
         interm = f[var]
         # For single float, need to re-allocate attributes
         data=cdms2.createVariable(data,typecode='f',id=interm.id,attributes=get_atts(interm))
+    data.foo = 'bar'
         
     # Write variable
     fw.write(data)
@@ -46,6 +47,7 @@ for var in f.listvariable():
 ga = f.listglobal()
 for att in ga:
     setattr(fw,att,f.getglobal(att))
+f.toto = 'tutu'
 # => Practice: Add new global attributes to the file.
 
 # Close files
