@@ -27,10 +27,9 @@ for var in f.listvariable():
     print '>> '+var+ ' <<'
     data=f(var)
     try: # - Variable is an n-dimension array
-        data.getValue()
         # - Example of moficiation - mask an area
         if var == 'TEMP':
-            data[:,:,:,80:200].mask=True
+            data[:,:,:,80:200]=MV2.masked
         # => Practice: Try to modify the variable and its mask before writing.
         # => Practice: Change attributes of the variable.
     except: # - Variable is a single float
