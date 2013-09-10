@@ -456,7 +456,7 @@ def get_config_files(section=None, check=False, user=1):
     mod_dirs = []
     if section=='__all__':
         for root, dirs, files in os.walk(lib_dir):
-            if 'config.cfg' in files:
+            if 'config.cfg' in files and not root.startswith('vacumm-'):
                 mod_dirs.append(root)
     elif section:
         if hasattr(section, '__name__'):
