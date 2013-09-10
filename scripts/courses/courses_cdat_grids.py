@@ -47,6 +47,7 @@ print rtime,rtime[1].value
 temp1 = cdms2.createVariable(N.ones((3,3,3,3)),typecode='f',id='temp',
     fill_value=1.e20,axes=[time,depth,lat,lon],copyaxes=0,
     attributes=dict(long_name='Temperature',units='degC'))
+print cdms2.isVariable(temp1)
 # - Remark
 print cdms2.createVariable is MV2.array
 #  -> True         (These are the same functions !)
@@ -62,3 +63,17 @@ temp2.set_fill_value(1.e20) # <=> temp2.setMissing(1.e20)
 temp2.setAxisList([time,depth,lat,lon])
 #   . or for example for each axis individually
 temp2.setAxis(1,depth)
+
+# Selection as for file
+print temp2(time=("2006-08-01", "2006-08-03", "co")).shape
+
+# The grid itself
+# - get it
+grid = temp2.getGrid()
+# - check axes
+grid.getLongitude() is temp2.getLongitude() is grid.getAxis(1) is temp2.getAxis(3)
+# - create it!
+grid2 = cdms2.createGenericGrid(lat,lon)
+# - set it
+temp2.setGrid(grid2)
+print cdms2.isGrid(grid2)
