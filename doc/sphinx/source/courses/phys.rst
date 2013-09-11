@@ -17,7 +17,7 @@ Fichier :file:`courses_phys_tide.py`
 Leçon 2 : dynamique et thermodynamique
 --------------------------------------
 
-Voir :mod:`vacumm.diags.thermdyn` et :mod:`vacumm.diags.dynamics`.
+Voir :mod:`vacumm.diag.thermdyn` et :mod:`vacumm.diag.dynamics`.
 
 Fichier :file:`courses_phys_dyn.py`
 
