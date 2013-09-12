@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
 """Axes et grilles avec VACUMM"""
 
 from vcmq import N, MV2, create_lon, create_lat, create_grid, isgrid, isrect, islon, set_grid,  get_grid, get_axis, varsel, resol, curv2rect, get_xy, meshgrid, meshcells, create_dep, isregular, P, rotate_grid, shiftgrid, extendgrid, create_axes2d, isdepthup, coord2slice, monotonic, xshift, depth2dz, get_closest

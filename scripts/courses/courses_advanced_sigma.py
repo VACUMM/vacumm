@@ -7,16 +7,17 @@ from vcmq import NcSigma, SigmaGeneralized, sigma2depths, cdms2, N, section2, cr
   
 # Lecture de la température
 f =cdms2.open(data_sample('mars3d.tsigyx.nc'))
-data_in = f('TEMP') # T-YX (- = level)
+data_in = f('TEMP', time=slice(0,2)) # T-YX (- = level)
 
 
 # Détermination des profondeurs d'après les sigma
-sigma_class = NcSigma.factory(f)                # détection auto de la classe
+sigma_converter = NcSigma.factory(f)                # détection auto et initialisation du convertisseur
 # -> VERIFIER QUE sigma_class EST BIEN SigmaGeneralized
-sigma_converter = sigma_class(copyaxes=True)    # initialisation du convertisseur
-depths_in = sigma_converter().filled()          # lecture eta, etc + conversion
+depths_in = sigma_converter(selector=dict(time=slice(0,2))).filled()          # lecture eta, etc + conversion
 f.close()
 
+
+print depths_in.shape
 
 # Creation de l'axe des profondeurs cibles
 depths = N.array([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
