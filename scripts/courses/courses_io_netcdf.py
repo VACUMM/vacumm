@@ -47,7 +47,7 @@ for var in f.listvariable():
 ga = f.listglobal()
 for att in ga:
     setattr(fw,att,f.getglobal(att))
-f.toto = 'tutu'
+fw.toto = 'tutu'
 # => Practice: Add new global attributes to the file.
 
 # Close files
