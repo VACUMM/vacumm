@@ -6,11 +6,7 @@ Using environment modules
 Introduction
 ------------
 
-Comme cela a été évoqué dans les deux sections précédentes,
-l'accès au python fourni par CDAT nécessite la modification
-de la variable d'environnement :envvar:`PATH`, et l'accès à la librairie
-nécessite la modification
-de la variable d'environnement :envvar:`PYTHONPATH` si elle a été installée dans un répertoire tiers.
+As it has been metioned in both previous sections, the access to the Python included in UV-CDAT needs to modify the environement variable :envvar:`PATH`, and the access to the library needs to modify the environment variable :envvar:`PYTHONPATH` if it has been installed in a different directory.
 
 Sachant qu'il est possible de faire coéxister plusieurs versions de CDAT et de la librairie,
 en fonction des besoins (dans un cadre opérationnel, pour un projet donné, 

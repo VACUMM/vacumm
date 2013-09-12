@@ -18,7 +18,7 @@ UV-CDAT
       (like `numpy <http://docs.scipy.org/doc/numpy/reference>`_ or
       `scipy <http://docs.scipy.org/doc/scipy/reference>`_),
     - python packages made by UV-CDAT providers, 
-      and specialized for manipulation and visualization of ocean/atmos data,
+      and specialized for manipulation and visualization of ocean/atmosphere data,
     - numerous other libraries and tools.
 
 
@@ -27,7 +27,7 @@ Other packages
 
 .. rubric:: Python
 
-Here is a list of necessary or useful  packages that can be install using
+When you have installed UV-CDAT, here is a list of necessary or useful  packages that can be install using
 :program:`easy_install`.
 
 .. _user.prereq.list.others.table:

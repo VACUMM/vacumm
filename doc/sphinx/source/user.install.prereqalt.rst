@@ -7,7 +7,7 @@ Prerequisites - alternative installation
 
 A ligther installation can be achieved using the core required packages.
 
-This kind of installation allow the users to install vacumm with some packages 
+This kind of installation allows the users to install vacumm with some packages 
 available in their (recent) OS repositories or by dowloading and installing them 
 manually ("python setup.py install --user" or "easy_install --user" for example).
 

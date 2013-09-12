@@ -9,7 +9,7 @@ For all users
 
 This installation puts the library within the python tree.
 The :program:`python` excutable must be the one provided by UV-CDAT
-(see :ref:`user.prereq.verif`).
+(see :ref:`user.install.prereq`).
 
 One compile and install VACUMM from the main directory of the package with:
 
@@ -70,7 +70,7 @@ setting the variables:
     shell> export PATH=~/path/to/vacumm-trunk/bin
     shell> export PYTHONPATH=~/path/to/vacumm-trunk/lib/python
     
-The fortran extensions will compilated automatically in place
+The fortran extensions will be compilated automatically in place
 during the importation of the associated module
 (:mod:`~vacumm.misc.grid.regridding`).
 
@@ -84,11 +84,11 @@ with the package as presented at section :ref:`user.install.modenv.dev`.
 User configuration of the modules
 ---------------------------------
 
-Some of the modules can be configured to change their default behavior.
+Some of the modules can be configured to change their default behaviour.
 Configurations store for instance default paths.
 
 The library is configured by default for a use on the supercomputer
-of IFREMER (CAPARMOR).
+from IFREMER (CAPARMOR).
 If you are on your own system or you want to change your configuration,
 please check the documentation section :ref:`user.install.config`.
 

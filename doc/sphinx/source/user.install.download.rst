@@ -16,7 +16,7 @@ To uncompress a tarball, just use:
     
 .. code-block:: bash
 
-    shell> tar xzf vacumm-1.0.tgz
+    shell> tar xzf vacumm-2.0-svn1231.tar.gz
 
 
 Subversion
