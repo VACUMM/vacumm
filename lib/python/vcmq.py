@@ -14,6 +14,7 @@ from traceback import format_exc
 
 import numpy as N
 npy = N
+np = N
 
 
 # CDAT
@@ -26,6 +27,7 @@ from genutil import minmax
 
 import matplotlib.pyplot as plt
 import pylab as P
+mp = P
 from matplotlib import use, rc, rcdefaults, rcParams
 from matplotlib.dates import DayLocator, HourLocator, WeekdayLocator, MinuteLocator,  \
     YearLocator, MonthLocator, DateFormatter, SecondLocator
