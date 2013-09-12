@@ -116,24 +116,27 @@ Il est important de parcourir son contenu avant d'aller voir ailleur.
 Avoir sa propre librairie
 -------------------------
 
-Créez le répertoire :file:`myscripts`::
+Créez le répertoire :file:`lib/mylib`::
 
-    mkdir myscripts
+    mkdir -p lib/mylib
     
     
 Créez un module ::
 
-    $ echo "earth_radius = 6371006." > myscripts/mydata.py
+    $ echo "earth_radius = 6371006." > lib/mylib/mydata.py
  
+Créer un fichier :file:`lib/mylib/__init__.py` ::
+
+    $ echo "import mydata" > lib/mylib/__init__.py
 
 Ajustez votre variable :envvar:`PYTHONPATH` ::
 
-    $ setenv PYTHONPATH $PWD/myscripts
+    $ setenv PYTHONPATH $PWD/lib:$PYTHONPATH
 
    
 Testez ::
 
-    $ python -c 'import mydata; print mydata.earth_radius`
+    $ python -c 'import mylib.mydata as myd; print myd.earth_radius'
 
 
 
