@@ -1,7 +1,7 @@
 Leçon sur le temps
 ==================
 
-Voir :mod:`vacumm.bathy.atime`.
+Voir :mod:`vacumm.misc.atime`.
 
 Fichier :file:`courses_times.py`
 
