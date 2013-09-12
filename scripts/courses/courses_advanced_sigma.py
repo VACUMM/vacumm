@@ -13,7 +13,8 @@ data_in = f('TEMP', time=slice(0,2)) # T-YX (- = level)
 # Détermination des profondeurs d'après les sigma
 sigma_converter = NcSigma.factory(f)                # détection auto et initialisation du convertisseur
 # -> VERIFIER QUE sigma_class EST BIEN SigmaGeneralized
-depths_in = sigma_converter(selector=dict(time=slice(0,2))).filled()          # lecture eta, etc + conversion
+depths_in = sigma_converter.sigma_to_depths(selector=dict(time=slice(0,2))).filled()          # lecture eta, etc + conversion
+# (Equivalent à depths_in = sigma_converter(selector=dict(time=slice(0,2))).filled())
 f.close()
 
 
