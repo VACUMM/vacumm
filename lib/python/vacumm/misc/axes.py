@@ -376,6 +376,11 @@ def create_lon(values,**atts):
     
         - **values**: Numeric values
         - Keywords are passed as attributes to the axis.
+        
+    :Example:
+        >>> create_lon(numpy.arange(-18., -5.))
+        >>> create_lon(numpy.arange(-18., -5.),long_name='original_longitude')
+        
     """ 
     if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
         from grid.misc import create_axes2d
@@ -390,6 +395,11 @@ def create_lat(values,**atts):
     
         - **values**: Numeric values
         - Keywords are passed as attributes to the axis.
+        
+    :Example:
+        >>> create_lat(numpy.arange(40., 48., 1.5))
+        >>> create_lat(numpy.arange(40., 48., 1.5),long_name='strange_latitude')
+    
     """ 
     if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
         from grid.misc import create_axes2d
@@ -404,6 +414,11 @@ def create_dep(values,**atts):
     
         - **values**: Numeric values
         - Keywords are passed as attributes to the axis.
+    
+    :Example:
+        >>> create_dep(numpy.arange(-1000., -500., 10.))
+        >>> create_dep(numpy.arange(-1000., -500., 10.),long_name='deep_depth')
+        
     """ 
     return create(values,'z',**atts)
 create_depth = create_dep

@@ -283,7 +283,7 @@ def gaussian1d(data,nxw,**kwargs):
     assert nxw % 2 == 1 , 'nxw must be an odd number'
     tc = data.dtype.char
     xx = N.arange(nxw)-nxw/2.
-    return generic2d(data, N.exp(-xx**2/nxw**2),**kwargs)
+    return generic1d(data, N.exp(-xx**2/nxw**2),**kwargs)
     
 
 
