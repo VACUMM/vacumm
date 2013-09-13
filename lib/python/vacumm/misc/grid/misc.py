@@ -1531,7 +1531,7 @@ def varsel(var, lon=None, lat=None, **kwargs):
     grid = var.getGrid()
     
     # Usual way
-    if not isgrid(grid, curved=True): 
+    if not isgrid(grid, curv=True): 
         return var(lon=lon, lat=lat, **kwargs)
     
     # Curved grid
