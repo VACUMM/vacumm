@@ -40,7 +40,7 @@ for it in xrange(nt):
 # Creation des animations
 outbase=__file__[:-3].replace('.', '-')
 # - gif anime
-make_movie('quiver*.png', outbase+'_gif.gif')
+make_movie('quiver*.png', outbase+'.gif')
 # - video compatible windows
 #make_movie('quiver*.png', outbase+'_mpg.mpg', clean=True)
 print 'Done'

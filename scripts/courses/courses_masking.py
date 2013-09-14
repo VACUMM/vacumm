@@ -5,6 +5,7 @@ Masquages évolués
 
 Modules: :mod:`vacumm.misc.grid.masking`
 """
+
 from vcmq import *
 from vacumm.misc.grid.masking import polygon_mask, erode_coast, get_coastal_indices, \
     get_coastal_indices, envelop, polygons, polygon_select, get_dist_to_coast, \
@@ -20,7 +21,7 @@ set_grid(mvmask, grid)
 map2(mvmask, fillcontinents=False, drawcoastlines_color='r', drawcoastlines_zorder=100, 
     res=resolution, proj='merc', fill='pcolor', drawcoastlines_linewidth=2, 
     cmap=cmap_rs(['1', '0.6']), contour=False, colorbar=False, 
-    savefig ='courses_masking_0.png')
+    savefig ='courses_masking_0.png', show=True)
 
 
 # Cote via mask

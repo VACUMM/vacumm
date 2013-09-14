@@ -4211,7 +4211,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
 #                p.set_linewidth(kwfill['linewidth'])
             
             
-    def plot_contour(self, zorder=None, alpha=1, clabel=False, linewidths=None, colors='k', shadow=False, glow=False, 
+    def plot_contour(self, zorder=None, alpha=1, clabel=None, linewidths=None, colors='k', shadow=False, glow=False, 
         **kwargs):
         """Plot contour lines
         
@@ -4239,6 +4239,10 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         if self.masked: return
         
         # Keywords
+        
+        if clabel is None:
+            get_config_value('vacumm.misc.plot', 'clabel')
+        
         kw = kwfilter(kwargs, 'contour', defaults=dict(
             levels=self.levels))
         kwcl = kwfilter(kwargs, 'clabel')

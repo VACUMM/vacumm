@@ -1,6 +1,8 @@
 # Creer une carte se limitant a Ouessant avec fond de mer
 from vacumm.misc.plot import map2
 from vacumm.misc.color import ocean, land
+from vcmq import code_base_name
+
 m = map2(lat=(48.41, 48.49), lon=(-5.15, -5), show=False,
     fillcontinents=False, drawcoastlines=False, figsize=(5.5, 4), 
      bgcolor=ocean, left=.12, top=.9)
@@ -30,4 +32,4 @@ for poly in island.intersection(select):
 from pylab import show, title
 from vacumm.misc.plot import savefigs
 title('Trait de cote SHOM/IGN 1/25000')
-savefigs(__file__, pdf=True)
+savefigs(code_base_name(ext='png'), pdf=True)

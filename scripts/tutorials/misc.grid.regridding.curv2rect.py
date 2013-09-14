@@ -48,7 +48,7 @@ map2(hs_carg, title='Cargen', subplot=325, m=m, **kwplot)
 add_grid(cgrid, lw=.7, alpha=.3)
 map2(hs_nat, title='Natgrid', subplot=326, m=m, **kwplot)
 add_grid(cgrid, lw=.7, alpha=.3)
-m.show()
+# m.show()
 savefigs(code_base_name(ext='png'))
 
 
