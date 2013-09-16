@@ -954,13 +954,16 @@ class NcIterBestEstimate(object):
     :Iterator: At each iteration, it returns ``f,tslice``
     
         - ``f``: the file descriptor (may be closed),
-        - ``tslice``: the time slice (``None`` = no valid time slice,
-          else a valid :func:`slice`.  
+        - ``tslice``: the time slice 
+        
+            - A :class:`slice` instance.
+            - ``None`` if not time is found (thus no slice to perform).
+            - ``False``: if nothing to read at all.  
     
     :Example:
     
     >>> for f, tslice in NcIterBestEstimate(ncfiles, toffset=(1,'day')):
-    ...     if tslice is None: continue
+    ...     if tslice is False or time is None: continue
     ...     var = f(time=tslice)
     """
     def __init__(self, files, time=None, toffset=None, timeid=None, tslices=None, keepopen=False, autoclose=True):
@@ -983,7 +986,7 @@ class NcIterBestEstimate(object):
         return self
         
     def next(self, verbose=False):
-        
+
         # Last iteration
         if self.i == self.nfiles:
             self.close()
@@ -1018,9 +1021,12 @@ class NcIterBestEstimate(object):
             print taxis
         
         # Get base time slice of current file
-        try: ij = taxis.mapInterval(self.seltime)
-        except:
-            ij = None
+        if isinstance(self.seltime, slice):
+            ij = self.seltime.indices(len(taxis))[:2]
+        else:
+            try: ij = taxis.mapInterval(self.seltime)
+            except:
+                ij = None
         if ij is None:
             return self.empty() # nothing
         i, j = ij        
