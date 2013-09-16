@@ -89,7 +89,7 @@ def bathy_list(name=None, cfgfile=None, minstatus=0):
     
     """
     
-    # Read config file file
+    # Read config file
     sections, cfg = get_config_sections(cfg=cfgfile, parent_section=__name__, 
         parent_option='cfgfile_gridded', getcfg=True)
     

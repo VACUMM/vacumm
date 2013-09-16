@@ -1700,12 +1700,12 @@ class OceanDataset(OceanSurfaceDataset):
                 self.debug('Found depth refer to a sigma level, processing sigma to depth conversion')
                 allvars = []
                 for f,t in NcIterBestEstimate(self.dataset, self.selects['time']):
-                    if t is None: continue # and when no time???
-                    sigma = NcSigma.factory(f)
+                    if t is False: continue # and when no time??? None-> ok we continue
+                    #sigma = NcSigma.factory(f)
                     sel = selector(time=t)
-                    self.debug('- dataset: %s: sigma: %s, select: %s', os.path.basename(f.id), sigma.__class__.__name__, sel)
+                    self.debug('- dataset: %s: sigma: %s, select: %s', os.path.basename(f.id), sigma_converter.__class__.__name__, sel)
                     try:
-                        d = sigma(sel, at=at, copyaxes=True, mode='sigma')
+                        d = sigma_converter(sel, at=at, copyaxes=True, mode='sigma')
                     except Exception, e:
                         if warn: 
                             self.warning("Can't get depth from sigma. Error: "+e.message)
