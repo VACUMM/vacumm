@@ -566,8 +566,13 @@ class NcSigma(object):
             return dz2depths(dz, ref, refloc=refloc)
         except Exception, e:
             raise SigmaError(msg+': '+format_exc())
-            
-                
+       
+    def update_file(self, newncfile, close=False):
+        """Change the netcdf file"""
+        if close: self.close()
+        self.nfo = NcFileObj(newncfile)
+        self.f = self.nfo.f
+
 class NcSigmaStandard(NcSigma):
     '''Ocean standard coordinates converter for netcdf files
        
