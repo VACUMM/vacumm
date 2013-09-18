@@ -972,7 +972,7 @@ class NcIterBestEstimate(object):
         self.nfiles = len(files)
         self.files = files
         self.nfonext = None
-        self.seltime = time
+        self.seltime = [time] if isinstance(time,list) else time
         self.tslices = [] if tslices is None else tslices
         if toffset is None: toffset = 0
         self.toffset = toffset
@@ -1021,21 +1021,22 @@ class NcIterBestEstimate(object):
             print taxis
         
         # Get base time slice of current file
-        if isinstance(self.seltime, slice):
-            ij = self.seltime.indices(len(taxis))[:2]
-        else:
-            try: ij = taxis.mapInterval(self.seltime)
-            except:
-                ij = None
-        if ij is None:
+        ijk = tsel2slice(taxis, self.seltime, asind=True, nonone=True)
+        #if isinstance(self.seltime, slice):
+            #ij = self.seltime.indices(len(taxis))[:2]
+        #else:
+            #try: ij = taxis.mapInterval(self.seltime)
+            #except:
+                #ij = None
+        if ijk is False:
             return self.empty() # nothing
-        i, j = ij        
+        i, j, k = ijk        
             
         # Offset
         ctimes = taxis.asComponentTime()
         if isinstance(self.toffset, tuple):
             subseltime = (self.add(ctimes[0], *self.toffset), ctimes[-1], 'cc')
-            subtaxis = taxis.subAxis(*ij)
+            subtaxis = taxis.subAxis(*ijk)
             ijo = subtaxis.mapIntervalExt(subseltime)
             if ijo is None or ijo[2]==-1: return self.empty() # nothing
             i += ijo[0]            
@@ -1049,7 +1050,7 @@ class NcIterBestEstimate(object):
             
             # Start of slice
             if subtaxis is None:
-                subtaxis = taxis.subAxis(*ij)
+                subtaxis = taxis.subAxis(*ijk)
                 ct0 = subtaxis.subAxis(0, 1).asComponentTime()[0]
             else:
                 ct0 = ctimes[i]
@@ -1253,7 +1254,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
             isinstance(tslice, slice) and not tslice==slice(None) else {}
 #        seltime = selector(**kwseltime)
         taxis = None
-    
+
         # Loop on variables
         for iv, vn in enumerate(varnames):
             
@@ -4149,4 +4150,4 @@ from axes import guess_timeid, get_checker, istime, islon, islat, islevel
 from phys.units import deg2m, m2deg
 from axes import create_lon, create_lat
 from grid import set_grid
-from atime import ch_units, round_date, are_same_units, now, has_time_pattern
+from atime import ch_units, round_date, are_same_units, now, has_time_pattern, tsel2slice

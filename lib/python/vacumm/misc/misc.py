@@ -1549,7 +1549,7 @@ def split_selector(selector):
     for c in selector.components():
         if isinstance(c, cdms2.selectors.positionalComponent):
             posed.append(c.v)
-        else:
+        elif not isinstance(c, cdms2.selectors.requiredComponent):
             named[c.id] = c.spec
     return tuple(posed), named
 

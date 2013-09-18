@@ -69,7 +69,7 @@ __all__ = ['mpl_time_units','str_unit_types','re_split_date','now', 'add', 'axis
 'is_strtime', 'time_type', 'is_axistime', 'notz',  'IterDates', 'numtime',  'is_numtime', 
 'pat2glob', 'midnight_date', 'midnight_interval','reduce_old', 'daily_bounds', 
 'hourly_bounds', 'time_split', 'time_split_nmax', 'add_margin', 'fixcomptime', 
-'is_interval', 'has_time_pattern']
+'is_interval', 'has_time_pattern', 'tsel2slice']
 
 __all__.sort()
 
@@ -2532,12 +2532,101 @@ class _LH_(object):
                 if isinstance(result, func):
                     return result
                 return func(result)
+                
+def _d2sel_(taxis, dsel):
+    """Extract time selections from a dict"""
+    return [sel for key,sel in dsel.items() 
+        if key in (['time', taxis.id]+cdms2.convention.time_aliases)
+            and sel is not None]
     
+def tsel2slice(taxis, *args, **kwargs):
+    """Convert time selections on a time axis to a valid slice or None
+    
+    :Params:
+    
+        - **asind**, optional: Return indices instead of a slice.
+        - **nonone**, optional: Return the full slice instead of ``None`` if everything is selected.
+        - Positional argument can be coordinates intervals, slices, 
+          dictionaries or cdms2 selectors.
+        - Optional arguments must have a key identified as time or be the axis id,
+          and a value as coordinates or slice.
+          
+    :Return:
+    
+        - A :class:`slice` or ``(i,j,k)`` when possible.
+        - ``None`` or the full slice if no slice needed (everything is selected).
+        - ``False`` if no intersection is found.
+    
+    :Example:
+    
+        >>> myslice = tsel2slice(taxis, ('2000', '2002', 'co'), time=slice(4,6))
+        >>> myslice = tsel2slice(taxis, cdms2.selectors.Selector(lon=(5,6), time=('2000','2002'))
+        >>> myslice = tsel2slice(taxis, slice(10,12), dict(time=slice(4,5), time=('2000','2002'))
+    """
+    # Inits
+    if not istime(taxis): raise VACUMMError('taxis must be a valid time axis')
+    asind = kwargs.pop('asind', False)
+    nonone = kwargs.pop('nonone', False)
+    fullslice = slice(*slice(None).indices(len(taxis)))
+
+    # Convert to list of tuples or slices
+    selects = []
+    ntup = 0
+    for arg in args:
+        if arg is None: continue
+        if isinstance(arg, cdms2.selectors.Selector):
+            psel, asel = split_selector(arg)
+            selects.extend(_d2sel_(taxis, asel))
+        elif isinstance(arg, dict):
+            selects.extend(_d2sel_(taxis,arg))
+        else:
+            if arg==':': 
+                args = slice(None)
+            elif isinstance(arg,tuple): 
+                ntup +=1
+            elif not isinstance(arg, slice):
+                arg = (arg,arg,'ccb')
+            selects.append(arg)
+    selects.extend(_d2sel_(taxis, kwargs))
+    if len(selects)==0: 
+        if asind: fullslice = fullslice.start,fullslice.stop,fullslice.step
+        return fullslice if nonone else None
+
+    # Apply successive selections
+    ii = N.arange(len(taxis))
+    for isel, sel in enumerate(selects):
+    
+        # From coordinates to slice
+        if isinstance(sel, tuple):
+            ijk = taxis.mapIntervalExt(sel)
+            if ijk is None: return False
+            sel = slice(*ijk)
+        
+        # Work on indices
+        ii = ii[sel]
+        if ii.size==0: return False
+            
+        # Subaxis for future use
+        if ntup>1: 
+            i,j,k = sel.indices(len(ii))
+            taxis = taxis.subAxis(i,j,k)
+     
+    # Deduce final indices
+    i = ii[0]
+    j = ii[-1]
+    j += N.sign(j-i) if i!=j else 1
+    if j<0: j = None
+    k = 1 if ii.size==1 else (ii[1]-ii[0])
+    
+    # Return
+    if not nonone and slice(i,j,k)==fullslice: return 
+    if asind: return i,j,k
+    return slice(i,j,k)
 
 
 #####################################################################
 ######################################################################
-from misc import cp_atts,isnumber,kwfilter
+from misc import cp_atts,isnumber,kwfilter,split_selector
 import grid as G
 from axes import istime,check_axes,check_axis,create_time, isaxis
 import io
