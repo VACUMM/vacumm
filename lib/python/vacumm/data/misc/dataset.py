@@ -590,7 +590,8 @@ class Dataset(Object):
     def __len__(self):
         return len(self.dataset)
     
-    def get_selector(self, time=None, lon=None, lat=None, level=None, merge=True, only=None, split=False, **kwargs):
+    def get_selector(self, time=None, lon=None, lat=None, level=None, 
+        merge=True, only=None, split=False, **kwargs):
         """Get a cdms2.selectors.Selector from specified time/lat/lon/level selection
         
         :Params:
@@ -621,7 +622,7 @@ class Dataset(Object):
                     if val is None: del kw[key]
                 if kw:
                     myselect.refine(**kw)
-            kw = {only: time}
+            #kw = {only: time} ?
             for key, val in kw.items():
                 if val is None: del kw[key]
             if kw:
@@ -1693,22 +1694,25 @@ class OceanDataset(OceanSurfaceDataset):
         # Second, find sigma coordinates
         sigma_converter = NcSigma.factory(self.dataset[0])
         if check_mode('sigma', mode):
+            
             if sigma_converter is not None and sigma_converter.stype is None: 
                 sigma_converter.close()
                 sigma_converter = None
+                
             if sigma_converter is not None:
-                self.debug('Found depth refer to a sigma level, processing sigma to depth conversion')
+                self.debug('Found depth referring to a sigma level, processing sigma to depth conversion')
                 allvars = []
-                for f,t in NcIterBestEstimate(self.dataset, self.selects['time']):
+                
+                for f,t in NcIterBestEstimate(self.dataset, time=selector):
                     if t is False: continue # and when no time??? None-> ok we continue
-                    #sigma = NcSigma.factory(f)
+                    if f!=self.dataset[0]: sigma_converter.update_file(f)
                     sel = selector(time=t)
                     self.debug('- dataset: %s: sigma: %s, select: %s', os.path.basename(f.id), sigma_converter.__class__.__name__, sel)
                     try:
                         d = sigma_converter(sel, at=at, copyaxes=True, mode='sigma')
                     except Exception, e:
                         if warn: 
-                            self.warning("Can't get depth from sigma. Error: "+e.message)
+                            self.warning("Can't get depth from sigma. Error: \n"+e.message)
                         break
                     self.debug('Sigma to depth result: %s', self.describe(d))
                     allvars.append(d)
