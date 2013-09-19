@@ -3554,6 +3554,7 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., maplims=None, bgcolor=(0, .
     bgcolor = RGB(bgcolor)
     if alpha:
         bgcolor += alpha, 
+    oldax = P.gca()
     m = map2(lon = (xmin, xmax), lat=(ymin,ymax), proj='merc', show=False,
         axes_rect = bbox, bgcolor=bgcolor, 
         xhide=True, yhide=True, fig=fig, **kwargs)
@@ -3562,6 +3563,7 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., maplims=None, bgcolor=(0, .
     if alpha!=1 and fc:
         for o in fc: o.set_alpha(alpha)
     m.axes.set_frame_on('off')
+    P.sca(oldax)
     return m
  
 def add_map_point(gg, lon, lat, marker='o', color='r', size=40,  m=None, alpha=1,  **kwargs):

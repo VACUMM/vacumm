@@ -2107,6 +2107,7 @@ class Plot(object):
         if self.anim is True:
             self.anim = anim
         return anim
+        
     def register_obj(self, obj, gtypes=None, anim=None, **kwargs):
         """Register an object with :meth:`add_obj` and :meth:`animator_append`"""
         if gtypes is None: 
@@ -5828,9 +5829,21 @@ def best_loc_map(m, onland=True, allowed=_locations):
     
 
 class Animator(object):
+    """Animate objects on a figure
+    
+    :Example:
+    
+        >>> anim = Animator()
+        >>> anim.append(P.plot([5,6])
+        >>> anim.append(P.plot([4,8])
+        >>> anim.make_animation()
+    
+    """
     def __init__(self, fig=None):
         self.objs = []
-        self.fig = None
+        if fig is None: fig = P.gcf()
+        self.fig = fig
+        
     def append(self, obj, frame=None):
         # Set frame index
         nobjs = len(self.objs)
@@ -5871,6 +5884,7 @@ class Animator(object):
                 else:
                     assert self.fig == obj.get_figure()
             frameobjs.append(obj)
+
         return frame
 
     def make_animation(self, **kwargs):
