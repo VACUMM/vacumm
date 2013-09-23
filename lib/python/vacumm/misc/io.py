@@ -40,7 +40,7 @@ __all__ = ['list_forecast_files', 'NcIterBestEstimate', 'NcIterBestEstimateError
     'ncfind_var', 'ncfind_axis', 'ncfind_obj', 'ncget_var', 'ncread_var', 'ncread_files', 'ncread_best_estimate', 
     'ncget_grid', 'ncget_time','ncget_lon','ncget_lat','ncget_level', 'ncmatch_obj', 
     'ncget_axis', 'netcdf3', 'netcdf4', 'ncread_axis', 'ncread_obj', 'ncget_fgrid', 
-    'grib_read_files',
+    'grib_read_files', 'nccache_get_time', 
     'Shapes', 'XYZ', 'XYZMerger', 'write_snx', 'ColoredFormatter', 'Logger', 'TermColors' 
     ]
 __all__.sort()
@@ -427,7 +427,7 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
     
     :Return:
     
-        The first matching variable name, or None if not found.
+        The first matching object name, or None if not found.
     
     '''
     nfo = NcFileObj(f)
@@ -510,7 +510,7 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
     else: # Not found
         name = None
         
-    del nfo
+    nfo.close()
 
     return name
         
@@ -763,7 +763,7 @@ def _process_var(var, torect, samp, grid, kwgrid, squeeze, atts):
     
     return var
 
-def ncget_axis(f, checker, ids=None, **kwargs):
+def ncget_axis(f, checker, ids=None, ro=False, **kwargs):
     """Get an axis in a netcdf file by searching all axes and variables
     
     If ``checker`` is a list, dict or tuple, :func:`ncfind_axis`
@@ -790,9 +790,12 @@ def ncget_axis(f, checker, ids=None, **kwargs):
     if isinstance(checker, basestring):
         checker = get_checker(checker)
     elif isinstance(checker, (list, tuple, dict)):
-        return  ncfind_obj(f, checker, ids=ids, **kwargs)
+        axid = ncfind_obj(f, checker, ids=ids, **kwargs)
+        if axid is None: return
+        axis = f[axid].clone()
+        nfo.close()
+        return axis
        
-    
     # Targets
     dimids = f.listdimension()
     varids = f.listvariables()
@@ -805,9 +808,11 @@ def ncget_axis(f, checker, ids=None, **kwargs):
     axis = None
     for id in ids:
         if checker(f[id], ro=True):
-            if id in varids:
-                return f(id)
-            return f.getAxis(id)
+            axis = f[id]
+            break
+#            if id in varids:
+#                return f(id)
+#            return f.getAxis(id)
         else:
             for i, aid in enumerate(f[id].listdimnames()):
                 if checker(f[aid], ro=True):
@@ -818,11 +823,11 @@ def ncget_axis(f, checker, ids=None, **kwargs):
             break
     axis = axis.clone()
     del nfo
-    checker(axis)
+    checker(axis, ro=ro)
     return axis
         
 
-def ncget_lon(f, ids=None):
+def ncget_lon(f, ids=None, ro=False):
     """Get longitude axis of a netcdf file
     
     :Params:
@@ -830,9 +835,9 @@ def ncget_lon(f, ids=None):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, islon, ids)
+    return ncget_axis(f, islon, ids, ro=ro)
     
-def ncget_lat(f, ids=None):
+def ncget_lat(f, ids=None, ro=False):
     """Get latitude axis of a netcdf file
     
     :Params:
@@ -840,9 +845,9 @@ def ncget_lat(f, ids=None):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, islat, ids)
+    return ncget_axis(f, islat, ids, ro=ro)
            
-def ncget_time(f, ids=None):
+def ncget_time(f, ids=None, ro=False):
     """Get time axis of a netcdf file
     
     :Params:
@@ -850,9 +855,9 @@ def ncget_time(f, ids=None):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, istime, ids)
+    return ncget_axis(f, istime, ids, ro=ro)
     
-def ncget_level(f, ids=None):
+def ncget_level(f, ids=None, ro=False):
     """Get level axis of a netcdf file
     
     :Params:
@@ -860,7 +865,7 @@ def ncget_level(f, ids=None):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, islevel, ids)
+    return ncget_axis(f, islevel, ids, ro=ro)
    
 def ncget_grid(f, ids=None, torect=False):
     """Get a grid of a netcdf file
@@ -932,6 +937,36 @@ def ncget_fgrid(f, gg):
     nfo.close()
 
 
+_nccache_time = {}
+def nccache_get_time(f, timeid=None, ro=False):
+    """Get a time axis from cache or netcdf file
+    
+    A time axis not in cache is read using :func:`ncget_time`,
+    them stored in cache.
+    
+    :Params:
+    
+        - **f**: File object or name.
+        - **timeid**, optional: Single or list of time ids for :func:`ncget_time`.
+        
+    Example:
+    
+        >>> taxis = nccache_get_time('myfile.nc', ['time','time_counter'])
+    """
+    # Check cache
+    # - file name
+    fname = f if isinstance(f, basestring) else f.id
+    fname = os.path.realpath(fname)
+    # - from cache
+    if fname in _nccache_time:
+        return _nccache_time[fname]
+        
+    # Read it 
+    taxis = ncget_time(f, ids=timeid, ro=ro)
+    _nccache_time[fname] = taxis
+    return taxis
+        
+
 class NcIterBestEstimate(object):
     """Iterator on netcdf forecast files
     
@@ -966,7 +1001,7 @@ class NcIterBestEstimate(object):
     ...     if tslice is False or time is None: continue
     ...     var = f(time=tslice)
     """
-    def __init__(self, files, time=None, toffset=None, timeid=None, tslices=None, keepopen=False, autoclose=True):
+    def __init__(self, files, time=None, toffset=None, timeid=None, tslices=None, keepopen=False, autoclose=True, id=None):
         self.i = 0
         if isinstance(files, basestring): files = [files]
         self.nfiles = len(files)
@@ -981,6 +1016,14 @@ class NcIterBestEstimate(object):
         self.keepopen = keepopen
         from atime import add
         self.add = add
+        if id is None:
+            id = str(self.toffset)+str(self.seltime)+str(files)
+            try:
+                import md5
+                id = md5.md5(self.id).digest()
+            except:
+                pass
+        self.id = id
        
     def __iter__(self):
         return self
@@ -1010,13 +1053,25 @@ class NcIterBestEstimate(object):
             self.nfo = NcFileObj(self.files[self.i])
             f = self.nfo.f
             
+        ## Check file cache
+        if not hasattr(f, '_vacumm_nibe_tslices'):
+            f._vacumm_nibe_tslices = {}
+        #ftslices = f._vacumm_nibe_tslices
+        #if self.id in ftslices:
+            #print 'gotit from cache'
+            #return f, ftslices[self.id]
+            
         # Get time axis
-        if self.timeid is None or self.timeid not in f.listdimension():
-            self.timeid = guess_timeid(f)
-        if self.timeid is None:
-            return f, None
+        if hasattr(f, '_vacumm_timeid'):
+            self.timeid = f._vacumm_timeid
+#        elif self.timeid is None or self.timeid not in f.listdimension():
+#            self.timeid = guess_timeid(f)
+#        if self.timeid is None:
+#            return f, None
 #            raise IOError('No valid time axis found in netcdf file')
-        taxis = f.getAxis(self.timeid)
+#        taxis = f.getAxis(self.timeid)
+        taxis = nccache_get_time(f, timeid=self.timeid, ro=True)
+        self.timeid = taxis.id
         if verbose:
             print taxis
         
@@ -1057,7 +1112,7 @@ class NcIterBestEstimate(object):
                 
             # End of slice
             self.nfonext = NcFileObj(self.files[self.i+1])
-            taxisnext = self.nfonext.f.getAxis(self.timeid)
+            taxisnext = nccache_get_time(self.nfonext.f, timeid=self.timeid, ro=True)
             if isinstance(self.toffset, tuple):
                 ct1 = taxisnext.subAxis(0, 1).asComponentTime()[0]
                 ct1 = self.add(ct1, *self.toffset)
@@ -1080,12 +1135,14 @@ class NcIterBestEstimate(object):
         self.i += 1
         tslice = slice(i, j)
         self.tslices.append(tslice)
+        f._vacumm_nibe_tslices[self.id] = tslice
         return f, tslice 
         
     def empty(self):
         """Nothing to read from this file"""
         self.tslices.append(None)
         self.i += 1
+        self.nfo.f._vacumm_nibe_tslices[self.id] = None
         return self.nfo.f, False
     
     def close(self):
@@ -1160,7 +1217,7 @@ def ncread_best_estimate(filepattern, varname, *args, **kwargs):
 
 def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, select=None, 
     atts=None, samp=None, grid=None, verbose=False, ignorecase=True, torect=True, 
-    squeeze=False, searchmode=None, **kwargs):
+    squeeze=False, searchmode=None, nibeid=None, **kwargs):
     """Read the best estimate of a variable through a set of netcdf files
    
     :Example:
@@ -1232,7 +1289,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
     selects = M.broadcast(select, nvar)
     selectors = [M.create_selector(s, **kwargs) for s in selects]
     # - iterator on files
-    iterator = NcIterBestEstimate(ncfiles, time, timeid=timeid, toffset=toffset)
+    iterator = NcIterBestEstimate(ncfiles, time, timeid=timeid, toffset=toffset, id=nibeid)
     # undepsampling
     if samp is not None:
         samp = [0 for s in samp if s==0 or not isinstance(s, int)]
