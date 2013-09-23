@@ -551,7 +551,7 @@ class ConfigManager(object):
 
     def arg_parse(
             self, parser=None, exc=[], parse=True, args=None, 
-            getparser=False, getargs=False, 
+            getparser=False, getargs=False, cfgfile='config.cfg',
             patch=None, cfgfileopt='--cfgfile', cfgfilepatch=None):
         """Options (:mod:`argparse`) and config mixer.
         
@@ -620,7 +620,7 @@ class ConfigManager(object):
                         cfgfileopt = '--'+cfgfileopt
                 cfgfileopt = (cfgfileopt,)
             parser.add_argument(*cfgfileopt,  
-                dest="cfgfile", help='Configuration file [default: "%(default)s"]')
+                dest="cfgfile", help='Configuration file [default: "%(default)s"]', default=cfgfile)
         
         # Default config
         defaults = self.defaults()
@@ -725,7 +725,7 @@ class ConfigManager(object):
 
     def opt_parse(
             self, parser=None, exc=[], parse=True, args=None, getparser=None,
-            patch=None, cfgfileopt='--cfgfile', cfgfilepatch=None):
+            patch=None, cfgfile='config.cfg', cfgfileopt='--cfgfile', cfgfilepatch=None):
         """Options (:mod:`optparse`) and config mixer.
         
             1. Creates command-line options from config defaults
@@ -811,7 +811,7 @@ class ConfigManager(object):
             if isinstance(cfgfileopt, basestring):
                 cfgfileopt = (cfgfileopt,)
             parser.add_option(*cfgfileopt, action='store', type="string", 
-                dest="cfgfile", help='Configuration file [default: "%default"]', default=None)
+                dest="cfgfile", help='Configuration file [default: "%default"]', default=cfgfile)
         
         # Default config
         defaults = self.defaults()
@@ -875,6 +875,27 @@ class ConfigManager(object):
             return (cfg, parser) if getparser else cfg
         else:
             return parser
+
+    def opt_patch(self, parser, exc=[], cfgfileopt='cfgfile'):
+        """Call to :meth:`arg_parse` with an automatic patching of current configuration
+        
+        :Return: ``cfg, args``
+        """
+        
+        # Create a patch configuration from commandline arguments
+        cfgpatch = self.opt_parse(parser, exc=exc, cfgfileopt=cfgfileopt)
+        
+        #  Load personal config file and default values
+        cfg = self.load(parser.values.cfgfile)
+        
+        #  Patch it with commandeline options
+        self.patch(cfg, cfgpatch)
+        
+        return cfg
+
+
+
+
 
     def opt_long_help(self, rst=True, usage="Usage: [prog] [options] ...", 
         description="Long help based on config specs"):
@@ -969,6 +990,33 @@ def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', exc=[], **kwargs):
     """
     return ConfigManager(cfgspecfile, **kwargs).arg_patch(parser, cfgfileopt='cfgfile', exc=exc)
    
+def cfgoptparse(cfgspecfile, parser, cfgfileopt='cfgfile', exc=[], **kwargs):
+    """Merge configuration and commandline arguments
+    
+    :Params:
+    
+        - **cfgspecfile**: Config specification file (.ini).
+        - **parser**: :class:`~argpase.ArgumentParser` instance.
+        - **cfgfileopt**, optional: Name of the option used to specify the 
+          user config file. Example: ``'cfgfile'`` creates the option
+          ``--cfgfile=<config file>``.
+        - **exc**, optional: Config option name that must not be used to generated
+          a commandline option.
+        - Extra params are passed to :class:`ConfigManager` initialization.
+    
+    :Tasks:
+    
+        1. Initialize a default configuration (:class:`ConfigManager`) 
+           from the specification file given by ``cfgspecfile``.
+        2. Generate associated commandline options.
+        3. Load a user configuration file (specified with the option 
+           whose name is given by ``cfgfileopt``).
+        4. Patch this configuration with user supplied options retrieved
+           using the :class:`~optpase.OptionParser` parser ``parser``.
+           
+        Technically it combines :class:`ConfigManager` and :meth:`ConfigManager.opt_patch`
+    """
+    return ConfigManager(cfgspecfile, **kwargs).opt_patch(parser, cfgfileopt='cfgfile', exc=exc)
         
 
 def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
