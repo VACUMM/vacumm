@@ -302,6 +302,7 @@ class Dataset(Object):
         Object.__init__(self, **kwargs)
         self.load_dataset(dataset, time=time)
         self._ncids = {}
+        self._nibeid = str(id(self))
         
         # Load specs of variables
         self._load_ncobj_specs_(ncobj_specs)
@@ -881,7 +882,7 @@ class Dataset(Object):
                 timeid=self.get_timeid(), 
     #            time=time, 
                 select=select, verbose=verbose if verbose is not None else self.is_debug(), 
-                squeeze=base_squeeze, **kwargs)
+                squeeze=base_squeeze, nibeid=self._nibeid+str(time), **kwargs)
             if var is None:
                 if warn: self.warning('No data found for variable: %s, local select: %s', varname, selstring)
                 return
@@ -959,7 +960,7 @@ class Dataset(Object):
             
             # Build iterator
             iter = NcIterBestEstimate([d.id for d in self.dataset], iter_time, 
-                timeid=timeid, autoclose=False)
+                timeid=timeid, autoclose=False, id=str(iter_time))
                 
             # Iterate
             for f,t in iter:
@@ -1703,7 +1704,7 @@ class OceanDataset(OceanSurfaceDataset):
                 self.debug('Found depth referring to a sigma level, processing sigma to depth conversion')
                 allvars = []
                 
-                for f,t in NcIterBestEstimate(self.dataset, time=selector):
+                for f,t in NcIterBestEstimate(self.dataset, time=selector, id=self._nibeid+str(time)):
                     if t is False: continue # and when no time??? None-> ok we continue
                     if f!=self.dataset[0]: sigma_converter.update_file(f)
                     sel = selector(time=t)
@@ -2257,7 +2258,8 @@ class OceanDataset(OceanSurfaceDataset):
             p.axes._minimap = True
         
         del kwargs['title']
-        p.post_plot(**kwargs)
+        if kwargs.get('post_plot', True): 
+            p.post_plot(**kwargs)
         return p
             
     
