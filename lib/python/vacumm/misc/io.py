@@ -813,7 +813,7 @@ def ncget_axis(f, checker, ids=None, ro=False, **kwargs):
 #            if id in varids:
 #                return f(id)
 #            return f.getAxis(id)
-        else:
+        elif id in varids:
             for i, aid in enumerate(f[id].listdimnames()):
                 if checker(f[aid], ro=True):
                     axis = f[id].getAxis(i)
@@ -821,6 +821,7 @@ def ncget_axis(f, checker, ids=None, ro=False, **kwargs):
             else:
                 continue
             break
+    if axis is None: return
     axis = axis.clone()
     del nfo
     checker(axis, ro=ro)
@@ -1071,6 +1072,9 @@ class NcIterBestEstimate(object):
 #            raise IOError('No valid time axis found in netcdf file')
 #        taxis = f.getAxis(self.timeid)
         taxis = nccache_get_time(f, timeid=self.timeid, ro=True)
+        if taxis is None:
+            return f, None
+            raise IOError('No valid time axis found in netcdf file')
         self.timeid = taxis.id
         if verbose:
             print taxis
