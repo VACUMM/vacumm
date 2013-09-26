@@ -58,7 +58,7 @@ def get_dist_dir():
     if not os.path.exists(os.path.join(dist_dir, 'setup.py')): return
     return dist_dir
     
-def get_data_dir(raiseerr=True):
+def get_data_dir(raiseerr=False):
     """Get the data directory absolute path
     
     This directory contains data samples and other needed files.
@@ -70,7 +70,9 @@ def get_data_dir(raiseerr=True):
     - Else in the :file:`data` subdirectory of the main distribution tree
       (see :meth:`get_dist_dir`).
       
-    .. warning:: It raises an :class:`VACUMMError` error if not found.
+    .. warning:: It raises an :class:`VACUMMError` error if not found 
+        and if ``raiseerr`` is True, else return ''.
+        
     """
     # Installed librairy
     lib_dir = get_lib_dir()
@@ -86,6 +88,7 @@ def get_data_dir(raiseerr=True):
             return data_dir
         
     if raiseerr: raise VACUMMError("Can't find a valid data directory")
+    return ''
     
 def data_sample(data_file, mode='all'):
     """Transform the relative path of a sample file to an absolute path
@@ -110,7 +113,7 @@ def data_sample(data_file, mode='all'):
     
     # VACUMM
     if mode.startswith('a') or not mode.startswith('u'):
-        path = vacpath = os.path.join(get_data_dir(), data_file)
+        path = vacpath = os.path.join(get_data_dir(raiseerr=True), data_file)
         if os.path.exists(path) or not mode.startswith('a'): return path
         
     # UVCDAT
@@ -131,7 +134,8 @@ def get_scripts_dir(subdir=None, raiseerr=False):
     - Else in the :file:`scripts` subdirectory of the main distribution tree
       (see :meth:`get_dist_dir`).
       
-    .. warning:: It raises an :class:`VACUMMError` error if not found.
+    .. warning:: It raises an :class:`VACUMMError` error if not found 
+        and if ``raiseerr`` is True.
     """
     # Installed librairy
     lib_dir = get_lib_dir()
@@ -148,6 +152,7 @@ def get_scripts_dir(subdir=None, raiseerr=False):
     # Not found
     if scripts_dir is None:
         if raiseerr: raise VACUMMError("Can't find a valid scripts directory")
+        return ''
     
     # Subdir
     if subdir and isinstance(subdir, basestring):
@@ -158,7 +163,7 @@ def get_scripts_dir(subdir=None, raiseerr=False):
     return scripts_dir
         
  
-def get_tut_dir(raiseerr=True):
+def get_tut_dir(raiseerr=False):
     """Get the tutorials directory absolute path
     
     This directory contains all tutorials used by the documentation.
@@ -171,9 +176,10 @@ def get_tut_dir(raiseerr=True):
       subdirectory of the main distribution tree
       (see :meth:`get_dist_dir`).
       
-    .. warning:: It raises an :class:`VACUMMError` error if not found.
+    .. warning:: It raises an :class:`VACUMMError` error if not found 
+        and if ``raiseerr`` is True.
     """
-    return get_scripts_dir('tutorials', raiseerr=True)
+    return get_scripts_dir('tutorials', raiseerr=raiseerr)
     
 #def get_conf_dir():
 #    """Get directory of secondary configuration files
