@@ -596,7 +596,7 @@ def _taylor_(stats, labels, colors, stdref=None, units=None, refcolor='.5', refl
             if normalize:
                 legstd = 'Rel. '+legstd.lower()
                 legrms = 'Rel. '+legrms
-            P.legend((pcor, pstd, prms, pref), 
+            P.legend((pcor[0], pstd, prms, pref[0]), 
                 ('Correlation', legstd, legrms, reflabel), 
                 loc='upper right' if not negative else 'upper left', 
                 #markerscale=10,
@@ -636,7 +636,7 @@ def _taylor_(stats, labels, colors, stdref=None, units=None, refcolor='.5', refl
     
     else:
     
-        P.xlim(ymin=0)
+        P.ylim(ymin=0)
         ax.set_aspect(1.)
         ax.set_frame_on(False)
     return ppts
@@ -745,7 +745,7 @@ def rankhist(obs, ens, title='Rank histogram', bins=None, **kwargs):
     if N.ma.isMA(rank): rank = rank.compressed()
     _start_plot_(**kwargs)
     if bins is None: bins = N.arange(-.5, nens+1.5)
-    pdf, bins, patches = P.hist(rank.compressed(), bins=bins, 
+    pdf, bins, patches = P.hist(rank, bins=bins, 
         normed=True, align='mid', **kwhist)
     P.axhline(1./(nens+1), color='r', lw=2)
     P.xlim(bins.min(), bins.max())

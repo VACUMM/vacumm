@@ -139,7 +139,8 @@ def ensrank(obs, ens, gethist=False, getnrz=False, centered=False):
     
     # Rank histogram
     if gethist:
-        hist = N.histogram(rank.compressed(), N.arange(0,nens+1))
+        if N.ma.isMA(rank): rank = rank.compressed()
+        hist = N.histogram(rank, N.arange(0,nens+1))
     
     # Out
     ret = rank,
