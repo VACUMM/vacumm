@@ -1048,7 +1048,10 @@ def xls_style(style=None,b=None,i=None,u=None,c=None,o=None,bd=None,fmt=None,va=
         
     :Tutorial: :ref:`user.tut.misc.io.xls`
     """
-    from pyExcelerator import XFStyle,Borders,Alignment, Font
+    try: 
+        from pyExcelerator import XFStyle,Borders,Alignment, Font
+    except:
+        from xlwt import XFStyle,Borders,Alignment, Font
     # Style object
     if style is None:
         style = XFStyle()
