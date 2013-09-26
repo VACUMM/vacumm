@@ -377,7 +377,8 @@ class Lakes(object):
         
 GetLakes = Lakes
 
-def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75], ocean=False, fractions=0, yclean=True, premask=None):
+def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75], 
+    ocean=False, fractions=0, yclean=True, premask=None):
     """Create a mask on a regular or curvilinear grid according to a polygon list
     
     :Params:
@@ -392,7 +393,7 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75], ocean=False,
             - else: Masked if grid point inside polygon.
             
         - **thresholds**, optional: See ``intersect`` mode [default: [.5, .75]]
-        - **ocean**, optional: If True, keep only the ocean (= biggest lake) [default: True]
+        - **ocean**, optional: If True, keep only the ocean (= biggest lake).
         
     :Result:
     
@@ -579,23 +580,24 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75], ocean=False,
 
 
 
-def masked_polygon(vv, polys, copy=0, **kwargs):
+def masked_polygon(vv, polys, copy=0, reverse=False, **kwargs):
     """Mask a variable according to a polygon list
     
-    - **vv**: The variable
-    - **polys**: Polygons (or something like that)
-    - *copy*: Copy data [default: 0]
-    - Other keywords are passed to :func:`MV.masked_where`
+    :Params:
+    
+        - **vv**: The MV2 array.
+        - **polys**, optional: Polygons (or something like that, see :func:`polygons`).
+        - **copy**, optional: Copy data?.
+        - **reverse**, optional: Reverse the mask?
+        - Other keywords are passed to :func:`polygon_mask`.
     """
-#   # Get grid
-#   gg = M.get_xy(vv, m=None)
-#   
     # Get mask
     mask = polygon_mask(vv, polys, **kwargs)
+    if reverse: mask = ~mask
     
     # Mask the variable
-    vv2 = vv.clone() if copy else vv
-    vv2[:] = MV2.masked_where(mask, vv, copy=0)
+    vv2 = MV2.masked_where(mask, vv, copy=copy)
+    vv2.id = vv.id
     del mask
     return vv2
 
@@ -645,9 +647,9 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     from misc import isgrid, isrect, curv2rect
     for poly in polys:
         
-        # Grid (argument to get_grid)
+        # Grid (cdms var, grid or tuple of axes) -> get envelop
         if cdms2.isVariable(poly) or isgrid(poly) or \
-            (isinstance(poly, tuple) and len(poly)==2):
+            (isinstance(poly, tuple) and len(poly)==2 and islon(poly[1]) and islat(poly[0])):
             grid = M.get_grid(poly)
             if grid is None: continue
             poly = grid_envelop(grid)
