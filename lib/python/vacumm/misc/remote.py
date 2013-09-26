@@ -38,8 +38,9 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 
-import os,  re
+import os, shutil, re
 from stat import *
+import glob
 from urlparse import urlparse
 from warnings import filterwarnings
 import subprocess
@@ -434,7 +435,7 @@ class InputWorkFiles(WorkFile):
     def remote_files(self, ifile=None):
         """List of remote files"""
         # List
-        if self.cpmode==1: # local copy
+        if self.cpmode<=1: # local copy
             files = glob.glob(self.remote_pattern)
         else: #remote copy
             files = [os.path.join(self.remote_dir, remfile) 
