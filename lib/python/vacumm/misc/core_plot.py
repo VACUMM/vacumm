@@ -5095,10 +5095,14 @@ class Map(Plot2D):
               :meth:`~mpl_toolkits.basemap.Basemap.drawmeridians` and 
               :meth:`~mpl_toolkits.basemap.Basemap.drawparallels` to change text properties.
             - **fullscreen**: Full screen mode -> no colorbar and no labels.
-            - **mapscale**: Add a map scale using :meth:`add_mapscale`.
-            - **mapscale_<params>**: Pass ``<param>`` to the :meth:`add_mapscale` method.
-            - **compass**: Add a compass using :meth:`add_compass`.
-            - **compass_<params>**: Pass ``<param>`` to the :meth:`add_compass` method.
+            - **mapscale**: Add a map scale using 
+              :meth:`~vacumm.misc.core_plot.Map.add_mapscale`.
+            - **mapscale_<param>**: Pass ``<param>`` to the 
+              :meth:`~vacumm.misc.core_plot.Map.add_mapscale` method.
+            - **compass**: Add a compass using 
+              :meth:`~vacumm.misc.core_plot.Map.add_compass`.
+            - **compass_<param>**: Pass ``<param>`` to the 
+              :meth:`~vacumm.misc.core_plot.Map.add_compass` method.
            
         
         """

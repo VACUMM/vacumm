@@ -3661,6 +3661,6 @@ from grid.basemap import gshhs_reslist, gshhs_autores, cache_map, cached_map
 from misc import *
 from vacumm.misc.phys.units import m2deg
 from core_plot import add_glow, add_shadow, add_agg_filter, hlitvs, AutoDateFormatter2,  \
-    AutoDateLocator2, AutoDateMinorLocator, AutoDualDateFormatter
+    AutoDateLocator2, AutoDateMinorLocator, AutoDualDateFormatter, add_compass
 
 
