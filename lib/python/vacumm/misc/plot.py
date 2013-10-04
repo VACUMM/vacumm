@@ -50,7 +50,8 @@ __all__ = [ 'traj', 'ellipsis',
     'make_movie', 'taylor', 'vtaylor', 'get_cls', 'dtaylor', 'rankhist', 
     'curve2', 'bar2', 'stick2', 'hov2' , 'target', 'map2', 'section2', 
     'minimap', 'add_map_point', 'add_map_line', 'add_map_lines', 'add_map_box',  'rshpere_wgs84', 
-    'add_glow', 'add_shadow', 'add_agg_filter', 'plot2d', 'hlitvs']
+    'add_glow', 'add_shadow', 'add_agg_filter', 'plot2d', 'hlitvs', 
+    'add_compass']
 __all__.sort()
 
 from genutil import minmax, statistics
@@ -3182,6 +3183,10 @@ def map2(*args, **kwargs):
         {Map_post_plot[drawparallels_<param>]}
         {Map_post_plot[meridional/zonal_labels]}
         {Map_post_plot[fullscreen]}
+        {Map_post_plot[mapscale]}
+        {Map_post_plot[mapscale_<param>]}
+        {Map_post_plot[compass]}
+        {Map_post_plot[compass_<param>]}
         
     :2D plot params:
     
