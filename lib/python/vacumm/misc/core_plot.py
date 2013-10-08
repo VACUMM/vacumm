@@ -5022,8 +5022,8 @@ class Map(Plot2D):
         """
         # Placement point
         offset = None
-        if xrel<1: xrel += 1
-        if yrel<1: yrel += 1
+        if xrel<0: xrel += 1
+        if yrel<0: yrel += 1
         if pos is None:
             lonmin = min(self.lon)
             lonmax = max(self.lon)
@@ -5059,7 +5059,7 @@ class Map(Plot2D):
         return pos, posref, offset
 
     def add_mapscale(self, pos=None, scale=None, posref=None, barstyle='simple', transform=None, 
-        xrel=0.1, yrel=0.1, getpos=False, posonly=False, **kwargs):
+        xrel=0.1, yrel=0.1, getpos=False, posonly=False, shadow=False, zorder=10, **kwargs):
         """Add a map scale using :meth:`mpl_toolkits.basemap.Basemap.drawmapscale`
         
         :Params:
@@ -5069,10 +5069,13 @@ class Map(Plot2D):
               is estimated.
             - **scale**, optional: Length of the scale in projection coordinates (m).
             - **barstyle**, optional: Bar style: 'simple' or 'fancy'.
-            - **transform**: Coordinates transform for ``pos`` which defaults to "data".
+            - **transform**, optional: Coordinates transform for ``pos`` which defaults to "data".
               Use a valid transform, or "data", "axes" or "figure".
-            - **x/yrel**: Default placement position relative to longitude and latitude ranges.
-            - **x/ypad**: Padding if dots for placement when given as a string like "upper left".
+            - **x/yrel**, optional: Default placement position relative to longitude and latitude ranges.
+            - **x/ypad**, optional: Padding if dots for placement when given as a string like "upper left".
+            - **shadow**, optional: Add a shadow.
+            - **shadow_<param>**, optional: ``<param>`` is passed to 
+              :meth:`~vacumm.misc.core_plot.Plot.add_shadow`.
             - Othe keywords are passed to :meth:`~mpl_toolkits.basemap.Basemap.drawmapscale`.
             
         :Example:
@@ -5081,6 +5084,7 @@ class Map(Plot2D):
             >>> mymap.add_mapscale('upper right', posref=(-2,45), fontsize=10)
         """
         if self.map is None: return
+        kwsh = kwfilter(kwargs, 'shadow_')
         
         # Positions
         pos, posref, offset = self._get_posposref_(pos, posref, transform=transform, 
@@ -5099,12 +5103,19 @@ class Map(Plot2D):
         ms = self.map.drawmapscale(pos[0], pos[1], posref[0], posref[1], scale, **kwargs)
         self.add_obj('mapscale', ms)
         
+        # Finalize
+        for o in ms:
+            o.set_clip_on(False)
+            o.set_zorder(zorder)
+            if shadow:
+                self.add_shadow(o, **kwsh)
+        
         if getpos: return ms, pos
         return ms
 
 
     def add_compass(self, pos=None, size=40, posref=None, style='simple', transform=None, 
-        xpad=None, ypad=None, xrel=0.9, yrel=0.9, getpos=False, **kwargs):
+        xpad=None, ypad=None, xrel=0.9, yrel=0.9, getpos=False, shadow=False, zorder=10, **kwargs):
         """Add a compass to the map using :func:`~vacumm.misc.plot.add_compass`
         
         See :func:`~vacumm.misc.plot.add_compass` all options.
@@ -5120,6 +5131,9 @@ class Map(Plot2D):
               Use a valid transform, or "data", "axes" or "figure".
             - **x/yrel**: Default placement position relative to longitude and latitude ranges.
             - **x/ypad**: Padding if dots for placement when given as a string like "upper left".
+            - **shadow**, optional: Add a shadow.
+            - **shadow_<param>**, optional: ``<param>`` is passed to 
+              :meth:`~vacumm.misc.core_plot.Plot.add_shadow`.
             - Othe keywords are passed to :func:`~vacumm.misc.plot.add_compass`.
             
         :Example:
@@ -5129,6 +5143,7 @@ class Map(Plot2D):
             >>> mymap.add_compass(pos="upper right", style="fancy", xpad=100)
         """
         if self.map is None: return
+        kwsh = kwfilter(kwargs, 'shadow_')
         
         # Transform
         transform = self._transform_(transform, 'axes')
@@ -5147,13 +5162,18 @@ class Map(Plot2D):
         # Draw it
         x, y = pos
         kwargs['posref'] = posref
-        kwargs.setdefault('offset', poffset)
+        dict_check_defaults(kwargs, offset=poffset, text_zorder=zorder)
         kwfont = kwfilter(kwargs, 'font', short=True)
         if 'size' in kwfont: kwargs['text_size'] = kwfont['size']
         if 'color' in kwfont: kwargs['text_color'] = kwfont['color']
         cp = add_compass(x, y, size=size, ax=self.axes, angle=angle, anglemode='data', 
-            transform=self.axes.transData, **kwargs)
+            transform=self.axes.transData, zorder=zorder, **kwargs)
         self.add_obj('compass', cp)
+        
+        # Finalize
+        if shadow:
+            for o in cp[0]+cp[1]:
+                self.add_shadow(o, **kwsh) 
         
         if getpos: return cp, pos
         return cp
@@ -5391,13 +5411,15 @@ class Map(Plot2D):
             kw.update(kwfilter(kwargs, 'compass_', keep=True)) 
             self.add_mscp(**kw)
         
-        # Map scale
-        elif mapscale:
-            self.add_mapscale(**kwfilter(kwargs, 'mapscale_'))
+        else:
             
-        # Compass
-        elif compass:
-            self.add_compass(**kwfilter(kwargs, 'compass_'))
+            # Map scale
+            if mapscale:
+                self.add_mapscale(**kwfilter(kwargs, 'mapscale_'))
+                
+            # Compass
+            if compass:
+                self.add_compass(**kwfilter(kwargs, 'compass_'))
             
         if fullscreen: self.axes.set_frame_on(False)
     
@@ -6408,7 +6430,7 @@ def add_compass(x, y, size=40, facecolor1='k', facecolor2='w', edgecolor='k',
 
     
     # Loop on quarters
-    dict_check_defaults(kwpatch, linewidth=linewidth, alpha=alpha)
+    dict_check_defaults(kwpatch, linewidth=linewidth, alpha=alpha, clip_on=False)
     patches = []
     texts = []
     if style.startswith('a') or style.startswith('s'):
