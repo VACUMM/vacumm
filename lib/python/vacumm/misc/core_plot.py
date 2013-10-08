@@ -5179,7 +5179,8 @@ class Map(Plot2D):
         return cp
 
 
-    def add_mscp(self, pos=None, posref=None, compass_size=40, transform=None, **kwargs):
+    def add_mscp(self, pos=None, posref=None, compass_size=40, transform=None, 
+        shadow=False, color='k', zorder=10, **kwargs):
         """Plot a mapscale and a compass above
         
         
@@ -5207,6 +5208,10 @@ class Map(Plot2D):
         kwms = kwfilter(kwargs, 'mapscale')
         kwms['transform'] = transform
         kwcp = kwfilter(kwargs, 'compass')
+        dict_check_defaults(kwcp, facecolor1=color, edgecolor=color, text_color=color, 
+            zorder=zorder)
+        dict_check_defaults(kwms, fontcolor=color, fillcolor2=color,  
+            zorder=zorder)
         
         msoffset = kwms.get('offset', 0.02*(self.map.ymax-self.map.ymin))
         cptextpad = kwcp.get('text_pad', 5)
@@ -6430,7 +6435,8 @@ def add_compass(x, y, size=40, facecolor1='k', facecolor2='w', edgecolor='k',
 
     
     # Loop on quarters
-    dict_check_defaults(kwpatch, linewidth=linewidth, alpha=alpha, clip_on=False)
+    dict_check_defaults(kwpatch, linewidth=linewidth, alpha=alpha, clip_on=False, 
+        edgecolor=edgecolor)
     patches = []
     texts = []
     if style.startswith('a') or style.startswith('s'):
