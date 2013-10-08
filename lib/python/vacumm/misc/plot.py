@@ -3187,6 +3187,8 @@ def map2(*args, **kwargs):
         {Map_post_plot[mapscale_<param>]}
         {Map_post_plot[compass]}
         {Map_post_plot[compass_<param>]}
+        {Map_post_plot[mscp]}
+        {Map_post_plot[mscp_<param>]}
         
     :2D plot params:
     

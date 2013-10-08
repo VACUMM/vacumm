@@ -56,6 +56,7 @@ from matplotlib.axes import Subplot, Axes
 from matplotlib.patches import Patch
 from matplotlib.path import Path
 from matplotlib.text import Text
+from matplotlib.artist import Artist
 
 from atime import mpl, comptime, strftime
 from axes import check_axes, istime, axis_type, set_order, get_order, merge_orders, \
@@ -871,6 +872,7 @@ class Plot(object):
             P.close(self.fig)
         except:
             pass
+            
         
     def get_brothers(self, notme=False, mefirst=True, filter=False):
         """Return all :class:`Plot` instances that belongs to current axes
@@ -1431,6 +1433,40 @@ class Plot(object):
             return True
         return False
 
+    def _transform_(self, transform, default=None):
+        return _transform_(transform, default, ax=self.axes, fig=self.fig)
+        
+    def get_xy(self, x, y, transform=None, xyscaler=None, default_transform=None):
+        """Convert (x,y) in data coordinates
+        
+        :Params:
+        
+            - **x/y**: Coordinates referenced to data, axes or figure.
+            - **transform**, optional: Transform applied to coordinates.
+              This either a :class:`matplotlib.transforms.Transform` or a string:
+              ``"data"``, ``"axes"``, ``"figure"``.
+            - **xyscaler**, optional: Converter of coordinates used when input
+              coordinates are in data coordinates. It must be a callable,
+              and it defaults to attribute :attr:`xyscaler` if existing.
+              It converts for instance from degrees to meters for :class:`Map`
+              instances. If equal to False, no conversion is performed.
+        """
+        transform = self._transform_(transform, default_transform)
+        
+        # From figure or axes coordinates
+        if transform is self.fig.transFigure or transform is self.axes.transAxes:
+            return tuple((transform-self.axes.transData).transform_point((x, y)))
+            
+        # From data coordinates (check xyscaler only)
+        if (transform is self.axes.transData or transform in self.axes.transData._parents.values() \
+            or str(self.axes.transData) in str(transform)) and xyscaler is not False: # Add transform from ie degrees to m
+            if xyscaler is None and hasattr(self, 'xyscaler'): xyscaler = self.xyscaler
+            if xyscaler:
+                x, y = xyscaler(x, y)  
+
+        return x, y
+
+    
     def get_transoffset(self, x, y, units='points', transform='data'):
         """Return a translation :class:`~maplotlib.transforms.Transform` 
         
@@ -1454,8 +1490,7 @@ class Plot(object):
             
         :See also: :func:`~maplotlib.transforms.offset_copy`
         """
-        if isinstance(transform, basestring):
-            transform = getattr(self.axes, 'trans'+transform.title())
+        transform = self._transform_(transform, 'data')
         return offset_copy(transform, fig=self.fig, x=x, y=y, units=units)
         
     def grid(self, b=True, **kwargs):
@@ -1519,7 +1554,8 @@ class Plot(object):
         return self.add_obj('figtext', self.fig.text(x, y, text, **kwargs))
     figtext = add_figtext # backward compat
         
-    def add_text(self, x, y, text, transform='axes', shadow=False, glow=False, xyscaler=None, **kwargs):
+    def add_text(self, x, y, text, transform='axes', shadow=False, glow=False, 
+        xyscaler=None, **kwargs):
         """Add text to the plot axes
         
         :Params:
@@ -1534,13 +1570,8 @@ class Plot(object):
         kwgl = kwfilter(kwargs, 'glow')
         
         # Coordinates transform
-        if isinstance(transform, basestring):
-            transform = getattr(self.axes, 'trans'+transform.title())
-        if (transform is self.axes.transData or transform in self.axes.transData._parents.values() \
-            or str(self.axes.transData) in str(transform)) and xyscaler is not False: # Add tranform from ie degrees to m
-            if xyscaler is None and hasattr(self, 'xyscaler'): xyscaler = self.xyscaler
-            if xyscaler:
-                x, y = xyscaler(x, y)   
+        transform = self._transform_(transform, 'axes')
+        x, y = self.get_xy(x, y, transform, xyscaler=xyscaler)
 
         # Plot
         obj = self.add_axobj('text', self.axes.text(x, y, text, transform=transform, **kwargs))
@@ -2122,7 +2153,7 @@ class Plot(object):
         self.animator_append(obj, anim=anim)
         return obj
         
-    
+
     def get_uvlat(self, default=45.):
         """Get :attr:`uvlat`
         
@@ -4974,8 +5005,26 @@ class Map(Plot2D):
         return tts
 
 
-    def _get_posposref_(self, pos, posref, xrel=0.2, yrel=0.15):
-        if pos is None or posref is None:
+    def _get_posposref_(self, pos=None, posref=None, xrel=0.1, yrel=0.1, transform='axes', 
+        xpad=30, ypad=None):
+        """Get position of point and reference points in data coordinates (meters)
+        
+        :Params:
+        
+            - **pos**: Position in data (lon, lat), axes or figure coordinates for placement.
+            - **posref**: Position in data (lon, lat) coordinates of reference point.
+            - **x/yrel**: Default placement position relative to longitude and latitude ranges.
+            - **transform**: Coordinates transform for ``pos`` which defaults to "data".
+              Use a valid transform, or "data", "axes" or "figure".
+            - **x/ypad**: Padding if dots for placement when given as a string like "upper left".
+            
+        Return: ``(x,y),(xref,yref)`` in meters
+        """
+        # Placement point
+        offset = None
+        if xrel<1: xrel += 1
+        if yrel<1: yrel += 1
+        if pos is None:
             lonmin = min(self.lon)
             lonmax = max(self.lon)
             latmin = min(self.lat)
@@ -4984,13 +5033,33 @@ class Map(Plot2D):
             dlat = latmax-latmin
             lon0 = lonmin+xrel*dlon
             lat0 = latmin+yrel*dlat
-            if pos is None:
-                pos = lon0, lat0
-            if posref is None:
-                posref = pos if pos is not None else (lon0, lat0)
-        return pos, posref
+            pos = tuple(self(lon0, lat0))
+        else:
+            if pos in _locations:
+                if xpad is not False and ypad is not False:
+                    offset = loc2offset(pos, xpad=xpad, ypad=ypad, margin=0.01)
+                    pos = loc2tuple(pos, xpad=0, ypad=0)
+                else:
+                    pos = loc2tuple(pos, xpad=xrel, ypad=yrel)
+                    
+                transform = self.axes.transAxes
+            else:
+                transform = self._transform_(transform)
+            if transform is self.axes.transAxes or transform is self.fig.transFigure:
+                pos = tuple((transform-self.axes.transData).transform_point(pos))
+            else:
+                pos = tuple(self(*pos))
+           
+        # Reference point
+        if posref is None:
+            posref = pos
+        else:
+            posref = self(*posref)
+        
+        return pos, posref, offset
 
-    def add_mapscale(self, pos=None, scale=None, posref=None, **kwargs):
+    def add_mapscale(self, pos=None, scale=None, posref=None, barstyle='simple', transform=None, 
+        xrel=0.1, yrel=0.1, getpos=False, posonly=False, **kwargs):
         """Add a map scale using :meth:`mpl_toolkits.basemap.Basemap.drawmapscale`
         
         :Params:
@@ -4999,32 +5068,46 @@ class Map(Plot2D):
             - **posref**, optional: ``(lon,lat)`` of reference position where the scale
               is estimated.
             - **scale**, optional: Length of the scale in projection coordinates (m).
+            - **barstyle**, optional: Bar style: 'simple' or 'fancy'.
+            - **transform**: Coordinates transform for ``pos`` which defaults to "data".
+              Use a valid transform, or "data", "axes" or "figure".
+            - **x/yrel**: Default placement position relative to longitude and latitude ranges.
+            - **x/ypad**: Padding if dots for placement when given as a string like "upper left".
             - Othe keywords are passed to :meth:`~mpl_toolkits.basemap.Basemap.drawmapscale`.
             
         :Example:
         
-            >>> mymap.add_mapscale((-4,45), 100, barstyle='fancy')
+            >>> mymap.add_mapscale((.2,.2), transform='axes')
+            >>> mymap.add_mapscale('upper right', posref=(-2,45), fontsize=10)
         """
         if self.map is None: return
         
         # Positions
-        pos, posref = self._get_posposref_(pos, posref, xrel=0.2, yrel=0.15)
+        pos, posref, offset = self._get_posposref_(pos, posref, transform=transform, 
+            xrel=xrel if xrel<.5 else (1-xrel), yrel=yrel if yrel<.5 else (1-yrel), xpad=False)
+        pos = self(pos[0], pos[1], inverse=True)
+        if getpos and posonly: return pos
+        posref = self(posref[0], posref[1], inverse=True)
                 
         # Scale
         if scale is None:
             scales = basic_auto_scale(self.map.xmin, self.map.xmax, nmax=10)
             scale = (scales[1]-scales[0])*0.001
-        
-        
+                
         # Draw it
-        kwargs.setdefault('barstyle', 'fancy')
+        kwargs['barstyle'] = barstyle
         ms = self.map.drawmapscale(pos[0], pos[1], posref[0], posref[1], scale, **kwargs)
         self.add_obj('mapscale', ms)
+        
+        if getpos: return ms, pos
         return ms
 
 
-    def add_compass(self, pos=None, size=50, posref=None, **kwargs):
+    def add_compass(self, pos=None, size=40, posref=None, style='simple', transform=None, 
+        xpad=None, ypad=None, xrel=0.9, yrel=0.9, getpos=False, **kwargs):
         """Add a compass to the map using :func:`~vacumm.misc.plot.add_compass`
+        
+        See :func:`~vacumm.misc.plot.add_compass` all options.
         
         :Params:
         
@@ -5032,30 +5115,109 @@ class Map(Plot2D):
             - **size**, optional: Size in pixels.
             - **posref**, optional: ``(lon,lat)`` of reference position where the north
               is estimated.
+            - **style**, optional: Compas style: 'simple' or 'fancy'.
+            - **transform**: Coordinates transform for ``pos`` which defaults to "data".
+              Use a valid transform, or "data", "axes" or "figure".
+            - **x/yrel**: Default placement position relative to longitude and latitude ranges.
+            - **x/ypad**: Padding if dots for placement when given as a string like "upper left".
+            - Othe keywords are passed to :func:`~vacumm.misc.plot.add_compass`.
             
         :Example:
         
+            >>> map2(data, compass=True)
             >>> mymap.add_compass((-4,45), 40, facecolor1='r', text_weight='bold')
+            >>> mymap.add_compass(pos="upper right", style="fancy", xpad=100)
         """
         if self.map is None: return
         
+        # Transform
+        transform = self._transform_(transform, 'axes')
+            
         # Positions
-        pos, posref = self._get_posposref_(pos, posref, xrel=0.8, yrel=0.15)
+        if xpad is None: xpad = int(size/2)+20
+        pos, posref, poffset = self._get_posposref_(pos, posref, transform=transform, 
+            xrel=xrel, yrel=yrel, xpad=xpad, ypad=ypad)
               
         # Departure angle from 90 for north
-        uo, vo = self.map.rotate_vector(N.array([0]),N.array([1.]), N.array(posref[:1]),N.array(posref[1:]))
+        pr = self(posref[0], posref[1], inverse=True)
+        uo, vo = self.map.rotate_vector(N.array([0]),N.array([1.]), 
+            N.array(pr[:1]),N.array(pr[1:]))
         angle = N.degrees(N.arctan2(vo[0], uo[0]))-90.
         
         # Draw it
-        x, y = self(pos[0], pos[1])
-        cp = add_compass(x, y, size=size, ax=self.axes, angle=angle, anglemode='data', **kwargs)
+        x, y = pos
+        kwargs['posref'] = posref
+        kwargs.setdefault('offset', poffset)
+        kwfont = kwfilter(kwargs, 'font', short=True)
+        if 'size' in kwfont: kwargs['text_size'] = kwfont['size']
+        if 'color' in kwfont: kwargs['text_color'] = kwfont['color']
+        cp = add_compass(x, y, size=size, ax=self.axes, angle=angle, anglemode='data', 
+            transform=self.axes.transData, **kwargs)
         self.add_obj('compass', cp)
-        return cp
         
+        if getpos: return cp, pos
+        return cp
+
+
+    def add_mscp(self, pos=None, posref=None, compass_size=40, transform=None, **kwargs):
+        """Plot a mapscale and a compass above
+        
+        
+        :Params:
+        
+            - **pos**: Position of the mapscale (see :meth:`add_mapscale`).
+              The compass is drawn just above.
+            - **posref**, optional: Position of reference point for both mapscale and
+              compass.
+            - **mapscale_<param>**, optional: ``<param>`` is passed to 
+              :meth:`~vacumm.misc.core_plot.Map.add_mapscale`.
+            - **scompass_<param>**, optional: ``<param>`` is passed to 
+              :meth:`~vacumm.misc.core_plot.Map.add_compass`.
+              
+              
+        Example:
+        
+            >>> map2(data, mscp=True, mscp_pos=(-2, 48))
+            >>> mymap.add_mscp('lower left')
+            >>> mymap.add_mscp((-4,45), mapscale_scale=100, mapscale_barstyle='fancy',
+                compass_size=50, compass_style='simple')
+            >>> mymap.add_mscp((.9,.1), transform='axes')
+        """
+        
+        kwms = kwfilter(kwargs, 'mapscale')
+        kwms['transform'] = transform
+        kwcp = kwfilter(kwargs, 'compass')
+        
+        msoffset = kwms.get('offset', 0.02*(self.map.ymax-self.map.ymin))
+        cptextpad = kwcp.get('text_pad', 5)
+        cpoffset = (0, int(compass_size)/2)
+            
+        # Mapscale position at top
+        if pos in _locations and 'top' in loc2align(pos)['va']:
+            
+            pos = self.add_mapscale(pos=pos, posref=posref, getpos=True, posonly=True, **kwms)
+            mpos = self(*pos)
+            ppos = self.axes.transData.transform_point(mpos)
+            mpos = self.axes.transData.inverted().transform_point(
+                (ppos[0], ppos[1]-cpoffset[1]-cptextpad*2))
+            pos = self(mpos[0], mpos[1]-3*msoffset, inverse=True)
+            del kwms['transform']            
+            
+        # Mapscale
+        ms, pos = self.add_mapscale(pos=pos, posref=posref, getpos=True, **kwms)
+        
+        # Compass above mapscale
+        pos = self(*pos)
+        pos = self(pos[0], pos[1]+msoffset*3, inverse=True)
+        kwcp.update(transform = 'data', offset=cpoffset)
+        cp = self.add_compass(pos=pos, posref=posref, size=compass_size, **kwcp)
+        
+        return ms+list(cp)
+
     def post_plot(self, drawrivers=False, fillcontinents=True, meridional_labels=True, zonal_labels=True,
         drawcoastlines=True, drawmapboundary=True, meridians=None, parallels=None, 
         land_color=None, ticklabel_size=None, refine=0, no_seconds=False, fullscreen=False, 
-        minutes=True, mapscale=False, compass=False, 
+        minutes=True, mapscale=False, compass=False, mscp=False, 
          **kwargs):
         """Post-processing of the plot
         
@@ -5103,6 +5265,10 @@ class Map(Plot2D):
               :meth:`~vacumm.misc.core_plot.Map.add_compass`.
             - **compass_<param>**: Pass ``<param>`` to the 
               :meth:`~vacumm.misc.core_plot.Map.add_compass` method.
+            - **cpms**: Add a mapscale AND a compass using 
+              :meth:`~vacumm.misc.core_plot.Map.add_cpms`.
+            - **cpms_<param>**: Pass ``<param>`` to the 
+              :meth:`~vacumm.misc.core_plot.Map.add_cpms` method.
            
         
         """
@@ -5218,12 +5384,19 @@ class Map(Plot2D):
                         lab.set_visible(False)
                     llfound.append(llm)
         
+        # Map scale and compass
+        if mscp:
+            kw = kwfilter(kwargs, 'mscp')
+            kw.update(kwfilter(kwargs, 'mapscale_', keep=True))
+            kw.update(kwfilter(kwargs, 'compass_', keep=True)) 
+            self.add_mscp(**kw)
+        
         # Map scale
-        if mapscale:
+        elif mapscale:
             self.add_mapscale(**kwfilter(kwargs, 'mapscale_'))
             
         # Compass
-        if mapscale:
+        elif compass:
             self.add_compass(**kwfilter(kwargs, 'compass_'))
             
         if fullscreen: self.axes.set_frame_on(False)
@@ -5801,21 +5974,26 @@ _locations = ['upper right',
          'center right',
          'lower center',
          'upper center',
+         'center center', 
          'center']
          
 def loc2tuple(loc, xpad=0.02, ypad=0.02):
-    """Location as tuple of (x,y)"""
+    """Location as tuple of (x,y) in relative coordinates"""
     if isinstance(loc, tuple): return loc
     if isinstance(loc, basestring):
         if len(loc.split())==1:
             loc = loc+' '+loc
     assert loc in _locations, 'loc must be a tuple or a string (%s)'% (", ".join(_locations))
     sy, sx = loc.split()
+    xpad = abs(xpad)
+    if xpad>.5: xpad = 1-xpad
+    ypad = abs(ypad)
+    if ypad>.5: ypad = 1-ypad
     x = {"left":xpad, 'center':.5, 'right':1-ypad}[sx]
     y = {"lower":xpad, 'center':.5, 'upper':1-ypad}[sy]
     return x, y
     
-def loc2align(loc, ha=None, va=None):
+def loc2align(loc, ha=None, va=None, margin=1/3.):
     """From location to dict of ha and va
     
     :Params:
@@ -5825,22 +6003,41 @@ def loc2align(loc, ha=None, va=None):
         
     :Return: dict(ha=ha, va=va)
     """
-    x, y = loc2tuple(loc)
+    x, y = loc2tuple(loc, xpad=0, ypad=0)
     if ha is None:
-        if x<1/3.:
+        if x<margin:
             ha = 'left'
-        elif x>2./3:
+        elif x>(1-margin):
             ha = 'right'
         else:
             ha = 'center'
     if va is None:
-        if y<1/3.:
+        if y<margin:
             va = 'bottom'
-        elif y>2./3:
+        elif y>(1-margin):
             va = 'top'
         else:
             va = 'center'
     return dict(ha=ha, va=va)
+
+def loc2offset(loc, xpad, ypad=None, margin=1/3.):
+    """From location to (xoffset, ypoffset) where x/yoffset = +/- x/ypad
+    
+    :Return: (xoffset,yoffset)
+    """
+    align = loc2align(loc, margin=margin)
+    xoffset = yoffset = 0
+    if ypad is None: ypad = xpad
+    if align['ha'] == 'left':
+        xoffset = xpad
+    elif align['ha'] == 'right':
+        xoffset = -xpad
+    if align['va'] == 'top':
+        yoffset = -ypad
+    elif align['va'] == 'bottom':
+        yoffset = ypad
+    return xoffset, yoffset
+    
 
 def best_loc_map(m, onland=True, allowed=_locations):
     """Find the best location on a plot map according to the land/ocean repartition"""
@@ -5868,7 +6065,6 @@ def best_loc_map(m, onland=True, allowed=_locations):
                         continue
                     for p in pcell.intersection(pcoast):
                         fractions[j, i] += p.area()
-        return fractions
         
         if not onland:
             fractions = 1-fractions
@@ -6029,7 +6225,8 @@ class _PPatch(Patch):
     def __str__(self):
         return "Compass(%s,%s;%s)" % (self.center[0], self.center[1], self.size)
 
-    def __init__(self, xy, size, angle=0, anglemode='pixels', **kwargs):
+    def __init__(self, xy, size, angle=0, anglemode='pixels', posref=None, offset=None, 
+        **kwargs):
         """
         *xy*
           center of compass
@@ -6038,8 +6235,6 @@ class _PPatch(Patch):
           size of compass
 
 
-        Valid kwargs are:
-        %(Patch)s
         """
         Patch.__init__(self, **kwargs)
 
@@ -6047,42 +6242,40 @@ class _PPatch(Patch):
         self.size = size
         self.angle = angle
         self.anglemode = anglemode
+        self.posref = posref
+        self.offset = offset
 
-#        path_coords = N.array([
-            # top filled
-#            [0, 0], [1, 1], [0, 5], 
-#            [0, 0], [0, 5], [1, 1], [0, 0], [1, 1], [0, 5], 
-#            # left filled
-#            [0, 0], [-1, 1], [-5, 0], 
-#            [0, 0], [-5, 0], [-1, -1], [0, 0], [-1, -1], [-5, 0]
-#        ], dtype='f')
         path_coords = N.array(self._path_coords, 'f')
         path_coords *= 0.1
-        
-        
         self._path = Path(path_coords, closed=False)
 
-#        self._patch_transform = mtransforms.Affine2D() 
         self._patch_transform = mtransforms.IdentityTransform()
         
 
-    def _update_transform(self):
-        self._patch_transform = self._get_transform()
+    def _update_transform_(self):
+        self._patch_transform = self._get_pixrot_transform_()
 
-    def _get_transform(self, size=None):
+    def _get_pixrot_transform_(self, size=None):
         if size is None: size=self.size
+        transform = Artist.get_transform(self) if self.is_transform_set() else None
         return _transform_pixrot_(self.center, size, self.angle, self.anglemode, 
-            ax = self.get_axes())
+            ax = self.get_axes(), posref=self.posref, transform=transform)
                 
     def get_patch_transform(self):
-        self._update_transform()
+        self._update_transform_()
         return self._patch_transform
         
     def get_path(self):
         return self._path
+        
+    def get_transform(self):
+        t = Patch.get_transform(self)
+        if self.offset is not None:
+            t = t+mtransforms.Affine2D().translate(*self.offset)
+        return t
 
     def draw(self, renderer):
-        self._update_transform()
+        self._update_transform_()
         Patch.draw(self, renderer)
 
 class QuarterRightCompass(_PPatch):
@@ -6091,6 +6284,9 @@ class QuarterRightCompass(_PPatch):
 class QuarterLeftCompass(_PPatch):
     _path_coords = [[0, 0], [-1, 1], [0, 5]]
 
+class ArrowCompass(_PPatch):
+    _path_coords = [[-.75, -5], [-.25, 3.5], [-1, 3], [0, 5], [1, 3], [.25, 3.5], 
+        [.75, -5], [0, -4]]
 
 class PPText(Text):
     def __init__(self, *args, **kwargs):
@@ -6099,42 +6295,84 @@ class PPText(Text):
         Text.__init__(self, *args, **kwargs)
         
     def get_transform(self):
-        ax = self.get_axes()
-        if ax is None: ax = P.gca()
-        return self._vc_ppatch._get_transform(self._vc_ppatch.size+self._vc_offset)+ax.transData
+        t = self._vc_ppatch._get_pixrot_transform_(self._vc_ppatch.size+self._vc_offset)+ \
+            Artist.get_transform(self._vc_ppatch)
+        if self._vc_ppatch.offset is not None:
+            t = t + mtransforms.Affine2D().translate(*self._vc_ppatch.offset)
+        return t
 
-def _transform_pixrot_(center, size, angle, anglemode, ax=None):
+def _transform_(transform, default=None, ax=None, fig=None):
+    if ax is None: ax = P.gca()    
+    if default is None: default = ax.transData
+    if transform is None: return default
+    if isinstance(transform, basestring):
+        if transform.lower()=='figure':
+            if fig is None: 
+                fig = P.gcf() if ax is None else ax.fig
+            return fig.transFigure
+        return getattr(ax, 'trans'+transform.title())
+    return transform
+
+
+def _transform_pixrot_(center, size, angle, anglemode, transform=None, posref=None, ax=None):
+        """Special transform: size in pixel, rotation, translation in data
+        
+        :Params:
+        
+            - **trandform**: Transform for the center location.
+            - **posref**: Reference point for the angle if anglemode == 'data'.
+              It default to the center. Values must be in data coordinates.
+        """
                   
-        if ax is not None: ax = P.gca()
+        if ax is None: ax = P.gca()
+        transform = _transform_(transform, 'data', ax=ax)
             
         # center
-        xp0, yp0 = ax.transData.transform(center)
+        xp0, yp0 = transform.transform(center)
         
         # scales
         xp1, yp1 = xp0 + size,  yp0 + size
-        xcorner, ycorner = ax.transData.inverted().transform_point((xp1, yp1))
+        xcorner, ycorner = transform.inverted().transform_point((xp1, yp1))
         xscale = xcorner-center[0]
         yscale = ycorner-center[1]
         
         # angle
         anglemode = str(anglemode)
-        if anglemode is None: anglemode = 'pixels'
+        if anglemode is None or anglemode.startswith('dot'): anglemode = 'pixels'
         if not anglemode.startswith('pix') and not anglemode.startswith('dat'):
             raise PlotError('Unkown anglemode: %s'%anglemode)
-        if anglemode.startswith('dat'):
+        if anglemode.startswith('dat'): # from data to pixels
+            
             ar = N.radians(angle)
-            xp1, yp1 = ax.transData.transform((center[0]+N.cos(ar), center[1]+N.sin(ar)))
-            angle = N.degrees(N.arctan2(yp1-yp0, xp1-xp0))
+            
+            if posref is None: 
+                posref = center 
+                if transform is not ax.transData:
+                    posref = (transform-ax.transData).transform_point(posref)            
+            if posref[0]>1.e20 or posref[1]>1e20:
+                raise PlotError('Coordinates of reference seems wrong: %s,%s'%tuple(posref))
+            xlen = ylen = min(posref)*0.01
+            xr0, yr0 = ax.transData.transform_point(posref)
+            xr1, yr1 = ax.transData.transform_point((posref[0]+xlen*N.cos(ar), 
+                posref[1]+ylen*N.sin(ar)))
+            angle = N.degrees(N.arctan2(yr1-yr0, xr1-xr0))
             
         # Transform
-        return mtransforms.Affine2D() \
+        t = mtransforms.Affine2D() \
             .rotate_deg(angle) \
             .scale(xscale, yscale) \
             .translate(*center) 
-    
+        return t
+
+def _add_text_(ax, text, **kwtext):
+    ax._set_artist_props(text)
+    text.update(kwtext)
+    ax.texts.append(text)
+    return text
 
 def add_compass(x, y, size=40, facecolor1='k', facecolor2='w', edgecolor='k', 
     text_color='k', text_size='medium', linewidth=0.5, alpha=1, text_pad=5, 
+    style='simple', 
     angle=0, ax=None, m=None, anglemode='pixels', **kwpatch):
     """Add a compass to the current plot
     
@@ -6142,6 +6380,7 @@ def add_compass(x, y, size=40, facecolor1='k', facecolor2='w', edgecolor='k',
     
         - **x/y**: Position in data coordinates.
         - **size**, optional: size in opixels.
+        - **style**, optional: "simple", "fancy".
         - **angle**, optional: Angle of the north (trigo).
         - **anglemode**, optional: "pixels" or "data".
         - **facecolor1**, optional: Dark face color.
@@ -6151,6 +6390,7 @@ def add_compass(x, y, size=40, facecolor1='k', facecolor2='w', edgecolor='k',
         - **text_size**, optional: Text labels size.
         - **text_<param>**, optional: ``<param>`` is passed to 
           :class:`~matplotlib.text.Text` when adding labels.
+        - **fontsize/color**, optional: Same as ``text_size/color``.
     """
     
     kwtext = kwfilter(kwpatch, 'text_')
@@ -6162,36 +6402,55 @@ def add_compass(x, y, size=40, facecolor1='k', facecolor2='w', edgecolor='k',
             ax = P.gca()
     if m:
         x, y = m(x, y)
+    if style is None: style = 'arrow'
+    else: style = str(style)
+        
 
     
     # Loop on quarters
     dict_check_defaults(kwpatch, linewidth=linewidth, alpha=alpha)
     patches = []
     texts = []
-    for iq, (label, ha, va) in enumerate([
-        ('N', 'center', 'bottom'),
-        ('W', 'right', 'center'), 
-        ('S', 'center', 'top'), 
-        ('E', 'left', 'center')]):
-            
-        aa = iq*90.
+    if style.startswith('a') or style.startswith('s'):
         
-        # Loop on back/white patches
-        for (C, fc) in [
-            (QuarterRightCompass, facecolor1), 
-            (QuarterLeftCompass, facecolor2), 
-            ][:]:
-            kwp = kwpatch.copy()
-            kwp['facecolor'] = fc
-            patches.append(ax.add_patch(C((x, y), size, angle=aa+angle, anglemode=anglemode, **kwp)))
-            
+        # Patch
+        kwp = kwpatch.copy()
+        kwp['facecolor'] = facecolor1
+        patches.append(ax.add_patch(ArrowCompass((x, y), size, angle=angle, anglemode=anglemode, **kwp)))
         
-        # Add text labels
-        text = PPText(0, .5, label, offset=text_pad, ppatch=patches[-1], ha=ha, va=va)
-        ax._set_artist_props(text)
-        text.update(kwtext)
-        ax.texts.append(text)
-        texts.append(text)
+        # Label (north only)
+        text = PPText(0, .5, 'N', offset=text_pad, ppatch=patches[-1], ha='center', va='bottom')
+        texts.append(_add_text_(ax, text, **kwtext))
+        
+    elif style.startswith('f'):
+        
+        for iq, (label, ha, va) in enumerate([
+            ('N', 'center', 'bottom'),
+            ('W', 'right', 'center'), 
+            ('S', 'center', 'top'), 
+            ('E', 'left', 'center')]):
+                
+            aa = iq*90.
+            
+            # Loop on back/white patches
+            for (C, fc) in [
+                (QuarterRightCompass, facecolor1), 
+                (QuarterLeftCompass, facecolor2), 
+                ][:]:
+                kwp = kwpatch.copy()
+                kwp['facecolor'] = fc
+                patches.append(ax.add_patch(C((x, y), size, angle=aa+angle, 
+                    anglemode=anglemode, **kwp)))
+                
+            
+            # Add text labels
+            text = PPText(0, .5, label, offset=text_pad, ppatch=patches[-1], ha=ha, va=va)
+            texts.append(_add_text_(ax, text))
+    
+    else:
+        
+        raise PlotError('Unknown compass style. Please use one of : '+
+            ', '.join(['simple', 'fancy']))
             
      
     return patches, texts
