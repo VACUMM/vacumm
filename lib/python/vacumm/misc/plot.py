@@ -3287,6 +3287,9 @@ def map2(*args, **kwargs):
         - **Other generic params**: see :class:`~vacumm.misc.core_plot.Plot`.
     
     """
+    
+    
+    
     from core_plot import Map
     kwargs.setdefault('plot', True)
     kwargs.setdefault('post_plot', True)

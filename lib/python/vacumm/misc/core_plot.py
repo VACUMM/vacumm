@@ -3089,9 +3089,11 @@ class ScalarMappable:
             if self.masked:
                 mode = 'normal'
             elif (self.vmin>=0 and self.vmax > 0) and (self.vmin<=self.vmax/3.):
-                mode = 'positive'
+                mode = 'normal'
+                # mode = 'positive'
             elif (self.vmin<0 and self.vmax<=0) and (self.vmax>=self.vmin/3.):
-                mode = 'negative'
+                mode = 'normal'
+                # mode = 'negative'
             elif (self.vmin+self.vmax)< 0.05 * (self.vmax-self.vmin):
                 mode = 'symetric'
         if mode=='positive':
@@ -3104,12 +3106,14 @@ class ScalarMappable:
         self.levels_mode = mode
            
         # Compute base levels
+        
         levels = auto_scale((self.vmin, self.vmax), vmin=vmin, vmax=vmax, nmax=self.nmax_levels, 
             keepminmax=keepminmax==2)
         
         # Change min and max
         if not keepminmax:
             del self.vmin, self.vmax
+          
           
         # Cache
         self._levels = levels
@@ -3929,6 +3933,9 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             - **x/yatts**, optional: Dictionnary of alter given ``x/yaxis``.
         
         """
+        
+        
+        
         # Get axes and adjust order
         if xaxis is not None or yaxis is not None:
             
@@ -4146,6 +4153,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         
         """
         if self.masked: return
+        
+        
         
         # Keywords
         kwfill = kwfilter(kwargs, 'fill_')
@@ -4765,6 +4774,8 @@ class Map(Plot2D):
             Latitudes as a two-elements tuple or and array.
         """
                     
+                    
+                    
         # Get some keys
         self.lon = lon
         self.lat = lat
@@ -4844,7 +4855,9 @@ class Map(Plot2D):
             An attribute to know if current map must be updated by :meth:`post_plot`.
             It is also a parameter to method.
         """
-            
+        
+        
+        
         # Aliases
         self.map = kwargs.pop('m', map)
         
@@ -4918,6 +4931,8 @@ class Map(Plot2D):
             #. Call to generic :meth:`~Plot2D.plot` method.
             #. Call to :meth:`add_lowhighs`.
         """
+        
+        
         
         # Keywords
         kwlh = kwfilter(kwargs, 'lowhighs')
@@ -5297,6 +5312,9 @@ class Map(Plot2D):
            
         
         """
+        
+        
+        
         if self.map_update:
         
             # Full screen

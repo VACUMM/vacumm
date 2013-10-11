@@ -219,6 +219,8 @@ def auto_scale(data = None, nmax = None,vmin = None, vmax = None,
         :func:`basic_auto_scale` :func:`geo_scale`
     """
 
+
+
     vmin = kwargs.get('min_value', vmin)
     vmax = kwargs.get('max_value', vmax)
 
@@ -296,6 +298,7 @@ def basic_auto_scale(vmin,vmax,nmax=7,steps=[1,2,2.5,5,10],geo=False,minutes=Fal
     
         :func:`auto_scale` :func:`geo_scale`
     """
+    
 
     from matplotlib.ticker import MaxNLocator
 
