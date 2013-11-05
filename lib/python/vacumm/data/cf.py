@@ -442,8 +442,8 @@ axis_specs = OrderedDict(
         axis = 'Z', 
     ), 
     level = dict(
-        names = ['level','SIG'], 
-        standard_names = ["model_level_number", "ocean_sigma_coordinate", "ocean_s_coordinate", "ocean_sigma_coordinate_at_w_location", "ocean_s_coordinate_at_w_location","ocean_s_coordinate_sig"], 
+        names = ['level'], 
+        standard_names = ["model_level_number", "ocean_sigma_coordinate", "ocean_s_coordinate", "ocean_sigma_coordinate_at_w_location", "ocean_s_coordinate_at_w_location"], 
         long_names = ['Model level number',  'Sigma level', 'Sigma level at W location'], 
         axis='Z', 
     ), 
