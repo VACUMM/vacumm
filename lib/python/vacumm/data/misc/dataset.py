@@ -462,7 +462,6 @@ class Dataset(Object):
         
         # Generic name -> cf specs and/or class level specs
         if isinstance(varname , basestring) and not varname.startswith('+'): 
-            
             specs = self._get_ncobj_merged_specs_(varname, searchmode=searchmode)
             genname = varname
                         
@@ -1827,22 +1826,38 @@ class OceanDataset(OceanSurfaceDataset):
     @formatdoc_var
     def get_u3d(self, **kwargs):
         '''Get 4D zonal velocity'''
-        return self.get_variable('u3d', **kwargs)
+        var = self.get_variable('u3d', **kwargs)
+        lon = self.get_lon_u()
+        lat = self.get_lat_u()
+        set_grid(var,(lon,lat))
+        return var
     
     @formatdoc_var
     def get_v3d(self, **kwargs):
         '''Get 4D meridional velocity'''
-        return self.get_variable('v3d', **kwargs)
+        var = self.get_variable('v3d', **kwargs)
+        lon = self.get_lon_v()
+        lat = self.get_lat_v()
+        set_grid(var,(lon,lat))
+        return var
      
     @formatdoc_var
     def get_ubt(self, **kwargs):
         '''Get zonal barotropic velocity'''
-        return self.get_variable('ubt', **kwargs)
+        var = self.get_variable('ubt', **kwargs)
+        lon = self.get_lon_u()
+        lat = self.get_lat_u()
+        set_grid(var,(lon,lat))
+        return var
     
     @formatdoc_var
     def get_vbt(self, **kwargs):
         '''Get meridional barotropic velocity'''
-        return self.get_variable('vbt', **kwargs)
+        var = self.get_variable('vbt', **kwargs)
+        lon = self.get_lon_v()
+        lat = self.get_lat_v()
+        set_grid(var,(lon,lat))
+        return var
         
     @formatdoc_var
     def get_bathy(self, **kwargs):
