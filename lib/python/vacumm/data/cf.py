@@ -186,7 +186,7 @@ var_specs = OrderedDict(
     ), 
     
     depth = dict(
-        names = ['depth', 'dep', 'depthu', 'depthv'], 
+        names = ['depth', 'dep', 'deptht', 'depthu', 'depthv'], 
         standard_names = ['ocean_layer_depth', 'ocean_layer_depth_at_t_location', 'ocean_layer_depth_at_u_location', 
             'ocean_layer_depth_at_v_location'], 
         long_names =  'Depth', 
