@@ -811,7 +811,7 @@ class ConfigManager(object):
             if isinstance(cfgfileopt, basestring):
                 cfgfileopt = (cfgfileopt,)
             parser.add_option(*cfgfileopt, action='store', type="string", 
-                dest="cfgfile", help='Configuration file [default: "%default"]', default=cfgfile)
+                dest="cfgfile", help='Configuration file [default: "%s"]'%cfgfile, default=cfgfile)
         
         # Default config
         defaults = self.defaults()
@@ -916,7 +916,7 @@ class ConfigManager(object):
         # Configuration options
         self.opt_parse(parser, parse=False)
         if rst:
-            formatter = IndentedHelpFormatter(max_help_position=0)
+            formatter = IndentedHelpFormatter(width=1000)#max_help_position=0)
             shelp = parser.format_option_help(formatter).encode(sys.getdefaultencoding(), 'replace')
         else:
             shelp = parser.format_help().encode(sys.getdefaultencoding(), 'replace')
@@ -1039,16 +1039,18 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
     s_lopt = r'(?:--[\w\-]+(?:[= ]+%(s_param)s)?)'%locals() # long option (--toto)
     s_optsep = r'(?:, +)' # option separator
     s_desc = r'(?:  (.+))'
-    s_tot = r'^  ((?:%(s_sopt)s|%(s_lopt)s)(?:%(s_optsep)s(?:%(s_sopt)s|%(s_lopt)s))*)%(s_desc)s?$'%locals()
+    s_tot = r'^  (?:  )?((?:%(s_sopt)s|%(s_lopt)s)(?:%(s_optsep)s(?:%(s_sopt)s|%(s_lopt)s))*)%(s_desc)s?$'%locals()
 #    s_tot = r'^  (%(s_sopt)s|%(s_lopt)s)|%(s_sopt)s%(s_optsep)s%(s_lopt)s)%(s_desc)s?$'%locals()
     re_opt = re.compile(s_tot).match
-    re_sec = re.compile(r'^([\w\s]+):(?: (.+))?$').match
+    re_sec = re.compile(r'^(?:  )?([\w\s]+):(?: (.+))?$').match
     for line in shelp.splitlines():
         
         # Sections
         m = re_sec(line)
         if m and not line.lower().endswith('ex:'):
-            secname = m.group(1).title()
+            
+            secname = m.group(1).title().strip()
+            
             # Usage
             if secname=='Usage' and m.group(2) is not None:
                 usage = m.group(2).strip()
@@ -1064,24 +1066,31 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
         # Options and other lines
         m = re_opt(line)
         if m:
+            
             rhelp.extend(['','\t.. cmdoption:: '+m.group(1), ''])
             multiline = True
             if m.group(2) is not None:
                 rhelp.append('\t\t'+m.group(2).strip())
+                
         elif secname.lower()=='positional arguments' and line.startswith(' '*2):
+            
             sline = line.split()
             rhelp.extend(['','\t.. cmdoption:: '+sline[0], ''])
             multiline = True
             if len(sline)>1 is not None:
                 rhelp.append('\t\t'+' '.join(sline))
+                
         elif multiline and len(line.strip()) and line.startswith(' '*3):
+            
             indent = '\t\t'
             if secname=='Usage':
                 indent += '\t'
             rhelp.append(indent+line.strip())
         #elif secname==descname:
         #    rhelp.append('\t'+line)
+        
         else:
+            
             rhelp.append(line)
             multiline = False
             if secname=='Usage':
@@ -1254,15 +1263,45 @@ def _walker_argcfg_setarg_(sec, key, group=None, exc=None):
             help=_shelp_(sec, key)
     )
 
-def _shelp_(sec, key, format='%(shelp)s [default: %(default)r]', undoc='Undocumented'):
-    """Get help string"""
+def _shelp_(sec, key, format='%(shelp)s [default: %(default)r]', mode='auto', 
+    undoc='Undocumented', adddot=True):
+    """Get help string
+    
+    :Params:
+    
+        - **mode**:
+        
+            - inline: inline comment only,
+            - above: above comments only,
+            - merge: merge inline and above comments,
+            - auto: if one is empty use the other one, else use inline
+    
+    """
+    # filter
+    def strip(c):
+        return c.strip().strip('#').strip()
+    abcoms = map(strip, filter(lambda c: c is not None, sec.comments[key]))
+    incoms = map(strip, filter(lambda c: c is not None, [sec.inline_comments[key]]))
+    
+    
     # Merge comments above item and its inline comment
-    comments = filter(lambda c: c is not None, sec.comments[key] + [sec.inline_comments[key]])
-    # Remove leading comment marker '#'
-    comments = [c.strip().strip('#').strip() for c in comments]
+    if mode=='merge':
+        comments = abcoms+incoms
+    elif mode=='auto':
+        if not incoms:
+            comments = abcoms
+        else:
+            comments = incoms
+    elif mode=='above':
+        comments = abcoms
+    else:
+        comments = incoms
+        
     # Force comments to end with a dot '.'
-    comments = [c.endswith('.') and c or '%s.'%c for c in comments]
+    if adddot:
+        comments = [c.endswith('.') and c or '%s.'%c for c in comments]
     shelp = '\n'.join(comments)
+    
     # If no comments
     if not shelp: shelp = undoc
     default = sec.get(key, None)
@@ -1331,6 +1370,19 @@ Options:
   -n NCOL, --ncol=NCOL  number of comlumns for output (default: 5)
   -f FORMAT, --format=FORMAT
                         date format (default: %Y-%m-%d %H:%M:%S)
+"""
+    shelp="""Options:
+  -h, --help            show a reduced help
+  --long-help           show an extended help
+  --cfgfile=CFGFILE     Configuration file [default: "config.cfg"]
+
+  Global configuration options:
+     Important general configuration options
+
+    --mars=MARS         complete configuration of mars. [default:
+                        'MANGA-V8.11']
+    --mars-version=MARS_VERSION
+                        MARS version. [default: 'V8.11']
 """
     print opt2rst(shelp)
 
