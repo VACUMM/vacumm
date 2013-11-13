@@ -1571,7 +1571,8 @@ class Plot(object):
         
         # Coordinates transform
         transform = self._transform_(transform, 'axes')
-        x, y = self.get_xy(x, y, transform, xyscaler=xyscaler)
+        if transform not in [self.axes.transAxes, self.fig.transFigure]:
+            x, y = self.get_xy(x, y, transform, xyscaler=xyscaler)
 
         # Plot
         obj = self.add_axobj('text', self.axes.text(x, y, text, transform=transform, **kwargs))
@@ -3016,13 +3017,57 @@ class Plot1D(Plot):
 class ScalarMappable:
     """Abstract class for adding scalar mappable utilities
     
-    Special attributes: 
-        :attr:`nmax_levels` (=:attr:`nmax`)
-        :attr:`nmax_levels` (=:attr:`nmax`)
-        :attr:`levels` :attr:`cmap` :attr:`cblabel`
+    :Attribute params:
+    
+        - **levels**, optional: Levels to use for contours or colorbar ticks.
+          "They can be specified as a single value, a list or array, or "
+          "as a tuple used as argument to :func:`numpy.arange`.
+          It sets the attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.levels`.
+        - **nmax_levels**, optional: Maximal number of levels when 
+          :attr:`~vacumm.misc.core_plot.ScalarMappable.levels` are computed automatically.
+          It sets the attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.nmax_levels`.
+        - **nmax**, optional: Same as **nmax_levels**.
+          It sets the attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.keepminmax`.
+        - **cmap**, optional: Colormap name (see :func:`vacumm.misc.color.get_cmap`).
+          If not specified, it is taken from
+          config section ``[vacumm.misc.plot]`` and config option ``cmap``, as a string
+          that defaults to ``magic``.
+        - **levels_mode**, optional: Mode of computing levels if needed.
+          It can be specified at initialisation with
+          attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.levels_mode`.
+          If not specified, it it taken from the config section 
+          ``[vacumm.misc.plot]`` and config option ``levels_mode``.
+            
+            - ``"symetric"``: Min and max are set opposite.
+            - ``"positive"``: Min is set to 0.
+            - ``"negative"``: Max is set to 0.
+            - ``"auto"``: If abs(min) and abs(max) are close,
+              ``"symetric"`` is assumed. If min and max are > 0,
+              ``"positive"`` is assumed, and the reverse for 
+              ``"negative"``.
+        - **keepminmax**, optional: 
+          It can be specified at initialisation with
+          attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.keepminmax`.
+          If not specified, it it taken from the config section 
+          ``[vacumm.misc.plot]`` and config option ``keepminmax``.
+          If False or 0, adjust 
+          :attr:`~vacumm.misc.core_plot.ScalarMappable.vmin` and 
+          :attr:`~vacumm.misc.core_plot.ScalarMappable.vmax` 
+          to first and last values of :attr:`~vacumm.misc.core_plot.ScalarMappable.levels`; 
+          if 1, do not change :attr:`~vacumm.misc.core_plot.ScalarMappable.vmin`, 
+          :attr:`~vacumm.misc.core_plot.ScalarMappable.vmax` and :attr:`levels`
+          if 2, adjust first and last values of :attr:`levels` or 
+          :attr:`~vacumm.misc.core_plot.ScalarMappable.vmin`, 
+          :attr:`~vacumm.misc.core_plot.ScalarMappable.vmax`.
+          It sets the attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.cmap`.
+        - **cblabel**, optional: Preformed label of the colorbar. 
+          It may be formed as a template using other attributes 
+          like :attr:`long_name`, :attr:`~vacumm.misc.core_plot.Plot.units`,  
+          :attr:`xmin`,  etc. Example: ``"%(long_name)s [%(units)s]"``.
+          
     
     """
-    _primary_attributes = Plot._primary_attributes + ['nmax', 'nmax_levels', 'levels', 'cmap', 'keepminmax']
+    _primary_attributes = Plot._primary_attributes + ['nmax', 'nmax_levels', 'levels', 'cmap', 'keepminmax',  'levels_mode']
     _secondary_attributes = Plot._secondary_attributes + ['cblabel']
     
     def get_nmax_levels(self):
@@ -3037,14 +3082,18 @@ class ScalarMappable:
         """Del :attr:`nmax_levels`"""
         self.del_obj('nmax_levels')
     nmax_levels = nmax = property(get_nmax_levels, set_nmax_levels, 
-        del_nmax_levels, doc="Max number of :attr:`levels` for contours or colorbar ticks.")
+        del_nmax_levels, doc="Max number of :attr:`levels` for contours and colorbar ticks.")
         
-    def get_levels(self, mode='auto', keepminmax=None, nocache=False, **kwargs):
-        """Get :attr:`levels`
+    def get_levels(self, mode=None, keepminmax=None, nocache=False, **kwargs):
+        """Get :attr:`levels` for contours and colorbar ticks
         
         :Params:
         
             - **mode**, optional: Mode of computing levels if needed.
+              It can be specified at initialisation with
+              attribute :attr:`levels_mode`.
+              If not specified, it it taken from the config section 
+              ``[vacumm.misc.plot]`` and config option ``levels_mode``.
                 
                 - ``"symetric"``: Min and max are set opposite.
                 - ``"positive"``: Min is set to 0.
@@ -3053,9 +3102,17 @@ class ScalarMappable:
                   ``"symetric"``is assumed. If min and max are > 0,
                   ``"positive"`` is assumed, and the reverse for 
                   ``"negative"``.
-            - **keepminmax**, optional: If False or 0, do not adjust 
-              :attr:`vmin` and :attr:`vmax` to these levels; if 2 adjust
-              also levels.
+                  
+            - **keepminmax**, optional: 
+              It can be specified at initialisation with
+              attribute :attr:`keepminmax`.
+              If not specified, it it taken from the config section 
+              ``[vacumm.misc.plot]`` and config option ``keepminmax``.
+              If False or 0, adjust 
+              :attr:`vmin` and :attr:`vmax` to first and last values of :attr:`levels`; 
+              if 1, do not change :attr:`vmin`, :attr:`vmax` and :attr:`levels`
+              if 2, adjust first and last values of :attr:`levels` or 
+              :attr:`vmin`, :attr:`vmax`.
             - **nocache**, optional: Once levels are computed, they are stored
               in cache. If ``nocache is True``, first check cache before
               trying to compute levels.
@@ -3065,35 +3122,46 @@ class ScalarMappable:
         if levels is not None and not isinstance(levels, str): 
             if not hasattr(levels, '__len__'): 
                 levels = N.asarray([levels])
+            elif isinstance(levels, tuple):
+                levels = N.arange(*levels[:3]).astype('d')
             self._levels = levels
             return levels
         if hasattr(self, '_levels') and not nocache: return self._levels
         
         # Inits
-        if not self.has_data(): return
         if isinstance(levels, str):
             mode = levels
+        if mode is not None:
+            self.levels_mode = mode
+        else:
+            mode = self.levels_mode
+        if mode is None:
+            mode = get_config_value('vacumm.misc.plot', 'levels_mode').lower()
+            if mode not in ['auto', 'smart', 'normal', 'basic', 'positive', 'negative', 'symetric', 'anomaly']:
+                oldmode = mode
+                mode = get_config_value('vacumm.misc.plot', 'levels_mode', user=False)
+                warn('Bad value for config value [vacumm.misc.plot] levels_mode: %s. Switched to default: %s'%(oldmode, mode))
+        if not self.has_data(): return
         if keepminmax is not None:
             self.keepminmax = keepminmax
-        else:
-            keepminmax = self.keepminmax
+        keepminmax = self.keepminmax
         
         # Min and max
+        if mode=='anomaly': mode = 'symetric'
+        elif mode=='smart': mode = 'auto'
+        elif mode=='basic': mode = 'normal'
         for key in 'positive', 'negative', 'symetric', 'anomaly':
             if kwargs.has_key(key) and kwargs[key]:
                 mode = key
-        if mode=='anomaly': mode = 'symetric'
         vmin = self.vmin if self.isset('vmin') else None
         vmax = self.vmax if self.isset('vmax') else None
         if mode == 'auto':
             if self.masked:
                 mode = 'normal'
             elif (self.vmin>=0 and self.vmax > 0) and (self.vmin<=self.vmax/3.):
-                mode = 'normal'
-                # mode = 'positive'
+                mode = 'positive'
             elif (self.vmin<0 and self.vmax<=0) and (self.vmax>=self.vmin/3.):
-                mode = 'normal'
-                # mode = 'negative'
+                mode = 'negative'
             elif (self.vmin+self.vmax)< 0.05 * (self.vmax-self.vmin):
                 mode = 'symetric'
         if mode=='positive':
@@ -3106,9 +3174,8 @@ class ScalarMappable:
         self.levels_mode = mode
            
         # Compute base levels
-        
-        levels = auto_scale((self.vmin, self.vmax), vmin=vmin, vmax=vmax, nmax=self.nmax_levels, 
-            keepminmax=keepminmax==2)
+        levels = auto_scale((self.vmin, self.vmax), vmin=vmin, vmax=vmax, 
+            nmax=self.nmax_levels, keepminmax=keepminmax==2)
         
         # Change min and max
         if not keepminmax:
@@ -3126,12 +3193,19 @@ class ScalarMappable:
         """Del :attr:`levels`"""
         self.del_obj('levels')
     levels = property(get_levels, set_levels, 
-        del_levels, doc="Levels to use for contours or colorbar ticks.")
+        del_levels, doc="Levels to use for contours or colorbar ticks. "
+            "They can be specified as a single value, a list or array, or "
+            "as a tuple used as argument to :func:`numpy.arange`.")
         
     def get_keepminmax(self):
         """Get :attr:`keepminmax`"""
         keepminmax = self.get_obj('keepminmax')
-        if keepminmax is None: keepminmax = False
+        if keepminmax is None:
+            keepminmax = get_config_value('vacumm.misc.plot', 'keepminmax')
+        try:
+            keepminmax = int(keepminmax)
+        except:
+            raise PlotError('Error with keepminmax: %s'%keepminmax)
         return keepminmax
     def set_keepminmax(self, value):
         """Set :attr:`keepminmax`"""
@@ -3140,8 +3214,23 @@ class ScalarMappable:
         """Del :attr:`keepminmax`"""
         self.del_obj('keepminmax')
     keepminmax = property(get_keepminmax, set_keepminmax, 
-        del_keepminmax, doc="Do not adjust :attr:`vmin` and :attr:`vmax` when setting :attr:`levels`.")
+        del_keepminmax, doc="Do not adjust :attr:`vmin` and :attr:`vmax` when setting :attr:`levels`. If 0, :attr:`vmin` and :attr:`vmax` are set to first and last :attr:`levels`; if 1, they are not adjested to :attr:`levels` ; if 2, first and last :attr:`levels` are adjusted to :attr:`vmin` and :attr:`vmax`.")
         
+    def get_levels_mode(self):
+        """Get :attr:`levels_mode`"""
+        levels_mode = self.get_obj('levels_mode')
+        if levels_mode is None:
+            levels_mode = get_config_value('vacumm.misc.plot', 'levels_mode')
+        levels_mode = str(levels_mode)
+        return levels_mode
+    def set_levels_mode(self, value):
+        """Set :attr:`levels_mode`"""
+        self.set_obj('levels_mode', value)
+    def del_levels_mode(self):
+        """Del :attr:`levels_mode`"""
+        self.del_obj('levels_mode')
+    levels_mode = property(get_levels_mode, set_levels_mode, 
+        del_levels_mode, doc="The way :attr:`levels` are estimated from :attr:`vmin` and :attr:`vmax`: 'positive'/'negative' means levels starting/ending from 0, 'anomaly' or 'symetric' means symetric levels, 'auto' or 'smart' means that mode is estimated from min and max.")
         
     def get_vmin(self, index=0, glob=False):
         """Get :attr:`vmin`"""
@@ -3188,8 +3277,10 @@ class ScalarMappable:
         if cmap is None and not nocache and hasattr(self, '_cmap'):
             cmap = self._cmap
         if cmap == 'mpl': cmap = False 
-        if cmap is None or cmap is True or cmap=='mg' or cmap=='auto': cmap = 'magic'
-        if cmap=='rb': cmap = 'rainbow'
+        if cmap is None or cmap=='auto' or cmap is True :
+            cmap = get_config_value('vacumm.misc.plot', 'cmap')
+        if cmap=='mg': cmap = 'magic'
+        elif cmap=='rb': cmap = 'rainbow'
         if cmap=='magic' or cmap=='rainbow':
             import color
             mode = getattr(self, 'levels_mode', 'auto')
@@ -3530,10 +3621,8 @@ class Curve(Plot1D):
                     xx = N.ma.array(xx,mask=mask)
                 else:
                     yy = N.ma.array(yy,mask=mask)
-                kwmark.update(label=False,color=ll[0].get_color())
-                dots = P.plot(xx, yy, '.', **kwmark)
-                oo = self.add_obj('lines_dots', dots)
-                oo = self.add_obj('plot', dots)
+                kwmark.update(label='',color=ll[0].get_color())
+                dots = self.axes.plot(xx, yy, '.', **kwmark)
                 self.register_obj(oo, ['lines_dots', 'plot'], **kwargs)
                 if shadow: self.add_shadow(dots, 'lines_dots_shadow', **kwsh) # 'lines_dots_shadow'
                 if glow: self.add_glow(dots, 'lines_dots_glow', **kwsh) # 'lines_dots_glow'
@@ -4131,7 +4220,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
               colormap.
             - **norm**, optional: :class:`~matplotlib.colors.Normalize` instance.
             - **alpha**, optional: Opacity.
-            - **shading**, optional: Shading with :func:`~matplotlib.pyplot.pcolor`
+            - **shading**, optional: Shading with :func:`~matplotlib.pyplot.pcolor`.
             - **extend**, optional: Let's :func:`~matplotlib.pyplot.contourf` add
               contours to cover all data range.
             - **zorder**, optional: Plot order.
@@ -4176,10 +4265,10 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         
         # Norm
         levels = self.get_levels(**kwlevels)
-        from matplotlib.colors import Normalize
-        #if norm is None:
-            #from color import StepsNorm
-            #norm = StepsNorm(levels, **kwnorm)
+#        from matplotlib.colors import Normalize
+        if norm is None:
+            from color import StepsNorm
+            norm = StepsNorm(levels, **kwnorm)
 
         # Data
         data = self.get_data(scalar=True)
@@ -4270,7 +4359,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             - **alpha**, optional: Opacity.
             - **linewidths**, optional: Contour linewidths.
             - **clabel**, optional: Add contour labels with 
-              :func:`~matplotlib.pyplot.clabel`.
+              :func:`~matplotlib.pyplot.clabel`. If not specified, it is taken from
+              config section ``[vacumm.misc.plot]`` and config option ``clabel``.
             - **clabel_<param>**, optional: ``<param>`` is passed to 
               :func:`~matplotlib.pyplot.clabel`..
             - **contour_<param>**, optional: ``<param>`` is passed to 
@@ -4288,10 +4378,12 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         # Keywords
         
         if clabel is None:
-            get_config_value('vacumm.misc.plot', 'clabel')
+            try:
+                clabel = eval(get_config_value('vacumm.misc.plot', 'clabel'))
+            except:
+                clabel = eval(get_config_value('vacumm.misc.plot', 'clabel', user=False))
         
-        kw = kwfilter(kwargs, 'contour', defaults=dict(
-            levels=self.levels))
+        kw = kwfilter(kwargs, 'contour', defaults=dict(levels=self.levels))
         kwcl = kwfilter(kwargs, 'clabel')
         kwsh = kwfilter(kwargs, 'shadow')
         kwsh.update(kwfilter(kw, 'shadow_'))
@@ -4648,10 +4740,9 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
 
         # Get levels
         kwlevels = kwfilter(kwargs, 'levels', defaults=dict(anomaly=anomaly))
-        if levels is None:
-            levels = self.get_levels(**kwlevels)
-        else:
+        if levels is not None:
             self.levels = levels
+        levels = self.get_levels(**kwlevels)
             
         # Plotter
         if self._plotter is None:
@@ -5040,10 +5131,10 @@ class Map(Plot2D):
         if xrel<0: xrel += 1
         if yrel<0: yrel += 1
         if pos is None:
-            lonmin = min(self.lon)
-            lonmax = max(self.lon)
-            latmin = min(self.lat)
-            latmax = max(self.lat)
+            lonmin = self.map.lonmin
+            lonmax = self.map.lonmax
+            latmin = self.map.latmin
+            latmax = self.map.latmax
             dlon = lonmax-lonmin
             dlat = latmax-latmin
             lon0 = lonmin+xrel*dlon
@@ -5073,7 +5164,7 @@ class Map(Plot2D):
         
         return pos, posref, offset
 
-    def add_mapscale(self, pos=None, scale=None, posref=None, barstyle='simple', transform=None, 
+    def add_mapscale(self, pos='lower left', scale=None, posref=None, barstyle='simple', transform=None, 
         xrel=0.1, yrel=0.1, getpos=False, posonly=False, shadow=False, zorder=10, **kwargs):
         """Add a map scale using :meth:`mpl_toolkits.basemap.Basemap.drawmapscale`
         
@@ -5129,7 +5220,7 @@ class Map(Plot2D):
         return ms
 
 
-    def add_compass(self, pos=None, size=40, posref=None, style='simple', transform=None, 
+    def add_compass(self, pos='lower right', size=40, posref=None, style='simple', transform=None, 
         xpad=None, ypad=None, xrel=0.9, yrel=0.9, getpos=False, shadow=False, zorder=10, **kwargs):
         """Add a compass to the map using :func:`~vacumm.misc.plot.add_compass`
         
@@ -5145,7 +5236,7 @@ class Map(Plot2D):
             - **transform**: Coordinates transform for ``pos`` which defaults to "data".
               Use a valid transform, or "data", "axes" or "figure".
             - **x/yrel**: Default placement position relative to longitude and latitude ranges.
-            - **x/ypad**: Padding if dots for placement when given as a string like "upper left".
+            - **x/ypad**: Padding in dots for placement when given as a string like "upper left".
             - **shadow**, optional: Add a shadow.
             - **shadow_<param>**, optional: ``<param>`` is passed to 
               :meth:`~vacumm.misc.core_plot.Plot.add_shadow`.
@@ -5305,10 +5396,10 @@ class Map(Plot2D):
               :meth:`~vacumm.misc.core_plot.Map.add_compass`.
             - **compass_<param>**: Pass ``<param>`` to the 
               :meth:`~vacumm.misc.core_plot.Map.add_compass` method.
-            - **cpms**: Add a mapscale AND a compass using 
-              :meth:`~vacumm.misc.core_plot.Map.add_cpms`.
-            - **cpms_<param>**: Pass ``<param>`` to the 
-              :meth:`~vacumm.misc.core_plot.Map.add_cpms` method.
+            - **mscp**: Add a mapscale AND a compass using 
+              :meth:`~vacumm.misc.core_plot.Map.add_mscp`.
+            - **mscp_<param>**: Pass ``<param>`` to the 
+              :meth:`~vacumm.misc.core_plot.Map.add_mscp` method.
            
         
         """
@@ -6508,7 +6599,7 @@ docfiller.scan(Plot, Plot.format_axes, Plot.load_data, Plot._check_order_,
     Curve.plot, Curve.load_data, 
     Bar.plot, 
     Stick.load_data, Stick.plot,
-    ScalarMappable.colorbar, ScalarMappable.post_plot,  
+    ScalarMappable, ScalarMappable.colorbar, ScalarMappable.post_plot,  
     ScalarMappable.get_cmap, ScalarMappable.get_levels, 
     Plot2D.load_data, 
     Plot2D.plot, Plot2D.plot_contour, Plot2D.plot_fill, 

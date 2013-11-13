@@ -3048,9 +3048,13 @@ def hov2(*args, **kwargs):
         {Plot2D_plot_contour[contour_<param>]}
         {Plot2D_plot_fill[fill]}
         {Plot2D_plot_fill[nofill]}
-        {Plot2D_plot[levels]}
+        {ScalarMappable[levels]}
         {Plot2D_plot[levels_<param>]}
-        {Plot2D_plot_fill[cmap]}
+        {ScalarMappable[levels_mode]}
+        {ScalarMappable[keepminmax]}
+        {ScalarMappable[nmax_levels]}
+        {ScalarMappable[nmax]}
+        {ScalarMappable[cmap]}
         {Plot2D_plot_fill[cmap_<param>]}
         {Plot2D_plot_fill[alpha]}
         {Plot2D_plot_fill[fill_<param>]}
@@ -3196,9 +3200,13 @@ def map2(*args, **kwargs):
         {Plot2D_plot_contour[contour_<param>]}
         {Plot2D_plot_fill[fill]}
         {Plot2D_plot_fill[nofill]}
-        {Plot2D_plot[levels]}
+        {ScalarMappable[levels]}
         {Plot2D_plot[levels_<param>]}
-        {Plot2D_plot_fill[cmap]}
+        {ScalarMappable[levels_mode]}
+        {ScalarMappable[keepminmax]}
+        {ScalarMappable[nmax_levels]}
+        {ScalarMappable[nmax]}
+        {ScalarMappable[cmap]}
         {Plot2D_plot_fill[cmap_<param>]}
         {Plot2D_plot_fill[alpha]}
         {Plot2D_plot_fill[fill_<param>]}
@@ -3320,9 +3328,13 @@ def section2(*args, **kwargs):
         {Plot2D_plot_contour[contour_<param>]}
         {Plot2D_plot_fill[fill]}
         {Plot2D_plot_fill[nofill]}
-        {Plot2D_plot[levels]}
+        {ScalarMappable[levels]}
         {Plot2D_plot[levels_<param>]}
-        {Plot2D_plot_fill[cmap]}
+        {ScalarMappable[levels_mode]}
+        {ScalarMappable[keepminmax]}
+        {ScalarMappable[nmax_levels]}
+        {ScalarMappable[nmax]}
+        {ScalarMappable[cmap]}
         {Plot2D_plot_fill[cmap_<param>]}
         {Plot2D_plot_fill[alpha]}
         {Plot2D_plot_fill[fill_<param>]}
@@ -3440,9 +3452,13 @@ def plot2d(*args, **kwargs):
         {Plot2D_plot_contour[contour_<param>]}
         {Plot2D_plot_fill[fill]}
         {Plot2D_plot_fill[nofill]}
-        {Plot2D_plot[levels]}
+        {ScalarMappable[levels]}
         {Plot2D_plot[levels_<param>]}
-        {Plot2D_plot_fill[cmap]}
+        {ScalarMappable[levels_mode]}
+        {ScalarMappable[keepminmax]}
+        {ScalarMappable[nmax_levels]}
+        {ScalarMappable[nmax]}
+        {ScalarMappable[cmap]}
         {Plot2D_plot_fill[cmap_<param>]}
         {Plot2D_plot_fill[alpha]}
         {Plot2D_plot_fill[fill_<param>]}
