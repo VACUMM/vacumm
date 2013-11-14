@@ -2201,7 +2201,10 @@ def curv2rect(gg, mode="warn", tol=1.e-2, f=None):
     xx, yy = get_xy(gg, mesh=True, num=True)
     x = xx.mean(axis=0)
     y = yy.mean(axis=1)
-    return create_grid(x, y)
+    grido =  create_grid(x, y)
+    cp_atts(gg.getLongitude(), grido.getLongitude())
+    cp_atts(gg.getLatitude(), grido.getLatitude())
+    return grido
     
 def isrect(gg, tol=1.e-2, mode="real", f=None, nocache=False):
     """Check wether a grid is trully rectangular
