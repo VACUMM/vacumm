@@ -182,7 +182,7 @@ def mixed_layer_depth(data, depth=None, lat=None, zaxis=None,
         H = 1.5*depth[slices['first']] - 0.5*depth[slices['firstp1']]
         H = -1.5*depth[slices['last']] + 0.5*depth[slices['lastm1']]
         mld[:] = -H*(densbot-denstop)/(densbot-denstop)
-        del H,dens
+        del H
         
     elif mode=='deltadens':
 
