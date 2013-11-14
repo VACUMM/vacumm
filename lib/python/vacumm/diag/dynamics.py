@@ -124,7 +124,9 @@ def coriolis_parameter(lat, gravity=default_gravity, fromvar=False, format_axes=
     
     # Compute
     f0 = 2*N.ma.sin(N.pi*latv/180.)
-    f0 *= 2*N.pi/(24.*3600.)
+    # f0 *= 2*N.pi/(24.*3600.)
+    f0 *= 2*N.pi/(86164.) # 86164 = sidereal day.... 
+
     
     # Format
     if N.isscalar(f0): return f0
