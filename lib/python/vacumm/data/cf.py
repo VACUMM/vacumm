@@ -711,7 +711,7 @@ generic_axis_names = axis_specs.keys()
 generic_names= generic_var_names+generic_axis_names
 
 
-def cf2search(name, mode=None, **kwargs):
+def cf2search(name, mode=None, raiseerr=True, **kwargs):
     """Extract specs from :attr:`axis_specs` or :attr:`var_specs` to form a search dictionary
     
     :Params:
@@ -741,7 +741,10 @@ def cf2search(name, mode=None, **kwargs):
     elif name in axis_specs:
         specs = axis_specs[name]
     else:
-        raise VACUMMError("Wrong generic name. It should be one of: "+' '.join(generic_axis_names+generic_var_names))
+        if raiseerr:
+            raise VACUMMError("Wrong generic name. It should be one of: "+' '.join(generic_axis_names+generic_var_names))
+        else:
+            return
     
     # Form search dict
     if not isinstance(mode, basestring): mode = 'nsa'
@@ -1001,7 +1004,8 @@ def match_obj(obj, name, searchmode=None, **kwargs):
         - **name**: A generic names.
         - **searchmode**, optional: Passed to :func:`~vacumm.misc.io.ncmatch_obj`.
     """
-    search = cf2search(name, mode=searchmode)
+    search = cf2search(name, mode=searchmode, raiseerr=False)
+    if search is None: return False
     search.update(kwargs)
     return ncmatch_obj(obj, searchmode=searchmode, **search)
 
