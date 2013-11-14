@@ -245,7 +245,7 @@ class F90toRst(object):
                 if bfunc['name'] in bfuncall['callto']:
                     bfunc['callfrom'].append(bfuncall['name'])
                     
-    def filter_by_srcfile(self, sfile, mode='basename', objtype=None):
+    def filter_by_srcfile(self, sfile, mode=None, objtype=None, **kwargs):
         """Search for subblocks according to origin file
         
         :Params:
@@ -255,15 +255,16 @@ class F90toRst(object):
             - **objtype**, optional: Restrict search to one or a list of object types
               (i.e. ``"function"``, ``"program"``, etc).
         """
-        if blocktype and not isinstance(blocktype, list):
-            blocktype = [blocktype]
+        if mode is None: mode = 'basename'
+        if objtype and not isinstance(objtype, list):
+            objtype = [objtype]
         bb = []
         if mode!='strict': 
             sfile = os.path.basename(sfile)
         for b in self.crack:
-            if objtype and objtype != 'all' and block['block'] not in objtype: continue
+            if objtype and objtype != 'all' and b['block'] not in objtype: continue
             bfile = b['from'].split(':')[0] # remove module name
-            if mode=='strict':
+            if mode!='strict':
                 bfile = os.path.basename(bfile)
             if sfile==bfile: bb.append(b)
         return bb
@@ -863,6 +864,7 @@ class F90toRst(object):
         return self._fmt_vattr%locals() if vattr else ''
         
     def format_argtype(self, block):
+        if not 'typespec' in block: return ''
         vtype = block['typespec']
         if vtype=='type': vtype = block['typename']
         return vtype
@@ -981,8 +983,8 @@ class F90toRst(object):
                 block = self.programs[block]
             else:
                 block = self.routines[block]
-        elif block['name'] not in self.modules.keys()+self.routines.keys():
-                raise F90toRstException('Unknown %s: %s'%(block['type'], block['name']))
+        elif block['name'] not in self.modules.keys()+self.routines.keys()+self.programs.keys():
+            raise F90toRstException('Unknown %s: %s'%(block['block'], block['name']))
 
         name = block['name']
         blocktype = block['block']
@@ -1151,21 +1153,35 @@ class F90toRst(object):
                
         return declaration + description + quickaccess + use + types + variables + routines
             
-    def format_srcfile(self, srcfile, indent=0, **kwargs):
+    def format_srcfile(self, srcfile, indent=0, objtype=None, search_mode='basename', **kwargs):
         """Format all declaration of a file, except modules"""
         rst = ''
+        if objtype is not None and not isinstance(objtype, (list, tuple)):
+            objtype = [objtype]
+        
         # Programs
-        bprog = self.filter_by_srcfile(srcfile, objtype='program', **kwargs)
-        if bprog:
-            programs = self.format_subsection('Program', indent=indent)+'\n'
-            rst += self.format_program(bprog[0], indent=indent)+'\n'
-            
+        if objtype is None or 'program' in objtype:
+            bprog = self.filter_by_srcfile(srcfile, objtype='program', mode=search_mode)
+            if bprog:
+                programs = self.format_subsection('Program', indent=indent)+'\n'
+                rst += self.format_routine(bprog[0], indent=indent)+'\n'
+        
+        # Modules
+        if objtype is None or 'module' in objtype:
+            bmod = self.filter_by_srcfile(srcfile, objtype='module', mode=search_mode)
+            if bmod:
+                modules = self.format_subsection('Module', indent=indent)+'\n'
+                rst += self.format_module(bmod[0], indent=indent)+'\n'
+        
         # Functions and subroutines
-        brouts = self.filter_by_srcfile(srcfile, objtype=['function', 'subroutine'], **kwargs)
-        if brouts:
-            self.format_subsection('Functions et subroutines', indent=indent)+'\n'
-            for block in brouts:
-                rst += self.format_routines(block, indent=indent)+'\n'
+        oal = ['function', 'subroutine']
+        oo = [o for o in oal if o in objtype] if objtype is not None else oal
+        if oo:
+            brouts = self.filter_by_srcfile(srcfile, objtype=oo, mode=search_mode)
+            if brouts:
+                self.format_subsection('Functions et subroutines', indent=indent)+'\n'
+                for block in brouts:
+                    rst += self.format_routines(block, indent=indent)+'\n'
                 
         return rst
         
@@ -1174,29 +1190,6 @@ class F90toRst(object):
         
 
 # Sphinx directive ---
-
-def setup(app):
-    
-    app.add_description_unit('ftype', 'ftype', indextemplate='pair: %s; Fortran type', )
-    app.add_description_unit('fvar', 'fvar', indextemplate='pair: %s; Fortran variable', )
-    
-    app.add_config_value('fortran_title_underline', '-', False)
-    app.add_config_value('fortran_indent', 4, False)
-    app.add_config_value('fortran_subsection_type', 'rubric', False)
-    app.add_config_value('fortran_src', '.', False)
-    app.add_config_value('fortran_ext', ['f90', 'f95'], False)
-    app.add_config_value('fortran_encoding', 'utf8', False)
-    
-    #app.add_directive('fortran_module', IncludeFortranDirective)
-    FortranDomain.directives.update(
-        automodule=FortranAutoModuleDirective,
-        autoroutine=FortranAutoObjectDirective,
-        autofunction=FortranAutoFunctionDirective,
-        autosubroutine=FortranAutoSubroutineDirective,
-        autoprogram=FortranAutoProgramDirective,
-        autosrcfile=FortranAutoSrcfileDirective,
-    )
-    app.connect('builder-inited', fortran_parse)
 
 def list_files(fortran_src, exts=['f', 'f90', 'f95'], absolute=True):
     """Get the list of fortran files"""
@@ -1207,6 +1200,7 @@ def list_files(fortran_src, exts=['f', 'f90', 'f95'], absolute=True):
     for e in exts:
         if e.lower() not in exts: exts.append(e.lower())
         if e.upper() not in exts: exts.append(e.upper())
+    exts = list(set(exts))
         
     # List the files using globs
     ffiles = []
@@ -1219,6 +1213,7 @@ def list_files(fortran_src, exts=['f', 'f90', 'f95'], absolute=True):
             ffiles.extend(glob(fg))
     if absolute:
         ffiles = [os.path.abspath(ffile) for ffile in ffiles]
+    ffiles.sort()
     return ffiles
 
 def fortran_parse(app):
@@ -1280,7 +1275,10 @@ class FortranAutoModuleDirective(Directive):
         # Check module name
         module = self.arguments[0]
         if not f90torst.modules.has_key(module):
-            self.warn('Wrong fortran module name: '+module)
+#            print dir(self)
+            print 'Wrong fortran module name: '+module
+            self.state_machine.reporter.warning('Wrong fortran module name: '+module, line=self.lineno)
+#            self.warn('Wrong fortran module name: '+module)
         
         # Options
         ic = f90torst.ic
@@ -1347,7 +1345,9 @@ class FortranAutoObjectDirective(Directive):
         if f_sep in objname: objname = objname.split(f_sep)[-1] # remove module name
         objects = getattr(f90torst, self._objtype+'s')
         if not objects.has_key(objname):
-            self.warn(self._warning%objname)
+            print self._warning%objname
+            self.state_machine.reporter.warning(self._warning%objname, line=self.lineno)
+#            self.warn(self._warning%objname)
                 
         # Get rst
         raw_text = getattr(f90torst, 'format_'+self._objtype)(objname)
@@ -1392,6 +1392,8 @@ class FortranAutoProgramDirective(Directive):
     optional_arguments = 0
     
     def run(self):
+        print 'test1'
+        self.state_machine.reporter.warning('test2', line=self.lineno)
 
         # Get environment
         f90torst = self.state.document.settings.env.config._f90torst
@@ -1400,7 +1402,9 @@ class FortranAutoProgramDirective(Directive):
         # Check routine name
         program = self.arguments[0].lower()
         if not f90torst.programs.has_key(program):
-            self.warning('Wrong program name: '+program)
+            print 'Wrong program name: '+program
+            self.state_machine.reporter.warning('Wrong program name: '+program, line=self.lineno)
+#            self.warning('Wrong program name: '+program)
                 
         # Get rst
         raw_text = f90torst.format_routine(program)
@@ -1425,11 +1429,6 @@ class FortranAutoSrcfileDirective(Directive):
         f90torst = self.state.document.settings.env.config._f90torst
         if f90torst is None: return []
 
-        # Check routine name
-        srcfile = self.arguments[0].lower()
-        if not f90torst.programs.has_key(program):
-            self.warning('Wrong program name: '+program)
-                
         # Options
         search_mode = self.options.get('search_mode')
         objtype = self.options.get('objtype')
@@ -1437,9 +1436,13 @@ class FortranAutoSrcfileDirective(Directive):
             objtype = objtype.split(' ,')
         
         # Get rst
+        srcfile = self.arguments[0].lower()
         raw_text = f90torst.format_srcfile(srcfile, search_mode=search_mode, objtype=objtype)
         if not raw_text:
-            self.warning('No valid content found for file: '+srcfile)
+            msg = 'No valid content found for file: '+srcfile
+            print msg
+            self.state_machine.reporter.warning(msg, line=self.lineno)
+#            self.warning('No valid content found for file: '+srcfile)
         
         # Insert it
         source = self.state_machine.input_lines.source(
@@ -1448,4 +1451,27 @@ class FortranAutoSrcfileDirective(Directive):
         self.state_machine.insert_input(include_lines,source)
         
         return []
+
+def setup(app):
+    
+    app.add_description_unit('ftype', 'ftype', indextemplate='pair: %s; Fortran type', )
+    app.add_description_unit('fvar', 'fvar', indextemplate='pair: %s; Fortran variable', )
+    
+    app.add_config_value('fortran_title_underline', '-', False)
+    app.add_config_value('fortran_indent', 4, False)
+    app.add_config_value('fortran_subsection_type', 'rubric', False)
+    app.add_config_value('fortran_src', '.', False)
+    app.add_config_value('fortran_ext', ['f90', 'f95'], False)
+    app.add_config_value('fortran_encoding', 'utf8', False)
+    
+    #app.add_directive('fortran_module', IncludeFortranDirective)
+    FortranDomain.directives.update(
+        automodule=FortranAutoModuleDirective,
+        autoroutine=FortranAutoObjectDirective,
+        autofunction=FortranAutoFunctionDirective,
+        autosubroutine=FortranAutoSubroutineDirective,
+        autoprogram=FortranAutoProgramDirective,
+        autosrcfile=FortranAutoSrcfileDirective,
+    )
+    app.connect('builder-inited', fortran_parse)
 

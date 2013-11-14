@@ -752,6 +752,8 @@ class WithFortranDocFieldTransformer:
                 signode.clear()
                 signode += addnodes.desc_name(sig, sig)
                 continue  # we don't want an index entry here
+            if not isinstance(name, unicode):
+                name = unicode(name)
             if not noindex and name not in self.names:
                 # only add target and index entry if this is the first
                 # description of the object with this name in this desc block
