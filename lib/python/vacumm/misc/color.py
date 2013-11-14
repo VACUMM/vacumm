@@ -1513,7 +1513,7 @@ class StepsNorm(Normalize):
         return result
 
     def inverse(self, pos):
-        result, is_scalar = self.process_value(value)
+        result, is_scalar = self.process_value(pos)
         pos = result.copy()
         if self.vmin==self.vmax:
             result.fill(0)
