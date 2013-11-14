@@ -12,8 +12,9 @@ from vacumm.misc.io import ncmatch_obj
 
 __all__ = ['var_specs', 'axis_specs', 
     'generic_axis_names', 'generic_var_names', 'generic_names', 
-    'format_var', 'format_axis', 'format_grid', 'match_var', 
+    'format_var', 'format_axis', 'format_grid', 'match_obj', 
     'cf2atts', 'cf2search', 'cp_suffix', 
+    'change_loc', 'change_loc_single', 'specs_dup_loc', 'no_loc_single', 
 ]
 
 #: Specifications for variables
@@ -74,6 +75,7 @@ var_specs = OrderedDict(
             ],
         long_names = "Sea water velocity along X at U location", 
         units = "m s-1", 
+        axes = dict(x=['lon_u'], y=['lat_u']), 
     ),
     v3d = dict(
         names=['vz', 'v3d'],
@@ -81,6 +83,7 @@ var_specs = OrderedDict(
             'northward_sea_water_velocity'],
         long_names = "Sea water velocity along Y at V location", 
         units = "m s-1", 
+        axes = dict(x=['lon_v'], y=['lat_v']), 
     ),
     w3d = dict(
         names=['wz', 'w3d'],
@@ -89,32 +92,36 @@ var_specs = OrderedDict(
         units = "m s-1", 
     ),
     ubt = dict(
-        names=['u','ubt', 'u2d'],
+        names=['ubt', 'u2d', 'u'],
         standard_names=['barotropic_sea_water_x_velocity_at_u_location'],
         long_names = "Sea water barotropic velocity along X at U location", 
         units = "m s-1", 
+        axes = dict(x=['lon_u'], y=['lat_u']), 
     ),
     vbt = dict(
-        names=['v','vbt', 'v2d'],
+        names=['vbt', 'v2d', 'v'],
         standard_names=['barotropic_sea_water_y_velocity_at_v_location'],
         long_names = "Sea water barotropic velocity along Y at V location", 
         units = "m s-1", 
+        axes = dict(x=['lon_v'], y=['lat_v']), 
     ),
     usurf = dict(
         names = ['usurf'], 
         standard_names=['sea_surface_x_velocity_at_u_location', 'sea_surface_x_velocity'],
         long_names = "Sea surface velocity along X at U location", 
         units = "m s-1", 
+        axes = dict(y=['lat_u'], x=['lon_u'])
     ), 
     vsurf = dict(
         names = ['vsurf'], 
         standard_names=['sea_surface_y_velocity_at_y_location', 'sea_surface_y_velocity'],
         long_names = "Sea surface velocity along Y at V location", 
         units = "m s-1", 
+        axes = dict(x=['lon_v'], y=['lat_v']), 
     ), 
     ugbt = dict(
         names=['ugbt'],
-        standard_names=['barotropic_sea_water_x_geostrophic_velocity_at_u_location'],
+        standard_names=['barotropic_sea_water_x_geostrophic_velocity'],
         long_names = "Sea water barotropic geostrophic velocity along X at U location", 
         units = "m s-1", 
     ),
@@ -319,13 +326,14 @@ var_specs = OrderedDict(
         units = "m s-1", 
     ), 
 
-   # Ocean Atmosphere interface
-   tauu = dict(
+    # Ocean Atmosphere interface
+    tauu = dict(
         names = [], 
         standard_names = ["surface_downward_eastward_stress",  
             "surface_eastward_stress"], 
         long_names = "Surface eastward wind stress", 
         units = "N m-2", 
+        axes = dict(x=['lon_u'], y=['lat_u']), 
     ), 
     tauv = dict(
         names = [], 
@@ -333,6 +341,7 @@ var_specs = OrderedDict(
             "surface_northward_stress"], 
         long_names = "Surface northward wind stress", 
         units = "N m-2", 
+        axes = dict(x=['lon_v'], y=['lat_v']), 
     ), 
     taux = dict(
         names = ['ustress'], 
@@ -340,6 +349,7 @@ var_specs = OrderedDict(
                           "surface_downward_x_stress_at_u_location"], 
         long_names = "Surface wind stress along X", 
         units = "N m-2", 
+        axes = dict(x=['lon_u'], y=['lat_u']), 
     ), 
     tauy = dict(
         names = ['vstress'], 
@@ -347,6 +357,7 @@ var_specs = OrderedDict(
                           "surface_downward_y_stress_at_v_location"], 
         long_names = "Surface wind stress along Y", 
         units = "N m-2", 
+        axes = dict(x=['lon_v'], y=['lat_v']), 
     ), 
     
     # Surfaces waves
@@ -399,7 +410,7 @@ axis_specs = OrderedDict(
         jaxis = 'nj_u', 
     ), 
     lat_u = dict(
-        names = ['lat_v','latitude_u',], 
+        names = ['lat_u','latitude_u',], 
         standard_names = ['latitude_at_u_location'], 
         long_names = 'Latitude at V location', 
         units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'], 
@@ -541,8 +552,8 @@ def change_loc_single(name, stype, loc):
             return basename+' at %s location'%loc.upper()
     return basename
         
-def change_loc(loc, names=None, standard_names=None, long_names=None, **kwargs):
-    """Change location specification in names, standard names or long names
+def change_loc(loc, names=None, standard_names=None, long_names=None, axes=None, **kwargs):
+    """Change location specification in names, standard names, long names and axes names
     
     :Return: A dictionary
     
@@ -551,6 +562,7 @@ def change_loc(loc, names=None, standard_names=None, long_names=None, **kwargs):
     specs = kwargs.copy()
     if 'atlocs' in specs: del specs['atlocs']
     
+    # Attributes
     for stype in 'name', 'standard_name', 'long_name':
         values = eval(stype+'s')
         if values is None: continue
@@ -558,12 +570,28 @@ def change_loc(loc, names=None, standard_names=None, long_names=None, **kwargs):
             tmp = [change_loc_single(value, stype, loc) for value in values]
             values = []
             for value in tmp: # unique
-                values.append(value)
-                tmp.remove(value)
+                if value not in values:
+                    values.append(value)
           
         else:
             values = change_loc_single(values, stype, loc)
         specs[stype+'s'] = values
+        
+    # Axes
+    if axes is not None:
+        for l in axes.keys(): # loop on x, y t
+            laxes = axes[l]
+            single = not isinstance(laxes, list)
+            if single: laxes = [laxes] # work on lists
+            laxes = [change_loc_single(axis, 'name', loc) for axis in laxes]+laxes # duplicate
+            lnewaxes = []
+            for axis in laxes: # unique
+                if axis not in lnewaxes:
+                    lnewaxes.append(axis)
+            if single and len(lnewaxes)==1:
+                lnewaxes = lnewaxes[0]
+            axes[l] = lnewaxes
+        specs['axes'] = axes
         
     return specs
     
@@ -633,6 +661,13 @@ for all_specs in var_specs, axis_specs:
             suffixes = [('_'+s) for s in 'rftuv']
             specs['axes'].setdefault('y', cp_suffix(name, 'lat', suffixes=suffixes))
             specs['axes'].setdefault('x', cp_suffix(name, 'lon', suffixes=suffixes))
+            if 'atlocs' in specs: # need list for later duplication of location
+                for l in 'yx':
+                    if not isinstance(specs['axes'][l], list):
+                        specs['axes'][l] = [specs['axes'][l]]
+            for l, n in ('t', 'time'), ('y', 'lat'), ('x', 'lon'):
+                if isinstance(specs['axes'][l], list) and n not in specs['axes'][l]: 
+                    specs['axes'][l].append(n)
                     
         # Inherits from other specs
         if 'inherit' in specs:
@@ -706,7 +741,7 @@ def cf2search(name, mode=None, **kwargs):
     elif name in axis_specs:
         specs = axis_specs[name]
     else:
-        VACUMMError("Wrong generic name. It should be one of: "+' '.join(generic_axis_names+generic_var_names))
+        raise VACUMMError("Wrong generic name. It should be one of: "+' '.join(generic_axis_names+generic_var_names))
     
     # Form search dict
     if not isinstance(mode, basestring): mode = 'nsa'
@@ -716,7 +751,7 @@ def cf2search(name, mode=None, **kwargs):
             if key.startswith(m):
                 keys.append(key)
                 break
-    return OrderedDict((k, specs[k]) for k in keys if k in specs)
+    return OrderedDict([(k, specs[k]) for k in keys if k in specs])
 
 
 _attnames_plurals = ['standard_name', 'long_name']
@@ -836,17 +871,20 @@ def format_var(var, name, force=True, format_axes=True, order=None, **kwargs):
             
         # First check
         axspecs = specs['axes']
+        formatted = []
         for key, meth in axismeths.items():
             axis = getattr(var, meth)()
             if order is not None: order.replace(key, '-')
             if axis is not None:
                 format_axis(axis, axspecs[key], **kwaxes[key])
+                formatted.append(key)
         
         # Check remaining simple axes (DOES NOT WORK FOR 2D AXES)
         if order is not None and order!='-'*len(order):
             for key in axismeths.keys():
-                if key in order:
-                    format_axis(var.getAxis(order.index(key)), axspecs[key], **kwaxes[key])
+                if key in order and key not in formatted:
+                    axis = var.getAxis(order.index(key))
+                    format_axis(axis, axspecs[key], **kwaxes[key])
             
     
     return var
@@ -859,8 +897,8 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True, **k
     :Params:
     
         - **var**: A :mod:`numpy` or :mod:`MV2` variabe.
-        - **name**: Generic name of variable. It should be one of
-          those listed by :attr:`generic_var_names`.
+        - **name**: Single or list of generic axis names. It should be one of
+          those listed by :attr:`generic_axis_names`.
         - **force**, optional: Overwrite attributes in all cases.
         - **axes2d_<param>**, optional: <param> is passed to 
           :func:`~vacumm.misc.grid.misc.create_axes2d` for 2D axes.
@@ -871,10 +909,17 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True, **k
     :Examples:
     
         >>> axis1d = format_axis(array1d, 'lon')
-        >>> axis2d = format_axis(array2d, 'lonu', axes2d_iid = 'xi',  axes2d_jid = 'xi', recreate=True)
+        >>> axis2d = format_axis(array2d, 'lon_u', axes2d_iid = 'xi',  axes2d_jid = 'xi', recreate=True)
         
         
     """
+    
+    # Guess best generic name from a list
+    if isinstance(name, (list, tuple)):
+        for nm in name:
+            if match_obj(axis, nm):
+                name = nm
+                break
     
     # Check specs
     if name not in generic_axis_names:
@@ -947,9 +992,17 @@ def format_grid(grid, pt, **kwargs):
     format_axis(lon, gs['lon'])
     format_axis(lat, gs['lat'])
 
-def match_var(var, name, searchmode=None, **kwargs):
-    """Check if a variable match some specifications"""
+def match_obj(obj, name, searchmode=None, **kwargs):
+    """Check if a variable or an axis matches generic specifications
+    
+    :Params:
+    
+        - **obj**: a numpy or cdms2 axis or variable.
+        - **name**: A generic names.
+        - **searchmode**, optional: Passed to :func:`~vacumm.misc.io.ncmatch_obj`.
+    """
     search = cf2search(name, mode=searchmode)
     search.update(kwargs)
-    return ncmatch_obj(var, searchmode=searchmode, **search)
+    return ncmatch_obj(obj, searchmode=searchmode, **search)
 
+match_var = match_obj

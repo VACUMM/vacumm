@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar (2010)
+# Copyright or © or Copr. Actimar (2010-2013)
 # 
 # wilkins@actimar.fr
 #
@@ -643,7 +643,7 @@ class Dataset(Object):
         return split_selector(myselect) if split else myselect
         
     def get_axis(self, name, select=None, select2=None, dataset=None, warn=True, 
-        getid=False, searchmode=None):
+        getid=False, searchmode=None, format=True):
         """Retreive a 1D or 2D axis.
         
         :Params:
@@ -656,6 +656,7 @@ class Dataset(Object):
           - **getid**, optional: If True, only return the id (netcdf name) or None.
           - **warn**, optional: Display a warning in case of problem.
           - **searchmode**, optional: Search order (see :func:`~vacumm.misc.io.ncfind_obj`).
+          - **format**, optional: Format the axis using :func:`~vacumm.data.cf.format_axis`?
         
         :Return:
             - cdms2 axis or None if not found, or id
@@ -708,7 +709,7 @@ class Dataset(Object):
         axis = axis.clone()
             
         # Format
-        if genname is not None:
+        if genname is not None and format:
             axis = format_axis(axis, genname)
         atts = _notuplist_(atts)
         if atts:
@@ -825,7 +826,7 @@ class Dataset(Object):
         
     def get_variable(self, varname, time=None, lon=None, lat=None, level=None, 
         atts=None, squeeze=False, order=None, asvar=None, torect=True, depthup=None,
-        verbose=None, warn=True, searchmode=None, **kwargs):
+        verbose=None, warn=True, searchmode=None, format=True, **kwargs):
         '''Load a variable in a best time serie fashion.
         
         :Params:
@@ -837,6 +838,8 @@ class Dataset(Object):
           - **order**: If not None, specify the output variable axes order.
           - **depthup**: Make depths up.
           - **torect**: Make grid rectangular if possible.
+          - **format**: Format the variable and its axes using
+            :func:`~vacumm.data.cf.format_var`?
           - Other kwargs are passed to :func:`~vacumm.misc.io.ncread_files`.
         
         :Return:
@@ -892,7 +895,7 @@ class Dataset(Object):
         if isinstance(var, list): var = var[0]
             
         # Post process
-        var = self.finalize_variable(var, genname=genname, atts=atts, order=order, 
+        var = self.finalize_object(var, genname=genname, format=format, atts=atts, order=order, 
             squeeze=squeeze, asvar=asvar, torect=torect, depthup=depthup, curvsel=curvsel)
         self.verbose('Loaded variable: %s', self.describe(var))
             
@@ -1053,34 +1056,34 @@ class Dataset(Object):
         return self.get_axis('lat_f', lat, lon, **kwargs)
     
     
-    def get_grid(self, lon=None, lat=None):
+    def get_grid(self, lon=None, lat=None, format=True):
         '''Get grid'''
-        axlon = self.get_lon(lon, lat)
-        axlat = self.get_lat(lat, lon)
+        axlon = self.get_lon(lon, lat, format=format)
+        axlat = self.get_lat(lat, lon, format=format)
         if axlon is None or axlat is None: return None
         grid = create_grid(axlon, axlat)
         return grid
         
-    def get_grid_u(self, lon=None, lat=None):
+    def get_grid_u(self, lon=None, lat=None, format=True):
         '''Get grid at U location'''
-        axlon = self.get_lon_u(lon, lat)
-        axlat = self.get_lat_u(lat, lon)
+        axlon = self.get_lon_u(lon, lat, format=format)
+        axlat = self.get_lat_u(lat, lon, format=format)
         if axlon is None or axlat is None: return None
         grid = create_grid(axlon, axlat)
         return grid
         
-    def get_grid_v(self, lon=None, lat=None):
+    def get_grid_v(self, lon=None, lat=None, format=True):
         '''Get grid at V location'''
-        axlon = self.get_lon_v(lon, lat)
-        axlat = self.get_lat_v(lat, lon)
+        axlon = self.get_lon_v(lon, lat, format=format)
+        axlat = self.get_lat_v(lat, lon, format=format)
         if axlon is None or axlat is None: return None
         grid = create_grid(axlon, axlat)
         return grid
     
-    def get_grid_f(self, lon=None, lat=None):
+    def get_grid_f(self, lon=None, lat=None, format=True):
         '''Get grid at F location'''
-        axlon = self.get_lon_f(lon, lat)
-        axlat = self.get_lat_f(lat, lon)
+        axlon = self.get_lon_f(lon, lat, format=format)
+        axlat = self.get_lat_f(lat, lon, format=format)
         if axlon is None or axlat is None: return None
         grid = create_grid(axlon, axlat)
         return grid
@@ -1196,7 +1199,7 @@ class Dataset(Object):
         set_grid(dxy, grid)
         
         # Finalize
-        return self.finalize_variable(dxy, genname=genname+atp, **kwargs)
+        return self.finalize_object(dxy, genname=genname+atp, **kwargs)
         
     
     def get_dx(self, **kwargs):
@@ -1325,14 +1328,15 @@ class Dataset(Object):
             #var.setAxisList(axes)
         #return var
     
-    def finalize_variable(self, var, genname=None, squeeze=False, order=None, 
+    def finalize_object(self, var, genname=None, format=format, squeeze=False, order=None, 
         asvar=None, torect=True, atts=None, lon=None, lat=None, curvsel=None, **kwargs):
-        """Finalize a variable
+        """Finalize a variable or an axis
         
         :Params:
         
-            - **genname**, optional: Generic name to format the variable using
-              :func:`~vacumm.data.cf.format_var`.
+            - **genname**, optional: Generic name to format the variable.
+            - **format**, optional: Format the variable and its axes with 
+              :func:`~vacumm.data.cf.format_var`?
             - **atts**, optional: Set these attributes to the variable.
             - **squeeze**, optional: If not False, squeeze singletons axes using
               :func:`~vacumm.misc.misc.squeeze_variable`.
@@ -1358,7 +1362,7 @@ class Dataset(Object):
                 var = curvsel.finalize(var)
             
             # Format
-            if genname is not None:
+            if genname is not None and format:
                 format_var(var, genname, **atts)
             elif atts:
                 set_atts(var, **atts)
@@ -1375,8 +1379,8 @@ class Dataset(Object):
                 
             # Rectangular if possible
             if torect: self._torect_(var)
-            
-        elif genname is not None:
+
+        elif genname is not None and format:
             format_axis(var, genname, **atts)
         elif atts:
             set_atts(var, **atts)
@@ -1540,7 +1544,7 @@ class OceanDataset(OceanSurfaceDataset):
     ncobj_specs.update(dict(
     ))
     
-    def finalize_variable(self, var, squeeze=False, order=None, asvar=None, torect=True, depthup=None, **kwargs):
+    def finalize_object(self, var, squeeze=False, order=None, asvar=None, torect=True, depthup=None, **kwargs):
         """Finalize a variable
         
         :Params:
@@ -1563,7 +1567,7 @@ class OceanDataset(OceanSurfaceDataset):
             self._makedepthup_(var, depth=depthup)
         
         # Generic stuff
-        var = Dataset.finalize_variable(self, var, squeeze=squeeze, order=order,
+        var = Dataset.finalize_object(self, var, squeeze=squeeze, order=order,
             torect=torect, asvar=asvar, **kwargs)
         
         return var
@@ -1646,7 +1650,7 @@ class OceanDataset(OceanSurfaceDataset):
         
         # Get depth
         if depth is None:
-            depth = self.get_depth(time=slice(0, 1), warn=False)
+            depth = self.get_depth(time=slice(0, 1), warn=False, format=False)
         if depth is None: # no depth = no problem
             self.positive = 'up'
             return True
@@ -1669,14 +1673,15 @@ class OceanDataset(OceanSurfaceDataset):
     
         
     def _get_depth_(self, at='t', level=None, time=None, lat=None, lon=None, 
-        order=None, squeeze=None, asvar=None, torect=True, warn=True, mode=None, **kwargs):
+        order=None, squeeze=None, asvar=None, torect=True, warn=True, mode=None, 
+        format=True, **kwargs):
 
         # Where?
         atp = _at_(at, squeezet=True, prefix=True)
         ath = _at_(at, squeezet=True, prefix=True, focus='hor')
         
         # First, try to find a depth variable
-        kwfinal = dict(order=order, squeeze=squeeze, asvar=asvar, torect=torect)
+        kwfinal = dict(order=order, squeeze=squeeze, asvar=asvar, torect=torect, format=format)
         kwvar = dict(level=level, time=time, lat=lat, lon=lon, warn=False)
         kwvar.update(kwfinal)
         if check_mode('var', mode):
@@ -1718,8 +1723,9 @@ class OceanDataset(OceanSurfaceDataset):
                     allvars.append(d)
                 if allvars:
                     # Concatenate loaded depth
-                    var = format_var(MV2_concatenate(allvars), 'depth'+atp)
-                    return self.finalize_variable(var, depthup=var, **kwfinal)
+                    var = MV2_concatenate(allvars)
+                    return self.finalize_object(var, depthup=var, genname='depth'+atp, 
+                        **kwfinal)
                         
                 if check_mode('sigma', mode, strict=True): return
 #        if sigma_converter is not None:
@@ -1743,15 +1749,14 @@ class OceanDataset(OceanSurfaceDataset):
                     depth = dz2depth(dzt, ssh, refloc="top") 
                     
             if depth is not None or check_mode('dz', mode, strict=True):
-                var =  format_var(depth, 'depth'+atp)
-                return self.finalize_variable(var, depthup=False, **kwfinal)
+                return self.finalize_object(depth, depthup=False, genname='depth'+atp, **kwfinal)
                         
         # Finally, find a depth axis
         if sigma_converter is None and check_mode('axis', mode): # no Z axis for sigma coordinates
             axis = self.get_axis('depth'+atp, level)
             if axis is not None:
-                format_axis(axis, 'depth'+atp), 
-                return self.finalize_variable(axis, depthup=axis, **kwfinal)
+                if format: axis = format_axis(axis, 'depth'+atp), 
+                return self.finalize_object(axis, depthup=axis, **kwfinal)
         if warn:
             self.warning('Found no way to estimate depths at %s location'%at.upper())
         
@@ -1810,7 +1815,7 @@ class OceanDataset(OceanSurfaceDataset):
         if check_mode('var', mode):
             dens = self.get_variable('dens', **kwvar)
             if dens is not None or check_mode('var', mode, strict=True): 
-                return self.finalize_variable(dens, **kwfinal)
+                return self.finalize_object(dens, **kwfinal)
             
         # Estimate it from temperature and salinity
         if check_mode('tempsal', mode):
@@ -1820,44 +1825,28 @@ class OceanDataset(OceanSurfaceDataset):
             if temp is not None and sal is not None:
                 dens = density(temp, sal, depth=depth, format_axes=True, **kwdens)
             if dens is not None or check_mode('tempsal', mode, strict=True): 
-                return self.finalize_variable(dens, depthup=False, **kwfinal)
+                return self.finalize_object(dens, depthup=False, **kwfinal)
     formatdoc_var(get_dens, mode=_mode_doc)
         
     @formatdoc_var
     def get_u3d(self, **kwargs):
         '''Get 4D zonal velocity'''
-        var = self.get_variable('u3d', **kwargs)
-        lon = self.get_lon_u()
-        lat = self.get_lat_u()
-        set_grid(var,(lon,lat))
-        return var
+        return self.get_variable('u3d', **kwargs)
     
     @formatdoc_var
     def get_v3d(self, **kwargs):
         '''Get 4D meridional velocity'''
-        var = self.get_variable('v3d', **kwargs)
-        lon = self.get_lon_v()
-        lat = self.get_lat_v()
-        set_grid(var,(lon,lat))
-        return var
+        return self.get_variable('v3d', **kwargs)
      
     @formatdoc_var
     def get_ubt(self, **kwargs):
         '''Get zonal barotropic velocity'''
-        var = self.get_variable('ubt', **kwargs)
-        lon = self.get_lon_u()
-        lat = self.get_lat_u()
-        set_grid(var,(lon,lat))
-        return var
+        return self.get_variable('ubt', **kwargs)
     
     @formatdoc_var
     def get_vbt(self, **kwargs):
         '''Get meridional barotropic velocity'''
-        var = self.get_variable('vbt', **kwargs)
-        lon = self.get_lon_v()
-        lat = self.get_lat_v()
-        set_grid(var,(lon,lat))
-        return var
+        return self.get_variable('vbt', **kwargs)
         
     @formatdoc_var
     def get_bathy(self, **kwargs):
@@ -1950,7 +1939,7 @@ class OceanDataset(OceanSurfaceDataset):
         if timeavg and lvar.getOrder().startswith('t') and lvar.shape[0]>1:
             lvar = MV2.average(lvar, axis=0)
         
-        return self.finalize_variable(lvar, depthup=False, **kwargs)
+        return self.finalize_object(lvar, depthup=False, **kwargs)
         
         
     def plot_hsection(self, varname, depth, time=None, lat=None, lon=None, 
@@ -2197,7 +2186,7 @@ class OceanDataset(OceanSurfaceDataset):
         if timeavg and tvar.getOrder().startswith('t') and tvar.shape[0]>1:
             tvar = MV2.average(tvar, axis=0)
         
-        tvar =  self.finalize_variable(tvar, **kwargs)
+        tvar =  self.finalize_object(tvar, **kwargs)
         if getcoords: return (tvar, )+res[1:]
         return tvar
     
@@ -2579,7 +2568,7 @@ class OceanDataset(OceanSurfaceDataset):
         if check_mode('var', mode):
             mld = self.get_variable('mld', **kwvar)
             if mld is not None or check_mode('var', mode, strict=True): 
-                return self.finalize_variable(mld, **kwfinal)
+                return self.finalize_object(mld, **kwfinal)
             
         # Estimate it
         depth = self.get_depth(**kwdepth)
@@ -2591,7 +2580,7 @@ class OceanDataset(OceanSurfaceDataset):
             if temp is not None:
                 mld = mixed_layer_depth(temp, depth=depth, mode='deltatemp', format_axes=True, **kwmld)
                 if mld is not None or check_mode('deltatemp', mode, strict=True): 
-                    return self.finalize_variable(mld, depthup=False, **kwfinal)
+                    return self.finalize_object(mld, depthup=False, **kwfinal)
                     
         # - deltadens and twolayers (density)
         for testmode in 'deltadens', 'twolayers':
@@ -2601,7 +2590,7 @@ class OceanDataset(OceanSurfaceDataset):
                 if dens is not None:
                     mld = mixed_layer_depth(dens, depth=depth, lat=lat, mode=testmode, format_axes=True, **kwmld)
                     if mld is not None or check_mode(testmode, mode, strict=True): 
-                        return self.finalize_variable(mld, depthup=False, **kwfinal)
+                        return self.finalize_object(mld, depthup=False, **kwfinal)
                         
         # - Kz
         if check_mode('kz', mode):
@@ -2611,7 +2600,7 @@ class OceanDataset(OceanSurfaceDataset):
                 mld = mixed_layer_depth(kz, depth=depth, mode='kz', format_axes=True, **kwmld)
                 if mld is not None or check_mode('twolayers', mode, strict=True): 
                     kwfinal['depthup'] = False
-                    return self.finalize_variable(mld, **kwfinal)
+                    return self.finalize_object(mld, **kwfinal)
              
     get_mld = formatdoc_var(get_mld, 
         mode=_mode_doc, 
