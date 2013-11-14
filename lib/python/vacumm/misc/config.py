@@ -392,7 +392,8 @@ class ConfigManager(object):
         
         :Params:
         
-            - **nocomments**, optional: Do not include comment in config file.
+            - **nocomments**, optional: Do not include option comments in config file.
+              If equal to 2, remove section comments too.
             - **interpolation**, optional: if True, interpolate values.
         
         :Return: A :class:`~configobj.ConfigObj` instance
@@ -401,7 +402,7 @@ class ConfigManager(object):
         cfg = ConfigObj(interpolation=interpolation, configspec=self._configspec)
         cfg.validate(self._validator, copy=True)
         if nocomments: 
-            cfg.walk(_walker_remove_all_comments_, call_on_sections=False)
+            cfg.walk(_walker_remove_all_comments_, call_on_sections=int(nocomments)==2)
         return cfg
     
     def reset(self, cfgfile='config.cfg', backup=True, nocomments=True, verbose=True):
