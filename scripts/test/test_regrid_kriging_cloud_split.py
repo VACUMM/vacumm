@@ -4,7 +4,7 @@ nps = [100, 60, 40]
 npmax = 90
 dxy = 5
 
-from vcmq import *
+from vcmq import P, simple_colors, savefigs, code_base_name, N
 from vacumm.misc.grid.kriging import cloud_split
 
 # Input clouds

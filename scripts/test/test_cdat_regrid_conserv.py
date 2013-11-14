@@ -1,4 +1,4 @@
-from vcmq import *
+from vcmq import N, meshbounds, bounds1d, cdms2, MV2, rc, P, add_grid, rcdefaults, create_lon, create_lat, savefigs, code_base_name
     
 # Input grid
 x0, y0, nx, ny, dx, dy = 0., 0., 20, 15, 5., 5.
@@ -8,7 +8,7 @@ xxbi, yybi = meshbounds(x, y)
 xb = bounds1d(x)
 yb = bounds1d(y)
 lon = create_lon(x)
-lat =  create_lat(y)
+lat = create_lat(y)
 lon.setBounds(xb)
 lat.setBounds(yb)
 gridi = cdms2.createRectGrid(lat, lon)

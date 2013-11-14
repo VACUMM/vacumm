@@ -3,8 +3,8 @@
 npi = 500
 npo = 200
 
-from vcmq import *
-from vacumm.misc.grid.kriging import *
+from vcmq import P, savefigs, code_base_name
+from vacumm.misc.grid.kriging import gridded_gauss3, random_gauss3, random_points, krig
 
 # Generate random field
 xg, yg, zzg = gridded_gauss3()

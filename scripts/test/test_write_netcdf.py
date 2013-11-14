@@ -5,7 +5,7 @@ ncfile = "nobounds.nc"
 outfile = "result.nc"
 
 # Imports
-from vcmq import *
+from vcmq import cdms2, warnings, data_sample
 from vacumm.misc.misc import get_atts
 
 # Warnings off

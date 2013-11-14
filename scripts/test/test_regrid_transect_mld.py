@@ -8,11 +8,11 @@ lon1 = 4.78
 lat1 = 42.01
 
 # Imports
-from vcmq import *
+from vcmq import DS, data_sample, mixed_layer_depth, N, transect, section2, curve2, code_base_name, os
 from vacumm.misc.plot import add_map_lines
 
 # Read data
-ds = setup_dataset('mars', data_sample(ncfile))
+ds = DS(data_sample(ncfile), 'mars')
 temp = ds.get_temp(squeeze=True)
 dens = ds.get_dens(squeeze=True)
 depth = ds.get_depth(squeeze=True)
@@ -44,7 +44,7 @@ curve2(xmld, 'w-', linewidth=2, show=False)
 add_map_lines(temp, xlons, xlats, map_zoom=0.5)
 
 # Save
-figfile = 'test_transect_mld.png'
+figfile = code_base_name(ext='png')
 if os.path.exists(figfile): os.remove(figfile)
 s.savefig(figfile, pdf=True)
 

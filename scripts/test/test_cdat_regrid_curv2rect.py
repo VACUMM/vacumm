@@ -18,10 +18,9 @@ yslice=slice(0, 121)
 
 # Imports
 #from matplotlib import use ; use('Agg')
-from vcmq import *
+from vcmq import cdms2, bounds1d, bounds2d, data_sample, MV2, cp_props, N, minmax, code_base_name, P, os, psinfo, gc
 #from cdms2.mvCdmsRegrid import CdmsRegrid
 from time import time
-from vacumm.misc.grid import bounds1d, bounds2d
 from traceback import format_exc
 from mpi4py import MPI
 

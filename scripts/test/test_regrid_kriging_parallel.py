@@ -6,8 +6,8 @@ npmax = 500
 nproc = 2
 
 
-from vcmq import *
-from vacumm.misc.grid.kriging import *
+from vcmq import P, savefigs, code_base_name
+from vacumm.misc.grid.kriging import gridded_gauss3, random_gauss3, random_points, OrdinaryKriger
 from time import time
 
 # Random and gridded input fields

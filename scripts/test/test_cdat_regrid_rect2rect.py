@@ -6,7 +6,7 @@ config = {
 }
 
 # Imports
-from vcmq import *
+from vcmq import MV2, create_grid2d, code_base_name, os, CDATRegridder, N, set_grid, psinfo
 from vacumm.misc.grid import rotate_grid
 from time import time
 

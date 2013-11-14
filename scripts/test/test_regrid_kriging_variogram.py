@@ -4,8 +4,8 @@ nx = ny = 50
 np = 500
 mtype = 'gauss'
 
-from vcmq import *
-from vacumm.misc.grid.kriging import *
+from vcmq import N, P, code_base_name, savefigs
+from vacumm.misc.grid.kriging import gridded_gauss3, random_gauss3, variogram, variogram_fit
 
 # Generate random field
 xxg, yyg, zzg = gridded_gauss3(nx=nx, ny=ny)
