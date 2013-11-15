@@ -383,7 +383,7 @@ axis_specs = OrderedDict(
         axis = 'T', 
     ),
     lon = dict(
-        names = ['lon', 'longitude'], 
+        names = ['lon', 'longitude', 'nav_lon'], 
         standard_names = ['longitude'], 
         long_names = 'Longitude', 
         units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 'degreee', 'degreese'], 
@@ -392,7 +392,7 @@ axis_specs = OrderedDict(
         jaxis = 'nj', 
     ), 
     lat = dict(
-        names = ['lat', 'latitude'], 
+        names = ['lat', 'latitude', 'nav_lat'], 
         standard_names = ['latitude'], 
         long_names = 'Latitude', 
         units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'], 
@@ -401,7 +401,7 @@ axis_specs = OrderedDict(
         jaxis = 'nj', 
     ), 
     lon_u = dict(
-        names = ['lon_u','longitude_u',], 
+        names = ['lon_u','longitude_u','nav_lon_u'], 
         standard_names = ['longitude_at_u_location'], 
         long_names = 'Longitude at U location', 
         units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 'degreee', 'degreese'], 
@@ -410,7 +410,7 @@ axis_specs = OrderedDict(
         jaxis = 'nj_u', 
     ), 
     lat_u = dict(
-        names = ['lat_u','latitude_u',], 
+        names = ['lat_u','latitude_u','nav_lat_u'], 
         standard_names = ['latitude_at_u_location'], 
         long_names = 'Latitude at V location', 
         units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'], 
@@ -419,7 +419,7 @@ axis_specs = OrderedDict(
         jaxis = 'nj_u', 
     ), 
     lon_v = dict(
-        names = ['lon_v','longitude_v',], 
+        names = ['lon_v','longitude_v','nav_lon_v'], 
         standard_names = ['longitude_at_v_location'], 
         long_names = 'Longitude at V location', 
         units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 'degreee', 'degreese'], 
@@ -428,7 +428,7 @@ axis_specs = OrderedDict(
         jaxis = 'nj_v', 
     ), 
     lat_v = dict(
-        names = ['lat_v','latitude_v',], 
+        names = ['lat_v','latitude_v','nav_lat_v'], 
         standard_names = ['latitude_at_v_location'], 
         long_names = 'Latitude at V location', 
         units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'], 

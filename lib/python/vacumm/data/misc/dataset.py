@@ -1376,7 +1376,7 @@ class Dataset(Object):
             if order:
                 self.debug('Reordering variable: %s', self.describe(var))
                 var = var(order=order)
-                
+            
             # Rectangular if possible
             if torect: self._torect_(var)
 
@@ -1563,6 +1563,8 @@ class OceanDataset(OceanSurfaceDataset):
         """
         if var is None: return
         # Make depth positive up
+	if isinstance(var,tuple):
+	    var=var[0]
         if depthup is not False:
             self._makedepthup_(var, depth=depthup)
         
@@ -1684,6 +1686,7 @@ class OceanDataset(OceanSurfaceDataset):
         kwfinal = dict(order=order, squeeze=squeeze, asvar=asvar, torect=torect, format=format)
         kwvar = dict(level=level, time=time, lat=lat, lon=lon, warn=False)
         kwvar.update(kwfinal)
+
         if check_mode('var', mode):
             depth = self.get_variable('depth'+atp, depth=False, **kwvar)
             if depth is not None or check_mode('var', mode, strict=True): 
@@ -1698,7 +1701,7 @@ class OceanDataset(OceanSurfaceDataset):
         
         # Second, find sigma coordinates
         sigma_converter = NcSigma.factory(self.dataset[0])
-        if check_mode('sigma', mode):
+	if check_mode('sigma', mode):
             
             if sigma_converter is not None and sigma_converter.stype is None: 
                 sigma_converter.close()
@@ -1759,7 +1762,6 @@ class OceanDataset(OceanSurfaceDataset):
                 return self.finalize_object(axis, depthup=axis, **kwfinal)
         if warn:
             self.warning('Found no way to estimate depths at %s location'%at.upper())
-        
         
         
     _mode_doc = """Computing mode
@@ -1922,23 +1924,26 @@ class OceanDataset(OceanSurfaceDataset):
         
         # Get data
         var = self.get(varname, **kwvar)
-        vardepth = self.get_depth(**kwdepth)
+	vardepth = self.get_depth(**kwdepth)
         if var is None or vardepth is None: 
             if warn: self.warning('Cannot get var or depths for hsection')
             return
-        
+
         # Interpolate
         depth = -N.abs(depth)
         zo = create_dep([depth] if N.isscalar(depth) else depth[:])
+
+        if isinstance(vardepth,tuple):
+		vardepth=vardepth[0]
+
         if len(vardepth.shape)>1:
             var, vardepth = grow_variables(var, vardepth)
             kwinterp.update(xmap=[0,2,3], xmapper=vardepth(order='...z').filled(0.))
         lvar = interp1d(var, zo, **kwinterp)
         
-        # Time average
+	# Time average
         if timeavg and lvar.getOrder().startswith('t') and lvar.shape[0]>1:
             lvar = MV2.average(lvar, axis=0)
-        
         return self.finalize_object(lvar, depthup=False, **kwargs)
         
         
