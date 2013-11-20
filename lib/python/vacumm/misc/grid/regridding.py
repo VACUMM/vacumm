@@ -68,7 +68,7 @@ __all__.sort()
 
 # Fortran functions
 _interp_funcs = ['interp1d', 'interp1dx', 'remap1d', 'remap1dx', 'nearest2d', 
-    'bilin', 'dstwgt','mbilin2d', 'mixt2dx', 'cargen', 'bilin2dto1d', 'nearest2dto1d']
+    'bilin', 'dstwgt','mbilin2d', 'mixt2dx', 'cargen', 'bilin2dto1d', 'nearest2dto1d','nearest2dto1dc','bilin2dto1dc']
     
 # Load fortran
 _interp_funcs = ['%s as _%s_'%(ff, ff) for ff in _interp_funcs]

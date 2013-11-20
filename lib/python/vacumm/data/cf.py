@@ -22,14 +22,14 @@ var_specs = OrderedDict(
 
     # Thermodynamics
     temp = dict(
-        names = ['temp', 'temperature'],
+        names = ['temp', 'temperature', 'TEMP'],
         standard_names = ['sea_water_temperature', 'sea_water_potential_temperature'],
         long_names = 'Temperature',
         units =  'degrees_celsius', 
 #        axes = {'t':'time', 'x':'lon', 'y':'lat'}, 
     ),
     sal = dict(
-        names=['sal', 'psal', 'salinity'],
+        names=['sal', 'psal', 'salinity', 'SAL'],
         standard_names='sea_water_salinity', 
         long_names = 'Salinity', 
         units = 'PSU', 

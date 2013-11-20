@@ -595,7 +595,7 @@ class NcSigmaStandard(NcSigma):
     '''
     standard_names = NcSigma.standard_names.copy()
     sigma_name = 'sigma'
-    standard_names[sigma_name] = ["ocean_sigma_coordinate",  "ocean_sigma_coordinate_at_t_location"]
+    standard_names[sigma_name] = ["ocean_sigma_coordinate", "ocean_sigma_coordinate_at_t_location"]
     standard_names[sigma_name+'w'] = ["ocean_sigma_coordinate_at_w_location"]
     
     def __init__(self, ncfile, levelvars=None, formula_terms=None):
@@ -864,7 +864,7 @@ class  NcSigmaGeneralized(NcSigma):
                     
         # From sigma
         if mode=='auto' or mode=='sigma':
-
+             
             try:
             
                 # Read variables      
@@ -1022,7 +1022,7 @@ def sigma2depths(sigma, depth, eta=None, stype='standard',
         grid = depth.getGrid() # Grid
         if grid is not None:
             depths.setGrid(grid)
-    
+   
     return depths
 
 

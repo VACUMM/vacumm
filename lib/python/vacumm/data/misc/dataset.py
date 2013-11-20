@@ -1694,7 +1694,7 @@ class OceanDataset(OceanSurfaceDataset):
 
         # Get selector for other tries
         selector = self.get_selector(lon=lon, lat=lat, level=level, time=time, merge=True) 
-        gridmet = 'get_grid'+ath
+	gridmet = 'get_grid'+ath
         grid = getattr(self, gridmet)(False)
         curvsel = CurvedSelector(grid, selector)
         kwfinal['curvsel'] = curvsel
@@ -2174,14 +2174,13 @@ class OceanDataset(OceanSurfaceDataset):
         
         """
         # Params
-        kwvar = kwfilter(kwargs, ['torect'], time=time, lat=lat, lon=lon, 
+	kwvar = kwfilter(kwargs, ['torect'], time=time, lat=lat, lon=lon, 
             level=level, depthup=False)
-        
         # Get data
         var = self.get(varname, **kwvar)
-        if var is None: return
+	if var is None: return
         if len(var.shape)<2: return var
-        
+       
         # Make transect
         res = transect(var, lons, lats, subsamp=subsamp, 
             getcoords=getcoords, method=method, outaxis=outaxis)
@@ -2228,7 +2227,7 @@ class OceanDataset(OceanSurfaceDataset):
             return
         if var.getLevel() is not None: 
             depth = self.get_transect('depth', lons, lats, **kwts)
-            if isaxis(depth): depth = None
+	    if isaxis(depth): depth = None
         else:
             depth = None
             
@@ -2238,7 +2237,6 @@ class OceanDataset(OceanSurfaceDataset):
             var = MV2.average(var, axis=0)
             if depth is not None and depth.getTime() is not None:
                 depth = MV2.average(depth, axis=0)
-            
         # Main plot
         kwmap = kwfilter(kwargs, 'minimap_')
         kwargs.update(post_plot=False, title=title)
@@ -2251,11 +2249,15 @@ class OceanDataset(OceanSurfaceDataset):
                         
         # - T-
         elif 't' in var.getOrder():
-            
+             
             p = hov2(var, **kwargs)
            
         # - Z-
         else:
+	    # - Modif GC: Masked depth converted to 0. 
+	    if hasattr(depth,'mask'):
+	        depth.mask = MV2.nomask
+	        depth[N.where(depth>1e10)]=0. 
             kwargs.setdefault('fill', 'contourf')
             p = section2(var, yaxis=depth, **kwargs)
             
