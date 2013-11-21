@@ -1820,8 +1820,8 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., **kwarg
                 eres[ik][sle['mid']] = .5*(res[ik][sl['firsts']]+res[ik][sl['lasts']])
                         
                 # Limits
-                eres[ik][sle['first']] = 1.5*res[ik][sl['first']]+0.5*res[ik][sl['firstp1']]
-                eres[ik][sle['last']] = 1.5*res[ik][sl['last']]+0.5*res[ik][sl['lastm1']]
+                eres[ik][sle['first']] = 1.5*res[ik][sl['first']]-0.5*res[ik][sl['firstp1']]
+                eres[ik][sle['last']] = 1.5*res[ik][sl['last']]-0.5*res[ik][sl['lastm1']]
                 
             res = eres
             
@@ -1830,8 +1830,8 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., **kwarg
             eres = tuple([N.ma.resize(r, (r.shape[0]+1, )) for r in res])
             for ik in xrange(len(xy)):
                 eres[ik][1:-1] = .5*(res[ik][:-1]+res[ik][1:])
-                eres[ik][0] = 2.*res[ik][0]-res[ik][1]
-                eres[ik][-1] = 2.*res[ik][-1]-res[ik][-2]
+                eres[ik][0] = 1.5*res[ik][0]-0.5*res[ik][1]
+                eres[ik][-1] = 1.5*res[ik][-1]-0.5*res[ik][-2]
             res = eres
             
     elif mode != 'raw':
