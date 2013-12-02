@@ -44,7 +44,7 @@ import numpy as N,MV2, cdms2
 from genutil.filters import *
 MA = N.ma
 MV = MV2
-cdm = cdms2
+cdms = cdms2
 import scipy.signal
 from scipy.signal import convolve2d
 
