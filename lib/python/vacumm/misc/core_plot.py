@@ -1937,12 +1937,12 @@ class Plot(object):
 
     def add_lines(self, xx, yy, zorder=150, shadow=False, glow=False, color='r', 
         xyscaler=None, closed=False, **kwargs):
-        """Add a lines to the plot using :meth:`matplotlib.pyplots.plot`
+        """Add lines to the plot using :meth:`matplotlib.axes.Axes.plot`
         
         :Params:
         
-            - **extents**: Extents in the forms ``[xmin,ymin,xmax,ymax]``
-              ``dict(x=(xmin,xmax),y=xmin,xmax)``.
+        
+            - **xx/yy**: Coordinates (in degrees).
             - **color**, optional: Line color of the line.
             - **closed**, optional: Close the lines to form a polygon.
             - **shadow**, optional: Add a droped shadow below the box 
@@ -1956,8 +1956,8 @@ class Plot(object):
         :See also: :func:`matplotlib.pyplot.plot`
         """
         # Positions
-        xx = N.ravel(xx)
-        yy = N.ravel(yy)
+        xx = N.ma.ravel(xx)
+        yy = N.ma.ravel(yy)
         if xx.size!=yy.size:
             raise PlotError('xx and yy must have the same number of elements (%i!=%i)'%(xx.size,yy.size))
         if xyscaler is None and hasattr(self, 'xyscaler'): xyscaler = self.xyscaler
@@ -3623,7 +3623,7 @@ class Curve(Plot1D):
                     yy = N.ma.array(yy,mask=mask)
                 kwmark.update(label='',color=ll[0].get_color())
                 dots = self.axes.plot(xx, yy, '.', **kwmark)
-                self.register_obj(oo, ['lines_dots', 'plot'], **kwargs)
+                self.register_obj(dots, ['lines_dots', 'plot'], **kwargs)
                 if shadow: self.add_shadow(dots, 'lines_dots_shadow', **kwsh) # 'lines_dots_shadow'
                 if glow: self.add_glow(dots, 'lines_dots_glow', **kwsh) # 'lines_dots_glow'
 
@@ -3723,13 +3723,13 @@ class QuiverKey:
         """
         # Value
         if value is None:
-            m,u,v = N.ma.abs(self.get_data())
+            m,u,v = self.get_data()
             m = N.ma.sqrt(u**2+v**2)
-            v10 = N.log10(m.max()) ; del u,v,m
+            v10 = N.ma.log10(m.max()) ; del u,v,m
             if ((v10+1) % 1) > (N.log10(.5) % 1):
-                v10 = N.ceil(v10)
+                v10 = N.ma.ceil(v10)
             else:
-                v10 = N.floor(v10)
+                v10 = N.ma.floor(v10)
             value = 10.**v10
             
         # Text
