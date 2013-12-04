@@ -1456,7 +1456,7 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None):
     return varo
 
 
-def transect(var, lons, lats, method='bilinear', subsamp=3, 
+def transect(var, lons, lats, time=None, method='bilinear', subsamp=3, 
     getcoords=False, outaxis=None):
     """Make a transect in a -YX variable
     
@@ -1475,7 +1475,12 @@ def transect(var, lons, lats, method='bilinear', subsamp=3,
               tuples in the form ``(lon0,lon1)`` and ``(lat0,lat1)``.
               The array of coordinates is generated using :func:`transect_specs`.
             - Or explicit array of coordinates (as scalars, lists or arrays).
-              
+        
+        - **time**, optional: Time sequence or axis of the same length as 
+          resulting coordinates. If provided, the interpolation is first done
+          in space, them onto this lagrangian time, 
+          and the final space-time trajectory is returned.
+          If ``outaxis`` is None, ``taxis`` becomes the output axis.
         - **subsamp**, optional: Subsampling with respect to grid cell
           (only when coordinates are not explicit).
         - **method**, optional: Interpolation method (see :func:`grid2xy`).
@@ -1487,17 +1492,68 @@ def transect(var, lons, lats, method='bilinear', subsamp=3,
         ``tvar`` or ``tvar,tons,tlats``
         
     """
+    # Output coordinates
     if isinstance(lons, tuple): # Find coordinates
         lon0, lon1 = lons
         lat0, lat1 = lats
         lons, lats = transect_specs(var, lon0, lat0, lon1, lat1, subsamp=subsamp)
         single = False
+    elif time is None and cdms2.isVariable(lons) and lons.getTime() is not None:
+        time = lons.getTime()
     else: # explicit coordinates
         single = N.isscalar(lons) and N.isscalar(lats)
         lons = N.atleast_1d(lons)
         lats = N.atleast_1d(lats)
+    
+    
+    # Spatial interpolation
+    if outaxis=='time':
+        outaxis = None 
+        ko = False
+    else:
+        ko = outaxis is not None
     var = grid2xy(var, lons, lats, outaxis=outaxis)
+    
+    # Interpolate to a lagrangian time axis
+    if time is not None and var.getTime() is not None:
+        
+        if ko: outaxis = var.getAxis(-1)
+        
+        # Time axis
+        if not A.istime(time):
+            time = A.create_time(time)
+        
+        # Interpolate
+        if len(time)!=len(lons):
+            raise VACUMMError('Your time axis must have a length of: %i (!=%i'%(
+                len(time), len(lons)))
+        var_square = regrid1d(var, time) # (nl,nz,nl)
+        
+        # Init out
+        iaxis = var.getOrder().index('t')
+        sel = [slice(None)]*var_square.ndim
+        if outaxis is None:
+            sel[-1] = 0
+            oaxis = iaxis
+        else:
+            sel[iaxis] = 0
+            oaxis = -1
+        
+        # Select the diagnonal the ~square matrix
+        var = var_square[tuple(sel)].clone() # (nz,nl)
+        varsm = var_square.asma()
+        ii = N.arange(len(time))
+        sel = [slice(None)]*varsm.ndim
+        sel[iaxis] = sel[-1] = ii
+        varsm = varsm[tuple(sel)]
+        if oaxis!=0:
+            varsm = N.rollaxis(varsm, 0, oaxis)
+        var[:] = varsm
+        
+        
+    # Single point
     if single: var = var[...,0]
+    
     if not getcoords: return var
     return var, lons, lats
 
