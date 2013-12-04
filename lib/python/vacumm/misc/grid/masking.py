@@ -53,7 +53,11 @@ import gc
 from genutil import minmax
 cdms = cdms2
 
-__all__ = ['get_coast', 'get_coastal_indices', 'GetLakes', 'polygon_mask', 'masked_polygon', 'polygons', 'd2m', 'polygon_select', 'envelop', 'check_poly_islands', 'check_poly_straits','t2uvmasks', 'mask2d', 'grid_envelop', 'convex_hull', 'uniq', 'rsamp', 'zcompress', 'Lakes', 'erode_coast', 'resol_mask', 'get_dist_to_coast']
+__all__ = ['get_coast', 'get_coastal_indices', 'GetLakes', 'polygon_mask', 'masked_polygon', 
+    'polygons', 'd2m', 'polygon_select', 'envelop', 'check_poly_islands', 
+    'check_poly_straits','t2uvmasks', 'mask2d', 'grid_envelop', 'convex_hull', 
+    'uniq', 'rsamp', 'zcompress', 'Lakes', 'erode_coast', 'resol_mask', 
+    'get_dist_to_coast', 'get_avail_rate']
 __all__.sort()
 
 def get_coast(mask, land=True, b=True, borders=True, corners=True):
@@ -1559,9 +1563,47 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
     
     return xmask | ymask
  
-
-
-
+def get_avail_rate(data, num=True, mode='rate'):
+    """Get the availability rate of a masked array along its forst dimension
+   
+    :Params:
+    
+        - **data**: Mask or masked array.
+        - **num**, optional: Get result as pure numpy array or formatted
+          as input array when possible (MV2 array).
+        - **mode**, optional: 
+            
+            - "rate": Output is between 0 and 1.
+            - "pct": Same but in percents from 0 to 100.
+            - "count": Count valid data.
+    """
+    # Get the mask
+    mask = N.ma.getmaskarray(data) if N.ma.isMA(data) else data
+    
+    # Count
+    rate = mask.sum(axis=0)
+    if mode=="rate" or mode=='pct':
+        rate = rate.astype('f')/rate.shape[0]
+        if mode=='pct':
+            rate *= 100
+    
+    # Format?
+    if not num and cdms2.isVariable(data):
+        rate = MV2.array(rate, copy=0)
+        if data.getGrid() is not None:
+            M.set_grid(rate, data.getGrid())
+        if mode=="rate":
+            rate.long_name = 'Availability rate'
+        elif mode=='pct':
+            rate.long_name = 'Availability rate'
+            rate.units = "%"
+        else:
+            rate.long_name = 'Number of valid data'
+            
+    return rate
+        
+        
+    
 ######################################################################
 ######################################################################
 import misc as M
