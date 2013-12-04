@@ -56,7 +56,8 @@ import validate
 try: import numpy
 except: numpy = None
 
-__all__ = ['ConfigException', 'ValidationWarning', 'ConfigManager', 'print_short_help', 'opt2rst'] 
+__all__ = ['ConfigException', 'ValidationWarning', 'ConfigManager', 'print_short_help', 
+    'opt2rst', 'cfg2rst'] 
 
 class ConfigException(Exception):
     pass
@@ -379,13 +380,14 @@ class ConfigManager(object):
         if interpolation is True: interpolation='template'
         self._interpolation = interpolation
     
-    def getspec(self, sec, key):
+    def get_spec(self, sec, key):
         '''
         See :func:`getspec`
         
         TODO: access to subsections
         '''
         return getspec(self._configspec[sec][key], validator=self._validator)
+    getspec = get_spec
     
     def defaults(self, nocomments=False, interpolation=None):
         """Get the default config
@@ -492,6 +494,7 @@ class ConfigManager(object):
                 
             # Loop on errors
             if isinstance(err, dict):
+
                 for sections, key, error in flatten_errors(cfg, err):
                 
                     # Format explicit message
@@ -499,7 +502,7 @@ class ConfigManager(object):
                         section = '['+']['.join(sections)+'] '
                     else:
                         section = ''
-                    msg = '%s%s: %s'%(section, key, getattr(error, 'message', error))
+                    msg = 'Config value error: %s%s: %s'%(section, key, getattr(error, 'message', error))
                     
                     # Check what to do
                     if validate in ['fix', 'report']:
@@ -510,12 +513,17 @@ class ConfigManager(object):
                         for subsec in sections:
                             sec = sec[subsec]
                             secd = secd[subsec]
-                        vdef = secd.get(key, None)
-                        sys.stderr.write(msg+'\nSetting it to default value: %s\n'%vdef)#,ValidationWarning) 
                         
-                        # Reset to default
-                        if validate=='fix':
-                            sec[key] = vdef
+                        # Loop on keys
+                        keys = secd.keys() if key is None else [key]
+                        for k in keys:
+                        
+                            vdef = secd.get(k, None)
+                            sys.stderr.write(msg+'\nSetting it to default value: %s\n'%vdef)#,ValidationWarning) 
+                            
+                            # Reset to default
+                            if validate=='fix':
+                                sec[k] = vdef
                         
                     else: # Raise an error
                         raise ValidateError, msg
@@ -961,6 +969,10 @@ class ConfigManager(object):
         if rst: shelp = opt2rst(shelp)
             
         return shelp
+        
+    def get_rst(self):
+        """Convert the default configuration to rst declarations with :func:`cfg2rst`"""
+        return cfg2rst(self)
 
 
 def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', exc=[], **kwargs):
@@ -1331,6 +1343,108 @@ def _walker_patch_(patch_sec, patch_key, cfg):
     except:
         pass
     sec[patch_key] = patch_sec[patch_key]
+    
+def _walker_cfg2rst_(cfg, key, lines):
+    
+    # Name
+    secnames = get_secnames(cfg)
+    if key in cfg.sections:
+        secnames.append(key)
+        name = '[%s]'%(']['.join(secnames), )
+        conftype = 'confsec'
+    else:
+        if secnames:
+            name = '[%s] %s'%(']['.join(secnames), key)
+        else:
+            name = key
+        conftype = 'confopt'
+    
+    # Description
+    desc = cfg.inline_comments.get(key)
+    if desc is None: desc = ''
+    desc = desc.strip('#').strip()
+    
+    # Formatting
+    desc = redent(desc, 1)
+    text = '.. %(conftype)s:: %(name)s\n\n%(desc)s\n'%locals()
+    text = redent(text, cfg.depth)
+    
+    lines.append(text)
+    
+def get_secnames(cfg):
+    """Get section names as list from top to bottom ['sec0','sec1',...]"""
+    if cfg.depth==0: return []
+    secnames = [cfg.name]
+    for i in xrange(cfg.depth-1):
+        cfg = cfg.parent
+        secnames.append(cfg.name)
+    return secnames[::-1]
+
+def redent(text, n=1, indent='    '):
+    lines = text.split('\n')
+    lines = [(n*indent+line) for line in lines]
+    return '\n'.join(lines)
+
+
+def cfg2rst(cfg):
+    """Convert a configuration to rst format
+    
+    Configuration sections are declared with the rst directive
+    "confsec" and options are declared with the rst directive
+    "confopt".
+    
+    For instance:
+    
+    .. code-block:: ini
+    
+        a=1 # desc a
+        [s1] # desc s1
+            b=2  # desc b
+            [[s2]] # desc s2
+                c=$a-$b # desd c
+                [sec1] # section 1
+            
+    is converted to:
+    
+    .. code-block:: rst
+    
+        .. confopt:: a
+        
+            desc a
+        
+        .. confsec:: [s1]
+        
+            desc s1
+        
+            .. confopt:: [s1] b
+            
+                desc b
+            
+            .. confsec:: [s1][s2]
+            
+                desc s2
+            
+                .. confopt:: [s1][s2] c
+                
+                    desd c
+    
+    Then one can reference an option with for example ``:confopt:`[s1][s2]c`.
+    
+    :Params:
+    
+        - **cfg**: :class:`ConfigObj` or :class:`ConfigManager` instance.
+          In the case of a :class:`ConfigManager`, the :meth:`~ConfigManager.defaults`
+          are used.
+          
+    :Return: rst string
+    """
+    out = ''
+    if isinstance(cfg, ConfigManager):
+        cfg = cfg.defaults()
+    lines = []
+    cfg.walk(_walker_cfg2rst_, call_on_sections=False, lines=lines)
+    return '\n'.join(lines)
+    
 
 def print_short_help(parser, formatter=None):
     """Print all help of an :class:`~optparse.OptionParser` instance but those of groups."""
