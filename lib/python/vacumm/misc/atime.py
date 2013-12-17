@@ -2151,6 +2151,7 @@ class Intervals(object):
         - **bounds**, optional: Add bounds specs to the intervals (like "co").
         - **l/rmargin**, optional: Add a margin to the left and/or right of each interval.
           See :func:`add_margin`.
+        - **innerbounds**, optional: Add bounds specs to inner intervals (like "cc").
     
     :Example:
     
@@ -2161,7 +2162,7 @@ class Intervals(object):
     
     """
     def __init__(self, time_range, dt, reverse=False, roundto=None, bounds=True, 
-        lmargin=0, rmargin=None):
+        lmargin=0, rmargin=None, innerbounds='co'):
             
         # Global range
         if not is_interval(time_range):
@@ -2191,7 +2192,7 @@ class Intervals(object):
         
         # Closed or open?
         self._lastbounds = None
-        self._innerbounds = 'co'
+        self._innerbounds = innerbounds
         if len(time_range) == 3 and bounds is not False:
             self._lastbounds = time_range[2]
         elif bounds in [True, None]:
