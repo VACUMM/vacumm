@@ -1562,9 +1562,10 @@ class OceanDataset(OceanSurfaceDataset):
               using :func:`~vacumm.misc.grid.misc.makedepthup`.
         """
         if var is None: return
+        
         # Make depth positive up
-	if isinstance(var,tuple):
-	    var=var[0]
+        if isinstance(var,tuple):
+            var=var[0]
         if depthup is not False:
             self._makedepthup_(var, depth=depthup)
         
@@ -1694,14 +1695,14 @@ class OceanDataset(OceanSurfaceDataset):
 
         # Get selector for other tries
         selector = self.get_selector(lon=lon, lat=lat, level=level, time=time, merge=True) 
-	gridmet = 'get_grid'+ath
+        gridmet = 'get_grid'+ath
         grid = getattr(self, gridmet)(False)
         curvsel = CurvedSelector(grid, selector)
         kwfinal['curvsel'] = curvsel
         
         # Second, find sigma coordinates
         sigma_converter = NcSigma.factory(self.dataset[0])
-	if check_mode('sigma', mode):
+        if check_mode('sigma', mode):
             
             if sigma_converter is not None and sigma_converter.stype is None: 
                 sigma_converter.close()
@@ -1924,7 +1925,7 @@ class OceanDataset(OceanSurfaceDataset):
         
         # Get data
         var = self.get(varname, **kwvar)
-	vardepth = self.get_depth(**kwdepth)
+        vardepth = self.get_depth(**kwdepth)
         if var is None or vardepth is None: 
             if warn: self.warning('Cannot get var or depths for hsection')
             return
@@ -1934,14 +1935,14 @@ class OceanDataset(OceanSurfaceDataset):
         zo = create_dep([depth] if N.isscalar(depth) else depth[:])
 
         if isinstance(vardepth,tuple):
-		vardepth=vardepth[0]
+            vardepth=vardepth[0]
 
         if len(vardepth.shape)>1:
             var, vardepth = grow_variables(var, vardepth)
             kwinterp.update(xmap=[0,2,3], xmapper=vardepth(order='...z').filled(0.))
         lvar = interp1d(var, zo, **kwinterp)
         
-	# Time average
+        # Time average
         if timeavg and lvar.getOrder().startswith('t') and lvar.shape[0]>1:
             lvar = MV2.average(lvar, axis=0)
         return self.finalize_object(lvar, depthup=False, **kwargs)
@@ -1974,167 +1975,21 @@ class OceanDataset(OceanSurfaceDataset):
         dict_check_defaults(kwargs, bgcolor='0.5')
         return map2(var, title=title%locals(), **kwargs)
             
-    
-    def get_layer(self, varname, depth, select=None, timeavg=True):
-        '''Get a layer of variable for a specified depth.
+            
+    def get_layer(self, varname, depth, timeavg=True, **kwargs):
+        """Get an horizontal section of a variable at a specified depth
         
-        :Params:
-            - **varname**: variable to process
-            - **depth**: output depth(s)
-            - **select**: selector
-            - **timeavg**: if true, average date along time if needed
-          
-        :Return:
-            - var([time],latitude,longitude): layer variable
-        
-        '''
+        .. warning:: This method is now an alias for method :meth:`get_hsection`
+        """
+        self.warning('get_layer is deprecated by get_hsection')        
         self.verbose('Getting layer data'
             '\n  variable:  %s'
             '\n  depth:      %s'
-            '\n  select:      %s'
-            '\n  timeavg:      %s', varname, depth, select, timeavg)
-        var = self.get_variable(varname, select=select)#, order='tzyx')
-        if var is None: raise Exception('Variable %s not found'%varname)
-        var = var.reorder('tzyx')
-        #if var.getOrder() not in ('tzyx','zyx'):
-        #    raise ValueError('Invalid var order: %s, [t]zyx expected'%(var.getOrder()))
-        dep = self.get_depth(varname, select=select)#, order='tzyx')
-        if dep is None: raise Exception('Depth not found')
-        dep = dep.reorder('tzyx')
-        #if dep.getOrder() not in ('tzyx','zyx'):
-        #    raise ValueError('Invalid depth order: %s, [t]zyx expected'%(dep.getOrder()))
-        # Time step interpolate function
-        def layer(var, dep):
-            self.logdesc(var, dep, title='load: ')
-            # Depth interpolation axis
-            odep = create_dep(is_iterable(depth) and depth or [depth])
-            method='auto'
-            dep = dep.reorder('yxz')
-            var = var.reorder('yxz')
-            var = interp1d(var, axo=odep, xmap=[0,1], xmapper=dep, method=method)
-            var = var.reorder('yx')
-            var = var.squeeze()
-            self.logdesc(var, title='interp: ')
-            return var
-        tax = None
-        axes = var.getAxisList()[-2:]
-        if 't' in var.getOrder():
-            self.verbose('Computing layers along time')
-            tmp = []
-            time = var.getTime()
-            ctime = time.asComponentTime()
-            for it in xrange(len(time)):
-                self.info('- Interpolating time: %s', ctime[it])
-                if 't' in dep.getOrder(): di = dep[it]
-                else: di = dep
-                tmp.append(layer(var[it], di))
-            if timeavg:
-                self.verbose('Averaging along time')
-                tmp = MV2.average(tmp, axis=0)
-            else: tax = time.clone()
-        else:
-            tmp = layer(var, dep)
-        if tax is not None: axes = [tax] + axes
-        var = cdms2.createVariable(tmp, id=var.id, axes=axes, attributes=var.attributes.copy())
+            '\n  timeavg:      %s', varname, depth, timeavg)
+        var =  self.get_hsection(varname, depth, timeavg=True, **kwargs)
         self.logdesc(var, title='out: ')
         return var
-    
-    def get_section(self, varname, xmin, ymin, xmax, ymax, select=None, timeavg=True):
-        '''Get a vertical section data along a straight trajectory, not necessary zonal or meridional.
-        
-        :Params:
-            - **varname**: variable to process
-            - **xmin**: westernmost longitude coordinate
-            - **ymin**: southernmost latitude coordinate
-            - **xmax**: eastermost longitude coordinate
-            - **ymax**: northernmost latitude coordinate
-            - **select**: selector
-            - **timeavg**: if true, average date along time if needed
-          
-        :Return: A list containing in order:
-            - var(level,position): section variable
-            - depth(level): depth corresponding to var's level
-            - latitude(position): latitude corresponding to var's position
-            - longitude(position): longitude corresponding to var's position
-        
-        '''
-        self.verbose('Getting section data'
-            '\n  variable:  %s'
-            '\n  xmin:      %s'
-            '\n  ymin:      %s'
-            '\n  xmax:      %s'
-            '\n  ymax:      %s'
-            '\n  select:    %s'
-            '\n  timeavg:    %s',varname, xmin, ymin, xmax, ymax, select, timeavg)
-        grid = self.get_grid(varname)
-        if grid is None:
-            raise Exception('No grid found')
-        xres, yres = resol(grid)
-        select = self.get_selector(select)
-        select.update(dict(longitude=(xmin-xres, xmax+xres, 'ccb'), latitude=(ymin-yres, ymax+yres, 'ccb')))
-        var = self.get_variable(varname, select=select, squeeze=True, order='tzyx')
-        if var is None:
-            raise Exception('No %s found'%(varname))
-        if var.getOrder() not in ('tzyx','zyx'):
-            raise ValueError('Invalid var order: %s, [t]zyx expected'%(var.getOrder()))
-        depth = self.get_depth(varname, select=select, squeeze=True, order='tzyx')
-        if depth is None:
-            raise Exception('No depth found')
-        if depth.getOrder() not in ('tzyx','zyx'):
-            raise ValueError('Invalid depth order: %s, [t]zyx expected'%(depth.getOrder()))
-        #depth.setAxisList(var.getAxisList())
-        # calc xy section coords
-        nx = (xmax-xmin)/xres
-        ny = (xmax-xmin)/xres
-        nxy = int(numpy.ceil(numpy.sqrt(nx**2+ny**2)))*1.5
-        xo = numpy.linspace(xmin, xmax, nxy)
-        yo = numpy.linspace(ymin, ymax, nxy)
-        def section(var, depth):
-            # interp var
-            vo = grid2xy(var, xo, yo, method='nat')
-            # interp depth
-            do = grid2xy(depth, xo, yo, method='nat')
-            ret = vo,do
-            self.verbose('\n  %s', '\n  '.join(self.describe(o) for o in ret))
-            return ret
-        if 't' in var.getOrder():
-            self.verbose('Computing section along time')
-            tmp, data = [], []
-            time = var.getTime()
-            ctime = time.asComponentTime()
-            for it in xrange(len(time)):
-                self.verbose('Interpolating time: %s', ctime[it])
-                if 't' in depth.getOrder(): di = depth[it]
-                else: di = depth
-                tmp.append(section(var[it], di))
-            for i in xrange(len(tmp[0])):
-                d = [d[i] for d in tmp]
-                data.append(MV2.concatenate([d]))
-            vo, do = data
-            tax = time.clone()
-        else:
-            vo, do = section(var, depth)
-            tax = None
-        xo, yo = create_lon(xo), create_lat(yo)
-        pos = cdms2.createAxis(range(vo.shape[-1]), id='position')
-        lev = cdms2.createAxis(range(vo.shape[-2]), id='level')
-        lev.designateLevel()
-        axes = [lev, pos]
-        if tax is not None: axes = [tax] + axes
-        ret = [vo, do]
-        vo = cdms2.createVariable(vo, id=var.id, axes=axes, attributes=var.attributes.copy())
-        do = cdms2.createVariable(do, id=depth.id, axes=axes, attributes=var.attributes.copy())
-        if timeavg and 't' in var.getOrder():
-            self.verbose('Averaging along time')
-            for i,d in enumerate(ret):
-                self.verbose('Averaging %s', d.id)
-                ret[i] = MV2.average(d, axis=0)
-            ret[0] = cdms2.createVariable(ret[0], id=var.id, axes=[lev,pos], attributes=var.attributes.copy())
-            ret[1] = cdms2.createVariable(ret[1], id=depth.id, axes=[lev,pos], attributes=depth.attributes.copy())
-        ret += [yo, xo]
-        self.verbose('Final Section data:\n  %s', '\n  '.join(self.describe(o) for o in ret))
-        return ret
-        
+
         
     def get_transect(self, varname, lons, lats, 
         method='bilinear', subsamp=3, getcoords=False, timeavg=False, outaxis=None, 
@@ -2170,15 +2025,15 @@ class OceanDataset(OceanSurfaceDataset):
         
         :Return:
     
-            ``tvar`` or ``tvar,tons,tlats``
+            ``tvar`` or ``tvar,tlons,tlats``
         
         """
         # Params
-	kwvar = kwfilter(kwargs, ['torect'], time=time, lat=lat, lon=lon, 
+        kwvar = kwfilter(kwargs, ['torect'], time=time, lat=lat, lon=lon, 
             level=level, depthup=False)
         # Get data
         var = self.get(varname, **kwvar)
-	if var is None: return
+        if var is None: return
         if len(var.shape)<2: return var
        
         # Make transect
@@ -2188,12 +2043,13 @@ class OceanDataset(OceanSurfaceDataset):
         
         # Time average
         if timeavg and tvar.getOrder().startswith('t') and tvar.shape[0]>1:
+            self.verbose('Averaging along time')
             tvar = MV2.average(tvar, axis=0)
         
         tvar =  self.finalize_object(tvar, **kwargs)
         if getcoords: return (tvar, )+res[1:]
         return tvar
-    
+
     def plot_transect(self, varname, lons, lats, 
         method='bilinear', timeavg=False, subsamp=3, outaxis=None, 
         time=None, lon=None, lat=None, level=None, 
@@ -2227,7 +2083,7 @@ class OceanDataset(OceanSurfaceDataset):
             return
         if var.getLevel() is not None: 
             depth = self.get_transect('depth', lons, lats, **kwts)
-	    if isaxis(depth): depth = None
+            if isaxis(depth): depth = None
         else:
             depth = None
             
@@ -2254,10 +2110,9 @@ class OceanDataset(OceanSurfaceDataset):
            
         # - Z-
         else:
-	    # - Modif GC: Masked depth converted to 0. 
-	    if hasattr(depth,'mask'):
-	        depth.mask = MV2.nomask
-	        depth[N.where(depth>1e10)]=0. 
+        # - Modif GC: Masked depth converted to 0. 
+            if N.ma.isMA(depth):
+                depth[:] = depth.filled(0.)
             kwargs.setdefault('fill', 'contourf')
             p = section2(var, yaxis=depth, **kwargs)
             
@@ -2273,9 +2128,54 @@ class OceanDataset(OceanSurfaceDataset):
             p.post_plot(**kwargs)
         return p
             
-    
+
+    def get_section(self, varname, xmin, ymin, xmax, ymax, timeavg=True, **kwargs):
+        '''Get a (vertical) section data along a straight trajectory, not necessary zonal or meridional.
+        
+        .. warning:: This method is deprecated by the :meth:`get_transect` method.
+        
+        :Params:
+            - **varname**: variable to process
+            - **xmin**: westernmost longitude coordinate
+            - **ymin**: southernmost latitude coordinate
+            - **xmax**: eastermost longitude coordinate
+            - **ymax**: northernmost latitude coordinate
+            - **timeavg**: if true, average date along time if needed
+          
+        :Return: A list containing in order:
+            - var(level,position): section variable
+            - depth(level) FOR 3D VARIABLES ONLY: depth corresponding to var's level
+            - latitude(position): latitude corresponding to var's position
+            - longitude(position): longitude corresponding to var's position
+        
+        '''
+        
+        # Get variable
+        tvar, tlons, tlats  = self.get_transect(varname, (xmin, xmax), (ymin, ymax), 
+            timeavg=True, getcoords=True, **kwargs)
+        if tvar is None:
+            raise Exception('No %s found'%(varname))
+        ret = [tvar] 
+            
+        # Depth?
+        if tvar.getLevel() is not None: 
+            tdep = self.get_transect('depth', (xmin, xmax), (ymin, ymax), 
+                timeavg=True, **kwargs)
+            if tdep is None:
+                raise Exception('No depth found')
+            ret.append(tdep) 
+        ret.extend([tlats, tlons])
+        
+        self.verbose('Final Section data:\n  %s', '\n  '.join(self.describe(o) for o in ret))
+
+        return ret
+
+
     def get_hovmoller(self, varname, xorymin, xorymax, xory, meridional=False, select=None):
         '''Get a hovmoller(time,position) section data along a straight trajectory, zonal or meridional.
+        
+        .. warning:: This method is deprecated and must be rewritten has a special case of 
+            method :meth:`get_transect`.
         
         Coordinates xorymin and xorymax are longitudes and xory a latitude if the section is zonal,
         latitudes and a longitude if the section is meridonal
@@ -2620,6 +2520,8 @@ class OceanDataset(OceanSurfaceDataset):
     def get_mixed_layer_depth(self, select):
         '''Get mixed layer depth
         
+        .. warning:: This method is deprecated by :meth:`get_mld`.
+        
         MLD is computed for each time step and then averaged
         
         :Params:
@@ -2629,6 +2531,7 @@ class OceanDataset(OceanSurfaceDataset):
             - mld with shape (latitude,longitude)
         
         '''
+        self.warning('get_mixed_layer_depth is deprecated by get_mld')
         select = select.copy()
         time = select.pop('time')
         mlds = []
@@ -2704,7 +2607,7 @@ class OceanDataset(OceanSurfaceDataset):
         ''' Plot the "legend" map of a trajectory
         
         .. todo::
-            - replace this method usage by vacumm.misc.plot.traj
+            - replace this method usage by vacumm.misc.plot.add_map_lines
         
         '''
         varname=kwargs.pop('varname', None)
@@ -2731,6 +2634,8 @@ class OceanDataset(OceanSurfaceDataset):
         '''
         Plot a layer
         
+        .. warning:: This method is deprecated by :meth:`plot_hsection`.
+        
         Params:
             - **map_<keyword>**: passed to :func:`~vacumm.misc.plot.map2`
             - **plot_<keyword>**: passed to created map :func:`post_plot`
@@ -2738,6 +2643,7 @@ class OceanDataset(OceanSurfaceDataset):
         Other params are passed to :func:`get_layer`
         
         '''
+        self.warning('plot_layer is deprecated by plot_hsection')
         mp = kwargs.pop('map', None)
         mapkw = kwfilter(kwargs, 'map', default=dict(label=self.__class__.__name__))
         for k in post_plot_args: mapkw.pop(k, None)
@@ -2756,6 +2662,8 @@ class OceanDataset(OceanSurfaceDataset):
         '''
         Produce a section plot.
         
+        .. warning:: This method is deprecated by :meth:`plot_transect`.
+        
         :Params: see :func:`get_section`
         
         :Plot params:
@@ -2767,9 +2675,10 @@ class OceanDataset(OceanSurfaceDataset):
             - add lat/lon position lines indicator
         
         '''
+        self.warning('plot_section is deprecated by plot_transect')
         datakw  = kwfilter(kwargs, 'data')
         # Get section data
-        var,dep,lat,lon = self.get_section(varname, xmin, ymin, xmax, ymax, select, **datakw)
+        var,dep,lat,lon = self.get_section(varname, xmin, ymin, xmax, ymax, select=select, **datakw)
         pos = var.getAxis(1)
         # Compute scaling/informationnal data
 #        vmin,vmax = numpy.min(var), numpy.max(var)
