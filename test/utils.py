@@ -21,31 +21,34 @@ class VCTestCase(unittest.TestCase):
     
     def handle_result(self, result=None):
         """Handle result from test scripts"""
-        if not isinstance(result, dict): return
+        if isinstance(result, dict): result = result.items()
+        if not isinstance(result, (list, tuple)): return
         
         # Loop on content
         for key, values in result.items():
-            
-            # Files exist
-            if key=='files':
-                files = values
-                if isinstance(files, basestring):
-                    files = [files]
-                for fn in files:
-                    self.assertTrue(os.path.exists(fn))
-                continue
-            
-            # Assertions
-            if key.startswith('assert'): 
-                if not isinstance(values, (list,tuple)):
-                    values = [values]
-                getattr(self, key)(*values)
-            
-            # Function that returns True if succeeded 
-            if callable(key):
-                if not isinstance(values, (list,tuple)):
-                    values = [values]
-                self.assertTrue(key(*values))
-                continue
+            check_single_result(key, values)
             
             
+def check_single_result(key, values):
+    
+    # Files exist
+    if key=='files':
+        files = values
+        if isinstance(files, basestring):
+            files = [files]
+        for fn in files:
+            self.assertTrue(os.path.exists(fn))
+        return
+    
+    # Assertions
+    if key.startswith('assert'): 
+        if not isinstance(values, (list,tuple)):
+            values = [values]
+        getattr(self, key)(*values)
+    
+    # Function that returns True if succeeded 
+    if callable(key):
+        if not isinstance(values, (list,tuple)):
+            values = [values]
+        self.assertTrue(key(*values))
+        return
