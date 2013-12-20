@@ -384,9 +384,10 @@ class ConfigManager(object):
         '''
         See :func:`getspec`
         
-        TODO: access to subsections
+        If sec is a basestring, use configspec[sec][key]
+        Otherwise use sec as a configspec, sec[key]
         '''
-        return getspec(self._configspec[sec][key], validator=self._validator)
+        return getspec((self._configspec[sec] if isinstance(sec, basestring) else sec)[key], validator=self._validator)
     getspec = get_spec
     
     def defaults(self, nocomments=False, interpolation=None):
