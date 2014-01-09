@@ -18,7 +18,9 @@ norm = StepsNorm(levels)
 cmap = cmap_rs(['b', 'c', 'g', 'r'], lstretch=-.3)
 
 # Carte avec extension de la colorbar vers les max
-map2(sst, vmin=0., vmax=1.5, cmap=cmap, levels=levels, norm=norm,
+map2(sst, vmin=0., vmax=1.5, cmap=cmap, levels=levels, 
+    norm=norm, # in fact, StepsNorm is used by defaults
+    fill='pcolor', 
     clabel_glow=True, colorbar_shrink=.8, xymasked=False, 
     colorbar_boundaries=levels+[levels[-1]], colorbar_extend='max', 
     figsize=(5.5, 4.5), savefigs=__file__, show=False)
