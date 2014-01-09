@@ -1,3 +1,5 @@
+.. _courses.cfgm:
+
 Leçon sur la gestion des configurations avancées
 ================================================
 

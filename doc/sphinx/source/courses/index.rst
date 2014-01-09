@@ -1,5 +1,7 @@
-Cours Python/CDAT/VACUMM
-========================
+.. _courses:
+
+Cours Python/CDAT/VACUMM (french)
+=================================
 
 Ce cours est consitué principalement de TP, 
 avec quelques généralités en guise d'introductions.
