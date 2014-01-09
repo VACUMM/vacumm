@@ -68,7 +68,8 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'grow_variables', 'grow_depth', 'grow_lat',
     'create_selector', 'selector2str', 'split_selector', 'squeeze_variable', 'dict_copy_items', 
     "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
-    'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod']
+    'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out', 
+    'kwfilterout']
 __all__.sort()
 
 def broadcast(set, n, mode='last', **kwargs):
@@ -357,7 +358,7 @@ def geo_scale(*args,**kwargs):
     return auto_scale(geo=True,*args,**kwargs)
 
 
-def get_atts(var, id=True, **kwargs):
+def get_atts(var, id=True, extra=None, **kwargs):
     """ Get all attributes from a variable
 
     :Params:
@@ -375,10 +376,14 @@ def get_atts(var, id=True, **kwargs):
         atts.update(var.attributes)
     if id and hasattr(var,'id'):
         atts['id'] = var.id
+    if extra:
+        for att in extra:
+            if hasattr(var, att):
+                atts[att] = getattr(var, att)
     atts.update(kwargs)
     return atts
 
-def cp_atts(var1, var2, overwrite=True, select=None, exclude=None, **kwargs):
+def cp_atts(var1, var2, overwrite=True, select=None, exclude=None, extra=None, **kwargs):
     """ Copy all atributes from one variable to another
 
     :Params:
@@ -395,7 +400,7 @@ def cp_atts(var1, var2, overwrite=True, select=None, exclude=None, **kwargs):
         :func:`get_atts` :func:`set_atts`  :func:`check_def_atts`
     """
     # Default list
-    atts = get_atts(var1,**kwargs)
+    atts = get_atts(var1, extra=extra, **kwargs)
     
     # Selection
     if atts and select is not None:
@@ -831,6 +836,38 @@ def dict_filter(kwargs,filters, defaults=None, copy=False, short=False, keep=Fal
 def kwfilter(*args, **kwargs):
     """Alias for :func:`dict_filter`"""
     return dict_filter(*args, **kwargs)
+
+def dict_filter_out(kwargs, filters, copy=False, mode='start'):
+    """Remove entries from a dictionary
+    
+    :Params:
+    
+        - **kwargs**: Valid dictionary.
+        - **filters**: Single or list of prefixes. Entries with a key starting with
+          one of these filters are removed.
+        - **copy**, optional: Create a copy or work on original dict?
+        - **mode**, optional: Matching mode.
+        
+            - ``"start"``: remove if key starts with filter.
+            - ``"end"``: remove if key ends with filter.
+            - ``"regexp"``: remove if key match regexp match filter.
+            - else remove if key is exactly filter.
+    """
+    if copy: kwargs = kwargs.copy()
+    if isinstance(filters,str):
+        filters = [filters]
+    if mode=="regexp":
+        filters = [re.compile(filter).match for filter in filters]
+    for key in kwargs.keys():
+        for filter in filters:
+            if callable(filter) and filter(key): break
+            if mode in ['start', 'end'] and getattr(key, mode+'swith')(filter): break
+            if key==filter: break
+        else:
+            continue
+        kwargs.pop(key)
+    return kwargs
+kwfilterout = dict_filter_out
 
 def dict_aliases(kwargs, aliases):
     """Remove duplicate entries in a dictionnary according to a list of aliases.
@@ -1734,7 +1771,7 @@ def N_choose(a, choices, out=None, mode='raise'):
     return out
 
 class ArgList(object):
-    """Utility to manage always arguments as list and return results as input
+    """Utility to always manage arguments as list and return results as input
     
     :Examples:
     
@@ -1769,7 +1806,7 @@ class ArgList(object):
 def set_lang(default='en_US.UTF-8', num=None):
     """Set the default and numeric languages
 
-    The numeric language defaults to the default language
+    The numeric language defaults to the default language.
     """
     import locale
     if num is None: num = default
@@ -1779,7 +1816,7 @@ def set_lang(default='en_US.UTF-8', num=None):
     locale.setlocale(locale.LC_NUMERIC, num)
     
 def set_lang_fr(ennum=True):
-    """Set lang to french, except the numeric lang wich is set to en by default"""
+    """Set lang to french, except the numeric lang which is set to english by default"""
     num = 'en_US.UTF-8' if ennum else 'fr_FR.UTF-8'
     set_lang(default='fr_FR.UTF-8', num=num)
     
@@ -1797,8 +1834,6 @@ def numod(*vv):
         if N.ma.isMA(v): nm = N.ma
     return nm
 
-#from phys.units import *
-#from phys.constants import *
 
 
 
