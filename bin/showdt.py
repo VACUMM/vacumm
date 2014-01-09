@@ -23,21 +23,21 @@ args = parser.parse_args()
 
 # Netcdf file
 if '://' not in args.ncfile and not os.path.exists(args.ncfile):
-    sys.exit('File not found: '+ncfile)
+    sys.exit('File not found: '+args.ncfile)
 try:
     import cdms2, cdtime
-    f = cdms2.open(ncfile)
+    f = cdms2.open(args.ncfile)
 except:
-    sys.exit("Can't open "+ncfile)
+    sys.exit("Can't open "+args.ncfile)
     
 # Guess time
 taxis = None
 # - from specified axis
-if args.tname is not None:
-    if args.tname in f.listdimension():
-        taxis = f.getAxis(args.tname)
+if args.time is not None:
+    if args.time in f.listdimension():
+        taxis = f.getAxis(args.time)
     else:
-        sys.exit('Time axis "%s" does not exist'%args.tname)
+        sys.exit('Time axis "%s" does not exist'%args.time)
 # -from specified variable
 if taxis is None and args.vname is not None:
     if args.vname in f.listvariables():
