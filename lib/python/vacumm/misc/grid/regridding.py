@@ -2472,7 +2472,6 @@ def shift2d(vari, ishift=0, jshift=0, mode=None, copy=True):
     if ishift==0 and jshift==0: return var
     ny, nx = var.shape[-2:]
     ne = N.multiply.reduce(var.shape)/(nx*ny)
-    var[:] = 0.
     sg = not A.isaxis(var) and cdms2.isVariable(var) and var.getGrid() is not None
     if sg:
         grido = shiftgrid(var.getGrid(), ishift=ishift, jshift=jshift)
@@ -2505,6 +2504,7 @@ def shift2d(vari, ishift=0, jshift=0, mode=None, copy=True):
             return vary
             
     # Inner Y
+    var[:] = 0.
     var[ssy[sny['firsts']]] += 0.5*(varx[ssy[sny['firsts']]]+varx[ssy[sny['lasts']]])
     
     # Top Y 
