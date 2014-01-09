@@ -6,15 +6,15 @@ from glob import glob
 import os
 
 # Commandline arguments
-parser = argparse.ArgumentParser("Generate the rst files for the test scripts")
-parser.add_argument("pattern", help="Model file", nargs="*", default="test_*.py")
+parser = argparse.ArgumentParser(description="Generate the rst files for the test scripts")
+parser.add_argument("pattern", help="file patern", nargs="*", default="test_*.py")
 parser.add_argument("-d", "--testdir", 
     help="Directory of test scripts [default: %(default)s]",
     default="../../../../scripts/test")
-parser.add_argument("-c", "--noclean", action='store_true', 
-    help='Do not remove unneeded rst files')
+#parser.add_argument("-c", "--noclean", action='store_true', 
+#    help='Do not remove unneeded rst files')
 parser.add_argument("-n", "--new", action='store_true',
-    help='Only add new files (do modify existing files)')
+    help='Only add new files (do not modify existing files)')
 parser.add_argument("-v", "--verbose", action='store_true',
     help='Be more verbose')
 parser.add_argument("-q", "--quiet", action='store_true',
@@ -33,7 +33,7 @@ def check_and_write(fname, content):
         f.close()
         if oldcontent==content:
             if options.verbose: print 'No update needed for '+fname
-            return
+            return 0
     else:
          status = 'Created'
             
@@ -43,6 +43,7 @@ def check_and_write(fname, content):
     f.close()
     if not options.quiet: 
         print status+' '+fname
+    return 1 if status == 'Updated' else 2
 
 # Loop on test files
 script_basenames = []
@@ -50,6 +51,9 @@ scfiles = glob(os.path.join(options.testdir, options.pattern))
 scfiles.sort()
 rstfiles = []
 skipped = []
+svnadd = []
+svnrm = []
+svnci = []
 for i, script_path in enumerate(scfiles):
     
     # Basenames
@@ -89,11 +93,25 @@ for i, script_path in enumerate(scfiles):
     
     
     # Check and write
-    check_and_write(rstfile, content)
+    status = check_and_write(rstfile, content)
     rstfiles.append(rstfile)
+    if status:
+        svnci.append(rstfile)
+        if status==2:
+            svnadd.append(rstfile)
 
 # Check unused rst files
 for rstfile in glob('test_*.rst'):
     if rstfile not in rstfiles+skipped:
         if options.verbose: print 'Unused: '+rstfile
+        svnrm.append(rstfile)
+svnci.extend(svnrm)
+
+# Subversion commands
+if not options.quiet and svnci:
+    print 'Subversion commands:\n'
+    if svnadd: print "svn add "+' '.join(svnadd)
+    if svnrm: print "svn rm "+' '.join(svnrm)
+    print "svn ci "+' '.join(svnci)
+    
 
