@@ -7,7 +7,6 @@ import vacumm.misc.color
 from sphinx.util.console import bold
 
 def gen_cmaps(app, rstfile):
-    print dir(app.config)
     
     # Generate specs
     cmaps = {}
@@ -16,7 +15,6 @@ def gen_cmaps(app, rstfile):
         cmaps[cmap_name] = cmap_name, app.config.gen_cmaps_prefix+cmap_name
     # - manual
     extra = app.config.gen_cmaps_file
-    print dir(app.config)
 
     for cmap_funcname, cmap_kwargs, savefigs in app.config.gen_cmaps_extra_list:
         if not savefigs.startswith(app.config.gen_cmaps_prefix):
