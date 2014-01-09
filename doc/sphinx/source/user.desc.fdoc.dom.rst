@@ -1,80 +1,80 @@
-Extension fortran à :mod:`sphinx.domains`
-=========================================
+Fortran extension to :mod:`sphinx.domains`
+==========================================
 
-Le module :mod:`~vacumm.sphinxext.fortran_domain` est
-une extension à Sphinx introduisant le "domaine" fortran (voir 
-la :sphinx:`documentation de sphinx<domains.html>` sur les domaines syntaxiques),
-et donc permettant de documenter du code fortran.
+The module :mod:`~vacumm.sphinxext.fortran_domain` 
+is an extension to Sphinx adding the FORTRAN "domain"  (see 
+the :sphinx:`sphinx documentation<domains.html>` on syntactic domains),
+and can therefore document FORTRAN codes.
 
 .. highlight:: rst
 
 Configurer Sphinx
 -----------------
 
-Il suffit de d'ajouter :mod:`vacumm.sphinxext.fortran_domain`
-à la liste décrite par la variable ``extension`` dans votre fichier
-de configuration :file:`conf.py` (on suppose que le paquet python :mod:`vacumm` est accessible).
+Just add :mod:`vacumm.sphinxext.fortran_domain`
+to the list defined by the :attr:`extension` variable in the file
+:file:`conf.py` sphinx configuration file
+(assuming the :mod:`vacumm` python package is available to you).
 
-Syntaxe
--------
+Syntax
+------
 
-Cette extension fournit des "directives" pour déclarer (décrire et référencer) 
-des entités
-fortran (programme, module, type, function, subroutine et variable),
-ainsi que de "roles" pour faire référence à des entité déclarées.
+This extension provides "guidelines" to declare (describe and reference) 
+fortran entities (program, module, type, function, subroutine and variable), 
+as well as "roles" to refer to the declared entities.
 
-Les directives
-~~~~~~~~~~~~~~
+Directives
+~~~~~~~~~~
 
 
-Toutes les directives sont préfixées par ``f:`` pour spécifier le domaine fortran.
+All directives are prefixed by ``f:`` to refer to the fortran domain.
 
 .. note::
     
-    Par la suite, les crochets ``[]`` désignent un argument optionel.
+    Thereafter, the brackets ``[]`` denote an optional argument.
     
-Toutes les directives acceptent un contenu permettant de décrire
-l'entité, et qui sera interpété par sphinx.
-Cette description peut en outre tirer partie des :ref:`docfields <docfields>`
-pour décrire les arguments des fonctions, subroutines et programmes.
+All directives accept content to describe the entity, which will interpreted by sphinx.
+This description can also take advantage of
+:ref:`docfields <docfields>`
+to describe the arguments of functions, subroutines and programs.
 
 .. rst:directive:: .. f:program:: progname
 
-    Description d'un programme fortran.
-    Cette directive accepte des :ref:`docfields <docfields>`.   
+    Description of a FORTRAN program. 
+    This directive accepts :ref:`docfields <docfields>`.   
     
-    Example : ::
+    Example::
         
         .. f:program:: main
             
-            Il s'agit du programme principal.
+            This is the main program.
     
     
 .. rst:directive:: .. f:module:: modname
 
-    Cette crée une référence à un module
-    et ne produit aucune sortie.
-    Elle accepte l'option ``:synopsis:`` qui permet de décrire
-    brièvement le module dans l'index des modules.
-    Elle définit en outre le module courant
-    (à l'instar de :rst:dir:`f:currentmodule`).
+    This creates a reference to a module and produces no output. 
+    It accepts the ``:synopsis:`` option to briefly 
+    describe the module in the modules index.
+    It also defines the current module,
+    like :rst:dir:`f:currentmodule`.
     
-    Example : ::
+    Example::
         
         .. f:module:: monmodule
-            :synopsis: Module de statistiques
+            :synopsis: Statistics module
                 
     
 .. rst:directive:: .. f:currentmodule:: [modname]
 
-    Cette directive ne produit aucune sortie ; 
-    elle fait de ``modname`` le module courant :
-    les fonctions, subroutines, types et variables décrits
-    par les suite seront considérés comme appartenant à ce module.
-    Si ``modname`` est vide ou égal à ``None``, il n'y a plus
-    de module courant.
+    This directive produces no output, it makes of ``modname``
+    the current module:
+    functions, subroutines, types and variables 
+    described in the following will be considered 
+    as belonging to this module. 
+    If ``modname`` is empty or equal to ``None``, 
+    there is no more current module.
     
-    Example : ::
+    Example::
         
         .. f:currentmodule:: mymodule
         
@@ -86,11 +86,11 @@ pour décrire les arguments des fonctions, subroutines et programmes.
     
 .. rst:directive:: .. f:type:: [~][modname][/]typename
 
-    Cette directive décrit un type dérivée dans un module.
-    Elle accepte le docfield spécial ``:f ...:`` pour
-    décrire les champs du module.
+    This directive describes a derived type in a module.
+    It accepts the special docfield ``:f ...:`
+    to describe the fields of the module.
     
-    Example : ::
+    Example::
         
         .. f:type:: mymod/mytype
         
@@ -100,173 +100,181 @@ pour décrire les arguments des fonctions, subroutines et programmes.
    
 .. rst:directive:: .. f:variable:: [type] [~][modname][/]varname[(shape)]
 
-    Cette directive décrit une variable d'un module.
-    Elle accèpte les options suivantes :
+    This directive describes a variable of a module. 
+    It accepts the following options::
     
-        - ``:type:``: Type de la variable (``float``, ``mytype``, etc). 
+        - ``:type:``: Type of the variable (``float``, ``mytype``, etc). 
           Si présent, un lien est créé vers ce type. 
-          Le type peut aussi être indiqué avant le nom de la variable.
-        - ``:shape:``: Dimension de la forme ``nx,ny``,
-          qui peut aussi être déclarée après le nom (entre parenthèses).
-          Une référence à toutes les variables trouvées est créée.
-        - ``:attrs:``: Attributs supplémentaires (``in``, ``parameter``, etc).
+          The type can also be specified before the variable name.
+        - ``:shape:``: Shape in the form ``nx,ny``,
+          which can also be declared after the name (in brackets).
+          A reference to all variables found is created.
+        - ``:attrs:``: Additional Attributes (``in``, ``parameter``, etc).
         
-    Exemple : ::
+    Example::
         
         .. f:function:: float myvar
             :shape: nx,ny
             :attrs: in
             
-            Description de ma variable.
+            Description of my variable.
             
     
 .. rst:directive:: .. f:function:: [type] [~][modname][/]funcname(signature)
 
-    Cette directive décrit une function appartenant ou non à un module.
-    Elle accèpte l'option `:type:` et utilise les :ref:`docfields <docfields>`
-    pour décrire ses arguments, ses appels et ses modules utilisés.
+    This directive describes a function belonging or not to a module.
+    It accepts the option `:type:` and uses :ref:`docfields <docfields>`
+    to describe his arguments, his calls and modules used.
     
-    Exemple : ::
+    Example::
         
         .. f:function:: myfunc(a [,b])
         
-            Ceci est ma fonction principale.
+            This is my primary function.
             
-            :p float a: Mon premier argument.
-            :o integer b [optional]: Mon deuxième argument.
+            :p float a: My first argument.
+            :o integer b [optional]: My second argument.
             :from: :f:subr:`mysub`
    
     
 .. rst:directive:: .. f:subroutine:: [~][modname][/]subrname[(signature)]
 
-     Cette directive décrit une subroutine à l'instar de la directive
+     This directive describes a subroutine like the directive
      :rst:dir:`f:function`.
 
-    Exemple : ::
+    Example::
         
         .. f:subroutine:: mysub(a)
         
             Description.
         
-            :param a: Mon paramètre.
+            :param a: My parameter.
             :to: :f:func:`myfunc`
     
-Les roles
+The roles
 ~~~~~~~~~
 
-Les roles permettent en langage rst de faire référence à des entités (programme, function, etc).
-On les utilise avec une syntaxe du type : ::
+The roles allow in rst language to refer to entities (program, function, etc.). 
+They are used with a syntax like::
     
     :role:`cible`
     :role:`nom <cible>` # avec nom alternatif
     
-Plusieurs ont été définis relativement aux directives fortran présentées ci-dessus.
+Several have been defined with respect to fortran guidelines presented above.
 
 .. rst:role:: f:prog
 
-    Référence à un programme déclaré par :rst:dir:`f:program`.
+    Reference to a program declared with :rst:dir:`f:program`.
 
 .. rst:role:: f:mod:
     
-    Référence à un module déclaré par :rst:dir:`f:module`.
+    Reference to a module declared with :rst:dir:`f:module`.
     
 .. rst:role:: f:type:
     
-    Référence à un type dérivé déclaré par :rst:dir:`f:type`.
+    Reference to a derived type declared with :rst:dir:`f:type`.
     
 .. rst:role:: f:var:
     
-    Référence à une variable déclaré par :rst:dir:`f:variable`.
+    Reference to a variable declared with :rst:dir:`f:variable`.
 
 .. rst:role:: f:func
 
-    Référence à une fonction ou une subroutine déclarés respectivement par :rst:dir:`f:function` et :rst:dir:`f:subroutine`.
+    Reference to a fonction or a subroutine declared 
+    respectively with :rst:dir:`f:function` and :rst:dir:`f:subroutine`.
 
 .. rst:role:: f:subr:
     
-    Alias pour :rst:role:`f:func`.
+    Alias for :rst:role:`f:func`.
     
 
-Il est possible de faire féférence à des types dérivés, variables, 
-fonctions et subroutines appartenant à un module, avec la syntaxe typique suivante : ::
+It is possible to make reference to derived types, variables, 
+functions and subroutines belonging to a module, with the typical following syntax:
     
-    :f:func:`monmodule/mafunction`
+    :f:func:`monmodule/myfunction`
     
-Si une fonction locale et celle d'un module ont le même nom,
-il est possible d'utiliser la syntaxe suivante si le module courant est celui de la fonction : ::
+If a local function and the module have the same name, 
+it is possible to use the following syntax if the current 
+module is the same as the function module:
     
-    :f:func:`/mafunction`
+    :f:func:`/myfunction`
     
-Si le `"/"` est omis, la référence portera sur la fonction locale et non celle du module courant.
+If the / is omitted, the reference will focus on the local function and not that of the current module.
 
-Si le module est précisé dans la référence, il est possible de ne pas le faire
-afficher en préfixant le nom par ``"~"`` : ::
+If the module is specified in the reference, it is possible not to display the name by prefixing 
+``"~"``::
     
-    :f:func:`~monmodule/mafunction`
+    :f:func:`~mymodule/myfunction`
     
 .. _docfields: 
 
-Les *docfields*
+The *docfields*
 ~~~~~~~~~~~~~~~
 
-Les docfields sont des balises rst de type 
+The docfields are rst tags of type
 :rstdoc:`field list <restructuredtext.html#field-lists>`,
-qui sont interprétées dans le contenu de certaines directives
-afin de décrire des paramètres, options et autres champs particuliers.
+which are interpreted in the content of certain directives 
+to describe the settings, options and other special fields.
+ 
+The fortran domain allows a use pretty close to
+:sphinx:`that implemented <domains.html#info-field-lists>` 
+for the :sphinx:`python domain <domains.html#the-python-domain>`.
 
-Le domaine fortran en permet une utilisation assez proche de :sphinx:`celle
-implémentée <domains.html#info-field-lists>` pour le :sphinx:`domaine python <domains.html#the-python-domain>`.
-
-Il existe deux familles de *docfields* fortran : celle des fonctions et subroutines, et celle des types dérivés.
+There are two families of fortran *docfields*: 
+one for functions and subroutines, and one for derived types.
 
 
-.. rubric:: Famille des fonctions et subroutines
+.. rubric:: Fonctions et subroutines family
 
-Pour cette famille, les *docfields* permettent de 
-décrire les arguments obligatoires et optionnels, les modules utilisés,
-les programmes, fonction et subroutines qui appellent l'entité courantes,
-et les fonctions et subroutines appelées par cette entité.
-Certains d'entre eux possèdent des alias.
+For this family, the *docfields* are used to describe 
+the mandatory and optional arguments, the modules used, 
+the programs, functions and subroutines that call the current entity, 
+and the functions and subroutines called by this entity.
+Some of them have aliases.
 
-- ``param`` (ou ``p``, ``parameter``, ``a``, ``arg``, ``argument``) : Argument obligatoire. ::
+- ``param`` (or ``p``, ``parameter``, ``a``, ``arg``, ``argument``): Mandatory argument. ::
     
     :param myvar: Description.
     
-  Il est possible de spécifier le type, les dimensions et les attributs spéciaux
-  lors de la déclaration en suivant l'exemple ci-dessous : ::
+  It is possible to specify the type, the size and special attributes 
+  in the declaration following the example below:
       
       :param mytype myvar(nx,ny) [in]: Description.
        
-- ``type`` (ou ``paramtype``, ``ptype``) : Type du paramètre (exemple : float). Une référence est faite à ce paramètre s'il est présent. ::
+- ``type`` (or ``paramtype``, ``ptype``): Parameter type (eg: float). 
+  Reference is made to this parameter if present. ::
     
     :type: float
     
-- ``shape`` (out ``pshape``) : Dimensions du paramètre (séparées par des virgules).
+- ``shape`` (ort ``pshape``): Shape of the parameter (dimensions are separated by commas).
 
     :shape: nx, ny
     
-- ``attrs`` (ou ``pattrs``, ``attr``) : Attributs particuliers (séparés par des virgules). ::
+- ``attrs`` (or ``pattrs``, ``attr``): Special Attributes (separated by commas). ::
     
     :attr: in/out
     
-- ``option`` (ou ``o``, ``optional``, ``keyword``) : Déclaration d'un paramètre optionnel, avec une syntaxe similaire à celle des paramètres obligatoires (``param``).
-- ``otype`` (ou ``optparamtype``) : Son type..
-- ``oshape`` : Ses dimensios.
-- ``oattrs``` (ou ``oattrs``) : Ses attributs.
-- ``return`` (ou ``r``, ``returns``) : Variable retournée par la fonction.
-- ``rtype`` (ou ``returntype``) : Son type.
-- ``rshape`` : Ses dimensions.
-- ``rattrs` (ou ``rattrs``) : Ses attributs.
-- ``calledfrom`` (ou ``from``) : Fonctions, subroutines ou programmes appelant la routines courante.
-- ``callto`` (ou ``to``) : Fonctions ou subroutines que la routines courante appelle.
+- ``option`` (or ``o``, ``optional``, ``keyword``): Declaration of an optional parameter with a similar syntax to required parameters (``param``).
+- ``otype`` (or ``optparamtype``): Its type.
+- ``oshape`` : Its shape.
+- ``oattrs``` (or ``oattrs``): Its attributes.
+- ``return`` (or ``r``, ``returns``): Variable returned by the function.
+- ``rtype`` (or ``returntype``): Its type.
+- ``rshape``: Its shape.
+- ``rattrs` (or ``rattrs``): Its attributes.
+- ``calledfrom`` (or ``from``): Functions, subroutines or programs calling the current routine.
+- ``callto`` (or ``to``): Fonctions ou subroutines called by the current routine.
 
-Les **docfiels** de paramètres sont fusionnés en une liste pour ceux obligatoires et une pour ceux optionnels, et leur **docfiels** associés (type, dimensions et attributs) sont supprimés et leur contenus insérés dans la déclaration du paramètre.
+The **docfiels** are merged into one list for those mandatory,
+and another one for those optional,
+and their associated **docfiels** (type, dimensions et attributs) are
+deleted and inserted in the parameter declaration.
 
 .. note::
-    En complément de ces *docfiels* interprétés, vous pouvez les accompagner
-    d'autres de votre choix. Par exemple : ::
+    In addition to these *docfiels* that are intepreted, 
+    you can add other of your choice. For example::
         
-        :actions: Cette fonction procède à
+        :actions: This function performs
             
             #) Une initialisation.
             #) Un calcul.
@@ -276,18 +284,19 @@ Les **docfiels** de paramètres sont fusionnés en une liste pour ceux obligatoi
         :use: Fait appel au module :f:mod:`mymod`.
 
 
-.. rubric:: Famille des types dérivés.
+.. rubric:: Derived types family
 
-Ces *docfields* décrivent les champs des types dérivés.
-Il sont à insérér dans l'entête d'une directive :rst:dir:`f:type`.
+These *docfields* describe the fields of derived types.
+They are inserted into the header of a :rst:dir:`f:type` directive.
 
     
-- ``ftype`` (ou ``f``, typef, typefield) : Champs d'un type dérivé, avec une la syntaxe similaire à celle des paramètres obligatoires (``param``).
-- ``ftype`` (ou ``fieldtype``) : Son type..
-- ``fshape`` : Ses dimensions.
-- ``fattrs``` (ou ``fattrs``) : Ses attributs.
+- ``ftype`` (or ``f``, typef, typefield): Fields of a derived type with a syntax similar 
+  to that of required parameters or routines (``param``).
+- ``ftype`` (or ``fieldtype``): Its type.
+- ``fshape``: Its shape.
+- ``fattrs``` (or ``fattrs``): Its attributes.
 
-Exemple
+Example
 -------
 
 
@@ -295,11 +304,12 @@ Exemple
     :language: rst
 
  
-*Ce qui donne :*
+Which gives:
     
     .. include:: user.desc.fdoc.dom.sample.txt
     
     
 .. note :: 
-    Les modules déclarés sont listés dans leur :f:ref:`index <f-modindex>`, et les autres entités fortrans sont aussi accesibles depuis l':ref:`index général <genindex>`.
+    Declared modules are listed in their :f:ref:`index <f-modindex>`, 
+    and other fortran entities are also accesible from the :ref:`main index <genindex>`.
 

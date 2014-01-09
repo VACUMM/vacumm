@@ -52,12 +52,12 @@
     <h1>CAPARMOR users!</h1>
     
     If you have an access to the CAPARMOR supercomputer at IFREMER,
-    you can quickly try VACUMM:
+    you can quickly try VACUMM from the shel:
     <div class="highlight-bash"><div class="highlight"><pre>
-<span class="gp">shell&gt;</span> module purge
-<span class="gp">shell&gt;</span> module use /home11/caparmor/mars/PYTHON/modulefiles
-<span class="gp">shell&gt;</span> module load uvcdat121
-<span class="gp">shell&gt;</span> python
+<span class="gp">$</span> module purge
+<span class="gp">$</span> module use /home11/caparmor/mars/PYTHON/modulefiles
+<span class="gp">$</span> module load uvcdat121
+<span class="gp">$</span> python
 </pre></div></div>
         
     Then:
@@ -66,9 +66,10 @@
 <span class="gp">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">vacumm</span>
 </pre></div></div>
 
-    Or:
+    Or for example:
     <div class="highlight-python"><div class="highlight"><pre>
 <span class="gp">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">vcmq</span> <span class="kn">import</span> *
+<span class="gp">&gt;&gt;&gt;</span> map2(DS(data_sample(<span class="s">&#39;mars3d.xy.nc&#39;</span>), <span class="s">&#39;mars&#39;</span>).get_sst())
 </pre></div></div>
     
 {% endblock %}

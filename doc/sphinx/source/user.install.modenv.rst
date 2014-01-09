@@ -6,35 +6,33 @@ Using environment modules
 Introduction
 ------------
 
-As it has been metioned in both previous sections, the access to the Python included in UV-CDAT needs to modify the environement variable :envvar:`PATH`, and the access to the library needs to modify the environment variable :envvar:`PYTHONPATH` if it has been installed in a different directory.
+As it has been metionned in both previous sections, the access to the Python included in UV-CDAT needs to modify the environement variable :envvar:`PATH`, and the access to the library needs to modify the environment variable :envvar:`PYTHONPATH` if it has been installed in a different directory.
 
-Sachant qu'il est possible de faire coéxister plusieurs versions de CDAT et de la librairie,
-en fonction des besoins (dans un cadre opérationnel, pour un projet donné, 
-pour les utilisateurs standards ou ceux voulant les dernières fonctionnalités),
-il peut devenir difficile à un administrateur de faire en sorte que
-les utilisateurs puissent accéder facilement aux bonnes versions ;
-de même qu'il serait désagréable aux utilisateurs de devoir changer eux même
-toutes les variables d'environnement (c'est à dire de savoir quelles variables
-et connaître tous les chemins d'accès).
-Un moyen de gérer facilement ce problème est l'utilisation de `modules d'environnement <http://modules.sourceforge.net>`_.
-Cette approche permet à l'administrateur de gérer de nombreuses versions et leur dépendances
-de façon transparente pour l'utilisateur qui n'a alors qu'a insérer deux lignes
-dans son :file:`.cshrc` (ou :file:`.bashrc`) et le fonctionnement 
-de la commande :command:`module` charger l'environnement python qu'il souhaite.
+Knowing that it is possible manage and use multiple versions of CDAT and the VACUMM library, 
+as needed (in an operational framework, for a given project,
+for the standard users, or those users who want the latest features),
+it may become difficult to administrator to ensure that users can easily access the correct versions;
+as it would be unpleasant for users to have to change themselves all environment variables (ie to know which variables and know all the paths).
+An easy way to handle this problem is the use of `environment modules <http://modules.sourceforge.net>`_.
+This approach allows the administrator to manage multiple versions
+and their dependencies transparently for the user,
+who just need to insert two rows in its :file:`.cshrc` (ou :file:`.bashrc`) file 
+and know :command:`module` utility to load the environment he wants.
 
-Les documentations de l'utilitaire se trouve ici:
+The documentation of the utility is located here: 
 
     - http://modules.sourceforge.net/
     - http://modules.sourceforge.net/man/module.html
     - http://modules.sourceforge.net/man/modulefile.html
     - http://sourceforge.net/p/modules/wiki/FAQ/
 
-Module par défaut
------------------
+Default module
+--------------
 
-L'utilitaire de module permet de faire cohabiter plusieurs version de module pour un même logiciel.
+The module utility makes possible to use several module version for the same software.
 
-Si on a par exemple :
+If we have for example:
+
 
 .. code-block:: bash
 
@@ -43,24 +41,26 @@ Si on a par exemple :
     1.0
     trunk
 
-Pour positionner une version comme étant celle par défaut  il faut alors créer dans ce répertoire un fichier :file:`.version` contenant :
+To set a version as the default, you must be create in this directory a
+:file:`.version` file containing:
 
 .. code-block:: tcl
 
     #%Module
     set ModulesVersion "1.0"
 
-Ce fichier :file:`.version` indique alors quel fichier de module par défaut il faut charger quand seul le nom de
-répertoire est spécifié. La commande ``module load vacumm`` chargera alors le fichier de module :file:`/my/modules/vacumm/1.0`.
+This file indicates which module file will be loaded by default
+when only the directory is specified.
+The command ``module load vacumm`` 
+then load the file module :file:`/my/modules/vacumm/1.0`.
 
-Le côté administrateur
+The administrator side
 ----------------------
 
-Il est d'abord nécessaire que l'administrateur configure l'utilisation
-des modules d'environnement.
+It is first necessary that the administrator configures the use of environment modules.
 
-La première étape consiste à créer un réportoire dédié aux fichiers de modules, 
-puis des sous-répertoires dédiés aux versions de CDAT et de vacumm et aux dépendances :
+The first step is to create a directory dedicated to the module files ,
+and subdirectories dedicated to versions of CDAT, vacumm and their dependencies:
     
 .. code-block:: bash
 
@@ -68,11 +68,10 @@ puis des sous-répertoires dédiés aux versions de CDAT et de vacumm et aux dé
     shell> mkdir /my/modules/cdat
     shell> mkdir /my/modules/vacumm
    
-Il convient ensuite de créer les fichiers de module pour CDAT et ses dépendances
-(voir :ref:`user.install.prereq`). 
-Par exemple, SCRIP est une des dépendances. 
-S'il est installé dans le répertoire :file:`/my/soft/scrip`, 
-il faut créer le fichier de module :file:`/my/modules/scrip` avec le contenu suivant:
+Then, the module files for CDAT and its dependencies (voir :ref:`user.install.prereq`)
+should be created. 
+For example, if SCRIP is a dependency and is installed in the directory :file:`/my/soft/scrip`, 
+you must create the module file :file:`/my/modules/scrip` with the following content:
     
 .. code-block:: tcl
 
@@ -83,8 +82,8 @@ il faut créer le fichier de module :file:`/my/modules/scrip` avec le contenu su
     
     prepend-path PATH /my/soft/scrip
     
-Le module python :mod:`~mpl_toolkits.basemap` utilise la librairie GEOS.
-On crée alors le fichier de module :file:`/my/modules/geos/3.2` :
+Python module :mod:`~mpl_toolkits.basemap` uses the GEOS library. 
+You must create the module file :file:`/my/modules/geos/3.2` :
     
 .. code-block:: tcl
 
@@ -98,11 +97,9 @@ On crée alors le fichier de module :file:`/my/modules/geos/3.2` :
     prepend-path LD_LIBRARY_PATH /my/soft/geos/$version/lib
     
 
-**Note**: geos est désormais inclus avec cdat >= 6.0, il n'est donc pas nécessaire
-d'avoir une installation et un module de geos à part.
+**Note**: geos is now included with cdat> = 6.0, it is not necessary to have a system and a module for geos apart.
 
-Le fichier de configuration de CDAT :file:`/my/modules/cdat/5.2` peut alors être créé 
-en tenant compte des dépendances et des conflits avec d'autres versions :
+The module file of CDAT :file:`/my/modules/cdat/5.2 can then be created taking into account dependencies and conflicts with other versions:
 
 .. code-block:: tcl
 
@@ -121,9 +118,9 @@ en tenant compte des dépendances et des conflits avec d'autres versions :
     prepend-path LD_LIBRARY_PATH  $base_path/$version/lib
     prepend-path LD_LIBRARY_PATH  $base_path/$version/Externals/lib
     prepend-path C_INCLUDE_PATH $base_path/$version/include
-    
-Si la version par défaut de vacumm est installée dans le python de CDAT par défaut,
-le fichier de module correspondant :file:`/my/modules/vacumm/1.0` contient alors :
+ 
+If the default version of vacumm is installed in the python provided with CDAT,
+the corresponding module file :file:`/my/modules/vacumm/1.0` then contains:
     
 .. code-block:: tcl
 
@@ -135,11 +132,12 @@ le fichier de module correspondant :file:`/my/modules/vacumm/1.0` contient alors
     conlict vacumm
     module load cdat
 
-Ici on ne fait que charger CDAT étant donné que vacumm est installé dans le répertoire par défaut
-de l'installation python de CDAT.
+Here we only load CDAT as vacumm is installed in the default directory for installing python CDAT.
 
-Si une autre version de VACUMM existe (installée avec un --prefix égal à :file:`/my/soft/vacumm-recent`), 
-et utilisant une autre version de CDAT, nous pourrions avoir le fichier :file:`/my/modules/vacumm/recent` :
+If another version of VACUMM exists 
+(installed with a --prefix equal to :file:`/my/soft/vacumm-recent`), 
+and using a different version of CDAT, we could have
+ the file  :file:`/my/modules/vacumm/recent` :
     
 .. code-block:: tcl
 
@@ -153,12 +151,13 @@ et utilisant une autre version de CDAT, nous pourrions avoir le fichier :file:`/
     prepend-path PATH /my/soft/vacumm-recent/bin
     prepend-path PYTHONPATH /my/soft/vacumm-recent/lib/python2.7/site-packages
     
-Avec un module cdat/6.0.0 configuré sur cet autre CDAT.
+with cdat/6.0.0 module configured using this other CDAT.
 
-Le côté utilisateur
--------------------
+The user side
+-------------
     
-Le fichier :file:`$HOME/.cshrc` (ou :file:`$HOME/.bashrc`) va typiquement contenir les lignes suivantes :
+The file :file:`$HOME/.cshrc` (ou :file:`$HOME/.bashrc`) 
+will typically contain the following lines:
     
 .. code-block:: bash
 
@@ -170,22 +169,23 @@ Le fichier :file:`$HOME/.cshrc` (ou :file:`$HOME/.bashrc`) va typiquement conten
 
 .. warning::
     
-    Il faut cependant faire attention si l'on charge le module cdat dans un des fichiers de profile tel
-    que :file:`$HOME/.bashrc` ou :file:`$HOME/.cshrc`. Ces fichiers étant chargés à l'ouverture de session
-    (graphique ou non), des effets de bord peuvent se produire car la version de python, et les packages
-    qui y sont installés ne sont plus ceux du système et certains logiciels voir même la session graphique
-    complète pourrait être inutilisable.
-    Si tel est le cas, il faudra alors se résoudre à charger le module cdat manuellement dans votre terminal.
+    One should however be careful if the module is loaded cdat in a profile file as
+    :file:`$HOME/.bashrc` or :file:`$HOME/.cshrc`. 
+    Since these files are loaded at logon (graphic or not), 
+    side effects may occur because the version of python, 
+    and packages that are installed are no longer those of 
+    the system and some software or even the complete graphical session 
+    may be unusable.
+    If this is the case, it can be solved by loading the CDAT module manually in your terminal.
 
-L'utilsateur a alors accès à tous les modules d'environnement définis
-dans la section précédente.
-On vérifie les modules disponibles :
+The user then has an access to all environment modules defined in the previous section.
+The see available modules:
     
 .. code-block:: bash
 
     shell> module avail
      
-Le chargement de la librairie python vacumm se fait de la façon suivante :
+To load the VACUMM library:
     
 .. code-block:: bash
 
@@ -193,10 +193,10 @@ Le chargement de la librairie python vacumm se fait de la façon suivante :
     
 .. note::
 
-    Il est possible de charger automatiquement la librairie en plaçant ``module load vacumm``
-    directement dans le fichier :file:`$HOME/.cshrc` après la ligne ``module use ...``
+    It is possible to automatically load the library by inserting  ``module load vacumm``
+    directly in the file  :file:`$HOME/.cshrc` after the line ``module use ...``
     
-Puis on vérifie :
+Then we check:
     
 .. code-block:: bash
 
@@ -209,8 +209,8 @@ Puis on vérifie :
     /my/soft/cdat/5.2/bin/python
     shell> python -c "import vacumm"
     
-    
-Pour changer de version de vacumm pour par exemple une installation du trunk qui serait régulièrement mise à jour :
+To change the version of VACUMM in order to use, for instance,
+an installation of the trunk branch that is regularly updated:
     
 .. code-block:: bash
 
@@ -218,40 +218,42 @@ Pour changer de version de vacumm pour par exemple une installation du trunk qui
     
 .. _user.install.modenv.dev:
 
-Le côté développeur
--------------------
+The developer side
+------------------
 
-Le checkout de vacumm contient un module :file:`etc/modulefiles/vacumm`, celui ci permet d'exploiter directement le checkout
-de vacumm :
+The checkout (svn) of VACUMM contains a module file  :file:`etc/modulefiles/vacumm`
+that can be used to directly exploit the sources:
 
 .. code-block:: bash
 
     shell> module use /path/to/my/vacumm/etc/modulefiles
     shell> module load vacumm
     
-Pour ne pas rentrer en conflit avec (masquer) un autre jeu de modules, vous pouvez créer votre espace de modules
-personnels et lier le module de votre checkout dans cet espace : 
+Not enter into conflict with (hide) another set of modules, 
+you can create your personal space for modules 
+and link this module file to this space:
 
 .. code-block:: bash
 
     shell> mkdir -p ~/etc/modulefiles/vacumm
     shell> ln -s /path/to/my/vacumm/etc/modulefiles ~/etc/modulefiles/vacumm/dev
 
-Ce module requiert un module nommé cdat, une erreur sera affichée si celui ci est introuvable.
+This module requires a module named cdat, and an error will be displayed if it is not found.
 
 .. warning::
 
-    Si vous avez besoin de spécifier un module cdat particulier pour votre version de développement, ne modifier pas
-    :file:`etc/modulefiles/vacumm` (pour ne pas le commiter !), créez plutôt un répertoire cdat dans votre espace de
-    modules en créant un module qui chargera le cdat nécessaire et éventuellement en utilisant la méthode de module
-    par défaut décrite ci dessus.
+    If you need to specify a particular cdat module for your development version, do not to modify 
+    :file:`etc/modulefiles/vacumm` (to not commit it), 
+    rather create a cdat directory in your own personal module space by 
+    creating a module that loads the right cdat,
+    and optionally using the default module method described above.
 
 .. code-block:: bash
 
     shell> mkdir -p ~/etc/modulefiles/cdat
     shell> vi ~/etc/modulefiles/cdat/dev
 
-Renseignez ce nouveau module :file:`cdat/dev` avec le contenu suivant :
+Learn this new module :file:`cdat/dev` with the following content:
 
 .. code-block:: tcl
 
@@ -259,7 +261,7 @@ Renseignez ce nouveau module :file:`cdat/dev` avec le contenu suivant :
     module load cdat/6.0
 
 
-Vous pouvez maintenant charger votre version de développement :
+You can now load your development version:
 
 .. code-block:: bash
 

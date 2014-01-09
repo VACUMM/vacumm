@@ -4,7 +4,7 @@ Basis of the librairie
 **********************
 
 
-_user.desc.basis.arch:
+.. _user.desc.basis.arch:
     
 General architecture
 ====================
@@ -14,7 +14,7 @@ General architecture
 .. figure:: static/modules.*
 
     Schematic view of (most of) the library modules (in green) 
-    and of some required external modules.
+    and of some required external modules (in red).
 
 
 
@@ -43,7 +43,7 @@ La librairie générique :mod:`vacumm.misc` est organisée de la manière suivan
         - :mod:`~vacumm.misc.phys.constants` : Useful constants.
         - :mod:`~vacumm.misc.phys.units` : Units conversions.
         
-    - :mod:`~vacumm.data` : Advanced data use.
+    - :mod:`~vacumm.data` : Advanced interfaces to datasets.
     - :mod:`~vacumm.diag` : Advanced diagnostics.
         
 

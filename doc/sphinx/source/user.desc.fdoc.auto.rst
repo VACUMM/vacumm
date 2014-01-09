@@ -72,99 +72,94 @@ Here are the available configuration variables.
     
 .. confval:: fortran_ext
 
-    Liste des extensions possibles dans le cas d'un listing de répertoire
-    (par défaut : ``['f90', 'f95']``).
+    List of possible extensions in the case of a directory listing (default: ``['f90', 'f95']``).
     
 .. confval:: fortran_encoding
 
-    Encodage des caractères des fichiers fortran (par défaut : ``"utf8"``).
+    Character encoding of fortran files (default : ``"utf8"``).
     
-    .. note:: Il est fortement suggéré d'encoder vos sources avec un jeu de
-        caractère universel tel que l'UTF-8.
+    .. note:: It is strongly recommanded to encode your sources with a set of universal character as UTF-8.
 
 .. confval::   fortran_subsection_type
 
-     Type de section pour la documentation des modules et fichiers.
-     Au choix :
+    Section type for the documentation of modules and files.
+    Choice:
          
-         - ``"rubric"`` (par défaut) : utilise la directive 
-           :rst:dir:`rubric` (title léger en gras).
-         - ``"title"`` : utilise un titre conventionnel (texte avec soulignage,
-           dont le caractère est défini par :confval:`fortran_title_underline`).
+         - ``"rubric"`` (default) : use directive 
+           :rst:dir:`rubric` (lightweight title in bold).
+         - ``"title"`` : uses a conventional title (text with underlining, whose 
+           character is defined by u :confval:`fortran_title_underline`).
            
 .. confval:: fortran_title_underline
 
-    Carcatère utilisé pour le soulignage (par défaut ``"-"``) si 
+    Character used for underlining (default ``"-"``) if
     ``fortran_subsection_type = "title"``.
            
            
 .. confval:: fortran_indent
 
-    Caractère d'indentation (par défaut ``4``).
-    S'il s'agit d'un entier, indique le nombre d'espaces.
+    Indentation string or length (default ``4``).
+    If it is an integer, indicates the number of spaces.
 
-Insérer une auto-documentation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Inserting an auto-documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-L'insertion d'une auto-documentation se fait au choix grâce
-à l'une des directives suivantes.
+The insertion of an auto-documentation can be chosen with the following diectives.
 
 .. rst:directive:: .. f:autoprogram:: progname
 
-    Documenter un programme.
+    Document a program.
     
 .. rst:directive:: .. f:autofunction:: [modname/]funcname
 
-    Documenter une fonction.
+    Document a function.
 
 .. rst:directive:: .. f:autosubroutine:: [modname/]subrname
 
-    Documenter une subroutine.
+    Document a subroutine.
     
 .. rst:directive:: .. f:autotype::  [modname/]typename
 
-    Documenter un type dérivé.
+    Document a derived type.
     
 .. rst:directive:: .. f:autovariable::  [modname/]varname
 
-    Documenter une variable d'un module.
+    Document a module variable.
 
 .. rst:directive:: .. f:autovariable::  modname
 
-    Documenter un module.
-    Cette directive accèpte les options ``:subsection_type:`` and 
+    Document a module.
+    This directive accepts options ``:subsection_type:`` and 
     ``:title_underline:``.
     
 .. rst:directive:: .. f:autosrcfile::  pathname
 
-    Documenter les programmes, fonctions et subroutines d'un fichier source.
-    Cette directive accèpte les options :``:search_mode:`` and  ``:objtype:``
-    (voir :meth:`~vacumm.sphinxext.fortran_autodoc.F90toRst.filter_by_srcfile`).
-    Exemple : ::
+    Document programs, functions and subroutines of a source file. 
+    This directive accepts options :``:search_mode:`` and  ``:objtype:``
+    (see :meth:`~vacumm.sphinxext.fortran_autodoc.F90toRst.filter_by_srcfile`).
+    Example::
         
         .. f:autosrcfile::  myfile.f90
             :search_mode: basename
             :objtype: function subroutine
             
-    .. warning:: Directive non testée !
+    .. warning:: Untested directive!
             
     
-Optimiser le processus
-----------------------
+Optimize the process
+--------------------
 
-Pour optimiser le processus de documentation,
-il est recommandé de suivre quelques règles relatives aux
-commentaires intégrés au code fortran.
-Ces commentaires permettent de mieux détaillé la
-description des entités fortran ; 
-ils sont interprétés en langage rst.
+To optimize the process of documentation, it is recommended 
+to follow some rules when commenting FORTRAN codes: 
+these comments provide a way to better decribe 
+fortran entities, and are interpreted in rst language.
 
-Commentaires d'entête
-~~~~~~~~~~~~~~~~~~~~~
+Header comments
+~~~~~~~~~~~~~~~
 .. highlight:: fortran
 
-Les commentaires en entête des **modules** (jusqu'à la première ligne de code),
-sont systématiquement utilisés. Exemple : ::
+The comments in the **modules** headers, up to the first line of code, are
+are systématically used. Example::
     
     module mymod
     
@@ -175,9 +170,8 @@ sont systématiquement utilisés. Exemple : ::
     end module mymod
 
 
-Dans le cas des **programmes**, **fonctions**, **subroutines** et **types**, les commentaires sont utilisés
-s'ils commencent immédiatement après la ligne de déclaration.
-Exemples : ::
+In the case of **programs**, **functions**, **subroutines** and **types**, 
+comments are used if they start immediately after the declaration line. Examples::
     
     subroutine mysub(a)
     ! Description
@@ -189,12 +183,12 @@ Exemples : ::
     end type mytype
 
 
-Commentaires en ligne
-~~~~~~~~~~~~~~~~~~~~~
+Inline comments
+~~~~~~~~~~~~~~~
 
-Ces commentaires se situent au niveau d'une ligne de code.
-Ils servent à déclarer les **champs de types dérivés**, les **variables d'un module**
-et les **arguments** des fonctions et subroutines. Exemple ::
+These comments are in a line of code. 
+They are used to declare  **fields of derived types**, **module variables**
+et **arguments of functions and subroutines**. Example::
     
     type mytype
         integer :: myvar &, ! Description1
@@ -209,5 +203,5 @@ et les **arguments** des fonctions et subroutines. Exemple ::
 
 .. warning::
     
-    Il est impératif qu'il n'y ait qu'une seule déclaration de variable
-    si un commentaire de description est indiqué.
+    There must have only one declaration of variable or field a description comment is specified.
+    

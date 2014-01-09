@@ -1,48 +1,49 @@
 .. _user.todo:
 
 
-Ce qu'il reste à faire
-**********************
+What remains to be done
+***********************
 
 
 .. _user.todo.gen:
 
-Liste générique
-===============
+Generic list
+============
 
 .. todolist::
 
-Stabilisation du code
-=====================
+Stabilisation of the code
+=========================
 
-Vous pouvez vous référer à :ref:`appendix.risks` pour avoir la liste des routines 
-nécessitant une attention particulière, et donc par exemple des améliorations.
+You can refer to :ref:`appendix.risks`  for a list of routines that require special attention, and therefore such improvements.
 
 
 .. _user.todo.more:
 
-Compléments
+Supplements
 ===========
 
-Cette section liste les améliorations importantes à apporter à la librairie,
-et éventuellement les clés pour y parvenir ou les voies possibles.
+This section lists important improvements needed to the library, and possibly the key to achieve or possible ways.
 
 
 
-Interpolations
---------------
+Interpolations and reggridding
+------------------------------
 
-Quatree
-~~~~~~~
+- The :mod:`~vacumm.misc.grid.kriging` module must 
+  be used by the :mod:`~vacumm.misc.grid.regridding` module, and especially the 
+  :class:`~vacumm.misc.grid.regridding.GridData` class.
+- The :mod:`~vacumm.misc.grid.regridding.regrid2d` must better handle masks, especially
+  in the case of curcilinear grids handled by 
+  the :class:`~vacumm.misc.grid.regridding.CDATRegridder` class.
+- The :class:`~vacumm.misc.grid.regridding.GriddedMerger` must be checked.
 
-Il serait souhaitable d'optimiser les interpolation de nuages de points 
-vers grilles rectangulaire en utilisant une méthode de décomposition
-du domaine avec un algorithme de type quadtree.
-Actuellement, les blocs sont tous de taille similaire et peuvent
-contenir un nombre de points très inhomogène.
+Tidal tools
+-----------
 
-Krigeage
-~~~~~~~~
+These must use the Tidal toolbox thanks to f2py, 
+and integrate analysis and prediction capabilities.
 
-Il serait intéressant d'avoir la possibilité d'interpoler par krigeage.
+
+
 

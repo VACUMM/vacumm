@@ -3,6 +3,8 @@
 For developpers
 ***************
 
+.. highlight:: bash
+
 Use your own version
 ====================
 
@@ -32,8 +34,8 @@ When a new module is specialized, it should find a place elsewhere.
 Generation of the sphinx documentation
 ======================================
 
-Generation of the figures of scripts
-------------------------------------
+Generation of the figures of the scripts
+----------------------------------------
 
 Some of the scripts located in the :file:`scripts` directory 
 create figure that are included in the documentation.
@@ -48,8 +50,42 @@ For that, just run a :program:`make` in the :file:`scripts` directory:
     $ make
 
 
-.. note:: It is not necessary to re-generate these figure each time you compile!
+.. note:: It is not necessary to re-generate these figures each time you compile!
 
+
+Force the regeneration of the figures of the colormaps
+------------------------------------------------------
+
+Some samples of colormap of the :mod:`vacumm.misc.color` module are displayed
+in the documentation. They are usually generated automatically at compile time
+by an integrated sphinx extension (the file :file:`doc/pshinx/source/sphinxext/gen_cmaps`)
+each time the module is modified or when no figure is present.
+
+You can force the regeneration of theses figure for the next compilation with::
+    
+    $ touch lib/python/vacumm/misc/color.py
+
+
+Generate missing test files
+---------------------------
+
+The test scripts (:file:`scripts/test/test_*.py`) are presented in the appendix 
+(:ref:`appendix.tests`)
+thanks to corresponding rst files situated in directory :file:`doc/pshinx/source/tests`.
+You can update these rst files with the :program:`make.py` present in this directory::
+    
+    $ cd doc/pshinx/source/tests
+    $ make.py # -h for help
+
+.. note:: The title of each of these rst files is copied from the first line of the test script.
+
+If new files are created, add them to subversion.
+
+    $ svn add test_newtest.py
+
+Then make a commit:
+    
+    $ svn ci -m 'adding new test rst files'
 
 Compilation
 -----------
@@ -73,16 +109,17 @@ The documentation is generated in directories
 Regeneration of TikZ figures 
 ----------------------------
 
-Cette documentation contient plusieurs figures 
-dessinées grâce à :program:`pdflatex` et 
-`PGF/TikZ <http://pgf.sourceforge.net>`_ (logo, architexture 
-de la librairie).
-L'avantage est de pouvoir placer les sources des figures
-sur le dépôt svn, et que tout le monde puisse re-générer ces dernières.
+This documentation contains several figures drawn with 
+:program:`pdflatex` and 
+`PGF/TikZ <http://pgf.sourceforge.net>`_ (logo, architecture 
+of the librairie).
+The advantage is being able to put figure sources on the svn server, 
+so that everyone can re-generate them.
 
-Il est nécessaire d'avoir une version récente de PGF/TikZ, 
-que vous pouvez par exemple obtenir ici : http://www.texample.net/tikz/builds/  (voici `une version <http://media.texample.net/pgf/builds/pgfCVS2010-09-28_TDS.zip>`_).
-Pour l'installation, procédez ainsi :
+It is necessary to have a recent version of PGF/TikZ,
+you can for example get here: http://www.texample.net/tikz/builds/  
+(here is `a version <http://media.texample.net/pgf/builds/pgfCVS2010-09-28_TDS.zip>`_).
+For installation, proceed as follows:
     
 .. code-block:: bash
 
@@ -92,59 +129,53 @@ Pour l'installation, procédez ainsi :
     $ unzip pgfCVS2010-09-28_TDS.zip
     $ rm pgfCVS2010-09-28_TDS.zip
 
-.. sidebar:: Qu'est-ce que PGF/TikZ ?
+.. sidebar:: What is PGF/TikZ ?
 
-    Il s'agit d'une librairie permettant de créer des figures
-    de haute qualités à partir d'un code source intégré dans du TeX.
-    Le meilleur aperçu est fourni par le site qui recense les
-    exemples (tutoriels) :  http://www.texample.net/tikz/examples .
-    La plupart d'entre eux se base sur une version plus récente que celle
-    installée par défaut sur un système.
-    C'est donc sur une *build* CVS que les figures de cette documentation
-    sont basées.
+    This is a library for creating high quality figures from an TeX source code.
+    The best overview is provided by the site that lists examples (tutorials): 
+    http://www.texample.net/tikz/examples .
+    Most of them are based on a more recent than the one installed by default on a system release.
+    Its on CVS *build* that the figures in this documentation are based.
 
-TikZ figure can now be generated with:  
+Figure TikZ can now be generated with:  
 
 .. code-block:: bash
 
     $ cd doc/sphinx/sources
     $ make
 
-Le code latex est alors compilé, générant un pdf qui est ensuite converti
-au format ppm, puis au format png.
+The latex code is then compiled, generating a pdf which is then converted 
+to ppm format and png formats.
+
 
 
 Writing tutorials
 =================
 
-Il fortement suggéré aux développeurs de la librairie de créer des tutoriels
-sur les fonctionnalités importantes qu'ils développent.
-Ces tutoriels ont deux intérêts :
+He strongly suggested to developers to create tutorials on important features they develop. 
+These tutorials have two interests:
     
-    - Ils compléte la documentation.
-    - Il permettent d'effectuer des tests de vérification,
-      grâce au programme :program:`check.py`.
+    - They complete the documentation.
+    - They can be used to perform tests,
+      thanks to the :program:`check.py` script.
       
-Le programme :program:`check.py` est situé dans le répertoire de tutoriels
-(:file:`doc/sphinx/source/tutorials/python`).
-Son utilisation est la suivante :
+The :program:`check.py` script is located in the tutorials directory
+(:file:`scripts/tutorials`).
+Its use is as follows:
 
 .. code-block:: bash
 
     $ check.py [options] [pattern1 [pattern2] ...]
     
-Celui-ci prend comme argument un (ou plusieurs) *global pattern*
-permettant de lister les scripts à tester.
-La valeur par défaut est ``"*.py"``.
-Il est ensuite possible d'exclure des scripts de cette liste
-grâce à l'option :option:`-e`.
+It takes as argument one (or more) global patterns to list the test scripts.
+The default is ``"*.py"``.
+It is then possible to exclude scripts that list with the :option:`-e` option.
 
-Ce script affiche en console tout ou partie des informations sur les tests, 
-et logue toutes les informations dans le fichier :file:`check.log`.
-Le niveau d'affichage des information est console est modifiable
-avec l'option :option:`-l`.
+This script displays to the console information about the tests, 
+and store all information in the :file:`check.log` file.
+The logging level at the console can be modified with the :option:`-l` option.
 
-Exemples d'utilisation :
+Examples of use:
     
 
 .. code-block:: bash
@@ -163,31 +194,31 @@ Exemples d'utilisation :
     
 .. option:: -e, --exclude
 
-    Ajoute un *global pattern* listant des scripts à exclure des tests.
+    Adds a global pattern listing scripts to exclude tests.
     
 .. option:: -l, --loglevel
 
-    Définit le niveau de journalisation dans la console.
-    Celui-ci peut avoir les valeurs suivantes :
+    Sets the level of logging to the console. 
+    This can have the following values:
         
-        - ``"debug"``: Affiche des sorties standard et d'erreur.
-        - ``"info"``: Affiche le nom des scripts ayant passé le test (choix par défaut).
-        - ``"error"``: Affiche le nom des scripts n'ayant pas passé le test.
+        - ``"debug"``:  Displays standard output and standard error.
+        - ``"info"``: Displays the name of the successful scripts (default).
+        - ``"error"``: Displays the name of the scripts that failed.
 
 
 Distributing the library as a package
 =====================================
 
-Il est possible de créer des paquets correspondant typiquement à des versions précises (par exemple stables).
-La procédure est la suivante :
+It is possible to create packages typically corresponding to specific versions (for example stability). 
+The procedure is as follows:   
     
 .. code-block:: bash
 
     $ python setup.py bdist
     
-Cette commande va alors créer un fichier distribuable, dont le nom est proche de 
+This command will then create a distributable file, whose name is close to
 :file:`vacumm-0.9-svn128.linux-x86_64.tar.gz`.
-Ce fichier peut alors être déposé dans la section fichiers du site gforge du projet
+This file can then be placed in the files section of the gforge site of the project 
 (`à cette adresse <https://forge.ifremer.fr/frs/admin/qrs.php?package=&group_id=93>`_).
 
 

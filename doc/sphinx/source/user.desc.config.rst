@@ -1,10 +1,10 @@
 .. _user.desc.config:
 
-Gestion des configurations
-**************************
+Using advanced configurations
+*****************************
 
-Configurations initiales
-========================
+Initial configurations
+======================
 
 Certains modules de la librairie utilisent des fichiers de configuration
 pour définir leur comportement par défaut.
@@ -33,8 +33,8 @@ La configuration initiale, aussi nommée configuration par défaut, est appliqu�
 lors de leur création.
 
 
-Configuration utilisateur
-=========================
+User configuration
+==================
 
 Les configurations utlisateur **".cfg"** permettent d'écraser les valeurs
 de la configuration initiale.
@@ -48,8 +48,8 @@ Le fichier de configuration peut alors contenir différentes sections
 correspondantes au composants (classes) utilisées par le script.
 
 
-Description des configuration par composant (classe)
-====================================================
+Classes of configuration
+========================
 
 .. note::
 
@@ -184,8 +184,8 @@ en fonction des données de profiles avec deux méthodes:
     - Interpolation spatiale et temporelle
 
 
-Exemple de fichier de configuration
-===================================
+Example of a configuration file
+===============================
 
 Voici un exemple de fichier de configuration minimale premettant de régler le niveau
 de logging et l'accès aux données.

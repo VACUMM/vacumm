@@ -6,38 +6,34 @@ Coding rules
 Coding norm : PEP 8
 ===================
 
-Les conventions de programmation choisies suivent notamment les normes
-spécifiées par la :pep:`8`.
-Parmi ces normes, citons les points importants suivants :
+The coding rules mainly follow he standards specified by the :pep:`8`.
+These standards include the following important points:
     
-    - Les indentations sont composées de quatre espaces (pas de tabulation).
-    - Les noms de classes et exceptions ont des majuscules en début de mot,
-      et aucun caractère n'est utilisé pour séparer les mots dans le cas
-      des noms composés. Exemple : ``MySuperClass``.
-    - Les autres noms (fonctions, méthodes, attributs) sont entièrement en
-      minuscules et le caractère underscore ``_`` est utilisé pour séparer les mots.
-      Exemple : ``my_super_function``.
-    - L'encodage doit être en UTF-8.
+    - The indentations are composed of four spaces (no tabs).
+    - The names of classes and exceptions are capitalized at the beginning of the word, 
+      and no character is used to separate words in the case of compound nouns. Example : ``MySuperClass``.
+    - Other names (functions, methods, attributes) are all lowercase and 
+      underscore`` _`` character is used to separate words. Example: ``my_super_function``.
+    - The encoding must be UTF-8.
     
-Les points suivants sont d'importance secondaire :
+The following points are of secondary importance: 
     
-    - Les lignes ne doivent pas dépasser 79 caractères.
-    - Des espaces doivent être utilisés pour séparer les opérateurs.
+    - Lines must not exceed 79 characters.
+    - Spaces must be used to separate operators.
      
      
 Docstrings
 ==========
 
-Les docstings sont les commentaires sous forme de chaîne de caractères situés 
-immédiatement après une déclaration.
-Elles servent à renseigner sur l'objet déclaré (but, paramètres, sorties...), 
-et ces informations vont apparaître donc la documentation de la librairie.
+The docstrings are  comments located immediately after a statement.
+They are used to learn about the stated purpose (purpose, parameters, outputs ...) 
+and this information will be inserted in the documentation of the library after compilation.
 
-Les docstrings doivent être rédigées en langage de programmation `rst <http://docutils.sourceforge.net/rst.html>`_,
-utilisé par la générateur de documentation `Sphinx <http://sphinx.pocoo.org>`_ .
-La langue utilisée est l'anglais.
+Docstrings must be written in `rst <http://docutils.sourceforge.net/rst.html>`_ programming language,
+used by the documentation generator `Sphinx <http://sphinx.pocoo.org>`_ .
+The language used is English.
 
-Nous proposons la forme suivante : ::
+ We propose the following form::
     
     def myfunc(a, b, c=None, d=5, **kwargs):
         """Short description of myfunc

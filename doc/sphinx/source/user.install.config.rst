@@ -1,59 +1,54 @@
 .. _user.install.config:
 
-Configuration de la librairie
-=============================
+Library configuration
+=====================
 
-.. sidebar:: Quelle est ma configuration ?
+.. sidebar:: What is my configuration?
 
-    Si votre librairie n'est pas trop ancienne,
-    tapez:
+    If your library is not too old, type:
         
         >>> from vacumm.config import print_config
         >>> print_config()
     
-    Ou directement dans le shell :
+    Or directly in the shell:
         
     .. code-block:: bash
     
         vacumm_print_config.py
         
-    Voir :ref:`user.scripts.vacumm_print_config`.
+    See :ref:`user.scripts.vacumm_print_config`.
 
-But
----
+Purpose
+-------
 
-Certains modules ont par exemple besoin d'avoir accès à des
-fichiers externes (comme un fichier bathymétrique) qui ne sont
-pas inclus directement dans la librairie car trop volumineux.
-Afin de rendre l'installation générique et portable sur 
-différents réseaux, il est nécessaire de ne pas mettre ces 
-chemin d'accès en dur dans le code : celui-ci fait donc appel
-à un système de configuration. 
-Il existe ainsi une configuration par défaut (celle du réseau IFREMER),
-et il est possible d'altérer cette configuration pour l'adapter par exemple
-à son réseau ou ses besoins.
-Par exemple, Actimar possède sa configuration propre.
-Et chaque utilisateur peut lui aussi avoir sa configuration qui
-n'altère qu'une partie des paramètres.
+Some modules need for instance to access external files (such as a bathymetric file) 
+that are not included directly in the library because they are too bulky.
+To make the installation generic and portable on different networks, 
+it is necessary not to put these paths hardcoded in the code:
+so it uses a system configuration. 
+There is thus a default configuration (that of IFREMER network), 
+and it is possible to alter the configuration 
+for example to adapt to his or her needs or network. 
+For example, Actimar has its own configuration.
+And each user can also have its configuration 
+which affects partly these parameters.
 
-La notion de configuration intervient donc à deux niveaux :
+The concept of configuration is at two levels: 
 
-- Au niveau du développeur qui va faire appel à l'API (:mod:`vacumm.config`)
-  pour définir et utiliser la configuration dans son code.
-- Au niveau de l'utilisateur qui peut modifier son fichier de
-  configuration personnel.
+- At the user's level who can change its personal configuration file. 
+- At the developer's leve who will appeal to the API (:mod:`vacumm.config`)
+  to define and use the configuration in its code.
 
 
-Fonctionnement
---------------
+Operating
+---------
 
-Un certain nombre de modules possèdent une configuration par défaut
-prenant la forme d'un fichier :file:`config.cfg` se trouvant
-dans le même répertoire que le module, ou dans le répertoire racine de la librairie.
-La configuration du module est alors accessible à la section
-portant son nom. Par exemple, si le module :mod:`vacumm.toto.tutu`
-est configurable, son fichier de configuration peut être situé dans 
-:file:`vacumm/toto/config.cfg`, avec le contenu:
+A number of modules have a default configuration in the form of a 
+:file:`config.cfg` file in the same directory as the module 
+or in the root directory of the library. 
+The module configuration is then accessible at the section of the same name.
+For example, if the :mod:`vacumm.toto.tutu` module is configurable,
+its configuration file may be :file:`vacumm/toto/config.cfg`, with the content:
 
 .. code-block:: ini
 
@@ -61,12 +56,11 @@ est configurable, son fichier de configuration peut être situé dans
     masection = mavaleur
     
     
-En outre, les fichiers de configuration supporte l'expansion de variable
-sous deux formes :
+In addition, the configuration files of support the expansion of variables in two ways:
     
-    #. Une option présente dans une valeur est automatiquement remplacée par
-       sa valeur (elle est "étendue") quand elle est présente sous la forme
-       classique ``%(option)s``. Par exemple :
+    #. An options inserted in a value is automatically replaced 
+       by its value (it is "extended") when it is present in the classical
+       form ``%(option)s``. For example:
            
        .. code-block:: ini
        
@@ -74,61 +68,55 @@ sous deux formes :
            option1 = foo
            option2 = %(option1)bar
            
-       ``option2`` prend alors la valeur ``foobar``.
-       Il existe plusieurs noms de répertoires qui sont
-       actuellement systématiquement étendus :
+       ``option2`` takes the value ``foobar``.
+       There are several directory names that are currently systematically extended::
            
-           - ``lib_dir`` : Répertoire racine de la librairie 
-             (voir :func:`~vacumm.config.get_lib_dir`).
-           - ``data_dir`` : Répertoire où sont stockées les données utilisées
-             par la librairie et les tutoriels 
-             (voir :func:`~vacumm.config.get_data_dir`).
-           - ``tut_dir`` : Répertoire contenant les scripts de tutoriel 
-             (voir :func:`~vacumm.config.get_tut_dir`).
-           - ``dist_dir`` : Répertoire du paquet de distribution dans le cas
-             des développeurs 
-             (voir :func:`~vacumm.config.get_dist_dir`).
-           - ``conf_dir`` : Répertoire général contenant les fichiers
-             de configuration 
-             (voir :func:`~vacumm.config.get_conf_dir`).
-           - ``user_conf_dir`` : Répertoire utilisateur contenant les fichiers
-             de configuration 
-             (voir :func:`~vacumm.config.get_user_conf_dir`).
-           - ``mod_dir`` : Répertoire du module concerné 
-             (voir :func:`~vacumm.config.get_mod_dir`).
+           - ``lib_dir`` : Root directory of the library  
+             (see :func:`~vacumm.config.get_lib_dir`).
+           - ``data_dir`` : Directory that stores the data used by the library and tutorials
+             (see :func:`~vacumm.config.get_data_dir`).
+           - ``tut_dir`` : Directory containing tutorial scripts
+             (see :func:`~vacumm.config.get_tut_dir`).
+           - ``dist_dir`` : Directory of packet distribution for developers 
+             (see :func:`~vacumm.config.get_dist_dir`).
+           - ``conf_dir`` : General directory containing the configuration files
+             (see :func:`~vacumm.config.get_conf_dir`).
+           - ``user_conf_dir`` : Directory containing user configuration files
+             (see :func:`~vacumm.config.get_user_conf_dir`).
+           - ``mod_dir`` : Directory of the module 
+             (see :func:`~vacumm.config.get_mod_dir`).
            
-    #. Le chemin d'accès ``~`` est automatiquement remplacé par le 
-       home de l'utilisateur, et les variables d'environnement
-       présentent sous la forme ``$HOME`` ou ``${HOME}``
-       sont remplacées par leur valeur.
+    #. The path ``~`` is automatically replaced by the user home, 
+       and environment variables that have the form ``$HOME`` ou ``${HOME}``
+       are replaced by their value.
        
-       .. note:: Les développeurs amenés à gérer des configuration
-           peuvent se référer à la documentation du module :mod:`vacumm.config`.
+       .. note:: Developers that need to manage configuration can refer 
+        to the documentation of the module :mod:`vacumm.config`.
 
-On accède dans le code aux valeurs de la configuration grâce à la fonction
+Configuration values are accessible with the function 
 :func:`vacumm.config.get_config_value`.
 
 
-Configuration par défaut
-------------------------
+Default configuration
+---------------------
 
-La configuration générale par défaut (chargée grâce à :func:`~vacumm.config.get_default_config`) 
-est la suivante :
+The general default configuration (loaded with :func:`~vacumm.config.get_default_config`) 
+is following: 
 
 .. literalinclude:: vacumm.cfg
     :language: ini
 
 
-Configuration utilisateur
--------------------------
+User configuration 
+------------------
 
-Il est possible d'altérer la configuration par défaut d'un ou plusieurs modules.
-Le meilleur moyen est d'éditer le fichier :file:`$HOME/.config/vacumm/vacumm.cfg`.
-Pour **éditer** rapidement le fichier : :ref:`user.scripts.vacumm_edit_config`.
+It is possible to alter for a user the default configuration of one or more modules. 
+The best way is to edit the file :file:`$HOME/.config/vacumm/vacumm.cfg`.
+To quickly **edit** this file, use this script: :ref:`user.scripts.vacumm_edit_config`.
 
 .. obsol
     Il existe en outre d'autres possibilités, mais qui doivent être considérées comme obsolètes.
-    Les voici par ordre de priorité (voir :func:`~vacumm.config.get_config_files`) :
+    Les voici par ordre de priorité (see :func:`~vacumm.config.get_config_files`) :
         
         #. Créer un fichier :file:`vacumm.cfg` dans votre **répertoire courant** d'utilisation.
         #. Installer un fichier :file:`site.cfg` ou :file:`vacumm.cfg` dans le **répertoire
@@ -137,10 +125,11 @@ Pour **éditer** rapidement le fichier : :ref:`user.scripts.vacumm_edit_config`.
         #. Installer un fichier :file:`site.cfg` dans le **répertoire du module** que vous ciblez.
         #. Installer un fichier :file:`site.cfg` dans le **répertoire racine de la librairie**.
     
-Si vous installez la librairie, vous pouvez la reconfigurer pour les
-utilisateur en spécifiant l'option *--cfgfiles* à l'execution de :file:`setup.py`
-(voir :ref:`user.install.install.config`).
+If you personally install the library,
+you can configure it for the users using option :option:`--cfgfiles` of the :file:`setup.py` 
+installation script
+(see :ref:`user.install.install.config`).
 
-Vous pouvez enfin altérer cette configuration en ligne grâce à la fonction
+Finally, you can alter this configuration online through function 
 :func:`vacumm.config.set_config_value`.
 

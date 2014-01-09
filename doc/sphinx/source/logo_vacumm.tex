@@ -1,12 +1,22 @@
 \documentclass{article}
 \usepackage{tikz}
 \usepackage[utf8]{inputenc}
+\input T1fmv.fd
+\renewcommand*\sfdefault{fmv}
+\renewcommand*\familydefault{\sfdefault} %% Only if the base font of the document is to be sans serif
 \usepackage[T1]{fontenc}
 \usepackage{times}
+% \usepackage{fontspec}
 \usetikzlibrary{shadows}
+% \setmainfont{GeosansLight.ttf}
 \begin{document}
 \pagestyle{empty}
-\begin{tikzpicture}[font=\ttfamily\bfseries\huge]
+% \renewcommand{\seriesdefault}{l}
+% \renewcommand*\sfdefault{fmv}
+% \renewcommand*\familydefault{\sfdefault} %% Only if the base font of the document is to be sans serif
+\font\tenrm = cmr17 at 8pt
+\tenrm
+\begin{tikzpicture}[font=\sffamily\huge]
 \node [rectangle,draw,rounded corners=2mm,top color=white,bottom color=orange,
     inner sep=3mm,very thick,
     drop shadow={shadow xshift=.1ex, shadow yshift=-.1ex}] {VACUMM};

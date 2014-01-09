@@ -2,18 +2,18 @@
 
 .. f:program:: make_stats
 
-    Programme principal de calcul des statistiques
+    Programm for computing statistics calcul des statistiques
 
 **Module** :f:mod:`mymodule`
 
 .. f:module:: mymodule
-    :synopsis: Module de calculs
+    :synopsis: Main statistical module
             
 .. f:variable:: nx
     :type: integer
     :attrs: parameter=5
 
-    Dimension zonale.
+    Zonal dimension.
     
 .. f:variable:: sst(nx)
     :type: float
@@ -22,20 +22,20 @@
     
 .. f:type:: obs
     
-    Type décrivant un jeu d'observations.
+    Type that describes observations.
     
-    :f x(nx): Axe zonal.
+    :f x(nx): zonal axis.
     :ftype x: float
     :f float sst(nx): SST
 
 .. f:subroutine:: stats(data, b, [c, d])
 
-    Description de la routine.
+    Description of the routine.
     
-    :param obs data: Données à analyser.
-    :p integer a(nx,5) [in]: Aussi obligatoire.
-    :o float c [optional]: Optionel.
-    :o d: Aussi optionel.
+    :param obs data: Data to analyse.
+    :p integer a(nx,5) [in]: Also mandatory.
+    :o float c [optional]: Optional.
+    :o d: Also optional.
     :from: :f:prog:`make_stats`.
     :to: :f:func:`rms`
     
@@ -45,12 +45,12 @@
 
 .. f:function:: rms(mod, obs, unbiased)
 
-    Compute RMS erreur.
+    Compute RMS errors.
     
-    :p float mod(nx) [in]: Sortes modèles.
+    :p float mod(nx) [in]: Model outputs.
     :p float obs(nx) [in]: Observations.
-    :o logical unbiased [default=.true.]: Calcul biasé ?
-    :r rms(nx): RMS calculée.
+    :o logical unbiased [default=.true.]: Biased?
+    :r rms(nx): Computed RMS.
     :rtype rms: float
     :from: :f:func:`mymodule/stats` :f:func:`~mymodule/stats` :f:subr:`stats` :f:func:`stats`
     

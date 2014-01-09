@@ -61,7 +61,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'VACUMM'
-copyright = u'2010, Actimar/IFREMER'
+copyright = u'2010-2013, Actimar/IFREMER'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -122,6 +122,9 @@ html_theme = 'sphinxdoc'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #html_theme_options = {}
+#html_theme_options = {
+    #"collapsiblesidebar": "true"
+#}
 
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = ['themes']
@@ -312,7 +315,8 @@ gen_gallery_paths = {
     'courses':{'figdir':'../../../scripts/courses', 'rstdir':'courses', 'title':'Courses'},
 }
 #gen_gallery_root = 'gallery'
-#gen_gallery_skips = []
+#gen_gallery_skips = [] # basenames to skip
+#gen_gallery_nmax = 3 # max number of muti-figures
 
 # Colormaps
 gen_cmaps_prefix = 'misc-color-'
@@ -325,6 +329,7 @@ gen_cmaps_extra_list = [
     ('cmap_magic', dict(anomaly=True), 'vacumm_magic-anom'), 
     ('cmap_magic', dict(positive=True), 'vacumm_magic-pos'),
     ('cmap_magic', dict(negative=True), 'vacumm_magic-neg'), 
+    ('cmap_rainbow', dict(n=5, stretcher='reduced_green'), 'vacumm_rainbow'), 
 ]
 
 # Autodoc (python)
@@ -335,4 +340,14 @@ autodoc_default_flags = ['members', 'show-inheritance', 'undoc-members']
 programoutput_use_ansi = True # default is: False
 
 
+def setup(app):
+    app.add_object_type('confval', 'confval',
+        objname='configuration value',
+        indextemplate='pair: %s; configuration value')
+    app.add_object_type('confopt', 'confopt',
+        objname='configuration option',
+        indextemplate='pair: %s; configuration option')
+    app.add_object_type('confsec', 'confsec',
+        objname='configuration section',
+        indextemplate='pair: %s; configuration section')
 

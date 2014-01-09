@@ -1,27 +1,27 @@
-Regrillages et masquages
-************************   
+Regridding and masking
+**********************
 
      
 .. _user.desc.regridding:
 
-Le regrillage
-=============
+Regridding
+==========
 
 
-Regrillage 1D et 2D
--------------------
+1D and 2D regridding
+--------------------
 
-Généralités importantes
-^^^^^^^^^^^^^^^^^^^^^^^
+Generalities
+^^^^^^^^^^^^
 
-Voir : :mod:`~vacumm.misc.grid.regridding`
+See also: :mod:`~vacumm.misc.grid.regridding`
 
-Classes de regrillage 
-~~~~~~~~~~~~~~~~~~~~~
+Regridding classes
+~~~~~~~~~~~~~~~~~~
 
-On distingue deux grandes classes de regrillage :
+There are two major classes of regridding:
 
-    **L'interpolation**
+    **The interpolation**
         Elle peut être typiquement par plus proche voisin, linéaire ou cubique, ou faire appel à des
         techniques plus sophistiquées en 2D.
         L'interpolation est à utiliser dans deux cas de figure :
@@ -36,7 +36,7 @@ On distingue deux grandes classes de regrillage :
         Elle est à utiliser pour passer **d'une grille (ou axe en 1D) 
         haute résolution vers une grille basse résolution**.
 
-Le tutoriel ":ref:`user.tut.misc.grid.regridding.remap_vs_interp_1d`" donne un aperçu du comportement des deux classes de regrillage.
+Le tutoriel ":ref:`user.tut.misc.grid.regridding.remap_vs_interp_1d`" donne un aperçu du comportement des deux classes de regridding.
 
 Le choix de la méthode peut être fait automatiquement.
 Dans ce cas, la fonction :func:`~vacumm.misc.grid.regridding.regrid_method` va calculer les résolutions
@@ -57,11 +57,11 @@ par exemple inférieure à .5.
 Regrillage 1D
 ^^^^^^^^^^^^^
 
-Le regrillage 1D se fait sur l'un des axes d'une variable qui peut être multi-dimensionnelle.
+Le regridding 1D se fait sur l'un des axes d'une variable qui peut être multi-dimensionnelle.
 Par exemple, on peut chercher à regriller sur la verticale une variable 'tzyx'.
 
-Le regrillage 1D supporte en outre ce que l'on pourrait appeler les "axes étendus" : 
-un regrillage toujours 1D, mais variable suivant certains des autres axes.
+Le regridding 1D supporte en outre ce que l'on pourrait appeler les "axes étendus" : 
+un regridding toujours 1D, mais variable suivant certains des autres axes.
 On utilise pour cela les mots clés ``xmap`` et ``xmapper``.
 
 Pour plus d'information, voir :func:`~vacumm.misc.grid.regridding.regrid1d`.
@@ -72,7 +72,7 @@ Pour plus d'information, voir :func:`~vacumm.misc.grid.regridding.regrid1d`.
 Regrillage 2D
 ^^^^^^^^^^^^^
 
-Le regrillage 2D se fait sur les deux derniers axes, qui sont généralement
+Le regridding 2D se fait sur les deux derniers axes, qui sont généralement
 associés aux axes de longitude et latitude en degrés.
 
 L'utilisation du proche voisin à proximité immédiate de la côte 
@@ -90,14 +90,14 @@ Ressources
 ^^^^^^^^^^
 
 Le module :mod:`~vacumm.misc.grid.regridding` met à disposition des fonctions et classes
-afin de faciliter le regrillage avec les méthodes évoquées ci-dessus.
-Néanmoins, le coeur du regrillage est délégué à d'autre modules.
+afin de faciliter le regridding avec les méthodes évoquées ci-dessus.
+Néanmoins, le coeur du regridding est délégué à d'autre modules.
 
-    - Le regrillage sur grilles rectangulaires est effectué notamment par les routines
+    - Le regridding sur grilles rectangulaires est effectué notamment par les routines
       Fortran du fichier :file:`interp.f90`. Ce fichier est converti en module
       python grâce à `f2py <http://docs.scipy.org/doc/numpy/user/c-info.python-as-glue.html#f2py>`_.
     - Le remapping sur grille rectangulaire est effectué par le module CDAT :mod:`regrid2`
-    - Le regrillage sur des grilles curvilinéaires fait appel au regrilleur
+    - Le regridding sur des grilles curvilinéaires fait appel au regrilleur
       `SCRIP <http://climate.lanl.gov/Software/SCRIP>`_ et au module CDAT :mod:`regrid2`.
 
 Interpolation de nuages de points
@@ -123,8 +123,8 @@ Pour plus d'information, voir :func:`~vacumm.misc.grid.regridding.griddata`.
 
 .. _user.desc.masking:
 
-Le masquage
-===========
+Masking
+=======
 
 Le masquage des nuages de points et des données grillées est généralement effectué
 soit par polygones, soit par interpolation de masque.

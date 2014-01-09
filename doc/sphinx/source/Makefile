@@ -1,4 +1,5 @@
 png = static/logo_vacumm.png static/modules.png
+png = static/logo_vacumm.png
 all: $(png)
 
 static/%.png: static/%.pdf
