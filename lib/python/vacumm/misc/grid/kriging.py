@@ -227,7 +227,15 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10)
     return db, vb
     
 def variogram_fit(x, y, z, mtype, getp=False, geterr=False, fpar=None):
-    """Fit a variogram model to data and return the function"""
+    """Fit a variogram model to data and return the function
+    
+    :Params:
+    
+        - **x/y/z**: Position and data.
+        - **mtype**: Variogram model type (see :func:`variogram_model_types`).
+        - **getp**, optional: Only return model parameters.
+    
+    """
     # Estimated variogram
     d, v = variogram(x, y, z)
     
