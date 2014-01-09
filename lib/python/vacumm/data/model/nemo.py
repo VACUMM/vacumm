@@ -45,7 +45,6 @@ __doc__ = 'NEMO model data manipulation'
 
 
 from vacumm.data.misc.dataset import OceanDataset
-from vacumm.misc import dict_merge
 
 
 class Nemo(OceanDataset):
@@ -55,7 +54,7 @@ class Nemo(OceanDataset):
     '''
     
     
-    _local_obj_specs = {
+    ncbj_specs = {
 
         # depth
         'depth':{'search':{'names':['depth']}}, 
@@ -160,8 +159,6 @@ class Nemo(OceanDataset):
         }
     }
     
-    ncobj_specs = dict_merge(_local_obj_specs, OceanDataset.ncobj_specs)
-    del _local_obj_specs
     
     positive = 'down'
     

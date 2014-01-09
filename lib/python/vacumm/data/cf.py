@@ -9,13 +9,19 @@ from vacumm.misc import kwfilter, dict_merge
 from vacumm.misc.axes import create as create_axis, isaxis
 from vacumm.misc.grid import create_axes2d
 from vacumm.misc.io import ncmatch_obj
+from misc.arakawa import locations as arakawa_locations
 
 __all__ = ['var_specs', 'axis_specs', 
     'generic_axis_names', 'generic_var_names', 'generic_names', 
     'format_var', 'format_axis', 'format_grid', 'match_obj', 
-    'cf2atts', 'cf2search', 'cp_suffix', 
+    'cf2atts', 'cf2search', 'cp_suffix', 'specs_def_loc', 'get_loc', 
     'change_loc', 'change_loc_single', 'specs_dup_loc', 'no_loc_single', 
+    'change_loc_var', 'squeeze_loc_single', 'squeeze_loc_var', 'get_physloc', 
+    'hidden_cf_atts'
 ]
+
+arakawa_suffixes = [('_'+p) for p in arakawa_locations]
+
 
 #: Specifications for variables
 var_specs = OrderedDict(
@@ -70,54 +76,67 @@ var_specs = OrderedDict(
     ),
     u3d = dict(
         names=['uz', 'u3d'],
-        standard_names=['sea_water_x_velocity_at_u_location', 'sea_water_x_velocity', 
+        standard_names=['sea_water_x_velocity', #'sea_water_x_velocity_at_u_location', 
 #            'eastward_sea_water_velocity'
             ],
-        long_names = "Sea water velocity along X at U location", 
+        long_names = "Sea water velocity along X", 
         units = "m s-1", 
         axes = dict(x=['lon_u'], y=['lat_u']), 
+        atlocs = ['t', 'u', 'v'], 
+        physloc = 'u', 
     ),
     v3d = dict(
         names=['vz', 'v3d'],
-        standard_names=['sea_water_y_velocity_at_v_location', 'sea_water_y_velocity', 
+        standard_names=['sea_water_y_velocity', #'sea_water_y_velocity_at_v_location', 
             'northward_sea_water_velocity'],
-        long_names = "Sea water velocity along Y at V location", 
+        long_names = "Sea water velocity along Y", 
         units = "m s-1", 
         axes = dict(x=['lon_v'], y=['lat_v']), 
+        atlocs = ['t', 'u', 'v'], 
+        physloc = 'v', 
     ),
     w3d = dict(
         names=['wz', 'w3d'],
         standard_names=['sea_water_z_velocity_at_w_location', 'sea_water_z_velocity'],
         long_names = "Sea water velocity along Z at W location", 
         units = "m s-1", 
+        physloc = 'w', 
     ),
     ubt = dict(
         names=['ubt', 'u2d', 'u'],
-        standard_names=['barotropic_sea_water_x_velocity_at_u_location'],
-        long_names = "Sea water barotropic velocity along X at U location", 
+        standard_names=['barotropic_sea_water_x_velocity'],
+        long_names = "Sea water barotropic velocity along X", 
         units = "m s-1", 
         axes = dict(x=['lon_u'], y=['lat_u']), 
+        atlocs = ['t', 'u', 'v'], 
+        physloc = 'u', 
     ),
     vbt = dict(
         names=['vbt', 'v2d', 'v'],
-        standard_names=['barotropic_sea_water_y_velocity_at_v_location'],
-        long_names = "Sea water barotropic velocity along Y at V location", 
+        standard_names=['barotropic_sea_water_y_velocity'],
+        long_names = "Sea water barotropic velocity along Y", 
         units = "m s-1", 
         axes = dict(x=['lon_v'], y=['lat_v']), 
+        atlocs = ['t', 'u', 'v'], 
+        physloc = 'v', 
     ),
     usurf = dict(
         names = ['usurf'], 
-        standard_names=['sea_surface_x_velocity_at_u_location', 'sea_surface_x_velocity'],
-        long_names = "Sea surface velocity along X at U location", 
+        standard_names=['sea_surface_x_velocity'],
+        long_names = ["Sea surface velocity along X"], 
         units = "m s-1", 
-        axes = dict(y=['lat_u'], x=['lon_u'])
+        axes = dict(y=['lat'], x=['lon']), 
+        atlocs = ['t', 'u', 'v'], 
+        physloc = 'u', 
     ), 
     vsurf = dict(
         names = ['vsurf'], 
-        standard_names=['sea_surface_y_velocity_at_y_location', 'sea_surface_y_velocity'],
-        long_names = "Sea surface velocity along Y at V location", 
+        standard_names=['sea_surface_y_velocity', 'sea_surface_y_velocity_at_y_location'],
+        long_names = ["Sea surface velocity along Y", "Sea surface velocity along Y at V location"], 
         units = "m s-1", 
         axes = dict(x=['lon_v'], y=['lat_v']), 
+        atlocs = ['t', 'u', 'v'], 
+        physloc = 'v', 
     ), 
     ugbt = dict(
         names=['ugbt'],
@@ -168,12 +187,14 @@ var_specs = OrderedDict(
         standard_names = 'mixed_layer_depth', 
         long_names = "Mixed layer depth", 
         units = "m", 
+        physloc = 't', 
     ), 
     ped = dict(
         names = [], 
         standard_names = 'potential_energy_deficit', 
         long_names = "Potential energy deficit", 
         units = "J m-2", 
+        physloc = 't', 
     ), 
 
 
@@ -183,7 +204,7 @@ var_specs = OrderedDict(
         standard_names=['model_sea_floor_depth_below_sea_level', 'model_sea_floor_depth_below_geoid', "sea_floor_depth_below_geoid" ], 
         long_names = 'Bathymetry', 
         units = 'm', 
-        atlocs = ['u', 'v', 'f'], 
+        atlocs = ['t', 'u', 'v', 'f'], 
     ), 
     bathy_u = dict(
         names = ['hx'], 
@@ -198,44 +219,44 @@ var_specs = OrderedDict(
             'ocean_layer_depth_at_v_location'], 
         long_names =  'Depth', 
         units = 'm', 
-        atlocs = ['u', 'v', 'w'], 
+        atlocs = ['t', 'u', 'v', 'w'], 
     ), 
         
     # Cell sizes
     dx = dict(
-        names = ['dx', 'dx_u', 'dx_v', 'dx_f'],
+        names = ['dx'], #, 'dx_u', 'dx_v', 'dx_f'],
         standard_names = 'cell_x_size',
         long_names = "Mesh size along x",
         units = 'm',
-        atlocs = ['u', 'v', 'f'], 
+        atlocs = ['t', 'u', 'v', 'f'], 
     ),
     dy = dict(
-        names = ['dy', 'dy_u', 'dy_v', 'dy_f'],
+        names = ['dy'], #, 'dy_u', 'dy_v', 'dy_f'],
         standard_names = 'cell_y_size',
         long_names = "Mesh size along y",
         units = 'm',
-        atlocs = ['u', 'v', 'f'], 
+        atlocs = ['t', 'u', 'v', 'f'], 
     ),
     dz = dict(
         names = ['dz'], 
         standard_names = 'ocean_layer_thickness', 
         long_names = "Ocean layer thickness", 
         units = "m", 
-        atlocs = ['u', 'v', 'w'], 
+        atlocs = ['t', 'u', 'v', 'w'], 
     ), 
     dlon = dict(
-        names = ['dlon', 'dlon_u', 'dlon_v', 'dlon_f'],
+        names = ['dlon'], #, 'dlon_u', 'dlon_v', 'dlon_f'],
         standard_names = 'cell_x_size',
         long_names = "Mesh size along x",
         units = 'degrees',
-        atlocs = ['u', 'v', 'f'], 
+        atlocs = ['t', 'u', 'v', 'f'], 
     ),
     dlat = dict(
-        names = ['dlat', 'dlat_u', 'dlat_v', 'dlat_f'],
+        names = ['dlat'], #, 'dlat_u', 'dlat_v', 'dlat_f'],
         standard_names = 'cell_y_step',
         long_names = "Mesh step along y",
         units = 'degrees',
-        atlocs = ['u', 'v', 'f'], 
+        atlocs = ['t', 'u', 'v', 'f'], 
     ),
    
     # Cell volumes
@@ -244,7 +265,7 @@ var_specs = OrderedDict(
         standard_names = 'cell_volume', 
         long_names = "Volume of the cell", 
         units = "m3", 
-        atlocs = ['u', 'v', 'w'], 
+        atlocs = ['t', 'u', 'v', 'w'], 
     ), 
    
     # Coriolis
@@ -253,7 +274,7 @@ var_specs = OrderedDict(
         standard_names = "coriolis_parameter", 
         long_names = "Coriolis parameter", 
         units = "s-1", 
-        atlocs = ['u', 'v'], 
+        atlocs = ['t', 'u', 'v', 'f'], 
     ), 
     beta = dict(
         names = [], 
@@ -334,6 +355,7 @@ var_specs = OrderedDict(
         long_names = "Surface eastward wind stress", 
         units = "N m-2", 
         axes = dict(x=['lon_u'], y=['lat_u']), 
+        physloc = 'u', 
     ), 
     tauv = dict(
         names = [], 
@@ -342,6 +364,7 @@ var_specs = OrderedDict(
         long_names = "Surface northward wind stress", 
         units = "N m-2", 
         axes = dict(x=['lon_v'], y=['lat_v']), 
+        physloc = 'v', 
     ), 
     taux = dict(
         names = ['ustress'], 
@@ -350,6 +373,7 @@ var_specs = OrderedDict(
         long_names = "Surface wind stress along X", 
         units = "N m-2", 
         axes = dict(x=['lon_u'], y=['lat_u']), 
+        physloc = 'u', 
     ), 
     tauy = dict(
         names = ['vstress'], 
@@ -358,6 +382,7 @@ var_specs = OrderedDict(
         long_names = "Surface wind stress along Y", 
         units = "N m-2", 
         axes = dict(x=['lon_v'], y=['lat_v']), 
+        physloc = 'v', 
     ), 
     
     # Surfaces waves
@@ -390,6 +415,7 @@ axis_specs = OrderedDict(
         axis = 'X', 
         iaxis = 'ni', 
         jaxis = 'nj', 
+        atlocs=['t', 'u', 'v', 'f'], 
     ), 
     lat = dict(
         names = ['lat', 'latitude', 'nav_lat'], 
@@ -399,45 +425,50 @@ axis_specs = OrderedDict(
         axis = 'Y', 
         iaxis = 'ni', 
         jaxis = 'nj', 
+        atlocs=['t', 'u', 'v', 'f'], 
     ), 
-    lon_u = dict(
-        names = ['lon_u','longitude_u','nav_lon_u'], 
-        standard_names = ['longitude_at_u_location'], 
-        long_names = 'Longitude at U location', 
-        units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 'degreee', 'degreese'], 
-        axis = 'X', 
-        iaxis = 'ni_u', 
-        jaxis = 'nj_u', 
-    ), 
-    lat_u = dict(
-        names = ['lat_u','latitude_u','nav_lat_u'], 
-        standard_names = ['latitude_at_u_location'], 
-        long_names = 'Latitude at V location', 
-        units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'], 
-        axis = 'Y', 
-        iaxis = 'ni_u', 
-        jaxis = 'nj_u', 
-    ), 
-    lon_v = dict(
-        names = ['lon_v','longitude_v','nav_lon_v'], 
-        standard_names = ['longitude_at_v_location'], 
-        long_names = 'Longitude at V location', 
-        units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 'degreee', 'degreese'], 
-        axis = 'X', 
-        iaxis = 'ni_v', 
-        jaxis = 'nj_v', 
-    ), 
-    lat_v = dict(
-        names = ['lat_v','latitude_v','nav_lat_v'], 
-        standard_names = ['latitude_at_v_location'], 
-        long_names = 'Latitude at V location', 
-        units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'], 
-        axis = 'Y', 
-        iaxis = 'ni_v', 
-        jaxis = 'nj_v', 
-    ), 
+#    lon_u = dict(
+#        names = ['lon_u','longitude_u',], 
+#        standard_names = ['longitude_at_u_location'], 
+#        long_names = 'Longitude at U location', 
+#        units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 'degreee', 'degreese'], 
+#        axis = 'X', 
+#        iaxis = 'ni_u', 
+#        jaxis = 'nj_u', 
+#    ), 
+#    lat_u = dict(
+#        names = ['lat_u','latitude_u',], 
+#        standard_names = ['latitude_at_u_location'], 
+#        long_names = 'Latitude at V location', 
+#        units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'], 
+#        axis = 'Y', 
+#        iaxis = 'ni_u', 
+#        jaxis = 'nj_u', 
+#    ), 
+#    lon_v = dict(
+#        names = ['lon_v','longitude_v',], 
+#        standard_names = ['longitude_at_v_location'], 
+#        long_names = 'Longitude at V location', 
+#        units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 'degreee', 'degreese'], 
+#        axis = 'X', 
+#        iaxis = 'ni_v', 
+#        jaxis = 'nj_v', 
+#    ), 
+#    lat_v = dict(
+#        names = ['lat_v','latitude_v',], 
+#        standard_names = ['latitude_at_v_location'], 
+#        long_names = 'Latitude at V location', 
+#        units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'], 
+#        axis = 'Y', 
+#        iaxis = 'ni_v', 
+#        jaxis = 'nj_v', 
+#    ), 
     depth = dict(
         inherit = 'depth', 
+        axis = 'Z', 
+    ), 
+    depth_t = dict(
+        inherit = 'depth_t', 
         axis = 'Z', 
     ), 
     depth_u = dict(
@@ -470,7 +501,7 @@ axis_specs = OrderedDict(
         names = ['ni'], 
         standard_names =  ['x_grid_index'], 
         long_names = ["x-dimension of the grid"], 
-        axis = 'X', 
+        axis = 'X',
     ), 
     nj = dict(names = ['nj'], 
         standard_names =  ['y_grid_index'], 
@@ -505,18 +536,97 @@ axis_specs = OrderedDict(
 
 #: Specifications for grid formating
 grid_specs = {
-    't': dict(lon='lon', lat='lat'), 
-    'u': dict(lon='lon_u', lat='lat_u'), 
-    'v': dict(lon='lon_v', lat='lat_v'), 
-    'f': dict(lon='lon_f', lat='lat_f'), 
+    't': dict(lon='lon', lat='lat', level='depth_t'), 
+    'u': dict(lon='lon_u', lat='lat_u', level='depth_t'), 
+    'v': dict(lon='lon_v', lat='lat_v', level='depth_t'), 
+    'f': dict(lon='lon_f', lat='lat_f', level='depth_t'), 
+    'w': dict(lon='lon', lat='lat', level='depth_w'),
 }
+#TODO: 't' must use lon_t and lat_t
 grid_specs['r'] = grid_specs['t']
 
-_reloc =  dict(
-    name = re.compile('(_[a-z])?$', re.I).search, 
-    standard_name = re.compile('(_at_[a-z]_location)?$', re.I).search, 
-    long_name = re.compile('( at [a-z] location)?$', re.I).search, 
+_reloc =  OrderedDict(
+    name = re.compile('(_([a-z]))?$', re.I).search, 
+    standard_name = re.compile('(_at_([a-z])_location)?$', re.I).search, 
+    long_name = re.compile('( at ([a-z]) location)?$', re.I).search, 
 )
+
+#: Default location of gridded variables
+default_location = 't'
+
+def get_loc(name, stype=None, mode='loc'):
+    """Get the location testing name, standard_name or long_name
+    
+    :Params:
+    
+        - **name**: Generic name of the variable or axis, or an object CDAT object 
+          (variable or axis).
+        - **stype**, optional: One of 'name', 'standard_name' or 'long_name'.
+          If ``None``, they are all tested.
+          If ``name`` is a string, location is searched interpreting it as of type ``'stype``.
+          Else if ``name`` is an object ``stype`` specifies what attribute to test.
+        - **mode**, optional: What you get if something found.
+        
+            - ``"loc"``: Get the location lowercase letter (like "u").
+            - ``"ext"``: Same as ``"loc"`` but defaults to the "physloc" specification
+              if ``name`` has an entry in :attr:`var_specs`, else defaults to
+              :attr:`default_location`.
+            - Else, the matched string.
+            
+    :Example:
+    
+        >>> loc = get_loc('toto_u')
+        >>> suffix = get_loc('toto_at_u_location', stype='standard_name', mode='full')
+        >>> loc = get_loc(myvar, stype=['name','long_name'])
+        
+    :Return:
+    
+        - ``None`` if no location spec found,
+        - if ``mode=="loc"``, one of possible physical 
+          :attr:`~vacumm.data.misc.arakawa.locations`,
+        - else, the complete matching string, like "_at_u_location".
+    """
+    # What to test
+    if stype is None: stype = _reloc.keys() # all by default
+    stypes = stype if isinstance(stype, list) else [stype]
+    
+    # CDAT object (not a string)
+    if isinstance(name, list): name = name[0]
+    if not isinstance(name, basestring):
+        for stype in stypes:
+            if stype=='name':
+                loc = get_loc(name.id, stype, mode=mode)
+            elif hasattr(name, stype):
+                loc = get_loc(getattr(name, stype), stype, mode)
+            elif mode=='ext' and name.id in var_specs and var_specs[name.id].get('physloc'):
+                loc = var_specs[name.id].get('physloc')
+            else:
+                continue
+            return loc
+        return
+    
+    # String
+    outloc = mode=='loc' or mode=='ext'
+    for stype in stypes:
+        
+        # From string
+        group = 2 if outloc else 1
+        if stype not in _reloc: stype = 'name'
+        loc = _reloc[stype](name).group(group)
+        if loc and outloc: loc = loc.lower()
+        if loc: return loc
+        
+        # Extended mode
+        if mode=='ext':
+            
+            # From physloc
+            if stype=='name' and name in var_specs and var_specs[name].get('physloc'): 
+                return var_specs[name].get('physloc')
+            
+            # Default location
+            return default_location            
+        
+    
 def no_loc_single(name, stype):
     """Remove location specification
     
@@ -525,7 +635,7 @@ def no_loc_single(name, stype):
         - **name**: Generic ame of the variable or axis.
         - **stype**: One of 'name', 'standard_name' or 'long_name'.
     """
-    loc = _reloc[stype](name).group(1)
+    loc = get_loc(name, stype, mode='full')
     if loc is not None:
         return name[:-len(loc)]
     return name
@@ -539,51 +649,75 @@ def _loc_(loc=None):
         raise TypeError('Wrong location: '+loc)
     return loc.lower()
 
-def change_loc_single(name, stype, loc):
-    """Change location specification"""
+def change_loc_single(name, stype, loc, squeeze=None):
+    """Change location specification
+    
+    :Params:
+    
+        - **name**: String to change.
+        - **stype**: String type: name, stand_name or long_name.
+        - **loc**: Location as a letter.
+        - **squeeze**, optional: If specified and equal to ``loc``, location is removed
+          instead of being changed.
+    
+    :Example:
+    
+        >>> change_loc_single('usurf_u', 'name', 't')
+        'usurf_t'
+        >>> change_loc_single('sst_at_u_location', 'standard_name', 'v')
+        'sst_at_v_location'
+        >>> change_loc_single('usurf_t', 'name', 'u', squeeze='u')
+        'usurf'
+    """
     basename = no_loc_single(name, stype)
     loc = _loc_(loc)
-    if loc:
-        if stype=='name':
-            return basename+'_'+loc
+    if loc and (not squeeze or squeeze!=loc):
         if stype=='standard_name':
             return basename+'_at_%s_location'%loc
         if stype=='long_name':
             return basename+' at %s location'%loc.upper()
+        return basename+'_'+loc
     return basename
         
-def change_loc(loc, names=None, standard_names=None, long_names=None, axes=None, **kwargs):
+def change_loc(loc, names=None, standard_names=None, long_names=None, axes=None, 
+    iaxis=None, jaxis=None, squeeze=None, **kwargs):
     """Change location specification in names, standard names, long names and axes names
     
-    :Return: A dictionary
+    :Example:
     
-    TODO: change_loc: add axes
+        >>> specs = change_loc('v', names = ['usurf_u', 'u_u'])
+    
+    :Return: A dictionary
     """
     specs = kwargs.copy()
     if 'atlocs' in specs: del specs['atlocs']
     
     # Attributes
-    for stype in 'name', 'standard_name', 'long_name':
-        values = eval(stype+'s')
+    for stype in 'name', 'standard_name', 'long_name', 'iaxis', 'jaxis':
+        sname = stype if stype in ('iaxis', 'jaxis') else (stype+'s')
+        values = eval(sname)
         if values is None: continue
         if isinstance(values, list):
-            tmp = [change_loc_single(value, stype, loc) for value in values]
+            values = list(values)
+            tmp = [change_loc_single(value, stype, loc, squeeze=squeeze) for value in values]
             values = []
             for value in tmp: # unique
                 if value not in values:
                     values.append(value)
           
         else:
-            values = change_loc_single(values, stype, loc)
-        specs[stype+'s'] = values
+            values = change_loc_single(values, stype, loc, squeeze=squeeze)
+        specs[sname] = values
         
     # Axes
     if axes is not None:
-        for l in axes.keys(): # loop on x, y t
+        axes = axes.copy()
+        for l in axes.keys(): # loop on x, y
+            if l=='t': continue # skip time
             laxes = axes[l]
             single = not isinstance(laxes, list)
             if single: laxes = [laxes] # work on lists
-            laxes = [change_loc_single(axis, 'name', loc) for axis in laxes]+laxes # duplicate
+            laxes = [change_loc_single(axis, 'name', loc, squeeze=default_location) for axis in laxes]+laxes # duplicate
             lnewaxes = []
             for axis in laxes: # unique
                 if axis not in lnewaxes:
@@ -595,8 +729,140 @@ def change_loc(loc, names=None, standard_names=None, long_names=None, axes=None,
         
     return specs
     
+def change_loc_var(var, toloc, axes=True, squeeze=True):
+    """Change location specifications of a variable and its axes
+    
+    It affects the id, the standard_name and the long_name when they are defined.
+    
+    :Params:
+    
+        - 
+    
+    :Example:
+    
+        >>> change_loc_var(sst, 'u').id
+        'sst_u'
+        >>> change_loc_var(sst, 't', squeeze=True).id
+        'sst'
+    
+    """
+    
+    # Squeeze physloc
+    if not isinstance(squeeze, basestring):
+        if squeeze:
+            squeeze = get_physloc(var)
+        else:
+            squeeze = None
+    
+    # Change attributes
+    # - get
+    specs = change_loc(toloc, squeeze=squeeze, 
+        names=var.id, 
+        standard_names = getattr(var, 'standard_name', None), 
+        long_names = getattr(var, 'long_name', None), 
+        )
+    # - set
+    var.id = specs['names']
+    for att in 'standard_name', 'long_name':
+        if att+'s' in specs:
+            setattr(var, att, specs[att+'s'])
+    # - cf name
+    if hasattr(var, '_vacumm_cf_name'):
+        var._vacumm_cf_name = change_loc_single(var._vacumm_cf_name, 'name', toloc, 
+            squeeze=squeeze)
+            
+    # Change axes and grid attributes
+    if axes and cdms2.isVariable(var) or cdms2.isGrid(var):
+        
+        # Axes
+        # - usual
+        for meth in 'Longitude', 'Latitude', 'Time', 'Level':
+            if hasattr(var, 'get'+meth):
+                axismet = getattr(var, 'get'+meth) # var.getLongitude
+                if axismet() is not None:
+                    change_loc_var(axismet(), toloc, squeeze=squeeze)
+        # - 2d axes
+        if cdms2.isVariable(var) and isaxis(var) and var.ndim>2:
+            for i in -1, -2:
+                change_loc_var(var.getAxis(i), toloc, squeeze=squeeze)            
+                    
+        # Grid
+        if cdms2.isVariable(var) and var.getGrid() is not None:
+            change_loc_var(var.getGrid(), toloc, squeeze=squeeze)
+            
+        
+    return var
+
+def get_physloc(var):
+    """Get the physical location of a variable
+    
+    It defaults to :attr:`default_location`
+    """
+    # Direct
+    if hasattr(var, '_vacumm_cf_physloc'): 
+        return var._vacumm_cf_physloc
+    
+    # Entry name in var_specs (string)
+    if isinstance(var, basestring):
+        if var in var_specs:
+            var = var_specs[var]
+        else:
+            return default_location
+    
+    # Dict of specs
+    if isinstance(var, dict):
+        return var.get('physloc', default_location)
+        
+    # Using var_specs 
+    if hasattr(var, '_vacumm_cf_name'):
+        name = var._vacumm_cf_name
+    elif var.id in var_specs:
+        name = var.id
+    else:
+        return default_location
+    return var_specs[name].get('physloc', default_location)
+    
+def squeeze_loc_var(var):
+    """Squeeze out location specification of a variable if the location is 
+    physloc or :attr:`default_location`
+        
+    :Params:
+    
+        - **var**: CDAT variable.
+        - **physloc**, optional: ``physloc`` specs given by the entry in :attr:`var_specs`
+          or :attr:`default_location`.
+    
+    :Return: The same variable
+    """
+    # Physloc
+    physloc = get_physloc(var)
+            
+    # Remove loc only for physloc
+    change_loc_var(var, None, axes=True, squeeze=physloc)
+    
+def squeeze_loc_single(name, stype, physloc=None):
+    """Squeeze location specs if it matches physical location"""
+    if physloc is None and stype=='name' and name in var_specs:
+        physloc = var_specs[name].get('physloc')
+    if physloc is None:
+        physloc = default_location
+    loc = get_loc(name, stype, mode='loc')
+    if loc==physloc:
+        name = change_loc_single(name, stype, None)
+    return name
+
 def specs_dup_loc(all_specs, fromname, toloc):
     """Duplicate the specification for a variable or an axis to another or several locations
+    
+    The following rules apply:
+    
+        - If the original specifications are from a name without a specific location,
+          new specs (located) are appended (merged) with original specs.
+        - If the specifications at target location already exist, 
+          it merges new specs with old specs.
+        - If the target location is the general default location (:attr:`default_location`),
+          the specs without location will be appended to the specs at target location
+          (generic specs are appended to specs at T).
     
     :Example:
     
@@ -609,6 +875,8 @@ def specs_dup_loc(all_specs, fromname, toloc):
     if single:
         toloc = [toloc]
     tonames = []
+    tomerge = []
+    fromnoloc = no_loc_single(fromname, 'name')==fromname
     for loc in toloc:
         
         # New name (id)
@@ -617,25 +885,61 @@ def specs_dup_loc(all_specs, fromname, toloc):
         
         # New specs
         tospecs = change_loc(loc, **all_specs[fromname])
+        
+        # For merging specs back with old specs if old has no location
+        if fromnoloc: # generic
+            tomerge.append(tospecs)
+            
+        # Merge with old spec if existing
         if toname in all_specs:
             tospecs = dict_merge(tospecs, all_specs[toname], mergelists=True)
+            
+        # Default location -> add its generic version ('_t' -> + '')
+        if loc==default_location:
+            genspecs = change_loc(None, **tospecs)
+            tospecs = dict_merge(tospecs, genspecs, mergelists=True)
+            
+        # Store it
         all_specs[toname] = tospecs
+
+    # Merge back with old specs when source is generic (no loc)
+    if fromnoloc:
+        kw = dict(mergelists=True)
+        tomerge.insert(0, all_specs[fromname])
+        all_specs[fromname] = dict_merge(*tomerge, **kw)
     
     if single: return tonames[0]
     return tonames
-
-def cp_suffix(idref, id, suffixes=['_u', '_v', '_w', '_z']):
-    """Copy a suffix if found in an id to another id"""
+    
+#def specs_def_loc(all_specs, names, suffixes=arakawa_suffixes):
+#    """Make specs of a variable at a special location the specs for default location
+#    
+#    :Example:
+#    
+#        >>> specs_def_loc(all_specs, ['usurf_u', 'ssh_f']) # specs of 'usurf_u' is copied to 'usurf'
+#    """
+#    if not isinstance(names, (list, tuple)): names = [names]
+#    if isinstance(suffixes, basestring): suffixes = [suffixes]
+#    for name in names:
+#        m = re.match('.+(%s)$'%'|'.join(suffixes), name)
+#        if m is None: continue
+#        specs_dup_loc(all_specs, name, '', suffixes=arakawa_suffixes)
+        
+        
+def cp_suffix(idref, id, suffixes=arakawa_suffixes):
+    """Copy a suffix if found in an id (name) to another id"""
     if isinstance(suffixes, basestring): suffixes = [suffixes]
     m = re.match('.+(%s)$'%'|'.join(suffixes), idref)
     if m is None: return id
     return id+m.group(1)
 
 # Format specifications
-# 1. Makes sure to have lists
-# 2. Check geo axes
-# 3. Check inheritance (generic name=id) the first name
-# 4. Check duplication to other locations
+# - Makes sure to have lists, except for 'axis' and 'inherit'
+# - Check geo axes
+# - Check inheritance 
+# - Makes sure that axes specs have no 'axes' key
+# - Makes sure that specs key is the first entry of 'names'
+# - Check duplication to other locations ('toto' -> 'toto_u')
 for all_specs in var_specs, axis_specs:
     
     from_atlocs = []
@@ -647,11 +951,18 @@ for all_specs in var_specs, axis_specs:
         # Always lists (except for dict and some keys)
         for key, value in specs.items():
             if isinstance(value, dict): continue
-            if key in ['axis', 'inherit']: continue
+            if key in ['axis', 'inherit', 'physloc']: continue
             if isinstance(value, tuple):
                 specs[key] = list(specs[key])
             elif not isinstance(value, list):
                 specs[key] = [value]
+                
+        # Physloc must be the first atlocs
+        if 'physloc' in specs and 'atlocs' in specs:
+            p = specs['physloc']
+            if p in specs['atlocs']:
+                specs['atlocs'].remove(p)
+            specs['atlocs'].insert(0, p)
                 
         # Geo axes (variables only)
         if all_specs is var_specs:
@@ -669,21 +980,21 @@ for all_specs in var_specs, axis_specs:
                 if isinstance(specs['axes'][l], list) and n not in specs['axes'][l]: 
                     specs['axes'][l].append(n)
                     
-        # Inherits from other specs
+        # Inherits from other specs (merge specs with dict_merge)
         if 'inherit' in specs:
             objname = specs['inherit']
             obj_specs = None
-            if key==objname: # same name
-                if key in var_specs and objname in axis_specs:
-                    obj_specs = axis_specs.keys()
-                elif key in axis_specs and objname in var_specs:
-                    obj_specs = var_specs.keys()
-            elif objname in var_specs:
-                obj_specs = var_specs 
-            else:
+            if name==objname: # same name
+                if all_specs is var_specs and objname in axis_specs:
+                    obj_specs = axis_specs
+                elif all_specs is axis_specs and objname in var_specs:
+                    obj_specs = var_specs
+            elif objname in var_specs: # check in var_specs first
+                obj_specs = var_specs
+            elif objname in axis_specs: # then in axis_specs
                 obj_specs = axis_specs
             if obj_specs is not None:
-                all_specs[name] = specs = dict_merge(specs, var_specs[objname])
+                all_specs[name] = specs = dict_merge(specs, obj_specs[objname])
                 
         # No geo axes for axes!
         if all_specs is axis_specs and 'axes' in specs:
@@ -718,7 +1029,7 @@ def cf2search(name, mode=None, raiseerr=True, **kwargs):
     
         - **name**: Generic name of an axis or a variable.
         - **mode**, optional: Search mode [default: None->``"ns"``].
-          A string containg one or more of the follwing letters:
+          A string containg one or more of the following letters:
         
             - ``"n"``: Search using names (ids).
             - ``"s"``: Search using standard_name attribute.
@@ -758,7 +1069,7 @@ def cf2search(name, mode=None, raiseerr=True, **kwargs):
 
 
 _attnames_plurals = ['standard_name', 'long_name']
-_attnames_exclude = ['names', 'atlocs', 'inherit', 'axes']
+_attnames_exclude = ['names', 'atlocs', 'inherit', 'axes', 'physloc']
 _attnames_firsts = ['standard_name', 'long_name', 'units', 'axis', 'valid_min', 'valid_max']
 def cf2atts(name, select=None, exclude=None, ordered=True):
     """Extract specs from :attr:`axis_specs` or :attr:`var_specs` to form
@@ -802,7 +1113,7 @@ def cf2atts(name, select=None, exclude=None, ordered=True):
 
 
 # Format a variable
-def format_var(var, name, force=True, format_axes=True, order=None, **kwargs):
+def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, **kwargs):
     """Format a MV2 variable according to its generic name
     
     
@@ -811,7 +1122,10 @@ def format_var(var, name, force=True, format_axes=True, order=None, **kwargs):
         - **var**: A :mod:`numpy` or :mod:`MV2` variabe.
         - **name**: Generic name of variable. It should be one of
           those listed by :attr:`generic_var_names`.
-        - **force**: Overwrite attributes in all cases.
+        - **force**, optional: Overwrite attributes in all cases.
+        - **format_axes**, optional: Also format axes.
+        - **nodef**, optional: Remove location specification when it refers to the
+          default location (:attr:`default_location`).
         - Other parameters are passed as attributes, except those:
         
             - present in specifications to allow overriding defaults,
@@ -821,7 +1135,7 @@ def format_var(var, name, force=True, format_axes=True, order=None, **kwargs):
     :Examples:
     
         >>> var = format_var(myarray, 'sst', valid_min=-2, valid_max=100)
-        
+       
     """
     # Filter keywords for axis formating
     axismeths = {'t':'getTime', 'y':'getLatitude', 'x':'getLongitude'}
@@ -834,9 +1148,9 @@ def format_var(var, name, force=True, format_axes=True, order=None, **kwargs):
     
     # Check specs
     if name not in generic_var_names:
-        raise KeyError("Generic var name not found '%s'. Please choose one of: "%(
+        raise KeyError("Generic var name not found '%s'. Please choose one of: %s"%(
             name, ', '.join(generic_var_names)))
-    specs = var_specs[name]
+    specs = var_specs[name].copy()
     # - merge kwargs and specs
     for key, val in kwargs.items():
         if val is None or key not in specs: continue
@@ -846,6 +1160,14 @@ def format_var(var, name, force=True, format_axes=True, order=None, **kwargs):
         # Set
         specs[key] = val
         del kwargs[key]
+    # - remove default location
+    if nodef:
+        refloc = specs.get('physloc', default_location)
+        for stype in 'name', 'long_name', 'standard_name':
+            sname = stype+'s'
+            if sname not in specs: continue
+            if get_loc(specs[sname], stype)==refloc:
+                specs[sname] = [no_loc_single(specs[sname][0], stype)]
     # - id
     if force or var.id.startswith('variable_'):
         var.id = specs['names'][0]
@@ -860,6 +1182,14 @@ def format_var(var, name, force=True, format_axes=True, order=None, **kwargs):
     for att, val in kwargs.items():
         if force or not getattr(var, att, ''):
             setattr(var, att, val)
+    # - physical location
+    loc = get_loc(var, mode='loc')
+    if not loc and 'physloc' in specs:
+        loc = specs['physloc']
+    if loc:
+        var._vacumm_cf_physloc = loc
+    # - store cf name
+    var._vacumm_cf_name = var.id
     
     # Axes
     if format_axes:
@@ -893,7 +1223,8 @@ def format_var(var, name, force=True, format_axes=True, order=None, **kwargs):
     return var
 
 # Format an axis
-def format_axis(axis, name, force=True, recreate=False, format_subaxes=True, **kwargs):
+def format_axis(axis, name, force=True, recreate=False, format_subaxes=True, 
+    nodef=True, **kwargs):
     """Format a MV2 axis according to its generic name
     
     
@@ -903,6 +1234,8 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True, **k
         - **name**: Single or list of generic axis names. It should be one of
           those listed by :attr:`generic_axis_names`.
         - **force**, optional: Overwrite attributes in all cases.
+        - **nodef**, optional: Remove location specification when it refers to the
+          default location (:attr:`default_location`).
         - **axes2d_<param>**, optional: <param> is passed to 
           :func:`~vacumm.misc.grid.misc.create_axes2d` for 2D axes.
         - **recreate**, optional: Force recreation of axes using either
@@ -962,6 +1295,13 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True, **k
         # Set
         specs[key] = val
         del kwargs[key]
+    # - remove default location
+    if nodef:
+        for stype in 'name', 'long_name', 'standard_name':
+            sname = stype+'s'
+            if sname not in specs: continue
+            if get_loc(specs[sname], stype)==default_location:
+                specs[sname] = [no_loc_single(specs[sname][0], stype)]
     # - id
     if force or axis.id.startswith('variable_') or axis.id.startswith('axis_'):
         axis.id = specs['names'][0]
@@ -977,6 +1317,8 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True, **k
         if force or not getattr(axis, att, ''):
             if isinstance(val, list): val = val[0]
             setattr(axis, att, val)
+    # - store cf name
+    axis._vacumm_cf_name = axis.id
     
     # Sub-axes for 2D axes
     if axis2d and format_subaxes:
@@ -994,6 +1336,10 @@ def format_grid(grid, pt, **kwargs):
     lat = grid.getLatitude()
     format_axis(lon, gs['lon'])
     format_axis(lat, gs['lat'])
+
+
+#: Hidden attributes of variable useful of this module
+hidden_cf_atts = ['_vacumm_cf_name', '_vacumm_cf_physloc']
 
 def match_obj(obj, name, searchmode=None, **kwargs):
     """Check if a variable or an axis matches generic specifications

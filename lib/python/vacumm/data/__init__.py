@@ -40,6 +40,10 @@ dataset_specs = dict(
         cls = 'vacumm.data.model.swan.SWAN',
         desc = 'SWAN wave model'
    ),
+    cfsr = dict(
+        cls = 'vacumm.data.model.cfsr.CFSR',
+        desc = 'CFSR atmospheric model'
+   ),
 )
 
 #: List of available dataset types

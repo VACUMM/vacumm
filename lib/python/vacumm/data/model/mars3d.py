@@ -46,20 +46,28 @@ __doc__ = 'MARS3D model data manipulation'
 
 from vacumm.data.misc.dataset import OceanDataset, AtmosSurfaceDataset
 from vacumm.misc import dict_merge
+#from vacumm.data.cf import specs_def_loc
 
 
 class Mars3D(OceanDataset,AtmosSurfaceDataset):
-    '''
-    .. todo::
-        - move specific code from Dataset to MARS3D (variable mapping)
-    '''
-    #:  Radius of earth (m)
+    """
+    :class:`~vacumm.data.misc.dataset.Dataset` class dedicated to the MARS3D model
+    of IFREMER.
+    """
+    #: Grid type
+    arakawa_grid_type = 'C'
+    
+    #: Radius of earth (m)
     earth_radius = 6.367e+6
         
-    #:  Gravity (m s-2)
+    #: Gravity (m s-2)
     gravity = 9.81
     
-    _local_obj_specs = {
+    #: Positive up?
+    positive = 'up'
+     
+    # Local specs
+    ncobj_specs = {
 
         # salinity
         'kz':{'search':{'names':['kzm']}}, 
@@ -92,13 +100,12 @@ class Mars3D(OceanDataset,AtmosSurfaceDataset):
             'squeeze':'z', 
         }
     }
+#    ncobj_specs = dict_merge(_local_obj_specs, OceanDataset.ncobj_specs)
+#    ncobj_specs = dict_merge(ncobj_specs, AtmosSurfaceDataset.ncobj_specs)
+#    del _local_obj_specs
     
-    # Positive up?
-    positive = 'up'
     
-    ncobj_specs = dict_merge(_local_obj_specs, OceanDataset.ncobj_specs)
-    ncobj_specs = dict_merge(ncobj_specs, AtmosSurfaceDataset.ncobj_specs)
-    del _local_obj_specs
+   
 
 
 

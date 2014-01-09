@@ -39,7 +39,6 @@
 
 
 from vacumm.data.misc.dataset import OceanSurfaceDataset
-from vacumm.misc import dict_merge
 
 
 class SWAN(OceanSurfaceDataset):
@@ -47,11 +46,9 @@ class SWAN(OceanSurfaceDataset):
     '''
     
     
-    _local_obj_specs = {
+    ncobj_specs = {
 
     }
     
-    ncobj_specs = dict_merge(_local_obj_specs, OceanSurfaceDataset.ncobj_specs)
-    del _local_obj_specs
     
 

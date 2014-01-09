@@ -68,6 +68,7 @@ __doc__ = 'Common dataset utilities'
 
 import os, sys
 from traceback import format_exc
+from collections import OrderedDict
 
 import cdms2, MV2, numpy, pylab, seawater
 from matplotlib.pyplot import colorbar
@@ -87,13 +88,16 @@ from vacumm.misc.grid.misc import meshweights, resol, create_grid, set_grid, \
     coord2slice
 from vacumm.misc.grid.regridding import resol, interp1d, regrid1d, grid2xy, transect,  \
     shift1d, shift2d, extend1d, extend2d
-from vacumm.misc.misc import is_iterable, kwfilter, squeeze_variable
+from vacumm.misc.misc import is_iterable, kwfilter, squeeze_variable, dict_filter_out,  \
+    get_atts, set_atts
 from vacumm.misc.phys.constants import g
 from vacumm.misc.plot import map2, curve2, section2, hov2, add_map_lines
 from vacumm.misc.axes import islon, islat, isdep
 from vacumm.data.misc.sigma import NcSigma
+from vacumm.data.misc.arakawa import ArakawaGrid, AGrid, CGrid, locations as arakawa_locations
 from vacumm.data.cf import var_specs, axis_specs, cf2search, cf2atts, generic_names, \
-    generic_axis_names, generic_var_names, format_axis, format_var
+    generic_axis_names, generic_var_names, format_axis, format_var, get_loc, no_loc_single, \
+    default_location, change_loc_var, hidden_cf_atts
 from vacumm import VACUMMError
 from vacumm.diag.dynamics import barotropic_geostrophic_velocity, eddy_kinetic_energy
 from vacumm.diag.thermdyn import mixed_layer_depth, density
@@ -106,50 +110,213 @@ post_plot_args = ('title', 'show', 'close', 'savefig', 'savefigs')
 
 _geonames =  {'x':'lon', 'y':'lat', 'z':'level', 't':'time'}
 
-# Docstring formatting
 
-_formatdoc_var_tpl = """%(func_name)s(time=None, level=None, lat=None, lon=None, squeeze=None, order=None, asvar=None, verbose=None, warn=None, **kwargs)
+############################################################################
+###  AUTO-GENERATION AND AUTO-FORMATTING OF CODE
+############################################################################
 
-    Read the %(long_name)s
+
+def _get_var_(self, name, **kwargs):
+    """Function to be used as a method for getting variables at a specific location
     
-    When multiple files are accessed, data are concatenated in time in
-    a best estimate fashion.
+    :Params:
+    
+        - **name**: Generic name.
+        - Extra keywords are passed to :method:`Dataset.get_variable`
+    """
+    kwargs = kwargs.copy()
+    warn = kwargs.get('warn', False)
+    kwargs['warn'] = False
+    
+    #TODO: _get_var_: add the 'at' keyword for forcing interpolation from one loc to another loc
+    
+    # Direct try
+    var =  self.get_variable(name, **kwargs)
+    gname = no_loc_single(name, 'name')
+    if var is not None or gname==name: return var
+
+    # Physical location
+    ploc = self._get_ncobj_specs_(gname)['physloc']
+
+    # No location specifications -> generic search 
+    if not self.arakawa_grid_type or not ploc: 
+        
+        if gname==name: 
+            if warn: self.warning("Can't get %(name)s"%locals())
+            return # Already searched for
+        kwargs['warn'] = warn
+        return self.get_variable(gname, **kwargs)
+  
+    # Generic name -> search at physical location only (U at '_u')
+    if gname==name:
+        pname = change_loc_single(name, 'name') # 'usurf' -> 'usurf_u'
+        kwargs['warn'] = warn
+        return self.get_variable(pname, **kwargs)
+
+    # Get it from other locations
+    loc = get_loc(name, 'name', mode='loc')
+    locations = list(arakawa_locations)
+    locations.remove(loc)
+    locations.remove(ploc)
+    locations.insert(0, ploc)
+    kwargs = kwargs.copy()
+    for fromloc in locations: #TODO: arakawa: clever order for loc2loc tries (use closer neighbours)
+        
+        var = self.get_variable(gname, at=loc, at_fromloc=fromloc, **kwargs)
+        if var is not None: 
+            return var
+        
+#        # Check that there is a grid
+#        if var.getGrid() is None:
+#            break
+#        
+#        # Interpolate
+#        self.debug('Get %(name)s at %(aloc)s location from %(aloc)s location'%locals())
+#        var = self.arakawa_grid.interp(var, aloc, loc)
+    
+    if warn: self.warning("Can't get %(name)s from any locations"%locals())
+
+getvar_decmet_tpl = """def get_var(self, **kwargs):
+    return _get_var_(self, '%(name)s', **kwargs)"""
+    
+
+def getvar_decmets(cls):
+    """Generate methods such as :meth:`get_sst` based on the :attr:`auto_generic_var_names`
+    attributes that provides a list of generic names of variables
+    
+    These generic names must be listed in :mod:`vacumm.data.cf.generic_var_names`.
+    The docstring of the each method is formatted using :func:`getvar_fmtdoc`.
+    
+    Methods that already exist are not overwritten.
+    
+    When a generic name does not start with a "+", its name appended with
+    a location suffix ('_t', '_u', '_v', '_w', '_f') is also treated.
+    """
+    # Get the basic list
+    if not hasattr(cls, 'auto_generic_var_names'): return cls
+    if isinstance(cls.auto_generic_var_names, basestring):
+        cls.auto_generic_var_names = [cls.auto_generic_var_names]
+    
+    # Add names for other positions (u, v, etc) if available.
+    names = []
+    for name in cls.auto_generic_var_names:
+        if name.startswith('+'): 
+            names.append(name[1:])
+            continue
+        names.append(name)
+        for p in arakawa_locations: #'u', 'v', 'w', 'f':
+            namep = name+'_'+p
+            if namep in generic_var_names:
+                names.append(namep)
+   
+    # Declarations
+    for name in names:
+        
+        # Check existence
+        metname = "get_"+name
+        if hasattr(cls, metname): continue
+        
+        # Declare the method
+        exec getvar_decmet_tpl%locals()            
+            
+        # Change its name
+        get_var.__name__ = metname
+        
+        # Change its docstring
+        getvar_fmtdoc(get_var)
+        
+        # Attach it to the class
+        setattr(cls, get_var.__name__, get_var)
+       
+    return cls
+
+            
+
+
+#: Template for auto formatting methods that get variables (like :meth:`get_sst`)
+getvar_fmtdoc_tpl = """%(func_name)s(time=None, level=None, lat=None, lon=None, squeeze=None, order=None, asvar=None, at=None, format=None, torect=True, verbose=None, warn=None, **kwargs)
+
+    Read the %(long_name)s %(units)s
     
     :Params:
     
         - **time/level/lat/lon**, optional: For selection (tuples or slices).
         - **squeeze**, optional: Squeeze singleton dimensions 
-          (see :func:`~vacumm.misc.misc.squeeze_variable`).
-        - **order**, optional: Change order of axes (like ``'xty'``).
-        %(other_params)s%(kwargs_params)s
-        - **asvar**, optional: Grow variable to match the ``asvar`` variable,
+          (see :func:`~vacumm.misc.misc.squeeze_variable`, like
+          ``True``, ``z`` or ``['x','y']``).
+        %(other_params)s- **asvar**, optional: Grow variable to match the ``asvar`` variable,
           using :func:`~vacumm.misc.misc.grow_variables`.
+        - **asvar**, optional: Reshape as this variable.
+        - **at**, optional: Interpolate to this grid location.
+        - **format**, optional: Format the variable and its axes using 
+          :mod:`~vacumm.data.cd.format_var`.
+        - **torect**, optional: If possible, convert a curvilinear grid to
+          a rectilinar grid.
+        - **order**, optional: Change order of axes (like ``'xty'``).
+        %(kwargs_params)s
     """
 
-def formatdoc_var(func, **kwargs):
-    """Format the docstring of basic variables"""
+def getvar_fmtdoc(func, **kwargs):
+    """Format the docstring of methods that get variables
+    
+    It uses the :attr:`getvar_fmtdoc_tpl` template.
+    
+    :Params:
+    
+        - **func**: Method (or function) name that must be in the form ``get_<name>``,
+          where ``<name>`` must be a generic var names listed in 
+          :attr:`vacumm.data.cf.generic_var_names`.
+        - Extra keywords define extra options in the docstring.
+          Keys must correspond to a keyword name, and values correspond to a keyword
+          description.
+    
+    :Example: ::
+    
+        # Manual way
+        getvar_fmtdoc(OceanDataset.get_sst, extra_param='Its description')
+        
+        # Decorator way
+        @getvar_fmtdoc
+        def get_sst(self, *args, **kwargs):
+            ...
+        
+    """
     kwargs_params = kwargs.get('_kwargs', "Other keywords are passed to :func:`~vacumm.misc.io.ncread_files`.")
     func_name = func.__name__
     if not func_name.startswith('get_'): return func
     var_name = func_name[4:]
     if not var_name in generic_var_names: return func
+    
+    # Long name and units
     long_name = var_specs[var_name]['long_names'][0]
     long_name = long_name[0].lower()+long_name[1:]
+    if 'units' in var_specs[var_name]:
+        units = " [%s]"%var_specs[var_name]['units'][0]
+    else:
+        units = ''
+    
+    # Extra keywords
     if kwargs:
         other_params = []
         indent = '    '
         keys =  sorted(kwargs.keys())
         for key in keys:
             other_params.append('- **%s**, optional: %s\n'%(key, kwargs[key]))
-        other_params = (indent*2).join(other_params)+'\n'
+        other_params = (indent*2).join(other_params)#+'\n'
         other_params += indent*2
     else:
         other_params = ''
-    kwargs_params = ('- '+kwargs_params) if kwargs else ''
-    func.__doc__ = _formatdoc_var_tpl%locals()
+    kwargs_params = ('- '+kwargs_params) if kwargs_params else ''
+    
+    # Format using template
+    func.__doc__ = getvar_fmtdoc_tpl%locals()
     return func
 
 
+    
+############################################################################
+### CATALOG  
+############################################################################
 
 
 class CatalogError(Exception):
@@ -159,11 +326,13 @@ class Catalog(Object):
     '''Build dataset files list based on self.get_config
     
     Variables in config (all optionnal):
+    
         - **files**: explicit list of datasets files
         - **filepattern** , **time**: see :func:`~vacumm.misc.io.list_forecast_files`
     
     These configuration can be passed when creating the Catalog object
     like any other Object, examples:
+    
         >>> c = Catalog(config='configfile.cfg')
         >>> c = Catalog(config=dict(files=('file1.nc', 'file2.nc')))
         >>> c = Catalog(config=dict(filepattern='model_%Y-%m-%d', time=('2010-01-01', '2011-01-01')))
@@ -209,9 +378,14 @@ class Catalog(Object):
             datasets.extend(self.find_datasets(self.filepattern, self.time))
         return datasets
 
+############################################################################
+### BASES  
+############################################################################
+
 class DatasetError(Exception):
     pass
 
+@getvar_decmets
 class Dataset(Object):
     '''Generic dataset representation.
     
@@ -234,7 +408,7 @@ class Dataset(Object):
                     search=dict(standard_name="sea_surface_temperature"), 
                     select=(Ellipsis, -1)), 
                     atts=dict(units="DegC"),
-    }
+            }
     
     :Params:
         - **dataset**: A dataset or list of dataset (see :meth:`load_dataset`).
@@ -271,13 +445,7 @@ class Dataset(Object):
                     [[Catalog]]
                         files = 'file1.nc', 'file2.nc', 'file3.nc'
         
-        .. todo::
-
-            - Move out non generic features (mld, ped, plots) to dedicated classes (ex: Stratification, PlotBuilder classes ?)
-            - Add a tutorial about :class:`Dataset`
-            
-            
-    :Attributes:
+     :Attributes:
     
     
         .. attribute:: selector
@@ -288,6 +456,12 @@ class Dataset(Object):
         
             Same as :attr:`selector` but as dictionary.
     '''
+    
+    #: Arakawa grid type (see :mod:`vacumm.data.misc.arakawa`)
+    arakawa_grid_type = None
+    
+    # For auto-declaring methods
+    auto_generic_var_names = ['corio']
     
     ncobj_specs = {}
     
@@ -302,17 +476,40 @@ class Dataset(Object):
         Object.__init__(self, **kwargs)
         self.load_dataset(dataset, time=time)
         self._ncids = {}
-        self._nibeid = str(id(self))
+        self._nibeid = str(id(self)) # IterBestEstimate id
+        
+        # Arakawa grid
+        self.arakawa_grid = ArakawaGrid.factory(self.arakawa_grid_type)
         
         # Load specs of variables
         self._load_ncobj_specs_(ncobj_specs)
         
+    def _load_ncobj_specs_(self, ncobj_specs=None):
+        """Read the :attr:`ncobj_specs` attribute and reformat it"""
+        # Get specs
+        if ncobj_specs is None:
+            ncobj_specs = self.ncobj_specs # local
+            ncobj_specs = dict_merge(ncobj_specs, self._inherited_ncobj_specs_()) # inherited
+        self.ncobj_specs = ncobj_specs # set it
+            
+        # Loop on variables to format their specs
+        for name, specs in ncobj_specs.items():
+            self._format_single_ncobj_specs_(specs, name)
+    
+    @classmethod
+    def _inherited_ncobj_specs_(cls):
+        ncobj_specs = {}
+        for c in cls.__bases__:
+            if hasattr(c, 'ncobj_specs'):
+                ncobj_specs = dict_merge(ncobj_specs, c._inherited_ncobj_specs_())
+        return ncobj_specs
+    
     def _format_single_ncobj_specs_(self, specs, name=None):
         """Load and reformat ncobj_specs dictionary
         
         :Params:
         
-            - **specs**: Dictionary of the folowing possible form::
+            - **specs**: Dictionary of the following possible form::
             
                 {'search': {
                     'names':[name1,...], 
@@ -342,7 +539,7 @@ class Dataset(Object):
         # Search specs
         search = specs.get("search", {})
         specs["search"] = search
-        # - names
+        # - names (as a list, and with name as its first element)
         names = search.get("names", [])
         if isinstance(names, tuple):
             names = list(names)
@@ -352,7 +549,7 @@ class Dataset(Object):
             if name in names: names.remove(name)
         names.insert(0, name)
         search["names"] = names
-        # - standard_names
+        # - standard_names (as a list)
         if 'standard_names' in search and not isinstance(search['standard_names'], list):
             if isinstance(search['standard_names'], tuple):
                 search['standard_names'] = list(search['standard_names'])
@@ -362,7 +559,6 @@ class Dataset(Object):
         for key in search:
             if key not in ['names', 'standard_names']:
                 del search[key]
-       
         # Attributes
         atts = specs.get("atts", {})
         specs["atts"] = atts
@@ -373,30 +569,18 @@ class Dataset(Object):
         if 'standard_names' in search:
             atts.setdefault('standard_name', search['standard_names'][0])
             
-        # Selection
+        # Selection (slices -> select)
         if 'slices' in specs:
             if "select" not in specs:
                 specs['select'] = specs['slices']
             del specs['slices']
         
-        # Squeeze
+        # Squeeze (as a list)
         if 'squeeze' in specs and not isinstance(specs['squeeze'], list):
             specs['squeeze'] = [specs['squeeze']]
 
         return specs
 
-    def _load_ncobj_specs_(self, ncobj_specs=None):
-        """Read the :attr:`ncobj_specs` attribute and reformat it"""
-        # Get specs
-        if ncobj_specs is None:
-            ncobj_specs = self.ncobj_specs # get default
-        else:
-            self.ncobj_specs = ncobj_specs # set default
-            
-        # Loop on variables to format their specs
-        for name, specs in ncobj_specs.items():
-            self._format_single_ncobj_specs_(specs, name)
-            
     def _get_ncobj_merged_specs_(self, varname, searchmode=None):
         """Get object specs merged from :mod:`vacumm.data.cf` 
         and class level specification (attribute :attr:`ncobj_specs`)
@@ -420,7 +604,14 @@ class Dataset(Object):
         # Specs from vacumm.data.cf
         fromobj = None
         if varname in generic_names:
-            cf_specs = dict(search=cf2search(varname, mode=searchmode), atts=cf2atts(varname))
+            cf_specs = dict(
+                search=cf2search(varname, mode=searchmode), 
+                atts=cf2atts(varname), 
+                )
+            axvar_specs = (var_specs if varname in generic_var_names else axis_specs)[varname]
+            for prop in ['physloc']:
+                if prop in axvar_specs:
+                    cf_specs[prop] = axvar_specs[prop]
             genname = varname
             fromobj = cf_specs.pop('fromobj', None)
         else:
@@ -452,13 +643,15 @@ class Dataset(Object):
         
         Calls :meth:`_get_ncobj_merged_specs_` for merging specifications.
         
-        :Return: genname, search, select, squeeze, atts
+        :Return: dict with following keys: genname, search, select, squeeze, atts and physloc
         """
+        # Init outputs
         specs = None
         select = create_selector()
         atts = None
         genname = None
         squeeze = []
+        physloc = None
         
         # Generic name -> cf specs and/or class level specs
         if isinstance(varname , basestring) and not varname.startswith('+'): 
@@ -471,7 +664,8 @@ class Dataset(Object):
             
             specs = self._format_single_ncobj_specs_(varname)
             if 'fromobj' in specs:
-                from_specs = self._get_ncobj_merged_specs_(specs['fromobj'], searchmode=searchmode)
+                from_specs = self._get_ncobj_merged_specs_(specs['fromobj'], 
+                    searchmode=searchmode)
                 specs = dict_merge(specs, from_specs)
             
             
@@ -509,9 +703,16 @@ class Dataset(Object):
             squeeze = specs.get('squeeze', [])
             if not isinstance(squeeze, list):
                 squeeze = [squeeze]
+                
+            # Physical location
+            if varname.startswith('u3d'):
+                pass
+            physloc = specs.get('physloc')
             
                 
-        return genname, search, select, squeeze, atts
+        return OrderedDict(genname=genname, search=search, select=select, squeeze=squeeze, 
+            atts=atts, physloc=physloc)
+#        return genname, search, select, squeeze, atts
         
     def apply_config(self, config, **kwargs):
         '''Apply passed configuration (usually internal call from load_config)
@@ -672,8 +873,10 @@ class Dataset(Object):
         if not getid: self.debug('Using reference dataset: %s', dataset.id)
             
         # Get specs
-        genname, search, base_select, squeeze, atts = self._get_ncobj_specs_(name, 
-            attsingle=False, searchmode=searchmode)
+        specs = self._get_ncobj_specs_(name, attsingle=False, searchmode=searchmode)
+        genname = specs['genname']
+        search = specs['search']
+        atts = specs['atts']
         if 'long_names' in atts:
             search['long_names'] = atts['long_names']
         if 'units' in atts and 'axis' in atts and atts['axis']!='Z':
@@ -826,7 +1029,7 @@ class Dataset(Object):
         
     def get_variable(self, varname, time=None, lon=None, lat=None, level=None, 
         atts=None, squeeze=False, order=None, asvar=None, torect=True, depthup=None,
-        verbose=None, warn=True, searchmode=None, format=True, **kwargs):
+        verbose=None, warn=True, searchmode=None, format=True, at=None, **kwargs):
         '''Load a variable in a best time serie fashion.
         
         :Params:
@@ -838,6 +1041,8 @@ class Dataset(Object):
           - **order**: If not None, specify the output variable axes order.
           - **depthup**: Make depths up.
           - **torect**: Make grid rectangular if possible.
+          - **at/toloc**: Interpolate the variable to another location on the grid
+            using :meth:`toloc`. Note that the :attr:`arakawa_grid_type` must be defined.
           - **format**: Format the variable and its axes using
             :func:`~vacumm.data.cf.format_var`?
           - Other kwargs are passed to :func:`~vacumm.misc.io.ncread_files`.
@@ -859,7 +1064,14 @@ class Dataset(Object):
             return None
             
         # Specifications for searching, selecting and modifying the variable
-        genname, search, select, base_squeeze, atts = self._get_ncobj_specs_(varname)
+        specs = self._get_ncobj_specs_(varname)
+        genname = specs['genname']
+        search = specs['search']
+        select = specs['select']
+        base_squeeze = specs['squeeze']
+        atts = specs['atts']
+        
+        # Refine selector
         select.refine(self.get_selector(lon=lon, lat=lat, level=level, time=time, merge=True))
         
         # Search for the variable now
@@ -876,15 +1088,19 @@ class Dataset(Object):
             
         # Curved grid case
         curvsel = CurvedSelector(self.dataset[0][ncvarid].getGrid(), select)
+        
+        # Intercept kwargs before ncread_files
             
         # Read
-        kwargs['torect'] = False
+        kwncr = kwargs.copy()
+        kwncr['torect'] = False
+        dict_filter_out(kwncr, ['at'], copy=False, mode='start')
         try:
             var = ncread_files([d.id for d in self.dataset], ncvarid, 
                 timeid=self.get_timeid(), 
     #            time=time, 
                 select=select, verbose=verbose if verbose is not None else self.is_debug(), 
-                squeeze=base_squeeze, nibeid=self._nibeid+str(time), **kwargs)
+                squeeze=base_squeeze, nibeid=self._nibeid+str(time), **kwncr)
             if var is None:
                 if warn: self.warning('No data found for variable: %s, local select: %s', varname, selstring)
                 return
@@ -896,7 +1112,8 @@ class Dataset(Object):
             
         # Post process
         var = self.finalize_object(var, genname=genname, format=format, atts=atts, order=order, 
-            squeeze=squeeze, asvar=asvar, torect=torect, depthup=depthup, curvsel=curvsel)
+            squeeze=squeeze, asvar=asvar, torect=torect, depthup=depthup, curvsel=curvsel, 
+            at=at, **kwargs)
         self.verbose('Loaded variable: %s', self.describe(var))
             
         return var
@@ -928,7 +1145,9 @@ class Dataset(Object):
             return None
             
         # Find time id
-        genname, search, _, _, _ = self._get_ncobj_specs_('time')
+        specs = self._get_ncobj_specs_('time')
+        genname = specs['genname']
+        search = specs['search']
         timeid = ncfind_axis(self.dataset[0], search)
         self._set_cached_ncid_('time', timeid)
         return timeid
@@ -1016,9 +1235,8 @@ class Dataset(Object):
             - resolution as datetime.timedelta
         
         '''
-        time = self.get_time()
-        if time is None: return
-        ctime = time.asComponentTime()
+        ctime = self.get_ctime()
+        if ctime is None: return
         return adatetime(ctime[1]) - adatetime(ctime[0])
     
     def get_lon(self, lon=None, lat=None, **kwargs):
@@ -1295,20 +1513,20 @@ class Dataset(Object):
         '''Get level axis, based on :func:`get_axis`'''
         return self.get_axis('depth', level=level, **kwargs)
     
-    @formatdoc_var
-    def get_corio(self, **kwargs):
-        '''Get Coriolis parameter'''
-        return self.get_variable('corio', **kwargs)
-    
-    @formatdoc_var
-    def get_corio_u(self, **kwargs):
-        '''Get Coriolis parameter'''
-        return self.get_variable('corio_u', **kwargs)
-    
-    @formatdoc_var
-    def get_corio_v(self, **kwargs):
-        '''Get Coriolis parameter'''
-        return self.get_variable('corio_v', **kwargs)
+#    @getvar_fmtdoc
+#    def get_corio(self, **kwargs):
+#        '''Get Coriolis parameter'''
+#        return self.get_variable('corio', **kwargs)
+#    
+#    @getvar_fmtdoc
+#    def get_corio_u(self, **kwargs):
+#        '''Get Coriolis parameter'''
+#        return self.get_variable('corio_u', **kwargs)
+#    
+#    @getvar_fmtdoc
+#    def get_corio_v(self, **kwargs):
+#        '''Get Coriolis parameter'''
+#        return self.get_variable('corio_v', **kwargs)
     
     
     @classmethod
@@ -1327,9 +1545,50 @@ class Dataset(Object):
         #if numpy.size(var):
             #var.setAxisList(axes)
         #return var
+        
+    def toloc(self, var, loc, fromloc=None, copy=False, **kwargs):
+        """Interpolate a variable to another location
+        
+        It has no effect if the current :class:`Dataset` instance has no valid 
+        :attr:`arakawa_grid_type` defined (``None``).
+        
+        :Params:
+        
+            - **var**: A CDAT array.
+            - **loc**: A physical location (see :attr:`vacumm.data.misc.arakawa.locations`).
+            - **fromloc**, optional: Originating location. If ``None`` it is guessed
+              from its attributes (id, standard_name and long_name), and default
+              to :attr:`~vacumm.data.cf.default_location`).
+            - Extra keywords are passed to 
+              :meth:`vacumm.data.misc.arakawa.ArakawaGrid.loc2loc`.
+        
+        """
+        # No grid type
+        atts = get_atts(var, extra=hidden_cf_atts)
+        if not self.arakawa_grid_type or var.getGrid() is None:
+            if copy: 
+                var = var.clone()
+                set_atts(var, atts)
+            return var
+            
+        # Originating location
+        if fromloc is None:
+            fromloc = get_loc(var, mode='ext')
+            
+        # Interpolate
+        atts = dict()
+        var = self.arakawa_grid.interp(var, fromloc, loc, copy=copy, **kwargs)
+        set_atts(var, atts)
+        
+        # Reformat location
+        change_loc_var(var, loc, squeeze=True)
+        
+        return var
+        
     
     def finalize_object(self, var, genname=None, format=format, squeeze=False, order=None, 
-        asvar=None, torect=True, atts=None, lon=None, lat=None, curvsel=None, **kwargs):
+        asvar=None, torect=True, atts=None, lon=None, lat=None, curvsel=None, 
+        at=None, **kwargs):
         """Finalize a variable or an axis
         
         :Params:
@@ -1349,9 +1608,14 @@ class Dataset(Object):
               grid using :func:`~vacumm.misc.grid.misc.curv2rect`.
             - **lon/lat**, optional: Additional spatial selection.
             - **curvsel**, optional: :class:`CurvedSelector` instance.
+            - **at/toloc**: Interpolate the variable to another location on the grid
+              using :meth:`toloc`. Note that the :attr:`arakawa_grid_type` must be defined.
         """
         if var is None: return
         kwasvar = kwfilter(kwargs, 'asvar_')
+        kwat = kwfilter(kwargs, 'at_')
+        kwat.update(kwfilter(kwargs, 'toloc_'))
+        at = kwargs.pop('toloc', at)
         ax = isaxis(var)
         if atts is None: atts = {}
         
@@ -1379,6 +1643,11 @@ class Dataset(Object):
             
             # Rectangular if possible
             if torect: self._torect_(var)
+            
+            # At/toloc
+            if at:
+                kwat['copy'] = False
+                var = self.toloc(var, at, **kwat)
 
         elif genname is not None and format:
             format_axis(var, genname, **atts)
@@ -1438,113 +1707,31 @@ class Dataset(Object):
             
         
         
-    ############################################################################
-    ############################################################################
-    ############################################################################
+############################################################################
+### OCEAN AND ATMOS   
+############################################################################
 
+@getvar_decmets 
 class AtmosSurfaceDataset(Dataset):
 
-    ncobj_specs = {}
-
-    @formatdoc_var
-    def get_senhf(self, *args, **kwargs):
-        '''Get Sensible Heat Flux'''
-        return self.get_variable('senhf', *args, **kwargs)
-
-    @formatdoc_var
-    def get_lathf(self, *args, **kwargs):
-        '''Get Latent Heat Flux'''
-        return self.get_variable('lathf', *args, **kwargs)
-
-    @formatdoc_var
-    def get_swhf(self, *args, **kwargs):
-        '''Get Short Wave Heat Flux'''
-        return self.get_variable('swhf', *args, **kwargs)
-
-    @formatdoc_var
-    def get_lwhf(self, *args, **kwargs):
-        '''Get Long Wave Heat Flux'''
-        return self.get_variable('lwhf', *args, **kwargs)
-
-    @formatdoc_var
-    def get_evap(self, *args, **kwargs):
-        '''Get Evaporation'''
-        return self.get_variable('evap', *args, **kwargs)
-
-    @formatdoc_var
-    def get_rain(self, *args, **kwargs):
-        '''Get Evaporation'''
-        return self.get_variable('rain', *args, **kwargs)
-
-    @formatdoc_var
-    def get_lhf(self, *args, **kwargs):
-        '''Get Latent Heat Flux'''
-        return self.get_variable('lhf', *args, **kwargs)
-    
-    @formatdoc_var
-    def get_taux(self, *args, **kwargs):
-        '''Get zonal wind stress (westerly)'''
-        return self.get_variable('taux', *args, **kwargs)
-    
-    @formatdoc_var
-    def get_tauy(self, *args, **kwargs):
-        '''Get meridional wind stress (westerly)'''
-        return self.get_variable('tauy', *args, **kwargs)
-    
-    @formatdoc_var
-    def get_u10m(self, *args, **kwargs):
-        '''Get 10-m zonal wind speed (westerly)'''
-        return self.get_variable('u10m', *args, **kwargs)
-    
-    @formatdoc_var
-    def get_v10m(self, *args, **kwargs):
-        '''Get 10-m meridional wind speed (westerly)'''
-        return self.get_variable('v10m', *args, **kwargs)
-    
+    # For auto-declaring methods
+    auto_generic_var_names = ['senhf', 'lathf', 'lhf', 'swhf', 'lwhf', 'evap', 'rain', 
+        'taux', 'tauy', 'u10m', 'v10m']
+ 
+@getvar_decmets 
 class OceanSurfaceDataset(Dataset):
     
-    ncobj_specs = {}
-#    dict(
-#        sst = dict(
-#            search = dict(standard_names='sea_surface_temperature'), 
-#        ), 
-#    )
-    @formatdoc_var
-    def get_sst(self, **kwargs):
-        '''Get SST'''
-        return self.get_variable('sst', **kwargs)
-    
-    @formatdoc_var
-    def get_sss(self, **kwargs):
-        '''Get SSS'''
-        return self.get_variable('sss', **kwargs)
-    
-    @formatdoc_var
-    def get_ssh(self, **kwargs):
-        '''Get sea surface height'''
-        return self.get_variable('ssh', **kwargs)
-        
-    @formatdoc_var
-    def get_usurf(self, **kwargs):
-        '''Get U at the sea surface'''
-        return self.get_variable('usurf', **kwargs)
-    
-    @formatdoc_var
-    def get_vsurf(self, **kwargs):
-        '''Get V at the sea surface'''
-        return self.get_variable('vsurf', **kwargs)
-    
-    @formatdoc_var
-    def get_hs(self, **kwargs):
-        '''Get significant height of waves'''
-        return self.get_variable('hs',  **kwargs)
+    # For auto-declaring methods
+    auto_generic_var_names = ['sst', 'sss', 'ssh', 'usurf', 'vsurf', 'hs']
 
+@getvar_decmets 
 class OceanDataset(OceanSurfaceDataset):    
-    ncobj_specs = OceanSurfaceDataset.ncobj_specs.copy()
-    ncobj_specs.update(dict(
-    ))
     
-    def finalize_object(self, var, squeeze=False, order=None, asvar=None, torect=True, depthup=None, **kwargs):
+    # For auto-declaring methods
+    auto_generic_var_names = ['temp', 'sal', 'u3d', 'v3d', 'ubt', 'vbt', 'kz', 'bathy']
+    
+    def finalize_object(self, var, squeeze=False, order=None, asvar=None, torect=True, 
+        depthup=None, **kwargs):
         """Finalize a variable
         
         :Params:
@@ -1626,22 +1813,22 @@ class OceanDataset(OceanSurfaceDataset):
     def get_dz(self, *args, **kwargs):
         """Get layer thickness at"""
         return self._get_dz_('t', *args, **kwargs)
-    get_dz = formatdoc_var(get_dz, mode=_mode_doc)
+    get_dz = getvar_fmtdoc(get_dz, mode=_mode_doc)
         
     def get_dz_u(self, *args, **kwargs):
         """Get layer thickness at U location"""
         return self._get_dz_('u', *args, **kwargs)
-    formatdoc_var(get_dz_u, mode=_mode_doc)
+    getvar_fmtdoc(get_dz_u, mode=_mode_doc)
         
     def get_dz_v(self, *args, **kwargs):
         """Get layer thickness at V location"""
         return self._get_dz_('v', *args, **kwargs)
-    formatdoc_var(get_dz_v, mode=_mode_doc)
+    getvar_fmtdoc(get_dz_v, mode=_mode_doc)
         
     def get_dz_w(self, *args, **kwargs):
         """Get layer thickness at W location"""
         return self._get_dz_('w', *args, **kwargs)
-    formatdoc_var(get_dz_w, mode=_mode_doc)
+    getvar_fmtdoc(get_dz_w, mode=_mode_doc)
     
     del _mode_doc
         
@@ -1759,7 +1946,7 @@ class OceanDataset(OceanSurfaceDataset):
         if sigma_converter is None and check_mode('axis', mode): # no Z axis for sigma coordinates
             axis = self.get_axis('depth'+atp, level)
             if axis is not None:
-                if format: axis = format_axis(axis, 'depth'+atp), 
+                if format: axis = format_axis(axis, 'depth'+atp)
                 return self.finalize_object(axis, depthup=axis, **kwfinal)
         if warn:
             self.warning('Found no way to estimate depths at %s location'%at.upper())
@@ -1778,27 +1965,13 @@ class OceanDataset(OceanSurfaceDataset):
           a '-' sigme before: ``"-dz"``."""
     def get_depth(self, *args, **kwargs):
         return self._get_depth_('t', *args, **kwargs)
-    formatdoc_var(get_depth, mode=_mode_doc)
+    getvar_fmtdoc(get_depth, mode=_mode_doc)
         
     def get_depth_w(self, *args, **kwargs):
         return self._get_depth_('w', *args, **kwargs)
-    formatdoc_var(get_depth_w, mode=_mode_doc)
+    getvar_fmtdoc(get_depth_w, mode=_mode_doc)
     del _mode_doc
 
-    @formatdoc_var
-    def get_temp(self, **kwargs):
-        '''Get 4D temperature'''
-        return self.get_variable('temp',  **kwargs)
-    
-    @formatdoc_var
-    def get_kz(self, **kwargs):
-        '''Get 4D vertical diffusion of tracers (kz)'''
-        return self.get_variable('kz',  **kwargs)
-    
-    @formatdoc_var
-    def get_sal(self, **kwargs):
-        '''Get 4D salinity'''
-        return self.get_variable('sal', **kwargs)
         
     _mode_doc = """Computing mode
     
@@ -1809,7 +1982,7 @@ class OceanDataset(OceanSurfaceDataset):
         '''Get 4D density'''
         
         kwvar = kwfilter(kwargs, ['lon','lat','time','level','torect'], warn=False)
-        kwfinal = kwfilter(kwargs, ['squeeze','order','asvar'])
+        kwfinal = kwfilter(kwargs, ['squeeze','order','asvar', 'at'])
         kwdens = kwfilter(kwargs, 'dens_')
         kwdepth = kwfilter(kwargs, 'depth_')
         kwdepth.update(kwvar)
@@ -1829,42 +2002,7 @@ class OceanDataset(OceanSurfaceDataset):
                 dens = density(temp, sal, depth=depth, format_axes=True, **kwdens)
             if dens is not None or check_mode('tempsal', mode, strict=True): 
                 return self.finalize_object(dens, depthup=False, **kwfinal)
-    formatdoc_var(get_dens, mode=_mode_doc)
-        
-    @formatdoc_var
-    def get_u3d(self, **kwargs):
-        '''Get 4D zonal velocity'''
-        return self.get_variable('u3d', **kwargs)
-    
-    @formatdoc_var
-    def get_v3d(self, **kwargs):
-        '''Get 4D meridional velocity'''
-        return self.get_variable('v3d', **kwargs)
-     
-    @formatdoc_var
-    def get_ubt(self, **kwargs):
-        '''Get zonal barotropic velocity'''
-        return self.get_variable('ubt', **kwargs)
-    
-    @formatdoc_var
-    def get_vbt(self, **kwargs):
-        '''Get meridional barotropic velocity'''
-        return self.get_variable('vbt', **kwargs)
-        
-    @formatdoc_var
-    def get_bathy(self, **kwargs):
-        '''Get bathymetry'''
-        return self.get_variable('bathy', **kwargs)
-
-    @formatdoc_var
-    def get_bathy_u(self, **kwargs):
-        '''Get bathymetry'''
-        return self.get_variable('bathy_u', **kwargs)
-        
-    @formatdoc_var
-    def get_bathy_v(self, **kwargs):
-        '''Get bathymetry'''
-        return self.get_variable('bathy_v', **kwargs)
+    getvar_fmtdoc(get_dens, mode=_mode_doc)
         
 
     def get_uvgbt(self, **kwargs):
@@ -1874,13 +2012,13 @@ class OceanDataset(OceanSurfaceDataset):
         dyv = self.get_dy_v(degrees=False, local=True, **kwargs)
         return barotropic_geostrophic_velocity(ssh, dxy=(dxu, dyv))
     
-    @formatdoc_var
+    @getvar_fmtdoc
     def get_ugbt(self, **kwargs):
         '''Get zonal barotropic geostrophic velocity from SSH'''
         kwargs['getv'] = False
         return get_uvbt(**kwargs)
     
-    @formatdoc_var
+    @getvar_fmtdoc
     def get_vgbt(self, **kwargs):
         '''Get meridional barotropic geostrophic velocity from SSH'''
         kwargs['getu'] = False
@@ -1898,8 +2036,6 @@ class OceanDataset(OceanSurfaceDataset):
             return eddy_kinetic_energy((ugbt, vgbt))
         
     
-    ############################################################################
-    ############################################################################
     ############################################################################
     
     def get_hsection(self, varname, depth, time=None, lat=None, lon=None, 
@@ -2004,8 +2140,8 @@ class OceanDataset(OceanSurfaceDataset):
             - **lons/lats**: Specification of transect, either
             
                 - Coordinates of first and last point in degrees as 
-                tuples in the form ``(lon0,lon1)`` and ``(lat0,lat1)``.
-                The array of coordinates is generated using :func:`transect_specs`.
+                  tuples in the form ``(lon0,lon1)`` and ``(lat0,lat1)``.
+                  The array of coordinates is generated using :func:`transect_specs`.
                 - Or explicit array of coordinates (as scalars, lists or arrays).
               
             - **subsamp**, optional: Subsampling with respect to grid cell.
@@ -2171,7 +2307,9 @@ class OceanDataset(OceanSurfaceDataset):
         return ret
 
 
-    def get_hovmoller(self, varname, xorymin, xorymax, xory, meridional=False, select=None):
+    def get_hovmoller(self, varname, xorymin, xorymax, xory, meridional=False, 
+        method='bilinear', timeavg=False, subsamp=3, outaxis=None, 
+        time=None, lon=None, lat=None, level=None, **kwargs):
         '''Get a hovmoller(time,position) section data along a straight trajectory, zonal or meridional.
         
         .. warning:: This method is deprecated and must be rewritten has a special case of 
@@ -2196,9 +2334,10 @@ class OceanDataset(OceanSurfaceDataset):
             - longitude(position): longitude corresponding to var's position
         
         :Example:
-            >>>  get_hovmoller(self, 'temp', -10, -6, 47, select=dict(level=slice(-1,None))):
+            >>>  get_hovmoller(self, 'sst', -10, -6, 47):
         
         '''
+        self.warning('Please use the more generic method get_transect')
         self.verbose('Getting hovmoller data'
             '\n  variable:    %s'
             '\n  xorymin:     %s'
@@ -2206,6 +2345,18 @@ class OceanDataset(OceanSurfaceDataset):
             '\n  xory:        %s'
             '\n  meridional:  %s'
             '\n  select:      %s', varname, xorymin, xorymax, xory, meridional, select)
+            
+        # Transect
+        if meridional:
+            lons = (xory, xory)
+            lats = (xorymin, xorymax)
+        else:
+            lons = (xorymin, xorymax)
+            lats = (xory, xory)
+        var, lons, lats = self.get_transect(varname, lons, lats, 
+            getcoords=True, **kwts)
+            
+            
         grid = self.get_grid(varname)
         if grid is None:
             raise Exception('No grid found')
@@ -2509,9 +2660,9 @@ class OceanDataset(OceanSurfaceDataset):
                     kwfinal['depthup'] = False
                     return self.finalize_object(mld, **kwfinal)
              
-    get_mld = formatdoc_var(get_mld, 
+    get_mld = getvar_fmtdoc(get_mld, 
         mode=_mode_doc, 
-        deltatemp='Temprature difference with surface.', 
+        deltatemp='Temperature difference with surface.', 
         deltadens='Density difference with surface', 
         kzmax='Kz max for search for low values', 
         )
@@ -2599,17 +2750,19 @@ class OceanDataset(OceanSurfaceDataset):
     
     
     ############################################################################
-    ############################################################################
-    ############################################################################
     
     
     def plot_trajectory_map(self, lon, lat, **kwargs):
-        ''' Plot the "legend" map of a trajectory
+        ''' Plot the "legend" map of a trajectory using :func:`~vacumm.misc.plot.add_map_lines`
         
+        :Params:
+        
+            - **lon/lat**: Coordinates (in degrees) as 1D arrays.
         .. todo::
             - replace this method usage by vacumm.misc.plot.add_map_lines
         
         '''
+        
         varname=kwargs.pop('varname', None)
         grid = self.get_grid(varname)
         glob_lon, glob_lat = grid.getLongitude(), grid.getLatitude()
@@ -2912,10 +3065,9 @@ class OceanDataset(OceanSurfaceDataset):
         m.post_plot(**plotkw)
         return m,c
     
-class AtmosDataset(AtmosSurfaceDataset):    
-    ncobj_specs = AtmosSurfaceDataset.ncobj_specs.copy()
-    ncobj_specs.update(dict(
-    ))
+class AtmosDataset(AtmosSurfaceDataset):   
+    
+    ncobj_specs = {}
 
 
 def _at_(at, squeezet=False, focus=None, prefix=False):

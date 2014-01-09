@@ -45,14 +45,13 @@ __doc__ = 'HYCOM model data manipulation'
 
 
 from vacumm.data.misc.dataset import OceanDataset, AtmosSurfaceDataset
-from vacumm.misc import dict_merge
 
 
 class HYCOM(OceanDataset,AtmosSurfaceDataset):
     '''
     HYCOM model
     '''
-    _local_obj_specs = {
+    ncobj_specs = {
     
         # Time
         'time':{'search':{'names':['mt']}}, 
@@ -89,10 +88,6 @@ class HYCOM(OceanDataset,AtmosSurfaceDataset):
         }
     }
     
-    ncobj_specs = dict_merge(_local_obj_specs, OceanDataset.ncobj_specs)
-    ncobj_specs = dict_merge(ncobj_specs, AtmosSurfaceDataset.ncobj_specs)
-    del _local_obj_specs
-
 
     positive = 'down'
 
