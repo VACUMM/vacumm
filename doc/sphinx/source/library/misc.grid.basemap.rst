@@ -1,7 +1,7 @@
 .. _lib.misc.grid.basemap:
 
-:mod:`vacumm.misc.grid.basemap` -- Dérivés de :mod:`mpl_toolkits.basemap`
--------------------------------------------------------------------------
+:mod:`vacumm.misc.grid.basemap` -- :mod:`mpl_toolkits.basemap` related
+----------------------------------------------------------------------
 
 .. overview:: vacumm.misc.grid.basemap
 

@@ -1,7 +1,7 @@
 .. _lib.misc.core_plot:
 
-:mod:`vacumm.misc.core_plot` -- Classes pour graphiques
-=======================================================
+:mod:`vacumm.misc.core_plot` -- Core classes for plots
+======================================================
 
 .. overview:: vacumm.misc.core_plot
 

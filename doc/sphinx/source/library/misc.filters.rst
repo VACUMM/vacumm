@@ -1,8 +1,8 @@
 .. _lib.misc.filters:
 
 
-:mod:`vacumm.misc.filters` -- Filtres numériques 1D/2D
-======================================================
+:mod:`vacumm.misc.filters` -- 1D/2D numeric filters
+===================================================
 
 .. overview:: vacumm.misc.filters
 

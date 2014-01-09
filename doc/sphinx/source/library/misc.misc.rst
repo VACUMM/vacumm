@@ -1,7 +1,7 @@
 .. _lib.misc.misc:
 
-:mod:`vacumm.misc.misc`-- Divers
-================================
+:mod:`vacumm.misc.misc`-- Very generic tools
+============================================
 
 .. overview:: vacumm.misc.misc
 

@@ -8,6 +8,7 @@
 .. toctree::
 
     data.misc.coloc
+    data.misc.arakawa
     data.misc.dataset
     data.misc.profile
     data.misc.satellite

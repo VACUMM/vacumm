@@ -1,7 +1,7 @@
 .. _lib.misc.grid:
 
-:mod:`vacumm.misc.grid` -- Travail sur les grilles
-===================================================
+:mod:`vacumm.misc.grid` -- All about grids
+==========================================
 
 .. module:: vacumm.misc.grid
 

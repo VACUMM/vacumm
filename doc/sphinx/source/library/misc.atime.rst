@@ -1,7 +1,7 @@
 .. _lib.misc.time:
 
-:mod:`vacumm.misc.atime` -- Gestion du temps
-=============================================
+:mod:`vacumm.misc.atime` -- Time utilities
+==========================================
 
 .. overview:: vacumm.misc.atime
 

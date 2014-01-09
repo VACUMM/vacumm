@@ -1,8 +1,8 @@
 .. _dev.lib.mis.gri.gri:
 
 
-:mod:`vacumm.misc.grid.misc` -- Divers sur les grilles
-------------------------------------------------------
+:mod:`vacumm.misc.grid.misc` -- Generic utilities about grids
+-------------------------------------------------------------
 
 .. overview:: vacumm.misc.grid.misc
 

@@ -1,7 +1,7 @@
 .. _lib.misc.grid.masking:
 
-:mod:`vacumm.misc.grid.masking` -- Masquage
--------------------------------------------
+:mod:`vacumm.misc.grid.masking` -- Masking
+------------------------------------------
 
 .. overview:: vacumm.misc.grid.masking
 

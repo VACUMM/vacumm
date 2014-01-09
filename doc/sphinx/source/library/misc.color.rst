@@ -1,6 +1,6 @@
 .. _lib.misc.color:
 
-:mod:`vacumm.misc.color` -- Couleurs et palettes
+:mod:`vacumm.misc.color` -- Colors and colormaps
 ================================================
 
 .. overview:: vacumm.misc.color

@@ -1,7 +1,7 @@
 .. _lib.misc.phys:
 
-:mod:`vacumm.misc.phys` -- Utilitaires de physique
-==================================================
+:mod:`vacumm.misc.phys` -- Physics
+==================================
 
 .. module:: vacumm.misc.phys
 

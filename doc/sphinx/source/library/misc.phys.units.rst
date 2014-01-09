@@ -1,8 +1,8 @@
 .. _lib.misc.phy.units:
 
 
-:mod:`vacumm.misc.phys.units` -- Unités
-=======================================
+:mod:`vacumm.misc.phys.units` -- Units
+======================================
 
 .. overview:: vacumm.misc.phys.units
 

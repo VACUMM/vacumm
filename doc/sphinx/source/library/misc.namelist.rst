@@ -1,7 +1,7 @@
 .. _lib.misc.namelist:
 
-:mod:`vacumm.misc.namelist` -- Gestion de namelist fortran
-==========================================================
+:mod:`vacumm.misc.namelist` -- Fortran namelists
+================================================
 
 .. overview:: vacumm.misc.namelist
 

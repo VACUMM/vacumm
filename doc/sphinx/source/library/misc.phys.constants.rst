@@ -1,7 +1,7 @@
 .. _lib.misc.phys.constants:
 
-:mod:`vacumm.misc.phys.constants` -- Constantes
-===============================================
+:mod:`vacumm.misc.phys.constants` -- Constants
+==============================================
 
 .. overview:: vacumm.misc.phys.constants
 

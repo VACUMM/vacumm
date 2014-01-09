@@ -16,4 +16,11 @@ Ocean models
     data.model.mars
     data.model.nemo
     data.model.hycom
+    data.model.swan
 
+Atmospheric models
+==================
+
+.. toctree::
+
+    data.model.cfsr

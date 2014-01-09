@@ -1,8 +1,8 @@
 .. _lib.misc.io:
 
 
-:mod:`vacumm.misc.io` -- Lecture/ecriture de fichiers de divers types
-=====================================================================
+:mod:`vacumm.misc.io` -- Input/output
+=====================================
 
 .. overview:: vacumm.misc.io
 

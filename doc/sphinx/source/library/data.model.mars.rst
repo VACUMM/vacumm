@@ -1,7 +1,7 @@
 .. _lib.data.model.mars:
     
-:mod:`vacumm.data.model.mars3d` -- MARS model
-*********************************************
+:mod:`vacumm.data.model.mars3d` -- MARS3D ocean model
+*****************************************************
 
 .. overview:: vacumm.data.model.mars3d
     :inherited-members: 
