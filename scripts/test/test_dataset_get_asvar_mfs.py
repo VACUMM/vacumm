@@ -1,4 +1,4 @@
-"""Test the asvar keyword of :meth:`~vacumm.data.misc.dataset.Dataset.finalize_variable` on MFS"""
+"""Test the asvar keyword of :meth:`~vacumm.data.misc.dataset.Dataset.finalize_object` on MFS"""
 
 # Inits
 ncfile = "mfs.nc"
