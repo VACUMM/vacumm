@@ -1,7 +1,7 @@
 .. _user.tut.misc.config.argparse:
 
-Mixing :mod:`argparse` and :class:`vacumm.misc.config.ConfigManager` in a script
-================================================================================
+Mixing :mod:`argparse` and :class:`~vacumm.misc.config.ConfigManager` in a script
+=================================================================================
 
 Specification file (:file:`misc.config.argparse.ini`):
 
