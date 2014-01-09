@@ -2,5 +2,7 @@
 ================================================================================================
 
 
+.. figure:: ../../../../scripts/test/test_plot_section_zo.png
+
 .. literalinclude:: ../../../../scripts/test/test_plot_section_zo.py
 

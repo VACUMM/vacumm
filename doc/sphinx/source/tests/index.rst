@@ -23,20 +23,10 @@ Testing module :mod:`~vacumm.misc.plot`.
 
     test_plot_*
     
-Grids
------
-
-Testing module :mod:`~vacumm.misc.grid.misc`.
-
-.. toctree::
-    :glob:
-
-    test_grid_*
-    
 Stats
 -----
 
-Testing module :mod:`~vacumm.misc.grid.stats`.
+Testing module :mod:`~vacumm.misc.stats`.
 
 .. toctree::
     :glob:
@@ -61,8 +51,7 @@ Testing module :mod:`~vacumm.diag`.
 .. toctree::
     :glob:
 
-    test_mld
-    test_transect_mld
+    test_diag_*
 
 The :class:`~vacumm.data.misc.dataset.Dataset` class
 ----------------------------------------------------
