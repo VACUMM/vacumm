@@ -83,52 +83,52 @@ class Nemo(OceanDataset):
         # meridional current (2d)
         #'vbt':{'search':{'names':['vomecrty']}}
         
-	# -- Atmosphere --
+    # -- Atmosphere --
         # net downward heat flux
-	'sohefldo':{'search':{'names':['sohefldo']}},
+    'sohefldo':{'search':{'names':['sohefldo']}},
 
-	# cloud cover
-	'soccov':{'search':{'names':['soccov']}},
+    # cloud cover
+    'soccov':{'search':{'names':['soccov']}},
 
-	# surface heat flux: damping
-	'sohefldp':{'search':{'names':['sohefldp']}},
+    # surface heat flux: damping
+    'sohefldp':{'search':{'names':['sohefldp']}},
 
         # specific humidity
-	'sohumspe':{'search':{'names':['sohumspe']}},
+    'sohumspe':{'search':{'names':['sohumspe']}},
 
         # latent downward heat flux
         'lathf':{'search':{'names':['solhflup']}},
 
-	# Longwave Downward Hear flux
-	'lwhf':{'search':{'names':['solwfldo']}},
+    # Longwave Downward Hear flux
+    'lwhf':{'search':{'names':['solwfldo']}},
 
         # Sensible Downward Heat Flux
-	'senhf':{'search':{'names':['sosbhfup']}},
-	
+    'senhf':{'search':{'names':['sosbhfup']}},
+    
         # Shortwave Radiation
-	'soshfldo':{'search':{'names':['soshfldo']}},
+    'soshfldo':{'search':{'names':['soshfldo']}},
 
-	# Air temperature at 2m
-	'sotemair':{'search':{'names':['sotemair']}},
+    # Air temperature at 2m
+    'sotemair':{'search':{'names':['sotemair']}},
 
-	# Concentration/dilution water flux
-	'sowaflcd':{'search':{'names':['sowaflcd']}},
+    # Concentration/dilution water flux
+    'sowaflcd':{'search':{'names':['sowaflcd']}},
 
-	# Surface Water Flux: Damping
-	'sowafldp':{'search':{'names':['sowafldp']}},
+    # Surface Water Flux: Damping
+    'sowafldp':{'search':{'names':['sowafldp']}},
 
-	# Net Upward Water Flux
-	'sowaflup':{'search':{'names':['sowaflup']}},
+    # Net Upward Water Flux
+    'sowaflup':{'search':{'names':['sowaflup']}},
 
-	# Total Precip
-	'sowapre':{'search':{'names':['sowapre']}},
+    # Total Precip
+    'sowapre':{'search':{'names':['sowapre']}},
 
-	# Wind speed module at 10m
-	'sowindsp':{'search':{'names':['sowindsp']}},
+    # Wind speed module at 10m
+    'sowindsp':{'search':{'names':['sowindsp']}},
 
-	# -- Rivers --
-	# River runoffs
-	'sornf':{'search':{'names':['sornf']}},
+    # -- Rivers --
+    # River runoffs
+    'sornf':{'search':{'names':['sornf']}},
 
         # SST
         'sst':{
@@ -161,7 +161,11 @@ class Nemo(OceanDataset):
     
     
     positive = 'down'
-    
+ 
+
+#: Alias for :class:`Nemo`
+NEMO = Nemo
+
 if __name__ == '__main__' :
     from vacumm.data import setup_dataset
     from vacumm.misc.plot import map2 as map

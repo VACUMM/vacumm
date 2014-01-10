@@ -105,8 +105,8 @@ class Mars3D(OceanDataset,AtmosSurfaceDataset):
 #    del _local_obj_specs
     
     
-   
-
+#: Alias for :class:`Mars3D`
+MARS3D = Mars3D
 
 
 
