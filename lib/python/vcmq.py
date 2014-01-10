@@ -48,12 +48,12 @@ from vacumm.config import \
 
 from vacumm.misc.misc import \
     lonlab, latlab, deplab, kwfilter, broadcast, ArgList, \
-    dict_check_defaults, cp_atts, dict_filter,  cp_props, numod
+    dict_check_defaults, cp_atts, dict_filter,  cp_props, numod, set_atts, get_atts
     
 from vacumm.misc.plot import \
-    map2, section2, hov2, curve2, bar2, plot2d, \
-    savefigs, add_grid, xhide, yhide, xrotate, yrotate, add_key, \
-    add_shadow, add_glow
+    map2, section2, hov2, curve2, bar2, plot2d, stick2, \
+    savefigs, add_grid, xhide, yhide, xrotate, yrotate, add_key, taylor, \
+    add_shadow, add_glow, add_map_lines, add_map_line, add_map_point, minimap
     
 from vacumm.misc.color import plot_cmap, show_cmap, get_cmap, simple_colors, \
     cmap_rs, cmap_srs, cmap_custom
@@ -86,11 +86,11 @@ from vacumm.misc.stats import StatAccum
    
 # - grid
 
-from vacumm.misc.grid import \
+from vacumm.misc.grid.misc import \
     get_grid, set_grid, create_grid, create_grid2d, resol, monotonic, isdepthup, depth2dz, \
     meshcells, meshbounds, meshgrid, bounds1d, bounds2d, coord2slice, isregular, \
     isrect, curv2rect, isgrid, get_xy, create_axes2d, gridsel, varsel, xshift, rotate_grid, \
-    get_closest, makedepthup, get_axis
+    get_closest, makedepthup, get_axis, transect_specs
     
 from vacumm.misc.grid.regridding import \
     regrid1d, regrid2d, interp1d, interp2d, cellave1d, cellave2d, \
