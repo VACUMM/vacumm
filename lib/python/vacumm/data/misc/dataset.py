@@ -1528,6 +1528,66 @@ class Dataset(Object):
 #        '''Get Coriolis parameter'''
 #        return self.get_variable('corio_v', **kwargs)
     
+    def get_transect(self, varname, lons, lats, 
+        method='bilinear', subsamp=3, getcoords=False, timeavg=False, outaxis=None, 
+        time=None, lon=None, lat=None, level=None, warn=True, **kwargs):
+        """Get a transect between two points 
+        
+        It uses :func:`~vacumm.misc.grid.regridding.transect`.
+        
+        :Params:
+        
+            - **varname**: Generic var name.
+            - **lons/lats**: Specification of transect, either
+            
+                - Coordinates of first and last point in degrees as 
+                  tuples in the form ``(lon0,lon1)`` and ``(lat0,lat1)``.
+                  The array of coordinates is generated using :func:`transect_specs`.
+                - Or explicit array of coordinates (as scalars, lists or arrays).
+              
+            - **subsamp**, optional: Subsampling with respect to grid cell.
+            - **method**, optional: Interpolation method 
+              (see :func:`~vacumm.misc.grid.regridding.grid2xy`).
+            - **getcoords**, optional: Also get computed coordiantes.
+            - **outaxis**, optional: Output axis.
+        
+                - A cdms2 axis.
+                - ``None`` or ``'auto'``: Longitudes or latitudes depending 
+                  on the range.
+                - ``'lon'`` or ``'x'``: Longitudes.
+                - ``'lat'`` or ``'y'``: Latitudes.
+                - ``'dist'`` or ``'d'``: Distance in km.
+            
+            - **timeavg**, optional: Time average of results.
+        
+        :Return:
+    
+            ``tvar`` or ``tvar,tlons,tlats``
+        
+        """
+        # Params
+        kwvar = kwfilter(kwargs, ['torect', 'at', 'squeeze', 'asvar'], 
+            time=time, lat=lat, lon=lon, level=level, depthup=False, warn=warn)
+        # Get data
+        var = self.get(varname, **kwvar)
+        if var is None: return
+        if len(var.shape)<2: 
+            if warn: self.warning('You variable needs at least to be YX for a transect')
+            return var
+       
+        # Make transect
+        res = transect(var, lons, lats, subsamp=subsamp, 
+            getcoords=getcoords, method=method, outaxis=outaxis)
+        tvar = res[0] if getcoords else res
+        
+        # Time average
+        if timeavg and tvar.getOrder().startswith('t') and tvar.shape[0]>1:
+            self.verbose('Averaging transect along time')
+            tvar = MV2.average(tvar, axis=0)
+        
+        tvar =  self.finalize_object(tvar, **kwargs)
+        if getcoords: return (tvar, )+res[1:]
+        return tvar
     
     @classmethod
     def squeeze_variable(cls, var, spec=True):
@@ -1659,11 +1719,14 @@ class Dataset(Object):
         if asvar is not None:
             if not cdms2.isVariable(asvar):
                 asvar = self.get(asvar, warn=False)
-            return grow_variables(asvar, var, **kwasvar)[1]
+            var = grow_variables(asvar, var, **kwasvar)[1]
            
         # Post spatial selection
         if lon is not None or lat is not None:
             var = var(create_selector(lon=lon, lat=lat))
+            
+        # Some attributes
+        var._vacumm_arakawa_grid_type = self.arakawa_grid_type
             
         return var
     
@@ -2127,64 +2190,6 @@ class OceanDataset(OceanSurfaceDataset):
         return var
 
         
-    def get_transect(self, varname, lons, lats, 
-        method='bilinear', subsamp=3, getcoords=False, timeavg=False, outaxis=None, 
-        time=None, lon=None, lat=None, level=None, **kwargs):
-        """Get a transect between two points 
-        
-        It uses :func:`~vacumm.misc.grid.regridding.transect`.
-        
-        :Params:
-        
-            - **varname**: Generic var name.
-            - **lons/lats**: Specification of transect, either
-            
-                - Coordinates of first and last point in degrees as 
-                  tuples in the form ``(lon0,lon1)`` and ``(lat0,lat1)``.
-                  The array of coordinates is generated using :func:`transect_specs`.
-                - Or explicit array of coordinates (as scalars, lists or arrays).
-              
-            - **subsamp**, optional: Subsampling with respect to grid cell.
-            - **method**, optional: Interpolation method 
-              (see :func:`~vacumm.misc.grid.regridding.grid2xy`).
-            - **getcoords**, optional: Also get computed coordiantes.
-            - **outaxis**, optional: Output axis.
-        
-                - A cdms2 axis.
-                - ``None`` or ``'auto'``: Longitudes or latitudes depending 
-                  on the range.
-                - ``'lon'`` or ``'x'``: Longitudes.
-                - ``'lat'`` or ``'y'``: Latitudes.
-                - ``'dist'`` or ``'d'``: Distance in km.
-            
-            - **timeavg**, optional: Time average of results.
-        
-        :Return:
-    
-            ``tvar`` or ``tvar,tlons,tlats``
-        
-        """
-        # Params
-        kwvar = kwfilter(kwargs, ['torect'], time=time, lat=lat, lon=lon, 
-            level=level, depthup=False)
-        # Get data
-        var = self.get(varname, **kwvar)
-        if var is None: return
-        if len(var.shape)<2: return var
-       
-        # Make transect
-        res = transect(var, lons, lats, subsamp=subsamp, 
-            getcoords=getcoords, method=method, outaxis=outaxis)
-        tvar = res[0] if getcoords else res
-        
-        # Time average
-        if timeavg and tvar.getOrder().startswith('t') and tvar.shape[0]>1:
-            self.verbose('Averaging along time')
-            tvar = MV2.average(tvar, axis=0)
-        
-        tvar =  self.finalize_object(tvar, **kwargs)
-        if getcoords: return (tvar, )+res[1:]
-        return tvar
 
     def plot_transect(self, varname, lons, lats, 
         method='bilinear', timeavg=False, subsamp=3, outaxis=None, 
@@ -2211,7 +2216,7 @@ class OceanDataset(OceanSurfaceDataset):
         # Get data
         kwts = dict(method=method, subsamp=subsamp, timeavg=timeavg, 
             outaxis=outaxis, time=time, lon=lon, lat=lat, level=level, 
-            squeeze=True, torect=True)
+            **kwargs)
         var, lons, lats = self.get_transect(varname, lons, lats, 
             getcoords=True, **kwts)
         if var is None:
@@ -2309,7 +2314,7 @@ class OceanDataset(OceanSurfaceDataset):
 
     def get_hovmoller(self, varname, xorymin, xorymax, xory, meridional=False, 
         method='bilinear', timeavg=False, subsamp=3, outaxis=None, 
-        time=None, lon=None, lat=None, level=None, **kwargs):
+        time=None, lon=None, lat=None, level=None, warn=True, **kwargs):
         '''Get a hovmoller(time,position) section data along a straight trajectory, zonal or meridional.
         
         .. warning:: This method is deprecated and must be rewritten has a special case of 
@@ -2326,7 +2331,8 @@ class OceanDataset(OceanSurfaceDataset):
             - **xorymax**: eastermost longitude or northernmost latitude coordinate
             - **xory**:  longitude or latitude coordinate
             - **meridional**:  if true, hovmoller is meridional, at a longitude and along given latitude range (default is zonal)
-            - **select**: selector (should at least restrict to one level)
+            - **lon/lat/level/time**: Selection.
+            - Other keywords are passed to :meth:`get_transect`.
           
         :Return: A list containing in order:
             - var(time,position): hovmoller variable
@@ -2343,52 +2349,56 @@ class OceanDataset(OceanSurfaceDataset):
             '\n  xorymin:     %s'
             '\n  xorymax:     %s'
             '\n  xory:        %s'
-            '\n  meridional:  %s'
-            '\n  select:      %s', varname, xorymin, xorymax, xory, meridional, select)
+            '\n  meridional:  %s', varname, xorymin, xorymax, xory, meridional)
             
         # Transect
+        kwts = dict(method=method, subsamp=subsamp, timeavg=timeavg, 
+            outaxis=outaxis, time=time, lon=lon, lat=lat, level=level, 
+            **kwargs)
         if meridional:
             lons = (xory, xory)
             lats = (xorymin, xorymax)
         else:
             lons = (xorymin, xorymax)
             lats = (xory, xory)
-        var, lons, lats = self.get_transect(varname, lons, lats, 
-            getcoords=True, **kwts)
+        ts = self.get_transect(varname, lons, lats, getcoords=True, **kwts)
+        if ts is None:
+            if warn: self.warning("Can't get hovmoller")
+            return
+        vo, xo, yo = ts
             
-            
-        grid = self.get_grid(varname)
-        if grid is None:
-            raise Exception('No grid found')
-        xres, yres = resol(grid)
-        if select is None: select = dict()
-        if meridional:
-            subgrid = grid.subGridRegion((xorymin, xorymax, 'oo'), (xory, xory, 'ccb'))
-            xoryax = subgrid.getLatitude()[:]
-            select.update(longitude=(xory-xres, xory+xres, 'ccb'), latitude=(xorymin-yres, xorymax+yres, 'ccb'))
-            yo = numpy.concatenate(([xorymin], xoryax, [xorymax]))
-            xo = numpy.ones(len(yo)) * xory
-        else:
-            subgrid = grid.subGridRegion((xory, xory, 'ccb'), (xorymin, xorymax, 'oo'))
-            xoryax = subgrid.getLongitude()[:]
-            select.update(longitude=(xorymin-xres, xorymax+xres, 'ccb'), latitude=(xory-yres, xory+yres, 'ccb'))
-            xo = numpy.concatenate(([xorymin], xoryax, [xorymax]))
-            yo = numpy.ones(len(xo)) * xory
-        
-        select = self.get_selector(select)
-        var = self.get_variable(varname, select=select, squeeze=True)
-        if var is None:
-            raise Exception('No %s found'%(varname))
-        
-        # interp var
-        vo = grid2xy(var, xo, yo, method='nat')
-        
-        axes = vo.getAxisList()
-        if meridional:
-            axes[-1] = create_lat(yo)
-        else:
-            axes[-1] = create_lon(xo)
-        vo.setAxisList(axes)
+#        grid = self.get_grid(varname)
+#        if grid is None:
+#            raise Exception('No grid found')
+#        xres, yres = resol(grid)
+#        if select is None: select = dict()
+#        if meridional:
+#            subgrid = grid.subGridRegion((xorymin, xorymax, 'oo'), (xory, xory, 'ccb'))
+#            xoryax = subgrid.getLatitude()[:]
+#            select.update(longitude=(xory-xres, xory+xres, 'ccb'), latitude=(xorymin-yres, xorymax+yres, 'ccb'))
+#            yo = numpy.concatenate(([xorymin], xoryax, [xorymax]))
+#            xo = numpy.ones(len(yo)) * xory
+#        else:
+#            subgrid = grid.subGridRegion((xory, xory, 'ccb'), (xorymin, xorymax, 'oo'))
+#            xoryax = subgrid.getLongitude()[:]
+#            select.update(longitude=(xorymin-xres, xorymax+xres, 'ccb'), latitude=(xory-yres, xory+yres, 'ccb'))
+#            xo = numpy.concatenate(([xorymin], xoryax, [xorymax]))
+#            yo = numpy.ones(len(xo)) * xory
+#        
+#        select = self.get_selector(select)
+#        var = self.get_variable(varname, select=select, squeeze=True)
+#        if var is None:
+#            raise Exception('No %s found'%(varname))
+#        
+#        # interp var
+#        vo = grid2xy(var, xo, yo, method='nat')
+#        
+#        axes = vo.getAxisList()
+#        if meridional:
+#            axes[-1] = create_lat(yo)
+#        else:
+#            axes[-1] = create_lon(xo)
+#        vo.setAxisList(axes)
         
         self.verbose('Resulting variable: %s', self.describe(vo))
         self.verbose('Resulting longitude: %s', self.describe(xo))
