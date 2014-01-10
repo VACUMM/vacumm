@@ -71,18 +71,22 @@ class ArakawaGrid(object):
         :Params:
         
             - **arg**: An explicit grid type (:attr:`grid_types`), or
-              an object with a ``grid_type`` attribute.
+              an object with a either :attr:`grid_type`, :attr:`arakawa_grid_type` or
+              :attr:`grid_type` attribute.
         
         :Return: A :class:`ArakawaGrid` children object or ``None`` if grid type 
             has not been guessed.
         """
         if str(arg).upper() in grid_types:
             gt = arg
-        elif hasattr(arg, 'grid_type'):
-            gt = arg.grid_type
         else:
-            return
-        return eval(arg.upper()+'Grid')()
+            for att in ['arakawa_grid_type', '_arakawa_grid_type', 'grid_type']:
+                if hasattr(arg, att):
+                    gt = str(getattr(arg, att)).upper()
+                    break
+            else:
+                return
+        return eval(gt.upper()+'Grid')()
     
     def __getitem__(self, p):
         p = self.is_valid_loc(p)
