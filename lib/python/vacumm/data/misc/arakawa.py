@@ -36,9 +36,11 @@
 # knowledge of the CeCILL license and that you accept its terms.
 # 
 
-from vacumm.misc.grid.regridding import shift2d
+import cdms2
+from vacumm.misc.grid.regridding import shift2d, shift1d
 
-__all__ = ['locations', 'positions', 'ArakawaGrid', 'CGrid']
+__all__ = ['locations', 'positions', 'ArakawaGrid', 'CGrid', 'AGrid', 
+    'ArakawaGridTransfer']
 
 #: Strings for naming standard physical locations on grid
 locations = [
@@ -60,8 +62,48 @@ grid_types = ['A', 'C']
 from vacumm import VACUMMError
 class ArakawaGridError(VACUMMError):
     pass
+    
+class _ArakawaInterp_(object):
+    
+    def _xy_interp_(self, var, p0, p1, copy, **kwargs):
+        # No grid
+        if var.getGrid() is None:
+            if copy: var = var.clone()
+            return var
+            
+        # Delta
+        dloc = self.delta_loc(p0, p1)
+        
+        # Interpolate
+        var = shift2d(var, ishift=dloc[0], jshift=dloc[1], copy=True, **kwargs)
+        return var
 
-class ArakawaGrid(object):
+    def _z_interp_(self, var, p0, p1, copy, **kwargs):
+        # No vertical axis (use vacumm.misc.grid.get_zdim?)
+        if var.getLevel() is None:
+            if copy: var = var.clone()
+            return var
+            
+        # Z axis index
+        axis = var.getOrder().index('z')
+        
+        # Delta
+        dloc = self.delta_loc(p0, p1)
+        
+        # Interpolate
+        var = shift1d(var, shift=dloc[2], axis=axis, copy=True, **kwargs)
+        return var
+
+    @classmethod
+    def is_valid_loc(cls, p):
+        """Check if a location is valid"""
+        p = str(p).lower()
+        if p not in locations:
+            raise ArakawaGridError('Bad location in Arakawa grid: %s. '
+                'Please use one of: %s'%(p, locations))
+        return p
+
+class ArakawaGrid(_ArakawaInterp_):
     """Base class that provides a facotry and declares grid operations"""
     
     @staticmethod
@@ -77,13 +119,22 @@ class ArakawaGrid(object):
         :Return: A :class:`ArakawaGrid` children object or ``None`` if grid type 
             has not been guessed.
         """
+        if arg in [AGrid, CGrid]: return arg()
+        if isinstance(arg, ArakawaGrid): return arg
         if str(arg).upper() in grid_types:
             gt = arg
         else:
-            for att in ['arakawa_grid_type', '_arakawa_grid_type', 'grid_type']:
-                if hasattr(arg, att):
-                    gt = str(getattr(arg, att)).upper()
-                    break
+            aa = [args]
+            if cdms2.isVariable(arg) and arg.getGrid():
+                aa.append(arg.getGrid())
+            for a in aa:
+                for att in ['arakawa_grid_type', '_arakawa_grid_type', 'grid_type']:
+                    if hasattr(a, att):
+                        gt = str(getattr(a, att)).upper()
+                        break
+                else:
+                    continue
+                break
             else:
                 return
         return eval(gt.upper()+'Grid')()
@@ -92,21 +143,13 @@ class ArakawaGrid(object):
         p = self.is_valid_loc(p)
         return getattr(self, p)
     
-    @classmethod
-    def is_valid_loc(cls, p):
-        """Check if a location is valid"""
-        p = str(p).lower()
-        if p not in locations:
-            raise ArakawaGridError('Bad location in Arakawa grid: %s. '
-                'Please use one of: %s'%(p, locations))
-        return p
     
     def are_same_locs(self, p0, p1):
         """Check if to positions are the same
         
         :Example:
         
-            >>> mygrid.issame('t', 'u')
+            >>> mygrid.are_same_locs('t', 'u')
         """
         p0 = self.is_valid_loc(p0)
         p1 = self.is_valid_loc(p1)
@@ -123,42 +166,57 @@ class ArakawaGrid(object):
         
         return self[p1][0]-self[p0][0], self[p1][1]-self[p0][1], self[p1][2]-self[p0][2]
         
-    def interp(self, var, p0, p1, copy=False, mode=None, **kwargs):
+    def interp(self, var, p0, p1, copy=False, mode=None, zfirst=True, **kwargs):
         """Interpolate a variable from one location to another one using 
-        :func:`vacumm.misc.grid.regridding.shift2d`
-        
-        .. warning: It currently works only for horizontal interpolations.
+        :func:`vacumm.misc.grid.regridding.shift2d` (horizontal) and 
+        :func:`vacumm.misc.grid.regridding.shift1d` (vertical)
         
         .. note:: It does not change the attributes.
         
         :Params:
         
             - **var**: MV2 array with a grid.
-            - **p0/1**: A valid location.
+            - **p0/1**: Valid locations: 0=source, 1=destination.
+              If p0 is None, it is guessed with :func:`vacumm.data.cf.get_loc`.
             - **mode**, optional: Interpolation mode at boundaries 
               (see :func:`~vacumm.misc.grid.regridding.shift2d`).
-            - **copy**, optional: Copy the variable?
+            - **copy**, optional: Copy the variable if same location?
             
         :Example:
         
             >>> u3d_t = CGrid().interp(u3d_u, 'u', 't', mode='extrap')
         """
         # Valid locations
+        if p0 is None:
+            from vacumm.data.cf import get_loc
+            p0 = get_loc(var)
+            if p0 is None:
+                raise ArakawaGridError("Can't guess location of variable: "+var.id)
         p0 = self.is_valid_loc(p0)
         p1 = self.is_valid_loc(p1)
         
         # Same location or no grid
-        if self[p0]==self[p1] or var.getGrid() is None:
+        if self[p0]==self[p1]:
             if copy: var = var.clone()
             return var
-            
-        # Delta
-        dloc = self.delta_loc(p0, p1)
         
-        # Interpolate
-        return shift2d(var, ishift=dloc[0], jshift=dloc[1], mode=mode, copy=copy)
+        # Interpolation order
+        interpmets = self._z_interp_, self._xy_interp_
+        if not zfirst:
+            interpmets = interpmets[::-1]
+            
+        # Interpolations
+        for interpmet in interpmets:
+            var = interpmet(var, p0, p1, copy, mode=mode, **kwargs)
+         
+        # Special attributes
+        from vacumm.data.cf import set_loc
+        set_loc(var, p1)
+        var._vacumm_arakawa_grid_type = self.grid_type
+        
+        return var
     loc2loc = interp
-
+    
 class AGrid(ArakawaGrid):
     """A Arakawa grid"""
     # Positions relative to T point
@@ -182,3 +240,99 @@ class CGrid(ArakawaGrid):
     
     grid_type = gtype = 'C'
     
+
+class ArakawaGridTransfer(_ArakawaInterp_):
+    """To interpolate variables from one grid type to another
+    
+    .. note:: This classes does not interpolate between two grids, it just interpolates
+        between relative positions. For general interpolations, please use
+        :func:`~vacumm.grid.regridding.regrid2d`.
+        
+    :Example:
+    
+        >>> sst_a_v = ArakawaGridTransfer('C','A').interp(sst_c_t, 't', 'v')
+    
+    """
+    def __init__(self, grid0, grid1):
+        """
+        
+        :Params:
+        
+            - **grid0/1**: Arguments to :meth:`~Arakawa.factory`
+        """
+        
+        # Get ArakawaGrid objects
+        self.grid0 = ArakawaGrid.factory(grid0)
+        self.grid1 = ArakawaGrid.factory(grid1)
+        
+    def delta_loc(self, p0, p1=None):
+        """Difference of relative locations
+        
+        :Return: ``dx,dy,dz``
+        """
+        p0 = self.grid0.is_valid_loc(p0)
+        if p1 is None:
+            p1 = p0
+        else:
+            p1 = self.grid0.is_valid_loc(p1)
+        
+        return (self.grid1[p1][0]-self.grid0[p0][0], self.grid1[p1][1]-self.grid0[p0][1], 
+            self.grid1[p1][2]-self.grid0[p0][2])
+        
+        
+    def interp(self, var, p0=None, p1=None, copy=False, mode=None, zfirst=True, **kwargs):
+        """Interpolate a variable from one location to another one using 
+        :func:`vacumm.misc.grid.regridding.shift2d` (horizontal) and 
+        :func:`vacumm.misc.grid.regridding.shift1d` (vertical)
+        
+        .. note:: It does not change the attributes.
+        
+        :Params:
+        
+            - **var**: MV2 array with a grid.
+            - **p0/1**: Valid locations: 0=source, 1=destination.
+              If p0 is None, it is guessed with :func:`vacumm.data.cf.get_loc`.
+              If p1 is None, it defaults to p0. 
+            - **mode**, optional: Interpolation mode at boundaries 
+              (see :func:`~vacumm.misc.grid.regridding.shift2d`).
+            - **copy**, optional: Copy the variable if same location?
+            
+        :Example:
+        
+            >>> sst_a_v = ArakawaGridTransfer('C','A').interp(sst_c_t, 't', 'v')
+    
+        """
+        
+        # Valid location
+        if p0 is None:
+            from vacumm.data.cf import get_loc
+            p0 = get_loc(var)
+            if p0 is None:
+                raise ArakawaGridError("Can't guess location of variable: "+var.id)
+        p0 = self.is_valid_loc(p0)
+        if p1 is None:
+            p1 = p0
+        else:
+            p1 = self.grid0.is_valid_loc(p1)
+        
+        # Same location or no grid
+        if self.grid0[p0]==self.grid1[p1]:
+            if copy: var = var.clone()
+            return var
+        
+        # Interpolation order
+        interpmets = self._z_interp_, self._xy_interp_
+        if not zfirst:
+            interpmets = interpmets[::-1]
+            
+        # Interpolations
+        for interpmet in interpmets:
+            var = interpmet(var, p0, p1, copy, mode=mode, **kwargs)
+         
+        # Special attributes
+        from vacumm.data.cf import set_loc
+        set_loc(var, p1)
+        var._vacumm_arakawa_grid_type = self.grid1.grid_type
+        
+        return var
+            
