@@ -135,7 +135,7 @@ def code_base_name(iframe=0, ext=True):
         if ext is not False:
             if isinstance(ext, basestring):
                 suf = ext
-            if not suf.startswith('.'):
+            if not '.' in suf:
                 suf = '.'+suf
             fname = fname + suf
     return fname
