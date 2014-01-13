@@ -97,7 +97,7 @@ from vacumm.data.misc.sigma import NcSigma
 from vacumm.data.misc.arakawa import ArakawaGrid, AGrid, CGrid, locations as arakawa_locations
 from vacumm.data.cf import var_specs, axis_specs, cf2search, cf2atts, generic_names, \
     generic_axis_names, generic_var_names, format_axis, format_var, get_loc, no_loc_single, \
-    default_location, change_loc_var, hidden_cf_atts
+    default_location, change_loc, hidden_cf_atts
 from vacumm import VACUMMError
 from vacumm.diag.dynamics import barotropic_geostrophic_velocity, eddy_kinetic_energy
 from vacumm.diag.thermdyn import mixed_layer_depth, density
@@ -116,65 +116,67 @@ _geonames =  {'x':'lon', 'y':'lat', 'z':'level', 't':'time'}
 ############################################################################
 
 
-def _get_var_(self, name, **kwargs):
+def _get_var_(self, name, mode=None, **kwargs):
     """Function to be used as a method for getting variables at a specific location
     
     :Params:
     
         - **name**: Generic name.
         - Extra keywords are passed to :method:`Dataset.get_variable`
+    
     """
     kwargs = kwargs.copy()
     warn = kwargs.get('warn', False)
     kwargs['warn'] = False
-    
-    #TODO: _get_var_: add the 'at' keyword for forcing interpolation from one loc to another loc
-    
-    # Direct try
-    var =  self.get_variable(name, **kwargs)
     gname = no_loc_single(name, 'name')
-    if var is not None or gname==name: return var
-
-    # Physical location
-    ploc = self._get_ncobj_specs_(gname)['physloc']
-
-    # No location specifications -> generic search 
-    if not self.arakawa_grid_type or not ploc: 
+    ploc = self._get_ncobj_specs_(gname).get('physloc', None)
+    if not self.arakawa_grid_type: ploc = None
+    
+    # From variable (no interpolation at all, just search for names)
+    if check_mode('var', mode):
+    
+        # Direct try
+        var =  self.get_variable(name, **kwargs)
+        if var is not None: return var
+    
+        # Physical location and generic name
+    
+        # No location info -> generic search allowed
+        if gname!=name and not ploc:             
+            var = self.get_variable(gname, **kwargs) #'usurf_u' = 'usurf'
+            if var is not None: return var
+            
+        # Generic name -> search at physical location only (U at '_u')
+        elif gname==name and ploc:
+            pname = change_loc_single(name, 'name', ploc) # 'usurf' -> 'usurf_u'
+            var = self.get_variable(pname, **kwargs)
+            if var is not None: return var
         
-        if gname==name: 
-            if warn: self.warning("Can't get %(name)s"%locals())
-            return # Already searched for
-        kwargs['warn'] = warn
-        return self.get_variable(gname, **kwargs)
-  
-    # Generic name -> search at physical location only (U at '_u')
-    if gname==name:
-        pname = change_loc_single(name, 'name') # 'usurf' -> 'usurf_u'
-        kwargs['warn'] = warn
-        return self.get_variable(pname, **kwargs)
+        # We failed
+        if check_mode('var', mode, strict=True): 
+            if warn: self.warning("Can't get %(name)s from file"%locals())
+            return
 
     # Get it from other locations
-    loc = get_loc(name, 'name', mode='loc')
-    locations = list(arakawa_locations)
-    locations.remove(loc)
-    locations.remove(ploc)
-    locations.insert(0, ploc)
-    kwargs = kwargs.copy()
-    for fromloc in locations: #TODO: arakawa: clever order for loc2loc tries (use closer neighbours)
+    if check_mode('stag', mode):
+        loc = get_loc(name, 'name', mode='ext')
+        locations = list(arakawa_locations)
+        locations.remove(loc)
+        if ploc:
+            locations.remove(ploc)
+            locations.insert(0, ploc)
+        kwargs = kwargs.copy()
+        for fromloc in locations: #TODO: arakawa: clever order for loc2loc tries (use closer neighbours)
+            
+            var = self.get_variable(gname, at=loc, at_fromloc=fromloc, **kwargs)
+            if var is not None: return var
         
-        var = self.get_variable(gname, at=loc, at_fromloc=fromloc, **kwargs)
-        if var is not None: 
-            return var
-        
-#        # Check that there is a grid
-#        if var.getGrid() is None:
-#            break
-#        
-#        # Interpolate
-#        self.debug('Get %(name)s at %(aloc)s location from %(aloc)s location'%locals())
-#        var = self.arakawa_grid.interp(var, aloc, loc)
+        if check_mode('stag', mode, strict=True): 
+            if warn: self.warning("Can't get %(name)s from any locations"%locals())
+            return
+            
+    if warn: self.warning("Can't get %(name)s in any way"%locals())
     
-    if warn: self.warning("Can't get %(name)s from any locations"%locals())
 
 getvar_decmet_tpl = """def get_var(self, **kwargs):
     return _get_var_(self, '%(name)s', **kwargs)"""
@@ -234,7 +236,7 @@ def getvar_decmets(cls):
 
 
 #: Template for auto formatting methods that get variables (like :meth:`get_sst`)
-getvar_fmtdoc_tpl = """%(func_name)s(time=None, level=None, lat=None, lon=None, squeeze=None, order=None, asvar=None, at=None, format=None, torect=True, verbose=None, warn=None, **kwargs)
+getvar_fmtdoc_tpl = """%(func_name)s(time=None, level=None, lat=None, lon=None, squeeze=None, order=None, asvar=None, at=None, format=None, torect=True, verbose=None, warn=None, mode=None, **kwargs)
 
     Read the %(long_name)s %(units)s
     
@@ -247,14 +249,19 @@ getvar_fmtdoc_tpl = """%(func_name)s(time=None, level=None, lat=None, lon=None, 
         %(other_params)s- **asvar**, optional: Grow variable to match the ``asvar`` variable,
           using :func:`~vacumm.misc.misc.grow_variables`.
         - **asvar**, optional: Reshape as this variable.
-        - **at**, optional: Interpolate to this grid location.
+        - **at**, optional: Interpolate to this grid location using 
+          :meth:`Datatset.toloc`.
         - **format**, optional: Format the variable and its axes using 
-          :mod:`~vacumm.data.cd.format_var`.
+          :func:`~vacumm.data.cf.format_var`.
         - **torect**, optional: If possible, convert a curvilinear grid to
-          a rectilinar grid.
+          a rectilinar grid using :func:`~vacumm.misc.grid.regridding.curv2rect`.
         - **order**, optional: Change order of axes (like ``'xty'``).
         %(kwargs_params)s
     """
+
+_default_modes = """Retreiving mode
+            - ``"var"``: Get from netcdf variable only.
+            - ``"stag"``: Get it from another grid location."""
 
 def getvar_fmtdoc(func, **kwargs):
     """Format the docstring of methods that get variables
@@ -287,6 +294,7 @@ def getvar_fmtdoc(func, **kwargs):
     var_name = func_name[4:]
     if not var_name in generic_var_names: return func
     
+    
     # Long name and units
     long_name = var_specs[var_name]['long_names'][0]
     long_name = long_name[0].lower()+long_name[1:]
@@ -296,6 +304,8 @@ def getvar_fmtdoc(func, **kwargs):
         units = ''
     
     # Extra keywords
+    kwargs.setdefault('mode', _default_modes)
+    if not kwargs['mode']: del kwargs['mode']
     if kwargs:
         other_params = []
         indent = '    '
@@ -1624,7 +1634,7 @@ class Dataset(Object):
         
         """
         # No grid type
-        atts = get_atts(var, extra=hidden_cf_atts)
+        atts = get_atts(var, extra=hidden_cf_atts+['_arakawa_grid_type'])
         if not self.arakawa_grid_type or var.getGrid() is None:
             if copy: 
                 var = var.clone()
@@ -1641,7 +1651,7 @@ class Dataset(Object):
         set_atts(var, atts)
         
         # Reformat location
-        change_loc_var(var, loc, squeeze=True)
+        change_loc(var, loc, squeeze=True)
         
         return var
         
@@ -1702,7 +1712,7 @@ class Dataset(Object):
                 var = var(order=order)
             
             # Rectangular if possible
-            if torect: self._torect_(var)
+            if torect: self.torect(var)
             
             # At/toloc
             if at:
@@ -1727,13 +1737,18 @@ class Dataset(Object):
             
         # Some attributes
         var._vacumm_arakawa_grid_type = self.arakawa_grid_type
+        if var.getGrid():
+            var.getGrid()._vacumm_arakawa_grid_type = self.arakawa_grid_type
             
         return var
     
-    def _torect_(self, var):
-        """Convert from curv 2 rect
+    def torect(self, var):
+        """Place a variable on rectangular grid if possible using 
+        :func:`~vacumm.misc.grid.regridding.curv2rect`
         
-        :Params: var =  variable or grid
+        :Params: 
+        
+            - **var**: CDAT variable or grid.
         """
         # Get the grid
         grid = var if isgrid(var) else var.getGrid()

@@ -15,9 +15,9 @@ __all__ = ['var_specs', 'axis_specs',
     'generic_axis_names', 'generic_var_names', 'generic_names', 
     'format_var', 'format_axis', 'format_grid', 'match_obj', 
     'cf2atts', 'cf2search', 'cp_suffix', 'specs_def_loc', 'get_loc', 
-    'change_loc', 'change_loc_single', 'specs_dup_loc', 'no_loc_single', 
-    'change_loc_var', 'squeeze_loc_single', 'squeeze_loc_var', 'get_physloc', 
-    'hidden_cf_atts'
+    'change_loc', 'change_loc_single', 'dupl_loc_specs', 'no_loc_single', 
+    'change_loc_specs', 'squeeze_loc_single', 'squeeze_loc', 'get_physloc', 
+    'hidden_cf_atts', 'set_loc'
 ]
 
 arakawa_suffixes = [('_'+p) for p in arakawa_locations]
@@ -560,7 +560,8 @@ def get_loc(name, stype=None, mode='loc'):
     :Params:
     
         - **name**: Generic name of the variable or axis, or an object CDAT object 
-          (variable or axis).
+          (variable or axis). If a CDAT object, it first searches for the
+          :attr:`_vacumm_cf_location` attributes.
         - **stype**, optional: One of 'name', 'standard_name' or 'long_name'.
           If ``None``, they are all tested.
           If ``name`` is a string, location is searched interpreting it as of type ``'stype``.
@@ -568,7 +569,9 @@ def get_loc(name, stype=None, mode='loc'):
         - **mode**, optional: What you get if something found.
         
             - ``"loc"``: Get the location lowercase letter (like "u").
-            - ``"ext"``: Same as ``"loc"`` but defaults to the "physloc" specification
+            - ``"ext"``: Same as ``"loc"`` but searches for the :attr:`position` first
+              if case of a CDAT variable,
+              then the :attr:`_vacumm_cf_physloc` attributes or the "physloc" specification
               if ``name`` has an entry in :attr:`var_specs`, else defaults to
               :attr:`default_location`.
             - Else, the matched string.
@@ -593,16 +596,41 @@ def get_loc(name, stype=None, mode='loc'):
     # CDAT object (not a string)
     if isinstance(name, list): name = name[0]
     if not isinstance(name, basestring):
+        
+        # First: _vacumm_cf_location
+        if getattr(name, '_vacumm_cf_location', None):
+            return name._vacumm_cf_location.lower()
+        
+        # Location from names
         for stype in stypes:
             if stype=='name':
                 loc = get_loc(name.id, stype, mode=mode)
             elif hasattr(name, stype):
                 loc = get_loc(getattr(name, stype), stype, mode)
-            elif mode=='ext' and name.id in var_specs and var_specs[name.id].get('physloc'):
-                loc = var_specs[name.id].get('physloc')
             else:
                 continue
+            break
+        if loc is not None:
             return loc
+                
+        # Ext mode
+        if mode=='ext':
+            
+            # Position attribute
+            if hasattr(name, 'position'): return name.position.lower()
+            
+            # Physloc
+            gname = name.id if not hasattr(name, '_vacumm_cf_name') else name._vacumm_cf_name
+            gname = no_loc_single(gname, 'name')
+            if gname in var_specs:
+                
+                # From _vacumm_cf_physloc attribute
+                if hasattr(name, '_vacumm_cf_physloc'):
+                    return name._vacumm_cf_physloc
+               
+                # From specs
+                if var_specs[gname].get('physloc'):
+                    return var_specs[gname]['physloc']
         return
     
     # String
@@ -679,13 +707,13 @@ def change_loc_single(name, stype, loc, squeeze=None):
         return basename+'_'+loc
     return basename
         
-def change_loc(loc, names=None, standard_names=None, long_names=None, axes=None, 
+def change_loc_specs(loc, names=None, standard_names=None, long_names=None, axes=None, 
     iaxis=None, jaxis=None, squeeze=None, **kwargs):
     """Change location specification in names, standard names, long names and axes names
     
     :Example:
     
-        >>> specs = change_loc('v', names = ['usurf_u', 'u_u'])
+        >>> specs = change_loc_specs('v', names = ['usurf_u', 'u_u'])
     
     :Return: A dictionary
     """
@@ -729,7 +757,7 @@ def change_loc(loc, names=None, standard_names=None, long_names=None, axes=None,
         
     return specs
     
-def change_loc_var(var, toloc, axes=True, squeeze=True):
+def change_loc(var, toloc, axes=True, squeeze=True):
     """Change location specifications of a variable and its axes
     
     It affects the id, the standard_name and the long_name when they are defined.
@@ -740,9 +768,9 @@ def change_loc_var(var, toloc, axes=True, squeeze=True):
     
     :Example:
     
-        >>> change_loc_var(sst, 'u').id
+        >>> change_loc(sst, 'u').id
         'sst_u'
-        >>> change_loc_var(sst, 't', squeeze=True).id
+        >>> change_loc(sst, 't', squeeze=True).id
         'sst'
     
     """
@@ -756,7 +784,7 @@ def change_loc_var(var, toloc, axes=True, squeeze=True):
     
     # Change attributes
     # - get
-    specs = change_loc(toloc, squeeze=squeeze, 
+    specs = change_loc_specs(toloc, squeeze=squeeze, 
         names=var.id, 
         standard_names = getattr(var, 'standard_name', None), 
         long_names = getattr(var, 'long_name', None), 
@@ -780,27 +808,61 @@ def change_loc_var(var, toloc, axes=True, squeeze=True):
             if hasattr(var, 'get'+meth):
                 axismet = getattr(var, 'get'+meth) # var.getLongitude
                 if axismet() is not None:
-                    change_loc_var(axismet(), toloc, squeeze=squeeze)
+                    change_loc(axismet(), toloc, squeeze=squeeze)
         # - 2d axes
         if cdms2.isVariable(var) and isaxis(var) and var.ndim>2:
             for i in -1, -2:
-                change_loc_var(var.getAxis(i), toloc, squeeze=squeeze)            
+                change_loc(var.getAxis(i), toloc, squeeze=squeeze)            
                     
         # Grid
         if cdms2.isVariable(var) and var.getGrid() is not None:
-            change_loc_var(var.getGrid(), toloc, squeeze=squeeze)
-            
+            change_loc(var.getGrid(), toloc, squeeze=squeeze)
+     
+    # Reference attribute
+    set_loc(var, toloc)
         
     return var
+
+def set_loc(var, loc, addpos=False):
+    """Define (or remove) the location of a variable with :attr:`_vacumm_cf_location` attribute
+    
+    It also makes sure that the :attr:`position` attribute is the same if present.
+    
+    :Params:
+    
+        - **var**: CDAT variable.
+        - **loc**: Location. If empty, remove :attr:`_vacumm_cf_location` and
+          :attr:`position` attributes.
+        - **addpos**, optional: Set also the :attr:`position` attribute.
+    
+    """
+    # Remove
+    if not loc:
+        for att in '_vacumm_cf_location', 'position':
+            if hasattr(var, att):
+                delattr(var, att)
+                
+    # Set
+    loc = loc.lower()
+    var._vacumm_cf_location = loc
+    if addpos:
+        var.position = loc
+    elif hasattr(var, 'position') and var.position.lower()!=loc:
+        var.position = loc
+    return var
+    
 
 def get_physloc(var):
     """Get the physical location of a variable
     
+    .. note:: The physical location may be different from the current location.
+    
     It defaults to :attr:`default_location`
     """
     # Direct
-    if hasattr(var, '_vacumm_cf_physloc'): 
-        return var._vacumm_cf_physloc
+    for att in ['_vacumm_cf_physloc']:
+        if hasattr(var, att): 
+            return getattr(var, att)
     
     # Entry name in var_specs (string)
     if isinstance(var, basestring):
@@ -822,7 +884,7 @@ def get_physloc(var):
         return default_location
     return var_specs[name].get('physloc', default_location)
     
-def squeeze_loc_var(var):
+def squeeze_loc(var):
     """Squeeze out location specification of a variable if the location is 
     physloc or :attr:`default_location`
         
@@ -838,7 +900,7 @@ def squeeze_loc_var(var):
     physloc = get_physloc(var)
             
     # Remove loc only for physloc
-    change_loc_var(var, None, axes=True, squeeze=physloc)
+    change_loc(var, None, axes=True, squeeze=physloc)
     
 def squeeze_loc_single(name, stype, physloc=None):
     """Squeeze location specs if it matches physical location"""
@@ -851,7 +913,7 @@ def squeeze_loc_single(name, stype, physloc=None):
         name = change_loc_single(name, stype, None)
     return name
 
-def specs_dup_loc(all_specs, fromname, toloc):
+def dupl_loc_specs(all_specs, fromname, toloc):
     """Duplicate the specification for a variable or an axis to another or several locations
     
     The following rules apply:
@@ -866,7 +928,7 @@ def specs_dup_loc(all_specs, fromname, toloc):
     
     :Example:
     
-        >>> specs_dup_loc(var_specs, 'corio', 'u') # Create the 'corio_u' entry in var_specs
+        >>> dupl_loc_specs(var_specs, 'corio', 'u') # Create the 'corio_u' entry in var_specs
         
     """
     if not fromname in all_specs:
@@ -884,29 +946,36 @@ def specs_dup_loc(all_specs, fromname, toloc):
         tonames.append(toname)
         
         # New specs
-        tospecs = change_loc(loc, **all_specs[fromname])
+        tospecs = change_loc_specs(loc, **all_specs[fromname])
         
         # For merging specs back with old specs if old has no location
-        if fromnoloc: # generic
-            tomerge.append(tospecs)
+#        if fromnoloc: # generic
+        tomerge.append(tospecs)
             
         # Merge with old spec if existing
         if toname in all_specs:
             tospecs = dict_merge(tospecs, all_specs[toname], mergelists=True)
             
-        # Default location -> add its generic version ('_t' -> + '')
-        if loc==default_location:
-            genspecs = change_loc(None, **tospecs)
-            tospecs = dict_merge(tospecs, genspecs, mergelists=True)
-            
+#        # Default location -> add its generic version ('_t' -> + '')
+#        if loc==default_location:
+#            genspecs = change_loc_specs(None, **tospecs)
+#            tospecs = dict_merge(tospecs, genspecs, mergelists=True)
+         
+        # Remove atlocs attribute
+        if 'atlocs' in tospecs:
+            tospecs.pop('atlocs')
+      
         # Store it
         all_specs[toname] = tospecs
 
-    # Merge back with old specs when source is generic (no loc)
+    # Make a generic entry that merges all specialized ones
     if fromnoloc:
-        kw = dict(mergelists=True)
-        tomerge.insert(0, all_specs[fromname])
-        all_specs[fromname] = dict_merge(*tomerge, **kw)
+        genspecs = all_specs[fromname]
+    else:
+        genspecs = change_loc_specs(None, **all_specs[fromname])
+    tomerge.insert(0, genspecs)
+    kw = dict(mergelists=True)
+    all_specs[fromname] = dict_merge(*tomerge, **kw)
     
     if single: return tonames[0]
     return tonames
@@ -923,7 +992,7 @@ def specs_dup_loc(all_specs, fromname, toloc):
 #    for name in names:
 #        m = re.match('.+(%s)$'%'|'.join(suffixes), name)
 #        if m is None: continue
-#        specs_dup_loc(all_specs, name, '', suffixes=arakawa_suffixes)
+#        dupl_loc_specs(all_specs, name, '', suffixes=arakawa_suffixes)
         
         
 def cp_suffix(idref, id, suffixes=arakawa_suffixes):
@@ -1007,7 +1076,7 @@ for all_specs in var_specs, axis_specs:
         
         # Duplicate at other locations
         if 'atlocs' in specs:
-            tonames =  specs_dup_loc(all_specs, name, specs['atlocs'])
+            tonames =  dupl_loc_specs(all_specs, name, specs['atlocs'])
             from_atlocs.extend(tonames)
 
 del specs
@@ -1183,11 +1252,13 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
         if force or not getattr(var, att, ''):
             setattr(var, att, val)
     # - physical location
-    loc = get_loc(var, mode='loc')
+    loc = get_loc(var, mode='ext')
     if not loc and 'physloc' in specs:
         loc = specs['physloc']
     if loc:
-        var._vacumm_cf_physloc = loc
+        if 'physloc' in specs and loc in specs['physloc']:
+            var._vacumm_cf_physloc = loc.lower()
+        set_loc(var, loc)
     # - store cf name
     var._vacumm_cf_name = var.id
     
@@ -1339,7 +1410,7 @@ def format_grid(grid, pt, **kwargs):
 
 
 #: Hidden attributes of variable useful of this module
-hidden_cf_atts = ['_vacumm_cf_name', '_vacumm_cf_physloc']
+hidden_cf_atts = ['_vacumm_cf_name', '_vacumm_cf_physloc', '_vacumm_cf_location']
 
 def match_obj(obj, name, searchmode=None, **kwargs):
     """Check if a variable or an axis matches generic specifications
