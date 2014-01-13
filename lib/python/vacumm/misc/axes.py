@@ -519,13 +519,13 @@ def get_order(var):
     if var.getGrid() is not None and \
         'z' not in order[-2:] and 't' not in order[-2:]:
         if order[-1]=='-' and 'x' not in order:
-            lon = var.getLongitude()
-            if len(lon.shape)==2:
-                order= order[:-1]+'x'
+#            lon = var.getLongitude()
+#            if len(lon.shape)==2:
+            order= order[:-1]+'x'
         if order[-2]=='-' and 'y' not in order:
-            lat = var.getLatitude()
-            if len(lat.shape)==2:
-                order = order[:-2]+'y'+order[-1]
+#            lat = var.getLatitude()
+#            if len(lat.shape)==2:
+            order = order[:-2]+'y'+order[-1]
     return order
 
 def order_match(order1, order2, asscore=False, strict=False):
