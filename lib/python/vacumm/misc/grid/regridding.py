@@ -2364,7 +2364,7 @@ def _shiftslicenames_(shift):
         neigh1=neigh1, neigh2=neigh2, firsts=firsts, lasts=lasts)
    
 
-def shift1d(var, shift=0, mode=None, axis=-1, copy=True):
+def shift1d(var, shift=0, mode=None, axis=-1, copy=True, shiftaxis=True):
     """Interpolate data on an axis shifted by an half cell size
     
     :Params:
@@ -2381,7 +2381,7 @@ def shift1d(var, shift=0, mode=None, axis=-1, copy=True):
             - ``None``: ``"extrap"`` if axis else ``"same"``
             - ``"extrap"``: Linear extrapolation.
             - ``"same"``: Constant extrapolation.
-            - ``"masked"``: Linear extrapolation.
+            - ``"masked"``: Mask outside data.
             - ``"cyclic"``: Cyclic extrapolation.
             
         - **axis**, optional: Axis on which to operate.
@@ -2409,8 +2409,11 @@ def shift1d(var, shift=0, mode=None, axis=-1, copy=True):
         varf = varo.getValue()
     else:
         varf = varo
+    xo = None
     if cdms2.isVariable(varo):
         refvar = varo.asma().copy()
+        if shiftaxis:
+            xo = shift1d(var.getAxis(axis), shift, mode='extrap')
     else:
         refvar = varf.copy()
         
@@ -2432,10 +2435,12 @@ def shift1d(var, shift=0, mode=None, axis=-1, copy=True):
         varf[ss[sn['out']]] = refvar[ss[sn['neigh1']]] 
         varf[ss[sn['out']]] += shift * (refvar[ss[sn['neigh1']]]-refvar[ss[sn['neigh2']]])
     del refvar
-    
+
     # Axes
     if ax:
         varo.assignValue(varf)
+    elif xo is not None:
+        varo.setAxis(axis, xo)
     
     return varo
         
@@ -2457,7 +2462,7 @@ def shift2d(vari, ishift=0, jshift=0, mode=None, copy=True):
         
             - ``"extrap"``: Linear extrapolation.
             - ``"same"``: Constant extrapolation.
-            - ``"masked"``: Linear extrapolation.
+            - ``"masked"``: Mask outside data.
             - ``"cyclic"``: Cyclic extrapolation.
             
         - **copy**, optional: Always input copy data.
@@ -2487,7 +2492,7 @@ def shift2d(vari, ishift=0, jshift=0, mode=None, copy=True):
     sny = _shiftslicenames_(jshift)
         
     # Shift along X
-    kwxshift = dict(axis=-1, mode=mode, copy=copy or jshift!=0)
+    kwxshift = dict(axis=-1, mode=mode, copy=copy or jshift!=0, shiftaxis=not sg)
     if jshift==0 or ishift!=0:
         varx = shift1d(vari, ishift, **kwxshift)
         if jshift==0: 
@@ -2496,7 +2501,8 @@ def shift2d(vari, ishift=0, jshift=0, mode=None, copy=True):
             return varx
             
     # Shift along Y
-    kwyshift = dict(axis=-2, mode = mode if mode!='cyclic' else 'extrap', copy=copy or ishift!=0)
+    kwyshift = dict(axis=-2, mode = mode if mode!='cyclic' else 'extrap', 
+        copy=copy or ishift!=0, shiftaxis=not sg)
     if ishift==0 or jshift!=0:
         vary = shift1d(vari, jshift, **kwyshift)
         if ishift==0:
@@ -2526,7 +2532,7 @@ def shift2d(vari, ishift=0, jshift=0, mode=None, copy=True):
     
     # Grid for MV2 arrays
     if sg:
-        set_grid(var, shiftgrid(var, ishift=ishift, jshift=jshift))
+        set_grid(var, grido)
     
     return var
             
@@ -2546,7 +2552,7 @@ def shiftgrid(gg, ishift=0, jshift=0, mode='extrap'):
         ys = shift2d(yy, ishift=ishift, jshift=jshift, mode=mode)
     else:
         xs = shift1d(xx, ishift, mode=mode)
-        ys = shift1d(yy, ishift, mode=mode)
+        ys = shift1d(yy, jshift, mode=mode)
     
     if isgrid(gg) or cdms2.isVariable(gg):
         return create_grid(xs, ys)
