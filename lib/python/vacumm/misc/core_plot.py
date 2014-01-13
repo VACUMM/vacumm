@@ -4177,8 +4177,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         elif fill == 'contour': 
             fill = 'contourf'
         elif isinstance(fill, int):
-            fill = N.clip(fill, 0, 3)
-            fill = ['no', 'pcolor', 'contourf', 'imshow'][fill]
+            fill = N.clip(fill, 0, 4)
+            fill = ['no', 'pcolor', 'contourf', 'imshow', 'scatter'][fill]
         return fill
         
         
@@ -4317,6 +4317,16 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
                         col.set_alpha(alpha)
                     except:
                         pass
+                        
+        elif fill == 'scatter':
+            pp = self._plotter.scatter(self.x2d.ravel(), self.y2d.ravel(), 
+                c=data.ravel(), cmap=cmap, alpha=alpha, 
+                norm=norm, vmin=self.vmin, vmax=self.vmax, 
+                **kwfill)
+            if alpha != 1:
+                pp.set_alpha(alpha)
+            self.set_obj('scatter', pp)
+            
         
         # Register
         self.set_obj(['fill', 'scalar_mappable'], pp)
@@ -5475,16 +5485,19 @@ class Map(Plot2D):
                             print '*** Error in shaprefile shoreline'
                             print traceback.format_exc()
                     
-            # Tick labels
+            # Tick labels and lines
             kwpm_def = dict(linewidth=0.5)
             kwpm_def.update(kwfilter(kwargs, 'ticklabels_'))
             if ticklabel_size is not None: kwpm_def.update(fontsize=ticklabel_size)
+            kwp = kwpm_def.copy() ; kwm = kwpm_def.copy()
+            if kwargs.get('grid', True) is False:
+                kwp['linewidth'] = kwm['linewidth'] = 0
             # - parallels
             if drawparallels:
                 if self._xyhide_('y', kwargs.get('yhide', False)):
                     meridional_labels = 0
-                kwp = dict(labels=[int(meridional_labels),0,0,0])
-                kwp.update(kwpm_def)
+                kwp.update(labels=[int(meridional_labels),0,0,0])
+#                kwp.update(kwpm_def)
                 kwp.update(kwfilter(kwargs, 'yticklabels_'))
                 kwp = kwfilter(kwargs,'drawparallels',defaults=kwp)
                 if minutes: kwp.setdefault('fmt',MinuteLabel(self.map, zonal=False, tex=False, no_seconds=no_seconds))
@@ -5496,8 +5509,8 @@ class Map(Plot2D):
             if drawmeridians:
                 if self._xyhide_('x', kwargs.get('xhide', False)):
                     zonal_labels = 0
-                kwm = dict(labels=[0,0,0,int(zonal_labels)])
-                kwm.update(kwpm_def)
+                kwm.update(labels=[0,0,0,int(zonal_labels)])
+#                kwm.update(kwpm_def)
                 kwm.update(kwfilter(kwargs, 'xticklabels_'))
                 kwm = kwfilter(kwargs,'drawmeridians',defaults=kwm)
                 if minutes: kwm.setdefault('fmt',MinuteLabel(self.map, zonal=True,  tex=False, no_seconds=no_seconds))
