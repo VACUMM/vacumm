@@ -2395,7 +2395,7 @@ def shift1d(var, shift=0, mode=None, axis=-1, copy=True, shiftaxis=True):
             varo = var.copy()
     else:
         varo = var
-    if shift==0: return var
+    if shift==0: return varo
     if shift<0:
         shift = -0.5
     else:
@@ -2433,7 +2433,7 @@ def shift1d(var, shift=0, mode=None, axis=-1, copy=True, shiftaxis=True):
         varf[ss[sn['out']]] = refvar[ss[sn['neigh1']]]
     else:
         varf[ss[sn['out']]] = refvar[ss[sn['neigh1']]] 
-        varf[ss[sn['out']]] += shift * (refvar[ss[sn['neigh1']]]-refvar[ss[sn['neigh2']]])
+        varf[ss[sn['out']]] += abs(shift) * (refvar[ss[sn['neigh1']]]-refvar[ss[sn['neigh2']]])
     del refvar
 
     # Axes
