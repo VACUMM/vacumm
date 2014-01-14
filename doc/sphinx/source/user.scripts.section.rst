@@ -1,5 +1,8 @@
 .. _user.scripts.section:
 
+.. note:: This script is sligthly obsolete and must be updated to be able to work with other model outputs, and renamed.
+
+
 :program:`section.py`
 =====================
 

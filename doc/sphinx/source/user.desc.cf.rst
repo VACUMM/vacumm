@@ -45,9 +45,11 @@ The value of an entry is a dictionary that can define de following specification
     - **physloc**: The physical grid location of this variable on an Arakawa grid.
     - **atlocs**: A list of grid locations (see :attr:`~vacumm.data.misc.arakawa.locations`)
       that will be used to deplicate this entry to match another location 
-      (with :func:`~vacumm.data.cf.specs_dup_loc`).
+      (with :func:`~vacumm.data.cf.dupl_loc_specs`).
       For instance ``u3d`` entry will create ``u3d_t``, ``u3d_u`` and ``u3d_v`` entries.
-      Then, the ``u3d`` entry will be modified depending on **physloc**:
+      Then ``u3d`` entry is merged with these new entries to be more generic.
+      
+      .. Then, the ``u3d`` entry will be modified depending on **physloc**:
       
         - If **physloc** is not set, ``u3d`` entry  will be merged with  
           auto-generated entries (``u3d_t``, ``u3d_u`` and ``u3d_v``):
@@ -75,7 +77,7 @@ Formatting variables and axes
 -----------------------------
 
 You can format variables and axes to make sure they meet CF standards,
-with the functions :func:`~vacumm.data.cf.format_var` and :func:`~vacumm.data.cf.format_axes`.
+with the functions :func:`~vacumm.data.cf.format_var` and :func:`~vacumm.data.cf.format_axis`.
 The attributes are defined by the :func:`~vacumm.data.cf.cf2atts` function.
   
     

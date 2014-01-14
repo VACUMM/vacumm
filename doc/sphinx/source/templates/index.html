@@ -69,7 +69,8 @@
     Or for example:
     <div class="highlight-python"><div class="highlight"><pre>
 <span class="gp">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">vcmq</span> <span class="kn">import</span> *
-<span class="gp">&gt;&gt;&gt;</span> map2(DS(data_sample(<span class="s">&#39;mars3d.xy.nc&#39;</span>), <span class="s">&#39;mars&#39;</span>).get_sst())
+<span class="gp">&gt;&gt;&gt;</span> sst = DS(data_sample(<span class="s">&#39;mars3d.xy.nc&#39;</span>), <span class="s">&#39;mars&#39;</span>).get_sst()
+<span class="gp">&gt;&gt;&gt;</span> map2(sst)
 </pre></div></div>
     
 {% endblock %}

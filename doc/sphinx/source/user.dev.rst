@@ -34,6 +34,9 @@ When a new module is specialized, it should find a place elsewhere.
 Generation of the sphinx documentation
 ======================================
 
+Quickly: see :ref:`user.dev.doc.comp`.
+
+
 Generation of the figures of the scripts
 ----------------------------------------
 
@@ -86,6 +89,9 @@ If new files are created, add them to subversion.
 Then make a commit:
     
     $ svn ci -m 'adding new test rst files'
+
+
+.. _user.dev.doc.comp:
 
 Compilation
 -----------
@@ -149,16 +155,58 @@ to ppm format and png formats.
 
 
 
-Writing tutorials
-=================
+.. _user.dev.tut:
+    
+How to add a new tutorial
+=========================
 
-He strongly suggested to developers to create tutorials on important features they develop. 
+It is strongly suggested to developers to create tutorials on important features they develop. 
 These tutorials have two interests:
     
-    - They complete the documentation.
+    - They complete the documentation: it is an example and it may add an entry
+      to the gallery.
     - They can be used to perform tests,
       thanks to the :program:`check.py` script.
-      
+
+
+To add a new tutorial script:
+    
+1. Create your script in the :file:`scripts/tutorials`.
+   
+   - Its name is typically compound of subnames separated with dots.
+   - If you create a figure, please use the :func:`vacumm.misc.plot.savefigs`
+     function to save your figure, with the ``file__`` variable as first argument:
+     this function convert dots to "-" (better with Latex) and allow to save 
+     also in pdf format, which good with 1D plots or pure contours::
+         
+         savefigs(__file__, pdf=True)
+         
+2. Add a reference into the documentation.
+   For that, create a new rst file in the :file:`doc/sphinx/source/tutorials`
+   directory which the same root name as the script:
+   
+   .. code-block:: rst
+       
+       .. _user.tut.my.tut:
+
+            My test script
+            ==============
+
+            Explain what it does.
+
+            .. _fig.tut.my.tut:
+            .. figure:: ../../../../scripts/tutorials/my.tut.png
+
+                Legend of the figure.
+
+
+            .. literalinclude:: ../../../../scripts/tutorials/my.tut.py
+
+   Insert a reference to this file into the doc tree.
+   Then commit the new and modified files.
+       
+       
+
 The :program:`check.py` script is located in the tutorials directory
 (:file:`scripts/tutorials`).
 Its use is as follows:
@@ -180,7 +228,7 @@ Examples of use:
 
 .. code-block:: bash
 
-    $ check.py -e "misc.color.py" -e misc.grid.masking.* misc.*.py
+    $ check.py -e "misc.color.py" -e misc.grid.masking.* "misc.*.py"
     $ check.py --loglevel=debug
 
     
@@ -205,6 +253,134 @@ Examples of use:
         - ``"info"``: Displays the name of the successful scripts (default).
         - ``"error"``: Displays the name of the scripts that failed.
 
+.. _user.dev.test:
+
+How to add a new test
+=====================
+
+The goal of tests is to test a small part of the library:
+we are speaking of the so-called "unit tests".
+Theses tests can also be viewed as good examples of coding.
+A test script can be executed directly or withing the
+testing framework of the library, which is located in the :file:`test` directory.
+This directory contains several modules whose name is starting with ``test_``:
+they declare :class:`unittest.TestCase` classes where one classes embeds several
+tests as methods starting also with ``test_`` (automatically generated).
+Each of these methods execute one of the test script, and then check for the
+existence of the ``result`` variable to perform more tests on this script.
+
+
+To add a new one:
+    
+1. Create such script in the :file:`scripts/test` directory,
+   with the following rules:
+       
+   - Makes sure the name of your script is not too generic of specific.
+     Try for instance to group some these scripts under the same root name.
+     If you test a function of method of a well known module or class,
+     use it as a root name. for instance, if test the 
+     :func:`vacumm.misc.phys.units.deg2m` function, create a script called
+     :file:`test_units_deg2m.py`.
+   - Insert a docstring of a single line telling what the script tests.
+     See examples here: :ref:`appendix.test`.
+   - Make explicit imports (without \*)::
+       
+       from vcmq import DS
+   
+   - If you create one or several figure, use the follwing syntax
+     to name you file::
+       
+       from vcmq import code_base_name
+       
+       # single file
+       figfile = code_base_name()
+       
+       # multiple files
+       figfile1 = code_base_name(ext='_1.png')
+       figfile2 = code_base_name(ext='_2.png')
+       
+   - At the end of the script, you can set the ``result`` variable.
+     This variable will be latter used by the testing framework to 
+     perform more checks.
+     It must be a list of tuples, and the first element of each is
+     of one of the follwing types:
+         
+     - The string ``"files"``: the second element of the tuple must
+       then be a single or a list of file names. 
+       The testing framework will check for the existence of these files.
+       Be caferul to remove them before trying to create them in the script!
+     - A string starting with ``"assert"``: It is assumed to be the name of
+       a method of the class :class:`unittest.TestCase`.
+       The second element of the tuple is converted as a list and passed as arguments
+       to the method.
+     - A callable object: The second element is passed to this object.
+     
+     Example::
+         
+         result = [
+            ('files', 'myfile.nc'), ('files', ['myfile1.cfg', 'myfile2.cfg']),
+            ('assertEqual', (var1, 1.5)), ('assertTrue', N.ma.allclose(var1,var2)),
+            (mytestfunc, (arg1, arg2))]
+            
+2. Create a test module in the :file:`test` directory, if it does not exist,
+   with the follwing rules:
+       
+   - Its name follows the same naming rules has for the test script:
+     it is the root part of the names of the test scripts it will test.
+     Using the example above, it must be named :file:`test_units.py`,
+     and contain all the test of the :mod:`vacumm.misc.phys.units` module.
+   - Its contents must be close to the following example::
+       
+        from utils import *
+
+
+        class TestSequenceFunctions(VCTestCase):
+
+            for test_name in [
+                'test_units_deg2m',
+                'test_units_m2deg',
+                ]:
+                exec(method_template.format(test_name))
+                
+        if __name__ == '__main__':
+            unittest.main()
+                
+     The header of the :class:`TestSequenceFunctions` contains a loop
+     on all the test scripts names (without suffix) that will be tested.
+     If the module already exists, just add your new test script to this loop. 
+      
+3. If the test module does not exist, add an entry the ``TEST`` variable
+  of the :file:`test/Makefile` file.
+4. Update the documentation:
+   
+   .. code-block:: bash
+   
+        $ cd doc/sphinx/source/tests
+        $ make.py
+        
+   Run the :program:`svn` commands that are displayed on the output of the 
+   :program:`make.py` script. 
+   If the test module was not existing, insert a reference to it in the :file:`index.rst`.
+   For example:
+   
+   .. code-block:: rst
+   
+        Units
+        -----
+
+        Testing module :mod:`~vacumm.misc.phys.units`.
+
+        .. toctree::
+            :glob:
+
+            test_units_*
+    
+   Then commit this file too.
+
+   
+   
+         
+     
 
 Distributing the library as a package
 =====================================

@@ -38,6 +38,19 @@ Interpolations and reggridding
   the :class:`~vacumm.misc.grid.regridding.CDATRegridder` class.
 - The :class:`~vacumm.misc.grid.regridding.GriddedMerger` must be checked.
 
+
+:class:`~vacumm.data.misc.dataset.Dataset` classes
+--------------------------------------------------
+
+- A special :class:`GriddedDataset` class must be created.
+- Vertical levels treatments must be generalized to be usable for
+  :class:`~vacumm.data.misc.dataset.AtmosDataset`, 
+  and a :class:`ZDataset` must be created for that.
+- A :class:`ZGridded` like class must be implemented to serve as base class
+  for :class:`~vacumm.data.misc.dataset.AtmosDataset` and
+  :class:`~vacumm.data.misc.dataset.OceanDataset`.
+
+
 Tidal tools
 -----------
 

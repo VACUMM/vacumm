@@ -3,6 +3,8 @@
 Test scripts
 ************
 
+To add a new test, see :ref:`user.dev.test`.
+
 Grids
 -----
 
@@ -61,6 +63,14 @@ The :class:`~vacumm.data.misc.dataset.Dataset` class
 
     test_dataset_*
  
+The :class:`~vacumm.data.misc.dataset.arakawa` module
+-----------------------------------------------------
+
+.. toctree::
+    :glob:
+
+    test_arakawa_*
+    
 The :class:`~vacumm.report.ifroco` module
 -----------------------------------------
 

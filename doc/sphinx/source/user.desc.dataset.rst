@@ -86,6 +86,26 @@ The functions that search for objects are
 :func:`~vacumm.misc.io.ncfind_axis`.
 
 
+:ref:`user.desc.dataset.cap.sim`
+
+Simple variables
+----------------
+
+You can access these variables using the generic way like the method 
+:meth:`~vacumm.data.misc.dataset.OceanDataset.get_temp`.
+If the variable cannot be found directly, the methods searches for it
+using a name at another similar location name (no location or its physical
+location according to :attr:`vacumm.data.cf.var_specs`).
+Finally, the method try to get it by reading it at different 
+location and interpolate it to the right one.
+
+The method provide the **mode** keyword to choose the retreiving mode.
+
+- ``"var"``: Read it directly from the file.
+- ``"stag"``: Get it from staggered location thanks to interpolation.
+- ``None``: Try them all!
+
+
 .. _user.desc.dataset.cap.adv:
 
 Advanced variables
@@ -93,11 +113,14 @@ Advanced variables
 
 Generally, a method will search for a variable which is
 already in the dataset.
-Other methods can also be implemented to retreive the variable.
+Other methods can also be implemented manually to retreive the variable,
+typically from other physical variables.
 You can choose which retreiving method to use thanks to the **mode** keyword:
 
     >>> mld = ds.get_mld(mode='var') # read it
     >>> mld = ds.get_mld(mode='deltadens') # compute it
+
+In the second case, it is computed from the temperature, the salinity and the depths.
 
 From slices
 ~~~~~~~~~~~
@@ -203,7 +226,8 @@ Let's name it ``myvar``.
 Then you can choose between two methods:
 
 - Add the entry name ``myvar`` to the list defined by the :attr:`auto_generic_var_names` class
-  attribute (create it if no present).
+  attribute (create it if no present). This method also makes the **mode** keyword available
+  to choose the way you will retreive your variable :ref:`user.desc.dataset.cap.sim`.
 - **Or** define the method manually with the decorator :func:`~vacumm.data.misc.dataset.getvar_fmtdoc`::
 
     @getvar_fmtdoc

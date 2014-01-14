@@ -9,4 +9,6 @@ FAQ
     user.faq.install
     user.faq.config
     user.faq.graphics
+    user.faq.contrib
+    
     
