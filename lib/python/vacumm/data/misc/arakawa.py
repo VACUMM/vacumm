@@ -124,7 +124,7 @@ class ArakawaGrid(_ArakawaInterp_):
         if str(arg).upper() in grid_types:
             gt = arg
         else:
-            aa = [args]
+            aa = [arg]
             if cdms2.isVariable(arg) and arg.getGrid():
                 aa.append(arg.getGrid())
             for a in aa:
