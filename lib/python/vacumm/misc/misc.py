@@ -923,9 +923,11 @@ def tunique(mytuple):
 def dict_merge(*dd, **kwargs):
     """Merge dictionaries
     
+    First dictionaries have to priority their followers
+    
     :Params:
     
-        - **dd**: Argument ar interpreted as dictionary to merge.
+        - **dd**: Argument are interpreted as dictionary to merge.
           Those who are not dictionaries are skipped.
         - **mergesubdicts**, optional: Also merge dictionary items 
           (like in a tree) [default: True].
@@ -933,6 +935,15 @@ def dict_merge(*dd, **kwargs):
         - **mergelists**, optional: Also merge list items [default: False].
         - **unique**, optional: Uniquify lists and tuples [default: True].
         - **skipnones**, optional: Skip Nones [default: True].
+        - **cls**, optional: Class to use. Default to the first class found in arguments
+          that is not a :class:`dict`, else defaults to :class:`dict`.
+          
+    :Example:
+    
+        >>> d1 = dict(a=3, b=5)
+        >>> d2 = dict(a=5, c=7)
+        >>> print dict_merge(d1,d2)
+        {'a': 3, 'c': 7, 'b': 5}
      
     """
     # Options
@@ -941,9 +952,19 @@ def dict_merge(*dd, **kwargs):
     mergetuples = kwargs.get('mergetuples', False)
     unique = kwargs.get('unique', True)
     skipnones = kwargs.get('skipnones', True)
+    cls = kwargs.get('cls')
+    dd = filter(None, dd)
+    
+    # Get the class
+    if cls is None:
+        cls = dict
+        for d in dd:
+            if d.__class__ is not dict:
+                cls = d.__class__
+                break
    
     # Loop
-    outd = {}
+    outd = cls()
     for d in dd:
         if not isinstance(d, dict): continue
         for key, val in d.iteritems():
