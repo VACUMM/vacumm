@@ -2320,7 +2320,7 @@ class Plot(object):
         else: # Selected component
             vmins = [self.data[index].min()] if self.has_valid_data() else []
             if glob: # Of all plotters
-                vmins = mins+[b.get_min(index=index) for b in self.get_brothers(notme=True)]
+                vmins = vmins+[b.get_min(index=index) for b in self.get_brothers(notme=True)]
             vmins = [v for v in vmins if v is not None]
             vmins = min(vmins) if len(vmins) else None
         return vmins
@@ -2350,7 +2350,7 @@ class Plot(object):
         else: # Selected component
             vmaxs = [self.data[index].max()] if self.has_valid_data() else []
             if glob: # Of all plotters
-                vmaxs = maxs+[b.get_max(index=index) for b in self.get_brothers(notme=True)]
+                vmaxs = vmaxs+[b.get_max(index=index) for b in self.get_brothers(notme=True)]
             vmaxs = [v for v in vmaxs if v is not None]
             vmaxs = max(vmaxs) if len(vmaxs) else None
         return vmaxs
