@@ -42,7 +42,9 @@ from constants import *
 import numpy as N
 from unidata import udunits
 
-__all__ = ['kt2ms', 'ms2kt', 'deg2m', 'm2deg', 'ms2bf', 'dms2deg', 'deg2dms', 'mph2ms', 'ms2mph', 'tometric', 'kel2degc', 'degc2kel', 'strfsize', 'strpsize']
+__all__ = ['kt2ms', 'ms2kt', 'deg2m', 'm2deg', 'ms2bf', 'dms2deg', 'deg2dms', 
+    'mph2ms', 'ms2mph', 'tometric', 'kel2degc', 'degc2kel', 'strfsize', 'strpsize', 
+    'convert_units']
 
 ############################################################
 def kt2ms(nd):
@@ -194,7 +196,11 @@ def tometric(units, value=1.,  munits=['m',  'm/s']):
         except:
             pass
         
-    
+def convert_units(value, ufrom, uto):
+    """Convert value from ufrom units to uto units using :mod:`~unidata.udunits.udunits`
+    """
+    import unidata
+    return unidata.udunits(value, ufrom).to(uto).value
 
 # 1 kilooctet (ko) = 10**3 octets = 1 000 octets
 sizeunits = {
