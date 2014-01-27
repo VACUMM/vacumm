@@ -10,7 +10,7 @@ Installations
 ---------------------------------------------------------------
 
 
-Si à l'installation (compilation) de la librairie, vous rencontrez un message d'erreur du type :
+During the installation (compilation) of the library, if you encounter an error message like:
 
 
 .. code-block:: bash
@@ -28,45 +28,43 @@ Si à l'installation (compilation) de la librairie, vous rencontrez un message d
         -I/home1/caparmor/sraynaud/soft/cdat-vacumm/include/python2.5 
         -c build/src.linux-x86_64-2.5/fortranobject.c -o build/temp.linux-x86_64-2.5/build/src.linux-x86_64-2.5/fortranobject.o" failed with exit status 1
 
-vous avez sûrement chargé un environnement (par exemple la variable :envvar:`LD_LIBRARY_PATH`) pointant vers
-des librairies Intel, alors que vous compilez avec :program:`gfortran`.
+you surely loaded environment (eg variable :envvar:`LD_LIBRARY_PATH`) 
+pointing to Intel libraries while you compile with :program:`gfortran`.
 
-Il est préférable de nettoyer votre environnement avant la compilation.
+It is best to clean your environment before compilation.
 
+What are the options for compilation or installation? 
+-----------------------------------------------------
 
-Quelles sont les options pour la compilation ou l'installation ?
-----------------------------------------------------------------
-
-Pour la compilation :
+For compilation:
 
 .. code-block:: bash
 
     shell> python setup.py --help build
     
-Par exemple :
+For example:
     
 .. code-block:: bash
 
     shell> python setup.py install --compiler=gfortran 
 
-Pour l'installation :
+For installation:
 
 .. code-block:: bash
 
     shell> python setup.py --help install
 
-Par exemple :
+For example:
     
 .. code-block:: bash
 
     shell> python setup.py install --install-lib=$HOME/lib/python
     
 
-Je suis développeur et j'ai une erreur de type ``ImportError: libgfortran.so.2``
---------------------------------------------------------------------------------
+I am a developer and I have an error like ``ImportError: libgfortran.so.2``
+--------------------------------------------------------------------------
 
-Si vous utilisez VACUMM en tant que développeur (importation direct des sources),
-une erreur typique peut se produire lors du chargement ::
+If you use vacumm as a developer (direct import sources), a typical error can occur when loading::
     
     
     >>> import vacumm.misc
@@ -91,18 +89,17 @@ une erreur typique peut se produire lors du chargement ::
     ImportError: libgfortran.so.2: cannot open shared object file: No such file or directory
     >>> 
 
-Une telle erreur se produit quand il y a incompatibilité entre votre python et 
-le module :mod:`vacumm.misc.grid._interp_` compilé à partir du fichier :file:`interp.f90`.
-Généralement, une version différente du compilateur à été utilisée.
-
-Dans ce cas, allez dans le répertoire du module :mod:`vacumm.misc.grid`, et procédez ainsi ::
-    
+This error occurs when there is an incompatibility between your python and module
+:mod:`vacumm.misc.grid._interp_` compiled from :file:`interp.f90` file.
+Generally, a different version of the compiler has been used.
+ 
+In this case, go to the module directory:mod:`vacumm.misc.grid`, and proceed as:    
     
 .. code-block:: bash
 
-    shell> cd /home1/caparmor/sraynaud/soft/src/vacumm/lib/python/vacumm/misc/grid
-    shell> rm _interp_.so
-    shell> make
+    $ cd lib/python/vacumm/misc/grid
+    $ rm _interp_.so
+    $ make
 
-Le module est ainsi recompilé.
+The should be recompiled.
 
