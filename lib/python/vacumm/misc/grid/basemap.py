@@ -52,7 +52,7 @@ from genutil import minmax
 from ...misc.io import Shapes
 from misc import get_xy
 from ...misc.phys.constants import R as rsphere_mean
-from ...misc.misc import kwfilter
+from ...misc.misc import kwfilter, dict_check_defaults
 
 #: Earth radius of wgs84 ellipsoid
 rshpere_wgs84 = (6378137.0,6356752.3141)
@@ -441,8 +441,9 @@ def get_proj(gg=None, **kwargs):
         xmin, ymin, xmax, ymax = x.min(), y.min(), x.max(), y.max()
     else:
         xmin, ymin, xmax, ymax = -180, -90, 180, 90 
-    projparams = dict(R=rsphere_mean, units='m', proj='merc', lat_ts = N.median(y))
-    projparams.update(kwargs)
+        y = [0]
+    projparams = kwargs.copy()
+    dict_check_defaults(projparams, R=rsphere_mean, units='m', proj='merc', lat_ts = N.median(y))
     return Proj(projparams, xmin, ymin, xmax, ymax)
     
 
