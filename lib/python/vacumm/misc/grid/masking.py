@@ -382,7 +382,7 @@ class Lakes(object):
 GetLakes = Lakes
 
 def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75], 
-    ocean=False, fractions=0, yclean=True, premask=None):
+    ocean=False, fractions=0, yclean=True, premask=None, proj=None):
     """Create a mask on a regular or curvilinear grid according to a polygon list
     
     :Params:
@@ -398,6 +398,8 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
             
         - **thresholds**, optional: See ``intersect`` mode [default: [.5, .75]]
         - **ocean**, optional: If True, keep only the ocean (= biggest lake).
+        - **fractions**: If True or 1, return the total fraction of cells covered by the 
+          polygons; if 2, returns the total area for each cell.
         
     :Result:
     
@@ -407,7 +409,8 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
     # Get proper numeric axes
     gg = M.get_grid(gg)
     curved = M.isgrid(gg, curv=True)
-    xx, yy = M.get_xy(gg, mesh=True, num=True)
+    proj = get_proj(gg)
+    xx, yy = M.get_xy(gg, mesh=True, num=True, proj=proj)
     
     # Thresholds
     if not isinstance(thresholds, (list, tuple)):
@@ -457,8 +460,8 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
         premask = N.asarray(premask, 'i')
     
     # Get instances of Polygons
-    polys = polygons(polys, clip=clip, shapetype=2)
-
+    polys = polygons(polys, clip=clip, shapetype=2, proj=proj, clip_proj=False)
+    
     # Loop on grid points
     skipped = 0
     for j in xrange(xx.shape[0]):
@@ -546,7 +549,6 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
                     try:
                         intersections = cell_poly.intersection(poly)
                     except:
-#                        print '[polygon_mask] bad intersection polys', i, j
                         continue
                     for intersection in intersections:
                         if isinstance(intersection, (LineString, Point)):
@@ -564,7 +566,10 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
             # Fraction
             land_fraction = intersect_area/cell_poly.area()
             if fmode: # Fraction only
-                mask[j, i] = land_fraction
+                if fmode==2:
+                    mask[j, i] = intersect_area
+                else:
+                    mask[j, i] = land_fraction
                 continue
                 
             # Mask according to fraction (basic masking + strait checking)
@@ -572,9 +577,8 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
 #           mask[j, i] = intersect_fraction < thresholds[1] and nintersect > 1
             del cell_poly
             
-        for ypoly in ypolys: del ypoly
         del ypolys
-#   print 'skipped', skipped
+
     # Select ocean only
     if ocean:
         return GetLakes(mask).ocean()
@@ -637,8 +641,9 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     # Input
     if isinstance(polys, (Basemap, str, Polygon, N.ndarray, Shapes, AbstractGrid, tuple)):
         polys = [polys]
-        
+
     if kwargs.has_key('m'): proj = kwargs['m']
+    kwclip = kwfilter(kwargs, 'clip_')
         
     # Numeric or geos polygons
     out_polys = []
@@ -647,7 +652,9 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
         shaper = LineString
     else:
         shaper = Polygon
-    if clip is not None: clip = polygons([clip], proj=proj)[0]
+    if clip is not None: 
+        kwclip.setdefault('proj', proj)
+        clip = polygons([clip], **kwclip)[0]
     from misc import isgrid, isrect, curv2rect
     for poly in polys:
         
@@ -697,13 +704,15 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
             poly = N.asarray([[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]])
             
         # Check order and geographic projection
+        if callable(proj):
+            poly = poly.copy()
         if poly.shape[0] == 2:
             if callable(proj):
                 poly[:] = proj(*poly)
             poly = poly.transpose()
         elif callable(proj):
             poly[:, 0], poly[:, 1] = proj(poly[:, 0], poly[:, 1])
-    
+
         # Get polygon object
         poly = shaper(poly)
         if clip is not None:
@@ -736,7 +745,7 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
 #       else:
 #           continue
 #       out_polys.extend([Polygon(N.array(p).transpose()) for p in gmt_m.coastpolygons])
-        
+   
     return out_polys
     
 
@@ -1611,4 +1620,4 @@ from ...misc.axes import islon, islat
 from ...misc.phys.units import deg2m
 from ...misc.io import Shapes
 from basemap import GSHHS_BM, get_proj
-from ...misc.misc import cp_atts
+from ...misc.misc import cp_atts, kwfilter
