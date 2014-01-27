@@ -13,12 +13,15 @@ See:
 
 One or more grib file(s) and parameter(s) can be loaded using the function :meth:`~vacumm.misc.io.grib_read_files` 
 
-The script below:
 
-.. literalinclude:: ../../../../scripts/tutorials/misc.io.grib.py
-    :language: python
+.. .
 
-generate the following output:
+    The script below:
 
-.. program-output:: ../../../scripts/tutorials/misc.io.grib.py
+    .. literalinclude:: ../../../../scripts/tutorials/misc.io.grib.py
+        :language: python
+
+    generate the following output:
+
+    .. program-output:: ../../../scripts/tutorials/misc.io.grib.py
 
