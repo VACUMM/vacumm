@@ -71,8 +71,18 @@ class HYCOM(OceanDataset,AtmosSurfaceDataset):
             'inherit':'sal', 
             'select':{'level':slice(0, 1)}, 
             'squeeze':'z', 
-        }
-        , 
+        }, 
+        
+        # Zonal velocity
+        'u3d':{ 
+            'names': 'u'
+        }, 
+        
+        # Meridional velocity
+        'v3d':{ 
+            'names': 'v'
+        }, 
+        
         # Sea surface zonal velocity
         'usurf':{
             'inherit':'u3d',  
