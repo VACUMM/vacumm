@@ -51,7 +51,7 @@ __all__ = [ 'traj', 'ellipsis',
     'curve2', 'bar2', 'stick2', 'hov2' , 'target', 'map2', 'section2', 
     'minimap', 'add_map_point', 'add_map_line', 'add_map_lines', 'add_map_box',  'rshpere_wgs84', 
     'add_glow', 'add_shadow', 'add_agg_filter', 'plot2d', 'hlitvs', 
-    'add_compass']
+    'add_compass', 'add_param_label']
 __all__.sort()
 
 from genutil import minmax, statistics
