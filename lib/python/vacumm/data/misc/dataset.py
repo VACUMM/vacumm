@@ -99,7 +99,7 @@ from vacumm.data.cf import var_specs, axis_specs, cf2search, cf2atts, generic_na
     generic_axis_names, generic_var_names, format_axis, format_var, get_loc, no_loc_single, \
     default_location, change_loc, hidden_cf_atts
 from vacumm import VACUMMError
-from vacumm.diag.dynamics import barotropic_geostrophic_velocity, eddy_kinetic_energy
+from vacumm.diag.dynamics import barotropic_geostrophic_velocity, kinetic_energy
 from vacumm.diag.thermdyn import mixed_layer_depth, density
 
 from vacumm.misc.misc import grow_variables
@@ -569,6 +569,7 @@ class Dataset(Object):
         for key in search:
             if key not in ['names', 'standard_names']:
                 del search[key]
+                
         # Attributes
         atts = specs.get("atts", {})
         specs["atts"] = atts
@@ -1043,9 +1044,12 @@ class Dataset(Object):
         '''Load a variable in a best time serie fashion.
         
         :Params:
-          - **varname**: Generic name, a netcdf name with a '+' a prefix, a tuple of netcdf variable names
-            or dictionnary of specification names with a search argument of :func:`~vacumm.misc.io.ncfind_var` (tuple of netcdf names
-            or dictionary).
+          - **varname**: Either a generic variable name listed in 
+            :attr:`~vacumm.data.cf.generic_var_names`, a netcdf name with a '+' a prefix, 
+            a tuple of netcdf variable names
+            or dictionnary of specification names with a search argument of 
+            :func:`~vacumm.misc.io.ncfind_var` (tuple of netcdf names
+            or dictionary). 
           - **time/lon/lat/level**: Selector components.
           - **squeeze**: If true, call :func:`squeeze_variable` on the returned variable.
           - **order**: If not None, specify the output variable axes order.
@@ -1119,6 +1123,10 @@ class Dataset(Object):
                 varname,  e.message)
             return 
         if isinstance(var, list): var = var[0]
+    
+        # Minimal formatting
+        if format and genname:
+            var.id = genname
             
         # Post process
         var = self.finalize_object(var, genname=genname, format=format, atts=atts, order=order, 
@@ -1696,7 +1704,7 @@ class Dataset(Object):
                 var = curvsel.finalize(var)
             
             # Format
-            if genname is not None and format:
+            if format and (genname is not None or var.id in generic_var_names):
                 format_var(var, genname, **atts)
             elif atts:
                 set_atts(var, **atts)
@@ -1719,7 +1727,7 @@ class Dataset(Object):
                 kwat['copy'] = False
                 var = self.toloc(var, at, **kwat)
 
-        elif genname is not None and format:
+        elif format and (genname is not None or var.id in generic_var_names):
             format_axis(var, genname, **atts)
         elif atts:
             set_atts(var, **atts)
@@ -1806,7 +1814,8 @@ class OceanSurfaceDataset(Dataset):
 class OceanDataset(OceanSurfaceDataset):    
     
     # For auto-declaring methods
-    auto_generic_var_names = ['temp', 'sal', 'u3d', 'v3d', 'ubt', 'vbt', 'kz', 'bathy']
+    auto_generic_var_names = ['temp', 'sal', 'u3d', 'v3d', 'ubt', 'vbt', 'kz', 'bathy', 
+        'eke', 'tke']
     
     def finalize_object(self, var, squeeze=False, order=None, asvar=None, torect=True, 
         depthup=None, **kwargs):
@@ -2060,7 +2069,7 @@ class OceanDataset(OceanSurfaceDataset):
         '''Get 4D density'''
         
         kwvar = kwfilter(kwargs, ['lon','lat','time','level','torect'], warn=False)
-        kwfinal = kwfilter(kwargs, ['squeeze','order','asvar', 'at'])
+        kwfinal = kwfilter(kwargs, ['squeeze','order','asvar', 'at'], genname='dens')
         kwdens = kwfilter(kwargs, 'dens_')
         kwdepth = kwfilter(kwargs, 'depth_')
         kwdepth.update(kwvar)
@@ -2102,16 +2111,38 @@ class OceanDataset(OceanSurfaceDataset):
         kwargs['getu'] = False
         return get_uvbt(**kwargs)
         
-    def get_eke(self, **kwargs):
+    _mode_doc = """Computing mode
+    
+          - ``None``: Try all modes, in the following order.
+          - ``"var"``: Read it from a variable.
+          - ``"uvgbt"``: Estimate from barotropic geostrophic velocity (:meth:`get_uvgbt`)."""
+    def get_ke(self, mode=None, **kwargs):
         """Get eddy kinetic energy"
         
-        :See also: :func:`~vacumm.diag.dynamics.eddy_kinetic_energy`
+        :See also: :func:`~vacumm.diag.dynamics.kinetic_energy`
             :meth:`get_uvgbt`
         """
-        eke = self.get_variable('eke', verbose=False, warn=False, **kwargs)
-        if eke is None:
+        # Params
+        
+        kwvar = kwfilter(kwargs, ['lon','lat','time','level','torect'], warn=False)
+        kwfinal = kwfilter(kwargs, ['squeeze','order','asvar', 'at'], genname='ke')
+        kwuvgbt = kwfilter(kwargs, 'uvgbt_')
+        kwuvgbt.update(kwvar)
+        
+        # First, try to find a variable
+        if check_mode('var', mode):
+            var = self.get_variable('ke', **kwvar)
+            if var is not None or check_mode('var', mode, strict=True): 
+                return self.finalize_object(var, **kwfinal)
+            
+        # Estimate it
+        if check_mode('uvgbt', mode):           
             ugbt, vgbt = self.get_uvgbt(**kwargs)
-            return eddy_kinetic_energy((ugbt, vgbt))
+            if ugbt is not None or check_mode('uvgbt', mode, strict=True): 
+                ke = kinetic_energy((ugbt, vgbt))
+                return self.finalize_object(ke, **kwfinal)
+        
+    getvar_fmtdoc(get_ke, mode=_mode_doc)
         
     
     ############################################################################
