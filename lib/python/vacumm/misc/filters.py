@@ -99,7 +99,7 @@ def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
     # Setup
     # - data
     data = MV2.asarray(data)
-    assert data.ndim, 'Input data array must be at least 2D'
+    assert data.ndim, 'Input data array must be at least 1D'
     if axis<0: axis += data.ndim
     if axis!=data.ndim-1:
         init_order = data.getOrder(ids=1)
@@ -155,6 +155,7 @@ def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
     else:
         datao = data
     datan.shape = data.shape
+    bad.shape = data.shape
     if data.mask is not MV2.nomask:
         ww.shape = one2d.shape = data.shape
         if mask is 'same':
