@@ -1276,14 +1276,25 @@ class FileTree(object):
             self._set_selector_(key,val,False)
         if update: self.scan()
 
-def geodir(direction, from_north=True):
+def geodir(direction, from_north=True, inverse=False):
     """Return a direction in degrees in the form 'WNW'"""
-    if from_north:
-        direction = 90. - direction
-    direction = (direction+360) % 360.
+    
     labels = ['E','ENE','NE','NNE','N','NNW','NW','WNW','W','WSW','SW','SSW','S','SSE','SE','ESE']
     nlab = len(labels)
     dtheta = 360./nlab
+    if inverse:
+        l = direction.strip().replace('-', '').lower()
+        ll = [lb.lower() for lb in labels]
+        if l not in ll:
+            raise VACUMMError("Wrong geographic direction: %s. Please use one of %s"%(
+                direction, ' '.join(labels)))
+        d = (N.arange(nlab)*dtheta)[ll.index(l)]
+        if from_north:
+            d = 90.-d
+        return d
+    if from_north :
+        direction = 90. - direction
+    direction = (direction+360) % 360.    
     return labels[int((direction+dtheta/2)/dtheta)%nlab]
 
 
