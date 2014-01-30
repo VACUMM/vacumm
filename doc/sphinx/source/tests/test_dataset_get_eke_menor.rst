@@ -2,7 +2,7 @@
 ================================================================================================================
 
 
-.. figure:: ../../../../scripts/test/test_dataset_get_eke_menor.png
+.. . figure:: ../../../../scripts/test/test_dataset_get_eke_menor.png
 
-.. literalinclude:: ../../../../scripts/test/test_dataset_get_eke_menor.py
+.. . literalinclude:: ../../../../scripts/test/test_dataset_get_eke_menor.py
 

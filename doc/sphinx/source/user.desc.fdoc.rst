@@ -1,5 +1,5 @@
-Documenter du code fortran avec Sphinx
-======================================
+Document fortran codes with Sphinx
+==================================
 
 .. toctree::
 

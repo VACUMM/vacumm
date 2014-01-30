@@ -236,7 +236,6 @@ intersphinx_mapping = {
     'numpy':('http://docs.scipy.org/doc/numpy', None),
     'scipy':('http://docs.scipy.org/doc/scipy/reference', None),
     'sphinx':('http://sphinx.pocoo.org', None),
-    'actimar':('http://relay.actimar.fr/~raynaud/pydoc', None),
     'interpsig2z':('http://relay.actimar.fr/~raynaud/interpsig2z', None),
     'http://docs.python.org/dev': None, 
     }

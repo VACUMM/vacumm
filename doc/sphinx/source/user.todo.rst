@@ -49,6 +49,24 @@ Interpolations and reggridding
 - A :class:`ZGridded` like class must be implemented to serve as base class
   for :class:`~vacumm.data.misc.dataset.AtmosDataset` and
   :class:`~vacumm.data.misc.dataset.OceanDataset`.
+  
+:mod:`vacumm.diag` and grid staggering
+--------------------------------------
+
+All diagnostics on grids must properly handle grid staggering.
+Different schemes can be proposed depending on the grid type and 
+the grid point location of variables.
+One way is to handle a limited number of configurations,
+like for instance for kinetic energy :
+
+- The case of a C grid with u and v and U and V locations recpectively.
+- The case of a C grid with u and v and V and U locations recpectively (geostrophic currents).
+- The generic case of an A grid when there is no staggering.
+
+If the configuration is not explicitly specified, it must be guessed
+using :meth:`vacumm.data.misc.arakawa.ArakawaGrid.factory` for the grid type,
+and :func:`vacumm.data.cf.get_loc` for the location.
+Another option is to estimate grid staggering from coordinates.
 
 
 Tidal tools
