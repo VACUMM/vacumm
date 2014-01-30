@@ -1652,6 +1652,23 @@ class Plot(object):
         kwargs.update(fig=self.fig, axes=self.axes)
         return self.set_axobj('key', add_key(key, **kwargs))
         
+    def add_param_label(self, text, **kwargs):
+        """Add parameters description to the bottom/left of the figure using
+        :func:`~vacumm.misc.plot.add_param_label`
+        
+        :Example:
+        
+            >>> c = curve2(sst, show=False)
+            >>> c.add_param_label(dict(max=.23, kz=0.25), color='r')
+        
+        :Params:
+        
+            - **text**: Either a string or a dictionary.
+            - See :func:`~vacumm.misc.plot.add_param_label` for other parameters
+        """
+        kwargs['fig'] = self.fig
+        return add_param_label(text, **kwargs)
+        
     def hlitvs(self, **kwargs):
         """Highlight intervals with grey/white background alternance
         
@@ -1934,6 +1951,36 @@ class Plot(object):
         if glow: self.add_glow(o, **kwgl)
               
         return o
+        
+    def add_place(self, x, y, text, zorder=150, shadow=False, glow=False, text_offset=(0, 10), **kwargs):
+        """Place a point using :meth:`add_point` and a label using :meth:`add_text`
+        
+        :Examples:
+        
+            - o.add_place(-5, 44, 'Buoy 654', text_offset=(20,0), text_ha='left', 
+                text_color='b', point_size=100, shadow=True)
+        
+        :Params:
+        
+            - **x/y**: Coordinates of the place in data units.
+            - **text**: Name of the place.
+            - **text_offset**, optional: Offset of the text in points with relative to
+              coordinates.
+            - **point_<param>**, optional: ``<param>`` is passed to :meth:`add_point`.
+            - **text_<param>**, optional: ``<param>`` is passed to :meth:`add_text`.
+            
+        """
+        kwpoint = kwfilter(kwargs, 'point_')
+        kwtext = kwfilter(kwargs, 'text_')
+        dict_check_defaults(kwpoint, zorder=zorder, shadow=shadow, glow=glow)
+        dict_check_defaults(kwtext, zorder=zorder, shadow=shadow, glow=glow, 
+            ha='center', va='center', weight='bold')
+        
+        p = self.add_point(x, y, **kwpoint)
+        kwtext.setdefault('transform', self.get_transoffset(*text_offset))
+        t = self.add_text(x, y, text, **kwtext)
+        return p, t
+        
 
     def add_lines(self, xx, yy, zorder=150, shadow=False, glow=False, color='r', 
         xyscaler=None, closed=False, **kwargs):
@@ -3994,9 +4041,10 @@ class Stick(ScalarMappable, Curve, QuiverKey):
         return qv
     
     def format_axes(self, **kwargs):
-        if self.get_obj('plot') is None:
+        if True or self.get_obj('plotted') is None: # FIXME: why not always True?
             xy = 'y' if self.ytype=='d' else 'x'
             kwargs.setdefault(xy+'hide', True)
+            kwargs.setdefault(xy+'ticks', [])
 #            kwargs.setdefault(xy+'label', '')
         return Curve.format_axes(self, **kwargs)
     
@@ -6115,6 +6163,7 @@ def add_bottom_label(text, pos=.1, ax=None, va='top', ha='center',
     """Add a text label to the left of a plot"""
     return _add_label_(text, .5, .5, 1-pos, pos, ax, va, ha, rotation, shadow, glow, **kwargs)
 
+
 _locations = ['upper right',
          'upper left',
          'lower left',
@@ -6226,6 +6275,34 @@ def best_loc_map(m, onland=True, allowed=_locations):
     
         
     
+
+
+
+def add_param_label(text, loc=(0.01, 0.01), color='0.4', size=8, family='monospace', fig=None, **kwargs):
+    """Add parameters description to the bottom/left of the figure
+    
+    :Example:
+    
+        >>> c = curve2(sst, show=False)
+        >>> c.add_param_label(dict(max=.23, kz=0.25))
+    
+    :Params:
+    
+        - **text**: Either a string or a dictionary.
+    """
+    # Convert dict to text
+    if isinstance(text, dict):
+        clsname = text.__class__.__name__
+        tt = []
+        for item in text.items():
+            tt.append('%s=%s'%item)
+        text = ', '.join(tt)
+    
+    if fig is None: fig = P.gcf()
+    loc = loc2tuple(loc, xpad=0.01, ypad=0.01)
+    return fig.text(loc[0], loc[1], str(text), color=color, size=size, family=family, **kwargs)
+
+
 
 class Animator(object):
     """Animate objects on a figure
