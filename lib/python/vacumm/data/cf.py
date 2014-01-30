@@ -1138,13 +1138,15 @@ def cf2search(name, mode=None, raiseerr=True, **kwargs):
 
 
 _attnames_plurals = ['standard_name', 'long_name']
-_attnames_exclude = ['names', 'atlocs', 'inherit', 'axes', 'physloc']
+_attnames_exclude = ['names', 'atlocs', 'inherit', 'axes', 'physloc', 'iaxis', 'jaxis', 'select']
 _attnames_firsts = ['standard_name', 'long_name', 'units', 'axis', 'valid_min', 'valid_max']
-def cf2atts(name, select=None, exclude=None, ordered=True):
+def cf2atts(name, select=None, exclude=None, ordered=True, **extra):
     """Extract specs from :attr:`axis_specs` or :attr:`var_specs` to form
     a dictionary of attributes (units and long_name)"""
     # Get specs
-    if name in var_specs:
+    if isinstance(name, dict):
+        specs = name.copy()
+    elif name in var_specs:
         specs = var_specs[name]
     elif name in axis_specs:
         specs = axis_specs[name]
@@ -1153,6 +1155,9 @@ def cf2atts(name, select=None, exclude=None, ordered=True):
     
     # Which attributes
     atts = OrderedDict() if ordered else {}
+    if exclude is None: exclude = []
+    elif isinstance(exclude, basestring): exclude = [exclude]
+    exclude.extend(_attnames_exclude)
     for attname in _attnames_firsts+specs.keys():
         
         # Distinction between specs key and attribute name
@@ -1165,7 +1170,7 @@ def cf2atts(name, select=None, exclude=None, ordered=True):
             key = attname
         
         # Skip some attributes
-        if key not in specs or attname in _attnames_exclude or attname in atts or \
+        if key not in specs or attname in exclude or attname in atts or \
             (select is not None and attname not in select):
             continue
         
@@ -1176,6 +1181,9 @@ def cf2atts(name, select=None, exclude=None, ordered=True):
         # Store it
         atts[attname] = value
 
+    # Extra
+    for att, val in extra.items():
+        atts[att] = val
 
     return atts
 
@@ -1239,18 +1247,12 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
             if sname not in specs: continue
             if get_loc(specs[sname], stype)==refloc:
                 specs[sname] = [no_loc_single(specs[sname][0], stype)]
+        name = specs[sname][0]
     # - id
     if force or var.id.startswith('variable_'):
-        var.id = specs['names'][0]
-    # - other specs
-    for att, val in specs.items():
-        if att in ['long_names', 'standard_names']:
-            att = att[:-1]
-        elif att in ['names', 'axes']: continue
-        if force or not getattr(var, att, ''):
-            setattr(var, att, val[0])
-    # - user attributes
-    for att, val in kwargs.items():
+        var.id = name
+    # - attributes
+    for att, val in cf2atts(specs, **kwargs).items():
         if force or not getattr(var, att, ''):
             setattr(var, att, val)
     # - physical location
@@ -1262,7 +1264,7 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
             var._vacumm_cf_physloc = loc.lower()
         set_loc(var, loc)
     # - store cf name
-    var._vacumm_cf_name = var.id
+    var._vacumm_cf_name = name
     
     # Axes
     if format_axes:
@@ -1378,17 +1380,9 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True,
     # - id
     if force or axis.id.startswith('variable_') or axis.id.startswith('axis_'):
         axis.id = specs['names'][0]
-    # - other specs
-    for att, val in specs.items():
-        if att in ['long_names', 'standard_names']:
-            att = att[:-1]
-        elif att in ['names', 'iaxis', 'jaxis'] or (att=='axis' and axis2d): continue
+    # - attributes
+    for att, val in cf2atts(specs, exclude=['axis'] if axis2d else None, **kwargs).items():
         if force or not getattr(axis, att, ''):
-            setattr(axis, att, val[0])
-    # - user attributes
-    for att, val in kwargs.items():
-        if force or not getattr(axis, att, ''):
-            if isinstance(val, list): val = val[0]
             setattr(axis, att, val)
     # - store cf name
     axis._vacumm_cf_name = axis.id
