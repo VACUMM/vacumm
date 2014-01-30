@@ -77,7 +77,7 @@ var_specs = OrderedDict(
     u3d = dict(
         names=['uz', 'u3d'],
         standard_names=['sea_water_x_velocity', #'sea_water_x_velocity_at_u_location', 
-#            'eastward_sea_water_velocity'
+            'eastward_sea_water_velocity'
             ],
         long_names = "Sea water velocity along X", 
         units = "m s-1", 
@@ -1216,6 +1216,8 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
     var = MV2.asarray(var)
     
     # Check specs
+    if name not in generic_var_names:
+        name = var.id
     if name not in generic_var_names:
         raise KeyError("Generic var name not found '%s'. Please choose one of: %s"%(
             name, ', '.join(generic_var_names)))
