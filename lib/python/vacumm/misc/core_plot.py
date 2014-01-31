@@ -701,7 +701,7 @@ class Plot(object):
 
 
     def pre_plot(self, axes=None, figure=None, figsize=None, subplot=None, twin=None, 
-        subplots_adjust=None, bgcolor=None, noframe=False, fullscreen=False, **kwargs):
+        subplots_adjust=None, bgcolor=None, noframe=False, fullscreen=False, verbose=False, **kwargs):
         """Initialize the plot
         
         :Tasks:
@@ -730,6 +730,7 @@ class Plot(object):
             - **axes_<param>**, optional: <param> is passed to :func:`~matplotlib.pyplot.axes`.
             - **noframe**, optional: Suppress plot frames.
             - **fullscreen**, optional: Plot in full screen mode (thus, ``noframe==True``).
+	    - **verbose**, optional: Informs about errors with axes.
            
             
         :Attributes:
@@ -788,7 +789,7 @@ class Plot(object):
         if axes is not None:
             self.axes = axes
             if self.axes.get_figure() != self.fig:
-                print 'Axes does not match figure'
+		if verbose: print 'Axes does not match figure'
                 self.fig = self.axes.get_figure()
         elif subplot is not None:
             if isinstance(subplot,(list,tuple)):
