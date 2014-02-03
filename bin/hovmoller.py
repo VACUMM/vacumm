@@ -46,7 +46,7 @@ import optparse
 import pylab
 
 from vacumm.misc.bases import Object
-from vacumm.data.model.mars import MARS3D
+from vacumm.data.model.mars3d import MARS3D
 from vacumm.misc.atime import Intervals, strftime
 from vacumm.misc.log import default as log
 
@@ -87,7 +87,7 @@ if __name__ == '__main__':
         lonmin, latmin, lonmax, latmax = map(float, bbox)
     if options.cfgfile:
         Object.load_default_config(options.cfgfile, nested=True)
-        MARS3D.load_default_config(Object.get_default_config())
+        Mars3D.load_default_config(Object.get_default_config())
     
     variables = map(lambda v:v.split(','), options.variables)
     time = options.time.split(',')
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     xymin, xymax, xy = map(float, coords)
     dtfmt = '%Y%m%dT%H%M%S'
     
-    mars = MARS3D()
+    mars = Mars3D()
     if options.cfgfile:
         mars.load_default_config(options.cfgfile, nested=True)
         mars.load_config(options.cfgfile, nested=True)

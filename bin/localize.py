@@ -46,7 +46,7 @@ import optparse
 import pylab
 
 from vacumm.misc.bases import Object
-from vacumm.data.model.mars import MARS3D
+from vacumm.data.model.mars3d import MARS3D
 from vacumm.data.misc.satellite import Satellite
 from vacumm.misc.atime import Intervals, strftime
 from vacumm.misc.log import default as log

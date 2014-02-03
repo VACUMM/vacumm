@@ -47,7 +47,7 @@ import pylab
 
 from vacumm.data.misc.coloc import Colocator
 from vacumm.data.misc.profile import ProfilesDataset
-from vacumm.data.model.mars import MARS3D
+from vacumm.data.model.mars3d import MARS3D
 from vacumm.misc.bases import Object
 from vacumm.misc.atime import Intervals, strftime
 from vacumm.misc.log import default as log
