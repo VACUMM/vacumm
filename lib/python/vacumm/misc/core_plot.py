@@ -730,7 +730,7 @@ class Plot(object):
             - **axes_<param>**, optional: <param> is passed to :func:`~matplotlib.pyplot.axes`.
             - **noframe**, optional: Suppress plot frames.
             - **fullscreen**, optional: Plot in full screen mode (thus, ``noframe==True``).
-	    - **verbose**, optional: Informs about errors with axes.
+            - **verbose**, optional: Informs about errors with axes.
            
             
         :Attributes:
@@ -789,7 +789,7 @@ class Plot(object):
         if axes is not None:
             self.axes = axes
             if self.axes.get_figure() != self.fig:
-		if verbose: print 'Axes does not match figure'
+                if verbose: print 'Axes does not match figure'
                 self.fig = self.axes.get_figure()
         elif subplot is not None:
             if isinstance(subplot,(list,tuple)):
@@ -1096,8 +1096,8 @@ class Plot(object):
     
     def post_plot(self, grid=True, figtext=None, show=True, 
         close=False, savefig=None, savefigs=None, title=None, 
-        fullscreen=False, anchor=None, autoresize=2, 
-        key=False, hlitvs=False, legend=False, **kwargs):
+        fullscreen=False, anchor=None, autoresize=2, finalize=None, 
+        key=False, hlitvs=False, legend=False, tight_layout=False, **kwargs):
         """Finish plotting stuff (plot size, grid, texts, saves, etc)
         
         :Params:
@@ -1123,6 +1123,7 @@ class Plot(object):
             - **close**: Close the figure at the end [default: False]
             - **title_<param>**: <param> is passed to :func:`~matplotlib.pyplot.title`
             - **logo_<param>**: <param> is passed to :func:`add_logo`
+            - **tight_layout**: To make a tight layout one everything is plotted.
         """
         self._post_plotted = True
 
@@ -1131,7 +1132,8 @@ class Plot(object):
 
         # Filter kewords
         kw = {}
-        for kwtype in 'grid', 'title', 'hlitvs', 'hldays', 'dayhl', 'figtext', 'key', 'savefig', 'savefigs', 'show', 'legend':
+        for kwtype in ['grid', 'title', 'hlitvs', 'hldays', 'dayhl', 'finalize', 
+            'figtext', 'key', 'savefig', 'savefigs', 'show', 'legend', 'tight_layout']:
             kw[kwtype] = kwfilter(kwargs, kwtype+'_')
             if kwtype in self._primary_attributes+self._secondary_attributes+self._special_attributes and \
                 kw[kwtype].has_key(kwtype):
@@ -1171,7 +1173,16 @@ class Plot(object):
         # Legend
         if legend:
             self.legend(**kw['legend'])
-    
+            
+        # Tight layout
+        if tight_layout:
+            self.fig.tight_layout(**kw['tight_layout'])
+        
+        # User finalization
+        if callable(finalize):
+            dict_check_defaults(kw['finalize'], fig=self.fig, ax=self.axes)
+            finalize(**kw['finalize'])
+            
         # Save it
         self.savefig(savefig, **kw['savefig'])
         self.savefigs(savefigs, **kw['savefigs'])
@@ -5963,7 +5974,7 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
         fmt = AutoDateFormatter2(major_locator)
     elif fmt == 'dual' or fmt is True or fmt  == 2:
         fmt = AutoDualDateFormatter(major_locator)
-    elif isinstance(fmt, str):
+    elif isinstance(fmt, basestring):
         fmt = DateFormatter(fmt)
     elif isinstance(fmt, list):
         fmt = AutoDualDateFormatter(major_locator, *fmt)
