@@ -13,9 +13,9 @@ parser.add_argument('-u', '--units', default="a",
     help='Units as one of "s" for seconds, "m" for minutes, "h" for hours, "d" for days,'
         ' "a" for auto (the defaults), and time axis units if empty ""')
 parser.add_argument('-s', '--stat', default='median', 
-    help='Statistics to guess time step, as one of "min", "max" ,"mean" or "median" (default: %default)')
+    help='Statistics to guess time step, as one of "min", "max" ,"mean" or "median" (default: %(default)s)')
 parser.add_argument('-f', '--format', default='%(value)g %(units)s', 
-    help='Output format (default: %default)')
+    help='Output format (default: %(default)s)')
    
     
 # Parse
