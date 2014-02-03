@@ -68,7 +68,8 @@ from vacumm.misc.config import ConfigManager
 from vacumm.misc.exception import getDetailedExceptionInfo
 from vacumm.misc.misc import kwfilter
 from vacumm.misc.log import Logger, logger, get_str_levels
-
+from argparse import ArgumentParser
+from optparse import OptionParser
 
 # Test application origin: a python script or an executable (py2exe/cx_freeze)
 isfreezed = os.path.basename(sys.executable) == os.path.basename(sys.argv[0])
@@ -463,7 +464,7 @@ class Object(object):
         return cls.__name__
     
     @classmethod
-    def get_config_manager(cls, reload=False):
+    def get_config_manager(cls, reload=False, encoding=None):
         '''
         Get the configuration manager for this class (cls).
         This manager and its underlying configuration specification
@@ -480,40 +481,41 @@ class Object(object):
             # If specification (and so defaults) file defined and exists
             if spec and os.path.isfile(spec):
                 # Load (temporary) the file
-                cfg = configobj.ConfigObj(spec, list_values=False, interpolation=False)
+                cfg = configobj.ConfigObj(spec, list_values=False, interpolation=False, 
+                    encoding=encoding)
                 # NOTE: list_values=False, interpolation=False are set because list values
                 #       are handled by the manager (parse error otherwise)
                 # If a config section lookup is defined and present, load the section
                 sec = cls.get_config_section_name()
                 if sec and sec in cfg:
                     #cfg = configobj.ConfigObj(cfgspec[sec], list_values=False, interpolation=False)
-                    cfg = configobj.ConfigObj(cfg[sec])
+                    cfg = configobj.ConfigObj(cfg[sec], encoding=encoding)
             # NOTE: If no spec / no class section, class use empty spec
-            cfgmgr = ConfigManager(cfg)
+            cfgmgr = ConfigManager(cfg, encoding=encoding)
             cls.__config_managers[cls] = cfgmgr
             if cls._cfg_debug:
                 cls.debug('Loaded config manager of class %s with spec:\n  %s', cls.__name__, '\n  '.join(cfgmgr._configspec.write()))
         return cls.__config_managers[cls]
     
     @classmethod
-    def load_default_config(cls, config=None, nested=None, apply=True):
+    def load_default_config(cls, config=None, nested=None, apply=True, encoding=None):
         '''Load / update the class (unique) default configuration'''
-        cfgmgr = cls.get_config_manager()
+        cfgmgr = cls.get_config_manager(encoding=encoding)
         cfgdef = cfgmgr.defaults()
         cfgsec = cls.get_config_section_name()
         if isinstance(nested, basestring):
             cfgsec = nested
         # Change the class default config if required
         if config is not None:
-            cfg = configobj.ConfigObj(config)
+            cfg = configobj.ConfigObj(config, encoding=encoding)
             # If a config section lookup is required
             # Otherwise, the whole passed config will be taken
             if nested:
                 if cfgsec in cfg:
-                    cfg = configobj.ConfigObj(cfg[cfgsec])
+                    cfg = configobj.ConfigObj(cfg[cfgsec], encoding=encoding)
                 # Section not found, use empty config
                 else:
-                    cfg = configobj.ConfigObj()
+                    cfg = configobj.ConfigObj(encoding=encoding)
             cfgdef = cfgmgr.load(cfg)
         cls.__config_defaults[cls] = cfgdef
         if apply:
@@ -529,17 +531,17 @@ class Object(object):
                 cls, cfgsec, nested, config, '\n  '.join(cls.get_default_config().write()))
         
     @classmethod
-    def get_default_config(cls):
+    def get_default_config(cls, encoding=None):
         '''Get the default configuration (copy)'''
-        return configobj.ConfigObj(cls.__config_defaults[cls])
+        return configobj.ConfigObj(cls.__config_defaults[cls], encoding=encoding)
     
     @classmethod
-    def get_default_config_str(cls):
+    def get_default_config_str(cls, encoding=None):
         '''Get the default configuration as a string'''
-        return '\n  '.join(configobj.ConfigObj(cls.__config_defaults[cls]).write())
+        return '\n  '.join(configobj.ConfigObj(cls.__config_defaults[cls], encoding=encoding).write())
     
     @classmethod
-    def apply_default_config(cls, config=None):
+    def apply_default_config(cls, config=None, encoding=None):
         '''
         This will turn on debug mode of various features (config, objects stats)
         if the loglevel of nested Logger configuration is debug.
@@ -556,7 +558,7 @@ class Object(object):
             - overriding this method will obviously shunt its default beahvior, you'll then have to call original method if needed
         
         '''
-        if config is None: config = cls.get_default_config()
+        if config is None: config = cls.get_default_config(encoding=encoding)
         #cls.get_logger().load_config(config, nested=True)
         loglvl = logger.get_level_name() #loglvl = cls.get_logger().get_level_name().lower()
         isdbg = logger.is_debug() #isdbg = loglvl == 'debug'
@@ -584,31 +586,40 @@ class Object(object):
         obj.load_config(config, **loadkw)
         return obj
     
-    def load_config(self, config=None, nested=True, apply=True, cfgpatch=None):
+    def load_config(self, config=None, nested=None, apply=True, cfgpatch=None, encoding=None, **kwargs):
         '''Load / update the instance configuration
         
         :Params:
-            - **config**: A configuration file (str) or object (ConfigObj) or None to load defaults.
+            - **config**: A configuration file (str) or object (ConfigObj) or 
+              None to load defaults, or an :class:`~argparse.ArgumentParser` object.
             - **nested**: Load from a nested config section instead of the whole config.
                           If True, use the section name returned by :meth:`get_config_section_name()`
                           Else if a string, use the section name defined by the **nested** string
             - **cfgpatch**: A manual patch to apply to the config once loaded.
+            - Other options are passed to 
+              :meth:`~vacumm.misc.config.ConfigManager.arg_parse`.
+            
+        :Return: A :class:`ConfigObj` object or :class:`ConfigObj`,options tuple if 
+            an :class:`~argparse.ArgumentParser` object has been passed
         '''
-        mgr = self.get_config_manager()
+        mgr = self.get_config_manager(encoding=encoding)
         sec = self.get_config_section_name()
         if not hasattr(self, '_config'):
-            self._config = self.get_default_config()
+            self._config = self.get_default_config(encoding=encoding)
+        self._options = None
         if config is not None:
-            cfg = configobj.ConfigObj(config, interpolation=False)
-            # If a nested section lookup is required
-            # Otherwise, the whole passed config will be taken
-            if nested:
-                if isinstance(nested, basestring):
+            if isinstance(nested, basestring):
                     sec = nested
-                # If not found, self._config remain unchanged
-                if sec and sec in cfg:
-                    cfg = configobj.ConfigObj(cfg[sec], interpolation=False)
-            self._config = mgr.load(cfg)
+            if isinstance(config, ArgumentParser):
+                self._config, self._options = mgr.arg_parse(config, 
+                    nested=nested and sec or nested, getargs=True, **kwargs)
+            else:
+                cfg = configobj.ConfigObj(config, interpolation=False, encoding=encoding)
+                # If a nested section lookup is required
+                # Otherwise, the whole passed config will be taken
+                if nested and sec and sec in cfg: # If not found, self._config remain unchanged
+                    cfg = configobj.ConfigObj(cfg[sec], interpolation=False, encoding=encoding)
+                self._config = mgr.load(cfg)
         if cfgpatch is not None:
             if not isinstance(cfgpatch, list):
                 cfgpatch = [cfgpatch]
@@ -627,11 +638,18 @@ class Object(object):
                 self.__class__, sec, nested, config, '\n  '.join(self._config.write()))
         return self._config
     
+    
+    def get_options(self):
+        """Get :attr:`options`"""
+        return getattr(self, '_options', None)
+    options = property(fget=get_options, doc='Options loaded from the commandline parser or None') 
+    
     def get_config(self, copy=True):
         '''Get the instance's config'''
         if copy:
             return configobj.ConfigObj(self._config)
         return self._config
+    config = property(fget=get_config, doc='Current configuration')
     
     def get_config_str(self):
         '''Get the instance's config as a string'''

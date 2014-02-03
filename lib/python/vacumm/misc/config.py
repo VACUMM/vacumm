@@ -57,7 +57,8 @@ try: import numpy
 except: numpy = None
 
 __all__ = ['ConfigException', 'ValidationWarning', 'ConfigManager', 'print_short_help', 
-    'opt2rst', 'cfg2rst'] 
+    'opt2rst', 'cfg2rst', 'cfgargparse', 'cfgoptparse', 'getspec', 'get_secnames', 
+    ] 
 
 class ConfigException(Exception):
     pass
@@ -345,7 +346,7 @@ class ConfigManager(object):
     :See also: :class:`configobj.ConfigObj` and :class:`validate.Validator`
     
     """
-    def __init__(self, cfgspecfile=None, validator=None, interpolation='template'):
+    def __init__(self, cfgspecfile=None, validator=None, interpolation='template', encoding=None):
         '''
         :Params:
             - **cfgspecfile**: the specification file to be used with this 
@@ -353,11 +354,16 @@ class ConfigManager(object):
             - **interpolation**: see :class:`configobj.ConfigObj`
         '''
         # Specifications
+        self._encoding = encoding
         if cfgspecfile is not None and isinstance(cfgspecfile, basestring) and not os.path.exists(cfgspecfile):
             raise ConfigException('Specification file not found: %s'%cfgspecfile)
         self._configspecfile = cfgspecfile
-        self._configspec = ConfigObj(cfgspecfile, list_values=False, interpolation=False)
-        
+        if isinstance(cfgspecfile, ConfigObj):
+            self._configspec = cfgspecfile
+        else:
+            self._configspec = ConfigObj(cfgspecfile, list_values=False, 
+                interpolation=False, encoding=encoding)
+            
         # Validator
         if isinstance(validator, Validator):
             self._validator = validator
@@ -402,10 +408,13 @@ class ConfigManager(object):
         :Return: A :class:`~configobj.ConfigObj` instance
         """
         if interpolation is None or interpolation is True: interpolation = self._interpolation
-        cfg = ConfigObj(interpolation=interpolation, configspec=self._configspec)
+        cfg = ConfigObj(interpolation=interpolation, configspec=self._configspec, 
+            encoding=self._encoding)
         cfg.validate(self._validator, copy=True)
         if nocomments: 
             cfg.walk(_walker_remove_all_comments_, call_on_sections=int(nocomments)==2)
+        elif self._configspec:
+            cfg.inline_comments = self._configspec.inline_comments
         return cfg
     
     def reset(self, cfgfile='config.cfg', backup=True, nocomments=True, verbose=True):
@@ -473,7 +482,8 @@ class ConfigManager(object):
         if cfgfile is not None and isinstance(cfgfile, basestring) and not os.path.exists(cfgfile):
             cfgfile = None
         # Instantiate / Copy
-        cfg = ConfigObj(cfgfile, interpolation=self._interpolation, configspec=self._configspec)
+        cfg = ConfigObj(cfgfile, interpolation=self._interpolation, 
+            configspec=self._configspec, encoding=self._encoding)
         
         # Patch
         if kwpatch and not patch:
@@ -546,11 +556,12 @@ class ConfigManager(object):
             - **validate**, optional: If ``True``, validate configs if they have a valid config spec.
         """
         if not isinstance(cfg, ConfigObj): 
-            cfg = ConfigObj(cfg, configspec=self._configspec)#, interpolation=False)
+            cfg = ConfigObj(cfg, configspec=self._configspec, encoding=self._encoding)#, interpolation=False)
         #else:
             #cfg.interpolation = False
         if not isinstance(cfgpatch, ConfigObj): 
-            cfgpatch = ConfigObj(cfgpatch, configspec=self._configspec, interpolation=False)
+            cfgpatch = ConfigObj(cfgpatch, configspec=self._configspec, interpolation=False, 
+                encoding=self._encoding)
         else:
             cfgpatch.interpolation = False
         cfgpatch.walk(_walker_patch_, cfg=cfg)
@@ -562,7 +573,8 @@ class ConfigManager(object):
     def arg_parse(
             self, parser=None, exc=[], parse=True, args=None, 
             getparser=False, getargs=False, cfgfile='config.cfg',
-            patch=None, cfgfileopt='--cfgfile', cfgfilepatch=None):
+            patch=None, cfgfileopt='--cfgfile', cfgfilepatch='before', 
+            nested=None):
         """Options (:mod:`argparse`) and config mixer.
         
             1. Creates command-line options from config defaults
@@ -607,6 +619,8 @@ class ConfigManager(object):
                 - True or 'before': the config file would be used before command line options
                 - 'after': the config file would be used after command line options
                 - Any False like value: the config file would not be used
+            - **nested**: Name of a section whose defines the configuration.
+              It must be used when the configuration in nested in more general configuration.
             
         :Return:
             - the :class:`OptionParser` if parse is False
@@ -649,7 +663,7 @@ class ConfigManager(object):
         # - global options
         for key in defaults.scalars:
             if key not in exc:
-                group.add_argument('--'+_cfg2optname_(key), help=_shelp_(defaults, key))
+                group.add_argument('--'+_cfg2optname_(key, nested), help=_shelp_(defaults, key))
             else:
                 pass
         
@@ -662,7 +676,7 @@ class ConfigManager(object):
             section = defaults[key]
             group = parser.add_argument_group(*desc)
             defaults[key].walk(_walker_argcfg_setarg_, raise_errors=True,
-                call_on_sections=False, group=group, exc=exc)
+                call_on_sections=False, group=group, exc=exc, nested=nested)
     
         # Now create a configuration instance from passed options
         if parse:
@@ -673,9 +687,6 @@ class ConfigManager(object):
             # Parse
             options = parser.parse_args(list(args))
             
-            # Create a configuration to feed
-            cfg = ConfigObj(interpolation=self._interpolation)
-            
             # Intercept helps
             if getattr(options, 'long_help', None):
                 parser.print_help()
@@ -684,6 +695,9 @@ class ConfigManager(object):
                 print_short_help(parser)
                 sys.exit()
 
+            # Create a configuration to feed
+            cfg = ConfigObj(interpolation=self._interpolation, encoding=self._encoding)
+            
             # Initial config from defaults or the one supplied
             if patch:
                 self.patch(cfg, patch if isinstance(patch, ConfigObj) else defaults)
@@ -700,7 +714,7 @@ class ConfigManager(object):
                 
             # Feed config with command line options
             defaults.walk(_walker_argcfg_setcfg_, raise_errors=True,
-                call_on_sections=False, cfg=cfg, options=options)
+                call_on_sections=False, cfg=cfg, options=options, nested=nested)
                 
             # Feed config with cfgfile after command line options
             if cfgfilepatch == 'after' and getattr(options, 'cfgfile', None):
@@ -735,7 +749,8 @@ class ConfigManager(object):
 
     def opt_parse(
             self, parser=None, exc=[], parse=True, args=None, getparser=None,
-            patch=None, cfgfile='config.cfg', cfgfileopt='--cfgfile', cfgfilepatch=None):
+            patch=None, cfgfile='config.cfg', cfgfileopt='--cfgfile', cfgfilepatch=None, 
+            nested=None):
         """Options (:mod:`optparse`) and config mixer.
         
             1. Creates command-line options from config defaults
@@ -801,7 +816,8 @@ class ConfigManager(object):
         def wrap_option_type_checker(func, islist):
             def wrapper_option_type_checker(opt, name, value):
                 if islist: # Use configobj list parser
-                    value,comment = ConfigObj(list_values=True, interpolation=False)._handle_value(value)
+                    value,comment = ConfigObj(list_values=True, interpolation=False, 
+                        encoding=self._encoding)._handle_value(value)
                     return func(value)
                 else:
                     return func(value)
@@ -840,7 +856,7 @@ class ConfigManager(object):
         # - global options
         for key in defaults.scalars:
             if key not in exc:
-                group.add_option('--'+_cfg2optname_(key), action='store', type="string", 
+                group.add_option('--'+_cfg2optname_(key, nested), action='store', type="string", 
                     dest=key, help=_shelp_(defaults, key))
             else:
                 pass
@@ -856,14 +872,26 @@ class ConfigManager(object):
             section = defaults[key]
             group = OptionGroup(parser, *desc)
             defaults[key].walk(_walker_optcfg_setopt_, raise_errors=True,
-                call_on_sections=False, group=group, exc=exc)
+                call_on_sections=False, group=group, exc=exc, nested=nested)
             parser.add_option_group(group)
     
         # Now create a configuration instance from passed options
         if parse:
+            
             if args is None: args = sys.argv[1:]
             (options, args) = parser.parse_args(list(args))
-            cfg = ConfigObj(interpolation=self._interpolation)
+
+            # Intercept helps
+            if getattr(options, 'long_help', None):
+                parser.print_help()
+                sys.exit()
+            elif getattr(options, 'help', None):
+                print_short_help(parser)
+                sys.exit()
+
+            # Create a configuration to feed
+            cfg = ConfigObj(interpolation=self._interpolation, encoding=self._encoding)
+            
             # Initial config from defaults or the one supplied
             if patch:
                 self.patch(cfg, patch if isinstance(patch, ConfigObj) else defaults)
@@ -873,12 +901,15 @@ class ConfigManager(object):
                     cfgfilepatch = 'after'
                 else:
                     cfgfilepatch = 'before'
+                    
             # Feed config with cfgfile before command line options
             if cfgfilepatch == 'before' and getattr(options, 'cfgfile', None):
                 self.patch(cfg, self.load(options.cfgfile))
+                
             # Feed config with command line options
             defaults.walk(_walker_optcfg_setcfg_, raise_errors=True,
-                call_on_sections=False, cfg=cfg, options=options)
+                call_on_sections=False, cfg=cfg, options=options, nested=nested)
+                
             # Feed config with cfgfile after command line options
             if cfgfilepatch == 'after' and getattr(options, 'cfgfile', None):
                 self.patch(cfg, self.load(options.cfgfile))
@@ -989,6 +1020,8 @@ def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', exc=[], **kwargs):
         - **exc**, optional: Config option name that must not be used to generated
           a commandline option.
         - Extra params are passed to :class:`ConfigManager` initialization.
+        
+    :Return: A :class:`ConfigObj` object
     
     :Tasks:
     
@@ -1057,6 +1090,7 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
 #    s_tot = r'^  (%(s_sopt)s|%(s_lopt)s)|%(s_sopt)s%(s_optsep)s%(s_lopt)s)%(s_desc)s?$'%locals()
     re_opt = re.compile(s_tot).match
     re_sec = re.compile(r'^(?:  )?([\w\s]+):(?: (.+))?$').match
+    secname = None
     for line in shelp.splitlines():
         
         # Sections
@@ -1086,7 +1120,7 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
             if m.group(2) is not None:
                 rhelp.append('\t\t'+m.group(2).strip())
                 
-        elif secname.lower()=='positional arguments' and line.startswith(' '*2):
+        elif secname and secname.lower()=='positional arguments' and line.startswith(' '*2):
             
             sline = line.split()
             rhelp.extend(['','\t.. cmdoption:: '+sline[0], ''])
@@ -1113,12 +1147,17 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
         
     return '\n'.join(rhelp)
 
-def _opt2cfgname_(name):
-    return name.replace('-', '_')
+def _opt2cfgname_(name, nested):
+    cfgkey = name.replace('-', '_')
+    if nested and cfgkey.startswith(nested+'_'): 
+        cfgkey = cfgkey[len(nested+'_'):]
+    return cfgkey
 
 _re_cfg2optname_sub = re.compile('[_\s]').sub
-def _cfg2optname_(name):
-    return _re_cfg2optname_sub('-', name)
+def _cfg2optname_(name, nested=None):
+    optkey = _re_cfg2optname_sub('-', name)
+    if nested: optkey = nested+'-'+optkey
+    return optkey
 
 class _attdict_(dict):
     def __getattr__(self, name):
@@ -1190,7 +1229,7 @@ def remove_defaults(cfg):
                 c.pop(k)
     remove(cfg, defaults)
 
-def _walker_optcfg_setcfg_(sec, key, cfg=None, options=None):
+def _walker_optcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
     """Walker to set config values"""
     # Find genealogy
     parents = _parent_list_(sec, names=False)
@@ -1199,7 +1238,7 @@ def _walker_optcfg_setcfg_(sec, key, cfg=None, options=None):
         # Option not set
         if value is None: continue
         # Option matches key?
-        if _opt2cfgname_(option) != cfgkey: continue
+        if _opt2cfgname_(option, nested) != cfgkey: continue
         # Check or create cfg genealogy
         s = cfg
         for p in parents:
@@ -1208,13 +1247,13 @@ def _walker_optcfg_setcfg_(sec, key, cfg=None, options=None):
             s = s[p.name]
         s[key] = value
 
-def _walker_optcfg_setopt_(sec, key, group=None, exc=None):
+def _walker_optcfg_setopt_(sec, key, group=None, exc=None, nested=None):
     """Walker to set options"""
     # Find option key and output var name
     key = key.strip('_')
     pp = _parent_list_(sec)
     varname = '_'.join(pp+[key])
-    optkey = _cfg2optname_(varname)
+    optkey = _cfg2optname_(varname, nested)
     # Check exceptions
     if key in exc: return
     # Add option to group
@@ -1228,7 +1267,7 @@ def _walker_optcfg_setopt_(sec, key, group=None, exc=None):
             help=_shelp_(sec, key)
     )
 
-def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None):
+def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
     """Walker to set config values"""
     # Find genealogy
     parents = _parent_list_(sec, names=False)
@@ -1239,7 +1278,7 @@ def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None):
         if value is None: continue
         
         # Option matches key?
-        if _opt2cfgname_(option) != cfgkey: continue
+        if _opt2cfgname_(option, nested) != cfgkey: continue
         
         # Check or create cfg genealogy
         s = cfg
@@ -1249,26 +1288,30 @@ def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None):
             s = s[p.name]
         s[key] = value
 
-def _walker_argcfg_setarg_(sec, key, group=None, exc=None):
+def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None):
     """Walker to set options"""
     # Find option key and output var name
     key = key.strip('_')
     pp = _parent_list_(sec)
     varname = '_'.join(pp+[key])
-    optkey = _cfg2optname_(varname)
+    optkey = _cfg2optname_(varname, nested)
+    
     # Check exceptions
     if key in exc: return
     spec = _validator_specs_.get(sec.configspec[key].split('(', 1)[0], {})
+    
     # Define the wrapping function for argparse argument types which also handle list values
     def wrap_argparse_type(func, islist):
         def wrapper_argparse_type(value):
             if islist: # Use configobj list parser
-                value,comment = ConfigObj(list_values=True, interpolation=False)._handle_value(value)
+                value,comment = ConfigObj(list_values=True, interpolation=False, 
+                    encoding=self._encoding)._handle_value(value)
                 return func(value)
             else:
                 return func(value)
         wrapper_argparse_type.__name__ += '-'+func.__name__
         return wrapper_argparse_type
+        
     # Add argument to group
     group.add_argument(
         '--'+optkey,
@@ -1449,25 +1492,53 @@ def cfg2rst(cfg):
 
 def print_short_help(parser, formatter=None):
     """Print all help of an :class:`~optparse.OptionParser` instance but those of groups."""
-    # - top
-    if formatter is None:
-        formatter = parser.formatter
-    result = []
-    if parser.usage:
-        result.append(parser.get_usage() + "\n")
-    if parser.description:
-        result.append(parser.format_description(formatter) + "\n")
-    # - basic options skipping groups
-    formatter.store_option_strings(parser)
-    result.append(formatter.format_heading(_("Options")))
-    formatter.indent()
-    if parser.option_list:
-        result.append(OptionContainer.format_option_help(parser, formatter))
-        result.append("\n")
-    formatter.dedent()
-    del result[-1]
-    result.append(parser.format_epilog(formatter))
-    print "".join(result)
+    if isinstance(parser, OptionParser):
+        # - top
+        if formatter is None:
+            formatter = parser.formatter
+        result = []
+        if parser.usage:
+            result.append(parser.get_usage() + "\n")
+        if parser.description:
+            result.append(parser.format_description(formatter) + "\n")
+        # - basic options skipping groups
+        formatter.store_option_strings(parser)
+        result.append(formatter.format_heading(_("Options")))
+        formatter.indent()
+        if parser.option_list:
+            result.append(OptionContainer.format_option_help(parser, formatter))
+            result.append("\n")
+        formatter.dedent()
+        del result[-1]
+        result.append(parser.format_epilog(formatter))
+        print "".join(result)
+        
+    elif isinstance(parser, ArgumentParser):
+        
+        if formatter is None:
+            formatter = parser._get_formatter()
+
+        # usage
+        formatter.add_usage(parser.usage, parser._actions,
+                            parser._mutually_exclusive_groups)
+
+        # description
+        formatter.add_text(parser.description)
+
+        # positionals, optionals and user-defined groups
+        for action_group in parser._action_groups:
+            if action_group.title in ['positional arguments', 'optional arguments']:
+                formatter.start_section(action_group.title)
+                formatter.add_text(action_group.description)
+                formatter.add_arguments(action_group._group_actions)
+                formatter.end_section()
+
+        # epilog
+        formatter.add_text(parser.epilog)
+
+        # determine help from format above
+        parser._print_message(formatter.format_help(), None)
+        
 
 if __name__=='__main__':
     shelp="""Usage: showtime.py [options] ncfile
