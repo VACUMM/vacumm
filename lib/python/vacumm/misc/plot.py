@@ -82,6 +82,7 @@ from docstrings import docfill
 from phys.units import deg2m
 from atime import mpl,time,axis_add,compress,SpecialDateFormatter
 from core_plot import *
+from core_plot import add_param_label
 from operator import isNumberType
 
 from string import Template
