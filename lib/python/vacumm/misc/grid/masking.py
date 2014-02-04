@@ -1441,13 +1441,16 @@ def zcompress(z, *xy, **kwargs):
     return ret
    
 def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None, 
-    relres=None, scaler=None, compact=False, relmargin=.05):
+    relres=None, scaler=None, compact=False, relmargin=.05, nauto=20):
     """Create a mask based on resolution criteria for undersampling 2D data
     
     :Params:
         - **grid**: A cdms array with a grid, a cdms grid or a tuple of axes.
         - **res**, optional: Horizontal resolution of arrows 
-            (in both directions) for undersampling [default: ``None``]
+            (in both directions) for undersampling [default: ``None``].
+            If ``'auto'``, resolution is computed so as to have at max ``nauto``
+            arrow in along an axis. If it is a :class:`complex` type, its imaginary part
+            set the ``nauto`` parameter and ``res`` is set to ``'auto'``.
             
             .. warning::
     
@@ -1478,6 +1481,8 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
     
         >>> mask = resol_mask((x2d, y2d), relres=2.5) # sampling=2.5
         >>> mask = resol_mask(var.getGrid(), xres=2., scaler=mymap, yres=-100.) # 100m
+        >>> mask = resol_mask(var.getGrid(), res=20j) # at max 20 arrows per axis
+        >>> mask = resol_mask(var.getGrid(), res='auto', nauto=20) # equivalent
           
     .. note::
     
@@ -1485,10 +1490,22 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
         instead of unsersample because of aliasing.
         
     """
+    # Params
+    if isinstance(res, complex):
+        if int(res.imag)>1:
+            nauto = int(res.imag)
+            res = 'auto'
+        else:
+            res = None
+    if nauto is None: nauto = 20
+    
+    
     # Get numeric axes
     xx, yy = M.get_xy(grid, num=True, mesh=True, m=False)
     
     # Scaler
+    if scaler is None:
+        scaler = get_proj(gg)
     if callable(scaler):
         xxs, yys = scaler(xx, yy)
     else:
@@ -1501,8 +1518,8 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
     if relres is not None:
         if xrelres is None: xrelres = relres
         if yrelres is None: yrelres = relres        
-    if xres is False: xres = None
-    if yres is False: yres = None
+    if xres is False or xx.shape[1]<3: xres = None
+    if yres is False or yy.shape[1]<3: yres = None
     if xrelres is False: xrelres = None
     if yrelres is False: yrelres = None
     if (xrelres is not None and xres is None) or (yrelres is not None and yres is None):
@@ -1527,48 +1544,65 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
         else:
             if xres is None: xres = xr
             if yres is None: yres = yr
+    if xres=='auto' or yres=='auto':
+        x2d = xxs
+        y2d = yys
+    else:
+        x2d = xx if xres > 0 else xxs
+        y2d = yy if yres > 0 else yys
+    if xres is not None or yres is not None:
+        xbres, ybres = M.resol((x2d, y2d), mode='raw')        
+    if xres=='auto' or yres=='auto':
+        xcres = N.ma.cumsum(xbres, axis=1)
+        ycres = N.ma.cumsum(ybres, axis=0)
+        xares = -1.*xcres.max()/nauto
+        yares = -1.*ycres.max()/nauto
+        xres = yres = min(xares, yares)
+    else:
+        x2d = y2d = xbres = ybres = xcres = ycres = None
         
     # Resolution along X
+    if xres=='auto':
+        xres = res
     if xres is not None: # From absolute resolution
         if xrelres is None: xrelres = 1.
-        x2d = xx if xres > 0 else xxs
-        xmask = N.zeros(xx.shape, '?')
-        baserelres = M.resol(x2d, axis=1, mode='loc')/N.abs(xres*N.abs(xrelres))
-        newrelres = baserelres.copy()
-        level = 1
-        while level < 100:
-            bad = newrelres < 1-relmargin
-            if not bad.any(): break
-            levelmask = bad.copy()
-            levelmask[:, level/2::level+1] = False
-            xmask = N.where(bad, levelmask, xmask)
-            newrelres[bad] = baserelres[bad]*(level+1)
-            del bad, levelmask
-            level += 1
-        del baserelres, newrelres
+        xbres /= N.abs(xres*N.abs(xrelres))
+        if xcres is None: 
+            xcres = N.ma.cumsum(xbres, axis=1).astype('i')
+        else:
+            xcres /= N.abs(xres*N.abs(xrelres))
+            xcres = xcres.astype('i')
+        xdres = N.ma.diff(xcres, axis=1)
+        xmask = N.ones(xx.shape, '?')
+        xmask[:, 0] = False
+        xmask[:, 1] = (xcres[:, 0]==0).filled(True)
+        xmask[:, 2:] = (xdres==0).filled(True)
+        xmask[:, 1:] &= (xbres<=1-relmargin)
+        del xcres, xdres, xbres
     else:
         xmask = False
-            
+
     # Resolution along Y
+    if yres=='auto':
+        yres = res
     if yres is not None: # From absolute resolution
         if yrelres is None: yrelres = 1.
-        y2d = yy if yres > 0 else yys
-        ymask = N.zeros(yy.shape, '?')
-        baserelres = M.resol(y2d, axis=0, mode='loc')/N.abs(yres*N.abs(yrelres))
-        newrelres = baserelres.copy()
-        level = 1
-        while level < 100:
-            bad = newrelres < 1-relmargin
-            if not bad.any(): break
-            levelmask = bad.copy()
-            levelmask[level/2::level+1, :] = False
-            ymask = N.where(bad, levelmask, ymask)
-            newrelres[bad] = baserelres[bad]*(level+1)
-            del bad, levelmask
-            level += 1
-        del baserelres, newrelres
+        ybres /= N.abs(yres*N.abs(yrelres))
+        if ycres is None: 
+            ycres = N.ma.cumsum(ybres, axis=0).astype('i')
+        else:
+            ycres /= N.abs(yres*N.abs(yrelres))
+            ycres = ycres.astype('i')
+        ydres = N.ma.diff(ycres, axis=0)
+        ymask = N.ones(yy.shape, '?')
+        ymask[0] = False
+        ymask[1] = (ycres[0]==0).filled(True)
+        ymask[2:] = (ydres==0).filled(True)
+        ymask[1:] &= (ybres<=1-relmargin)
+        del ycres, ydres, ybres
     else:
         ymask = False
+    
     
     return xmask | ymask
  
