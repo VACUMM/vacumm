@@ -4525,7 +4525,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         quiver_vmin=None, quiver_vmax=None,
         quiver_samp=None, quiver_xsamp=None, quiver_ysamp=None, quiver_res=None,
         quiver_relres=None, quiver_xres=None, quiver_xrelres=None, quiver_yres=None,
-        quiver_yrelres=None, quiver_res_scaler=None, **kwargs):
+        quiver_yrelres=None, quiver_res_scaler=None, quiver_nauto=None, **kwargs):
         """Plot arrows
         
         You can undersample arrows using direct undersampling (parameters
@@ -4565,7 +4565,11 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
               ``"magic"``).
             - **quiver_samp**, optional: Horizontal sampling of arrows (in both directions) [default: 1]
             - **quiver_x/ysamp**, optional: Sampling along X/Y [default: quiver_samp]
-            - **quiver_res**, optional: Horizontal resolution of arrows (in both directions) for undersampling [default: None]
+            - **quiver_res**, optional: Horizontal resolution of arrows (in both directions) 
+              for undersampling [default: None]
+                If ``'auto'``, resolution is computed so as to have at max ``quiver_nauto``
+                arrow in along an axis. If it is a :class:`complex` type, its imaginary part
+                set the ``quiver_nauto`` parameter and ``quiver_res`` is set to ``'auto'``.
             - **quiver_x/yres**, optional: Same along X/Y [default: quiver_res]
             - **quiver_relres**, optional: Relative resolution (in both directions). 
               
@@ -4620,7 +4624,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         # - indirect
         rmask = resol_mask((x2dr, y2dr), res=quiver_res, xres=quiver_xres, yres=quiver_yres, 
             relres=quiver_relres, xrelres=quiver_xrelres, yrelres=quiver_yrelres, 
-            scaler = self.xyscaler, compact=True)
+            scaler = self.xyscaler, compact=True, nauto=quiver_nauto)
         
         # - apply
         if rmask is not False:
@@ -4661,6 +4665,10 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             vmin = quiver_vmin if quiver_vmin is not None else self.vmin
             vmax = quiver_vmax if quiver_vmax is not None else self.vmax
             kwqv['norm'] = Normalize(vmin=vmin, vmax=vmax)
+        mask = N.ma.asarray(uu).mask
+        if mask is not MV2.nomask:
+            good = ~mask.ravel()
+            qvargs = [N.compress(good, qa.ravel()) for qa in qvargs] ; del qa
 
         # Arrows
         if barbs:
