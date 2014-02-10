@@ -3618,7 +3618,7 @@ class Curve(Plot1D):
         kwerr = kwfilter(kwargs, 'err')
         kwfb = kwfilter(kwargs, 'fill_between')
         kwline = {}
-        line_keys = ['color','linewidth','linestyle','markerwidth']
+        line_keys = ['color','linewidth','linestyle','markerwidth','drawstyle']
         marker_keys = ['markeredgecolor','markeredgesize','markersize','markerfacecolor','marker','zorder','alpha']
         line_keys.extend(marker_keys)
         for key in line_keys:
