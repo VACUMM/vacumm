@@ -1239,7 +1239,7 @@ class Plot(object):
             vatts = ['min', 'max', 'minmax', 'maxmin', ('label', 'title'), 'units', ]
             aatts = ['strict', ('fmt', 'format', 'tickfmt', 'tickformat'), ('rotation', 'rotate'), 
                 'lim', 'hide', 'ticks', 'ticklabels','locator', 'minor_locator', 'formatter', 'minor_formatter', 
-                ('nmax', 'nmax_ticks')]
+                ('nmax', 'nmax_ticks'), 'scale']
             defaults = dict()#strict=True)
             if props['type']!='d':
                 defaults['strict'] = True
@@ -1271,6 +1271,10 @@ class Plot(object):
             props['label_kwargs'] = kwfilter(xykwargs, 'label_', copy=1)
             props['label_kwargs'].update(kwfilter(xykwargs, 'title_', copy=1))
             props['ticklabels_kwargs'] = kwfilter(xykwargs, 'ticklabels_', copy=1)
+            
+            # Axis scale
+            if props['scale'] is not None:
+                getattr(self.axes, 'set_%sscale'%xy)(props['scale'])
             
             # Limits
             axmin, axmax = None, None
