@@ -183,7 +183,6 @@ def _validator_figsize_(value, default=(6, 6)):
     if isinstance(value, list): 
         value = tuple(value)
     elif isinstance(value, (str, unicode)):
-        tmp=eval(value)
         try:
             value = eval(value)
         except:
@@ -452,7 +451,7 @@ class ConfigManager(object):
         return cfg
 
     def load(self, cfgfile='config.cfg', 
-        validate='fix', geterr=False, patch=None, **kwpatch):
+        validate='fix', geterr=False, patch=None, force=True, **kwpatch):
         """Get a :class:`~configobj.ConfigObj` instance loaded from a file
         
         :Params:
@@ -471,6 +470,8 @@ class ConfigManager(object):
                 - ``"raise"``: validation raises errors
             
             - **geterr**, optional: Return validation results as well
+            - **force**, optional: Force re-instantiation of ``cfgfile`` when it is already
+              a :class:`ConfigObj` instance.
             
         :Return: Depends on ``geterr``
         
@@ -481,10 +482,15 @@ class ConfigManager(object):
         # Load the config
         if cfgfile is not None and isinstance(cfgfile, basestring) and not os.path.exists(cfgfile):
             cfgfile = None
+            
         # Instantiate / Copy
-        cfg = ConfigObj(cfgfile, interpolation=self._interpolation, 
-            configspec=self._configspec, encoding=self._encoding)
-        
+        if not isinstance(cfgfile, ConfigObj) or force:
+            cfg = ConfigObj(cfgfile, interpolation=self._interpolation, 
+                configspec=self._configspec, encoding=self._encoding)
+        else:
+            cfg = cfgfile
+
+
         # Patch
         if kwpatch and not patch:
             patch = {}
@@ -517,13 +523,21 @@ class ConfigManager(object):
                     
                     # Check what to do
                     if validate in ['fix', 'report']:
+                        
                     
                         # Report
                         sec = cfg
                         secd = defaults
                         for subsec in sections:
                             sec = sec[subsec]
+                            if subsec not in secd: 
+                                secd = None
+                                break
                             secd = secd[subsec]
+                        if secd is None: 
+#                            sys.stderr.write(msg+"\nCan't set it to default value because"
+#                                " none available")
+                            continue
                         
                         # Loop on keys
                         keys = secd.keys() if key is None else [key]
@@ -543,6 +557,7 @@ class ConfigManager(object):
                 return cfg, err
         
         return cfg
+        
 
     def patch(self, cfg, cfgpatch, validate=False):
         """Replace config values of ``cfg`` by those of ``cfgpatch``
@@ -1288,7 +1303,7 @@ def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
             s = s[p.name]
         s[key] = value
 
-def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None):
+def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding=None):
     """Walker to set options"""
     # Find option key and output var name
     key = key.strip('_')
@@ -1305,7 +1320,7 @@ def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None):
         def wrapper_argparse_type(value):
             if islist: # Use configobj list parser
                 value,comment = ConfigObj(list_values=True, interpolation=False, 
-                    encoding=self._encoding)._handle_value(value)
+                    encoding=encoding)._handle_value(value)
                 return func(value)
             else:
                 return func(value)
@@ -1317,7 +1332,7 @@ def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None):
         '--'+optkey,
             action='store',
             type=wrap_argparse_type(spec.get('func', lambda s:s), spec.get('iterable', None)),
-            help=_shelp_(sec, key)
+            help=_shelp_(sec, key), 
     )
 
 def _shelp_(sec, key, format='%(shelp)s [default: %(default)r]', mode='auto', 
@@ -1361,12 +1376,17 @@ def _shelp_(sec, key, format='%(shelp)s [default: %(default)r]', mode='auto',
     
     # If no comments
     if not shelp: shelp = undoc
+    default = _sdefault_(sec, key)
+    return format%locals()
+
+def _sdefault_(sec, key):
+    """Get default string"""
     default = sec.get(key, None)
     if isinstance(default, (list,tuple)):
-        default = ' '.join(map(str, default))
+        default = ','.join(map(str, default))
     else:
         default = str(default).strip('()')
-    return format%locals()
+    return default.replace('%', '%%')
 
 def _parent_list_(sec, names=True):
     parents = []
