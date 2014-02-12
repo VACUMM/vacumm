@@ -1,12 +1,11 @@
 .. _lib.data.misc.dataset:
 
 
-:mod:`data.misc.dataset` -- Gestion generique de donnees
-========================================================
+:mod:`data.misc.dataset` -- Generic data classes
+================================================
 
 .. overview:: vacumm.data.misc.dataset
     :columns: 2
-    :title-overview: hahaha
 
 :Inheritance diagram: 
 

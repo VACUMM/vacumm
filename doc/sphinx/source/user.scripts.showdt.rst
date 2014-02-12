@@ -1,7 +1,7 @@
 .. _user.scripts.showdt:
 
-:program:`showdt.py` -- Affichage du pas de temps netcdf
-========================================================
+:program:`showdt.py` -- Display de time step of netcdf time axis
+================================================================
 
 .. include:: bin/showdt.help.txt
 

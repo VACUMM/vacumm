@@ -1,5 +1,7 @@
 .. _user.install.prereq:
 
+.. highlight:: bash
+
 Prerequisites
 =============
 
@@ -27,8 +29,8 @@ Other packages
 
 .. rubric:: Python
 
-When you have installed UV-CDAT, here is a list of necessary or useful  packages that can be install using
-:program:`easy_install`.
+When you have installed UV-CDAT, here is a list of necessary or useful  packages that can be install using :program:`pip`
+:program:`easy_install`:
 
 .. _user.prereq.list.others.table:
 .. list-table:: *Necessary or useful packages*
@@ -48,8 +50,11 @@ When you have installed UV-CDAT, here is a list of necessary or useful  packages
      - Yes for advanced diags.
      - Sea water properties
    * - :pypi:`PIL (1.1.7)`
-     - Non
-     - Manipulation d'images
+     - No
+     - Manipulate images
+   * - :pypi:`readline (1.1.7)`
+     - No (if install failed with UV-CDAT)
+     - Useful for commandline history
    * - :pypi:`xlutils (1.5.2)`
      - No
      - Manipulate Excel files.
@@ -64,8 +69,9 @@ When you have installed UV-CDAT, here is a list of necessary or useful  packages
      - Extension à :pypi:`sphinx` Include program output.
 
 
-.. rubric:: Others
+.. rubric:: Documentation generation
 
+These utilities are needed to fully compile the documentation.
     
 `Graphviz <http://www.graphviz.org>`_
     Used to create hierarchical diagrams of class inheritance
@@ -110,6 +116,7 @@ Once the installation is done, set environment variables:
     shell> export LD_LIBRARY_PATH=/path/to/uvcdat/Externals/lib:/path/to/uvcdat/lib:$LD_LIBRARY_PATH
     shell> export C_INCLUDE_PATH=/path/to/uvcdat/Externals/include:$C_INCLUDE_PATH
     
+    
 Check the installation
 ----------------------
 
@@ -117,5 +124,13 @@ Then check :
     
 .. code-block:: bash
 
-    shell> python -c "import cdms2"
+    $ python -c "import cdms2"
         
+Install other packages
+----------------------
+
+    $ pip install PIL paramiko xlutils readline seawater
+    $ pip install sphinxcontrib-cheeseshop sphinxcontrib-ansi sphinxcontrib-programoutput
+
+
+    
