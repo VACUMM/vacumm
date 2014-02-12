@@ -2060,11 +2060,11 @@ class OceanDataset(OceanSurfaceDataset):
     
     def get_depth_u(self, *args, **kwargs):
         return self._get_depth_('u', *args, **kwargs)
-    getvar_fmtdoc(get_depth_w, mode=_mode_doc)
+    getvar_fmtdoc(get_depth_u, mode=_mode_doc)
     
     def get_depth_v(self, *args, **kwargs):
         return self._get_depth_('v', *args, **kwargs)
-    getvar_fmtdoc(get_depth_w, mode=_mode_doc)
+    getvar_fmtdoc(get_depth_v, mode=_mode_doc)
     
     del _mode_doc
 
