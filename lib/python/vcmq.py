@@ -47,16 +47,17 @@ from vacumm.config import \
 # - misc 
 
 from vacumm.misc.misc import \
-    lonlab, latlab, deplab, kwfilter, broadcast, ArgList, \
-    dict_check_defaults, cp_atts, dict_filter,  cp_props, numod, set_atts, get_atts
+    lonlab, latlab, deplab, kwfilter, broadcast, ArgList, closeto, dict_merge, \
+    dict_check_defaults, cp_atts, dict_filter,  cp_props, numod, set_atts, get_atts, \
+    set_lang, geodir, auto_scale
     
 from vacumm.misc.plot import \
-    map2, section2, hov2, curve2, bar2, plot2d, stick2, \
+    map2, section2, hov2, curve2, bar2, plot2d, stick2, make_movie, \
     savefigs, add_grid, xhide, yhide, xrotate, yrotate, add_key, taylor, \
     add_shadow, add_glow, add_map_lines, add_map_line, add_map_point, minimap
     
 from vacumm.misc.color import plot_cmap, show_cmap, get_cmap, simple_colors, \
-    cmap_rs, cmap_srs, cmap_custom
+    cmap_rs, cmap_srs, cmap_custom, Scalar2RGB, darken, whiten
 
 from vacumm.misc.axes import \
     create_lon, create_lat, create_time, create_depth, \
@@ -83,6 +84,8 @@ from vacumm.misc.log import Logger
 from vacumm.misc.config import ConfigManager, cfgargparse
 
 from vacumm.misc.stats import StatAccum
+
+from vacumm.misc.phys.units import convert_units
    
 # - grid
 
@@ -103,15 +106,19 @@ from vacumm.misc.grid.basemap import \
     
 from vacumm.misc.grid.masking import \
     erode_coast, polygon_mask, GetLakes, get_coast, polygons, polygon_select, zcompress, \
-    envelop, get_coastal_indices
+    envelop, get_coastal_indices, grid_envelop
     
 # - data
 
 from vacumm.data import setup_dataset, DS
 
-from vacumm.data.cf import format_var, format_axis, format_grid, match_var
+from vacumm.data.cf import format_var, format_axis, format_grid, match_var, change_loc, \
+    set_loc, get_loc
 
 from vacumm.data.misc.sigma import NcSigma, sigma2depths, SigmaGeneralized, SigmaStandard
+
+from vacumm.data.misc.arakawa import ArakawaGrid, locations as arakawa_locations, \
+    CGrid, AGrid, ArakawaGridTransfer
 
 # - diag
 
