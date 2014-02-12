@@ -29,7 +29,7 @@ Other packages
 
 .. rubric:: Python
 
-When you have installed UV-CDAT, here is a list of necessary or useful  packages that can be install using :program:`pip`
+When you have installed UV-CDAT, here is a list of necessary or useful  packages that can be install using :program:`pip` or 
 :program:`easy_install`:
 
 .. _user.prereq.list.others.table:
@@ -112,9 +112,9 @@ Once the installation is done, set environment variables:
     
 .. code-block:: bash
 
-    shell> export PATH=/path/to/uvcdat/bin:$PATH
-    shell> export LD_LIBRARY_PATH=/path/to/uvcdat/Externals/lib:/path/to/uvcdat/lib:$LD_LIBRARY_PATH
-    shell> export C_INCLUDE_PATH=/path/to/uvcdat/Externals/include:$C_INCLUDE_PATH
+    $ export PATH=/path/to/uvcdat/bin:$PATH
+    $ export LD_LIBRARY_PATH=/path/to/uvcdat/Externals/lib:/path/to/uvcdat/lib:$LD_LIBRARY_PATH
+    $ export C_INCLUDE_PATH=/path/to/uvcdat/Externals/include:$C_INCLUDE_PATH
     
     
 Check the installation
@@ -128,6 +128,8 @@ Then check :
         
 Install other packages
 ----------------------
+
+::
 
     $ pip install PIL paramiko xlutils readline seawater
     $ pip install sphinxcontrib-cheeseshop sphinxcontrib-ansi sphinxcontrib-programoutput
