@@ -1785,7 +1785,7 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., **kwarg
         # Mesh
         xy = meshgrid(*xy)
         # Loop on directions
-        for i in -1, -2:
+        for i in -1, -2: # resx,resy
             res += N.ma.sqrt(N.ma.diff(xy[0], axis=i)**2+N.ma.diff(xy[1], axis=i)**2), 
     
     else: # Single 1D or 2D

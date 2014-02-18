@@ -44,14 +44,21 @@ from multiprocessing import Pool,  cpu_count
 import numpy as N
 import pylab as P
 from scipy.optimize import curve_fit
-import scipy.linalg.fblas
-blas_dgemv = scipy.linalg.fblas.dgemv
+def get_blas_func(name):
+    try:
+        import scipy.linalg.blas
+        func = scipy.linalg.blas.get_blas_funcs(name)
+    except:
+        import scipy.linalg.fblas
+        func = getattr(scipy.linalg.fblas, 'd'+name)
+    return func
+blas_dgemv = get_blas_func('gemv')
 def dgemv(a, x): return blas_dgemv(1., a, x)
 try:
     from _blaslapack import symm, sytri
 except:
 #    print 'Falling back to builtin functions'
-    dgemm = scipy.linalg.fblas.dgemm
+    dgemm = get_blas_func('gemm')
     def symm(a, b): return dgemm(1., a, b)
     sytri = N.linalg.inv
 import gc
