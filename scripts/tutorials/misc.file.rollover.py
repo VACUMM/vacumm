@@ -3,6 +3,7 @@
 
 from shutil import rmtree
 from tempfile import mkdtemp
+from os.path import join
 
 import vacumm.misc.file as F
 
