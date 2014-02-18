@@ -3819,6 +3819,8 @@ class QuiverKey:
     def get_quiverkey_units(self):
         """Get :attr:`quiverkey_units`"""
         units = self.get_obj('quiverkey_units')
+        if units is None and isinstance(self, Plot1D) and self.isset('units'):
+            units = self.units
         if units is None:
             units = self.get_units(idata=[-2, -1])
         return units
@@ -4057,7 +4059,7 @@ class Stick(ScalarMappable, Curve, QuiverKey):
         return qv
     
     def format_axes(self, **kwargs):
-        if True or self.get_obj('plotted') is None: # FIXME: why not always True?
+        if kwargs.get('mod', False) and self.get_obj('plotted') is None: # FIXME: why not always True?
             xy = 'y' if self.ytype=='d' else 'x'
             kwargs.setdefault(xy+'hide', True)
             kwargs.setdefault(xy+'ticks', [])
