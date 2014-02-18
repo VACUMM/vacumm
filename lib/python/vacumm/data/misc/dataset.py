@@ -97,7 +97,7 @@ from vacumm.data.misc.sigma import NcSigma
 from vacumm.data.misc.arakawa import ArakawaGrid, AGrid, CGrid, locations as arakawa_locations
 from vacumm.data.cf import var_specs, axis_specs, cf2search, cf2atts, generic_names, \
     generic_axis_names, generic_var_names, format_axis, format_var, get_loc, no_loc_single, \
-    default_location, change_loc, hidden_cf_atts
+    default_location, change_loc, hidden_cf_atts, change_loc_single
 from vacumm import VACUMMError
 from vacumm.diag.dynamics import barotropic_geostrophic_velocity, kinetic_energy
 from vacumm.diag.thermdyn import mixed_layer_depth, density
