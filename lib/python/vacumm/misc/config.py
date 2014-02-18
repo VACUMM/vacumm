@@ -763,8 +763,9 @@ class ConfigManager(object):
 
 
     def opt_parse(
-            self, parser=None, exc=[], parse=True, args=None, getparser=None,
-            patch=None, cfgfile='config.cfg', cfgfileopt='--cfgfile', cfgfilepatch=None, 
+            self, parser=None, exc=[], parse=True, args=None, 
+            getparser=None, cfgfile='config.cfg', 
+            patch=None, cfgfileopt='--cfgfile', cfgfilepatch='before', 
             nested=None):
         """Options (:mod:`optparse`) and config mixer.
         
