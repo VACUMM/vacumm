@@ -1019,6 +1019,11 @@ def griddata(xi, yi, zi, ggo, method='carg', cgrid=False, **kwargs):
             return zou, zov
         return GridData(xi, yi, ggo, method=method, **kwargs)(zi, **kwout)
     else:
+        if cgrid:
+            ggu, ggv = t2uvgrids(ggo)
+            zou = cargen(xi, yi, zi, ggu,**kwargs)
+            zov = cargen(xi, yi, zi, ggv,**kwargs)
+            return zou, zov
         return cargen(xi, yi, zi, ggo, cgrid=cgrid, **kwargs)
 
 
