@@ -50,7 +50,7 @@ dataset_specs = dict(
 dataset_names = dataset_specs.keys()
 
 def DS(ncfile, clsname='generic', *args, **kwargs):
-    """Load a specialized :class:`vacumm.data.misc.dataset.Dataset`
+    """Load a specialized :class:`vacumm.data.misc.dataset.Dataset` instance
     
     Available methods for retreiving data (or derived data) are the same
     for all dataset types.
@@ -60,9 +60,15 @@ def DS(ncfile, clsname='generic', *args, **kwargs):
     
     :Params:
     
-        - **ncfile**: Netcdf file name(s) or pattern.
+        - **ncfile**: Netcdf file name(s) or pattern compatibile with
+          :func:`~vacumm.misc.io.list_forecast_files`, so 
+          please read the documentation of this function carefully.
         - **clsname**: Generic class name. Please choose one of:
           %s
+        - All other keyword are passed to the class initialization.
+          See :class:`~vacumm.data.misc.dataset.Dataset` a list of these options.
+          
+    :Return: A child of :class:`vacumm.data.misc.dataset.Dataset`.
           
     :Example:
     
@@ -70,6 +76,9 @@ def DS(ncfile, clsname='generic', *args, **kwargs):
         >>> mars = DS('results.nc', 'mars')
         >>> dx,dy = mars.get_resol()
         >>> sst = mars.get_sst()
+        
+    :See also: :ref:`user.desc.dataset`.
+        
     """
     if clsname is None:clsname = 'generic'
     clsname = clsname.lower()
