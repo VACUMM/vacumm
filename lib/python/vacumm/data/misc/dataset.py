@@ -422,22 +422,37 @@ class Dataset(Object):
     
     :Params:
         - **dataset**: A dataset or list of dataset (see :meth:`load_dataset`).
+          Argument to are either a :class:`Catalog` instance, or compatible with
+          :func:`~vacumm.misc.io.list_forecast_files`. In this latter case,
+          please read the documentation of this function carefully.
         - **select**: A selector to be applied by default.
         - **time**: Time for searching files (see :func:`~vacumm.misc.io.list_forecast_files`) 
           which overwrites configuration.
-        - **filepattern**, optional: File pattern for searching files 
-          (see :func:`~vacumm.misc.io.list_forecast_files`), which overwrites configuration.
-        - **kwargs**: passed to Object.__init__, you may then pass a config filepath/dict/ConfigObj.
+        - **sort/nopat/patfreq/patfmtfunc/check**, optional: These arguments are passed to 
+          :func:`~vacumm.misc.io.list_forecast_files`.
+        - Extra keywords are passed to Object.__init__, you may then pass a 
+          config filepath/dict/ConfigObj.
+          
+    :See also: :ref:`user.desc.dataset`.
     
     :Examples:
+    
+        Classical cases:
+        
+        >>> d = Dataset("mars.*.nc")
+        >>> d = Dataset("mars.%Y%m%d%H00.nc", time=('2000','2000-02-15'))
+        >>> d = Dataset(['file1.nc', 'file2.nc'])
+        >>> d = Dataset('http://opendap.net/mars.nc')
+        
+        With :meth:`load_dataset`:
         
         >>> d = Dataset()
         >>> d.load_dataset('file1.nc')
-        >>> d.load_dataset(('file2.nc', 'file3.nc'), append=True)
+        >>> d.load_dataset(['file2.nc', 'file3.nc'], append=True)
         
         Is equivalent to:
         
-        >>> d = Dataset(('file1.nc', 'file2.nc', 'file3.nc'))
+        >>> d = Dataset(['file1.nc', 'file2.nc', 'file3.nc'])
         
         
         Another example using configuration:
@@ -476,7 +491,7 @@ class Dataset(Object):
     ncobj_specs = {}
     
     def __init__(self, dataset=None, time=None, lon=None, lat=None, level=None, 
-        ncobj_specs=None, **kwargs):
+        ncobj_specs=None, nopat=False, patfreq=None, patfmtfunc=None, sort=True, check=True, **kwargs):
         
         # Load dataset
         if dataset is None: dataset = []
@@ -484,7 +499,8 @@ class Dataset(Object):
         self.selects = dict(time=time, lon=lon, lat=lat, level=level)
         self.selector = create_selector(**self.selects)
         Object.__init__(self, **kwargs)
-        self.load_dataset(dataset, time=time)
+        self.load_dataset(dataset, time=time, nopat=nopat, patfreq=patfreq, 
+            patfmtfunc=patfmtfunc, sort=sort, check=check)
         self._ncids = {}
         self._nibeid = str(id(self)) # IterBestEstimate id
         
@@ -742,9 +758,14 @@ class Dataset(Object):
         
         :Params:
             - **dataset**: can be either:
-                - an instance or list of strings (filepath/filepattern/url) or 
+                - an instance or list of strings (filepath/filepattern/url) that
+                  will be passed to :func:`~vacumm.misc.io.list_forecast_files`.
                 - an instance of :class:`Catalog`
-            - **time**: used with :meth:`Catalog.find_datasets` when dataset is a string (or list of strings)
+            - **time**: used with :meth:`Catalog.find_datasets` when 
+              dataset is a string (or list of strings).
+            - Extra keywords are passed to :func:`~vacumm.misc.io.list_forecast_files` 
+              (via :meth:`Catalog.find_datasets`).
+            
         
         :Keyword parameters:
             - **append**: keep previously loaded datasets if True
@@ -1546,7 +1567,7 @@ class Dataset(Object):
 #        '''Get Coriolis parameter'''
 #        return self.get_variable('corio_v', **kwargs)
     
-    def get_transect(self, varname, lons, lats, 
+    def get_transect(self, varname, lons, lats, times=None, 
         method='bilinear', subsamp=3, getcoords=False, timeavg=False, outaxis=None, 
         time=None, lon=None, lat=None, level=None, warn=True, **kwargs):
         """Get a transect between two points 
@@ -1563,6 +1584,7 @@ class Dataset(Object):
                   The array of coordinates is generated using :func:`transect_specs`.
                 - Or explicit array of coordinates (as scalars, lists or arrays).
               
+            - **times**, optional: For time transect too.
             - **subsamp**, optional: Subsampling with respect to grid cell.
             - **method**, optional: Interpolation method 
               (see :func:`~vacumm.misc.grid.regridding.grid2xy`).
@@ -1584,14 +1606,19 @@ class Dataset(Object):
         
         """
         # Params
+        if time is None and times is not None:
+            ctimes = comptime(times)
+            time = (ctimes[0], ctimes[-1], 'ccn')
         kwvar = kwfilter(kwargs, ['torect', 'at', 'squeeze', 'asvar'], 
             time=time, lat=lat, lon=lon, level=level, depthup=False, warn=warn)
+            
         # Get data
         var = self.get(varname, **kwvar)
         if var is None: return
         if len(var.shape)<2: 
             if warn: self.warning('You variable needs at least to be YX for a transect')
             return var
+            
        
         # Make transect
         res = transect(var, lons, lats, subsamp=subsamp, 
@@ -1738,15 +1765,18 @@ class Dataset(Object):
             if not cdms2.isVariable(asvar):
                 asvar = self.get(asvar, warn=False)
             var = grow_variables(asvar, var, **kwasvar)[1]
-           
-        # Post spatial selection
-        if lon is not None or lat is not None:
-            var = var(create_selector(lon=lon, lat=lat))
             
-        # Some attributes
-        var._vacumm_arakawa_grid_type = self.arakawa_grid_type
-        if var.getGrid():
-            var.getGrid()._vacumm_arakawa_grid_type = self.arakawa_grid_type
+        # Not an axis
+        if not isaxis(var):
+           
+            # Post spatial selection
+            if lon is not None or lat is not None:
+                var = var(create_selector(lon=lon, lat=lat))
+                
+            # Some attributes
+            var._vacumm_arakawa_grid_type = self.arakawa_grid_type
+            if var.getGrid():
+                var.getGrid()._vacumm_arakawa_grid_type = self.arakawa_grid_type
             
         return var
     
@@ -1973,6 +2003,7 @@ class OceanDataset(OceanSurfaceDataset):
         grid = getattr(self, gridmet)(False)
         curvsel = CurvedSelector(grid, selector)
         kwfinal['curvsel'] = curvsel
+        kwfinal['genname'] = genname='depth'+atp
         
         # Second, find sigma coordinates
         sigma_converter = NcSigma.factory(self.dataset[0])
@@ -2002,8 +2033,7 @@ class OceanDataset(OceanSurfaceDataset):
                 if allvars:
                     # Concatenate loaded depth
                     var = MV2_concatenate(allvars)
-                    return self.finalize_object(var, depthup=var, genname='depth'+atp, 
-                        **kwfinal)
+                    return self.finalize_object(var, depthup=var, **kwfinal)
                         
                 if check_mode('sigma', mode, strict=True): return
 #        if sigma_converter is not None:
@@ -2027,7 +2057,7 @@ class OceanDataset(OceanSurfaceDataset):
                     depth = dz2depth(dzt, ssh, refloc="top") 
                     
             if depth is not None or check_mode('dz', mode, strict=True):
-                return self.finalize_object(depth, depthup=False, genname='depth'+atp, **kwfinal)
+                return self.finalize_object(depth, depthup=False, **kwfinal)
                         
         # Finally, find a depth axis
         if sigma_converter is None and check_mode('axis', mode): # no Z axis for sigma coordinates
@@ -2246,7 +2276,7 @@ class OceanDataset(OceanSurfaceDataset):
 
         
 
-    def plot_transect(self, varname, lons, lats, 
+    def plot_transect(self, varname, lons, lats, times=None, 
         method='bilinear', timeavg=False, subsamp=3, outaxis=None, 
         time=None, lon=None, lat=None, level=None, 
         title='%(long_name)s along transect', minimap=None, **kwargs):
@@ -2255,7 +2285,7 @@ class OceanDataset(OceanSurfaceDataset):
         :Params:
         
             - **varname**: Generic var name.
-            - **lons/lats**: Specification of transect (see :meth:`get_transect`).
+            - **lons/lats/times**: Specification of transect (see :meth:`get_transect`).
             - **title**, optional: Title of the figure.
             - **minimap**, optional: If True, add a minimap showing the transect
               on a map; if False, display nothing; if None, display if no minimap
@@ -2271,7 +2301,7 @@ class OceanDataset(OceanSurfaceDataset):
         # Get data
         kwts = dict(method=method, subsamp=subsamp, timeavg=timeavg, 
             outaxis=outaxis, time=time, lon=lon, lat=lat, level=level, 
-            **kwargs)
+            times=times, **kwargs)
         var, lons, lats = self.get_transect(varname, lons, lats, 
             getcoords=True, **kwts)
         if var is None:
