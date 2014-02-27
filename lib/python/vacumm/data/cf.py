@@ -1326,6 +1326,7 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True,
     """
     
     # Guess best generic name from a list
+    if name is None: return axis
     if isinstance(name, (list, tuple)):
         for nm in name:
             if match_obj(axis, nm):
