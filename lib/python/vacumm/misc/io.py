@@ -252,13 +252,17 @@ def list_forecast_files(filepattern, time=None, check=True,
               This argument is *mandatory* if ``filepattern`` is a date pattern,
               and *not used* if ``filepattern`` is of another type.
               
-        - **check**, optional: Check if files exist.
+        - **check**, optional: Check if local files exist.
         - **nopat**, optional: Never consider that input patterns have date patterns.
         - **patfreq**, optional: Frequency of files to generate file names for each date
            when ``filepattern`` is a date pattern.
         - **patfmtfunc**, optional: Function to use in place of 
            :func:`~vacumm.misc.atime.strftime` to generate file names. 
            It must take as arguments a date pattern and a CDAT component time.
+        - **sort**, optional: If True, files are sorted alphabetically after being listed; 
+          if a callable function, they are sorted using this function (``files=sort(files)``).
+          
+          .. warning:: Files are sorted alphabetically by default!
         
     :Examples:
     
@@ -1221,8 +1225,12 @@ def ncread_best_estimate(filepattern, varname, *args, **kwargs):
 
 def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, select=None, 
     atts=None, samp=None, grid=None, verbose=False, ignorecase=True, torect=True, 
-    squeeze=False, searchmode=None, nibeid=None, **kwargs):
+    squeeze=False, searchmode=None, nibeid=None, sort=True, nopat=False, patfreq=None, 
+    patfmtfunc=None, check=True, **kwargs):
     """Read the best estimate of a variable through a set of netcdf files
+    
+    .. warning:: Files are listed using function :func:`list_forecast_files`.
+        Please read its documentation before using current function.
    
     :Example:
     
@@ -1268,11 +1276,14 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
         - **squeeze**, optional: Argument passed to :func:`ncread_var`
           to squeeze out singleton axes.
         - **searchmode**, optional: Search order (see :func:`ncfind_obj`).
+        - **sort/nopat/patfreq/patfmtfunc/check**, optional: These arguments are passed to 
+          :func:`list_forecast_files`.
 
     :Raise: :class:`NcIterBestEstimateError` in case of error.
     """
     # Get the list of files
-    ncfiles = list_forecast_files(filepattern, time)
+    ncfiles = list_forecast_files(filepattern, time, sort=sort, nopat=nopat, 
+        patfreq=patfreq, patfmtfunc=patfmtfunc, check=check)
     if len(ncfiles)==0:
         raise NcIterBestEstimateError('No valid file found with pattern: %s'%filepattern)
     single = not isinstance(varname, list)

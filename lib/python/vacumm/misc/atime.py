@@ -1574,12 +1574,21 @@ def strftime(fmt,mytime=None):
 
     :Params:
     
-        - **fmt**: Time format
-        - **mytime**, optional: If None, takes current time [default: None]
+        - **fmt**: Time format with date patterns, like ``"%Y-%m-%d"``.
+        - **mytime**, optional: If None, takes current time using 
+         (:meth:`~datetime.datetime.now()`)
+         
+    :Examples:
     
+        >>> print strftime('%Y-%m-%d')
+        2014-02-25
+        >>> ctime = strftime('%Hh%M', '2020')
+        00h00
+        
     :Sea also:
     
-        :meth:`datetime.datetime.strftime()`
+        :meth:`datetime.datetime.strftime` and 
+        `this link <http://docs.python.org/dev/library/datetime.html#strftime-strptime-behavior>`_.
     """
 
     if mytime is None:
@@ -1595,8 +1604,18 @@ def strptime(mytime,fmt):
 
     :Params:
     
-        - **fmt**: format like %Y-%m-%d.
-        - **mytime**: string date.
+        - **fmt**: Time format with date patterns, like ``"%Y-%m-%d"``.
+        - **mytime**: Date string.
+        
+    :Example:
+    
+        >>> print strptime('25 Jan 2000, '%d %b %Y').month
+        1
+        
+    :Sea also:
+    
+        :meth:`datetime.datetime.strptime` and 
+        `this link <http://docs.python.org/dev/library/datetime.html#strftime-strptime-behavior>`_.
     """
     return comptime(time.strptime(mytime,fmt))
 
