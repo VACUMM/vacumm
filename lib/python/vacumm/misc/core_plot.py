@@ -1215,7 +1215,7 @@ class Plot(object):
               -> use this value if max is too low.
             - **x/y/vmaxmin**, optional: Maximal min value.
             - **x/yticks**, optional: Position of ticks.
-            - **x/yfmt** (or **...format**, **...tickfmt**, **...tickformat**, optional: Position of ticks.
+            - **x/yfmt** (or **...format**, **...tickfmt**, **...tickformat**, optional: Format of ticks.
             - **x/yticklabels**, optional: Label of ticks.
             - **x/yhide**, optional: Hide labels.
             - **x/ynmax** (or **...nmax_ticks***), optional: Max number of ticks for some locators.
@@ -3639,9 +3639,7 @@ class Curve(Plot1D):
         # Plot
         # - main
         ll = self.axes.plot(xx, yy, *parg, **kwline)
-        self.add_obj('lines', ll)
-        self.add_obj('plot', ll)
-        self.register_obj(ll)
+        self.register_obj(ll, ['curve', 'lines', 'plot'], **kwargs)
         # - fill_between
         if fill_between is not False:
             kwfb.setdefault('zorder', ll[0].get_zorder()-0.01)
@@ -3904,7 +3902,7 @@ class Stick(ScalarMappable, Curve, QuiverKey):
         return Curve.get_ydata(self, scalar=scalar, masked=masked, bounds=bounds)
     get_ydata.__doc__ = Curve.get_ydata.__doc__
 
-    def plot(self, mod=False, pos=None, line=True, color='k', alpha=1, quiverkey=True, 
+    def plot(self, mod=False, pos=None, line=False, color='k', alpha=1, quiverkey=True, 
         headwidth=None, headlength=None, headaxislength=None, width=None, scale=None, 
         minshaft=None, minlength=None, 
         shadow=False, glow=False, cmap=None, levels=None, label=None, 
@@ -4022,7 +4020,7 @@ class Stick(ScalarMappable, Curve, QuiverKey):
             kwqv.pop('color')
         elif isinstance(color, (list, N.ndarray)):
             kwqv.setdefault('color', color)
-        qv = self.register_obj(self.axes.quiver(*args, **kwqv), ['quiver', 'patches'])
+        qv = self.register_obj(self.axes.quiver(*args, **kwqv), ['quiver', 'patches'], **kwargs)
         if numcolors:
             kwqv['cmap'] = cmap
             qv.set_clim(self.vmin, self.vmax)
@@ -4051,15 +4049,18 @@ class Stick(ScalarMappable, Curve, QuiverKey):
         # Quiver key
         if quiverkey:
             self.quiverkey(qv, **kwqvkey)
+            
+        # Base line
         if line:
-            hv, pp = ('v', yy[0]) if self.ytype=='d' else ('h', xx[0])
+            hv, pp = ('h', yy[0]) if self.ytype=='d' else ('v', xx[0])
             funcname = 'ax%sline'%hv
             func = getattr(self.axes, funcname)
-            self.register_obj(func(pp, **kwline), ['funcname'], **kwargs)
+            self.register_obj(func(pp, **kwline), [funcname], **kwargs)
+            
         return qv
     
     def format_axes(self, **kwargs):
-        if kwargs.get('mod', False) and self.get_obj('plotted') is None: # FIXME: why not always True?
+        if self.get_obj('quiver') is not None and self.get_obj('curve') is None: # 
             xy = 'y' if self.ytype=='d' else 'x'
             kwargs.setdefault(xy+'hide', True)
             kwargs.setdefault(xy+'ticks', [])
