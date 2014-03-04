@@ -524,10 +524,11 @@ class Dataset(Object):
     
     @classmethod
     def _inherited_ncobj_specs_(cls):
+        """Get merged specs from current and parent classes"""
         ncobj_specs = {}
         for c in cls.__bases__:
             if hasattr(c, 'ncobj_specs'):
-                ncobj_specs = dict_merge(ncobj_specs, c._inherited_ncobj_specs_())
+                ncobj_specs = dict_merge(ncobj_specs, c._inherited_ncobj_specs_(), mergelists=True)
         return ncobj_specs
     
     def _format_single_ncobj_specs_(self, specs, name=None):
