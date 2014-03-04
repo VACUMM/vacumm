@@ -47,6 +47,7 @@ from dateutil.rrule import rrule, MO, TU, WE, TH, FR, SA, SU, YEARLY, \
 
 import time,datetime as DT
 from re import split as resplit,match, compile as recompile
+import re
 import os
 from operator import isNumberType, gt, ge, lt, le
 from vacumm import VACUMMError
@@ -56,7 +57,10 @@ from vacumm import VACUMMError
 mpl_time_units = 'days since 0001'
 str_unit_types = ['years','months','days','hours','minutes','seconds']
 re_split_date = recompile(r'[ Z:T\-]')
-re_match_time = recompile(r'(^[0-2]?\d?\d?\d(-[12]?\d(-[1-3]?\d([ T][0-2]?\d(:[0-6]?\d(:[0-6]?\d)?)?)?)?)?)').match
+re_match_time_pattern = r'[0-2]?\d?\d?\d(-[01]?\d(-[0-3]?\d([ T][0-2]?\d(:[0-6]?\d(:[0-6]?\d)?)?)?)?)?'
+re_match_time = recompile(re_match_time_pattern+'$', re.I).match
+re_match_units_pattern = r'(%s) since '%'|'.join(str_unit_types)+re_match_time_pattern+'[ \w]*'
+re_match_units = recompile(re_match_units_pattern+'$', re.I).match
 
 __all__ = ['mpl_time_units','str_unit_types','re_split_date','now', 'add', 'axis_add', 
 'mpl', 'are_same_units', 'are_good_units', 'ch_units', 'comptime', 'reltime', 'datetime', 
@@ -362,14 +366,14 @@ def are_good_units(units):
     False
     """
     if not isinstance(units, basestring): return False
-    try:
-        cdtime.reltime(100,  units)
-        return True
-    except:
-        return False
+#    try:
+#        cdtime.reltime(100,  units)
+#        return True
+#    except:
+#        return False
 #    for rem in ' UTC.', ' UTC':
 #        units = units.replace(rem, '')
-#    return match('^(years|months|days|hours|minutes|seconds) since \d+(-\d+(-\d+( \d+:(\d+(:\d+(\.(\d+)?)?)?)?)?)?)?$',units) is not None
+    return re_match_units(units) is not None
 
 check_units = are_good_units
 def ch_units(mytimes, newunits, copy=True):
