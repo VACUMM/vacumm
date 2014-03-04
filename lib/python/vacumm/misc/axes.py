@@ -113,11 +113,13 @@ isdepth = isdep
 def istime(axis, 
     ids=['time','date'], 
     standard_names = ['time'], 
-    units=['years','months','days','hours','minutes','seconds'], 
+    units=None, 
     long_names=['time','temps','date'], 
     defaults=dict(axis='T', standard_name='time', long_name='Time'), 
     ro=False, checkatts=True):
     """Check if a axis is time"""
+    if units is None:
+        from .atime import are_good_units as units
     myistime = is_geo_axis_type(axis, 't',  ids=ids, standard_names=standard_names,
         units=units, long_names=long_names, defaults=defaults, ro=ro, checkatts=checkatts)
     if myistime and not ro:
@@ -216,18 +218,25 @@ def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None,
         goods = eval(gtype)
         att = gtype if gtype=='units' else gtype[:-1]
         if goods is None: continue
-        if not isinstance(goods, list):
-            goods = [goods,]
-        for good in goods:
-            val = getattr(axis, att, '').lower().strip()
-            if val != '' and val.split()[0] == good:
-                if not ro:
-                    exec ok
-                    try:    
-                        check_def_atts(axis,**defaults)
-                    except:
-                        pass
-                return True
+        if callable(goods):
+            if not goods(getattr(axis, att, None)): continue
+        else:
+            if not isinstance(goods, list):
+                goods = [goods,]
+                
+            for good in goods:
+                val = getattr(axis, att, '').lower().strip()
+                if val != '' and val.startswith(good):
+                    break
+            else:
+                continue
+        if not ro:
+            exec ok
+            try:    
+                check_def_atts(axis,**defaults)
+            except:
+                pass
+        return True
 
     return False
 _isgeoaxis_ = is_geo_axis_type # Backward compat
