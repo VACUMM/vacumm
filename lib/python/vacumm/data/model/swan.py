@@ -42,9 +42,11 @@ from vacumm.data.misc.dataset import OceanSurfaceDataset
 
 
 class SWAN(OceanSurfaceDataset):
-    '''Class for the SWAN wave model
-    '''
+    """:class:`~vacumm.data.misc.dataset.Dataset` class to read the
+    SWAN wave model outputs
     
+    Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
+    """
     
     ncobj_specs = {
 

@@ -48,9 +48,11 @@ from vacumm.data.misc.dataset import OceanDataset, AtmosSurfaceDataset
 
 
 class HYCOM(OceanDataset,AtmosSurfaceDataset):
-    '''
-    HYCOM model
-    '''
+    """:class:`~vacumm.data.misc.dataset.Dataset` class to read the
+    HYCOM ocean model outputs
+    
+    Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
+    """
     ncobj_specs = {
     
         # Time

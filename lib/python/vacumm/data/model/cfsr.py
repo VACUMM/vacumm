@@ -48,16 +48,21 @@ from vacumm.data.misc.dataset import AtmosDataset
 
 
 class CFSR(AtmosDataset):
+    """:class:`~vacumm.data.misc.dataset.Dataset` class to read the
+    CFSR atmospheric model outputs
+    
+    Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
+    """
     
     ncobj_specs = {
 
         # surface wind
         'u10m':{
-            'search':{'names':['10u']},
+            'search':{'names':['10u', 'U-component_of_wind']},
             'squeeze':'z'
         }, 
         'v10m':{
-            'search':{'names':['10v']},
+            'search':{'names':['10v', 'V-component_of_wind']},
             'squeeze':'z'
         }, 
         

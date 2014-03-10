@@ -48,10 +48,11 @@ from vacumm.data.misc.dataset import OceanDataset
 
 
 class Nemo(OceanDataset):
-    '''
-    .. todo::
-      - move specific code from Dataset to NEMO (variable mapping)
-    '''
+    """:class:`~vacumm.data.misc.dataset.Dataset` class to read the
+    NEMO ocean model outputs
+    
+    Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
+    """
     
     
     ncbj_specs = {

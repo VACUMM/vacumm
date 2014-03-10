@@ -50,9 +50,10 @@ from vacumm.misc import dict_merge
 
 
 class Mars3D(OceanDataset,AtmosSurfaceDataset):
-    """
-    :class:`~vacumm.data.misc.dataset.Dataset` class dedicated to the MARS3D model
-    of IFREMER.
+    """:class:`~vacumm.data.misc.dataset.Dataset` class to read the
+    MARS3D ocean model (IFREMER) outputs
+    
+    Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
     #: Grid type
     arakawa_grid_type = 'C'
