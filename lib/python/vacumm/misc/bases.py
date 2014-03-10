@@ -66,7 +66,7 @@ import configobj
 
 from vacumm.misc.config import ConfigManager
 from vacumm.misc.exception import getDetailedExceptionInfo
-from vacumm.misc.misc import kwfilter
+from vacumm.misc.misc import kwfilter, dict_merge
 from vacumm.misc.log import Logger, logger, get_str_levels
 from argparse import ArgumentParser
 from optparse import OptionParser
@@ -457,6 +457,54 @@ class Object(object):
     def get_config_spec_file(cls):
         '''Return (and define) the class specification file path'''
         return '%s.ini'%(os.path.splitext(os.path.realpath(inspect.getfile(cls)))[0])
+      
+    @classmethod
+    def get_parent_config_spec(cls):
+        '''Get the merged config specifications of all parents'''
+        cfg = None
+        for c in cls.__bases__:
+            if not hasattr(c, 'get_config_spec'): continue
+            cs = c.get_config_spec()
+            if cfg is None:
+                cfg = cs
+            else:
+                cfg = dict_merge(cfg, cs)
+        return cfg
+    
+    
+    @classmethod
+    def get_config_spec(cls):
+        '''Load the config specs as ConfigObj object 
+        
+        It merges the specs of the current class and those of parents classes
+        '''
+        cfg = None
+        spec = cls.get_config_spec_file()
+        
+        # If specification (and so defaults) file defined and exists
+        if spec and os.path.isfile(spec):
+            
+            # Load (temporary) the file
+            cfg = configobj.ConfigObj(spec, list_values=False, interpolation=False)
+                
+            # NOTE: list_values=False, interpolation=False are set because list values
+            #       are handled by the manager (parse error otherwise)
+            
+            # If a config section lookup is defined and present, load the section
+            sec = cls.get_config_section_name()
+            if sec and sec in cfg:
+                #cfg = configobj.ConfigObj(cfgspec[sec], list_values=False, interpolation=False)
+                cfg = configobj.ConfigObj(cfg[sec])
+           
+        # Merge with parents
+        pcfg = cls.get_parent_config_spec()
+        if cfg is None:
+            cfg = pcfg
+        elif pcfg is not None:
+            cfg = dict_merge(cfg, pcfg)
+        
+        return cfg
+
     
     @classmethod
     def get_config_section_name(cls):
@@ -475,26 +523,16 @@ class Object(object):
         '''
         # Populate this class config manager if not yet done or reload request
         if not cls in cls.__config_managers or reload:
-            # Default is to use an empty config specification
-            cfg = None
-            spec = cls.get_config_spec_file()
-            # If specification (and so defaults) file defined and exists
-            if spec and os.path.isfile(spec):
-                # Load (temporary) the file
-                cfg = configobj.ConfigObj(spec, list_values=False, interpolation=False, 
-                    encoding=encoding)
-                # NOTE: list_values=False, interpolation=False are set because list values
-                #       are handled by the manager (parse error otherwise)
-                # If a config section lookup is defined and present, load the section
-                sec = cls.get_config_section_name()
-                if sec and sec in cfg:
-                    #cfg = configobj.ConfigObj(cfgspec[sec], list_values=False, interpolation=False)
-                    cfg = configobj.ConfigObj(cfg[sec], encoding=encoding)
+            
+            # Get the ConfigObj object of specifications
+            cfg = cls.get_config_spec()
+            
             # NOTE: If no spec / no class section, class use empty spec
             cfgmgr = ConfigManager(cfg, encoding=encoding)
             cls.__config_managers[cls] = cfgmgr
             if cls._cfg_debug:
                 cls.debug('Loaded config manager of class %s with spec:\n  %s', cls.__name__, '\n  '.join(cfgmgr._configspec.write()))
+
         return cls.__config_managers[cls]
     
     @classmethod
