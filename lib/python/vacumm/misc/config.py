@@ -345,7 +345,8 @@ class ConfigManager(object):
     :See also: :class:`configobj.ConfigObj` and :class:`validate.Validator`
     
     """
-    def __init__(self, cfgspecfile=None, validator=None, interpolation='template', encoding=None):
+    def __init__(self, cfgspecfile=None, validator=None, interpolation='template', 
+        encoding=None, boolean_false=True):
         '''
         :Params:
             - **cfgspecfile**: the specification file to be used with this 
@@ -362,7 +363,7 @@ class ConfigManager(object):
         else:
             self._configspec = ConfigObj(cfgspecfile, list_values=False, 
                 interpolation=False, encoding=encoding)
-            
+        
         # Validator
         if isinstance(validator, Validator):
             self._validator = validator
@@ -381,6 +382,12 @@ class ConfigManager(object):
                 validator[k] = _valwrap_(v)
             self._validator.functions.update(validator)
         
+        # Makes sure that boolean has a default value
+        self._boolean_false = boolean_false
+        if boolean_false:
+            self._configspec.walk(_walker_set_boolean_false_by_default_, 
+                validator=self._validator)
+            
         # Interpolation
         if interpolation is True: interpolation='template'
         self._interpolation = interpolation
@@ -678,10 +685,12 @@ class ConfigManager(object):
         # - global options
         for key in defaults.scalars:
             if key not in exc:
-                group.add_argument('--'+_cfg2optname_(key, nested), help=_shelp_(defaults, key))
+                _walker_argcfg_setarg_(defaults, key, group=group, exc=exc, nested=nested, 
+                    boolean_false=self._boolean_false)
+#                group.add_argument('--'+_cfg2optname_(key, nested), help=_shelp_(defaults, key))
             else:
                 pass
-        
+
         # Create secondary option groups from defaults
         for key in defaults.sections:
             desc = ['Undocumented section']
@@ -691,7 +700,8 @@ class ConfigManager(object):
             section = defaults[key]
             group = parser.add_argument_group(*desc)
             defaults[key].walk(_walker_argcfg_setarg_, raise_errors=True,
-                call_on_sections=False, group=group, exc=exc, nested=nested)
+                call_on_sections=False, group=group, exc=exc, nested=nested, 
+                boolean_false=self._boolean_false)
     
         # Now create a configuration instance from passed options
         if parse:
@@ -872,8 +882,11 @@ class ConfigManager(object):
         # - global options
         for key in defaults.scalars:
             if key not in exc:
-                group.add_option('--'+_cfg2optname_(key, nested), action='store', type="string", 
-                    dest=key, help=_shelp_(defaults, key))
+                _walker_optcfg_setopt_(defaults, key, raise_errors=True,
+                    call_on_sections=False, group=group, exc=exc, nested=nested, 
+                    boolean_false=self._boolean_false)
+#                group.add_option('--'+_cfg2optname_(key, nested), action='store', type="string", 
+#                    dest=key, help=_shelp_(defaults, key))
             else:
                 pass
         # - add to parser
@@ -888,7 +901,8 @@ class ConfigManager(object):
             section = defaults[key]
             group = OptionGroup(parser, *desc)
             defaults[key].walk(_walker_optcfg_setopt_, raise_errors=True,
-                call_on_sections=False, group=group, exc=exc, nested=nested)
+                call_on_sections=False, group=group, exc=exc, nested=nested, 
+                boolean_false=self._boolean_false)
             parser.add_option_group(group)
     
         # Now create a configuration instance from passed options
@@ -1263,24 +1277,35 @@ def _walker_optcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
             s = s[p.name]
         s[key] = value
 
-def _walker_optcfg_setopt_(sec, key, group=None, exc=None, nested=None):
+def _walker_optcfg_setopt_(sec, key, group=None, exc=None, nested=None, boolean_false=True):
     """Walker to set options"""
     # Find option key and output var name
     key = key.strip('_')
     pp = _parent_list_(sec)
     varname = '_'.join(pp+[key])
     optkey = _cfg2optname_(varname, nested)
+    
     # Check exceptions
     if key in exc: return
+    
     # Add option to group
     spec = _validator_specs_.get(sec.configspec[key].split('(', 1)[0], {})
+    type = spec.get('opttype', 'string')
+    if boolean_false and type=='boolean':
+        default = sec[key]
+        action = 'store_false' if default else 'store_true'
+        type = None
+    else:
+        action = 'store'
+        default = None
     group.add_option(
         '--'+optkey,
             #action='append' if spec.get('iterable', None) else 'store',
-            action='store',
-            type=spec.get('opttype', 'string'),
+            action=action,
+            type=type,
             dest=varname,
-            help=_shelp_(sec, key)
+            help=_shelp_(sec, key), 
+            default=default, 
     )
 
 def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
@@ -1304,7 +1329,8 @@ def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
             s = s[p.name]
         s[key] = value
 
-def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding=None):
+def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding=None, 
+    boolean_false=True):
     """Walker to set options"""
     # Find option key and output var name
     key = key.strip('_')
@@ -1329,11 +1355,19 @@ def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding
         return wrapper_argparse_type
         
     # Add argument to group
+    type = wrap_argparse_type(spec.get('func', lambda s:s), spec.get('iterable', None))
+    kw = {}
+    if boolean_false and spec.get('opttype', '')=='boolean':
+        default = sec[key]
+        action = 'store_true' if default is False else 'store_false'
+    else:
+        action = 'store'
+        kw['type'] = type
     group.add_argument(
         '--'+optkey,
-            action='store',
-            type=wrap_argparse_type(spec.get('func', lambda s:s), spec.get('iterable', None)),
+            action=action,
             help=_shelp_(sec, key), 
+            **kw
     )
 
 def _shelp_(sec, key, format='%(shelp)s [default: %(default)r]', mode='auto', 
@@ -1435,7 +1469,19 @@ def _walker_cfg2rst_(cfg, key, lines):
     text = redent(text, cfg.depth)
     
     lines.append(text)
-    
+ 
+
+def _walker_set_boolean_false_by_default_(sec, key, validator=None):
+    if validator is None: return
+    check = sec[key]
+    fun_name, fun_args, fun_kwargs, default = validator._parse_with_caching(check)
+    if fun_name=='boolean' and default is None:
+        if fun_args or fun_kwargs:
+            check = check[:-1]+', default=False)'
+        else:
+            check = check+'(default=False)'
+        sec[key] = check
+
 def get_secnames(cfg):
     """Get section names as list from top to bottom ['sec0','sec1',...]"""
     if cfg.depth==0: return []
