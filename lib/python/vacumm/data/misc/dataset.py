@@ -1146,14 +1146,18 @@ class Dataset(Object):
             return 
         if isinstance(var, list): var = var[0]
     
-        # Minimal formatting
-        if format and genname:
-            var.id = genname
+        # Finalize
+        if isinstance(var, N.ndarray):
             
-        # Post process
-        var = self.finalize_object(var, genname=genname, format=format, atts=atts, order=order, 
-            squeeze=squeeze, asvar=asvar, torect=torect, depthup=depthup, curvsel=curvsel, 
-            at=at, **kwargs)
+            # Minimal formatting
+            if format and genname and cdms2.isVariable(var):
+                var.id = genname
+                
+            # Post process
+            var = self.finalize_object(var, genname=genname, format=format, atts=atts, order=order, 
+                squeeze=squeeze, asvar=asvar, torect=torect, depthup=depthup, curvsel=curvsel, 
+                at=at, **kwargs)
+                
         self.verbose('Loaded variable: %s', self.describe(var))
             
         return var
