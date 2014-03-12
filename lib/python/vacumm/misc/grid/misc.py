@@ -2497,14 +2497,19 @@ def merge_axis_slice(sel1, sel2):
 
 def get_zdim(var, axis=None, default=None, strict=True):
     """Get the index of the Z dimension"""
+    if isinstance(axis, int): return axis
     ndim = len(var.shape)
-    if ndim==1 and (not strict or isdep(var)):
+    if ndim==1 and (not strict or isdep(var)): # a single axis
         return 0
-    if isaxis(axis) and cdms2.isVariable(var):
+    if isaxis(axis) and cdms2.isVariable(var): # find axis index in var axes
         i = var.getAxisList().index(axis)
         if i!=-1: axis = i
+    if axis is not None and not strict and hasattr(axis, '__len__') and len(axis)!=0: # find the same axis length
+        good = filter(lambda i:i==len(axis), var.shape)
+        if len(good)==1: return good[0]
+        axis = None
     if axis is None:
-        if cdms2.isVariable(var):
+        if cdms2.isVariable(var): # search for z in order
             axis = var.getOrder().find('z')
             if axis==-1: axis=None
         if not strict and axis is None and ndim>2:
