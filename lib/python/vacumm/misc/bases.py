@@ -501,7 +501,7 @@ class Object(object):
         if cfg is None:
             cfg = pcfg
         elif pcfg is not None:
-            cfg = dict_merge(cfg, pcfg)
+            cfg = dict_merge(cfg, pcfg, mergesubdicts=False)
         
         return cfg
 
