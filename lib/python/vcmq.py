@@ -53,7 +53,7 @@ from vacumm.misc.misc import \
     
 from vacumm.misc.plot import \
     map2, section2, hov2, curve2, bar2, plot2d, stick2, make_movie, \
-    savefigs, add_grid, xhide, yhide, xrotate, yrotate, add_key, taylor, \
+    savefigs, add_grid, xhide, yhide, xrotate, yrotate, add_key, taylor, dtaylor, dtarget, \
     add_shadow, add_glow, add_map_lines, add_map_line, add_map_point, minimap
     
 from vacumm.misc.color import plot_cmap, show_cmap, get_cmap, simple_colors, \
@@ -98,8 +98,8 @@ from vacumm.misc.grid.misc import \
 from vacumm.misc.grid.regridding import \
     regrid1d, regrid2d, interp1d, interp2d, cellave1d, cellave2d, \
     cargen, xy2xy, shift1d, shift2d, extend1d, extend2d, regrid_method, \
-    transect, griddata, CDATRegridder, grid2xy, \
-    nearest1d, shiftgrid, extendgrid
+    transect, griddata, CDATRegridder, grid2xy, krig, \
+    nearest1d, shiftgrid, extendgrid, fill1d, fill2d
 
 from vacumm.misc.grid.basemap import \
     merc, create_map, get_proj, reset_cache

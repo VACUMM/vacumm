@@ -971,7 +971,7 @@ def dict_merge(*dd, **kwargs):
             if skipnones and val is None: continue
             if key not in outd: # Not set so we set
                 outd[key] = val
-            elif mergesubdicts and isinstance(outd[key], dict) and isinstance(val, dict): # Merge subdict
+            elif mergesubdicts and isinstance(outd[key], cls) and isinstance(val, cls): # Merge subdict
                 outd[key] = dict_merge(outd[key] , val, **kwargs)
             elif mergelists and isinstance(outd[key], list) and isinstance(val, list): # Merge lists
                 outd[key] += val

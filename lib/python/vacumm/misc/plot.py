@@ -54,6 +54,14 @@ __all__ = [ 'traj', 'ellipsis',
     'add_compass', 'add_param_label']
 __all__.sort()
 
+from string import Template
+import re, os, glob
+from copy import copy
+from tempfile import mktemp
+import cPickle
+from itertools import cycle
+from operator import isNumberType
+
 from genutil import minmax, statistics
 import numpy as N,MV2, cdms2
 import cdtime
@@ -83,14 +91,8 @@ from phys.units import deg2m
 from atime import mpl,time,axis_add,compress,SpecialDateFormatter
 from core_plot import *
 from core_plot import add_param_label
-from operator import isNumberType
+from color import get_cmap, Scalar2RGB
 
-from string import Template
-import re, os, glob
-from copy import copy
-from tempfile import mktemp
-import cPickle
-from itertools import cycle
 from vacumm import VACUMMError
 
 #: WGS radius of earth
@@ -378,65 +380,108 @@ def taylor(datasets, ref, labels=False, colors=None, units=None, normalize=True,
         - **datasets**: One or several arrays that must be evaluated against the reference.
           Best is to provide :mod:`cdms2` variables with an appropriate `long_name` attribute 
           to set labels automatically.
-        - **ref**: Reference array or the same shape as all ``datasets`` arrays.
-        - **labels**,optional: Label of the points. Obviously, if there are several points, there must have several labels.
-          If ``None``, it tries to get it from the `long_name` attribute. If ``False``, it doesn't display it.
-        - **reflabel**,optional: Name of the reference label. It defaults to the `long_name` attribute or to ``"Reference"``.
+        - **ref**: Reference array of the same shape as all ``datasets`` arrays.
+        - **labels**,optional: Label of the points. 
+          Obviously, if there are several points, there must have several labels.
+          If ``None``, it tries to get it from the `long_name` attribute. 
+          If ``False``, it doesn't display it.
+        - **reflabel**,optional: Name of the reference label. 
+          It defaults to the `long_name` attribute or to ``"Reference"``.
         - **normalize**,optional: Normalize standard deviation and RMSE
         $_taylor_
     
     :Example:
     
+        Basic usage:
+        
         >>> taylor(var_model, var_obs, title='Single point', reflabel='Observations')
+        
+        Two variables with the same reference:
+        
         >>> taylor(([var_model1,var_model2], var_ref)
     
+        Two variables without the same reference (like temprature and salinity):
+        
+        >>> taylor(([sst,sss], [sstref,sssref], labels=True)
+        
+        A huge model ensemble of SST with colors varying with averaged SSS:
+        
+        >>> taylor([sstm for sstm in sstens], sstsat, colors=cdutil.averager(sss, 'xy'))
+        
     :Tutorial: ":ref:`user.tut.misc.plot.basic.taylor`".
     """
-    # Check datasets
-    ref = MV2.asarray(ref)
-    if units is None or units is True:
-        units = getattr(ref, 'units', None)
+    # Check datasets, units and labels
+    # - datasets
     if isinstance(datasets, N.ndarray):
         datasets = [datasets]
+    datasets = list(datasets)
+    n = len(datasets)
+    labels = broadcast(labels, n, mode='last')
     for i, d in enumerate(datasets):
         d = MV2.asarray(d)
-        if units is None or units is True:
+        if units in [True, None]:
             units = getattr(d, 'units', None)
-        if d.ndim>1:
-            d = d.ravel()
+        if labels[i] in [True, None]:
+            labels[i] = getattr(d, 'long_name', None)
+        d = d.asma().ravel()
         datasets[i] = d
+    # - references
     if isinstance(ref, N.ndarray):
         ref = [ref]
-    for i in xrange(len(ref)):
-        if ref[i].ndim>1:
-            ref[i] = ref[i].ravel()
-    ref = N.ma.asarray(ref)
+    ref = list(ref)
+    ref = broadcast(ref, n, mode='last')
+    for r in ref:
+        r = MV2.asarray(r)
+        if units in [True, None]:
+            units = getattr(r, 'units', None)
+        if labels[i] in [True, None]:
+            labels[i] = getattr(r, 'long_name', None)
+        ref[i] = r.asma().ravel()
     
     # Statistics
     stats = []
-    for i,d in enumerate(datasets):
-        r = ref[0] if len(ref)==1 else ref[i]
-        stats.append([d.std().reshape(1), statistics.correlation(d, r).reshape(1)])
+    stdref = []
+    for i,(d, r) in enumerate(zip(datasets, ref)):
+        stats.append([d.std(), statistics.__correlation(d, r)])
+        stdref.append(r.std())
     stats = N.ma.asarray(stats)
-    stdref = ref.std(axis=1)
         
     # Diagram
     return _taylor_(stats, labels, colors, stdref=stdref, 
         units=units, normalize=normalize, **kwargs)
     
     
-def _taylor_(stats, labels, colors, stdref=None, units=None, refcolor='.5', reflabel='Observations', normalize=True, ref=True, legend=True, negative=None, minimal=False, stdmax=None, autoresize=True, singleref=False, zorder=12, **kwargs):
-    """- **size**,optional: Size(s) of the markers in points.
-        - **colors**,optional: Color of the points. It can be a list to set a different color for each pair.
-        - **label_colors**,optional: Color of the labels. If ``"same"``, color is taken from ``colors``.
-        - **label_<keyword>**,optional: ``<keyword>`` is passed to :func:`~matplotlib.pyplot.text` for plotting the labels.
+def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor='.5', 
+    reflabel='Observations', normalize=True, addref=True, legend=True, negative=None, 
+    minimal=False, stdmax=None, autoresize=True, scatter=False, zorder=12, cmap=None, 
+    **kwargs):
+    """- **stdref**, optional: Standard deviation of the reference used either when
+          normalizing statistics or to plot the reference arc and point.
+          All statistics can have a different reference standard deviation;
+          in this case, statistics are normalized (``normalize`` is set to True).
+        - **addref**,optional: Add the reference arc and point to the plot.
+        - **normalize**, optional: Force the normalization of statistics (standard 
+          deviations).
+        - **negative**,optional: Force plot of negative correlations.
+        - **legend**, optional: Add the legend.
+        - **size**,optional: Size(s) of the markers in points.
+        - **colors**,optional: Color of the points. It can be a list to set 
+          a different color for each pair.
+        - **cmap**, optional: Colormap use when ``colors`` is a numeric array.
+        - **label_colors**,optional: Color of the labels. 
+          If ``"same"``, color is taken from ``colors``.
+        - **label_<keyword>**,optional: ``<keyword>`` is passed 
+          to :func:`~matplotlib.pyplot.text` for plotting the labels.
         - **symbols**,optional: Symbols for the points (default to ``"o"``).
-        - **point_<keyword>**,optional: ``<keyword>`` is passed to :func:`~matplotlib.pyplot.plot` for plotting the points.
+        - **point_<keyword>**,optional: ``<keyword>`` is passed to 
+          :func:`~matplotlib.pyplot.plot` (:func:`~matplotlib.pyplot.scatter` if 
+          ``scatter`` is True) or for plotting the points.
         - **reflabel**,optional: Label of the reference.
         - **refcolor**,optional: Color of the reference.
-        - **plotref**,optional: Plot the reference arc and point.
-        - **negative**,optional: Force plot of negative correlation.
         - **title**,optional: A string for the general title.
+        - **scatter**, optional: Use :func:`matplotlib.pyplot.scatter` to improve 
+          plot efficiency when the number of points is huge. Labels are not plotted in
+          this mode.
         - **savefig**,optional: Save figure to ``savefig``.
         - **savefig_<keyword>**,optional: ``<keyword>`` is used for saving figure.
         - **savefigs**,optional: Save figure to ``savefig`` using :func:`~vacumm.misc.plot.savefigs`.
@@ -444,12 +489,15 @@ def _taylor_(stats, labels, colors, stdref=None, units=None, refcolor='.5', refl
     from matplotlib.transforms import offset_copy
     
     # Normalization
-    singleref &= stdref is None
+    np = len(stats)
+    scatter = kwargs.get('singleref', scatter)
     if stdref is None:
         normalize=True
         stdref = N.ma.array([1.])
     stdref = N.ma.asarray(stdref)
     if stdref.ndim==0: stdref.shape = 1,
+    if stdref.shape[0]>1 and not N.ma.allclose(stdref, stdref.mean()):
+        normalize = True
     stats = N.ma.asarray(stats)
     if normalize:
         stats[:, 0] /= stdref
@@ -457,30 +505,31 @@ def _taylor_(stats, labels, colors, stdref=None, units=None, refcolor='.5', refl
     
     # Arrays
     if stdmax is None:
-        stdmax = max(N.abs(stats[:, 0]).max(), stdref.max())
+        stdmax = max(N.ma.abs(stats[:, 0]).max(), stdref.max())
     corrmin = stats[:, 1].min()
     if negative is None:
         negative = corrmin < 0
     sticks = auto_scale([0, stdmax], vmin=0.)
-    stdmax=sticks[-1]
+    stdmax = sticks[-1]
     stdmin = -stdmax if negative else 0
     sticksref = N.arange(0., stdmax*N.sqrt(2.), sticks[1]-sticks[0])
     rticks = N.arange(0, 1., .1).tolist()+[.95, .99, 1.]
     if negative:
         rticks = (-N.asarray(rticks[:0:-1])).tolist()+rticks
-    np = len(stats)
     
     # Check options
-    singleref &= labels is None
     labels = broadcast(labels, np, fillvalue=None)
+    cmap = get_cmap(cmap)
     if colors is None: 
         colors =  kwargs.pop('color', 'k')
-    elif isinstance(colors, N.ndarray):
-        singleref = True
-    if isinstance(colors, N.ndarray) and colors.shape[0]!=np:
-        colors = N.resize(colors, (np,))
-    else:
+    if not isinstance(colors, N.ndarray):
         colors = broadcast(colors,np)
+        if any([isinstance(c,(int,float)) for c in colors]): # list of scalars
+            colors = N.array(colors)
+    if isinstance(colors, N.ndarray):
+        colors = N.resize(colors, (np,))
+        if not scatter:
+            colors = Scalar2RGB(colors, cmap)(colors)
     for i in xrange(np):
         if colors[i] is None:
             colors[i] = 'k'
@@ -515,21 +564,30 @@ def _taylor_(stats, labels, colors, stdref=None, units=None, refcolor='.5', refl
     # Points
     kwpt = kwfilter(kwargs, 'point')
     kwlab = kwfilter(kwargs, 'label')
-    if singleref:
+    if scatter:
+        
+        # All points
         x,y = xy(stats[:,0],stats[:,1])
         ppts = P.scatter(x, y, 0.75*sizes**2, colors, marker=symbols[0], 
-            zorder=zorder, alpha=alphas[0], **kwpt)
+            zorder=zorder, alpha=alphas[0], cmap=cmap, **kwpt)
+            
     else:
+        
         ppts = []
         for i, (std, corr) in enumerate(stats):
+            
+            # Single point
             x, y = xy(std, corr)
             ppts.append(P.plot([x], [y], symbols[i], label=labels[i], 
                 zorder=12, color=colors[i], 
                 markersize=sizes[i], alpha=alphas[i],**kwpt))
-            if isinstance(labels[i], (str,unicode)):
-                transoffset = offset_copy(ax.transData, fig=fig, x = 0.0, y=-1.2*sizes[i], units='points')
-                P.text(x, y, labels[i], va='center', ha='center', weight='bold', transform=transoffset, 
-                zorder=zorder-2, size=label_size[i], **kwlab)
+                
+            # Labels
+            if isinstance(labels[i], basestring):
+                transoffset = offset_copy(ax.transData, fig=fig, 
+                    x = 0.0, y=-1.2*sizes[i], units='points')
+                P.text(x, y, labels[i], va='center', ha='center', transform=transoffset, 
+                    zorder=zorder-2, size=label_size[i], **kwlab)
     del labels
     
     # Decorations for normal plots
@@ -559,16 +617,22 @@ def _taylor_(stats, labels, colors, stdref=None, units=None, refcolor='.5', refl
             yt = stdmax*r/rmax
             P.text(stdref[0]-xt, yt, ('%g'%r).ljust(4), color='r', 
                 rotation=N.arctan2(xt, yt)*180./N.pi, 
-                va='center', ha='center', clip_on=True, bbox=dict(facecolor='w', linewidth=0, alpha=.5))
+                va='center', ha='center', clip_on=True, 
+                bbox=dict(facecolor='w', linewidth=0, alpha=.5))
         
     # Reference
-    if ref:
+    addref = kwargs.get('ref', addref)
+    if addref:
+        
         # First Arc
-        ax.add_patch(Arc((0., 0.), stdref[0]*2, stdref[0]*2, fill=False, edgecolor=refcolor, linewidth=2, zorder=0))
+        ax.add_patch(Arc((0., 0.), stdref[0]*2, stdref[0]*2, fill=False, 
+            edgecolor=refcolor, linewidth=2, zorder=0))
+        
         # All points unless normalized
         imax = 1 if normalize else None
         rslice = slice(0,imax)
-        pref = P.plot(stdref[rslice], [0]*len(stdref[rslice]), 'o', color=refcolor, markersize=10, clip_on=False)
+        pref = P.plot(stdref[rslice], [0]*len(stdref[rslice]), 'o', color=refcolor, 
+            markersize=10, clip_on=False)
     
     if not minimal:
     
@@ -598,11 +662,16 @@ def _taylor_(stats, labels, colors, stdref=None, units=None, refcolor='.5', refl
             if normalize:
                 legstd = 'Rel. '+legstd.lower()
                 legrms = 'Rel. '+legrms
-            P.legend((pcor[0], pstd, prms, pref[0]), 
-                ('Correlation', legstd, legrms, reflabel), 
+            hdls = (pcor[0], pstd, prms)
+            labs = ('Correlation', legstd, legrms)
+            if addref:
+                hdls += pref[0], 
+                labs += reflabel, 
+            P.legend(hdls, labs, 
                 loc='upper right' if not negative else 'upper left', 
                 #markerscale=10,
-                numpoints=1, **kwfilter(kwargs, 'legend_', defaults=dict(shadow=False, fancybox=True))).legendPatch.set_alpha(.5)
+                numpoints=1, **kwfilter(kwargs, 'legend_', 
+                    defaults=dict(shadow=False, fancybox=True))).legendPatch.set_alpha(.5)
 
         # Final setup
         P.axis([stdmin, stdmax, 0, stdmax])
@@ -645,9 +714,9 @@ def _taylor_(stats, labels, colors, stdref=None, units=None, refcolor='.5', refl
 
 
 
-def target(bias, rmsc, stdmod, stdref=None, colors='cyan', sizes=20, 
+def dtarget(bias, rmsc, stdmod, stdref=None, colors='cyan', sizes=20, 
     title='Target diagram', **kwargs):
-    """Plot a target diagram
+    """Plot a (direct) target diagram from already computed statistics
     
     :Params:
     
@@ -723,7 +792,7 @@ def target(bias, rmsc, stdmod, stdref=None, colors='cyan', sizes=20,
     kwargs.update(autoresize=0, units=None, grid=False)
     _end_plot_(**kwargs)
 
-
+target = dtarget
 
 
 def rankhist(obs, ens, title='Rank histogram', bins=None, **kwargs):
@@ -2697,7 +2766,7 @@ def _end_plot_(var=None,grid=True,figtext=None,show=True,close=False,savefig=Non
                     return
         else:
             P.show()
-    elif savefig is not None and kwargs.has_key('savefigs') and close:
+    elif close:#savefig is not None and kwargs.has_key('savefigs') and close:
         P.close()
 
 
@@ -2723,7 +2792,7 @@ def _fill_doc_(*funcs):
             func_doc = eval(func_name).__doc__.strip(' \t\n')
             func.__doc__ = Template(func.__doc__).safe_substitute(**{func_name:func_doc})
 
-_fill_doc_(xdate,ydate,taylor)
+_fill_doc_(xdate, ydate, taylor, dtaylor)
 
 
 

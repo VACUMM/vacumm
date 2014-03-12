@@ -2485,7 +2485,7 @@ class Scalar2RGB(object):
     """
     
     def __init__(self, vminmax, cmap=None):
-        if cmap is None: cmap = P.get_cmap()
+        cmap = get_cmap(cmap)
         self.cmap = cmap
         from genutil import minmax
         vmin, vmax = minmax(vminmax)
