@@ -302,9 +302,12 @@ def list_forecast_files(filepattern, time=None, check=True,
     elif not nopat and has_time_pattern(filepattern): 
         
         from atime import pat2freq,IterDates, strftime, is_interval, pat2glob
-        if not is_interval(time):
+        if not is_interval(time) and is_time(time):
+            time = (time, time, 'ccb')
+        else:
             raise ValueError('Your file pattern contains date pattern (like "%Y"), '
-                'so you must provide a valid absolute time interval such as (date1,date2,"co")')
+                'so you must provide a valid absolute time interval such as (date1,date2,"co")'
+                ' or at least a valid single date')
         time = tuple(time)
         patfmtfunc = patfmtfunc if callable(patfmtfunc) else strftime
         
@@ -4222,4 +4225,5 @@ from axes import guess_timeid, get_checker, istime, islon, islat, islevel
 from phys.units import deg2m, m2deg
 from axes import create_lon, create_lat
 from grid import set_grid
-from atime import ch_units, round_date, are_same_units, now, has_time_pattern, tsel2slice
+from atime import ch_units, round_date, are_same_units, now, has_time_pattern, tsel2slice, \
+    is_time
