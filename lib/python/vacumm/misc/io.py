@@ -2942,45 +2942,44 @@ class XYZ(object):
         - *param*: A single or a list of parameter names
         """
         # List of params
-        allowed = ['xmin', 'xmax', 'ymin', 'max', 'long_name', 'units', 'transp', 
-            'exclusions', 'selections']
+        allowed = ['xmin', 'xmax', 'ymin', 'ymax','zmin','zmax', 'long_name', 'units', 'transp', 
+                   'xres','yres','exclusions', 'selections']
         if param is None:
             param = allowed
         elif isinstance(param, str):
             param = [param]
         # Get string
-        if param.startwith('x') or param.startwith('y'):
-            # xmax, xmin, ymax, ymin
-            var = getattr(self, '_'+param[0])
-            val = getattr(var, param[1:])
-        elif param.endswith('sions'):
-            # selections, exclusions
-            val = []
-            for var in getattr(self, '_'+param):
-                if isinstance(var, tuple):
+        for param in param:
+          if param.endswith('res'):
+             val = getattr(self, '_'+param+'_mauto')
+          elif param.endswith('sions'):
+             # selections, exclusions
+             val = []
+             for var in getattr(self, '_'+param):
+                 if isinstance(var, tuple):
                     # exclusions and inclusions
                     exc, incs = var
                     if len(incs) == 0:
-                        # no inclusions
-                        val.append(exc.get_coords().tolist())
+                       # no inclusions
+                       val.append(exc.get_coords().tolist())
                     else:
-                        polys = []
-                        for inc in incs:
-                            polys.append(inc.get_coords().tolist())
-                        val.append((exc, polys))
-                else:
-                    # normal case
-                    val.append(var.get_coords().tolist())
-        elif param in ['units', 'long_name']:
-            val = getattr(self, param)
-        else:
-            val = getattr(self, '_'+param)
-        # Check section
-        if not cfg.has_section(cfg, section):
-            cfg.add_section(section)
-        # Dump
-        cfg.set(section, param, str(val))
-    
+                       polys = []
+                       for inc in incs:
+                          polys.append(inc.get_coords().tolist())
+                          val.append((exc, polys))
+                 else:
+                     # normal case
+                     val.append(var.get_coords().tolist())
+          elif param in ['units', 'long_name']:
+              val = getattr(self, param)
+          else:
+              val = getattr(self, '_'+param)
+          # Check section
+          if not cfg.has_section(section):
+              cfg.add_section(section)
+          # Dump
+          cfg.set(section, param, str(val))
+  
     
     def get_xmin(self, mask=True): 
         if mask is True or mask == 'masked': return self._xmin
