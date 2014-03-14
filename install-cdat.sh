@@ -1,4 +1,5 @@
 #!/bin/bash
+exit "This script is deprecated and will be updated later!"
 
 ######################################
 # INIT
