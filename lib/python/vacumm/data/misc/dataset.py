@@ -115,7 +115,6 @@ _geonames =  {'x':'lon', 'y':'lat', 'z':'level', 't':'time'}
 ###  AUTO-GENERATION AND AUTO-FORMATTING OF CODE
 ############################################################################
 
-
 def _get_var_(self, name, mode=None, **kwargs):
     """Function to be used as a method for getting variables at a specific location
     
@@ -127,7 +126,7 @@ def _get_var_(self, name, mode=None, **kwargs):
     """
     kwargs = kwargs.copy()
     warn = kwargs.get('warn', False)
-    kwargs['warn'] = False
+    kwargs['warn'] = max(int(warn)-1, 0)
     gname = no_loc_single(name, 'name')
     ploc = self._get_ncobj_specs_(gname).get('physloc', None)
     if not self.arakawa_grid_type: ploc = None
@@ -159,11 +158,11 @@ def _get_var_(self, name, mode=None, **kwargs):
 
     # Get it from other locations
     if check_mode('stag', mode):
-        loc = get_loc(name, 'name', mode='ext')
+        loc = get_loc(name, 'name', mode='ext', default=default_location)
         locations = list(arakawa_locations)
         locations.remove(loc)
         if ploc:
-            locations.remove(ploc)
+            if ploc in locations: locations.remove(ploc)
             locations.insert(0, ploc)
         kwargs = kwargs.copy()
         for fromloc in locations: #TODO: arakawa: clever order for loc2loc tries (use closer neighbours)
@@ -788,27 +787,40 @@ class Dataset(Object):
         
         '''
         append = kwargs.pop('append', None)
-        # Catalog case: get its dataset files
+        # Catalog case: get its dataset files (copy logger level too)
         if isinstance(dataset, Catalog):
+            
+            oldlevel = dataset.get_loglevel()
+            dataset.set_loglevel(self.get_loglevel())
             datasets = dataset.get_datasets()
+            dataset.set_loglevel(oldlevel)
+            
         # Other cases: let Catalog find files using filepaths / filepatterns & time
         else:
             if not isinstance(dataset, (list, tuple)):
                 dataset = [dataset]
+            
+            oldlevel = Catalog.get_loglevel()
+            Catalog.set_loglevel(self.get_loglevel())
             datasets = Catalog.find_datasets(dataset, time, **kwargs)
+            Catalog.set_loglevel(oldlevel)
+            
         # Open new datasets
         if datasets:
             self.info('Loading datasets:')
             for i,d in enumerate(datasets):
                 datasets[i] = cdms2.open(d)
                 self.info('- %s', datasets[i].id)
+                
         # If append mode, extend internal list
         if append:
             self.dataset.extend(datasets)
+            
         # Otherwise close internal list and overwrite it
         else:
             self.close()
             self.dataset = list(datasets)
+            
         # Return the new datasets
         return datasets
         
@@ -1081,6 +1093,7 @@ class Dataset(Object):
             using :meth:`toloc`. Note that the :attr:`arakawa_grid_type` must be defined.
           - **format**: Format the variable and its axes using
             :func:`~vacumm.data.cf.format_var`?
+          - **warn**: Display a warning message if the variable can"t be retreived.
           - Other kwargs are passed to :func:`~vacumm.misc.io.ncread_files`.
         
         :Return:
@@ -1207,7 +1220,7 @@ class Dataset(Object):
         self.debug('Getting time, select: %s', time)
         
         # Find time id
-        timeid = self.get_timeid(warn=warn)
+        timeid = self.get_timeid(warn=max(int(warn)-1, 0))
         if timeid is None: return
                              
         # Loop on files with first level selection
@@ -1257,7 +1270,7 @@ class Dataset(Object):
                 return axis
                 
             
-        self.warning('No time found for select: %s'%time)
+        if warn: self.warning('No time found for select: %s'%time)
     
     def get_ctime(self, *args, **kwargs):
         """Get time axis as a list of :class:`cdtime.comptime`
@@ -1514,7 +1527,7 @@ class Dataset(Object):
             ]
         return  self._get_dxy_('y', 'u', frompt=frompt, **kwargs)
         
-    def get_resol(self, degrees=False, at='t', mode=None, **kwargs):
+    def get_resol(self, degrees=False, at='t', mode=None, warn=True, **kwargs):
         """Get the horizontal grid resolutions
         
         :Params:
@@ -1547,7 +1560,7 @@ class Dataset(Object):
         else:
             dx2, dy2 =  resol(grid, proj=not degrees, mode="median")
         res = dx or dx2, dy or dy2
-        if res[0] is None or res[1] is None:
+        if (res[0] is None or res[1] is None) and warn:
             self.warning("Can't properly estimate resolution along both X and Y")
         return res
         
@@ -1615,13 +1628,14 @@ class Dataset(Object):
             ctimes = comptime(times)
             time = (ctimes[0], ctimes[-1], 'ccn')
         kwvar = kwfilter(kwargs, ['torect', 'at', 'squeeze', 'asvar'], 
-            time=time, lat=lat, lon=lon, level=level, depthup=False, warn=warn)
+            time=time, lat=lat, lon=lon, level=level, depthup=False, 
+            warn=max(int(warn)-1, 0))
             
         # Get data
         var = self.get(varname, **kwvar)
         if var is None: return
         if len(var.shape)<2: 
-            if warn: self.warning('You variable needs at least to be YX for a transect')
+            if warn: self.warning('Your variable needs at least to be YX for a transect')
             return var
             
        
@@ -1768,7 +1782,7 @@ class Dataset(Object):
         # Grow variables or axes
         if asvar is not None:
             if not cdms2.isVariable(asvar):
-                asvar = self.get(asvar, warn=False)
+                asvar = self.get(asvar, warn=max(int(warn)-1, 0))
             var = grow_variables(asvar, var, **kwasvar)[1]
             
         # Not an axis
@@ -1888,10 +1902,11 @@ class OceanDataset(OceanSurfaceDataset):
     def _get_dz_(self, at='t', warn=True, mode=None, **kwargs):
         """Get layer thickness"""
         atp = _at_(at, squeezet=True, prefix=True)
+        fwarn = max(int(warn)-1, 0) # forward warning
         
         # First, find a variable
         if check_mode('var', mode):
-            dz = self.get_variable('dz'+atp, warn=False, **kwargs)
+            dz = self.get_variable('dz'+atp, warn=fwarn, **kwargs)
             if dz is not None or check_mode('var', mode, strict=True): return dz
         
         # Second, guess from vertical coordinates
@@ -1899,14 +1914,14 @@ class OceanDataset(OceanSurfaceDataset):
             # - read depths
             dz2dmode = None
             if at in 'tr':
-                depth = self._get_depth_('w', warn=False, mode='-dz', **kwargs) # from W points
+                depth = self._get_depth_('w', warn=fwarn, mode='-dz', **kwargs) # from W points
                 if depth is None:
-                    depth = self._get_depth_('t', warn=False, mode='-dz', **kwargs)  # from T points
+                    depth = self._get_depth_('t', warn=fwarn, mode='-dz', **kwargs)  # from T points
                     dz2dmode = 'center'
             elif at=='w':
-                depth = self._get_depth_('t', warn=False, mode='-dz', **kwargs) # from T points
+                depth = self._get_depth_('t', warn=fwarn, mode='-dz', **kwargs) # from T points
                 if depth is None:
-                    depth = self._get_depth_('w', warn=False, mode='-dz', **kwargs) # from W points
+                    depth = self._get_depth_('w', warn=fwarn, mode='-dz', **kwargs) # from W points
                     dz2dmode = 'center'
             else:
                 if warn: self.warning("Computing dz from depths at points other than T and W is yet not implemented")
@@ -1993,8 +2008,9 @@ class OceanDataset(OceanSurfaceDataset):
         ath = _at_(at, squeezet=True, prefix=True, focus='hor')
         
         # First, try to find a depth variable
+        fwarn = max(int(warn)-1, 0)
         kwfinal = dict(order=order, squeeze=squeeze, asvar=asvar, torect=torect, format=format)
-        kwvar = dict(level=level, time=time, lat=lat, lon=lon, warn=False)
+        kwvar = dict(level=level, time=time, lat=lat, lon=lon, warn=fwarn)
         kwvar.update(kwfinal)
 
         if check_mode('var', mode):
@@ -2112,7 +2128,8 @@ class OceanDataset(OceanSurfaceDataset):
     def get_dens(self, mode=None, **kwargs):
         '''Get 4D density'''
         
-        kwvar = kwfilter(kwargs, ['lon','lat','time','level','torect'], warn=False)
+        fwarn = max(int(kwargs.get('warn', 0))-1, 0)
+        kwvar = kwfilter(kwargs, ['lon','lat','time','level','torect'], warn=fwarn)
         kwfinal = kwfilter(kwargs, ['squeeze','order','asvar', 'at'], genname='dens')
         kwdens = kwfilter(kwargs, 'dens_')
         kwdepth = kwfilter(kwargs, 'depth_')
@@ -2160,15 +2177,15 @@ class OceanDataset(OceanSurfaceDataset):
           - ``None``: Try all modes, in the following order.
           - ``"var"``: Read it from a variable.
           - ``"uvgbt"``: Estimate from barotropic geostrophic velocity (:meth:`get_uvgbt`)."""
-    def get_ke(self, mode=None, **kwargs):
-        """Get eddy kinetic energy"
+    def get_ke(self, mode=None, warn=True, **kwargs):
+        """Get kinetic energy"
         
         :See also: :func:`~vacumm.diag.dynamics.kinetic_energy`
             :meth:`get_uvgbt`
         """
         # Params
-        
-        kwvar = kwfilter(kwargs, ['lon','lat','time','level','torect'], warn=False)
+        fwarn = max(int(warn)-1, 0)
+        kwvar = kwfilter(kwargs, ['lon','lat','time','level','torect'], warn=fwarn)
         kwfinal = kwfilter(kwargs, ['squeeze','order','asvar', 'at'], genname='ke')
         kwuvgbt = kwfilter(kwargs, 'uvgbt_')
         kwuvgbt.update(kwvar)
@@ -2185,6 +2202,9 @@ class OceanDataset(OceanSurfaceDataset):
             if ugbt is not None or check_mode('uvgbt', mode, strict=True): 
                 ke = kinetic_energy((ugbt, vgbt))
                 return self.finalize_object(ke, **kwfinal)
+                
+        if warn:
+            self.warning("Can't estimate the kinetic energy")
         
     getvar_fmtdoc(get_ke, mode=_mode_doc)
         
@@ -2207,7 +2227,8 @@ class OceanDataset(OceanSurfaceDataset):
         
         # Params
         kwargs.pop('level', None)
-        kwvar = dict(time=time, lat=lat, lon=lon, torect=kwargs.pop('torect', True))
+        kwvar = dict(time=time, lat=lat, lon=lon, torect=kwargs.pop('torect', True), 
+            warn=max(int(warn)-1, 0))
         kwdepth = kwfilter(kwargs, 'depth_')
         kwdepth.update(kwvar)
         kwinterp = kwfilter(kwargs, 'interp_', axis=1)

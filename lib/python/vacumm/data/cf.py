@@ -546,33 +546,33 @@ grid_specs = {
 grid_specs['r'] = grid_specs['t']
 
 _reloc =  OrderedDict(
-    name = re.compile('(_([a-z]))?$', re.I).search, 
-    standard_name = re.compile('(_at_([a-z])_location)?$', re.I).search, 
-    long_name = re.compile('( at ([a-z]) location)?$', re.I).search, 
+    [('name',  re.compile('(_([a-z]))?$', re.I).search), 
+    ('standard_name', re.compile('(_at_([a-z])_location)?$', re.I).search), 
+    ('long_name',  re.compile('( at ([a-z]) location)?$', re.I).search)], 
 )
 
 #: Default location of gridded variables
 default_location = 't'
 
-def get_loc(name, stype=None, mode='loc'):
-    """Get the location testing name, standard_name or long_name
+def get_loc(var, stype=None, mode='loc', default=None):
+    """Get the location testing name, standard_name or long_name and other attributes
     
     :Params:
     
-        - **name**: Generic name of the variable or axis, or an object CDAT object 
+        - **var**: Generic name of the variable or axis OR an object CDAT object 
           (variable or axis). If a CDAT object, it first searches for the
           :attr:`_vacumm_cf_location` attributes.
         - **stype**, optional: One of 'name', 'standard_name' or 'long_name'.
           If ``None``, they are all tested.
-          If ``name`` is a string, location is searched interpreting it as of type ``'stype``.
-          Else if ``name`` is an object ``stype`` specifies what attribute to test.
+          If ``var`` is a string, location is searched interpreting it as of type ``'stype``.
+          Else if ``var`` is an object ``stype`` specifies what attribute to test.
         - **mode**, optional: What you get if something found.
         
             - ``"loc"``: Get the location lowercase letter (like "u").
             - ``"ext"``: Same as ``"loc"`` but searches for the :attr:`position` first
               if case of a CDAT variable,
               then the :attr:`_vacumm_cf_physloc` attributes or the "physloc" specification
-              if ``name`` has an entry in :attr:`var_specs`, else defaults to
+              if ``var`` has an entry in :attr:`var_specs`, else defaults to
               :attr:`default_location`.
             - Else, the matched string.
             
@@ -594,19 +594,19 @@ def get_loc(name, stype=None, mode='loc'):
     stypes = stype if isinstance(stype, list) else [stype]
     
     # CDAT object (not a string)
-    if isinstance(name, list): name = name[0]
-    if not isinstance(name, basestring):
+    if isinstance(var, list): var = var[0]
+    if not isinstance(var, basestring):
         
         # First: _vacumm_cf_location
-        if getattr(name, '_vacumm_cf_location', None):
-            return name._vacumm_cf_location.lower()
+        if getattr(var, '_vacumm_cf_location', None):
+            return var._vacumm_cf_location.lower()
         
         # Location from names
         for stype in stypes:
             if stype=='name':
-                loc = get_loc(name.id, stype, mode=mode)
-            elif hasattr(name, stype):
-                loc = get_loc(getattr(name, stype), stype, mode)
+                loc = get_loc(var.id, stype, mode=mode)
+            elif hasattr(var, stype):
+                loc = get_loc(getattr(var, stype), stype, mode)
             else:
                 continue
             break
@@ -617,21 +617,22 @@ def get_loc(name, stype=None, mode='loc'):
         if mode=='ext':
             
             # Position attribute
-            if hasattr(name, 'position'): return name.position.lower()
+            if hasattr(var, 'position'): return var.position.lower()
             
             # Physloc
-            gname = name.id if not hasattr(name, '_vacumm_cf_name') else name._vacumm_cf_name
+            gname = var.id if not hasattr(var, '_vacumm_cf_name') else var._vacumm_cf_name
             gname = no_loc_single(gname, 'name')
             if gname in var_specs:
                 
                 # From _vacumm_cf_physloc attribute
-                if hasattr(name, '_vacumm_cf_physloc'):
-                    return name._vacumm_cf_physloc
+                if hasattr(var, '_vacumm_cf_physloc'):
+                    return var._vacumm_cf_physloc
                
                 # From specs
                 if var_specs[gname].get('physloc'):
                     return var_specs[gname]['physloc']
-        return
+                    
+        return default
     
     # String
     outloc = mode=='loc' or mode=='ext'
@@ -640,7 +641,7 @@ def get_loc(name, stype=None, mode='loc'):
         # From string
         group = 2 if outloc else 1
         if stype not in _reloc: stype = 'name'
-        loc = _reloc[stype](name).group(group)
+        loc = _reloc[stype](var).group(group)
         if loc and outloc: loc = loc.lower()
         if loc: return loc
         
@@ -648,11 +649,12 @@ def get_loc(name, stype=None, mode='loc'):
         if mode=='ext':
             
             # From physloc
-            if stype=='name' and name in var_specs and var_specs[name].get('physloc'): 
-                return var_specs[name].get('physloc')
+            if stype=='name' and var in var_specs and var_specs[var].get('physloc'): 
+                return var_specs[var].get('physloc')
             
-            # Default location
-            return default_location            
+#            # Default location
+#            return default_location  
+    return default
         
     
 def no_loc_single(name, stype):
@@ -1247,7 +1249,7 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
             if sname not in specs: continue
             if get_loc(specs[sname], stype)==refloc:
                 specs[sname] = [no_loc_single(specs[sname][0], stype)]
-        name = specs[sname][0]
+        name = specs['names'][0]
     # - id
     if force or var.id.startswith('variable_'):
         var.id = name
