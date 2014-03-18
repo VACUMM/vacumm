@@ -69,7 +69,7 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'create_selector', 'selector2str', 'split_selector', 'squeeze_variable', 'dict_copy_items', 
     "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
     'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out', 
-    'kwfilterout']
+    'kwfilterout', 'filter_selector']
 __all__.sort()
 
 def broadcast(set, n, mode='last', **kwargs):
@@ -1627,6 +1627,53 @@ def split_selector(selector):
         elif not isinstance(c, cdms2.selectors.requiredComponent):
             named[c.id] = c.spec
     return tuple(posed), named
+    
+def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False, noslice=False):
+    """Filter a :class:`cdms2.selectors.Selector` instance to keep only a list of ids
+    
+    :Params:
+        
+        - **selector**: A :class:`cdms2.selectors.Selector` instance.
+        - **ids**, optional: Allowed ids.
+        - **copy**, optional: Filter original or copy?
+        - **out**, optional: Filter in (keep target selections) 
+          or out(remove target selections)?
+        - **keeppos**, optional: Keep positional components?
+        - **noslice**, optional: Remove slices?
+    """
+    if not isinstance(selector, cdms2.selectors.Selector):
+        selector = create_selector(selector)
+    elif copy: selector = selector()
+    if selector is None or ids is None: selector
+    ids = filter(None, ids)
+    ipos = -1
+    if isinstance(keeppos, int): keeppos = [keeppos]
+    for comp in selector._Selector__components:
+        
+        # Positional
+        if isinstance(comp, cdms2.selectors.positionalComponent):
+            ipos += 1
+            if keeppos is True:
+                continue
+            elif keeppos not in [False, None] and \
+                (ipos in keeppos and not out) or (ipos not in keeppos and out):
+                continue
+            
+        # Named
+        elif hasattr(comp, 'id') and (comp.id in ids and not out) or (comp.id not in ids and out): 
+            continue
+            
+        # Remove
+        selector._Selector__components.remove(comp)
+      
+    # Remove slices?
+    if noslice:
+        for comp in selector._Selector__components:
+            if hasattr(comp, 'spec') and isinstance(comp.spec, slice):
+                selector._Selector__components.remove(comp)
+        
+    return selector
+    
 
 def squeeze_variable(var, spec=True):
     """Remove singleton axes from a MV2 variable
