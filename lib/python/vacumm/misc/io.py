@@ -301,22 +301,71 @@ def list_forecast_files(filepattern, time=None, check=True,
     # Date pattern
     elif not nopat and has_time_pattern(filepattern): 
         
-        from atime import pat2freq,IterDates, strftime, is_interval, pat2glob
-        if not is_interval(time) and is_time(time):
-            time = (time, time, 'ccb')
-        else:
-            raise ValueError('Your file pattern contains date pattern (like "%Y"), '
-                'so you must provide a valid absolute time interval such as (date1,date2,"co")'
-                ' or at least a valid single date')
+        from atime import pat2freq,IterDates, strftime, is_interval, pat2glob, time_selector
+        if isinstance(time, cdms2.selectors.Selector):
+            seltime = time_selector(time, noslice=True)
+            if seltime.components():
+                _, comps = split_selector(seltime) # FIXME: include positional components
+                for i, comp in comps:
+                    itv = comp.spec
+                    if not is_interval(itv) and is_time(itv):
+                        itv = (itv, itv, 'ccb')
+                    if i==0:
+                        time = itv
+                    else:
+                        time = itv_union(itv, time)
+            else:
+                time = None
+        
+        if not is_interval(time):
+            if is_time(time):
+                time = (time, time, 'ccb')
+            else:
+                raise ValueError('Your file pattern contains date pattern (like "%Y"), '
+                    'so you must provide a valid absolute time interval such as (date1,date2,"co")'
+                    ' or at least a valid single date')
         time = tuple(time)
         patfmtfunc = patfmtfunc if callable(patfmtfunc) else strftime
         
         # Guess the minimal frequency
+        lmargin = 1
         if patfreq is None:
             patfreq = pat2freq(filepattern)
             if verbose: print 'Detected frequency for looping on possible dates: '+patfreq.upper()
         if not isinstance(patfreq, tuple):
+            
+            #  Reform 
             patfreq = (1, patfreq)
+            
+            # Guess left margin when possible
+            gfiles = glob.glob(pat2glob(filepattern))
+            if gfiles<2:
+                lmargin = 1
+            elif not glob.has_magic(filepattern):
+                date0 = date1 = None
+                for i in xrange(len(gfiles)-1):
+                    date0 = strptime(gfiles[i], filepattern)
+                    date1 = strptime(gfiles[i+1], filepattern)
+                    try:
+                        date0 = strptime(gfiles[i], filepattern)
+                        date1 = strptime(gfiles[i+1], filepattern)
+                    except:
+                        continue
+                    if date0>=time[0] or date1<=time[1]: break
+                if None not in [date0, date1]:
+                    dt = adatetime(date1)-adatetime(date0)
+                    if dt.seconds!=0:
+                        lmargin = comptime('2000').add(dt.seconds, cdtime.Seconds).torel(
+                            patfreq[1]+' since 2000').value
+                    else:
+                        lmargin = comptime('2000').add(dt.days, cdtime.Days).torel(
+                            patfreq[1]+' since 2000').value
+                else:
+                    lmargin = 1
+             #FIXME: make it work with date+glob patterns 
+            else:
+                lmargin = patfreq[0]
+            
             
 #        # Add margin to time interval
 #        if patmargin is None:
@@ -332,6 +381,7 @@ def list_forecast_files(filepattern, time=None, check=True,
 
         # Make a loop on dates
         itertime = (round_date(time[0], patfreq[1], 'floor'), time[1])
+        itertime = add_margin(itertime, (lmargin-1, patfreq[1]), False)
         iterdates = IterDates(itertime, patfreq, 
             closed = len(time)==3 and time[2][1]=='c' or True)
         files = []
@@ -1015,7 +1065,7 @@ class NcIterBestEstimate(object):
         self.nfiles = len(files)
         self.files = files
         self.nfonext = None
-        self.seltime = [time] if isinstance(time,list) else time
+        self.seltime = time #[time] if isinstance(time,list) else time
         self.tslices = [] if tslices is None else tslices
         if toffset is None: toffset = 0
         self.toffset = toffset
@@ -1235,7 +1285,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
     .. warning:: Files are listed using function :func:`list_forecast_files`.
         Please read its documentation before using current function.
    
-    :Example:
+    :Examples:
     
         >>> var = ncread_files("r0_2010-%m-%d_00.nc", 'xe',  
             ('2010-08-10', '2010-08-15', 'cc'), samp=[2, 1, 3])
@@ -1308,7 +1358,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
     selectors = [M.create_selector(s, **kwargs) for s in selects]
     # - iterator on files
     iterator = NcIterBestEstimate(ncfiles, time, timeid=timeid, toffset=toffset, id=nibeid)
-    # undepsampling
+    # - undepsampling
     if samp is not None:
         samp = [0 for s in samp if s==0 or not isinstance(s, int)]
         samp = [slice(None, None, s) for s in samp]
@@ -4197,18 +4247,16 @@ class TermColors(object):
 def netcdf3():
     """Turn netcdf4 writing off with :mod:`cdms2`"""
     try:
-        cdms2.setNetcdfShuffleFlag(0)
-        cdms2.setNetcdfDeflateFlag(0)
-        cdms2.setNetcdfDeflateLevelFlag(0)
+        netcdf4(0, 0, 0)
     except:
         pass
 
 
-def netcdf4(level=3):
+def netcdf4(level=3, deflate=1, shuffle=1):
     """Turn netcdf4 writing on and suppress compression warning"""
     cdms2.setCompressionWarnings(0)
-    cdms2.setNetcdfDeflateFlag(1)
-    cdms2.setNetcdfShuffleFlag(1)
+    cdms2.setNetcdfDeflateFlag(deflate)
+    cdms2.setNetcdfShuffleFlag(shuffle)
     cdms2.setNetcdfDeflateLevelFlag(level) 
 
 
@@ -4225,4 +4273,5 @@ from phys.units import deg2m, m2deg
 from axes import create_lon, create_lat
 from grid import set_grid
 from atime import ch_units, round_date, are_same_units, now, has_time_pattern, tsel2slice, \
-    is_time
+    is_time, time_selector, itv_union, add_margin, strptime, datetime as adatetime, \
+    comptime
