@@ -73,7 +73,7 @@ __all__ = ['mpl_time_units','str_unit_types','re_split_date','now', 'add', 'axis
 'is_strtime', 'time_type', 'is_axistime', 'notz',  'IterDates', 'numtime',  'is_numtime', 
 'pat2glob', 'midnight_date', 'midnight_interval','reduce_old', 'daily_bounds', 
 'hourly_bounds', 'time_split', 'time_split_nmax', 'add_margin', 'fixcomptime', 
-'is_interval', 'has_time_pattern', 'tsel2slice']
+'is_interval', 'has_time_pattern', 'tsel2slice', 'time_selector']
 
 __all__.sort()
 
@@ -2563,7 +2563,7 @@ def _d2sel_(taxis, dsel):
         if key in (['time', taxis.id]+cdms2.convention.time_aliases)
             and sel is not None]
     
-def tsel2slice(taxis, *args, **kwargs):
+def tsel2slice_old(taxis, *args, **kwargs):
     """Convert time selections on a time axis to a valid slice or None
     
     :Params:
@@ -2648,9 +2648,114 @@ def tsel2slice(taxis, *args, **kwargs):
     return slice(i,j,k)
 
 
+def time_selector(*args, **kwargs):
+    """Create a pure time selector with all arguments 
+    
+    All components that are not recongnized a time selection are not kept.
+    
+    :Params:
+    
+        - **ids**, optional: Special keyword to specify allowed time ids in addition
+          to generic ones defined by :attr:`cdms2.convention.time_aliases`.
+        - **out**, optional: Inverse the process by removing all time selections
+          (see :func:`~vacumm.misc.misc.filter_selector`)?
+        - **keeppos**, optional: Remove positional components 
+          (see :func:`~vacumm.misc.misc.filter_selector`)?
+        - **noslice**, optional: Remove slices  
+          (see :func:`~vacumm.misc.misc.filter_selector`)?
+        - Positional argument can be coordinates intervals, slices, 
+          dictionaries or cdms2 selectors.
+        - Optional arguments must have a key identified as time,
+          and a value as coordinates or slice.
+    """
+    # Valid ids for filtering
+    ids = kwargs.pop('ids', None)
+    out = kwargs.pop('out', False)
+    keeppos = kwargs.pop('keeppos', False)
+    if ids is None: ids = []
+    if isinstance(ids, basestring): ids = [ids]
+    ids = list(ids)+['time']+cdms2.convention.time_aliases
+    
+    # Build the selector using refinements
+    newargs = []
+    selector = cdms2.selectors.Selector()
+    for arg in args:
+        if arg is None: continue
+        if isinstance(arg, dict):
+            selector.refine(*arg)
+        else:
+            selector.refine(arg)
+    selector.refine(**kwargs)
+    
+    # Filter
+    filter_selector(selector, ids=ids, copy=False, out=out, keeppos=keeppos)
+    
+    return selector
+    
+def tsel2slice(taxis, *args, **kwargs):
+    """Convert time selections on a time axis to a valid slice or None
+    
+    :Params:
+    
+        - **asind**, optional: Return indices instead of a slice.
+        - **nonone**, optional: Return the full slice instead of ``None`` if everything is selected.
+        - Positional argument can be coordinates intervals, slices, 
+          dictionaries or cdms2 selectors.
+        - Optional arguments must have a key identified as time or be the axis id,
+          and a value as coordinates or slice.
+          
+    :Return:
+    
+        - A :class:`slice` or ``(i,j,k)`` when possible.
+        - ``None`` or the full slice if no slice needed (everything is selected).
+        - ``False`` if no intersection is found.
+    
+    :Examples:
+    
+        >>> myslice = tsel2slice(taxis, ('2000', '2002', 'co'), time=slice(4,6))
+        >>> myslice = tsel2slice(taxis, cdms2.selectors.Selector(lon=(5,6), time=('2000','2002'))
+        >>> myslice = tsel2slice(taxis, slice(10,12), dict(time=slice(4,5), time=('2000','2002'))
+    """
+    # Inits
+    if not istime(taxis): raise VACUMMError('taxis must be a valid time axis')
+    asind = kwargs.pop('asind', False)
+    nonone = kwargs.pop('nonone', False)
+    fullslice = slice(*slice(None).indices(len(taxis)))
+
+    # Convert to list valid time selector
+    kwargs['ids'] = [taxis.id]
+    selector = time_selector(*args, **kwargs)
+    
+    # No selection
+    if len(selector.components())==0: 
+        if asind: fullslice = fullslice.start,fullslice.stop,fullslice.step
+        return fullslice if nonone else None
+
+    # Select
+    ii = MV2.arange(len(taxis))
+    taxis = taxis.clone()
+    taxis.designateTime()
+    ii.setAxis(0, taxis)
+    try:
+        ii = ii(selector).filled()
+    except:
+        return False
+    
+    # Deduce final indices
+    i = ii[0]
+    j = ii[-1]
+    j += N.sign(j-i) if i!=j else 1
+    if j<0: j = None
+    k = 1 if ii.size==1 else (ii[1]-ii[0])
+    
+    # Return
+    if not nonone and slice(i,j,k)==fullslice: return 
+    if asind: return i,j,k
+    return slice(i,j,k)
+
 #####################################################################
 ######################################################################
-from misc import cp_atts,isnumber,kwfilter,split_selector
+from misc import cp_atts,isnumber,kwfilter,split_selector, filter_selector
 import grid as G
 from axes import istime,check_axes,check_axis,create_time, isaxis
 import io
