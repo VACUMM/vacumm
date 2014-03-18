@@ -7,7 +7,7 @@ ncfile = "mfs.nc"
 from vcmq import DS, data_sample
 
 # Read data
-ds = DS(data_sample(ncfile), 'nemo')
+ds = DS(data_sample(ncfile), 'nemo', logger_level='critical')
 temp = ds.get_temp()
 depth = ds.get_depth(asvar=temp)
 

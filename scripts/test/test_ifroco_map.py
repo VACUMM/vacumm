@@ -13,7 +13,7 @@ copyright = u"© Previmer"
 from vacumm.report.ifroco.maps import DS, cfgget, N, plot_map, P, data_sample
 
 # Read data
-ds = DS(data_sample('menor.nc'), 'mars')
+ds = DS(data_sample('menor.nc'), 'mars', logger_level='critical')
 data = ds.get(field)
 
 # Some config values

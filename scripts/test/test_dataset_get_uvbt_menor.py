@@ -7,7 +7,7 @@ ncfile = "menor.nc"
 from vcmq import data_sample, DS, N, MV2, shapiro2d, map2, code_base_name
 
 # Read data
-ds = DS(data_sample(ncfile), 'mars')
+ds = DS(data_sample(ncfile), 'mars', logger_level='critical')
 u, v = ds.get_uvgbt()
 
 # Mask huge values

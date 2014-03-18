@@ -7,7 +7,7 @@ ncfile = "menor.nc"
 from vcmq import DS, data_sample
 
 # Read data
-ds = DS(data_sample(ncfile), 'mars')
+ds = DS(data_sample(ncfile), 'mars', logger_level='critical')
 temp = ds.get_temp()
 lon = temp.getLongitude()
 

@@ -8,7 +8,7 @@ depth = -1000.
 from vcmq import DS, data_sample, os, os, code_base_name
 
 # Setup dataset
-ds = DS(data_sample(ncfile), 'mars')
+ds = DS(data_sample(ncfile), 'mars', logger_level='critical')
 
 # Plot hsection
 figfile = code_base_name(ext='png')

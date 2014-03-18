@@ -9,7 +9,7 @@ lats = (43.4375,42.125)
 from vcmq import DS, data_sample, os, code_base_name
 
 # Setup dataset
-ds = DS(data_sample(ncfile), 'nemo')
+ds = DS(data_sample(ncfile), 'nemo', logger_level='critical')
 
 # Plot transect
 figfile = code_base_name(ext='png')

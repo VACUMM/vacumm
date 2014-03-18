@@ -7,7 +7,7 @@ ncfile = "menor.nc"
 from vcmq import DS, data_sample, mixed_layer_depth, rc, map2, os, code_base_name
 
 # Read data
-ds = DS(data_sample(ncfile),'mars', )
+ds = DS(data_sample(ncfile),'mars', logger_level='critical')
 temp = ds.get_temp(squeeze=True)
 sal = ds.get_sal(squeeze=True)
 depth = ds.get_depth(squeeze=True)

@@ -9,7 +9,7 @@ lats = (43.1, 42)
 from vcmq import DS, data_sample, os, code_base_name
 
 # Setup dataset
-ds = DS(data_sample(ncfile), 'mars')
+ds = DS(data_sample(ncfile), 'mars', logger_level='critical')
 
 # Plot transect
 figfile = code_base_name(ext='png')

@@ -7,7 +7,7 @@ ncfile = "menor.nc"
 from vcmq import DS, os, map2, data_sample, code_base_name
 
 # Read data
-ds = DS(data_sample(ncfile), 'mars')
+ds = DS(data_sample(ncfile), 'mars', logger_level='critical')
 mld = ds.get_mld(mode='deltadens', squeeze=True)
 
 # Plot surface density

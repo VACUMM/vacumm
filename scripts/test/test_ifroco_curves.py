@@ -24,7 +24,7 @@ t0 = paris_to_utc(t0)
 t1 = paris_to_utc(t1)
 
 # Read
-ds = DS(ncpat, 'mars', time=(t0, t1))
+ds = DS(ncpat, 'mars', time=(t0, t1), logger_level='critical')
 data = ds.get(field)
 utc_to_paris(data)
 
