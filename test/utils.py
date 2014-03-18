@@ -25,30 +25,32 @@ class VCTestCase(unittest.TestCase):
         if not isinstance(result, (list, tuple)): return
         
         # Loop on content
-        for key, values in result.items():
-            check_single_result(key, values)
+        for key, values in result:
+            self.check_single_result(key, values)
             
             
-def check_single_result(key, values):
-    
-    # Files exist
-    if key=='files':
-        files = values
-        if isinstance(files, basestring):
-            files = [files]
-        for fn in files:
-            self.assertTrue(os.path.exists(fn))
-        return
-    
-    # Assertions
-    if key.startswith('assert'): 
-        if not isinstance(values, (list,tuple)):
-            values = [values]
-        getattr(self, key)(*values)
-    
-    # Function that returns True if succeeded 
-    if callable(key):
-        if not isinstance(values, (list,tuple)):
-            values = [values]
-        self.assertTrue(key(*values))
-        return
+    def check_single_result(self, key, values):
+        
+        # Files exist
+        if key=='files':
+            files = values
+            if isinstance(files, basestring):
+                files = [files]
+            for fn in files:
+                self.assertTrue(os.path.exists(fn))
+            return
+        
+        # Function that returns True if succeeded 
+        if callable(key):
+            if not isinstance(values, (list,tuple)):
+                values = [values]
+            self.assertTrue(key(*values))
+            return
+            
+        # Assertions
+        if key.startswith('assert'): 
+            if not isinstance(values, (list,tuple)):
+                values = [values]
+            getattr(self, key)(*values)
+            return
+        
