@@ -76,7 +76,8 @@ N = numpy
 
 from vacumm.misc import auto_scale, MV2_concatenate, MV2_axisConcatenate, create_selector, \
     split_selector, dict_merge, dict_check_defaults, set_atts, broadcast
-from vacumm.misc.atime import add as add_time, comptime, datetime as adatetime, Intervals
+from vacumm.misc.atime import add as add_time, comptime, datetime as adatetime, Intervals, \
+    time_selector
 from vacumm.misc.axes import create_time, create_dep, create_lat, create_lon, guess_timeid, get_axis_type, isaxis
 from vacumm.misc.bases import Object
 import vacumm.misc.color as C
@@ -1144,10 +1145,11 @@ class Dataset(Object):
         kwncr = kwargs.copy()
         kwncr['torect'] = False
         dict_filter_out(kwncr, ['at'], copy=False, mode='start')
+        seltime = time_selector(select, ids=self.get_timeid())
         try:
             var = ncread_files([d.id for d in self.dataset], ncvarid, 
                 timeid=self.get_timeid(), 
-    #            time=time, 
+    #            time=seltime, 
                 select=select, verbose=verbose if verbose is not None else self.is_debug(), 
                 squeeze=base_squeeze, nibeid=self._nibeid+str(time), **kwncr)
             if var is None:
@@ -2020,6 +2022,7 @@ class OceanDataset(OceanSurfaceDataset):
 
         # Get selector for other tries
         selector = self.get_selector(lon=lon, lat=lat, level=level, time=time, merge=True) 
+        selnotime = None
         gridmet = 'get_grid'+ath
         grid = getattr(self, gridmet)(False)
         curvsel = CurvedSelector(grid, selector)
@@ -2037,12 +2040,16 @@ class OceanDataset(OceanSurfaceDataset):
             if sigma_converter is not None:
                 self.debug('Found depth referring to a sigma level, processing sigma to depth conversion')
                 allvars = []
-                
-                for f,t in NcIterBestEstimate(self.dataset, time=selector, id=self._nibeid+str(time)):
+                nib = NcIterBestEstimate(self.dataset, time=selector, id=self._nibeid+str(time)) 
+                for f,t in nib:
                     if t is False: continue # and when no time??? None-> ok we continue
                     if f!=self.dataset[0]: sigma_converter.update_file(f)
-                    sel = selector(time=t)
-                    self.debug('- dataset: %s: sigma: %s, select: %s', os.path.basename(f.id), sigma_converter.__class__.__name__, sel)
+                    sel = create_selector(time=t)
+                    if selnotime is None:
+                        selnotime = time_selector(selector, ids=nib.timeid, out=True)
+                    sel.refine(selnotime)
+                    self.debug('- dataset: %s: sigma: %s, select: %s', 
+                        os.path.basename(f.id), sigma_converter.__class__.__name__, sel)
                     try:
                         d = sigma_converter(sel, at=at, copyaxes=True, mode='sigma')
                     except Exception, e:
@@ -2059,7 +2066,7 @@ class OceanDataset(OceanSurfaceDataset):
                 if check_mode('sigma', mode, strict=True): return
 #        if sigma_converter is not None:
 #            sigma_converter.close()
-            
+ 
         # Third, estimate from layer thickness
         if check_mode('dz', mode):
             
