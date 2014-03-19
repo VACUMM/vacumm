@@ -98,7 +98,7 @@ from vacumm.misc.grid.misc import \
 from vacumm.misc.grid.regridding import \
     regrid1d, regrid2d, interp1d, interp2d, cellave1d, cellave2d, \
     cargen, xy2xy, shift1d, shift2d, extend1d, extend2d, regrid_method, \
-    transect, griddata, CDATRegridder, grid2xy, krig, \
+    transect, griddata, CDATRegridder, grid2xy, \
     nearest1d, shiftgrid, extendgrid, fill1d, fill2d
 
 from vacumm.misc.grid.basemap import \
