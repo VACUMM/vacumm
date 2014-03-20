@@ -308,8 +308,7 @@ def zeros(var, ref='mean',mean=None, getref=True, **kwargs):
     return ret
     
 
-
-def extrema(var,ref='mean',mean=None,getmax=True,getmin=True,getsign=False,spline=True,**kwargs):
+def extrema(var,ref='mean',mean=None,getmax=True,getmin=True,getsign=False,getidx=False,spline=True,**kwargs):
     """Find extrema of 1D array using a reference. This is suited for detecting low and high tides.
     
     - **var**: 1D :mod:`cdms2` array of sea level with a time axis.
@@ -325,6 +324,7 @@ def extrema(var,ref='mean',mean=None,getmax=True,getmin=True,getsign=False,splin
     - *getmin*: Return an array of low tides.
     - *getmax*: Return an array of tides.
     - *getsign*: Return signs of tide.
+    - *getidx*: Return array of index of low and high tides
     
     :Returns: ``[lows,][highs,][signs]`` depending on options.
     """
@@ -367,10 +367,20 @@ def extrema(var,ref='mean',mean=None,getmax=True,getmin=True,getsign=False,splin
         i0 = i1+1
 
     # Returned data
+    if getidx:
+        ctime,var,idxmin = zip(*minima)
+        idxmin=N.array(idxmin)+1
+        ctime,var,idxmax = zip(*maxima)
+        idxmax=N.array(idxmax)+1
+
     res = []
     if getmin: res.append(_extrema_var_(minima,long_name='Minima',id='maxima', **kwargs))
     if getmax: res.append(_extrema_var_(maxima,long_name='Maxima',id='minima', **kwargs))
     if getsign: res.append(sign)
+
+    if getidx:
+        res.append(idxmin)
+        res.append(idxmax)
     if isinstance(res,list) and len(res) == 1:
         res = res[0]
     return res
