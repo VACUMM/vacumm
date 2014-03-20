@@ -2580,6 +2580,7 @@ class XYZ(object):
     - *sel*: Polygons to select data (see :meth:`select`). 
              Several polygons must be passed as a tuple (poly1, poly2, ...).
     - load_<keywords>: keywords are passed to :func:`numpy.loadtxt`
+    - rsamp_<keywords>: keywords are passed to :func:`rsamp`
     - Other keywords are set as atrributes.
          
     
@@ -2653,7 +2654,7 @@ class XYZ(object):
         self.id = None
         
         # Now update arrays
-        self._update_()
+        self._update_(**kwargs)
         
     def __str__(self):
         s = 'XYZ:'
@@ -2743,8 +2744,8 @@ class XYZ(object):
         # - load it (from file or array)
         return self.__class__(d)
         
-    def _update_(self):
-        
+    def _update_(self,**kwargs):
+
         # Mask (1==good)
         del self._mask
         npt = len(self._x)
@@ -2760,7 +2761,8 @@ class XYZ(object):
             del self._rsamp_mask
         elif (self._rsamp!=0 and self._rsamp_mask is None) or self._rsamp != self._rsamp_old:
             del self._rsamp_mask
-            self._rsamp_mask = rsamp(self._x, self._y, abs(self._rsamp), proj=self._rsamp<0, getmask=True)
+            kwrsamp=M.kwfilter(kwargs, 'rsamp')        
+            self._rsamp_mask = rsamp(self._x, self._y, abs(self._rsamp), proj=self._rsamp<0, getmask=True,**kwrsamp)
         if self._rsamp_mask is not None:
             self._mask &= self._rsamp_mask
         self._rsamp = self._rsamp_old
@@ -3313,11 +3315,16 @@ class XYZ(object):
             x, y = self._proj_(True)(x, y)
             
 #       if method.startswith('tri'): # Using the median length of triangles
-        from matplotlib.delaunay import Triangulation
-        t = Triangulation(x, y)
+        from scipy.spatial import Delaunay
+   
+        coord=N.vstack((x,y)).T
+        t=Delaunay(coord)
         distances = []
-        for i0, i1 in t.edge_db:
-            distances.append(N.sqrt((x[i1]-x[i0])**2+(y[i1]-y[i0])**2))
+        for p1,p2,p3 in t.vertices:
+           distances.append(N.sqrt((x[p1]-x[p2])**2+(y[p1]-y[p2])**2))
+           distances.append(N.sqrt((x[p1]-x[p3])**2+(y[p1]-y[p3])**2))
+           distances.append(N.sqrt((x[p2]-x[p3])**2+(y[p2]-y[p3])**2))
+
         xres = yres = N.median(distances)
         del t, distances
             
