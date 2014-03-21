@@ -42,7 +42,10 @@ List of all available colormaps in matplotlib, including VACUMM colormaps
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 # 
-import os,glob
+import re
+import os
+import glob
+
 from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Colormap, Normalize, LinearSegmentedColormap, ColorConverter, makeMappingArray
 import pylab as P
@@ -50,6 +53,9 @@ from matplotlib.cm import cmap_d
 import numpy as N
 ma = N.ma
 import matplotlib.cbook as cbook
+from mpl_toolkits.basemap import cm as basemap_cm
+
+import vacumm
 
 # Color definitions
 
@@ -75,7 +81,7 @@ sea = ocean
 simple_colors =  ['k', 'b', 'g', 'r', 'c', 'm', 'y']
 #colors = simple_colors
 
-_gmt_cpt = '/soft/gmt/GMT4.1.1/share/cpt/' # !!!
+_cpt_dir = os.path.join(os.path.dirname(__file__), 'cpt')
 
 RGB = ColorConverter().to_rgb
 RGBA = ColorConverter().to_rgba
@@ -84,13 +90,15 @@ __all__ = ['cmap_custom', 'cmap_bwr', 'cmap_bwre', 'cmap_br', 'cmap_wr', 'cmap_w
     'cmap_jete', 'cmap_ajete', 'cmap_jets', 'cmap_wjets', 'cmap_ajets', 'cmap_smoothed_steps', 
     'cmap_smoothed_regular_steps', 'cmap_ss', 'cmap_steps', 'cmap_regular_steps', 'cmap_rs', 
     'cmap_wjet', 'cmap_pe', 'cmap_grey', 'show_cmap', 'cmaps_mpl', 'cmaps_gmt', 'cmap_gmt',
-    'cmaps_act', 'print_cmaps_gmt',  'darken', 'whiten', 'to_shadow', 'StepsNorm',
+    'cmaps_vacumm', 'print_cmaps_gmt',  'darken', 'whiten', 'to_shadow', 'StepsNorm',
     'bistre', 'land', 'jean_pierre', 'decimaitre', 'RGB', 'RGBA', 'cmap_srs', 'cmap_rs', 
     'cmap_linear', 'ocean', 'sea', 'plot_cmap', 'plot_cmaps', 'get_cmap', 'simple_colors', 
     'cmap_land', 'cmap_topo', 'auto_cmap_topo', 'cmap_jet', 'cmap_rainbow', 'rainbow', 
     'cmap_magic', 'cmap_mg', 'RangedLinearSegmentedColormap','Scalar2RGB', 'cmap_chla', 
     'cmap_previmer', 'cmap_rnb2_hymex','cmap_rainbow_sst_hymex','cmap_dynamic_cmyk_hymex',
-    'cmap_white_centered_hymex','cmap_red_tau_hymex', 'cmap_previmer2', 'cmap_ssec', 'cmap_ncview_rainbow', 'cmap_eke']
+    'cmap_white_centered_hymex','cmap_red_tau_hymex', 'cmap_previmer2', 'cmap_ssec', 
+    'cmap_ncview_rainbow', 'cmap_eke', 'cmap_rb', 'cmap_currents', 'cmaps_registered', 
+    'cmap_br2']
 __all__.sort()
 
 # Color maps
@@ -1835,6 +1843,18 @@ def cmap_eke(name='vacumm_eke'):
     P.register_cmap(name, cmap)
     return cmap
 
+def _local_cmap_cpt_(name):
+    """Get a cmap stored in a GMT format in file _cpt_dir/<name>.cpt"""
+    if name not in cmap_d:
+        sname = name[7:] if name.startswith('vacumm_') else name
+        cmap = cmap_gmt(os.path.join(_cpt_dir, sname+'.cpt'), register='vacumm_'+sname)
+    return cmap
+    
+
+def cmap_currents(name='vacumm_currents'):
+    """A colormap for displaying currents"""
+    return _local_cmap_cpt_(name)
+
 def cmap_rnb2_hymex(name="vacumm_rnb2_hymex"):
     """RNB2 Colormap for HYMEX
     
@@ -1943,6 +1963,7 @@ def cmap_red_tau_hymex(name="vacumm_red_tau_hymex"):
     P.register_cmap(name, cmap)
     return cmap
 
+
 def get_cmap(cmap=None, **kwargs):
     """A simple way to get a VACUMM, GMT or MPL colormap
     
@@ -1954,8 +1975,8 @@ def get_cmap(cmap=None, **kwargs):
         >>> get_cmap('cmap_grey',start=.2)   # VACUMM
         >>> get_cmap('vacumm_grey')   # VACUMM (registered in MPL)
         >>> cmap_grey(start=.2)     # VACUMM
-        >>> get_cmap('gmt_gebco')   # GMT
-        >>> cmap_gmt('gebco')       # GMT
+        >>> get_cmap('gmt_gebco')   # GMT (registered in MPL)
+        >>> cmap_gmt('gebco')       # GMT (registered in MPL)
     
     :See also:
 
@@ -1963,10 +1984,15 @@ def get_cmap(cmap=None, **kwargs):
     """
     if isinstance(cmap, Colormap):
        return cmap 
-    if isinstance(cmap, str):
+    if isinstance(cmap, basestring):
+        if not kwargs: # Try an already registered colormap
+            try:
+                return P.get_cmap(cmap)
+            except:
+                pass
         if cmap.startswith('cmap_'):
             cmap = eval(cmap)(**kwargs)
-        elif cmap.startswith('gmt_'):
+        elif cmap.startswith('gmt_') or cmap.endswith('.cpt'):
             cmap = cmap_gmt(cmap)
         elif  cmap.startswith('vacumm_') and kwargs:
             cmap = eval('cmap_'+cmap[7:])(**kwargs)
@@ -2026,10 +2052,10 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, nrow=50, savef
     # Default colormap list
     from vacumm.misc import kwfilter
     if cmaps is None:
-        cmaps = cmaps_mpl(names=False)+cmaps_gmt()
+        cmaps = cmaps_mpl(names=False)
     elif isinstance(cmaps, str):
-        if cmaps.startswith('act'):
-            cmaps = cmaps_act(names=False)
+        if cmaps.startswith('vacumm'):
+            cmaps = cmaps_vacumm(names=False)
         elif cmaps == 'mpl':
             cmaps = cmaps_mpl(names=False, vacumm=False)
         elif cmaps == 'gmt':
@@ -2090,50 +2116,67 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, nrow=50, savef
 def show_cmap(cmap, *args, **kwargs):
     """Alias for :func:`plot_cmap`"""
     return plot_cmap(cmap, *args, **kwargs)
+
+def cmaps_registered(include=None, exclude=None, names=True):
+    """List colormap registered in matplotlib
     
-def cmaps_mpl(vacumm=True, names=True):
-    """List available Matplotlib colormaps
+    :Params:
+    
+        - **include**: Include only colormaps that have one of these prefixes.
+        - **include**: Exclude colormaps that have one of these prefixes.
+        - **names**: Return names OR colormaps.
+    """
+    cmap_names = cmap_d.keys()
+    cmap_names.sort()
+    if include is None: include = []
+    elif isinstance(include, basestring): include = [include]
+    if exclude is None: exclude = []
+    elif isinstance(exclude, basestring): exclude = [exclude]
+    for inc in include:
+        cmap_names = [name for name in cmap_names if name.startswith(inc)]
+    for exc in exclude:
+        cmap_names = [name for name in cmap_names if not name.startswith(exc)]
+    if not names:
+        return [cmap_d[name] for name in cmap_names]
+    return cmap_names
+
+def cmaps_mpl(vacumm=True, gmt=True, names=True):
+    """List available registered colormaps available directly from Matplotlib
     
     :See also:
     
         :func:`get_cmap`
     """
-    cmap_names = cmap_d.keys()
-    cmap_names.sort()
-    if not vacumm:
-        cmap_names = [name for name in cmap_names if not name.startswith('vacumm_')]
-    if names:
-        return cmap_names
-    return [cmap_d[name] for name in cmap_names]
+    exclude = []
+    if not vacumm: exclude.append('vacumm_')
+    if not gmt: exclude.append('gmt_')
+    return cmaps_registered(exclude=exclude, names=names)
 
-def cmaps_act(names=True):
+def cmaps_vacumm(names=True):
     """List available VACUMM colormaps
     
     :See also:
     
         :func:`get_cmap`
     """
-    cmap_names = cmap_d.keys()
-    cmap_names.sort()
-    cmap_names = [name for name in cmap_names if name.startswith('vacumm_')]
-    if names:
-        return cmap_names
-    return [cmap_d[name] for name in cmap_names]
-    
-def cmaps_gmt():
+    return cmaps_registered(include='vacumm_', names=names)
+cmaps_act = cmaps_vacumm
+
+def cmaps_gmt(names=True):
     """List available GMT colormaps
     
     :See also:
         
         :func:`cmap_gmt` :func:`print_cmaps_gmt` :func:`get_cmap`
     """
-    cmaps = []
-    for file in glob.glob(_gmt_cpt+'GMT_*.cpt'):
-        f = open(file)
-        lines = f.readlines()
-        f.close()
-        cmaps.append(os.path.basename(file)[4:-4])
-    return cmaps
+    return cmaps_registered(include='gmt_', names=names)
+#    cmaps = []
+#    for file in glob.glob(os.path.join(_gmt_cpt_dir, '*.cpt')):
+#        f = open(file)
+#        lines = f.readlines()
+#        f.close()
+#        cmaps.append(os.path.basename(file)[:-4])
+#    return cmaps
         
 def print_cmaps_gmt():
     """List available gmt colormaps
@@ -2142,28 +2185,46 @@ def print_cmaps_gmt():
         
         :func:`cmap_gmt` :func:`cmaps_gmt` :func:`get_cmap`
     """
-    print 'List of available GMT colormaps :'
-    for file in glob.glob(_gmt_cpt+'GMT_*.cpt'):
-        f = open(file)
-        lines = f.readlines()
-        f.close()
-        name = os.path.basename(file)[4:-4]
-        description = lines[2].strip('# \t\n')
-        print '%s %s' % ((name+':').ljust(20),description)
+    print 'List of available GMT colormaps: '+', '.join(cmaps_gmt(names=True))
+#    for file in glob.glob(os.path.join(_gmt_cpt_dir, '*.cpt')):
+#        f = open(file)
+#        lines = f.readlines()
+#        f.close()
+#        name = os.path.basename(file)[:-4]
+#        description = lines[2].strip('# \t\n')
+#        print '%s %s' % ((name+':').ljust(20),description)
         
-
-def cmap_gmt(name):
+_re_split_gmt = re.compile(r'[\t/\-]+').split
+def cmap_gmt(name, register=True):
     """Get a colormap from GMT
+    
+    :Params:
+    
+        - **name**: Lower case GMT colormap name OR .cpt file name.
     
     :See also:
         
         :func:`cmaps_gmt` :func:`print_cmaps_gmt` :func:`get_cmap`
     """
+    # Already registered
+    if not name.endswith('.cpt'):
+        
+        name = name.lower()
+        mname = ('gmt_'+name) if not name.startswith('gmt_') else name
+        if mname not in cmaps_gmt():
+            raise vacumm.VACUMMError('Invalid GMT colormap: %s. '%name + 
+                'Please print available name with: print_cmaps_gmt()')
+        return P.get_cmap(mname)
+     
+    # From file
     import colorsys
-    filePath = _gmt_cpt+'GMT_'+name+'.cpt'
+    filePath = name
+    name = os.path.basename(name[:-4]).lower()
+    mname = ('gmt_'+name) if not name.startswith('gmt_') else name
+    
     if not os.path.exists(filePath):
-        print "Bad color map name (%s). Please use cmap_gmt_list() to get the list of available GMT colormaps." % name
-        return None
+        raise vacumm.VACUMMError("Wrong GMT colormap file: "+filePath)
+
     f = open(filePath)
     lines = f.readlines()
     f.close()
@@ -2174,16 +2235,18 @@ def cmap_gmt(name):
     b = []
     colorModel = "RGB"
     for l in lines:
-        ls = l.split()
+        ls = _re_split_gmt(l.strip())
+#        ls = l.split()
         if l[0] == "#":
             if ls[-1] == "HSV":
                 colorModel = "HSV"
                 continue
             else:
                 continue
+        if len(ls)==0: continue
         if ls[0] == "B" or ls[0] == "F" or ls[0] == "N":
             pass
-        else:
+        elif len(ls)==8:
             x.append(float(ls[0]))
             r.append(float(ls[1]))
             g.append(float(ls[2]))
@@ -2192,6 +2255,9 @@ def cmap_gmt(name):
             rtemp = float(ls[5])
             gtemp = float(ls[6])
             btemp = float(ls[7])
+#        else:
+#            return
+            
 
     x.append(xtemp)
     r.append(rtemp)
@@ -2207,10 +2273,10 @@ def cmap_gmt(name):
         for i in range(r.shape[0]):
             rr,gg,bb = colorsys.hsv_to_rgb(r[i]/360.,g[i],b[i])
             r[i] = rr ; g[i] = gg ; b[i] = bb
-        if colorModel == "HSV":
-            for i in range(r.shape[0]):
-                rr,gg,bb = colorsys.hsv_to_rgb(r[i]/360.,g[i],b[i])
-                r[i] = rr ; g[i] = gg ; b[i] = bb
+    if colorModel == "HSV":
+        for i in range(r.shape[0]):
+            rr,gg,bb = colorsys.hsv_to_rgb(r[i]/360.,g[i],b[i])
+            r[i] = rr ; g[i] = gg ; b[i] = bb
     if colorModel == "RGB":
         r = r/255.
         g = g/255.
@@ -2224,9 +2290,14 @@ def cmap_gmt(name):
         red.append([xNorm[i],r[i],r[i]])
         green.append([xNorm[i],g[i],g[i]])
         blue.append([xNorm[i],b[i],b[i]])
-    colorDict = {"red":red, "green":green, "blue":blue}
-    
-    return LinearSegmentedColormap('gmt_'+name,colorDict)
+    colorDict = {"red":red, "green":green, "blue":blue}    
+    if register:
+        if isinstance(register, basestring): name = register
+    cmap = LinearSegmentedColormap(name, colorDict)
+    if register:
+        P.register_cmap(name, cmap)
+    return cmap
+
 
 def darken(c, f):
     """Darken a color 'c' by a factor 'f' (max when f=1)
@@ -2537,6 +2608,8 @@ cmap_white_centered_hymex()
 cmap_red_tau_hymex()
 cmap_ncview_rainbow()
 cmap_eke()
-
-
-#print 'importing colors 1'
+cmap_currents()
+for _name, _cmap in basemap_cm.datad.items():
+    sname = _name.lower() if _name.startswith('GMT_') else _name
+    P.register_cmap(sname, _cmap)
+del sname, _cmap, _name
