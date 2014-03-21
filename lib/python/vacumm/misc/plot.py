@@ -398,11 +398,11 @@ def taylor(datasets, ref, labels=False, colors=None, units=None, normalize=True,
         
         Two variables with the same reference:
         
-        >>> taylor(([var_model1,var_model2], var_ref)
+        >>> taylor([var_model1,var_model2], var_ref)
     
         Two variables without the same reference (like temprature and salinity):
         
-        >>> taylor(([sst,sss], [sstref,sssref], labels=True)
+        >>> taylor([sst,sss], [sstref,sssref], labels=True)
         
         A huge model ensemble of SST with colors varying with averaged SSS:
         
@@ -3629,14 +3629,16 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., maplims=None, bgcolor=(0, .
     A minimap is small and generally in a corner of the figure,
     and used to show simple geographic information.
     
-    :Example:
+    :Examples:
     
         >>> minimap(((lonmin,lonmax),(latmin,latmax))).add_point(-5,48)
         >>> minimap(sst.getGrid())
+        >>> minimap(sst)
         
     """
     from grid import get_xy
     from color import RGB
+    data = gg if cdms2.isVariable(gg) else None
     x, y = get_xy(gg)
     x = N.asarray(x)
     y = N.asarray(y)
@@ -3647,12 +3649,16 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., maplims=None, bgcolor=(0, .
     if zoom:
         xmin, ymin, xmax, ymax = zoombox([xmin, ymin, xmax, ymax], zoom)
     kwargs.setdefault('anchor', 'E')
+    kwargs.setdefault('colorbar', False)
+    kwargs.setdefault('contour', False)
+    kwargs.setdefault('fill', 'pcolormesh')
+    kwargs.setdefault('cmap', 'jet')
     bgcolor = RGB(bgcolor)
     if alpha:
         bgcolor += alpha, 
     oldax = P.gca()
-    m = map2(lon = (xmin, xmax), lat=(ymin,ymax), proj='merc', show=False,
-        axes_rect = bbox, bgcolor=bgcolor, 
+    m = map2(data, lon = (xmin, xmax), lat=(ymin,ymax), proj='merc', show=False,
+        axes_rect = bbox, bgcolor=bgcolor,
         xhide=True, yhide=True, fig=fig, **kwargs)
 #    m.axes.set_alpha(alpha)
     fc = m.get_axobj('fillcontinents')
