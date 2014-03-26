@@ -17,6 +17,9 @@ def barotropic_geostrophic_velocity(ssh, dxy=None, gravity=default_gravity, cycl
     .. note:: ssh is supposed to be at T points,
         ubt is computed at V points, 
         and vbt is computed at U points.
+        
+    .. todo:: Rewrite it using :mod:`vacumm.data.misc.arakawa` and defining
+        a limited number of algorithms for different staggering configurations.
     
     :Params:
     
@@ -138,6 +141,9 @@ def coriolis_parameter(lat, gravity=default_gravity, fromvar=False, format_axes=
 
 def kinetic_energy(sshuv, gravity=default_gravity, format_axes=None, dxy=None):
     """Compute kinetic energy in m2.s-2 either from SSH or velocity on C-grid
+    
+    .. todo:: Rewrite it using :mod:`vacumm.data.misc.arakawa` and defining
+        a limited number of algorithms for different staggering configurations.
     
     :Params:
     
