@@ -47,7 +47,8 @@ import os
 import glob
 
 from matplotlib.cm import ScalarMappable
-from matplotlib.colors import Colormap, Normalize, LinearSegmentedColormap, ColorConverter, makeMappingArray
+from matplotlib.colors import Colormap, Normalize, LinearSegmentedColormap, \
+ColorConverter, makeMappingArray
 import pylab as P
 from matplotlib.cm import cmap_d
 import numpy as N
@@ -1845,10 +1846,10 @@ def cmap_eke(name='vacumm_eke'):
 
 def _local_cmap_cpt_(name):
     """Get a cmap stored in a GMT format in file _cpt_dir/<name>.cpt"""
-    if name not in cmap_d:
-        sname = name[7:] if name.startswith('vacumm_') else name
-        cmap = cmap_gmt(os.path.join(_cpt_dir, sname+'.cpt'), register='vacumm_'+sname)
-    return cmap
+    if name in cmap_d:
+        return cmap_d[name]
+    sname = name[7:] if name.startswith('vacumm_') else name
+    return cmap_gmt(os.path.join(_cpt_dir, sname+'.cpt'), register='vacumm_'+sname)
     
 
 def cmap_currents(name='vacumm_currents'):
@@ -2020,7 +2021,8 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), show=T
     x = N.arange(0,ncol,1.)
     dx = x[1]-x[0]
     interp = 'bilinear' if smoothed else "nearest"
-    p = P.imshow(P.outer(N.ones(1),x), aspect=aspect*ncol, cmap=cmap, origin="lower", 
+    p = P.imshow(P.outer(N.ones(1),x), aspect=aspect*ncol, 
+        cmap=cmap, origin="lower", 
         interpolation=interp, vmin=-.5, vmax=x[-1]+0.5)
     P.fill([x[0]-dx/2, x[0]-dx/2, x[0]-dx/2-ncol/20.], [-.5, .5, 0], facecolor=p.to_rgba(-1), 
         edgecolor='none', linewidth=0)
@@ -2041,13 +2043,14 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), show=T
         P.show()
 
 
-def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, nrow=50, savefigs=None, 
+def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5, savefigs=None, 
     aspect=0.05, **kwargs):
     """Display a list of or all colormaps"""
     
     from vacumm.misc import kwfilter
     kwsf = kwfilter(kwargs, 'savefig')
     kwsfs = kwfilter(kwargs, 'savefigs')
+    kwargs.pop('nrow', None)
     
     # Default colormap list
     from vacumm.misc import kwfilter
@@ -2089,8 +2092,10 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, nrow=50, savef
     cmaps.sort(cmp=lambda a, b: cmp(a.name, b.name))
     
     # Setup figure
-    nrow = min(ncmap, nrow)
-    ncol = (ncmap-1)/nrow+1
+    ncol = min(ncmap, ncol)
+    nrow = (ncmap-1)/ncol+1
+#    nrow = min(ncmap, nrow)
+#    ncol = (ncmap-1)/nrow+1
     if figsize is None:
         figsize = (5*ncol, nrow*5*aspect*1.1)
     if figsize is not False:
@@ -2101,9 +2106,10 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, nrow=50, savef
     for i, cmap in enumerate(cmaps):
         ax = P.subplot(nrow, ncol, ip[i])
         plot_cmap(cmap, show=False, ax=P.gca(), sa=dict(bottom=.01, top=.99, left=.01, right=.99), 
-            aspect=aspect, **kwargs)
+            aspect=aspect, 
+            **kwargs)
         ax.set_anchor('C')
-    P.subplots_adjust(wspace=0.05, top=0.98, bottom=0.02, left=0.02, right=0.98)
+    P.subplots_adjust(wspace=0.0, hspace=0, top=0.98, bottom=0.02, left=0.02, right=0.98)
     
     # Save and show
     if savefig is not None:
@@ -2149,7 +2155,7 @@ def cmaps_mpl(vacumm=True, gmt=True, names=True):
     """
     exclude = []
     if not vacumm: exclude.append('vacumm_')
-    if not gmt: exclude.append('gmt_')
+    if not gmt: exclude.append('GMT_')
     return cmaps_registered(exclude=exclude, names=names)
 
 def cmaps_vacumm(names=True):
@@ -2169,7 +2175,7 @@ def cmaps_gmt(names=True):
         
         :func:`cmap_gmt` :func:`print_cmaps_gmt` :func:`get_cmap`
     """
-    return cmaps_registered(include='gmt_', names=names)
+    return cmaps_registered(include='GMT_', names=names)
 #    cmaps = []
 #    for file in glob.glob(os.path.join(_gmt_cpt_dir, '*.cpt')):
 #        f = open(file)
@@ -2200,7 +2206,7 @@ def cmap_gmt(name, register=True):
     
     :Params:
     
-        - **name**: Lower case GMT colormap name OR .cpt file name.
+        - **name**: GMT colormap name OR .cpt file name.
     
     :See also:
         
@@ -2209,8 +2215,9 @@ def cmap_gmt(name, register=True):
     # Already registered
     if not name.endswith('.cpt'):
         
-        name = name.lower()
-        mname = ('gmt_'+name) if not name.startswith('gmt_') else name
+#        name = name.lower()
+        if name.startswith('gmt_'): name = 'GMT_'+name[4:]
+        mname = ('GMT_'+name) if not name.startswith('GMT_') else name
         if mname not in cmaps_gmt():
             raise vacumm.VACUMMError('Invalid GMT colormap: %s. '%name + 
                 'Please print available name with: print_cmaps_gmt()')
@@ -2219,8 +2226,7 @@ def cmap_gmt(name, register=True):
     # From file
     import colorsys
     filePath = name
-    name = os.path.basename(name[:-4]).lower()
-    mname = ('gmt_'+name) if not name.startswith('gmt_') else name
+    name = os.path.basename(name[:-4])#.lower()
     
     if not os.path.exists(filePath):
         raise vacumm.VACUMMError("Wrong GMT colormap file: "+filePath)
@@ -2609,7 +2615,8 @@ cmap_red_tau_hymex()
 cmap_ncview_rainbow()
 cmap_eke()
 cmap_currents()
-for _name, _cmap in basemap_cm.datad.items():
-    sname = _name.lower() if _name.startswith('GMT_') else _name
-    P.register_cmap(sname, _cmap)
-del sname, _cmap, _name
+for _name in basemap_cm.datad.keys():
+#    sname = _name.lower() if _name.startswith('GMT_') else _name
+    _cmap = getattr(basemap_cm, _name)
+    P.register_cmap(_name, _cmap)
+del _cmap, _name
