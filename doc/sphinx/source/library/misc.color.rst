@@ -4,6 +4,7 @@
 ================================================
 
 .. overview:: vacumm.misc.color
+    :columns: 2
 
 :Inheritance diagram: 
 
