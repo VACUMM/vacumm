@@ -2354,6 +2354,7 @@ class OceanDataset(OceanSurfaceDataset):
                 depth = MV2.average(depth, axis=0)
         # Main plot
         kwmap = kwfilter(kwargs, 'minimap_')
+        post_plot = kwargs.get('post_plot', True)
         kwargs.update(post_plot=False, title=title)
         kwargs.setdefault('bgcolor', '0.5')
         kwargs.setdefault('ymax', 0)
@@ -2383,7 +2384,7 @@ class OceanDataset(OceanSurfaceDataset):
             p.axes._minimap = True
         
         del kwargs['title']
-        if kwargs.get('post_plot', True): 
+        if post_plot: 
             p.post_plot(**kwargs)
         return p
             
