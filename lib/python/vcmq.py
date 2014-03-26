@@ -51,14 +51,6 @@ from vacumm.misc.misc import \
     dict_check_defaults, cp_atts, dict_filter,  cp_props, numod, set_atts, get_atts, \
     set_lang, geodir, auto_scale
     
-from vacumm.misc.plot import \
-    map2, section2, hov2, curve2, bar2, plot2d, stick2, make_movie, \
-    savefigs, add_grid, xhide, yhide, xrotate, yrotate, add_key, taylor, dtaylor, dtarget, \
-    add_shadow, add_glow, add_map_lines, add_map_line, add_map_point, minimap
-    
-from vacumm.misc.color import plot_cmap, show_cmap, get_cmap, simple_colors, \
-    cmap_rs, cmap_srs, cmap_custom, Scalar2RGB, darken, whiten
-
 from vacumm.misc.axes import \
     create_lon, create_lat, create_time, create_depth, \
     create_dep, islon, islat, isdep, isaxis, istime
@@ -87,6 +79,17 @@ from vacumm.misc.stats import StatAccum
 
 from vacumm.misc.phys.units import convert_units
    
+# - plot
+   
+from vacumm.misc.plot import \
+    map2, section2, hov2, curve2, bar2, plot2d, stick2, make_movie, \
+    savefigs, add_grid, xhide, yhide, xrotate, yrotate, add_key, taylor, dtaylor, dtarget, \
+    add_shadow, add_glow, add_map_lines, add_map_line, add_map_point, minimap
+    
+from vacumm.misc.color import plot_cmap, show_cmap, get_cmap, simple_colors, \
+    cmap_rs, cmap_srs, cmap_custom, Scalar2RGB, darken, whiten, cmaps_mpl, \
+    cmap_gmt, cmaps_registered, cmaps_vacumm, print_cmaps_gmt, plot_cmaps
+
 # - grid
 
 from vacumm.misc.grid.misc import \
