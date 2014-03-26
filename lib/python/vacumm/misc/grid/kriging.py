@@ -340,7 +340,7 @@ def syminv(A):
     else:
         return res
 
-class OrdinaryKriger(object):
+class OrdinaryCloudKriger(object):
     """Ordinary kriger using mutliclouds of points
     
     Big input cloud of points (size > ``npmax``)
@@ -506,7 +506,7 @@ class OrdinaryKriger(object):
     
         
     def get_Ainv(self):
-        """Get the invert of A"""
+        """Get the inverse of A"""
 
         # Variogram function
         vgf = self.variogram_func
@@ -640,6 +640,9 @@ class OrdinaryKriger(object):
         return zo
     
     __call__ = interp
+
+
+OrdinaryKriger = OrdinaryCloudKriger
 
 def krig(xi, yi, zi, xo, yo, vgf=None, geterr=False, **kwargs):
     """Quickly krig data"""
