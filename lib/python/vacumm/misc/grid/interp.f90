@@ -557,7 +557,7 @@ subroutine remap1d(vari, yi, varo, yo, mv, conserv, nx, nyi, nyo, yib, yob)
 
     ! Extrernal
     integer, intent(in) :: nx, nyi, nyo
-    logical,intent(in) :: conserv
+    integer, intent(in) :: conserv
     real(kind=8),intent(in) :: vari(nx,nyi),mv
     real(kind=8),intent(in) :: yi(nyi),yo(nyo)
     real(kind=8),intent(out) :: varo(nx,nyo)
@@ -603,7 +603,7 @@ subroutine remap1d(vari, yi, varo, yo, mv, conserv, nx, nyi, nyo, yib, yob)
 
             ! Contribution of intersection
             dyio = min(zyib(iyi+1),zyob(iyo+1))-max(zyib(iyi),zyob(iyo))
-            if(conserv.and.zyib(iyi)/=zyib(iyi+1)) dyio = dyio / (zyib(iyi+1)-zyib(iyi))
+            if(conserv==1.and.zyib(iyi)/=zyib(iyi+1)) dyio = dyio / (zyib(iyi+1)-zyib(iyi))
             where(vari(:,iyi)/=mv)
                 wo = wo + dyio
                 varo(:,iyo) = varo(:,iyo) + vari(:,iyi)*dyio
@@ -616,7 +616,7 @@ subroutine remap1d(vari, yi, varo, yo, mv, conserv, nx, nyi, nyo, yib, yob)
         enddo
 
         ! Normalize
-        if(conserv)where(wo/=0.)wo = 1.
+        if(conserv==1)where(wo/=0.)wo = 1.
         varo(:,iyo) = merge(varo(:,iyo)/wo, mv, wo/=0.)
 !        where(wo/=0.)
 !            varo(:,iyo) = varo(:,iyo)/wo
@@ -642,7 +642,7 @@ subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob
     
     ! Extrernal
     integer, intent(in) :: nx,nyi,nyo,nxb
-    logical,intent(in) ::  conserv
+    integer, intent(in) ::  conserv
     real(kind=8), intent(in) :: vari(nx,nyi)
     real(kind=8), intent(in) :: yi(nxb,nyi), yo(nyo)
     real(kind=8), intent(in) :: mv
@@ -675,7 +675,7 @@ subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob
     
     ! Initialisation
     varo = 0.
-    if(.not.conserv)dyi = 1.
+    if(conserv==0)dyi = 1.
         
     ! Loop on output grid
     do iyo = 1,nyo
@@ -692,11 +692,11 @@ subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob
             ! Conditional arrays
             mapi(:,1) = zyib(:, iyi)>=zyob(iyo).and.zyib(:, iyi+1)<=zyob(iyo+1)
             mapi(:,2) = zyib(:, iyi)< zyob(iyo).and.zyib(:, iyi+1)> zyob(iyo+1)
-            mapi(:,3) = zyib(:, iyi)< zyob(iyo).and.zyib(:, iyi+1)>=zyob(iyo)
-            mapi(:,4) = zyib(:, iyi)<=zyob(iyo+1).and.zyib(:, iyi+1)> zyob(iyo+1)
+            mapi(:,3) = zyib(:, iyi)< zyob(iyo).and.zyib(:, iyi+1)>zyob(iyo)
+            mapi(:,4) = zyib(:, iyi)< zyob(iyo+1).and.zyib(:, iyi+1)> zyob(iyo+1)
             
             ! Conservative
-            if(conserv) dyi = zyib(:, iyi+1)-zyib(:, iyi)
+            if(conserv==1) dyi = zyib(:, iyi+1)-zyib(:, iyi)
     
             ! Loop on blocks
             do ib = 1, nx/nxb
@@ -710,7 +710,7 @@ subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob
                         ! Input inside
                         varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
                         &    *(zyib(:, iyi+1)-zyib(:, iyi))/dyi
-                        wo(ix0:ix1) = wo(ix0:ix1) + zyib(ix0:ix1, iyi+1)-zyib(ix0:ix1, iyi)
+                        wo(ix0:ix1) = wo(ix0:ix1) + zyib(:, iyi+1)-zyib(:, iyi)
                         
                     elsewhere(mapi(:,2))
                     
@@ -724,14 +724,14 @@ subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob
                         ! Input partly below
                         varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
                         &    *(zyib(:, iyi+1)-zyob(iyo))/dyi
-                        wo(ix0:ix1) = wo(ix0:ix1) + zyib(ix0:ix1, iyi+1)-zyob(iyo)
+                        wo(ix0:ix1) = wo(ix0:ix1) + zyib(:, iyi+1)-zyob(iyo)
                     
                     elsewhere(mapi(:,4))
                     
                         ! Input partly above
                         varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
                         &    *(zyob(iyo+1)-zyib(:, iyi))/dyi
-                        wo(ix0:ix1) = wo(ix0:ix1) + (zyob(iyo+1)-zyib(ix0:ix1, iyi))
+                        wo(ix0:ix1) = wo(ix0:ix1) + (zyob(iyo+1)-zyib(:, iyi))
                         
                     endwhere
                 endwhere
@@ -739,7 +739,7 @@ subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob
         enddo
             
         ! Normalize
-        if(conserv)where(wo/=0.)wo = 1.
+        if(conserv==1)where(wo/=0.)wo = 1.
         where(wo/=0.)
             varo(:,iyo) =  varo(:,iyo)/wo
         elsewhere
@@ -749,6 +749,126 @@ subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob
 
 end subroutine remap1dx
 
+subroutine remap1dxx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob)
+    ! Remapping between two variable axes in space (y)
+    !
+    ! - vari: input variable
+    ! - varo: output variable
+    ! - yi: input y axis
+    ! - yo: output y axis
+    ! - mv: missing value (used only for initialisation)
+    !
+
+    implicit none
+    
+    ! Extrernal
+    integer, intent(in) :: nx,nyi,nyo,nxb
+    integer,intent(in) ::  conserv
+    real(kind=8), intent(in) :: vari(nx,nyi)
+    real(kind=8), intent(in) :: yi(nxb,nyi), yo(nxb,nyo)
+    real(kind=8), intent(in) :: mv
+    real(kind=8), intent(out) :: varo(nx,nyo)
+    real(kind=8), intent(in), optional :: yib(nxb,nyi+1), yob(nxb,nyo+1)
+   
+    ! Local
+    integer :: iyi,iyo,ib
+    real(kind=8) :: zyib(nxb,nyi+1),zyob(nxb,nyo+1),wo(nx),dyi(nxb)
+    integer :: ix0,ix1
+    logical :: mapi(nxb,4)
+
+    ! Bounds
+    if(present(yib).and. .not.all(yib==0d0))then
+        zyib = yib
+    else
+        zyib(:,2:nyi-1) = (yi(:,2:nyi)+yi(:,1:nyi-1))*.5
+        zyib(:,1)     = yi(:,1)  +(yi(:,1)  -yi(:,2))    *.5
+        zyib(:,nyi+1) = yi(:,nyi)+(yi(:,nyi)-yi(:,nyi-1))*.5
+    endif
+    if(present(yob).and. .not.all(yob==0d0))then
+        zyob = yob
+    else
+        zyob(:,2:nyo-1) = (yo(:,2:nyo)+yo(:,1:nyo-1))*.5
+        zyob(:,1)     = yo(:,1)  +(yo(:,1)  -yo(:,2))    *.5
+        zyob(:,nyo+1) = yo(:,nyo)+(yo(:,nyo)-yo(:,nyo-1))*.5
+    endif
+    if (zyib(1,nyi)<zyib(1,1)) zyib = -zyib
+    if (zyob(1,nyo)<zyob(1,1)) zyob = -zyob
+    
+    ! Initialisation
+    varo = 0.
+    if(conserv==0)dyi = 1.
+    print*,'hahahaa'
+    ! Loop on output grid
+    do iyo = 1,nyo
+            
+        wo = 0.
+        
+        ! Loop on input grid
+        do iyi = 1, nyi
+
+            ! No intersection
+            if(all(zyib(:, iyi)>=zyob(:, iyo+1)))exit
+            if(all(zyib(:, iyi+1)<zyob(:, iyo)))cycle
+            
+            ! Conditional arrays
+            mapi(:,1) = zyib(:, iyi)>=zyob(:, iyo).and.zyib(:, iyi+1)<=zyob(:, iyo+1) ! Inside
+            mapi(:,2) = zyib(:, iyi)< zyob(:, iyo).and.zyib(:, iyi+1)> zyob(:, iyo+1) ! Embed
+            mapi(:,3) = zyib(:, iyi)< zyob(:, iyo).and.zyib(:, iyi+1)>zyob(:, iyo) ! Below
+            mapi(:,4) = zyib(:, iyi)<zyob(:, iyo+1).and.zyib(:, iyi+1)> zyob(:, iyo+1) ! Above
+            
+            ! Conservative
+            if(conserv==1) dyi = zyib(:, iyi+1)-zyib(:, iyi)
+    
+            ! Loop on blocks
+            do ib = 1, nx/nxb
+            
+                ! Block
+                ix0 = 1+(ib-1)*nxb
+                ix1 = ix0+nxb-1
+                where(vari(ix0:ix1,iyi)/=mv)
+                    where(mapi(:,1))
+                    
+                        ! Input inside
+                        varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
+                        &    *(zyib(:, iyi+1)-zyib(:, iyi))/dyi
+                        wo(ix0:ix1) = wo(ix0:ix1) + zyib(:, iyi+1)-zyib(:, iyi)
+                        
+                    elsewhere(mapi(:,2))
+                    
+                        ! Output inside
+                        varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
+                        &    *(zyob(:, iyo+1)-zyob(:, iyo))/dyi
+                        wo(ix0:ix1) = wo(ix0:ix1) + zyob(:, iyo+1)-zyob(:, iyo)
+                        
+                    elsewhere(mapi(:,3))
+                    
+                        ! Input partly below
+                        varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
+                        &    *(zyib(:, iyi+1)-zyob(:, iyo))/dyi
+                        wo(ix0:ix1) = wo(ix0:ix1) + zyib(:, iyi+1)-zyob(:, iyo)
+                    
+                    elsewhere(mapi(:,4))
+                    
+                        ! Input partly above
+                        varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
+                        &    *(zyob(:, iyo+1)-zyib(:, iyi))/dyi
+                        wo(ix0:ix1) = wo(ix0:ix1) + zyob(:, iyo+1)-zyib(:, iyi)
+                        
+                    endwhere
+                endwhere
+            enddo
+        enddo
+        
+        ! Normalize
+        if(conserv==1)where(wo>0d0)wo = 1.
+        where(wo>0d0)
+            varo(:,iyo) =  varo(:,iyo)/wo
+        elsewhere
+            varo(:,iyo) = mv
+        endwhere
+    enddo
+
+end subroutine remap1dxx
 
 ! =============================================================================
 ! ======================================= 2D ==================================
@@ -1342,6 +1462,42 @@ subroutine curv2rect(x1,x2,x3,x4,y1,y2,y3,y4,x,y,p,q)
 end subroutine curv2rect
 !end function curv2rect
 
+
+subroutine curv2rel(xx0,yy0,x1,y1,p,q,nx0,ny0,n1)
+    ! Convert a series of absolute coordinates to coordinates relative to
+    ! a curved grid 
+    
+    integer,intent(in) :: nx0,ny0,n1
+    real(kind=8),intent(in) :: xx0(ny0,nx0), yy0(ny0,nx0), x1(n1), y1(n1)
+    real(kind=8),intent(out) :: p(n1), q(n1)
+    
+    integer :: i0, j0
+    
+    !$OMP PARALLEL DO PRIVATE(i0,j0,i1) 
+    !$& SHARED(xx0,yy0,x1,y1,nx0,ny0,n1,p,q)
+    do i1 = 1, n1
+        
+        ! Find the cell
+        call closest2d(xx0,yy0,x1(i1),y1(i1),nx0,ny0,i0,j0,.false.)
+        if(i0==nx0) i0 = i0-1
+        if(j0==ny0) j0 = j0-1
+        
+        ! Relative to the current cell
+        call curv2rect(xx0(j0,i0),xx0(j0+1,i0),xx0(j0+1,i0+1),xx0(j0,i0+1), &
+            &  yy0(j0,i0),yy0(j0+1,i0),yy0(j0+1,i0+1),yy0(j0,i0+1), &
+            &  x1(i1), y1(i1), p(i1), q(i1))
+            
+        ! Relative to the full grid cells
+        p(i1) = p(i1)+i0
+        q(i1) = q(i1)+j0
+        
+    end do
+    !$OMP END PARALLEL
+
+end subroutine
+                
+    
+    
 subroutine bilin2dto1dc(xxi,yyi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     ! bilinear interpolation of gridded data with 2D AXES to random positions
 
