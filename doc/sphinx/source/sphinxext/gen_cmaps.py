@@ -44,7 +44,7 @@ def gen_cmaps(app, rstfile):
     app.builder.info(bold("generating overview of colormaps..."), nonl=True)
     rc('font', size=8)
     vacumm.misc.color.plot_cmaps(savefigs=os.path.join(outdir, app.config.gen_cmaps_prefix+'cmaps'), 
-        show=False, figsize=(7, 7), savefigs_verbose=False, aspect=0.1)
+        show=False, figsize=(6, 10), savefigs_verbose=False, aspect=0.08, ncol=3)
     rcdefaults()
     app.builder.info('done')
 

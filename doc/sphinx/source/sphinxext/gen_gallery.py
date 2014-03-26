@@ -26,7 +26,7 @@ link_template = """\
 <a href="%s"><img src="%s" border="0" alt="%s"/></a>
 """
 
-header_template = """<div class="section" id="%(subdir)s">\
+header_template = u"""<div class="section" id="%(subdir)s">\
 <h3>%(title)s<a class="headerlink" href="#%(subdir)s" title="Permalink to this headline">¶</a></h3>"""
 
 toc_template = """\
@@ -34,6 +34,7 @@ toc_template = """\
 
 import os, glob, re, sys, warnings
 import matplotlib.image as image
+from codecs import open
 
 multiimage_match = re.compile('(.*?)(_\d+)$').match
 
@@ -134,13 +135,13 @@ def gen_gallery(app, doctree):
     # Otherwise, this triggers a full rebuild of the docs
     gallery_path = os.path.join(srcdir, 'templates', 'gallery.html')
     if os.path.exists(gallery_path):
-        fh = file(gallery_path, 'r')
+        fh = open(gallery_path, 'r', 'utf8')
         regenerate = fh.read() != content
         fh.close()
     else:
         regenerate = True
     if regenerate:
-        fh = file(gallery_path, 'w')
+        fh = open(gallery_path, 'w', 'utf8')
         fh.write(content)
         fh.close()
 
