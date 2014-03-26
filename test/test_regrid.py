@@ -5,7 +5,7 @@ class TestSequenceFunctions(VCTestCase):
 
     for test_name in [
         'test_regrid_extend',
-        'test_regrid_kriging_coud_split',
+        'test_regrid_kriging_cloud_split',
         'test_regrid_kriging_variogram',
         'test_regrid_kriging_krig',
         'test_regrid_kriging_parallel',

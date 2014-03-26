@@ -39,8 +39,8 @@ curve2(var['w'][:, 0, 0], '^r', show=False, savefig=code_base_name(ext='_2.png')
 
 
 result = [
-    ('assertEqual', var['t'][0, 0, :2].mean(), var['u'][0, 0, 0]), 
-    ('assertEqual', var['t'][0, :2, 0].mean(), var['v'][0, 0, 0]), 
-    ('assertEqual', var['t'][0, :2, :2].mean(), var['f'][0, 0, 0]), 
-    ('assertEqual', var['t'][:2, 0, 0].mean(), var['w'][0, 0, 0]), 
+    ('assertEqual', [var['t'][0, 0, :2].mean(), var['u'][0, 0, 0]]), 
+    ('assertEqual', [var['t'][0, :2, 0].mean(), var['v'][0, 0, 0]]), 
+    ('assertEqual', [var['t'][0, :2, :2].mean(), var['f'][0, 0, 0]]), 
+    ('assertEqual', [var['t'][:2, 0, 0].mean(), var['w'][0, 0, 0]]), 
     ]

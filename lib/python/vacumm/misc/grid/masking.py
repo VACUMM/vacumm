@@ -1505,7 +1505,7 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
     
     # Scaler
     if scaler is None:
-        scaler = get_proj(gg)
+        scaler = get_proj((xx, yy))
     if callable(scaler):
         xxs, yys = scaler(xx, yy)
     else:

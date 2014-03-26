@@ -6,7 +6,7 @@ from vacumm.misc.plot import add_grid
 
 figfiles = []
 figfile = code_base_name(ext=False)+'_%i.png'
-def plot(xx, yy, target, label, lon=None, lat=None, show=False):
+def plot(xx, yy, target, label, figfiles, lon=None, lat=None, show=False):
     xs, ys, mask = coord2slice(target, lon=lon, lat=lat)
     P.figure(figsize=(6, 3.5))
     P.title('Target=%(label)s / select: lon=%(lon)s, lat=%(lat)s'%locals())
@@ -67,12 +67,12 @@ for i in xrange(10):
 lat2d = N.resize((N.arange(10)+20), (10, 10)).T
 lon2d, lat2d = create_axes2d(lon2d, lat2d)
 kw = dict(show=False)
-plot(lon2d, lat2d, lon2d, 'lon2d', lon=(2, 4), **kw)
-plot(lon2d, lat2d, lon2d, 'lon2d', lon=(2, 4), lat=slice(0, 2), **kw)
-plot(lon2d, lat2d, lat2d,  'lat2d', lat=(22, 26.6,'ccb'), **kw)
+plot(lon2d, lat2d, lon2d, 'lon2d', figfiles, lon=(2, 4), **kw)
+plot(lon2d, lat2d, lon2d, 'lon2d', figfiles, lon=(2, 4), lat=slice(0, 2), **kw)
+plot(lon2d, lat2d, lat2d,  'lat2d', figfiles, lat=(22, 26.6,'ccb'), **kw)
 
 print 'Curv grid'
 grid = create_grid(lon2d, lat2d)
-plot(lon2d, lat2d, grid, 'grid', lon=(8, 11, 'cc'), lat=(21.9, 26., 'cc'), **kw)
-plot(lon2d, lat2d, grid, 'grid', lon=slice(2, 5), lat=(23.4, 23.6, 'ccb'), **kw)
+plot(lon2d, lat2d, grid, 'grid', figfiles, lon=(8, 11, 'cc'), lat=(21.9, 26., 'cc'), **kw)
+plot(lon2d, lat2d, grid, 'grid', figfiles, lon=slice(2, 5), lat=(23.4, 23.6, 'ccb'), **kw)
 print coord2slice(grid,lon=(8,8,'ccb'),lat=(24,24,'ccb'))
