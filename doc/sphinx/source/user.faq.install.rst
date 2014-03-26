@@ -62,7 +62,7 @@ For example:
     
 
 I am a developer and I have an error like ``ImportError: libgfortran.so.2``
---------------------------------------------------------------------------
+---------------------------------------------------------------------------
 
 If you use vacumm as a developer (direct import sources), a typical error can occur when loading::
     

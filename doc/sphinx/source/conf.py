@@ -269,11 +269,6 @@ inheritance_node_attrs = dict(shape='ellipse', fontsize=10, height=.6,
 inheritance_edge_attrs = dict(penwidth=1)
 
 
-def setup(app):
-    app.add_object_type('confval', 'confval',
-                        objname='configuration value',
-                        indextemplate='pair: %s; configuration value')
-
 # Help of scripts
 # TODO: Create an extension for generating these rst help files
 if callfromsphinx:

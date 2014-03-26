@@ -69,7 +69,7 @@ In addition, the configuration files of support the expansion of variables in tw
            option2 = %(option1)bar
            
        ``option2`` takes the value ``foobar``.
-       There are several directory names that are currently systematically extended::
+       There are several directory names that are currently systematically extended:
            
            - ``lib_dir`` : Root directory of the library  
              (see :func:`~vacumm.config.get_lib_dir`).

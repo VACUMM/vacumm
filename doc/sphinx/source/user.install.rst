@@ -1,7 +1,7 @@
 .. _user.install:
 
-Installation of the library
-***************************
+Installation and configuration
+******************************
 
 
 .. toctree::

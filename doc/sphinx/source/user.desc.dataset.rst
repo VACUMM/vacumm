@@ -34,7 +34,9 @@ are implemented to manage the interface to the different sources of data.
   :class:`~vacumm.data.model.mars3d.Mars3D`,
   :class:`~vacumm.data.model.nemo.Nemo`, 
   :class:`~vacumm.data.model.hycom.HYCOM`, 
-  :class:`~vacumm.data.model.swan.SWAN`.
+  :class:`~vacumm.data.model.swan.SWAN`,
+  :class:`~vacumm.data.model.swan.CFSR,
+  and more.
   This list will increase with time.
 
 Usage
@@ -50,9 +52,9 @@ You can also use the :func:`vacumm.data.DS` function:
     >>> mydata = DS(ncfile, 'mars')
     
 In this latter case,  if you don't specify the dataset type (here "mars"), 
-the generic class :class:`~vacumm.data.misc.dataset.Generic` is used.
+the generic class :class:`~vacumm.data.misc.dataset.GenericDataset` is used.
 
-Some options are supperted at initialization. For example::
+Some options are supported at initialization. For example::
     
     >>> mydata = Mars3D(ncfile, lon=(-10, 4),  logger_level='debug')
     
@@ -73,6 +75,14 @@ For example,  you can provide sereval files or a file name with date patterns.
 
     >>> Mars3D([ncfile1, ncfile2, ...])
     >>> Mars3D('myfile.%Y.nc', time=('2000', '2010'))
+
+It also accepts url, global unix patterns (``*``, ``?``, etc),
+and date patterns (``%Y``, ``%m``, etc, see :func:`~vacumm.misc.atime.strftime`).
+For more information on how to read a set of files, please read the 
+:func:`~vacumm.misc.io.list_forecast_files` function for options.
+
+.. note:: Files are sorted by alphabetically, unless you you pass
+    the ``sort`` keyword to prevent or tune sorting.
     
     
 Searching for variables and axes

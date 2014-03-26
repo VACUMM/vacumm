@@ -10,4 +10,5 @@ Appendix
     appendix.license
     appendix.biblio
     courses/index
+    appendix.release
     

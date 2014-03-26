@@ -1,7 +1,7 @@
 .. _user.desc:
 
-Description of the library
-**************************
+Description of some components
+******************************
 
 This section describes some components of the library.
 

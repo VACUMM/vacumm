@@ -60,13 +60,13 @@ When you have installed UV-CDAT, here is a list of necessary or useful  packages
      - Manipulate Excel files.
    * - :pypi:`sphinxcontrib-cheeseshop (0.2)`
      - Doc
-     - Extension à :pypi:`sphinx` Linking to Cheese Shop (Python Package Index) packages.
+     - Extension to :pypi:`sphinx`: Linking to Cheese Shop (Python Package Index) packages.
    * - :pypi:`sphinxcontrib-ansi (0.6)`
      - Doc
-     - Extension à :pypi:`sphinx` Parse ANSI control sequences.
+     - Extension to :pypi:`sphinx`: Pparse ANSI control sequences.
    * - :pypi:`sphinxcontrib-programoutput (0.8)`
      - Doc
-     - Extension à :pypi:`sphinx` Include program output.
+     - Extension to :pypi:`sphinx`: Include program output.
 
 
 .. rubric:: Documentation generation
@@ -131,7 +131,7 @@ Install other packages
 
 ::
 
-    $ pip install PIL paramiko xlutils readline seawater
+    $ pip install configobj PIL paramiko xlutils readline seawater
     $ pip install sphinxcontrib-cheeseshop sphinxcontrib-ansi sphinxcontrib-programoutput
 
 
