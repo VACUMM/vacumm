@@ -1,7 +1,7 @@
 Release notes
 #############
 
-Version 2.2.0 (in develoment)
+Version 2.2.2 (in develoment)
 =============================
 
 
