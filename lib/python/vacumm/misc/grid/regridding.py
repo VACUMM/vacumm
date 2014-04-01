@@ -386,7 +386,7 @@ def _subshape_(bigshape, subshape, axis=None):
     ns = len(subshape)
     assert nb>=ns # TODO: make it more generic
     istart = None
-    for i in xrange(nb-ns):
+    for i in xrange(nb-ns+1):
         subbigshape = bigshape[i:i+ns]
         if axis is not None and axis>=i and axis<i+ns:
             i0 = axis-i
@@ -435,7 +435,6 @@ def _syncshapes_(axi, iaxi, axo, iaxo):
     nir = axi.ndim-iaxi-1 # right, second
     nol = iaxo # left, first
     nor = axo.ndim-iaxo-1 # right, second
-    print nil, nir, nol, nor
 
     # Right adjusment
     if nir>nor: # expand the second to the right
@@ -477,8 +476,8 @@ def _toright_(ar, iax):
     newmap.remove(iax)
     newmap.append(iax)
     bakmap = [newmap.index(iax) for iax in oldmap]
-    newar = ar.translate(*newmap)
-    newar, bakmap
+    newar = ar.transpose(*newmap)
+    return newar, bakmap
         
 
 def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None, 
@@ -545,11 +544,8 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
     missing_value = vari.getMissing()
     
     # Output axis
-    if not A.isaxis(axo):
-        axo = N.asarray(axo)
-        if axo.ndim == 1:
-            axo = cdms.createAxis(axo)
-    axon = axo[:]                
+    axon = axo[:] 
+    if N.ma.isMA(axon): axon = axon.filled(missing_value)
 
     # Working data axis
     if axis is None:# Guess it
@@ -562,8 +558,8 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
             if axis is None: 
                 raise VACUMMError('Please, specify the "axis" parameter for interpolation')
             
-        # Not found
-        if axis == -1: axis = 0
+        # Not found, so 0 without verification now (later)
+        if axis == -1 or axis is None: axis = 0
         
     elif axis == -1:      # Last axis
         axis = vari.ndim-1
@@ -606,7 +602,7 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
         raise VACUMMError("Input axis has a invalid shape: %s (!=%s)"%(
             axi.shape, vari.shape[axis-iaxi:axis-iaxi+nxi]))
     vs = list(vari.shape[axis-iaxo:axis-iaxo+nxo])
-    vs[ixo] = len(axo[iaxo])
+    vs[iaxo] = axo.shape[iaxo]
     vs = tuple(vs)
     if vs!=axo.shape:
         raise VACUMMError("Output axis has a invalid shape: %s (!=%s)"%(axo.shape, vs))
@@ -619,9 +615,13 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
     
     # Push interpolation dimension to the right and convert to 1D or 2D arrays
     varis, bakmapv = _toright_(varin, axis)
-    varo2d = varis.reshape(-1, varis.shape[-1])
-    axind, bakmapi = _toright_(axin, iaxi).reshape(-1, axin.shape[iaxi])
-    axond, bakmapo = _toright_(axon, iaxo).reshape(-1, axon.shape[iaxo])
+    vari2d = varis.reshape(-1, varis.shape[-1])
+    axind, bakmapi = _toright_(axin, iaxi)
+    if axind.ndim>3:
+        axind = axind.reshape((-1, axin.shape[iaxi]))
+    axond, bakmapo = _toright_(axon, iaxo)
+    if axond.ndim>3:
+        axond = axond.reshape((-1, axon.shape[iaxo]))
     nxb = vari2d.size/max(axind.size, axond.size)
     nxi = axind.ndim
     nxo = axond.ndim
@@ -650,7 +650,7 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
     if nxi==1 and nxo==1: # 1D->1D
         interp_func = _interp1d_
         remap_func = _remap1d_
-    elif nxi==1: # 1D->ND
+    elif nxo==1: # 1D->ND
         interp_func = _interp1dx_
         remap_func = _remap1dx_        
     else: # ND->ND
@@ -718,14 +718,18 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
     
     # Reshape back
     varos = varo2d.reshape(varis.shape[:-1]+axond.shape[-1:]) ; del varo2d
-    varon = varos.translate(*bakmapv) ; del varos
+    varon = varos.transpose(*bakmapv) ; del varos
 
     # Convert to cdms
-    varo = MV.masked_values(varon, missing_value)
+    varo = MV2.masked_values(varon, missing_value)
     cp_atts(vari, varo, id=True)
     varo.setMissing(missing_value)
-    if isaxis(axo):
+    if A.isaxis(axo):
         axes[axis] = axo
+    elif cdms2.isVariable(axo):
+        axes[axis] = axo.getAxis(iaxo)
+    else:
+        axes[axis] = varo.getAxis(axis)
     varo.setAxisList(axes)
     varo.setGrid(grid)
     gc.collect()
