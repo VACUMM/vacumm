@@ -43,7 +43,7 @@ import re, math, numpy as N, cdms2, MV2
 from traceback import format_exc
 from warnings import warn
 from cdms2.selectors import Selector
-from vacumm.misc import selector2str
+from vacumm.misc import selector2str, create_selector
 import vacumm.data.cf as cf
 from vacumm.misc.grid import dz2depth as dz2depths
 from vacumm.misc.io import NcFileObj, ncread_axis, ncread_var
@@ -1045,8 +1045,7 @@ class SigmaStandard(object):
         self.depth = depth
         self.sigma = sigma
     def sigma_to_depths(self, eta=None, selector=None, copyaxes=True):        
-        if isinstance(selector, dict):
-            selector = Selector(**selector)            
+        selector = as_selector(selector)
         depth = self.depth(selector)
         eta = eta(selector)
         return sigma2depths(self.sigma, depth, eta, stype=self.stype, copyaxes=copyaxes)
@@ -1082,9 +1081,8 @@ class SigmaGeneralized(object):
         self.depth_c = depth_c
         self.a = a
         self.b = b
-    def sigma_to_depths(self, eta=None, selector=None, copyaxes=True):        
-        if isinstance(selector, dict):
-            selector = Selector(**selector)            
+    def sigma_to_depths(self, eta=None, selector=None, copyaxes=True): 
+        selector = as_selector(selector)
         depth = self.depth(selector)
         depth_c = self.depth_c(selector)
         eta = eta(selector)
