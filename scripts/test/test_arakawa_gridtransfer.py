@@ -1,4 +1,4 @@
-"""Test :met:`vacumm.data.misc.arakawa.CGrid.interp`"""
+"""Test :meth:`vacumm.data.misc.arakawa.CGrid.interp`"""
 
 from vcmq import MV2, N, create_grid, create_dep, set_grid, map2, \
     code_base_name, CGrid, minmax, curve2, add_grid, ArakawaGridTransfer, set_loc
