@@ -608,6 +608,7 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
         raise VACUMMError("Output axis has a invalid shape: %s (!=%s)"%(axo.shape, vs))
         
     # Homogeneize axi and axo shapes (except for z dim)
+    iaxo_bak = iaxo
     axin, iaxi, axon, iaxo = _syncshapes_(axin, iaxi, axon, iaxo)
         
     # Convert to numeric
@@ -688,9 +689,8 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
         
         # Float mask
         maski2df = maski2d.astype('f')
-        print "regrid mask"
-        masko2d = regrid_func(maski2df, axind, axond, 1.e20, *args)
-        masko2d[masko2d==1.e20] = 1.
+        masko2d = regrid_func(maski2df, axind, axond, missing_value, *args)
+        masko2d[masko2d==missing_value] = 1.
         
         # Masking
         if method == -1:
@@ -706,8 +706,8 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
         
             # Cubic case: lower order again
             if method >= 2:
-                masko2dc = interp_func(maski2df, axind, axond, 1.e20, 1)
-                masko2dc[masko2dc==1.e20] = 1.
+                masko2dc = interp_func(maski2df, axind, axond, missing_value, 1)
+                masko2dc[masko2dc==missing_value] = 1.
                 varolowc = interp_func(vari2d, axind, axond, missing_value, 0)
                 varolow[:] = N.where(masko2dc!=0., varolowc, varolow)
                 del masko2dc, varolowc
@@ -729,9 +729,13 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
     if A.isaxis(axo):
         axes[axis] = axo
     elif cdms2.isVariable(axo):
-        axes[axis] = axo.getAxis(iaxo)
+        axes[axis] = axo.getAxis(iaxo_bak)
     else:
         axes[axis] = varo.getAxis(axis)
+        if nxo==1:
+            odlaxis = axes[axis]
+            axes[axis][:] = axo[:]
+            cp_atts(oldaxis, axes[axis])
     varo.setAxisList(axes)
     varo.setGrid(grid)
     gc.collect()

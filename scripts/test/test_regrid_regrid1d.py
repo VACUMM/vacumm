@@ -66,6 +66,7 @@ result.append(('assertEqual', [(varol1-varol2).std(), 0]))
 varoc = _regrid1dnew_(vari, depo1d, method='cellave', iaxi=1, axi=depi4d)
 myplot(vari, depi4d, varol1, varoc, depo1d, code_base_name(ext='_1.png'))
 
+
 # 4d->4d
 depi1d = N.arange(-4500., 1, 500)
 nzi = depi1d.shape[0]
@@ -86,6 +87,28 @@ varol2 = _regrid1dnew_(vari, depo4d, axis=1, method='linear', iaxi=1, axi=depi4d
 result.append(('assertEqual', [(varol1-varol2).std(), 0]))
 varoc = _regrid1dnew_(vari, depo4d, axis=1, method='cellave', iaxi=1, axi=depi4d, iaxo=1)
 myplot(vari, depi4d, varol1, varoc, depo4d, code_base_name(ext='_2.png'))
+
+
+# 4d->3d
+depi1d = N.arange(-4500., 1, 500)
+nzi = depi1d.shape[0]
+depi4d = N.resize(N.resize(depi1d, (nx, ny, nzi)).T, (nt, nzi, ny, nx))
+depi4d += 500*(N.random.random(depi4d.shape)-0.5)
+depo1d = create_dep(N.arange(-4000., 1, 333.33))
+nzo = depo1d.shape[0]
+depo3d = N.resize(depo1d, (nx, ny, nzo)).T
+depo3d += 500*(N.random.random(depo3d.shape)-0.5)
+vari = MV2.array(depi4d)
+vari.getAxis(1).designateLevel()
+depi4d = MV2.asarray(depi4d)
+depi4d.getAxis(1).designateLevel()
+depo3d = MV2.asarray(depo3d)
+depo3d.getAxis(1).designateLevel()
+varol1 = _regrid1dnew_(vari, depo3d, axis=1, method='linear', axi=depi4d)
+varol2 = _regrid1dnew_(vari, depo3d, axis=1, method='linear', iaxi=1, axi=depi4d, iaxo=0)
+result.append(('assertEqual', [(varol1-varol2).std(), 0]))
+varoc = _regrid1dnew_(vari, depo3d, axis=1, method='cellave', iaxi=1, axi=depi4d, iaxo=0)
+myplot(vari, depi4d, varol1, varoc, depo3d, code_base_name(ext='_3.png'))
 
 P.close()
 
