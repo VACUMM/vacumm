@@ -679,6 +679,7 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
     
         
     # First guess
+    print "regrid var"
     varo2d = regrid_func(vari2d, axind, axond, missing_value, *args)
 
     # Mask
@@ -687,7 +688,8 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
         
         # Float mask
         maski2df = maski2d.astype('f')
-        masko2d = regrid_func(maski2df, axin, axon, 1.e20, *args)
+        print "regrid mask"
+        masko2d = regrid_func(maski2df, axind, axond, 1.e20, *args)
         masko2d[masko2d==1.e20] = 1.
         
         # Masking
@@ -699,14 +701,14 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
         else:
             
             # Lower method
-            varolow = interp_func(vari2d, axin, axon, missing_value, 
+            varolow = interp_func(vari2d, axind, axond, missing_value, 
                 min(abs(method), 2)-1, extrap=extrap)
         
             # Cubic case: lower order again
             if method >= 2:
-                masko2dc = interp_func(maski2df, axin, axon, 1.e20, 1)
+                masko2dc = interp_func(maski2df, axind, axond, 1.e20, 1)
                 masko2dc[masko2dc==1.e20] = 1.
-                varolowc = interp_func(vari2d, axin, axon, missing_value, 0)
+                varolowc = interp_func(vari2d, axind, axond, missing_value, 0)
                 varolow[:] = N.where(masko2dc!=0., varolowc, varolow)
                 del masko2dc, varolowc
             
