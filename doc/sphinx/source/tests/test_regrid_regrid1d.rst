@@ -8,5 +8,7 @@
 
 .. figure:: ../../../../scripts/test/test_regrid_regrid1d_2.png
 
+.. figure:: ../../../../scripts/test/test_regrid_regrid1d_3.png
+
 .. literalinclude:: ../../../../scripts/test/test_regrid_regrid1d.py
 

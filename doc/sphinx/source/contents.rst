@@ -16,8 +16,7 @@
     library/index
     appendix
     contact
-
-
+    
 .. only:: html
 
     **Indexation**

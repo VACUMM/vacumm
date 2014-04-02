@@ -1,5 +1,5 @@
-:program:`test_arakawa_interp.py` -- Test :met:`vacumm.data.misc.arakawa.CGrid.interp`
-======================================================================================
+:program:`test_arakawa_interp.py` -- Test :meth:`vacumm.data.misc.arakawa.CGrid.interp`
+=======================================================================================
 
 
 .. figure:: ../../../../scripts/test/test_arakawa_interp_1.png
