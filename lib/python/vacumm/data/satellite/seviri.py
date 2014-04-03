@@ -527,11 +527,9 @@ class Seviri(Sst) :
         obsdir = cfg['Observations']['obsdir']
         fln = cfg['Observations']['filename']
         
-        
-        
         # -- Lecture du fichier filename
         self.data=[]
-        flist = list_forecast_files(os.path.join(obsdir,fln),(str(cfg['Time Period']['andeb']),str(cfg['Time Period']['anfin']),'co'))  
+        flist = list_forecast_files(os.path.join(obsdir,fln),(str(cfg['Time Period']['andeb'])+'-'+str(cfg['Time Period']['mdeb'])+'-'+str(cfg['Time Period']['jdeb']),str(cfg['Time Period']['anfin'])+'-'+str(cfg['Time Period']['mfin'])+'-'+str(cfg['Time Period']['jfin']),'co'))  
         print flist
         for fil in flist:                      
             f = cdms2.open(fil)
