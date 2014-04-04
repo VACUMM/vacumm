@@ -384,31 +384,36 @@ See also: http://en.wikipedia.org/wiki/Software_versioning
 
 The version number must be defined in a unique location.
 
-Vacumm set the version number into its python root package, vacumm.__version__ module attribute (vacumm/__init__.py)
+Vacumm set the version number into its python root package, :attr:`vacumm.__version__` module attribute (:file:`vacumm/__init__.py`)
 
 This __version__ string must use the following conventions:
-    - at least three numerical parts, separated with dots ('.'): __version__ = 'X.Y.Z'
+    - at least three numerical parts, separated with dots ('.'): ``__version__ = 'X.Y.Z'``
     - these three numerical parts have the following meaning:
         - X is the major version number, incremented when there is a significant change of the software (when reaching a certain maturity or when reorganization or when there are API breakage).
         - Y is the minor version number, incremented when new features have been added to the software.
         - Z is the revision number, incremented when there are some fixes to the corresponding X.Y version
-    - an extra part can be present to indicate a release status: __version__ = '1.0.0.alpha' (or '1.0.0.beta', '1.0.0.rc1', ...)
+    - an extra part can be present to indicate a release status: ``__version__ = '1.0.0.alpha'`` (or ``'1.0.0.beta'``, ``'1.0.0.rc1'``, ...)
 
 When a version is ready to be tagged, proceed with the following steps:
-    - check or set vacumm.__version__
-    - make a svn copy (which in fact only put a reference to a revision number)
-        svn copy https://gforge.ifremer.fr/svn/vacumm/trunk https://gforge.ifremer.fr/svn/vacumm/tags/vacumm-X.Y.Z
+    - check or set :attr:`vacumm.__version__`,
+    - make a svn copy (which in fact only put a reference to a revision number)::
+        
+        $ svn copy https://gforge.ifremer.fr/svn/vacumm/trunk \
+            https://gforge.ifremer.fr/svn/vacumm/tags/vacumm-X.Y.Z
 
-Using a tag named with 'vacumm' and the version string 'X.Y.Z' together is a preferred way since a checkout will then result in an explicit vacumm-X.Y.Z directory (instead of a lonely X.Y.Z).
+Using a tag named with ``'vacumm'`` and the version string ``'X.Y.Z'`` together is a preferred way since a checkout will then result in an explicit :file:`vacumm-X.Y.Z` directory (instead of a lonely :file:`X.Y.Z`).
 
-After a tag have been created, you can then change vacumm.__version__ from, for example 1.0.0 to 1.1.0.alpha to mark a difference for the people who uses the trunk.
-However these users must be aware of what they're doing and then know if the 1.0.0 version they're using is the trunk or the real 1.0.0 version.
+After a tag have been created, you can then change :attr:`vacumm.__version__` from, for example ``1.0.0`` to ``1.1.0.alpha`` to mark a difference for the people who uses the trunk.
+However these users must be aware of what they're doing and then know if the ``1.0.0`` version they're using is the trunk or the real 1.0.0 version.
 The most important thing to do is to correctly setup the version number before creating a new tag.
 
 If you created the tag too quickly and need to correct something, then
     - fix it
-    - remove the created faulty tag: svn rm https://gforge.ifremer.fr/svn/vacumm/tags/vacumm-X.Y.Z.
-    - re-create the expected tag (svn copy, see above)
+    - remove the created faulty tag::
+        
+        $ svn rm https://gforge.ifremer.fr/svn/vacumm/tags/vacumm-X.Y.Z
+        
+    - re-create the expected tag (``svn copy``, see above).
 
 Distributing the library as a package
 =====================================
