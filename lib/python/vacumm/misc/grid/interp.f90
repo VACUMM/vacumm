@@ -189,7 +189,8 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
     end do
     
     ! Extrapolation with nearest
-    if(method==0 .and.present(extrap).and.extrap/=0)then
+    !if(method==0 .and.present(extrap).and.extrap/=0)then
+    if(present(extrap).and.extrap/=0)then
         if((extrap==-1 .or. extrap==2) .and. (zyo(1)<zyi(1)))then
             do iyo=1,nyo
                 if(zyi(1)<zyo(iyo))exit
@@ -348,7 +349,8 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
     end do
 
     ! Extrapolation with nearest
-    if(method==0 .and.present(extrap).and.extrap/=0)then
+    !if(method==0 .and.present(extrap).and.extrap/=0)then
+    if(present(extrap).and.extrap/=0)then
         do iyo = 1,nyo
             if(extrap==-1 .or. extrap==2)then
                 bitv = zyo(iyo)<zyi(:,1) ! below
@@ -521,7 +523,8 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
     end do
 
     ! Extrapolation with nearest
-    if(method==0 .and.present(extrap).and.extrap/=0)then
+    !if(method==0 .and.present(extrap).and.extrap/=0)then
+    if(present(extrap).and.extrap/=0)then
         do iyo = 1,nyo
             if(extrap==-1 .or. extrap==2)then
                 bitv = zyo(:,iyo)<zyi(:,1) ! below
@@ -550,7 +553,7 @@ end subroutine interp1dxx
 
 ! =============================================================================
 
-subroutine remap1d(vari, yi, varo, yo, mv, conserv, nx, nyi, nyo, yib, yob)
+subroutine remap1d(vari, yi, varo, yo, mv, conserv, nx, nyi, nyo, yib, yob,extrap)
     ! Remapping along the second axis (y)
     
     implicit none
@@ -562,6 +565,7 @@ subroutine remap1d(vari, yi, varo, yo, mv, conserv, nx, nyi, nyo, yib, yob)
     real(kind=8),intent(in) :: yi(nyi),yo(nyo)
     real(kind=8),intent(out) :: varo(nx,nyo)
     real(kind=8),intent(in), optional :: yib(nyi+1),yob(nyo+1)
+    integer, intent(in), optional :: extrap
 
     ! Local
     integer :: iyi,iyo
@@ -585,6 +589,15 @@ subroutine remap1d(vari, yi, varo, yo, mv, conserv, nx, nyi, nyo, yib, yob)
     if (zyib(2)<zyib(1)) zyib = -zyib
     if (zyob(2)<zyob(1)) zyob = -zyob
 
+    ! Extrapolation with nearest bound
+    if(present(extrap).and.extrap/=0)then
+       if(extrap==-1 .or. extrap==2)then
+           if (zyib(1) > zyob(1)) zyib(1)=zyob(1) !below
+       endif
+       if(extrap==1 .or. extrap==2)then
+           if (zyib(nyi+1) < zyob(nyo+1)) zyib(nyi+1)=zyob(nyo+1) !above
+       endif
+    endif
     ! Init
     varo = 0d0
 
@@ -628,7 +641,7 @@ subroutine remap1d(vari, yi, varo, yo, mv, conserv, nx, nyi, nyo, yib, yob)
     
 end subroutine remap1d
 
-subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob)
+subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob,extrap)
     ! Remapping along the second axis (y)
     !
     ! - vari: input variable
@@ -648,7 +661,8 @@ subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob
     real(kind=8), intent(in) :: mv
     real(kind=8), intent(out) :: varo(nx,nyo)
     real(kind=8), intent(in), optional :: yib(nxb,nyi+1), yob(nyo+1)
-   
+    integer, intent(in), optional :: extrap
+ 
     ! Local
     integer :: iyi,iyo,ib
     real(kind=8) :: zyib(nxb,nyi+1),zyob(nyo+1),wo(nx),dyi(nxb)
@@ -672,6 +686,16 @@ subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob
     endif
     if (zyib(1,nyi)<zyib(1,1)) zyib = -zyib
     if (zyob(nyo)<zyob(1)) zyob = -zyob
+
+    ! Extrapolation with nearest bound
+    if(present(extrap).and.extrap/=0)then
+       if(extrap==-1 .or. extrap==2)then
+           where (zyib(:,1) > zyob(1)) zyib(:,1)=zyob(1) 
+       endif
+       if(extrap==1 .or. extrap==2)then
+           where (zyib(:,nyi+1) < zyob(nyo+1)) zyib(:,nyi+1)=zyob(nyo+1) 
+       endif
+    endif
     
     ! Initialisation
     varo = 0.
@@ -749,7 +773,7 @@ subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob
 
 end subroutine remap1dx
 
-subroutine remap1dxx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob)
+subroutine remap1dxx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob,extrap)
     ! Remapping between two variable axes in space (y)
     !
     ! - vari: input variable
@@ -769,6 +793,7 @@ subroutine remap1dxx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yo
     real(kind=8), intent(in) :: mv
     real(kind=8), intent(out) :: varo(nx,nyo)
     real(kind=8), intent(in), optional :: yib(nxb,nyi+1), yob(nxb,nyo+1)
+    integer, intent(in), optional :: extrap
    
     ! Local
     integer :: iyi,iyo,ib
@@ -793,7 +818,17 @@ subroutine remap1dxx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yo
     endif
     if (zyib(1,nyi)<zyib(1,1)) zyib = -zyib
     if (zyob(1,nyo)<zyob(1,1)) zyob = -zyob
-    
+
+    ! Extrapolation with nearest bound
+    if(present(extrap).and.extrap/=0)then
+       if(extrap==-1 .or. extrap==2)then
+           where (zyib(:,1) > zyob(:,1)) zyib(:,1)=zyob(:,1) 
+       endif
+       if(extrap==1 .or. extrap==2)then
+           where (zyib(:,nyi+1) < zyob(:,nyo+1)) zyib(:,nyi+1)=zyob(:,nyo+1) 
+       endif
+    endif
+
     ! Initialisation
     varo = 0.
     if(conserv==0)dyi = 1.
