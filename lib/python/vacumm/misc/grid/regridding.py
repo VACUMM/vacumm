@@ -659,11 +659,10 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
         remap_func = _remap1dxx_
     if method == -1: # Cellave
         regrid_func = remap_func
-        args = [conserv]
+        kwargs=dict(conserv=conserv,extrap=extrap)
     else: # Interp
         regrid_func = interp_func
-        args = [method]
-
+        kwargs=dict(method=method,extrap=extrap)
     # Extrapolation
     if isinstance(extrap, basestring):
         extrap = extrap.lower()
@@ -680,8 +679,7 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
     
         
     # First guess
-    print "regrid var"
-    varo2d = regrid_func(vari2d, axind, axond, missing_value, *args)
+    varo2d = regrid_func(vari2d, axind, axond, missing_value, **kwargs)
 
     # Mask
     maski2d = vari2d==missing_value
@@ -689,7 +687,7 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
         
         # Float mask
         maski2df = maski2d.astype('f')
-        masko2d = regrid_func(maski2df, axind, axond, missing_value, *args)
+        masko2d = regrid_func(maski2df, axind, axond, missing_value,**kwargs)
         masko2d[masko2d==missing_value] = 1.
         
         # Masking

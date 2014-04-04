@@ -374,8 +374,8 @@ def extrema(var,ref='mean',mean=None,getmax=True,getmin=True,getsign=False,getid
         idxmax=N.array(idxmax)+1
 
     res = []
-    if getmin: res.append(_extrema_var_(minima,long_name='Minima',id='maxima', **kwargs))
-    if getmax: res.append(_extrema_var_(maxima,long_name='Maxima',id='minima', **kwargs))
+    if getmin: res.append(_extrema_var_(minima,long_name='Minima',id='minima', **kwargs))
+    if getmax: res.append(_extrema_var_(maxima,long_name='Maxima',id='maxima', **kwargs))
     if getsign: res.append(sign)
 
     if getidx:
