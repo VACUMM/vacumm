@@ -64,7 +64,7 @@ isseq = operator.isSequenceType
 isnum = operator.isNumberType
 isdic= ismap = operator.isMappingType
 
-__all__ = ['isgrid', 'get_resolution', 'get_distances', 'get_closest', 'get_geo_area', 
+__all__ = ['isgrid', 'get_resolution', 'get_distances', 'get_closest', 'get_closest_depth', 'get_geo_area', 
     'bounds2d', 'bounds1d', 'get_axis', 'get_grid', 'get_grid_axes', "gridsel", 
     'grid2d', 'num2axes2d', 'var2d', 'axis1d_from_bounds', 'get_xy', 
     'deg2xy', 'set_grid', 'check_xy_shape', 'axes2d', 'meshgrid','meshbounds', 'meshweights', 
@@ -273,6 +273,31 @@ def get_closest(xx, yy, xp, yp, proj=True, mask=None,  gridded=True, **kwargs):
         return N.unravel_index(imin, dd.shape)[::-1]
     return imin
 
+def get_closest_depth(zz, zp, mask=None, **kwargs):
+    """Find the closest unmasked point on a depth vector and return indices
+
+    :Params:
+
+        - **zz**: 1D Z axis, or random positions.
+        - **zp**: Z position of the point (float)
+
+    :Returns: 
+
+        - ``(i,)`` 1-element tuple of indices along z for gridded data,
+        - OR ``i`` if not gridded.
+    """
+
+    # Gridded
+    zz = N.asarray(zz[:])
+
+    # Compute the distance to all grid points
+    if mask is not None:
+        zz = MA.array(zz, mask=mask, copy=False)
+    dd = N.abs(zz - zp)
+
+    # Find the smallest distance
+    imin = N.ma.argmin(dd)
+    return imin
 
 def get_geo_area(grid,mask=None):
     """Compute cell areas on the a regular geographical grid.
