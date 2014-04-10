@@ -2886,6 +2886,8 @@ def curve2(*args, **kwargs):
         {Plot_post_plot[show]}
         {Plot_post_plot[close]}
    
+    :Other arguments can be classical matplotlib plot arguments (for exemple: linewidths):   
+   
     """
     from core_plot import Curve
     kwargs.setdefault('plot', True)
