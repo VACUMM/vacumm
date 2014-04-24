@@ -30,18 +30,18 @@ print >>f, 'NY=%(ny)i, NX=%(nx)i'%locals()
 # Loop on methods
 for tool, methods in config.items():
     for method in methods:
-        print tool.upper(), method
+#        print tool.upper(), method
         print >>f, tool.upper(), method
         
-        print ' rect'
+        # rect...
         t0 = time()
-#        varo = vari.regrid(gridor, tool=tool, method=method)
         r = CDATRegridder(vari, gridor, tool=tool, method=method)
         t1 = time()
         dt = t1-t0
         varo = r(vari)
         print >>f,  ' rect: ini=%5.1f s + reg=%5.2f s %s'%(dt, time()-t1, psinfo())
-        print ' curved'
+        
+        # curved
         t0 = time()
         r = CDATRegridder(vari, gridoc, tool=tool, method=method)
         t1 = time()

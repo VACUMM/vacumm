@@ -26,6 +26,6 @@ P.plot(d, v, 'ob', label='From data')
 P.plot(D, V, '-r', label='Fitted model (%s)'%mtype)
 P.legend(loc='best')
 P.ylim(ymin=0)
-savefigs(code_base_name(ext=False), pdf=True)
+savefigs(code_base_name(ext=False), pdf=True, verbose=False)
 P.close()
 

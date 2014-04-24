@@ -48,5 +48,3 @@ figfile = code_base_name(ext='png')
 if os.path.exists(figfile): os.remove(figfile)
 s.savefig(figfile, pdf=True)
 
-# For unittest
-result = dict(files=figfile)

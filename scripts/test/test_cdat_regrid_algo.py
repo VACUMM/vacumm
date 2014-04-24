@@ -48,7 +48,7 @@ kw = dict(vmin=vari.min(),vmax=vari.max())
 logfile = code_base_name(ext='log')
 f = open(logfile, 'w')
 def log(f, text): # logger
-    print text
+#    print text
     print >>f, text
 
 # Loop on methods and tools
@@ -95,9 +95,9 @@ for tool, methods in configs.items():
         P.axis(axis)
         ifig = len(figfiles)
         ff = figfile%vars()
+        P.tight_layout()
         P.savefig(ff)
         figfiles.append(ff)
-        P.tight_layout()
         P.close()
 f.close()
-print 'Done'
+

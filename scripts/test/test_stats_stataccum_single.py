@@ -34,5 +34,4 @@ istats = sa.get_stats()
 result = []
 for key in sorted(dstats.keys()):
     value = N.ma.allclose(dstats[key], istats[key])
-    print key, value
     result.append(('assertTrue', value))

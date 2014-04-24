@@ -7,16 +7,16 @@ nx = 4
 ny = 3
 result = []
 
-def getdv(var, dep):
-    v = var[1, :, 1, :]
-    if dep[:].ndim==var.ndim:
-        dep = dep[1, :, 1, :]
-    elif dep[:].ndim==3:
-        dep = dep[:, 1, :]
-    xb, yb = meshcells(v.getAxis(-1), dep)
-    return xb, yb, v.asma()
 
 def myplot(vari, depi, varol, varoc, depo, figfile):
+    def getdv(var, dep):
+        v = var[1, :, 1, :]
+        if dep[:].ndim==var.ndim:
+            dep = dep[1, :, 1, :]
+        elif dep[:].ndim==3:
+            dep = dep[:, 1, :]
+        xb, yb = meshcells(v.getAxis(-1), dep)
+        return xb, yb, v.asma()
     xbi, ybi, vi = getdv(vari, depi)
     xbo, ybo, vol = getdv(varol, depo)
     _, _, voc = getdv(varoc, depo)

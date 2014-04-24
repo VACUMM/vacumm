@@ -39,7 +39,7 @@ for i, select in enumerate(indices):
     msize = max(len(x), msize)
 P.legend(loc='upper left').get_frame().set_alpha(.5)
 P.title('Split clouds: max size=%i'%npmax)
-savefigs(code_base_name(ext='png'), pdf=True)
+savefigs(code_base_name(ext='png'), pdf=True, verbose=False)
 #P.tight_layout()
 P.close()    
     

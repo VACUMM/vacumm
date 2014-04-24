@@ -33,5 +33,3 @@ figfile = code_base_name(ext='png')
 if os.path.exists(figfile): os.remove(figfile)
 m.savefig(figfile)
 
-# Unittest
-result = dict(files=figfile)

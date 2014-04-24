@@ -31,5 +31,5 @@ varo = extend2d(vari, iext=2, jext=2, mode='linear')
 plot2d(varo, subplot=(2, 2, 2), 
     title='interp2d: mode=linear\niext=2, jext=2', **kw)
 P.tight_layout()
-savefigs(code_base_name())
-
+savefigs(code_base_name(), verbose=False)
+P.close()

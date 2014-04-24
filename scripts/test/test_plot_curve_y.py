@@ -14,5 +14,3 @@ figfile = code_base_name(ext='png')
 if os.path.exists(figfile): os.remove(figfile)
 curve2(var, savefig=figfile, show=False, close=True, latex_units=True)
 
-# Unittest
-result = {"files":figfile}

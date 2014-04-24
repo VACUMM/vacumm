@@ -25,8 +25,8 @@ tlons, tlats = transect_specs(u.getGrid(), lon0, lat0, lon1, lat1)
 ttimes = create_time(IterDates((time0, time1), len(tlons), closed=True))
 
 # Compute transect
-tu = transect(u, tlons, tlats, time=ttimes)
-tv = transect(v, tlons, tlats, time=ttimes)
+tu = transect(u, tlons, tlats, times=ttimes)
+tv = transect(v, tlons, tlats, times=ttimes)
 
 # Plot along time
 s = stick2(tu, tv, figsize=(8,3), title='Space-time transect of speed', 

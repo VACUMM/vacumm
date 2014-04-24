@@ -56,5 +56,4 @@ for key in sorted(dstats.keys()):
             value += N.ma.allclose(dstats[key][i], istats[key][i]), 
     else:
         value = N.ma.allclose(dstats[key], istats[key])
-    print key, value
     result.append(('assertTrue', value))

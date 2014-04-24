@@ -6,7 +6,7 @@ from vacumm.misc.plot import add_grid
 
 figfiles = []
 figfile = code_base_name(ext=False)+'_%i.png'
-def plot(xx, yy, target, label, figfiles, lon=None, lat=None, show=False):
+def plot(xx, yy, target, label, figfiles, figfile, lon=None, lat=None, show=False):
     xs, ys, mask = coord2slice(target, lon=lon, lat=lat)
     P.figure(figsize=(6, 3.5))
     P.title('Target=%(label)s / select: lon=%(lon)s, lat=%(lat)s'%locals())
@@ -47,32 +47,39 @@ def plot(xx, yy, target, label, figfiles, lon=None, lat=None, show=False):
     if show: P.show()
     else: P.close()
     
-print '1D axis'
+result = []
+    
+# 1D axis
 lon1d = create_lon((0, 10))
-print coord2slice(lon1d, lon=(2.5, 4., 'cc'))
-print coord2slice(lon1d, lon=(2.5, 4., 'ccb')) 
-print coord2slice(lon1d, lon=slice(3, 6))
-print coord2slice(lon1d, lat=(6, 8))
-print coord2slice(lon1d, lon=(60, 70))
+result.append(('AssertEqual', (coord2slice(lon1d, lon=(2.5, 4., 'cc')), slice(3, 5, 1))))
+result.append(('AssertEqual', (coord2slice(lon1d, lon=(2.5, 4., 'ccb')), slice(2, 5, 1))))
+result.append(('AssertEqual', (coord2slice(lon1d, lon=slice(3, 6)), slice(3, 6, None))))
+result.append(('AssertEqual', (coord2slice(lon1d, lat=(6, 8)), slice(0, 10, 1))))
+result.append(('AssertEqual', (coord2slice(lon1d, lon=(60, 70)), None)))
 
-print 'Rect grid'
+# Rect grid
 grid = create_grid((0, 10.), (20, 30.))
-print coord2slice(grid, lon=(0., 3.5), lat=slice(3, 5))
-print coord2slice(grid, lat=(21,21, 'ccb')) 
+result.append(('AssertEqual', (coord2slice(grid, lon=(0., 3.5), lat=slice(3, 5)), 
+    (slice(0, 4, 1), slice(3, 5, None), None))))
+result.append(('AssertEqual', (coord2slice(grid, lat=(21,21, 'ccb')),
+    (slice(0, 10, 1), slice(1, 2, 1), None))))
 
-print '2D axis'
+# 2D axis
 lon2d = N.empty((10, 10.))
 for i in xrange(10): 
     lon2d[i] = lon1d[:]+i
 lat2d = N.resize((N.arange(10)+20), (10, 10)).T
 lon2d, lat2d = create_axes2d(lon2d, lat2d)
 kw = dict(show=False)
-plot(lon2d, lat2d, lon2d, 'lon2d', figfiles, lon=(2, 4), **kw)
-plot(lon2d, lat2d, lon2d, 'lon2d', figfiles, lon=(2, 4), lat=slice(0, 2), **kw)
-plot(lon2d, lat2d, lat2d,  'lat2d', figfiles, lat=(22, 26.6,'ccb'), **kw)
+plot(lon2d, lat2d, lon2d, 'lon2d', figfiles, figfile, lon=(2, 4), **kw)
+plot(lon2d, lat2d, lon2d, 'lon2d', figfiles, figfile, lon=(2, 4), lat=slice(0, 2), **kw)
+plot(lon2d, lat2d, lat2d,  'lat2d', figfiles, figfile, lat=(22, 26.6,'ccb'), **kw)
 
-print 'Curv grid'
+# Curv grid
 grid = create_grid(lon2d, lat2d)
-plot(lon2d, lat2d, grid, 'grid', figfiles, lon=(8, 11, 'cc'), lat=(21.9, 26., 'cc'), **kw)
-plot(lon2d, lat2d, grid, 'grid', figfiles, lon=slice(2, 5), lat=(23.4, 23.6, 'ccb'), **kw)
-print coord2slice(grid,lon=(8,8,'ccb'),lat=(24,24,'ccb'))
+plot(lon2d, lat2d, grid, 'grid', figfiles, figfile, lon=(8, 11, 'cc'), lat=(21.9, 26., 'cc'), **kw)
+plot(lon2d, lat2d, grid, 'grid', figfiles, figfile, lon=slice(2, 5), lat=(23.4, 23.6, 'ccb'), **kw)
+res = coord2slice(grid,lon=(8,8,'ccb'),lat=(24,24,'ccb'))
+result.append(('AssertEqual', (res[:2], (slice(3, 6, 1), slice(4, 5, 1)))))
+result.append(('AssertEqual', (coord2slice(grid,lon=(8,8,'ccb'),lat=(24,24,'ccb'), mode='a').tolist(), 
+    [[4, 4, 4], [3, 4, 5]])))

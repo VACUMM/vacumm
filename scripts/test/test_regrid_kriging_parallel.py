@@ -23,7 +23,7 @@ xo, yo = random_points(np=npo)
 # Interpolate
 t0 = time()
 zo = kriger(xo, yo)
-print '%.2fs'%(time()-t0)
+#print '%.2fs'%(time()-t0)
 
 # Plot
 P.figure(figsize=(6, 8))
@@ -40,6 +40,6 @@ P.imshow(zzg, **kwim)
 P.scatter(xo, yo, c=zo, s=40, **kwsc)
 P.title('Interpolated points')
 P.tight_layout()
-savefigs(code_base_name())
+savefigs(code_base_name(), verbose=False)
 P.close()
 
