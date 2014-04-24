@@ -702,19 +702,33 @@ def meshbounds(*args):
     """A shortcut to :func:`meshcells`"""
     return meshcells(*args)
 
-def coord2slice(gg, lon=None, lat=None, asslice=True, mask=None, assubmask=True):
+def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True, 
+    squeeze=False, **kwargs):
     """Convert from coordinates to indices on grid or axes
     
     :Params:
     
         - **gg**: A grid, a cmds variable with a grid, 
           a tuple of axes or an axis.
-        - **lon/lat**: Interval of coordinates or slice.
-        - **asslice**, optional: Return slices instead of indices.
+        - **lon/lat**: Interval of coordinates or slice. If single coordinates, the 
+          interval becomes for instance ``(lon,lon,'ccb')``.
+        - **mode**, optional: Output mode. You can pass only the first letter.
+        
+            - ``"slice"``: Return a :class:`slice` object.
+            - ``"indices"``: Return a 3-element tuple as in a :class:`slice` context
+              ``(start,stop,step)``.
+            - ``"array"``: Return an array of valid indices of shape ``(2,nvalid)``,
+              where ``out[0]`` gives the X indices and ``out[1]`` gives the Y indices.
+              
         - **mask**, optional: Also use this mask to get indices
           (for 2D axes only).
+        - **squeeze**, optional: If ``asslice`` is False ad
+        - **asslice**, optional: DEPRECATED. Use ``mode='slice'`` instead.
     
     :Return: 
+    
+        In array mode, it always returns an array of indices of shape ``(2,nvalid)``, 
+        possibly empty if not intersection if found.
     
         Here ``i/jslice`` is a slice or a tuple of indices,
         depending on asslice. It can also be ``None`` if
@@ -722,28 +736,47 @@ def coord2slice(gg, lon=None, lat=None, asslice=True, mask=None, assubmask=True)
         
         If ``gg`` is grid, a tuple of axes or a 2D axis: 
         ``islice, jslice, mask``.
-        In case of a tuple od 1D axes, ``mask`` is ``None``.
+        In case of a tuple of 1D axes, ``mask`` is ``None`` because not relevant.
         
         If ``gg`` is a 1D axis: ``ijslice``, just as the
         :meth:`mapIntervaExt`` method of 1D axes.
         
     :Examples:
     
-        >>> ijk = coord2slice(lon1d, lon=(lon0,lon1))
-        >>> xijk, yijk, mask = coord2slice((lon1d,lat1d), lon=(lon0,lon1), lat=slice(0,3))
-        >>> islice, jslice, mask = coord2slice(gridcurv, lat=(lat0,lat0,'ccb'), asslice=True)
-        >>> xijk, yijk, mask = coord2slice(lon2d, lon=(lon0,lon1))
+        >>> ijk = coord2slice(lon1d, lon=(lon0,lon1), mode='i')
+        >>> xijk, yijk, mask = coord2slice((lon1d,lat1d), 
+            lon=(lon0,lon1), lat=slice(0,3), mode='i')
+        >>> islice, jslice, mask = coord2slice(gridcurv, lat=(lat0,lat0,'ccb'), mode='s')
+        >>> xijk, yijk, mask = coord2slice(lon2d, lon=(lon0,lon1), mode='i')
+        >>> ij = coord2slice(grid, lon, lat, mode='a')
         
     """
+    # Output mode
+    if 'asslice' in kwargs:
+        mode = 'slice' if kwargs['asslice'] else 'indices'
+    if mode is None: 
+        mode = 'slice'
+    else:
+        mode = str(mode).lower()
+        if mode[:1] not in 'ias':
+            raise VACUMMError('Wrong mode: %s. Choose one of: slice, indices, array'%mode)
+    if mode[0]=='a':
+        assubmask = True
+    
     # Format selector specs
+    if lon==':' or lon==slice(None): lon = None
     if lon==':' or lon==slice(None): lon = None
     elif isinstance(lon, tuple):
         if len(lon)==2: lon += 'cc', 
         if len(lon)==3: lon += None, 
+    elif isinstance(lon, (int, float)):
+        lon = (lon, lon, 'ccb')
     if lat==':' or lat==slice(None): lat = None
     elif isinstance(lat, tuple):
         if len(lat)==2: lat += 'cc', 
-        if len(lat)==3: lat += None, 
+        if len(lat)==3: lat += None,
+    elif isinstance(lat, (int, float)):
+        lat = (lat, lat, 'ccb')
     
     # CDMS variable
     if cdms2.isVariable(gg) and not isaxis(gg):
@@ -764,9 +797,9 @@ def coord2slice(gg, lon=None, lat=None, asslice=True, mask=None, assubmask=True)
                 xx, yy = create_axes2d(xx, yy)
             
             # Get indices            
-            xii, xjj, mask = coord2slice(xx, lon=lon, asslice=False, mask=mask, assubmask=False)
+            xii, xjj, mask = coord2slice(xx, lon=lon, mode='indices', mask=mask, assubmask=False)
             if xii is None: return None, None, mask
-            yii, yjj, mask = coord2slice(yy, lat=lat, asslice=False, mask=mask, assubmask=False)
+            yii, yjj, mask = coord2slice(yy, lat=lat, mode='indices', mask=mask, assubmask=False)
             if yii is None: return None, None, mask
 
             # Merge
@@ -774,15 +807,20 @@ def coord2slice(gg, lon=None, lat=None, asslice=True, mask=None, assubmask=True)
             imax = min(xii[1], yii[1])
             jmin = max(xjj[0], yjj[0])
             jmax = min(xjj[1], yjj[1])
-            xijk = (imin, imax, 1)
+            xijk = (imin, imax, 1) # max(xii[2],yii[2]) instead of 1?
             yijk = (jmin, jmax, 1)
+            sxijk = slice(*xijk)
+            syijk = slice(*yijk)
             
             # Submask and slices 
-            if asslice: 
-                xijk = slice(*xijk)
-                yijk = slice(*yijk)
-                if assubmask: mask = mask[yijk, xijk]
-            elif assubmask: mask = mask[slice(*yijk), slice(*xijk)]
+            if mode[0]=='s': 
+                xijk = sxijk
+                yijk = syijk
+            if assubmask: mask = mask[syijk, sxijk]
+            if mode[0]=='a': # array of valid indices
+                iijj = N.indices(xx.shape)[:, syijk, sxijk]
+                iijj.shape = 2, -1
+                return iijj[:, ~mask.ravel()]
             return xijk, yijk, mask
             
         # 1D
@@ -792,10 +830,15 @@ def coord2slice(gg, lon=None, lat=None, asslice=True, mask=None, assubmask=True)
         if not isaxis(yy): yy = create_lon(yy)
         
         # - indices
-        xijk = coord2slice(xx, lon=lon, asslice=asslice)
-        if xijk is None: return None, None, None
-        yijk = coord2slice(yy, lat=lat, asslice=asslice)
-        if yijk is None: return None, None, None
+        cmode = mode if mode[0]!='a' else 'slice'
+        xijk = coord2slice(xx, lon=lon, mode=cmode)
+        if xijk is None: 
+            if mode[0]=='a': return N.zeros((2, 0))
+            return None, None, None
+        yijk = coord2slice(yy, lat=lat, mode=cmode)
+        if yijk is None: 
+            if mode[0]=='a': return N.zeros((2, 0))
+            return None, None, None
         
         # - mask
         mask = None
@@ -804,6 +847,10 @@ def coord2slice(gg, lon=None, lat=None, asslice=True, mask=None, assubmask=True)
 
             
         # - return
+        if mode=='a':
+            iijj = N.indices((len(yy), len(xx)))[:, yijk, xijk]
+            iijj.shape = 2, -1
+            return iijj
         return xijk, yijk, mask
     
     
@@ -842,23 +889,31 @@ def coord2slice(gg, lon=None, lat=None, asslice=True, mask=None, assubmask=True)
         
         # Submask and slices
         xijk, yijk = (oijk, ijk)[::1-2*axis]
-        if asslice:
+        if mode[0]=='s':
             xijk = slice(*xijk)
             yijk = slice(*yijk)
             if assubmask: mask = mask[yijk, xijk]
         elif assubmask:
             mask = mask[slice(*yijk), slice(*xijk)]
-            
+        if mode[0]=='a': # array of valid indices
+            iijj = N.indices(xx.shape)[:, yijk, xijk]
+            iijj.shape = 2, -1
+            return iijj[:, ~mask.ravel()]
         return  xijk, yijk, mask
         
     # - 1D
     if isinstance(sel, slice):
-        if asslice: return sel
-        return sel.indices(len(gg))
-    ijk = gg.mapIntervalExt(sel)
-    if ijk is None: return
-    if asslice: ijk = slice(*ijk)
-    
+        if mode[0]=='s': return sel
+        ijk = sel.indices(len(gg))
+        if mode[0]=='i': return ijk
+    else:
+        ijk = gg.mapIntervalExt(sel)
+    if ijk is None: 
+        if mode[0]=='a': return N.array((0,))
+        return
+    if mode[0]=='s': ijk = slice(*ijk)
+    elif mode[0]=='a':
+        return N.arange(len(gg))[ijk]
     return ijk            
             
 
