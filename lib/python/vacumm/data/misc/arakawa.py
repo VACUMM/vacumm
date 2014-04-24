@@ -50,7 +50,12 @@ locations = [
     'w', # Vertical momentum quantities
     'f', # Vorticity quantities
 ]
-positions = locations # Simple alias
+
+#: Alias for :attr:`locations`
+positions = locations
+
+#: Upper-case version of :attr:`locations`
+Locations = [l.upper() for l in locations]
 
 # TODO: Add special locations such as uw, vw and fw at the same place?
 
@@ -98,6 +103,7 @@ class _ArakawaInterp_(object):
     def is_valid_loc(cls, p):
         """Check if a location is valid"""
         p = str(p).lower()
+        if p=='': return 't'
         if p not in locations:
             raise ArakawaGridError('Bad location in Arakawa grid: %s. '
                 'Please use one of: %s'%(p, locations))
@@ -124,24 +130,17 @@ class ArakawaGrid(_ArakawaInterp_):
         if str(arg).upper() in grid_types:
             gt = arg
         else:
-            aa = [arg]
-            if cdms2.isVariable(arg) and arg.getGrid():
-                aa.append(arg.getGrid())
-            for a in aa:
-                for att in ['arakawa_grid_type', '_arakawa_grid_type', 'grid_type']:
-                    if hasattr(a, att):
-                        gt = str(getattr(a, att)).upper()
-                        break
-                else:
-                    continue
-                break
-            else:
-                return
+            gt = get_grid_type(arg)
+            if gt is None: return
+            
         return eval(gt.upper()+'Grid')()
     
     def __getitem__(self, p):
         p = self.is_valid_loc(p)
         return getattr(self, p)
+        
+    def __str__(self):
+        return self.grid_type
     
     
     def are_same_locs(self, p0, p1):
@@ -180,6 +179,8 @@ class ArakawaGrid(_ArakawaInterp_):
               If p0 is None, it is guessed with :func:`vacumm.data.cf.get_loc`.
             - **mode**, optional: Interpolation mode at boundaries 
               (see :func:`~vacumm.misc.grid.regridding.shift2d`).
+            - **zfirst**, optional: Perform the vertical interpolation first,
+              then the horizontal interpolation.
             - **copy**, optional: Copy the variable if same location?
             
         :Example:
@@ -190,8 +191,8 @@ class ArakawaGrid(_ArakawaInterp_):
         if p0 is None:
             from vacumm.data.cf import get_loc
             p0 = get_loc(var)
-            if p0 is None:
-                raise ArakawaGridError("Can't guess location of variable: "+var.id)
+#            if p0 is None:
+#                raise ArakawaGridError("Can't guess location of variable: "+var.id)
         p0 = self.is_valid_loc(p0)
         p1 = self.is_valid_loc(p1)
         
@@ -212,7 +213,7 @@ class ArakawaGrid(_ArakawaInterp_):
         # Special attributes
         from vacumm.data.cf import set_loc
         set_loc(var, p1)
-        var._vacumm_arakawa_grid_type = self.grid_type
+        set_grid_type(var, self.grid_type)
         
         return var
     loc2loc = interp
@@ -307,8 +308,8 @@ class ArakawaGridTransfer(_ArakawaInterp_):
         if p0 is None:
             from vacumm.data.cf import get_loc
             p0 = get_loc(var)
-            if p0 is None:
-                raise ArakawaGridError("Can't guess location of variable: "+var.id)
+#            if p0 is None:
+#                raise ArakawaGridError("Can't guess location of variable: "+var.id)
         p0 = self.is_valid_loc(p0)
         if p1 is None:
             p1 = p0
@@ -332,7 +333,69 @@ class ArakawaGridTransfer(_ArakawaInterp_):
         # Special attributes
         from vacumm.data.cf import set_loc
         set_loc(var, p1)
-        var._vacumm_arakawa_grid_type = self.grid1.grid_type
+        set_grid_type(var, self.grid1.grid_type)
         
         return var
             
+_cdms2_atts = ['_vacumm_arakawa_grid_type', '_arakawa_grid_type']
+_other_atts = ['arakawa_grid_type', 'grid_type']
+
+def get_grid_type(var):
+    """Guess the Arakawa grid type
+    
+    It search for the following attributes: :attr:`arakawa_grid_type`, :attr:`grid_type`
+    and :attr:`_vacumm_arakawa_grid_type`.
+    
+    :Params:
+    
+        - **var**: A :mod:`cdms2` variable or grid, an :class:`ArakawaGrid` instance or
+          a :class:`~vacumm.data.misc.dataset.Dataset` instance.
+          If var is a :mod:`cdms2` variable, it also check its grid if defined.
+    
+    :Return: An Arakawa grid upper-base letter, like 'C'
+    """
+    vv = [var]
+    if cdms2.isVariable(var):
+        grid = var.getGrid()
+        if grid is not None:
+            vv.append(grid)
+    for v in vv:
+        for att in _cdms2_atts+_other_atts:
+            if hasattr(v, att):
+                gt = getattr(a, att)
+                if gt is None: return
+                return str(gt).upper()
+
+def _set_clean_atts_(var, atts, value):
+    for att in atts:
+        if hasattr(var, att): delattr(var, att)
+    if value is not None:
+        setattr(var, atts[0], value)
+
+def set_grid_type(var, gtype):
+    """Set an attribute so that var is identified as being on the specified Arakawa 
+    grid type.
+    
+    If var is a :mod:`cdms2` variable or grid, it sets the  
+    :attr:`_vacumm_arakawa_grid_type` attribute, 
+    else it sets the :attr:`arakawa_grid_type` attribute.
+    
+    :Params:
+    
+        - **var**:  A :mod:`cdms2` variable or grid, a 
+          :class:`~vacumm.data.misc.dataset.Dataset` instance.
+        - **gtype**: None or one of the :attr:`grid_type` letters.
+    
+    """
+    if gtype is not None:
+        gtype = str(gtype).upper()
+    if cdms2.isVariable(var) or cdms2.isGrid(var):
+        vv = [var]
+        if cdms2.isVariable(var):
+            grid = var.getGrid()
+            if grid is not None: vv.append(grid)
+        for v in vv:
+            _set_clean_atts_(v, _cdms2_atts, gtype)
+    else:
+        _set_clean_atts_(var, _other_atts, gtype)
+    return gtype

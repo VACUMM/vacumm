@@ -95,7 +95,8 @@ from vacumm.misc.phys.constants import g
 from vacumm.misc.plot import map2, curve2, section2, hov2, add_map_lines
 from vacumm.misc.axes import islon, islat, isdep
 from vacumm.data.misc.sigma import NcSigma
-from vacumm.data.misc.arakawa import ArakawaGrid, AGrid, CGrid, locations as arakawa_locations
+from vacumm.data.misc.arakawa import ArakawaGrid, AGrid, CGrid, locations as arakawa_locations,  \
+    set_grid_type, get_grid_type, _cdms2_atts as cdms2_arakawa_atts
 from vacumm.data.cf import var_specs, axis_specs, cf2search, cf2atts, generic_names, \
     generic_axis_names, generic_var_names, format_axis, format_var, get_loc, no_loc_single, \
     default_location, change_loc, hidden_cf_atts, change_loc_single
@@ -139,8 +140,6 @@ def _get_var_(self, name, mode=None, **kwargs):
         var =  self.get_variable(name, **kwargs)
         if var is not None: return var
     
-        # Physical location and generic name
-    
         # No location info -> generic search allowed
         if gname!=name and not ploc:             
             var = self.get_variable(gname, **kwargs) #'usurf_u' = 'usurf'
@@ -159,16 +158,18 @@ def _get_var_(self, name, mode=None, **kwargs):
 
     # Get it from other locations
     if check_mode('stag', mode):
-        loc = get_loc(name, 'name', mode='ext', default=default_location)
+        kwargs = kwargs.copy()
+        loc = kwargs.pop('at', None)
+        if loc is None:
+            loc = get_loc(name, 'name', mode='ext', default=default_location)
         locations = list(arakawa_locations)
         locations.remove(loc)
         if ploc:
             if ploc in locations: locations.remove(ploc)
             locations.insert(0, ploc)
-        kwargs = kwargs.copy()
         for fromloc in locations: #TODO: arakawa: clever order for loc2loc tries (use closer neighbours)
-            
-            var = self.get_variable(gname, at=loc, at_fromloc=fromloc, **kwargs)
+            fname = change_loc_single(gname, 'name', fromloc)
+            var = self.get_variable(fname, at=loc, at_fromloc=fromloc, **kwargs)
             if var is not None: return var
         
         if check_mode('stag', mode, strict=True): 
@@ -619,6 +620,9 @@ class Dataset(Object):
             2. Specs declared at the class definition level (attribute :attr:`ncobj_specs`).
             3. Specs from another variable specified through the 'fromobj' 
                specification key.
+               
+        Found specs are reformatted to provide ``search`` and ``atts`` specs using
+        :func:`~vacumm.data.cf.cf2search` and :func:`~vacumm.data.cf.cf2atts`.
         
         :Params:
         
@@ -629,17 +633,24 @@ class Dataset(Object):
             A dictionary of specifications.
         """
         
-        # Specs from vacumm.data.cf
+        # Specs from CF specs (vacumm.data.cf)
+        if varname=='bathy_w':
+            pass
         fromobj = None
         if varname in generic_names:
+            
+            # Search and atts
             cf_specs = dict(
                 search=cf2search(varname, mode=searchmode), 
                 atts=cf2atts(varname), 
                 )
+                
+            # Get 'physloc'
             axvar_specs = (var_specs if varname in generic_var_names else axis_specs)[varname]
             for prop in ['physloc']:
                 if prop in axvar_specs:
                     cf_specs[prop] = axvar_specs[prop]
+                    
             genname = varname
             fromobj = cf_specs.pop('fromobj', None)
         else:
@@ -664,6 +675,10 @@ class Dataset(Object):
             raise DatasetError('Generic var/axis name "%s" has no specification defined in current class or module vacumm.data.cf'%varname)
         specs = dict_merge(cf_specs, local_specs, from_specs, mergelists=True, mergedicts=True)
         
+        # Final check
+        if specs is not None and 'search' not in specs: 
+            specs = None
+        
         return specs
     
     def _get_ncobj_specs_(self, varname, attsingle=True, searchmode=None):
@@ -680,7 +695,8 @@ class Dataset(Object):
         genname = None
         squeeze = []
         physloc = None
-        
+        search = None
+
         # Generic name -> cf specs and/or class level specs
         if isinstance(varname , basestring) and not varname.startswith('+'): 
             specs = self._get_ncobj_merged_specs_(varname, searchmode=searchmode)
@@ -733,11 +749,10 @@ class Dataset(Object):
                 squeeze = [squeeze]
                 
             # Physical location
-            if varname.startswith('u3d'):
-                pass
             physloc = specs.get('physloc')
             
-                
+        
+        if search is None: return
         return OrderedDict(genname=genname, search=search, select=select, squeeze=squeeze, 
             atts=atts, physloc=physloc)
 #        return genname, search, select, squeeze, atts
@@ -1115,6 +1130,9 @@ class Dataset(Object):
             
         # Specifications for searching, selecting and modifying the variable
         specs = self._get_ncobj_specs_(varname)
+        if specs is None:
+            if warn: self.warning('No valid specs to search for %s', varname)
+            return None
         genname = specs['genname']
         search = specs['search']
         select = specs['select']
@@ -1303,6 +1321,10 @@ class Dataset(Object):
         return self.get_axis('lon', lon, lat, **kwargs)
     get_longitude = get_lon
     
+    def get_lon_t(self, lon=None, lat=None, **kwargs):
+        '''Get longitude axis at T location'''
+        return self.get_axis('lon_t', lon, lat, **kwargs)
+        
     def get_lon_u(self, lon=None, lat=None, **kwargs):
         '''Get longitude axis at U location'''
         return self.get_axis('lon_u', lon, lat, **kwargs)
@@ -1320,6 +1342,10 @@ class Dataset(Object):
         return self.get_axis('lat', lat, lon, **kwargs)
     get_latitude = get_lat
     
+    def get_lat_t(self, lat=None, lon=None, **kwargs):
+        '''Get latitude axis at T location'''
+        return self.get_axis('lat_t', lat, lon, **kwargs)
+    
     def get_lat_u(self, lat=None, lon=None, **kwargs):
         '''Get latitude axis at U location'''
         return self.get_axis('lat_u', lat, lon, **kwargs)
@@ -1333,35 +1359,58 @@ class Dataset(Object):
         return self.get_axis('lat_f', lat, lon, **kwargs)
     
     
-    def get_grid(self, lon=None, lat=None, format=True):
+    def get_grid(self, lon=None, lat=None, format=True, warn=True):
         '''Get grid'''
-        axlon = self.get_lon(lon, lat, format=format)
-        axlat = self.get_lat(lat, lon, format=format)
-        if axlon is None or axlat is None: return None
+        warn2 = max(int(warn)-1, 0)
+        axlon = self.get_lon(lon, lat, format=format, warn=warn2)
+        axlat = self.get_lat(lat, lon, format=format, warn=warn2)
+        if axlon is None or axlat is None: 
+            if warn: self.warning("Can't get grid")
+            return None
         grid = create_grid(axlon, axlat)
         return grid
         
-    def get_grid_u(self, lon=None, lat=None, format=True):
+    def get_grid_t(self, lon=None, lat=None, format=True, warn=True):
+        '''Get grid at T location'''
+        warn2 = max(int(warn)-1, 0)
+        axlon = self.get_lon_t(lon, lat, format=format, warn=warn2)
+        axlat = self.get_lat_t(lat, lon, format=format, warn=warn2)
+        if axlon is None or axlat is None:  
+            if warn: self.warning("Can't get grid")
+            return None
+        grid = create_grid(axlon, axlat)
+        return grid
+        
+    def get_grid_u(self, lon=None, lat=None, format=True, warn=True):
         '''Get grid at U location'''
-        axlon = self.get_lon_u(lon, lat, format=format)
-        axlat = self.get_lat_u(lat, lon, format=format)
-        if axlon is None or axlat is None: return None
+        warn2 = max(int(warn)-1, 0)
+        axlon = self.get_lon_u(lon, lat, format=format, warn=warn2)
+        axlat = self.get_lat_u(lat, lon, format=format, warn=warn2)
+        if axlon is None or axlat is None:  
+            if warn: self.warning("Can't get grid")
+            return None
         grid = create_grid(axlon, axlat)
         return grid
         
-    def get_grid_v(self, lon=None, lat=None, format=True):
+    def get_grid_v(self, lon=None, lat=None, format=True, warn=True):
         '''Get grid at V location'''
-        axlon = self.get_lon_v(lon, lat, format=format)
-        axlat = self.get_lat_v(lat, lon, format=format)
-        if axlon is None or axlat is None: return None
+        warn2 = max(int(warn)-1, 0)
+        axlon = self.get_lon_v(lon, lat, format=format, warn=warn2)
+        axlat = self.get_lat_v(lat, lon, format=format, warn=warn2)
+        if axlon is None or axlat is None:  
+            if warn: self.warning("Can't get grid")
+            return None
         grid = create_grid(axlon, axlat)
         return grid
     
-    def get_grid_f(self, lon=None, lat=None, format=True):
+    def get_grid_f(self, lon=None, lat=None, format=True, warn=True):
         '''Get grid at F location'''
-        axlon = self.get_lon_f(lon, lat, format=format)
-        axlat = self.get_lat_f(lat, lon, format=format)
-        if axlon is None or axlat is None: return None
+        warn2 = max(int(warn)-1, 0)
+        axlon = self.get_lon_f(lon, lat, format=format, warn=warn2)
+        axlat = self.get_lat_f(lat, lon, format=format, warn=warn2)
+        if axlon is None or axlat is None: 
+            if warn: self.warning("Can't get grid")
+            return None
         grid = create_grid(axlon, axlat)
         return grid
         
@@ -1411,7 +1460,7 @@ class Dataset(Object):
     def _coord2res_(self, axis, func, rmode, frompt, kwg, kwgeo):
         """Estimate resolution in meters or degrees from coordinates at several locations"""
         dxy = None
-        if frompt: # [('u', -1)]
+        if frompt: # [('u', -1)] # FIXME: WE MUST DOT IT HERE AND USE FINALISE/AT INSTEAD
             for pt, transforms in frompt:
                 
                 # Compute it
@@ -1690,21 +1739,21 @@ class Dataset(Object):
         
         """
         # No grid type
-        atts = get_atts(var, extra=hidden_cf_atts+['_arakawa_grid_type'])
+        atts = get_atts(var, extra=hidden_cf_atts+cdms2_arakawa_atts)
         if not self.arakawa_grid_type or var.getGrid() is None:
             if copy: 
                 var = var.clone()
-                set_atts(var, atts)
+            set_atts(var, atts)
             return var
             
         # Originating location
         if fromloc is None:
             fromloc = get_loc(var, mode='ext')
+        if fromloc is None:
+            fromloc = default_location
             
         # Interpolate
-        atts = dict()
         var = self.arakawa_grid.interp(var, fromloc, loc, copy=copy, **kwargs)
-        set_atts(var, atts)
         
         # Reformat location
         change_loc(var, loc, squeeze=True)
@@ -1795,9 +1844,7 @@ class Dataset(Object):
                 var = var(create_selector(lon=lon, lat=lat))
                 
             # Some attributes
-            var._vacumm_arakawa_grid_type = self.arakawa_grid_type
-            if var.getGrid():
-                var.getGrid()._vacumm_arakawa_grid_type = self.arakawa_grid_type
+            set_grid_type(var, self.arakawa_grid_type)
             
         return var
     
@@ -1901,9 +1948,9 @@ class OceanDataset(OceanSurfaceDataset):
         return var
     
 
-    def _get_dz_(self, at='t', warn=True, mode=None, **kwargs):
+    def _get_dz_(self, loc='t', warn=True, mode=None, **kwargs):
         """Get layer thickness"""
-        atp = _at_(at, squeezet=True, prefix=True)
+        atp = _at_(loc, squeezet=True, prefix=True)
         fwarn = max(int(warn)-1, 0) # forward warning
         
         # First, find a variable
@@ -1915,12 +1962,12 @@ class OceanDataset(OceanSurfaceDataset):
         if check_mode('depth', mode):
             # - read depths
             dz2dmode = None
-            if at in 'tr':
+            if loc in 'tr':
                 depth = self._get_depth_('w', warn=fwarn, mode='-dz', **kwargs) # from W points
                 if depth is None:
                     depth = self._get_depth_('t', warn=fwarn, mode='-dz', **kwargs)  # from T points
                     dz2dmode = 'center'
-            elif at=='w':
+            elif loc=='w':
                 depth = self._get_depth_('t', warn=fwarn, mode='-dz', **kwargs) # from T points
                 if depth is None:
                     depth = self._get_depth_('w', warn=fwarn, mode='-dz', **kwargs) # from W points
@@ -1934,7 +1981,7 @@ class OceanDataset(OceanSurfaceDataset):
             # - compute thicknesses 
             dz = format_var(depth.clone(), 'dz'+atp)
             isup = self._isdepthup_(depth)
-            if at=='': # At T from W depth
+            if loc=='': # At T from W depth
                 dz2dmode= 'top' if isup else 'bottom'
             else: # At W from T depth
                 dz2dmode = 'bottom' if isup else 'top'
@@ -1949,10 +1996,24 @@ class OceanDataset(OceanSurfaceDataset):
           
           You can also negate the search with
           a '-' sigme before: ``"-depth"``."""
+          
     def get_dz(self, *args, **kwargs):
-        """Get layer thickness at"""
-        return self._get_dz_('t', *args, **kwargs)
+        """Get layer thickness testing all locations"""
+        warn = kwargs.pop('warn', True)
+        fwarn = max(int(warn)-1, 0)
+        kwargs['warn'] = fwarn
+        locs = kwargs.pop('at', 'tuvw')
+        for loc in locs:
+            dz = self._get_dz_(loc, *args, **kwargs)
+            if dz is not None:
+                return dz
+        if warn: self.warning("Can't get dz at location "+at)
     get_dz = getvar_fmtdoc(get_dz, mode=_mode_doc)
+        
+    def get_dz_t(self, *args, **kwargs):
+        """Get layer thickness at T location"""
+        return self._get_dz_('t', *args, **kwargs)
+    get_dz_t = getvar_fmtdoc(get_dz_t, mode=_mode_doc)
         
     def get_dz_u(self, *args, **kwargs):
         """Get layer thickness at U location"""
@@ -2006,30 +2067,40 @@ class OceanDataset(OceanSurfaceDataset):
         format=True, **kwargs):
 
         # Where?
-        atp = _at_(at, squeezet=True, prefix=True)
-        ath = _at_(at, squeezet=True, prefix=True, focus='hor')
+        at_p = _at_(at, squeezet=True, prefix=True)
+        atz = _at_(at, prefix=False, focus='ver')
+        at_z = _at_(at, prefix=True, focus='ver')
+        at_xy = _at_(at, squeezet=True, prefix=True, focus='hor')
         
-        # First, try to find a depth variable
+        # Setup keywords
         fwarn = max(int(warn)-1, 0)
-        kwfinal = dict(order=order, squeeze=squeeze, asvar=asvar, torect=torect, format=format)
+        kwfinal = dict(order=order, squeeze=squeeze, asvar=asvar, torect=torect, 
+            format=format, at=at)
         kwvar = dict(level=level, time=time, lat=lat, lon=lon, warn=fwarn)
         kwvar.update(kwfinal)
-
+        kwvarnoat = kwvar.copy()
+        kwvarnoat.pop('at')
+        
+        # First, try to find a depth variable
         if check_mode('var', mode):
-            depth = self.get_variable('depth'+atp, depth=False, **kwvar)
+            depth = self.get_variable('depth'+at_p, depth=False, **kwvar)
             if depth is not None or check_mode('var', mode, strict=True): 
                 return self._makedepthup_(depth, depth)
 
         # Get selector for other tries
         selector = self.get_selector(lon=lon, lat=lat, level=level, time=time, merge=True) 
         selnotime = None
-        gridmet = 'get_grid'+ath
+        gridmet = 'get_grid'+at_xy
         grid = getattr(self, gridmet)(False)
         curvsel = CurvedSelector(grid, selector)
         kwfinal['curvsel'] = curvsel
-        kwfinal['genname'] = genname='depth'+atp
+        kwfinal['genname'] = genname='depth'+at_p
+        kwfinalz = kwfinal.copy()
+        kwfinalz['genname'] = genname='depth'+at_z
+        if at_z!=at_p: # from T or W to U, etc
+            kwfinalz.setdefault('at', at)
         
-        # Second, find sigma coordinates
+        # Second, try from sigma-like coordinates at W and T points only (for now)
         sigma_converter = NcSigma.factory(self.dataset[0])
         if check_mode('sigma', mode):
             
@@ -2042,6 +2113,8 @@ class OceanDataset(OceanSurfaceDataset):
                 allvars = []
                 nib = NcIterBestEstimate(self.dataset, time=selector, id=self._nibeid+str(time)) 
                 for f,t in nib:
+                    
+                    # - init
                     if t is False: continue # and when no time??? None-> ok we continue
                     if f!=self.dataset[0]: sigma_converter.update_file(f)
                     sel = create_selector(time=t)
@@ -2050,18 +2123,21 @@ class OceanDataset(OceanSurfaceDataset):
                     sel.refine(selnotime)
                     self.debug('- dataset: %s: sigma: %s, select: %s', 
                         os.path.basename(f.id), sigma_converter.__class__.__name__, sel)
+                        
+                    # - try it
                     try:
-                        d = sigma_converter(sel, at=at, copyaxes=True, mode='sigma')
+                        d = sigma_converter(sel, at=atz, copyaxes=True, mode='sigma')
                     except Exception, e:
                         if warn: 
                             self.warning("Can't get depth from sigma. Error: \n"+e.message)
                         break
                     self.debug('Sigma to depth result: %s', self.describe(d))
                     allvars.append(d)
+                    
+                # Concatenate loaded depth
                 if allvars:
-                    # Concatenate loaded depth
                     var = MV2_concatenate(allvars)
-                    return self.finalize_object(var, depthup=var, **kwfinal)
+                    return self.finalize_object(var, depthup=var, **kwfinalz)
                         
                 if check_mode('sigma', mode, strict=True): return
 #        if sigma_converter is not None:
@@ -2070,28 +2146,27 @@ class OceanDataset(OceanSurfaceDataset):
         # Third, estimate from layer thickness
         if check_mode('dz', mode):
             
-            if atp=='': # at T-location
-            
+            if atz=='t': # at T-location
                 bathy = self.get_bathy(**kwvar)
-                dzw = self.get_dz_w(mode='var', **kwvar)
+                dzw = self.get_dz_w(mode='var', **kwvarnoat)
                 if bathy is not None and dzw is not None:
                     depth = dz2depth(dzw, bathy, refloc="bottom")
                     
-            elif atp=='w': # at W-location
+            elif atz=='w': # at W-location
             
                 ssh = self.get_ssh(**kwvar)
-                dzt = self.get_dz(mode='var', **kwvar)
+                dzt = self.get_dz_t(mode='var', **kwvarnoat)
                 if ssh is not None and dzt is not None:
                     depth = dz2depth(dzt, ssh, refloc="top") 
                     
             if depth is not None or check_mode('dz', mode, strict=True):
-                return self.finalize_object(depth, depthup=False, **kwfinal)
+                return self.finalize_object(depth, depthup=False, **kwfinalz)
                         
         # Finally, find a depth axis
         if sigma_converter is None and check_mode('axis', mode): # no Z axis for sigma coordinates
-            axis = self.get_axis('depth'+atp, level)
+            axis = self.get_axis('depth'+at_p, level)
             if axis is not None:
-                if format: axis = format_axis(axis, 'depth'+atp)
+                if format: axis = format_axis(axis, 'depth'+at_p)
                 return self.finalize_object(axis, depthup=axis, **kwfinal)
         if warn:
             self.warning('Found no way to estimate depths at %s location'%at.upper())
@@ -2109,18 +2184,36 @@ class OceanDataset(OceanSurfaceDataset):
           You can also negate the search with
           a '-' sigme before: ``"-dz"``."""
     def get_depth(self, *args, **kwargs):
+        """Get layer depth testing all locations"""
+        warn = kwargs.pop('warn', True)
+        fwarn = max(int(warn)-1, 0)
+        kwargs['warn'] = fwarn
+        locs = kwargs.pop('at', 'tuvw')
+        for loc in locs:
+            depth = self._get_depth_(loc, *args, **kwargs)
+            if depth is not None:
+                return depth
+        if warn: self.warning("Can't get depth at location "+at)
         return self._get_depth_('t', *args, **kwargs)
     getvar_fmtdoc(get_depth, mode=_mode_doc)
         
+    def get_depth_t(self, *args, **kwargs):
+        """Get depth at T location"""
+        return self._get_depth_('t', *args, **kwargs)
+    getvar_fmtdoc(get_depth_t, mode=_mode_doc)
+        
     def get_depth_w(self, *args, **kwargs):
+        """Get depth at W location"""
         return self._get_depth_('w', *args, **kwargs)
     getvar_fmtdoc(get_depth_w, mode=_mode_doc)
     
     def get_depth_u(self, *args, **kwargs):
+        """Get depth at U location"""
         return self._get_depth_('u', *args, **kwargs)
     getvar_fmtdoc(get_depth_u, mode=_mode_doc)
     
     def get_depth_v(self, *args, **kwargs):
+        """Get depth at V location"""
         return self._get_depth_('v', *args, **kwargs)
     getvar_fmtdoc(get_depth_v, mode=_mode_doc)
     
