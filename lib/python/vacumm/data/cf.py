@@ -215,8 +215,7 @@ var_specs = OrderedDict(
     
     depth = dict(
         names = ['depth', 'dep', 'deptht', 'depthu', 'depthv'], 
-        standard_names = ['ocean_layer_depth', 'ocean_layer_depth_at_t_location', 'ocean_layer_depth_at_u_location', 
-            'ocean_layer_depth_at_v_location'], 
+        standard_names = ['ocean_layer_depth'], 
         long_names =  'Depth', 
         units = 'm', 
         atlocs = ['t', 'u', 'v', 'w'], 
@@ -427,42 +426,6 @@ axis_specs = OrderedDict(
         jaxis = 'nj', 
         atlocs=['t', 'u', 'v', 'f'], 
     ), 
-#    lon_u = dict(
-#        names = ['lon_u','longitude_u',], 
-#        standard_names = ['longitude_at_u_location'], 
-#        long_names = 'Longitude at U location', 
-#        units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 'degreee', 'degreese'], 
-#        axis = 'X', 
-#        iaxis = 'ni_u', 
-#        jaxis = 'nj_u', 
-#    ), 
-#    lat_u = dict(
-#        names = ['lat_u','latitude_u',], 
-#        standard_names = ['latitude_at_u_location'], 
-#        long_names = 'Latitude at V location', 
-#        units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'], 
-#        axis = 'Y', 
-#        iaxis = 'ni_u', 
-#        jaxis = 'nj_u', 
-#    ), 
-#    lon_v = dict(
-#        names = ['lon_v','longitude_v',], 
-#        standard_names = ['longitude_at_v_location'], 
-#        long_names = 'Longitude at V location', 
-#        units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 'degreee', 'degreese'], 
-#        axis = 'X', 
-#        iaxis = 'ni_v', 
-#        jaxis = 'nj_v', 
-#    ), 
-#    lat_v = dict(
-#        names = ['lat_v','latitude_v',], 
-#        standard_names = ['latitude_at_v_location'], 
-#        long_names = 'Latitude at V location', 
-#        units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'], 
-#        axis = 'Y', 
-#        iaxis = 'ni_v', 
-#        jaxis = 'nj_v', 
-#    ), 
     depth = dict(
         inherit = 'depth', 
         axis = 'Z', 
@@ -684,9 +647,9 @@ def change_loc_single(name, stype, loc, squeeze=None):
     
     :Params:
     
-        - **name**: String to change.
+        - **name**: String to change
         - **stype**: String type: name, stand_name or long_name.
-        - **loc**: Location as a letter.
+        - **loc**: Location as a letter or None.
         - **squeeze**, optional: If specified and equal to ``loc``, location is removed
           instead of being changed.
     
@@ -920,17 +883,17 @@ def dupl_loc_specs(all_specs, fromname, toloc):
     
     The following rules apply:
     
-        - If the original specifications are from a name without a specific location,
-          new specs (located) are appended (merged) with original specs.
+        - If the original specifications are from a name without a specific location
+          (generic), new specs (located) are appended (merged) with original specs.
         - If the specifications at target location already exist, 
           it merges new specs with old specs.
-        - If the target location is the general default location (:attr:`default_location`),
-          the specs without location will be appended to the specs at target location
-          (generic specs are appended to specs at T).
+        - Generic specification are systematically created or updated by merging of 
+          specialized ones.
     
     :Example:
     
-        >>> dupl_loc_specs(var_specs, 'corio', 'u') # Create the 'corio_u' entry in var_specs
+        >>> dupl_loc_specs(var_specs, 'corio', 'u') # Create the 'corio_u' entry in var_specs and update 'corio'
+        >>> dupl_loc_specs(var_specs, 'corio_t', 'u') # Create 'corio_u' and 'corio_t'
         
     """
     if not fromname in all_specs:
@@ -950,6 +913,16 @@ def dupl_loc_specs(all_specs, fromname, toloc):
         # New specs
         tospecs = change_loc_specs(loc, **all_specs[fromname])
         
+        # Add a version of standard_name and long_name for T loc without location spec
+        if loc=='t': # 'toto_at_t_location' -> ['toto_at_t_location','toto']
+            for spname in 'standard_names', 'long_names':
+                if spname not in tospecs: continue
+                addspecs = change_loc_specs(None, **{spname:tospecs[spname]})
+                for dd in tospecs, addspecs: # to lists
+                    if not isinstance(dd[spname], list): 
+                        dd[spname] = [dd[spname]]
+                tospecs[spname].extend(addspecs[spname])
+                
         # For merging specs back with old specs if old has no location
 #        if fromnoloc: # generic
         tomerge.append(tospecs)
@@ -972,12 +945,13 @@ def dupl_loc_specs(all_specs, fromname, toloc):
 
     # Make a generic entry that merges all specialized ones
     if fromnoloc:
-        genspecs = all_specs[fromname]
+        genspecs = all_specs[fromname] # existing generic specs
     else:
-        genspecs = change_loc_specs(None, **all_specs[fromname])
+        genspecs = change_loc_specs(None, **all_specs[fromname]) # remove location info
     tomerge.insert(0, genspecs)
     kw = dict(mergelists=True)
-    all_specs[fromname] = dict_merge(*tomerge, **kw)
+    genname = genspecs['names'][0]
+    all_specs[genname] = dict_merge(*tomerge, **kw)
     
     if single: return tonames[0]
     return tonames
