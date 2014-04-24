@@ -4,8 +4,8 @@ from utils import *
 class TSF(VCTestCase):
 
     for test_name in [
-        'test_grid_coord2slice_acad',
-#        'test_grid_coord2slice_real',
+        'test_stats_stataccum_single',
+        'test_stats_stataccum_dual',
         ]:
         exec(method_template.format(test_name))
         

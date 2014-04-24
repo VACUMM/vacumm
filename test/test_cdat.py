@@ -1,7 +1,7 @@
 from utils import *
 
 
-class TestSequenceFunctions(VCTestCase):
+class TSF(VCTestCase):
 
     for test_name in [
         'test_cdat_regrid_algo',
