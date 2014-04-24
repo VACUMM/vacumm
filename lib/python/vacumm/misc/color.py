@@ -296,20 +296,24 @@ def cmap_mg(*args, **kwargs):
     """Shortcut to :func:`cmap_magic`"""
     return cmap_magic(*args, **kwargs)
 
-def cmap_custom(colors, name='mycmap', ncol=256, ranged=False, **kwargs):
+def cmap_custom(colors, name='mycmap', ncol=256, ranged=False, register=True, **kwargs):
     """Quick colormap creation
     
     :Params:
     
         - **colors**: Like [(color1, position1),(color2, position2), etc...] or 
           dict(red=((pos1,r1a,r1b), (pos2,r2a,r2b)),etc...)
+        - **ncol/N**: Discretization.
+        - **register**: Register the colormap into matplotlib to be accessible with its name?
     """
+    ncol = kwargs.pop('N', ncol)
     if isinstance(colors, dict):
         for cname, cvals in colors.items():
+            cvals = tuple(cvals)
             if cvals[0][0] != 0:
                 colors[cname] = ((0, cvals[0][1], cvals[0][2]), ) + cvals
             if cvals[-1] != 1:
-                colors[cname] = colors[cname] + ((1, cvals[-1][1], cvals[-1][2]), )
+                colors[cname] = cvals + ((1, cvals[-1][1], cvals[-1][2]), )
     else:
         if isinstance(colors, tuple): colors = list(colors)
         tcolors = colors
@@ -324,8 +328,11 @@ def cmap_custom(colors, name='mycmap', ncol=256, ranged=False, **kwargs):
             colors['green'] += ((pos, g, g), )
             colors['blue'] += ((pos, b, b), )
     if ranged:
-        return RangedLinearSegmentedColormap(name,colors,ncol, **kwargs)
-    return LinearSegmentedColormap(name,colors,ncol)
+        cmap = RangedLinearSegmentedColormap(name,colors,ncol, **kwargs)
+    else:
+        cmap = LinearSegmentedColormap(name,colors,ncol)
+    P.register_cmap(name, cmap)
+    return cmap
 
 def cmap_linear(c, **kwargs):
     """Basic linear map between colors"""
@@ -342,13 +349,11 @@ def cmap_bwr(wpos=0.5, wcol='w', name='vacumm_bwr'):
     
     :Sample: .. image:: misc-color-vacumm_bwr.png
     """
-    cmap = cmap_custom((('b', 0), (wcol, wpos), ('r', 1)), 'vacumm_bwr')
-    P.register_cmap(name, cmap)
-    return cmap
+    return cmap_custom((('b', 0), (wcol, wpos), ('r', 1)), name)
 
 
 # blue -> white -> red for Extremes : violet and pink and ends
-def cmap_bwre(wpos=0.5,gap=0.1, wcol='w', name='vacumm_bwre'):
+def cmap_bwre(wpos=0.5,gap=0.1, wcol='w', name='vacumm_bwre', **kwargs):
     """Returns a violet->blue->white->red colormap->yellow
     
     - **white**, optional: relative position of white color in the map [default: 0.5]
@@ -358,13 +363,11 @@ def cmap_bwre(wpos=0.5,gap=0.1, wcol='w', name='vacumm_bwre'):
     """
     wstart = wpos*(1-gap)
     wstop = wpos + (1.-wpos)*gap
-    cmap =  cmap_custom((((1, 0, 1), 0), ('b', .1), (wcol, wstart), 
-        (wcol, wstop), ('r', .9), ((1, 1, 0), 1)), 'vacumm_bwre')
-    P.register_cmap(name, cmap)
-    return cmap
+    return  cmap_custom((((1, 0, 1), 0), ('b', .1), (wcol, wstart), 
+        (wcol, wstop), ('r', .9), ((1, 1, 0), 1)), name, **kwargs)
 
 # blue -> red
-def cmap_br(sep=0.5, name='vacumm_br'):
+def cmap_br(sep=0.5, name='vacumm_br', **kwargs):
     """Blue->red colormap
     
     :Params:
@@ -373,11 +376,9 @@ def cmap_br(sep=0.5, name='vacumm_br'):
     
     :Sample: .. image:: misc-color-vacumm_br.png
     """
-    cmap = cmap_custom( (('r', 0), ((.5, 0, .5), sep), ('b', 1)), 'vacumm_br')
-    P.register_cmap(name, cmap)
-    return cmap
+    return cmap_custom( (('r', 0), ((.5, 0, .5), sep), ('b', 1)), name, **kwargs)
     
-def cmap_br2(sep=0.5, white=.7, name="vacumm_br2"):
+def cmap_br2(sep=0.5, white=.7, name="vacumm_br2", **kwargs):
     """Blue->light blue|light red-> red
     
     :Params:
@@ -393,22 +394,18 @@ def cmap_br2(sep=0.5, white=.7, name="vacumm_br2"):
                'green': ((0,0,0),(sep,bsep[1],rsep[1]), (1,0,0)),
                'blue':  ((0,1,1),(sep,bsep[2],rsep[2]), (1,0,0)),
                }
-    cmap =  LinearSegmentedColormap(name, cdict, 256)
-    P.register_cmap(name, cmap)
-    return cmap
+    return cmap_custom(cdict, name, **kwargs)
 
 # white -> red
-def cmap_wr(name='vacumm_wr'):
+def cmap_wr(name='vacumm_wr', **kwargs):
     """White->red colormap
     
     :Sample: .. image:: misc-color-vacumm_wr.png
     """
-    cmap = cmap_custom( (('w', 0), ('r', 1)), name)
-    P.register_cmap(name, cmap)
-    return cmap
+    return cmap_custom((('w', 0), ('r', 1)), name, **kwargs)
 
 # white -> red
-def cmap_wre(name='vacumm_wre'):
+def cmap_wre(name='vacumm_wre', **kwargs):
     """White->red->yellow colormap for positive extremes
     
     :Sample: .. image:: misc-color-vacumm_wre.png
@@ -416,28 +413,25 @@ def cmap_wre(name='vacumm_wre'):
     cdict = {'red':  ((0.,1.,1.),(.8,1.,1.),(1.,1.,1.)),
            'green':((0.,1.,1.),(.8,0.,0.),(1.,1.,1.)),
            'blue': ((0.,1.,1.),(.8,0.,0.),(1.,0.,0.))}
-    cmap = LinearSegmentedColormap(name,cdict,256)
-    P.register_cmap(name, cmap)
-    return cmap
+    return cmap_custom(cdict, name, **kwargs)
 
 cy = 0.6 # cyan
 ye = 0.95 # yellow
 vi = 0.35 # violet
 _colors_bathy = (('k',0), ((0,.1,.9),vi), ((0,.8,.8),cy), ((.9,.9,.6),.9), ((.9,.9,.8),1))
-def cmap_bathy(start=0., stop=1., name='vacumm_bathy'):
+def cmap_bathy(start=0., stop=1., name='vacumm_bathy', **kwargs):
     """Colormap for bathymetry maps
     
     :Sample: .. image:: misc-color-vacumm_bathy.png
     """
-    this_cmap = cmap_custom(_colors_bathy, name, ranged=True, start=start, stop=stop)
+    this_cmap = cmap_custom(_colors_bathy, name, ranged=True, start=start, stop=stop, **kwargs)
     this_cmap.set_bad(bistre)
     this_cmap.set_under(bistre)
     this_cmap.set_over(bistre)
-    P.register_cmap(name, this_cmap)
     return this_cmap
     
 _colors_land = ((_colors_bathy[-1][0], 0), ('#145D0A',.2),('#62CF60', .4), ('#A1A156',.6),('#6D461D', .85), ('#eeeeff', 1.))
-def cmap_land(start=0., stop=1., name='vacumm_land'):
+def cmap_land(start=0., stop=1., name='vacumm_land', **kwargs):
     """Colormap for land maps
     
     :Params:
@@ -446,14 +440,14 @@ def cmap_land(start=0., stop=1., name='vacumm_land'):
     
     :Sample: .. image:: misc-color-vacumm_land.png
     """
-    this_cmap = cmap_custom(_colors_land, 'vacumm_land', ranged=True, start=start, stop=stop)
+    this_cmap = cmap_custom(_colors_land, name, ranged=True, start=start, stop=stop, **kwargs)
     this_cmap.set_bad(ocean)
     this_cmap.set_under(ocean)
     this_cmap.set_over(ocean)
-    P.register_cmap(name, this_cmap)
     return this_cmap
 
-def cmap_topo(start=0., stop=1., name='vacumm_topo', zero=.5, over=_colors_bathy[0][0], under=_colors_land[-1][0], bad='0.5'):
+def cmap_topo(start=0., stop=1., name='vacumm_topo', zero=.5, over=_colors_bathy[0][0], 
+    under=_colors_land[-1][0], bad='0.5', **kwargs):
     """Colormap for bathy+land maps
     
     :Params:
@@ -473,11 +467,10 @@ def cmap_topo(start=0., stop=1., name='vacumm_topo', zero=.5, over=_colors_bathy
     """
     mycolors = tuple([(c[0], zero*c[1]) for c in _colors_bathy])
     mycolors += tuple([(c[0], zero+(1-zero)*c[1]) for c in _colors_land[1:]])
-    this_cmap = cmap_custom(mycolors, name, ranged=True, start=start, stop=stop)
+    this_cmap = cmap_custom(mycolors, name, ranged=True, start=start, stop=stop, **kwargs)
     this_cmap.set_bad(bad)
     this_cmap.set_under(under)
     this_cmap.set_over(over)
-    P.register_cmap(name, this_cmap)
     return this_cmap
  
 def auto_cmap_topo(varminmax=(0., 1.), gzoom=1., xzoom=1., **kwargs):
@@ -524,11 +517,12 @@ def auto_cmap_topo(varminmax=(0., 1.), gzoom=1., xzoom=1., **kwargs):
     if gzoom<1: gzoom=1.
     start = zero - (zero-start)/gzoom
     stop = zero + (stop-zero)/gzoom
+    kwargs.setdefault('register', False)
     return cmap_topo(start, stop, 'vacumm_auto_cmap_topo', zero=zero, **kwargs)
     
     
 
-def cmap_jete(name='vacumm_jete'):
+def cmap_jete(name='vacumm_jete', **kwargs):
     """Jet colormap with extremes
     
     :Sample: .. image:: misc-color-vacumm_jete.png
@@ -536,11 +530,9 @@ def cmap_jete(name='vacumm_jete'):
     cdict =   {'red':((0.,.75,.75),(0.22,0,0),  (0.4,0,0),(0.6,1,1),        (.78,1,1),  (1,1,1)),
                'green':((0.,0.,0.),(0.22,0,0),  (0.375,1,1),(0.64,1,1), (.78,0,0),  (1,0,0)),
                'blue':((0.,1.,1.),(0.22,1,1),   (0.4,1,1),(0.6,0,0),        (.78,0,0),  (1,.75,.75))}
-    cmap = LinearSegmentedColormap(name,cdict,256)
-    P.register_cmap(name, cmap)
-    return cmap
+    return cmap_custom(cdict, name, **kwargs)
 
-def cmap_ajete(w=.02, name='vacumm_ajete'):
+def cmap_ajete(w=.02, name='vacumm_ajete', **kwargs):
     """Jet colormap with white at center and extremes, for anomaly plots
     
     :Sample: .. image:: misc-color-vacumm_ajete.png
@@ -548,9 +540,7 @@ def cmap_ajete(w=.02, name='vacumm_ajete'):
     cdict =   {'red':((0.,.75,.75),(0.21,0,0),  (0.33,0,0),(.5-w/2,1,1),(.5+w/2,1,1),(0.67,1,1),        (.79,1,1),  (1,1,1)),
                'green':((0.,0.,0.),(0.21,0,0),  (0.3,1,1),(.5-w/2,1,1),(.5+w/2,1,1),(0.71,1,1),     (.79,0,0),  (1,0,0)),
                'blue':((0.,1.,1.),(0.21,1,1),   (0.33,1,1),(.5-w/2,1,1),(.5+w/2,1,1),(0.67,0,0),        (.79,0,0),  (1,.75,.75))}
-    cmap = LinearSegmentedColormap(name,cdict,256)
-    P.register_cmap(name, cmap)
-    return cmap
+    return cmap_custom(cdict, name, **kwargs)
 
 def cmap_jet(smoothed=False, name='vacumm_jet', **kwargs):
     """Jet colormap"""
@@ -559,8 +549,7 @@ def cmap_jet(smoothed=False, name='vacumm_jet', **kwargs):
     if not smoothed:
         cmap = cmap_regular_steps(colors, name=name, **kwargs)
     else:
-        cmap = cmap_jets(colors, name=name, **kwargs)
-    P.register_cmap(name, cmap)
+        cmap = cmap_srs(colors, name=name, **kwargs)
     return cmap
 
 def cmap_jets(name='vacumm_jets', **kwargs):
@@ -578,9 +567,7 @@ def cmap_jets(name='vacumm_jets', **kwargs):
     """
     colors = [(.75,0,1),(0,0,1),(0,1,1),(0,1,0),(1,1,0),(1,.5,0),(1,0,0)]
     kwargs.setdefault('stretch', 0)
-    cmap = cmap_smoothed_regular_steps(colors,name=name,**kwargs)
-    P.register_cmap(name, cmap)
-    return cmap
+    return cmap_smoothed_regular_steps(colors,name=name,**kwargs)
 
 def cmap_wjets(wcol=".95", name='vacumm_wjets', **kwargs):
     """White jet colormap with smoothed steps
@@ -597,9 +584,7 @@ def cmap_wjets(wcol=".95", name='vacumm_wjets', **kwargs):
     colors = [RGB(wcol),(0,1,1),(0,1,0),(1,1,0),(1,.5,0),(1,0,0),(1,0,.75)]
     kwargs.setdefault('stretch', 0)
 #   return cmap_linear(colors,name='cmap_wjets',**kwargs)
-    cmap = cmap_smoothed_regular_steps(colors, name=name,**kwargs)
-    P.register_cmap(name, cmap)
-    return cmap
+    return cmap_smoothed_regular_steps(colors, name=name,**kwargs)
 
 def cmap_ajets(wcol="w", name='vacumm_ajets', **kwargs):
     """Jet colormap with smoothed steps and white at center (for anomalies)
@@ -614,9 +599,7 @@ def cmap_ajets(wcol="w", name='vacumm_ajets', **kwargs):
 ##  colors = [(.75,0,1),(0,0,1),(0,1,1),(0,1,0),(1,1,0),(1,.5,0),(1,0,0)]
     colors = [(.75,0,1),(0,0,1),(0,1,1),RGB(wcol),(1,1,0),(1,.5,0),(1,0,0)]
     kwargs.setdefault('stretch', 0)
-    cmap = cmap_smoothed_regular_steps(colors,name=name,**kwargs)
-    P.register_cmap(name, cmap)
-    return cmap
+    return cmap_smoothed_regular_steps(colors,name=name,**kwargs)
 
 def _stretch_(value, stretch):
     """ 0 = no stretch
@@ -629,7 +612,8 @@ def _stretch_(value, stretch):
         return (1+stretch) * value
     return value + stretch * (1-value) 
     
-def cmap_smoothed_steps(colors, stretch=None, rstretch=0, lstretch=0, name='cmap_css', ncol=256, asdict=False):
+def cmap_smoothed_steps(colors, stretch=None, rstretch=0, lstretch=0, name='cmap_css', 
+    asdict=False, **kwargs):
     """Smoothed steps
     
     :Params:
@@ -672,7 +656,7 @@ def cmap_smoothed_steps(colors, stretch=None, rstretch=0, lstretch=0, name='cmap
             
     cdict = {'red':rr,'green':gg,'blue':bb}
     if asdict: return cdict
-    return LinearSegmentedColormap(name, cdict, ncol)
+    return cmap_custom(cdict, name, **kwargs)
     
 def cmap_ss(*args, **kwargs):
     """Shortcut to :func:`cmap_smoothed_steps`"""
@@ -717,7 +701,8 @@ def _regular_(colors, steptype='center', posmin=0., posmax=1.):
         rcolors.append((col,pos))
     return rcolors
 
-def cmap_steps(cols, stretch=None, lstretch=0., rstretch=0., keepc=None, name='cmap_steps'):
+def cmap_steps(cols, stretch=None, lstretch=0., rstretch=0., keepc=None, name='cmap_steps', 
+    **kwargs):
     """Colormap by steps
     
     :Params:
@@ -728,6 +713,7 @@ def cmap_steps(cols, stretch=None, lstretch=0., rstretch=0., keepc=None, name='c
         - **keepc**, optional: If ``lstretch`` and ``rstretch`` are both different from zero,
           it keeps center of steps intact, else it becomes a mean
           of left and right.
+        - **ncol/N**: Discretization.
     
     .See also:
     
@@ -776,7 +762,7 @@ def cmap_steps(cols, stretch=None, lstretch=0., rstretch=0., keepc=None, name='c
     gg.append((1, g, g))
     bb.append((1, b, b))
     cdict = {'red':rr,'green':gg,'blue':bb}
-    return LinearSegmentedColormap(name, cdict, 256)
+    return cmap_custom(cdict, name, **kwargs)
 
 def cmap_regular_steps(colors, steptype='stair', **kwargs):
     """Colormap by regular steps
@@ -806,16 +792,14 @@ def cmap_wjet(wcol='.95', smoothed=True, name='vacumm_wjet', **kwargs):
     wcol = kwargs.get('first_color', wcol)
     func = cmap_regular_steps if not smoothed else cmap_smoothed_regular_steps
     colors = [wcol, 'b', (0, 1, 1), (0, 1, 0), (1, 1, 0), (1, 0, 0), (1, 0, .74)]
-    cmap = func(colors, **kwargs)
-    P.register_cmap(name, cmap)
-    return cmap
+    return func(colors, **kwargs)
 
 #    wcol = kwargs.get('first_color', wcol)
 #    colors = [RGB(wcol),(0,1,1),(0,1,0),(1,1,0),(1,.5,0),(1,0,0),(1,0,.75)]
 
 
 
-def cmap_pe(red=.8, name="vacumm_pe"):
+def cmap_pe(red=.8, name="vacumm_pe", **kwargs):
     """Colomap for positive extremes (white->grey->red)
     
     :Sample: .. image:: misc-color-vacumm_pe.png
@@ -823,11 +807,9 @@ def cmap_pe(red=.8, name="vacumm_pe"):
     cdict = {'red':  ((0.,1.,1.),(red,.7,.7),(1.,1.,1.)),
            'green':((0.,1.,1.),(red,.7,.7),(1.,0.,0.)),
            'blue': ((0.,1.,1.),(red,.7,.7),(1.,0.,0.))}
-    cmap = LinearSegmentedColormap(name,cdict,256)
-    P.register_cmap(name, cmap)
-    return cmap
+    return cmap_custom(cdict, name, **kwargs)
 
-def cmap_grey(start=0, end=1., name="vacumm_grey"):
+def cmap_grey(start=0, end=1., name="vacumm_grey", **kwargs):
     """Grey colormap from position ``start`` to position ``end``
     
     :Sample: .. image:: misc-color-vacumm_grey.png
@@ -835,11 +817,9 @@ def cmap_grey(start=0, end=1., name="vacumm_grey"):
     cdict = {'red':  ((0.,start,start),(1.,end,end)),
            'green':((0.,start,start),(1.,end,end)),
            'blue': ((0.,start,start),(1.,end,end))}
-    cmap = LinearSegmentedColormap(name, cdict, 256)
-    P.register_cmap(name, cmap)
-    return cmap
+    return cmap_custom(cdict, name, **kwargs)
 
-def cmap_chla(name='vacumm_chla', smoothed=True):
+def cmap_chla(name='vacumm_chla', smoothed=True, **kwargs):
     """Colormap for Chlorophyll A
     
     :Sample: .. image:: misc-color-vacumm_chla.png
@@ -897,11 +877,9 @@ def cmap_chla(name='vacumm_chla', smoothed=True):
     colors = zip(param_red,param_green,param_blue)
 
     func = cmap_regular_steps if not smoothed else cmap_smoothed_regular_steps
-    cmap = func(colors, name=name)
-    P.register_cmap(name, cmap)
-    return cmap
+    return func(colors, name=name, **kwargs)
 
-def cmap_previmer(name='vacumm_previmer'):
+def cmap_previmer(name='vacumm_previmer', **kwargs):
     """Colormap from PREVIMER Website (http://www.previmer.org)
     
     :Sample: .. image:: misc-color-vacumm_previmer.png
@@ -920,15 +898,14 @@ def cmap_previmer(name='vacumm_previmer'):
     colors = []
     for icolor in N.arange(len(r1)):
       colors.append(((r1[icolor],v1[icolor],b1[icolor]),norm.positions[icolor]))
-    cmap = cmap_custom(colors,name=name,ncol=len(colors)-1)
-    P.register_cmap(name, cmap)
-    return cmap
+    kwargs.setdefault('ncol', len(colors)-1)
+    return cmap_custom(colors, name=name, **kwargs)
 
-def cmap_previmer2(name='vacumm_previmer2'):
+def cmap_previmer2(name='vacumm_previmer2', **kwargs):
     """Colormap from PREVIMER Website (http://www.previmer.org)
     
     Same as :func:`cmap_previmer` but extremes are used for 
-    methd:`set_under` and :meth`set_over`.
+    :meth:`set_under` and :meth`set_over`.
     
     :Sample: .. image:: misc-color-vacumm_previmer.png
     
@@ -941,13 +918,12 @@ def cmap_previmer2(name='vacumm_previmer2'):
     b = N.array([229,213,208,209,159,173,119,205,222,242,252,252,252,252,252,252,252,252,228,155,132,132,126,105,82,49,15,4,4,4,4,4,4,4.])
     b /= 255.
     colors = zip(r,g,b)
-    cmap = cmap_srs(colors[1:-1], name=name)
+    cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
-    P.register_cmap(name, cmap)
     return cmap    
 
-def cmap_ssec(name='vacumm_ssec'):
+def cmap_ssec(name='vacumm_ssec', **kwargs):
     """ Colormap from Ncview (http://fossies.org/dox/ncview-2.1.2/colormaps__ssec_8h_source.html)
     
     
@@ -992,13 +968,12 @@ def cmap_ssec(name='vacumm_ssec'):
     b = d[2::3]/255.
     
     colors = zip(r,g,b)
-    cmap = cmap_srs(colors[1:-1], name=name)
+    cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
-    P.register_cmap(name, cmap)
     return cmap
 
-def cmap_ncview_rainbow(name='vacumm_ncview_rainbow'):
+def cmap_ncview_rainbow(name='vacumm_ncview_rainbow', **kwargs):
     """ Colormap Rainbow from Ncview (http://fossies.org/dox/ncview-2.1.2/colormaps__rainbow_8h_source.html)
 
 
@@ -1054,13 +1029,12 @@ def cmap_ncview_rainbow(name='vacumm_ncview_rainbow'):
     b = d[2::3]/255.
 
     colors = zip(r,g,b)
-    cmap = cmap_srs(colors[1:-1], name=name)
+    cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
-    P.register_cmap(name, cmap)
     return cmap
 
-def cmap_eke(name='vacumm_eke'):
+def cmap_eke(name='vacumm_eke', **kwargs):
     """ Colormap for Eddy Kinetic Energy (from Barnier et al., 2006)
 
     Added by G. Charria
@@ -1838,25 +1812,24 @@ def cmap_eke(name='vacumm_eke'):
     
 
     colors = zip(r,g,b)
-    cmap = cmap_srs(colors[1:-1], name=name)
+    cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
-    P.register_cmap(name, cmap)
     return cmap
 
-def _local_cmap_cpt_(name):
+def _local_cmap_cpt_(name, **kwargs):
     """Get a cmap stored in a GMT format in file _cpt_dir/<name>.cpt"""
     if name in cmap_d:
         return cmap_d[name]
     sname = name[7:] if name.startswith('vacumm_') else name
-    return cmap_gmt(os.path.join(_cpt_dir, sname+'.cpt'), register='vacumm_'+sname)
+    return cmap_gmt(os.path.join(_cpt_dir, sname+'.cpt'), register='vacumm_'+sname, **kwargs)
     
 
-def cmap_currents(name='vacumm_currents'):
+def cmap_currents(name='vacumm_currents', **kwargs):
     """A colormap for displaying currents"""
-    return _local_cmap_cpt_(name)
+    return _local_cmap_cpt_(name, **kwargs)
 
-def cmap_rnb2_hymex(name="vacumm_rnb2_hymex"):
+def cmap_rnb2_hymex(name="vacumm_rnb2_hymex", **kwargs):
     """RNB2 Colormap for HYMEX
     
     .. note:: This colormap is registered in matplotlib under the name "vacumm_rnb2_hymex".
@@ -1872,13 +1845,12 @@ def cmap_rnb2_hymex(name="vacumm_rnb2_hymex"):
         ((1, .1, .1), .82), 
         ((.8, .1, .1), .9), 
         ((.6, .25, .6), 1.)]
-    cmap = cmap_smoothed_steps(data, name=name)
+    cmap = cmap_smoothed_steps(data, name=name, **kwargs)
     cmap.set_under(data[0][0])
     cmap.set_over(data[-1][0])
-    P.register_cmap(name, cmap)
     return cmap
 
-def cmap_rainbow_sst_hymex(name="vacumm_rainbow_sst_hymex"):
+def cmap_rainbow_sst_hymex(name="vacumm_rainbow_sst_hymex", **kwargs):
     """RAINBOW_SST Colormap for HYMEX
     
     .. note:: This colormap is registered in matplotlib under the name "vacumm_rainbow_sst_hymex".
@@ -1893,13 +1865,12 @@ def cmap_rainbow_sst_hymex(name="vacumm_rainbow_sst_hymex"):
         ((1, 0.95, 0), .66), 
         ((1, .2, 0), .85), 
         ((.61, 0, 0), 1.)]
-    cmap = cmap_smoothed_steps(data, name=name)
+    cmap = cmap_smoothed_steps(data, name=name, **kwargs)
     cmap.set_under(data[0][0])
     cmap.set_over(data[-1][0])
-    P.register_cmap(name, cmap)
     return cmap
 
-def cmap_dynamic_cmyk_hymex(name="vacumm_dynamic_cmyk_hymex"):
+def cmap_dynamic_cmyk_hymex(name="vacumm_dynamic_cmyk_hymex", **kwargs):
     """DYNAMIC_CMYK Colormap for HYMEX
     
     .. note:: This colormap is registered in matplotlib under the name "vacumm_dynamic_cmyk_hymex".
@@ -1918,13 +1889,12 @@ def cmap_dynamic_cmyk_hymex(name="vacumm_dynamic_cmyk_hymex"):
         ((0.97255, 0.50980, 0.06667), .8), 
         ((0.98039, 0.07059, 0.04706), .9), 
         ((0.59608, 0.05882, 0.03137), 1.)]
-    cmap = cmap_smoothed_steps(data, name=name)
+    cmap = cmap_smoothed_steps(data, name=name, **kwargs)
     cmap.set_under(data[0][0])
     cmap.set_over(data[-1][0])
-    P.register_cmap(name, cmap)
     return cmap
 
-def cmap_white_centered_hymex(name="vacumm_white_centered_hymex"):
+def cmap_white_centered_hymex(name="vacumm_white_centered_hymex", **kwargs):
     """RNB2 Colormap for HYMEX
     
     .. note:: This colormap is registered in matplotlib under the name "vacumm_white_centered_hymex".
@@ -1938,13 +1908,12 @@ def cmap_white_centered_hymex(name="vacumm_white_centered_hymex"):
         ((1, 1, 1), .65), 
         ((1,0.2,0.2), .8), 
         ((1, 1, 0), 1.)]
-    cmap = cmap_smoothed_steps(data, name=name)
+    cmap = cmap_smoothed_steps(data, name=name, **kwargs)
     cmap.set_under(data[0][0])
     cmap.set_over(data[-1][0])
-    P.register_cmap(name, cmap)
     return cmap
 
-def cmap_red_tau_hymex(name="vacumm_red_tau_hymex"):
+def cmap_red_tau_hymex(name="vacumm_red_tau_hymex", **kwargs):
     """RNB2 Colormap for HYMEX
     
     .. note:: This colormap is registered in matplotlib under the name "vacumm_red_tau_hymex".
@@ -1958,10 +1927,9 @@ def cmap_red_tau_hymex(name="vacumm_red_tau_hymex"):
         ((1.0, 0.6, 0.1), .6), 
         ((1.0, 0.3, 0.1), .9), 
         ((1.0, 0.0,   0), 1.)]
-    cmap = cmap_smoothed_steps(data, name=name)
+    cmap = cmap_smoothed_steps(data, name=name, **kwargs)
     cmap.set_under(data[0][0])
     cmap.set_over(data[-1][0])
-    P.register_cmap(name, cmap)
     return cmap
 
 
@@ -2201,7 +2169,7 @@ def print_cmaps_gmt():
 #        print '%s %s' % ((name+':').ljust(20),description)
         
 _re_split_gmt = re.compile(r'[\t/\-]+').split
-def cmap_gmt(name, register=True):
+def cmap_gmt(name, register=True, **kwargs):
     """Get a colormap from GMT
     
     :Params:
@@ -2299,10 +2267,7 @@ def cmap_gmt(name, register=True):
     colorDict = {"red":red, "green":green, "blue":blue}    
     if register:
         if isinstance(register, basestring): name = register
-    cmap = LinearSegmentedColormap(name, colorDict)
-    if register:
-        P.register_cmap(name, cmap)
-    return cmap
+    return cmap_custom(colorDict, name, register=register, **kwargs)
 
 
 def darken(c, f):
