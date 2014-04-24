@@ -3659,9 +3659,9 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., maplims=None, bgcolor=(0, .
     if alpha:
         bgcolor += alpha, 
     oldax = P.gca()
-    m = map2(data, lon = (xmin, xmax), lat=(ymin,ymax), proj='merc', show=False,
-        axes_rect = bbox, bgcolor=bgcolor,
-        xhide=True, yhide=True, fig=fig, **kwargs)
+    dict_check_defaults(kwargs, title=False, xhide=True, yhide=True, proj='merc')
+    m = map2(data, lon = (xmin, xmax), lat=(ymin,ymax), show=False,
+        axes_rect = bbox, bgcolor=bgcolor, fig=fig, **kwargs)
 #    m.axes.set_alpha(alpha)
     fc = m.get_axobj('fillcontinents')
     if alpha!=1 and fc:
