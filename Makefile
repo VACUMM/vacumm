@@ -55,6 +55,8 @@ help:
 	@echo ""
 	@echo "  Development"
 	@echo "    doc                       generate documentations"
+	@echo "    html                      generate html documentation"
+	@echo "    pdf                       generate pdf documentation"
 	@echo "    install                   prepare for local use (build libs, fix permissions)"
 	@echo "    uninstall                 clean local installations"
 	@echo "    arch                      clean all and create source archive in parent directory"
@@ -74,7 +76,8 @@ pdf:
 	cd doc/sphinx && make pdf
 
 lib:
-	cd lib/python/vacumm/misc/grid && make
+	python setup.py build_ext --inplace --force
+	#cd lib/python/vacumm/misc/grid && make
 
 # install: lib doc
 install: lib
