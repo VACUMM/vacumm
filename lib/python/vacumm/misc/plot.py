@@ -2800,7 +2800,7 @@ _fill_doc_(xdate, ydate, taylor, dtaylor)
 def curve2(*args, **kwargs):
     """curve2(data, axis=None, title=None, savefig=None, show=True, **kwargs)
     
-    Plot 1D data as a curve
+    Plot 1D data as a curve and get a :class:`~vacumm.misc.core_plot.Curve` object.
     
     
     :Examples:
@@ -2886,7 +2886,7 @@ def curve2(*args, **kwargs):
         {Plot_post_plot[show]}
         {Plot_post_plot[close]}
    
-    :Other arguments can be classical matplotlib plot arguments (for exemple: linewidths):   
+    :Extra: A few matplotlib plot arguments can be passed (for exemple: ``linewidths``).  
    
     """
     from core_plot import Curve
@@ -2901,7 +2901,7 @@ def curve2(*args, **kwargs):
 def bar2(*args, **kwargs):
     """bar2(data, width=1.,lag=0, align='center', offset=None, title=None, savefig=None, show=True, **kwargs)
     
-    Plot data as a bar plot
+    Plot data as a bar plot and get a :class:`~vacumm.misc.core_plot.Bar` object.
     
     :Examples:
     
@@ -2991,7 +2991,7 @@ def bar2(*args, **kwargs):
 def stick2(*args, **kwargs):
     """stick2(udata, vdata, polar=False, degrees=True, mod=False, pos=None, width=None, scale=None, color='k', line=True, levels=None, cmap=None, shadow=False, **kwargs)
     
-    Plot data as a stick plot
+    Plot data as a stick plot and get a :class:`~vacumm.misc.core_plot.Stick` object.
     
     :Example:
     
@@ -3101,10 +3101,12 @@ def hov2(*args, **kwargs):
     """hov2(data, order=None, contour=True, fill='pcolor', levels=None, colorbar=True, title=None, xaxis=None, yaxis=None, **kwargs)
     
     Plot data as a Hovmoller diagram (2D with one axis as time)
+    and get a :class:`~vacumm.misc.core_plot.Nov` object.
     
     :Example:
     
         >>> hov2(temp[:,-1,:,3], order='ty') # Force time as Y axis
+        >>> h = hov2(ssh, show=False)
         
     :Data params:
     
@@ -3222,12 +3224,15 @@ def hov2(*args, **kwargs):
 def map2(*args, **kwargs):
     """map2(data=None, proj='cyl', res='auto', lon=None, lat=None, contour=True, fill='pcolor', levels=None, colorbar=True, xaxis=None, yaxis=None, title=None, savefig=None, show=True, **kwargs)
     
-    Plot an empty map or data on a map
+    Plot an empty map or data on a map and get a :class:`~vacumm.misc.core_plot.Map` object.
     
     :Example:
     
-        >>> map(xe, resolution='i')
-        >>> map(lon=(-10,0), lat=(45,55), drawrivers=True, drawrivers_color='b')
+        >>> map2(xe, resolution='i')
+        >>> map2(lon=(-10,0), lat=(45,55), drawrivers=True, drawrivers_color='b')
+        >>> m = map(bathy, show=False)
+        >>> m.add_place(x, y, 'Brest')
+        >>> m.show()
         
     :Data params:
     
@@ -3382,6 +3387,7 @@ def section2(*args, **kwargs):
     """section2(data, contour=True, fill='pcolor', levels=None, colorbar=True, title=None, xaxis=None, yaxis=None, **kwargs)
     
     Plot geographical data as a vertical-horizontal section
+    and get a :class:`~vacumm.misc.core_plot.Section` object.
     
     :Example:
     
@@ -3502,7 +3508,7 @@ def section2(*args, **kwargs):
 def plot2d(*args, **kwargs):
     """plot2d(data, contour=True, fill='pcolor', levels=None, colorbar=True, xaxis=None, yaxis=None, title=None, savefig=None, show=True, **kwargs)
     
-    Generic plot of a 2D variable
+    Generic plot of a 2D variable and get a :class:`~vacumm.misc.core_plot.Plot2D` object.
     
     :Example:
     
@@ -3635,8 +3641,10 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., maplims=None, bgcolor=(0, .
     
         >>> minimap(((lonmin,lonmax),(latmin,latmax))).add_point(-5,48)
         >>> minimap(sst.getGrid())
-        >>> minimap(sst)
-        
+        >>> m = minimap(sst)
+        >>> m.add_point(lon, lat)
+      
+    :Return: A :class:`~vacumm.misc.core_plot.Map` object.  
     """
     from grid import get_xy
     from color import RGB
