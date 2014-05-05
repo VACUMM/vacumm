@@ -55,22 +55,29 @@ class PREVIMERError(Exception):
 # Load configuration here
 cfgfiles = [
     os.path.join(os.path.dirname(__file__[:-2]), 'ifroco.cfg'), 
-    'previmer.cfg'
+    'previmer.cfg', 'ifroco.cfg'
 ]
 cfg = SafeConfigParser()
 
-def load_cfg():
-    """Load configuration"""
-    return cfg.read(cfgfiles)
+def load_cfg(cfiles=None):
+    """Load configuration
+    
+    :Params:
+    
+        - **cfiles**: single or list of alternative config files.
+    """
+    if not cfiles: cfiles = cfgfiles
+    return cfg.read(cfiles)
 
 cfgfiles = load_cfg()
 
 
-def cfgget(option, section='DEFAULT', alt=None):
+def cfgget(option, section='DEFAULT', alt=None, reload=False):
     """Get an evaluated config option
     
     .. note:: Convert strings to unicode
     """
+    if reload: load_cfg(reload)
     if not cfg.has_option(section, option): return alt
     value = eval(cfg.get(section, option))
     if isinstance(value, str): 
