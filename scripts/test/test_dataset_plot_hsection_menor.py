@@ -13,5 +13,5 @@ ds = DS(data_sample(ncfile), 'mars', logger_level='critical')
 # Plot hsection
 figfile = code_base_name(ext='png')
 if os.path.exists(figfile): os.remove(figfile)
-ds.plot_hsection('temp', depth, savefig=figfile, show=False, close=True)
+ds.plot_hsection('temp', depth, savefig=figfile, fill='contourf', show=False, close=True)
 
