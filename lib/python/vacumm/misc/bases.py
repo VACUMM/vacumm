@@ -111,15 +111,38 @@ def func_name(iframe=0):
     '''
     #return inspect.currentframe().f_back.f_code.co_name
     return sys._getframe(1+iframe).f_code.co_name
+ 
+
+def _set_ext_(fname, ext):
+    """Change a file extension
     
-def code_file_name(iframe=0):
+    Parameters:
+        - **fname**: File path.
+        - **ext**: Remove extension if False, replace it if string,
+          or leave it.
+    """
+    if ext is False or isinstance(ext, basestring):
+        fname, suf = os.path.splitext(fname)
+        if ext is not False:
+            if isinstance(ext, basestring):
+                suf = ext
+            if not '.' in suf:
+                suf = '.'+suf
+            fname = fname + suf
+    return fname
+    
+def code_file_name(iframe=0,  ext=True):
     '''
     Get the name of the file that hosts the code where it is called
     
     Parameters:
         - **iframe**: int: Get the iframe'th caller function name.
+        - **ext**: Remove extension if False, replace it if string,
+          or leave it.
     '''
-    return sys._getframe(1+iframe).f_code.co_filename
+    fname = sys._getframe(1+iframe).f_code.co_filename
+    fname = _set_ext_(fname, ext)
+    return fname
 
 def code_base_name(iframe=0, ext=True):
     '''
@@ -130,16 +153,7 @@ def code_base_name(iframe=0, ext=True):
         - **ext**: Remove extension if False, replace it if string,
           or leave it.
     '''
-    fname = os.path.basename(code_file_name(iframe+1))
-    if ext is False or isinstance(ext, basestring):
-        fname, suf = os.path.splitext(fname)
-        if ext is not False:
-            if isinstance(ext, basestring):
-                suf = ext
-            if not '.' in suf:
-                suf = '.'+suf
-            fname = fname + suf
-    return fname
+    return os.path.basename(code_file_name(iframe+1, ext))
     
 def stack_trace(iframe=0):
     def etrace(frame, pad=60):
