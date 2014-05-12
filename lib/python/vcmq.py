@@ -57,7 +57,7 @@ from vacumm.misc.axes import \
     
 from vacumm.misc.atime import comptime, strftime, strptime, Intervals, IterDates, now, \
     time_split, time_split_nmax, to_utc, tz_to_tz, utc_to_paris, paris_to_utc,  \
-    lindates, ch_units, add_margin, round_date, midnight_date, midnight_interval, mpl
+    lindates, ch_units, add_margin, round_date, midnight_date, midnight_interval, mpl, tic, toc
 
 
 from vacumm.misc.bases import psinfo, code_base_name, code_file_name
