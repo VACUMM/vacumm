@@ -2,7 +2,7 @@
 """
 Time utilities
 """
-# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
+# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud, Guillaume Charria) (2010)
 # 
 # raynaud@actimar.fr
 # 
@@ -73,7 +73,9 @@ __all__ = ['mpl_time_units','str_unit_types','re_split_date','now', 'add', 'axis
 'is_strtime', 'time_type', 'is_axistime', 'notz',  'IterDates', 'numtime',  'is_numtime', 
 'pat2glob', 'midnight_date', 'midnight_interval','reduce_old', 'daily_bounds', 
 'hourly_bounds', 'time_split', 'time_split_nmax', 'add_margin', 'fixcomptime', 
-'is_interval', 'has_time_pattern', 'tsel2slice', 'time_selector']
+'is_interval', 'has_time_pattern', 'tsel2slice', 'time_selector', 'tic', 'toc']
+
+
 
 __all__.sort()
 
@@ -2752,6 +2754,52 @@ def tsel2slice(taxis, *args, **kwargs):
     if not nonone and slice(i,j,k)==fullslice: return 
     if asind: return i,j,k
     return slice(i,j,k)
+
+def tic():
+    """Launch a time counter at the begining of your program.
+        
+          
+    :Return:
+    
+        - A time to be used with the toc() function.
+    
+    :Examples:
+    
+        >>> stime = tic()
+    """
+    import time as tc
+    stime = tc.clock()
+    print tc.asctime()
+    return stime
+
+def toc(stime=0.):
+    """Compute the cost of the computation and display in an adapted format.
+    
+    :Params:
+    
+        - **stime**, optional: The initial time given by the tic() function.
+          
+    :Return:
+    
+        - Display the time spent in the program.
+    
+    :Examples:
+    
+        >>> stime = tic()
+        >>> 
+        >>> toc(stime=stime)
+    """
+    import time as tc
+    # print tc.asctime()
+    r = tc.clock()-stime
+    if r > 60:
+        if r > 3600:
+            print (r/3600), "hours"
+        else:
+            print (r/60), " minutes"
+    else:
+        print tc.clock()-stime, " seconds"
+
 
 #####################################################################
 ######################################################################
