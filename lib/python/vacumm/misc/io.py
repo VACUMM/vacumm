@@ -339,6 +339,7 @@ def list_forecast_files(filepattern, time=None, check=True,
             
             # Guess left margin when possible
             gfiles = glob.glob(pat2glob(filepattern))
+            gfiles = gfiles.sort()
             if gfiles<2:
                 lmargin = 1
             elif not glob.has_magic(filepattern):
