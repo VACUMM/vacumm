@@ -46,6 +46,7 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
     ! - yo: output y axis
     ! - mv: missing value (used only for initialisation)
     ! - method: 0 = nearest, 1 = linear, 2 = cubic, 3 = hermit
+    ! - extrap: 0 = do not extrapolate, 1 = top, -1 = bottom, 2 = both
     !
     ! See: http://local.wasp.uwa.edu.au/~pbourke/miscellaneous/interpolation/
 
@@ -217,6 +218,7 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
     ! - yo: output y axis
     ! - mv: missing value (used only for initialisation)
     ! - method: 0 = nearest, 1 = linear, 2 = cubic, 3 = hermit
+    ! - extrap: 0 = do not extrapolate, 1 = top, -1 = bottom, 2 = both
     !
     ! See: http://local.wasp.uwa.edu.au/~pbourke/miscellaneous/interpolation/
 
@@ -386,6 +388,7 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
     ! - yo: output y axis
     ! - mv: missing value (used only for initialisation)
     ! - method: 0 = nearest, 1 = linear, 2 = cubic, 3 = hermit
+    ! - extrap: 0 = do not extrapolate, 1 = top, -1 = bottom, 2 = both
     !
     ! See: http://local.wasp.uwa.edu.au/~pbourke/miscellaneous/interpolation/
 
@@ -550,6 +553,60 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
     if(method==3)deallocate(a0,a1,a2,a3)
 
 end subroutine interp1dxx
+
+
+subroutine extrap1d(vari, varo, mv, extrap, nx, ny)
+    ! Extrapolate valid data to the top and/or bottom
+    !
+    ! - vari: input variable
+    ! - varo: output variable
+    ! - mv: missing value (used only for initialisation)
+    ! - extrap: 0 = do not extrapolate, 1 = top, -1 = bottom, 2 = both
+    !
+
+    implicit none
+    
+    ! Extrernal
+    integer, intent(in) :: nx,ny
+    real(kind=8), intent(in) :: vari(nx,ny)
+    real(kind=8), intent(in) :: mv
+    real(kind=8), intent(out) :: varo(nx,ny)
+    integer, intent(in), optional :: extrap
+    
+    ! Internal
+    integer :: ix,iy, jj(ny), iymin, iymax
+    logical :: valid(ny)
+    
+    ! Initialisation
+    varo = vari
+    if(extrap==0)return    
+    jj = (/(iy, iy=1,ny)/)
+        
+    ! Loop on extra dim
+    !$OMP PARALLEL DO PRIVATE(ix,iymin,iymax,valid) 
+    !$& SHARED(vari,jj,varo,extrap)
+    do ix = 1, nx
+        
+        valid = abs(vari(ix,:)-mv)>tiny(1d0)
+        
+        if(any(valid))then
+        
+            if(extrap==-1 .or. extrap==2)then
+                iymin = minval(jj, mask=valid)
+                if(iymin>1) varo(ix,1:iymin-1) = varo(ix,iymin)
+            endif
+            
+            if(extrap==1 .or. extrap==2)then
+                iymax = maxval(jj, mask=valid)
+                if(iymax<ny) varo(ix,iymax+1:ny) = varo(ix,iymax)
+            endif
+            
+        endif
+
+    enddo
+    !$OMP END PARALLEL DO
+    
+end subroutine extrap1d
 
 ! =============================================================================
 
@@ -832,7 +889,7 @@ subroutine remap1dxx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yo
     ! Initialisation
     varo = 0.
     if(conserv==0)dyi = 1.
-    print*,'hahahaa'
+
     ! Loop on output grid
     do iyo = 1,nyo
             
@@ -939,7 +996,7 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nxi, nyi, nxo, nyo, nz,
 
 !    ! Latitude rectification
 !    if(geo)then
-!        georectif = cos(yyi*acos(-1.)/180.)
+!        georectif = cos(yyi*3.14159d0/180.)
 !        zxxi = xxi
 !        zxxo = xxo
 !!         zxxi = modulo(xxi,360.)
@@ -1014,7 +1071,7 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nxi, nyi, nxo, nyo, nz,
     endif
 end subroutine nearest2d
 
-subroutine closest2d(xxi,yyi,xo,yo,nxi,nyi,i,j,nogeo)!xxi,yyi,xo(io),yo(io),nxi,nyi,i,j,0
+subroutine closest2d(xxi,yyi,xo,yo,nxi,nyi,i,j,nogeo)
     ! Find indices of closest point on 2D axes
     implicit none
     real(kind=8),intent(in) :: xxi(nyi,nxi),yyi(nyi,nxi),xo,yo
@@ -1024,10 +1081,12 @@ subroutine closest2d(xxi,yyi,xo,yo,nxi,nyi,i,j,nogeo)!xxi,yyi,xo(io),yo(io),nxi,
     real(kind=8) :: dx(nyi,nxi)
     integer:: ij(2)
     
-    dx = abs(xxi-xo)
     if(nogeo)then
-        where(dx>180.)dx = 360.-dx
-        dx = dx * cos(yyi*acos(-1.)/180.)
+        dx = xxi-xo
+    else
+        dx = abs(xxi-xo)
+        where(dx>180d0)dx = 360d0-dx
+        dx = dx * cos(yyi*3.14159d0/180d0)
     endif
     ij = minloc(dx**2+(yyi-yo)**2)
     i = ij(2)
@@ -1238,8 +1297,8 @@ subroutine dstwgt   (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
                     if(geo)then
                         if(dx0>180.)dx0=360.-dx0
                         if(dx1>180.)dx1=360.-dx1
-                        dx0 = dx0*cos(zyo(iyo)*acos(-1.)/180.)
-                        dx1 = dx1*cos(zyo(iyo)*acos(-1.)/180.)
+                        dx0 = dx0*cos(zyo(iyo)*3.14159d0/180.)
+                        dx1 = dx1*cos(zyo(iyo)*3.14159d0/180.)
                     endif
 
                     ! Distances and weights
@@ -1297,7 +1356,7 @@ subroutine mbilin2d (vari, xi,  yi,  varo, xo,  yo, mv, ext,  nxi, nyi, no,  nog
     
 
     ! Inits
-    pi = acos(-1.)
+    pi = 3.14159d0
     varo = mv
     
     ! Geo
@@ -1447,7 +1506,6 @@ end function linept
 !    dstpt2line = sqrt((xy(1)-x)**2+(xy(2)-y)**2)
 !end function dstpt2line
     
-!function curv2rect(x1,x2,x3,x4,y1,y2,y3,y4,x,y)
 subroutine curv2rect(x1,x2,x3,x4,y1,y2,y3,y4,x,y,p,q)
     ! Coordinate transform from curvilinear to rectangular
     ! 
@@ -1456,9 +1514,8 @@ subroutine curv2rect(x1,x2,x3,x4,y1,y2,y3,y4,x,y,p,q)
     implicit none
     
     real(kind=8), intent(in) :: x1,x2,x3,x4,y1,y2,y3,y4,x,y
-!    real(kind=8), intent(out) :: curv2rect(2)
     real(kind=8), intent(out) :: p,q
-    real(kind=8) :: p1,p2 ,q1,q2, AA, BB, CC, DD, a,b,c,d,e,f
+    real(kind=8) :: p1,p2 ,q1,q2, AA, BB, CC, DD, a,b,c,d,e,f,sDD,xx,yy
     
     ! Coefs
     a = x4 -x1
@@ -1469,132 +1526,213 @@ subroutine curv2rect(x1,x2,x3,x4,y1,y2,y3,y4,x,y,p,q)
     f = y3-y4-y2 +y1
     
     ! Solve A*p**2 + B*p + C = 0
+    yy = y-y1
+    xx = x-x1
     AA = c*d - a*f
-    BB = -c*(y-y1) + b*d + (x-x1)*f - a*e
-    CC = -(y-y1)*b + e*(x-x1)
+    BB = -c*yy + b*d + xx*f - a*e
+    CC = -yy*b + e*xx
     if(AA==0.)then
-        p1 = CC/BB
+        p1 = -CC/BB
         p2 = p1
     else
         DD = BB**2 - 4*AA*CC
-        p1 = (-BB-sqrt(DD))/(2*AA)
-        p2 = (-BB+sqrt(DD))/(2*AA)
+        sDD = sqrt(DD)
+        p1 = (-BB-sDD)/(2*AA)
+        p2 = (-BB+sDD)/(2*AA)
     endif
     
+    ! Get q from p
+    if(b+c*p1/=0)then
+        q1 = (xx-a*p1)/(b+c*p1)
+    else
+        q1 = (yy-d*p1)/(e+f*p1)
+    endif
+
     ! Select point closest to center
-    q1 = (x-x1-a*p1)/(b+c*p1)
-    q2 = (x-x1-a*p2)/(b+c*p2)
-    if( ((p1-.5)**2+(q1-.5)**2)<((p2-.5)**2+(q2-.5)**2) )then
-!        curv2rect = (/p1,q1/)
-        p = p1
-        q = q1
-   else
-!        curv2rect = (/p2,q2/)
+!    if( ((p1-.5)**2+(q1-.5)**2)<((p2-.5)**2+(q2-.5)**2) )then
+    if(p1<0d0 .or. p1>1d0 .or. q1<0d0 .or. q1>1d0)then
+        if(b+c*p2/=0)then
+            q2 = (xx-a*p2)/(b+c*p2)
+        else
+            q2 = (yy-d*p2)/(e+f*p2)
+        endif
         p = p2
         q = q2
+    else
+        p = p1
+        q = q1
     endif
     
 end subroutine curv2rect
-!end function curv2rect
 
-
-subroutine curv2rel(xx0,yy0,x1,y1,p,q,nx0,ny0,n1)
+subroutine curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
     ! Convert a series of absolute coordinates to coordinates relative to
     ! a curved grid 
     
-    integer,intent(in) :: nx0,ny0,n1
-    real(kind=8),intent(in) :: xx0(ny0,nx0), yy0(ny0,nx0), x1(n1), y1(n1)
-    real(kind=8),intent(out) :: p(n1), q(n1)
-    
-    integer :: i0, j0
-    
-    !$OMP PARALLEL DO PRIVATE(i0,j0,i1) 
-    !$& SHARED(xx0,yy0,x1,y1,nx0,ny0,n1,p,q)
-    do i1 = 1, n1
-        
-        ! Find the cell
-        call closest2d(xx0,yy0,x1(i1),y1(i1),nx0,ny0,i0,j0,.false.)
-        if(i0==nx0) i0 = i0-1
-        if(j0==ny0) j0 = j0-1
-        
-        ! Relative to the current cell
-        call curv2rect(xx0(j0,i0),xx0(j0+1,i0),xx0(j0+1,i0+1),xx0(j0,i0+1), &
-            &  yy0(j0,i0),yy0(j0+1,i0),yy0(j0+1,i0+1),yy0(j0,i0+1), &
-            &  x1(i1), y1(i1), p(i1), q(i1))
-            
-        ! Relative to the full grid cells
-        p(i1) = p(i1)+i0
-        q(i1) = q(i1)+j0
-        
-    end do
-    !$OMP END PARALLEL
+    implicit none
 
-end subroutine
+    integer,intent(in) :: nxi,nyi,no
+    real(kind=8),intent(in) :: xxi(nyi,nxi), yyi(nyi,nxi), xo(no), yo(no)
+    real(kind=8),intent(out) :: p(no), q(no)
+    
+    integer :: io,i,j,ic,jc
+    real(kind=8) :: a,b
+
+    p = -1d0
+    q = -1d0
+
+    !$OMP PARALLEL DO PRIVATE(io,i,j,ic,jc,a,b)
+    !$& SHARED(xxi,yyi,xo,yo,nxi,nyi,no,p,q)
+    do io = 1, no
+    
+        ! Find the closest corner
+        call closest2d(xxi,yyi,xo(io),yo(io),nxi,nyi,ic,jc,.true.)
+        
+        ! Curvilinear to rectangular
+        do i=max(ic-1,1), min(ic,nxi)
+            do j = max(jc-1,1), min(jc,nyi)
+            
+                ! Get relative position
+                call curv2rect(xxi(j,i),xxi(j+1,i),xxi(j+1,i+1),xxi(j,i+1), &
+                             & yyi(j,i),yyi(j+1,i),yyi(j+1,i+1),yyi(j,i+1), &
+                             & xo(io), yo(io), a, b)
+                             
+                ! Store absolute indices
+                if(a>=0d0 .and. a<=1d0 .and. b>=0d0 .and. b<=1d1)then
+                    p(io) = dble(i) + a
+                    q(io) = dble(j) + b
+                    exit
+                endif
                 
-    
-    
-subroutine bilin2dto1dc(xxi,yyi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
-    ! bilinear interpolation of gridded data with 2D AXES to random positions
+            enddo
+            if(a>=0d0 .and. a<=1d0 .and. b>=0d0 .and. b<=1d1)exit
+        enddo
+
+    enddo
+    !$OMP END PARALLEL DO
+
+end subroutine curv2rel
+
+subroutine bilin2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
+    ! Bilinear interpolation of gridded data with 2D AXES to random positions
+    ! This version takes relative positions with respect to output grid
+
+    implicit none
 
     integer,intent(in) :: nxi,nyi,no,nz
-    real(kind=8),intent(in) :: xxi(nyi,nxi), yyi(nyi,nxi), xo(no), yo(no)
-    real(kind=8),intent(in) :: zi(nz,nyi,nxi),mv
+    real(kind=8),intent(in) :: p(no),q(no),zzi(nz,nyi,nxi),mv
     real(kind=8),intent(out) :: zo(nz,no)
     
-    integer :: io,jo,i,j
+    integer :: io,i,j
     real(kind=8) :: a,b
     
     zo = mv
-    !$OMP PARALLEL DO PRIVATE(ij,i,pq,a,b) 
-    !$& SHARED(xxi,yyi,zi,xo,yo,zo,nxi,nyi,no)
+    
+    !$OMP PARALLEL DO PRIVATE(io,i,j,a,b)
+    !$& SHARED(p,q,zzi,zo,nxi,nyi,no)
     do io = 1, no
     
-        ! Find the cell
-        call closest2d(xxi,yyi,xo(io),yo(io),nxi,nyi,i,j,.false.)
-        if(i==nxi) i = i-1
-        if(j==nyi) j = j-1
+        if(p(io)>0d0 .and. q(io)>0d0)then
         
-        ! Curvilinear to rectangular
-        call curv2rect(xxi(i,i),xxi(j+1,i),xxi(j+1,i+1),xxi(j,i+1), &
-                     & yyi(i,j),yyi(j+1,i),yyi(j+1,i+1),yyi(j,i+1), &
-                     & xo(no), yo(no), a, b)
-        
-        ! Bilinear interpolation
-        if(a>=0d0 .and. a<=1d0 .and. b>=0d0 .and. b<=1d1) &
-            & zo(:, io) = (1-b)*(1-a)*zi(:,j,  i) + &
-            &       (1-b)*a*zi(:,j,  i+1) + &
-            &        b*(1-a)*zi(:,j+1,i) + &
-            &        b*a*zi(:,j+1,i+1)
+            ! Cell 
+            a = mod(p(io),1d0)
+            b = mod(q(io),1d0)
+            i = int(p(io)-a)
+            j = int(q(io)-b)
+            
+            ! Interpolation
+            zo(:, io) = (1-b)*(1-a)*zzi(:,j,  i) + &
+            &       (1-b)*a*zzi(:,j,  i+1) + &
+            &        b*(1-a)*zzi(:,j+1,i) + &
+            &        b*a*zzi(:,j+1,i+1)
+            
+        endif
+
     enddo
-    !$OMP END PARALLEL
+    !$OMP END PARALLEL DO
+
+end subroutine bilin2dto1dc_reduc
+
+
+subroutine bilin2dto1dc(xxi,yyi,zzi,xo,yo,zo,mv,nxi,nyi,no,nz)
+    ! Bilinear interpolation of gridded data with 2D AXES to random positions
+
+    implicit none
+    
+    integer,intent(in) :: nxi,nyi,no,nz
+    real(kind=8),intent(in) :: xxi(nyi,nxi), yyi(nyi,nxi), xo(no), yo(no)
+    real(kind=8),intent(in) :: zzi(nz,nyi,nxi),mv
+    real(kind=8),intent(out) :: zo(nz,no)
+    
+    real(kind=8) :: p(no), q(no)
+    
+    ! Relative positions
+    call curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
+    
+    ! Interpolation
+    call bilin2dto1dc_reduc(p, q, zzi, zo, mv, nxi, nyi, no, nz)
 
 end subroutine bilin2dto1dc
+    
+    
+subroutine nearest2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
+    ! Nearest interpolation of gridded data with 2D AXES to random positions
+    ! This version takes relative positions with respect to output grid
 
-subroutine nearest2dto1dc(xxi,yyi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
+    implicit none
+
+    integer,intent(in) :: nxi,nyi,no,nz
+    real(kind=8),intent(in) :: p(no),q(no),zzi(nz,nyi,nxi),mv
+    real(kind=8),intent(out) :: zo(nz,no)
+    
+    integer :: io,i,j
+    real(kind=8) :: a,b
+    
+    zo = mv
+
+    !$OMP PARALLEL DO PRIVATE(io,i,j,a,b)
+    !$& SHARED(p,q,zzi,zo,nxi,nyi,no)
+    do io = 1, no
+    
+        if(p(io)>0d0 .and. q(io)>0d0)then
+        
+            ! Cell 
+            a = mod(p(io),1d0)
+            b = mod(q(io),1d0)
+            i = int(p(io)-a)
+            j = int(q(io)-b)
+            
+            ! Interpolation
+            if(a>0.5)i = i+1
+            if(b>0.5)j = j+1
+            zo(:, io) = zzi(:,j, i)
+        endif
+
+    enddo
+    !$OMP END PARALLEL DO
+
+end subroutine nearest2dto1dc_reduc
+
+subroutine nearest2dto1dc(xxi,yyi,zzi,xo,yo,zo,mv,nxi,nyi,no,nz)
     ! nearest interpolation of gridded data with 2D AXES to random positions
+
+    implicit none
 
     integer,intent(in) :: nxi,nyi,no,nz
     real(kind=8),intent(in) :: xxi(nyi,nxi), yyi(nyi,nxi), xo(no), yo(no)
-    real(kind=8),intent(in) :: zi(nz,nyi,nxi),mv
+    real(kind=8),intent(in) :: zzi(nz,nyi,nxi),mv
     real(kind=8),intent(out) :: zo(nz,no)
     
-    integer :: io,jo,i,j
+    real(kind=8) :: p(no), q(no)
     
-    zo = mv
-    !$OMP PARALLEL DO PRIVATE(ij,i,pq) 
-    !$& SHARED(xxi,yyi,zi,xo,yo,zo,nxi,nyi,no)
-    do io = 1, no
-    
-        ! Find the cell
-        call closest2d(xxi,yyi,xo(io),yo(io),nxi,nyi,i,j,.false.)
-        
-        ! Get it!
-        zo(:, io) = zi(:, j,  i)
-        
-    enddo
-    !$OMP END PARALLEL
+    ! Relative positions
+    call curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
+
+    ! Interpolation
+    call nearest2dto1dc_reduc(p, q, zzi, zo, mv, nxi, nyi, no, nz)
 
 end subroutine nearest2dto1dc
+
 ! =============================================================================
 
 subroutine mixt2dx   (vari, xi,  yi,  varo, xo,  yo,  mv, ext,       nxi,nyi,nxo,nyo,nz)
