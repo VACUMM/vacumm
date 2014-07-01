@@ -1187,7 +1187,7 @@ _re_cfg2optname_sub = re.compile('[_\s]').sub
 def _cfg2optname_(name, nested=None):
     optkey = _re_cfg2optname_sub('-', name)
     if nested: optkey = nested+'-'+optkey
-    return optkey
+    return optkey.lower()
 
 class _attdict_(dict):
     def __getattr__(self, name):
@@ -1265,10 +1265,13 @@ def _walker_optcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
     parents = _parent_list_(sec, names=False)
     cfgkey = '_'.join([p.name.strip('_') for p in parents]+[key])
     for option, value in options.__dict__.items():
+        
         # Option not set
         if value is None: continue
+        
         # Option matches key?
-        if _opt2cfgname_(option, nested) != cfgkey: continue
+        if _opt2cfgname_(option, nested) != cfgkey.lower(): continue
+        
         # Check or create cfg genealogy
         s = cfg
         for p in parents:
@@ -1319,7 +1322,7 @@ def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
         if value is None: continue
         
         # Option matches key?
-        if _opt2cfgname_(option, nested) != cfgkey: continue
+        if _opt2cfgname_(option, nested) != cfgkey.lower(): continue
         
         # Check or create cfg genealogy
         s = cfg
@@ -1604,7 +1607,7 @@ def print_short_help(parser, formatter=None):
         formatter.add_text(parser.epilog)
 
         # determine help from format above
-        parser._print_message(formatter.format_help(), None)
+        parser._print_message(formatter.format_help(), sys.stdout)
         
 
 if __name__=='__main__':
