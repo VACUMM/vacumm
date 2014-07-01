@@ -15,13 +15,13 @@ One compile and install VACUMM from the main directory of the package with:
 
 .. code-block:: bash
 
-    shell> python setup.py install
+    $ python setup.py install
 
 For more options:
     
 .. code-block:: bash
 
-    shell> python setup.py --help
+    $ python setup.py --help
 
 
 For our own usage
@@ -33,28 +33,28 @@ First, compile:
 
 .. code-block:: bash
 
-    shell> python setup.py build
+    $ python setup.py build
     
 Then, install in the default user's directory 
 (typically  :file:`/home/<user>/.local/lib/python2.{x}/site-packages`) :
     
 .. code-block:: bash
 
-    shell> python setup.py install --user
+    $ python setup.py install --user
 
 If the library must be installed in a special directory, use:
 
 .. code-block:: bash
 
-    shell> python setup.py install --prefix=/my/special/dir
+    $ python setup.py install --prefix=/my/special/dir
 
 Then, set your environment variables to have acces both to the python library
 and to the executables:
 
 .. code-block:: bash
 
-    shell> export PATH=/my/special/dir/bin
-    shell> export PYTHONPATH=/my/special/dir/lib/python{x.x}/site-packages  # {x.x} refers to the python version
+    $ export PATH=/my/special/dir/bin
+    $ export PYTHONPATH=/my/special/dir/lib/python{x.x}/site-packages  # {x.x} refers to the python version
 
 
 .. _user.install.install.dev:
@@ -63,20 +63,35 @@ Local installation for a developper
 -----------------------------------
 
 VACUMM must be used directly after an untar or a checkout by
-setting the variables:
+compiling the extensions and setting the variables:
 
 .. code-block:: bash
 
-    shell> export PATH=~/path/to/vacumm-trunk/bin
-    shell> export PYTHONPATH=~/path/to/vacumm-trunk/lib/python
+    $ make lib # or python setup.py build_ext --inplace
+    $ export PATH=~/path/to/vacumm-trunk/bin
+    $ export PYTHONPATH=~/path/to/vacumm-trunk/lib/python
     
-The fortran extensions will be compilated automatically in place
-during the importation of the associated module
-(:mod:`~vacumm.misc.grid.regridding`).
 
 You can also use the environment module provided
 with the package as presented at section :ref:`user.install.modenv.dev`.
 
+
+Tuning the installation
+-----------------------
+
+You can tune the installation with the :file:`setup.cfg` file, 
+following the instruction of the official documentations 
+(`here <https://docs.python.org/2/distutils/configfile.html#writing-the-setup-configuration-file>`_).
+Two examples are provided, which differ in the way the fortran extension
+is compilated:
+
+- The :file:`setup.cfg.simple` simply specifies the compiler type.
+- The :file:`setup.cfg.omp` makes the compilation to use OpenMP.
+
+Here is the content of the :file:`setup.cfg.omp` file:
+
+.. literalinclude:: ../../../setup.cfg.omp
+    :language: ini
 
 
 .. _user.install.install.config:
@@ -115,7 +130,7 @@ To alter this configuration, proceed in this way:
         
        .. code-block:: bash
        
-            shell> python setup.py install --cfgfiles=myconfig.cfg,path/to/bathy.gridded.cfg
+            $ python setup.py install --cfgfiles=myconfig.cfg,path/to/bathy.gridded.cfg
             
  
 Check your installation
@@ -125,6 +140,6 @@ Run:
     
 .. code-block:: bash
 
-    shell> vacumm_print_config.py
+    $ vacumm_print_config.py
 
     

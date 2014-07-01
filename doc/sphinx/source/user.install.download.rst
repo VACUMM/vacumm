@@ -12,20 +12,31 @@ Tarballs
 
 Tarballs are available here : https://forge.ifremer.fr/frs/?group_id=93
 
-To uncompress a tarball, just use:
-    
-.. code-block:: bash
+.. highlight:: bash
 
-    shell> tar xzf vacumm-2.0-svn1231.tar.gz
+To uncompress a tarball, just use for instance::
+    
+    $ tar xzf vacumm-2.0-svn1231.tar.gz
 
 
 Subversion
 ----------
 
-The development version of the library is available on its subversion repository:
-    
-.. code-block:: bash
+The development version of the library is available on its subversion repository.
 
-    shell> svn checkout https://forge.ifremer.fr/svn/vacumm  
+For normal or anonymous users::
     
+    $ svn checkout --username anonsvn https://forge.ifremer.fr/svn/vacumm/trunk vacumm
     
+with password: ``anonsvn``.
+ 
+ 
+For developpers::
+
+    $ svn checkout --username username https://forge.ifremer.fr/svn/vacumm/trunk vacumm
+
+To update your version, go at the root and type::
+
+    $ svn update
+
+To download a tag, use 

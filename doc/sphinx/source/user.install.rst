@@ -5,6 +5,7 @@ Installation and configuration
 
 
 .. toctree::
+    :maxdepth: 1
     
     user.install.prereq
     user.install.prereqalt
