@@ -2,5 +2,7 @@
 ====================================================================================
 
 
+.. figure:: ../../../../scripts/test/test_regrid_griddata_bases.png
+
 .. literalinclude:: ../../../../scripts/test/test_regrid_griddata_bases.py
 

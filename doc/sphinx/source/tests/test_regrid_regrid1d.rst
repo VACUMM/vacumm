@@ -10,5 +10,7 @@
 
 .. figure:: ../../../../scripts/test/test_regrid_regrid1d_3.png
 
+.. figure:: ../../../../scripts/test/test_regrid_regrid1d_4.png
+
 .. literalinclude:: ../../../../scripts/test/test_regrid_regrid1d.py
 

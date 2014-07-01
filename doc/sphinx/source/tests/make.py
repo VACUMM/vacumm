@@ -82,8 +82,12 @@ for i, script_path in enumerate(scfiles):
     # Figure?
     figpaths = []
     for figpat in '', '_[0-9]', '_[0-9][0-9]':
-        figpat = script_basename+figpat+'.png'
-        figpaths.extend(glob(os.path.join(options.testdir, figpat)))
+        figbases = [script_basename+figpat]
+        figbases.append(figbases[0].replace('.', '-'))
+        for figbase in figbases:
+            figpath = figbase+'.png'
+            figpaths.extend(glob(os.path.join(options.testdir, figpath)))
+    figpaths = list(set(figpaths))
     figpaths.sort()
     for figpath in figpaths:
         content += '.. figure:: %(figpath)s\n\n'%locals()
