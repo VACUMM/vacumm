@@ -110,6 +110,23 @@ result.append(('assertEqual', [(varol1-varol2).std(), 0]))
 varoc = _regrid1dnew_(vari, depo3d, axis=1, method='cellave', iaxi=1, axi=depi4d, iaxo=0)
 myplot(vari, depi4d, varol1, varoc, depo3d, code_base_name(ext='_3.png'))
 
+# 4d->1d avec extrap=2
+depi1d = N.arange(-4500., 1, 500)
+nzi = depi1d.shape[0]
+depi4d = N.resize(N.resize(depi1d, (nx, ny, nzi)).T, (nt, nzi, ny, nx))
+depi4d += 500*(N.random.random(depi4d.shape)-0.5)
+depo1d = create_dep(N.round(N.arange(-5000., 1, 333.33)))
+vari = MV2.array(depi4d)
+vari.getAxis(1).designateLevel()
+depi4d = MV2.asarray(depi4d)
+depi4d.getAxis(1).designateLevel()
+varol1 = _regrid1dnew_(vari, depo1d, method='linear', axi=depi4d, extrap=2)
+varol2 = _regrid1dnew_(vari, depo1d, method='linear', iaxi=1, axi=depi4d, extrap=2)
+result.append(('assertEqual', [(varol1-varol2).std(), 0]))
+varoc = _regrid1dnew_(vari, depo1d, method='cellave', iaxi=1, axi=depi4d, extrap=2)
+myplot(vari, depi4d, varol1, varoc, depo1d, code_base_name(ext='_4.png'))
+
+
 P.close()
 
 
