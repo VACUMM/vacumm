@@ -33,10 +33,9 @@ s = stick2(tu, tv, figsize=(8,3), title='Space-time transect of speed',
     show=False, top=0.85, quiver_width=0.002)
 
 # Add a small map to show the transect positions
-add_map_lines(u, tlons, tlats, map_zoom=0.5)
-P.show()
+add_map_lines(u.getGrid(), tlons, tlats, map_zoom=0.5)
 
-## Save
-#figfile = code_base_name(ext='png')
-#if os.path.exists(figfile): os.remove(figfile)
-#s.savefig(figfile, pdf=True)
+# Save
+figfile = code_base_name(ext='png')
+if os.path.exists(figfile): os.remove(figfile)
+s.savefig(figfile, pdf=True)
