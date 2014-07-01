@@ -70,7 +70,7 @@ __all__.sort()
 # Fortran functions
 _interp_funcs = ['interp1d', 'interp1dx', 'interp1dxx', 
     'remap1d', 'remap1dx', 'remap1dxx', 'nearest2d', 'bilin', 'dstwgt',
-    'mbilin2d', 'mixt2dx', 'cargen', 'bilin2dto1d', 
+    'mbilin2d', 'mixt2dx', 'cargen', 'bilin2dto1d', 'extrap1d', 
     'nearest2dto1d', 'nearest2dto1dc', 'bilin2dto1dc']
     
 # Load fortran
@@ -618,10 +618,11 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
     varis, bakmapv = _toright_(varin, axis)
     vari2d = varis.reshape(-1, varis.shape[-1])
     axind, bakmapi = _toright_(axin, iaxi)
-    if axind.ndim>3:
+    
+    if axind.ndim>2:
         axind = axind.reshape((-1, axin.shape[iaxi]))
     axond, bakmapo = _toright_(axon, iaxo)
-    if axond.ndim>3:
+    if axond.ndim>2:
         axond = axond.reshape((-1, axon.shape[iaxo]))
     nxb = vari2d.size/max(axind.size, axond.size)
     nxi = axind.ndim
@@ -659,24 +660,11 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
         remap_func = _remap1dxx_
     if method == -1: # Cellave
         regrid_func = remap_func
-        kwargs=dict(conserv=conserv,extrap=extrap)
+        kwargs=dict(conserv=conserv,extrap=0)
     else: # Interp
         regrid_func = interp_func
-        kwargs=dict(method=method,extrap=extrap)
-    # Extrapolation
-    if isinstance(extrap, basestring):
-        extrap = extrap.lower()
-        if extrap in ['both', 'all']:
-            extrap = 2
-        elif extrap in ['bottom', 'min', 'lower', 'first']:
-            extrap = -1
-        elif extrap in ['top', 'max', 'upper', 'last']:
-            extrap = 1
-        else:
-            extrap = 0
-    elif not isinstance(extrap, int):
-        extrap = int(bool(extrap))
-    
+        kwargs=dict(method=method,extrap=0)
+        
         
     # First guess
     varo2d = regrid_func(vari2d, axind, axond, missing_value, **kwargs)
@@ -700,7 +688,7 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
             
             # Lower method
             varolow = interp_func(vari2d, axind, axond, missing_value, 
-                min(abs(method), 2)-1, extrap=extrap)
+                min(abs(method), 2)-1, extrap=0)
         
             # Cubic case: lower order again
             if method >= 2:
@@ -715,6 +703,22 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
             del varolow
             
         del maski2df, masko2d
+        
+    # Extrapolation
+    if isinstance(extrap, basestring):
+        extrap = extrap.lower()
+        if extrap in ['both', 'all']:
+            extrap = 2
+        elif extrap in ['bottom', 'min', 'lower', 'first']:
+            extrap = -1
+        elif extrap in ['top', 'max', 'upper', 'last']:
+            extrap = 1
+        else:
+            extrap = 0
+    elif not isinstance(extrap, int):
+        extrap = int(bool(extrap))
+    if extrap:
+        varo2d = _extrap1d_(varo2d, missing_value, extrap)
     
     # Reshape back
     varos = varo2d.reshape(varis.shape[:-1]+axond.shape[-1:]) ; del varo2d
@@ -1796,7 +1800,7 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None):
     """
     # Prefer 1D axes
     grid = get_grid(vari)
-    grid = curv2rect(grid)
+    grid = curv2rect(grid, mode=False)
 
     # Format
     # - input
@@ -1824,7 +1828,7 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None):
         zo = func(xi, yi, zi, xo, yo, mv)
             
         if mi is not None: zonear = zo
-        
+
     if method == 'bilinear':
         
         # Base
