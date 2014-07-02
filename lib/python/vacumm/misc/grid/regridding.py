@@ -83,11 +83,7 @@ except Exception, e:
     print e
     print 'Trying to build it...'
     import subprocess
-    #cmd = ["f2py", "-c","-m","_interp_"]
-    cmd = ["make", "_interp_.so"]
-    #if None in [os.environ.get('F77'), os.environ.get('F90')]:
-    #    cmd.append("--fcompiler=gnu95")
-    #cmd.append("interp.f90")
+    cmd = ["make"] # Compilation of all vacumm extensions from the root of sources
     out = subprocess.Popen(cmd, cwd=os.path.dirname(__file__), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if out[1]!='':
         raise ImportError("Can't build _interp_ for importation:\n%s"%('\n'.join(out)))
