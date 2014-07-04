@@ -46,7 +46,7 @@ the time units between each coefficients.
 import cdtime, numpy as N,MV2,cdms2,genutil.filters as F
 
 from vacumm.misc.axes import check_axis, check_axes, create_time
-from vacumm.misc.atime import unit_type,  compress
+from vacumm.misc.atime import unit_type,  compress,strftime
 from vacumm.misc.grid import isregular
 from vacumm.misc.grid.regridding import interp1d
 from vacumm.misc import cp_atts
@@ -425,7 +425,7 @@ def _extrema_var_(extrem,units=None,indices=False,**kwargs):
         mytime.long_name = 'Time index'
     else:
         if units is None:
-            units = 'minutes since %s'%ctime[0]
+            units = 'minutes since %s'%strftime('%Y-%m-%d %H:%M:%S',ctime[0])
         mytime = create_time(list(ctime), units)
     var = cdms2.createVariable(var,copy=0)
     var.setMissing(1.e20)
