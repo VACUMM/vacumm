@@ -1088,7 +1088,7 @@ class SigmaGeneralized(object):
         depth_c = self.depth_c(selector)
         if eta is not None:
              eta = eta(selector)
-        return sigma2depths(s, depth, eta, stype=self.stype, copyaxes=copyaxes, 
+        return sigma2depths(self.s, depth, eta, stype=self.stype, copyaxes=copyaxes, 
             depth_c=depth_c, a=self.a, b=self.b)
     __call__ = sigma_to_depths
        
