@@ -1515,7 +1515,9 @@ subroutine curv2rect(x1,x2,x3,x4,y1,y2,y3,y4,x,y,p,q)
     
     real(kind=8), intent(in) :: x1,x2,x3,x4,y1,y2,y3,y4,x,y
     real(kind=8), intent(out) :: p,q
-    real(kind=8) :: p1,p2 ,q1,q2, AA, BB, CC, DD, a,b,c,d,e,f,sDD,xx,yy
+    real(kind=8) :: p1,p2 ,q1,q2, AA, BB, CC, DD, a,b,c,d,e,f,sDD,xx,yy,small
+    
+    small = epsilon(1d0)*2
     
     ! Coefs
     a = x4 -x1
@@ -1531,7 +1533,7 @@ subroutine curv2rect(x1,x2,x3,x4,y1,y2,y3,y4,x,y,p,q)
     AA = c*d - a*f
     BB = -c*yy + b*d + xx*f - a*e
     CC = -yy*b + e*xx
-    if(AA==0.)then
+    if(abs(AA)<small)then
         p1 = -CC/BB
         p2 = p1
     else
@@ -1542,16 +1544,15 @@ subroutine curv2rect(x1,x2,x3,x4,y1,y2,y3,y4,x,y,p,q)
     endif
     
     ! Get q from p
-    if(b+c*p1/=0)then
+    if(abs(b+c*p1)>small)then
         q1 = (xx-a*p1)/(b+c*p1)
     else
         q1 = (yy-d*p1)/(e+f*p1)
     endif
 
     ! Select point closest to center
-!    if( ((p1-.5)**2+(q1-.5)**2)<((p2-.5)**2+(q2-.5)**2) )then
     if(p1<0d0 .or. p1>1d0 .or. q1<0d0 .or. q1>1d0)then
-        if(b+c*p2/=0)then
+        if(abs(b+c*p2)>small)then
             q2 = (xx-a*p2)/(b+c*p2)
         else
             q2 = (yy-d*p2)/(e+f*p2)
@@ -1577,36 +1578,40 @@ subroutine curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
     
     integer :: io,i,j,ic,jc
     real(kind=8) :: a,b
+    logical :: binside
 
     p = -1d0
     q = -1d0
 
-    !$OMP PARALLEL DO PRIVATE(io,i,j,ic,jc,a,b)
+    !$OMP PARALLEL DO PRIVATE(io,i,j,ic,jc,a,b,binside)
     !$& SHARED(xxi,yyi,xo,yo,nxi,nyi,no,p,q)
     do io = 1, no
     
         ! Find the closest corner
         call closest2d(xxi,yyi,xo(io),yo(io),nxi,nyi,ic,jc,.true.)
-        
+        if(io==5)print*,ic,jc
         ! Curvilinear to rectangular
-        do i=max(ic-1,1), min(ic,nxi)
-            do j = max(jc-1,1), min(jc,nyi)
+        binside = .false.
+        main: do i=max(ic-1,1), min(ic,nxi-1)
+            do j = max(jc-1,1), min(jc,nyi-1)
             
                 ! Get relative position
                 call curv2rect(xxi(j,i),xxi(j+1,i),xxi(j+1,i+1),xxi(j,i+1), &
                              & yyi(j,i),yyi(j+1,i),yyi(j+1,i+1),yyi(j,i+1), &
                              & xo(io), yo(io), a, b)
-                             
+                 if(io==5)print*,i,j,a,b          
                 ! Store absolute indices
-                if(a>=0d0 .and. a<=1d0 .and. b>=0d0 .and. b<=1d1)then
+                binside = a>=0d0-tiny(0d0) .and. a<=1d0+tiny(0d0) &
+                    & .and. b>=0d0-tiny(0d0) .and. b<=1d0+tiny(0d0)
+                if(binside)then
                     p(io) = dble(i) + a
                     q(io) = dble(j) + b
-                    exit
+                    exit main
                 endif
                 
             enddo
-            if(a>=0d0 .and. a<=1d0 .and. b>=0d0 .and. b<=1d1)exit
-        enddo
+!            if(binside)exit
+        enddo main
 
     enddo
     !$OMP END PARALLEL DO
