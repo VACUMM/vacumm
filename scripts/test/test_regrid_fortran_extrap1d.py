@@ -1,6 +1,6 @@
 """Test the fortran function :f:func:`extrap1d`"""
 from vcmq import N, P,meshcells, minmax, code_base_name
-from vacumm.misc.grid.regridding import _extrap1d_
+from vacumm.misc.grid._interp_ import extrap1d
 
 
 mv = 999.
@@ -12,10 +12,10 @@ vari[3,3:] = [3,4]
 vari[4,:2] = [0,1]
 vari = N.asfortranarray(vari)
 
-varo0 = _extrap1d_(vari, mv, 0)
-varop1 = _extrap1d_(vari, mv, 1)
-varom1 = _extrap1d_(vari, mv, -1)
-varop2 = _extrap1d_(vari, mv, 2)
+varo0 = extrap1d(vari, mv, 0)
+varop1 = extrap1d(vari, mv, 1)
+varom1 = extrap1d(vari, mv, -1)
+varop2 = extrap1d(vari, mv, 2)
 
 result = [
     ('AssertTrue', N.allclose(vari, varo0)), 
