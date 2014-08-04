@@ -462,7 +462,10 @@ def get_config_files(section=None, check=False, user=1):
     mod_dirs = []
     if section=='__all__':
         for root, dirs, files in os.walk(lib_dir):
-            if 'config.cfg' in files and not root.startswith('vacumm-'):
+            if '.svn' in dirs: dirs.remove('.svn')
+            for d in dirs:
+                if d.startswith('vacumm-'): dirs.remove(d)
+            if 'config.cfg' in files:
                 mod_dirs.append(root)
     elif section:
         if hasattr(section, '__name__'):
@@ -774,6 +777,7 @@ def get_config(section=None, user=True, asstring=False, cfg=None,
                 cfgfiles = (cfgfiles, get_com_conf_file(), get_user_conf_file())
     
         # Load configurations
+        print cfgfiles
         cfg = load_configs(cfgfiles)
             
         
@@ -918,7 +922,9 @@ def print_config(section='__all__', system=True, direc=True, config=True, packag
         if headers: _print_header_('VACUMM configuration', nc)
         print get_config(section=section, user=user, asstring=True).strip()
     if packages:
-        if headers: _print_header_('Other packages', nc)
+        if headers: _print_header_('Versions', nc)
+        from __init__ import __version__
+        print 'VACUMM: '+__version__
         for mname in 'numpy', 'matplotlib', ('mpl_toolkits.basemap', 'basemap'), 'scipy':
             try:
                 if isinstance(mname, tuple):
