@@ -267,6 +267,7 @@ class F90toRst(object):
             if mode!='strict':
                 bfile = os.path.basename(bfile)
             if sfile==bfile: bb.append(b)
+
         return bb
          
     def scan(self):
@@ -738,7 +739,7 @@ class F90toRst(object):
         if aliasof is not None:
             falias = fname
             fname = aliasof
-        if fname in self.routines.keys() and fname in self.routines[fname]['aliases']:
+        if fname in self.routines and fname in self.routines[fname].get('aliases', []):
             falias = fname
             fname = self.routines[fname]['name']
         else:
@@ -1108,14 +1109,14 @@ class F90toRst(object):
     def format_routines(self, block, indent=0):
         """Format the list of all subroutines and functions"""
         routines = ''
-        if block['body']:
-            fdecs = []
-            for subblock in block['body']:
-                if subblock['block'] in ['function', 'subroutine']:
-                    fdecs.append(self.format_routine(subblock, indent))
-            if fdecs:
-                fdecs = '\n'.join(fdecs)
-                routines = self.format_subsection('Subroutines and functions', indent=indent)+fdecs
+        blocks = block if isinstance(block, list) else block['body']
+        fdecs = []
+        for subblock in blocks: #block['body']:
+            if subblock['block'] in ['function', 'subroutine']:
+                fdecs.append(self.format_routine(subblock, indent))
+        if fdecs:
+            fdecs = '\n'.join(fdecs)
+            routines = self.format_subsection('Subroutines and functions', indent=indent)+fdecs
         return routines
         
     def format_module(self, block, indent=0):
@@ -1163,14 +1164,14 @@ class F90toRst(object):
         if objtype is None or 'program' in objtype:
             bprog = self.filter_by_srcfile(srcfile, objtype='program', mode=search_mode)
             if bprog:
-                programs = self.format_subsection('Program', indent=indent)+'\n'
+                rst += self.format_subsection('Program', indent=indent)+'\n'
                 rst += self.format_routine(bprog[0], indent=indent)+'\n'
         
         # Modules
         if objtype is None or 'module' in objtype:
             bmod = self.filter_by_srcfile(srcfile, objtype='module', mode=search_mode)
             if bmod:
-                modules = self.format_subsection('Module', indent=indent)+'\n'
+                rst += self.format_subsection('Module', indent=indent)+'\n'
                 rst += self.format_module(bmod[0], indent=indent)+'\n'
         
         # Functions and subroutines
@@ -1178,10 +1179,7 @@ class F90toRst(object):
         oo = [o for o in oal if o in objtype] if objtype is not None else oal
         if oo:
             brouts = self.filter_by_srcfile(srcfile, objtype=oo, mode=search_mode)
-            if brouts:
-                self.format_subsection('Functions et subroutines', indent=indent)+'\n'
-                for block in brouts:
-                    rst += self.format_routines(block, indent=indent)+'\n'
+            rst += self.format_routines(brouts, indent=indent)+'\n'
                 
         return rst
         
