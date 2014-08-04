@@ -345,6 +345,19 @@ var_specs = OrderedDict(
         long_names = "10-m wind speed along Y", 
         units = "m s-1", 
     ), 
+    
+    wspd = dict(
+        names=[], 
+        standard_names = 'wind_speed', 
+        long_names = "Wind speed", 
+        units = "m s-1", 
+    ), 
+    
+    wdir = dict(names=[], 
+        standard_names = ['wind_to_direction', 'wind_from_direction'], 
+        long_names = "Wind direction", 
+        units = "m s-1", 
+    ), 
 
     # Ocean Atmosphere interface
     tauu = dict(
@@ -1201,10 +1214,11 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
     
     # Check specs
     if name not in generic_var_names:
-        name = var.id
-    if name not in generic_var_names:
-        raise KeyError("Generic var name not found '%s'. Please choose one of: %s"%(
-            name, ', '.join(generic_var_names)))
+        if var.id in generic_var_names:
+            name = var.id
+        else:
+            raise KeyError("Generic var name not found '%s'. Please choose one of: %s"%(
+                name, ', '.join(generic_var_names)))
     specs = var_specs[name].copy()
     # - merge kwargs and specs
     for key, val in kwargs.items():
