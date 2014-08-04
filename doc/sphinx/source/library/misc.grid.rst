@@ -12,3 +12,4 @@
     misc.grid.kriging
     misc.grid.masking
     misc.grid.basemap
+    misc.grid.finterp

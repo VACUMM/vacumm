@@ -19,7 +19,7 @@
     
 .. only:: html
 
-    **Indexation**
+    **Indices and search**
 
     * :ref:`genindex`
     * :ref:`modindex`

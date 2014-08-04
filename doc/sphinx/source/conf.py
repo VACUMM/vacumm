@@ -133,7 +133,7 @@ html_style = 'vacumm.css'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = 'Documentation de VACUMM v%(release)s'%locals()
+html_title = 'VACUMM v%(release)s documentation'%locals()
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_short_title = 'VACUMM'
@@ -333,6 +333,8 @@ autodoc_default_flags = ['members', 'show-inheritance', 'undoc-members']
 #doesn't works...#programoutput_prompt_template = '[user@host ~]$ %(command)s\n\n%(output)s' # default is: '$ %%(command)s\n%%(output)s'
 programoutput_use_ansi = True # default is: False
 
+# Fortran autodoc
+fortran_src = [os.path.abspath('../../../lib/python/vacumm/misc/grid/interp.f90')]
 
 def setup(app):
     app.add_object_type('confval', 'confval',
