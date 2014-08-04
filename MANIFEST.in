@@ -1,6 +1,5 @@
 include test/Makefile
 include release_notes.txt
 exclude scripts/tutorials/check.log
-recursive-exclude scripts/tutorials *.png *.pdf *.nc
-recursive-exclude scripts/test *.png *.pdf *.nc
+recursive-exclude scripts *.so *.png *.pdf *.nc *.log
 recursive-include etc *

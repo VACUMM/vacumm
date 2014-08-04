@@ -54,6 +54,7 @@ help:
 	@echo "    clean-all                 call all clean and uninstall targets"
 	@echo ""
 	@echo "  Development"
+	@echo "    lib                       local compilation of modules and extensions"
 	@echo "    doc                       generate documentations"
 	@echo "    html                      generate html documentation"
 	@echo "    pdf                       generate pdf documentation"
