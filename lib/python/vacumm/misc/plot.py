@@ -1058,6 +1058,20 @@ def scolorbar(*args, **kwargs):
     """Shortcut to :func:`add_colorbar`"""
     return add_colorbar(*args, **kwargs)
 
+def _plot_grid_(ax, xx, yy, samp, alpha, zorder, labels, **kwargs):
+        lines = ()
+        ny, nx = xx.shape
+        for iy in xrange(0, ny, samp):
+            lines += zip(xx[iy, ::samp], yy[iy, ::samp]), 
+        for ix in xrange(0, nx, samp):
+            lines += zip(xx[::samp, ix], yy[::samp, ix]),
+        oo = LineCollection(lines, **kwargs)
+        oo.set_alpha(alpha)
+        oo.set_zorder(zorder)
+        oo.set_label(labels)
+        ax.add_collection(oo)
+    
+
 def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None, 
     linewidth=1, alpha=.5, linestyle='solid', zorder=100, marker=',', 
     markersize=4, facecolor=None, edgecolor=None, markerlinewidth=0, label_edges='Cell edges', 
@@ -1066,7 +1080,7 @@ def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None,
     
     - **gg**: A cdms grid OR a (lon,lat) tuple of axes OR a cdms variable with a grid
     - *borders*: Display cell borders
-    - *centers*: Display cell centers
+    - *centers*: Display cell centers. If == 2, connect centers.
     - *samp*: Undersampling rate
     - *m*: A basemap instance to plot on
     - *color*: Default color (or *c*)
@@ -1113,35 +1127,47 @@ def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None,
     linewidth = kwargs.pop('lw', linewidth)
     alpha = kwargs.pop('a', alpha)
     markersize = kwargs.pop('s', markersize)
+    kwlines = {'colors':[linecolor], 'linestyles':linestyle, 'linewidths':linewidth}
     
     # Centers
     if centers:
-        kwdef = {}
-        kwdef['markerfacecolor'] = facecolor
-        kwdef['markeredgecolor'] = edgecolor
-        kwdef['linewidth'] = markerlinewidth
-        kwdef['label'] = label_centers
-        kwdef['alpha'] = alpha
-        centers = ax.plot(xx[::samp, ::samp].ravel(), yy[::samp, ::samp].ravel(), marker, markersize=markersize, 
-            **kwfilter(kwargs, 'center', defaults=kwdef))
-#        gobjs(grid_centers=centers)
+        
+        # Markers
+        if centers>0:
+            kwdef = {}
+            kwdef['markerfacecolor'] = facecolor
+            kwdef['markeredgecolor'] = edgecolor
+            kwdef['linewidth'] = markerlinewidth
+            kwdef['label'] = label_centers
+            kwdef['alpha'] = alpha
+            centers = ax.plot(xx[::samp, ::samp].ravel(), yy[::samp, ::samp].ravel(), marker, markersize=markersize, 
+                **kwfilter(kwargs, 'center', defaults=kwdef))
+
+        # Lines
+        if centers==2 or centers<0:
+            kwpg = kwfilter(kwargs, 'center', defaults=kwlines)
+            edges = _plot_grid_(ax, xx, yy, samp, alpha, zorder, label_edges, **kwpg)
+            
     else:
         centers=None
     
     # Create lines
     if edges:
-        lines = ()
-        ny, nx = gg.shape
-        for iy in xrange(0, ny+1, samp):
-            lines += zip(xx2d[iy, ::samp], yy2d[iy, ::samp]), 
-        for ix in xrange(0, nx+1, samp):
-            lines += zip(xx2d[::samp, ix], yy2d[::samp, ix]),   
-        kwdef = {'colors':[linecolor], 'linestyles':linestyle, 'linewidths':linewidth}
-        edges = LineCollection(lines, **kwfilter(kwargs, 'edge', defaults=kwdef))
-        edges.set_alpha(alpha)
-        edges.set_zorder(zorder)
-        edges.set_label(label_edges)
-        ax.add_collection(edges)
+        kwpg = kwfilter(kwargs, 'edge', defaults=kwlines)
+        edges = _plot_grid_(ax, xx2d, yy2d, samp, alpha, zorder, label_edges, **kwpg)
+
+#        lines = ()
+#        ny, nx = gg.shape
+#        for iy in xrange(0, ny+1, samp):
+#            lines += zip(xx2d[iy, ::samp], yy2d[iy, ::samp]), 
+#        for ix in xrange(0, nx+1, samp):
+#            lines += zip(xx2d[::samp, ix], yy2d[::samp, ix]),   
+#        kwdef = {'colors':[linecolor], 'linestyles':linestyle, 'linewidths':linewidth}
+#        edges = LineCollection(lines, **kwfilter(kwargs, 'edge', defaults=kwdef))
+#        edges.set_alpha(alpha)
+#        edges.set_zorder(zorder)
+#        edges.set_label(label_edges)
+#        ax.add_collection(edges)
 #        gobjs(grid_edges=edges)
     else:
         edges=None
@@ -1950,7 +1976,7 @@ def savefigs(basename, png=True, pdf=False, verbose=True, dpi=100, nodots=True, 
     
         Dots ('.') in figure name are converted to dashes  ('-')
         for compatilibity reasons with latex.
-        It optimized for the sphinx doc generator and may
+        It is optimized for the sphinx doc generator and may
         NOT BE SUITABLE FOR YOU. In this case, use 
         :func:`~matplotlib.pyplot.savefig` instead.
     """
