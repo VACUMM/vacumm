@@ -1,8 +1,25 @@
 Release notes
 #############
 
-Version 2.2.2 (in develoment)
-=============================
+Version 2.3.0
+=============
+
+- Added the new CurvedInterpolator based on some fortran code 
+  primarily used for computing transects.
+- New regrid1dnew that can regrid from a variable 1D axis to another 
+  variable 1D axis, like for instance from sigma to sigma coordinates.
+  It will later replace regrid1d. Extrapolation in regrid1dnew is 
+  now available for all methods.
+- Improvements for staggered grids in Dataset.
+- minimap can now display background data instead of ocean color.
+- cf: added wspd and wdir for wind.
+- Smaller data samples.
+- Better management of staggering in Dataset and arakawa (still experimental).
+- Removed setup.cfg and added two templates, with a simple one and
+  another one for OpenMP parallelisation.
+- Fixed issues: vacumm config, sigma2depth, grid2xy, format_var, 
+  fortran_domain, etc.
+
 
 
 
