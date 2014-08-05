@@ -4,6 +4,8 @@ Installations
 =============
 
 
+.. highlight:: bash
+
 For all users
 -------------
 
@@ -11,15 +13,11 @@ This installation puts the library within the python tree.
 The :program:`python` excutable must be the one provided by UV-CDAT
 (see :ref:`user.install.prereq`).
 
-One compile and install VACUMM from the main directory of the package with:
-
-.. code-block:: bash
+One compile and install VACUMM from the main directory of the package with::
 
     $ python setup.py install
 
-For more options:
-    
-.. code-block:: bash
+For more options::
 
     $ python setup.py --help
 
@@ -29,29 +27,21 @@ For our own usage
 
 In this case, the library is installed in the user's directory.
 
-First, compile:
-
-.. code-block:: bash
+First, compile::
 
     $ python setup.py build
     
 Then, install in the default user's directory 
-(typically  :file:`/home/<user>/.local/lib/python2.{x}/site-packages`) :
-    
-.. code-block:: bash
+(typically  :file:`/home/<user>/.local/lib/python2.{x}/site-packages`)::
 
     $ python setup.py install --user
 
-If the library must be installed in a special directory, use:
-
-.. code-block:: bash
+If the library must be installed in a special directory, use::
 
     $ python setup.py install --prefix=/my/special/dir
 
 Then, set your environment variables to have acces both to the python library
-and to the executables:
-
-.. code-block:: bash
+and to the executables::
 
     $ export PATH=/my/special/dir/bin
     $ export PYTHONPATH=/my/special/dir/lib/python{x.x}/site-packages  # {x.x} refers to the python version
@@ -63,9 +53,7 @@ Local installation for a developper
 -----------------------------------
 
 VACUMM must be used directly after an untar or a checkout by
-compiling the extensions and setting the variables:
-
-.. code-block:: bash
+compiling the extensions and setting the variables::
 
     $ make lib # or python setup.py build_ext --inplace
     $ export PATH=~/path/to/vacumm-trunk/bin
@@ -93,6 +81,10 @@ Here is the content of the :file:`setup.cfg.omp` file:
 .. literalinclude:: ../../../setup.cfg.omp
     :language: ini
 
+For example, to quickly allow OpenMP parallelisation::
+
+    $ ln -s setup.cfg.omp setup.cfg
+    $ python setup.py install
 
 .. _user.install.install.config:
     
@@ -125,10 +117,7 @@ To alter this configuration, proceed in this way:
            [vacumm.bathy.bathy]
            cfgfile_gridded=%(conf_dir)s/bathy.gridded.cfg
            
-    #. Then specify the list of config files as comandline option:
-        
-        
-       .. code-block:: bash
+    #. Then specify the list of config files as comandline option::
        
             $ python setup.py install --cfgfiles=myconfig.cfg,path/to/bathy.gridded.cfg
             
@@ -136,9 +125,7 @@ To alter this configuration, proceed in this way:
 Check your installation
 -----------------------
 
-Run:
-    
-.. code-block:: bash
+Run::
 
     $ vacumm_print_config.py
 
