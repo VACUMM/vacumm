@@ -227,6 +227,7 @@ class Plot(object):
         self.data = self.axes = None
         self._kwargs = kwargs
         self._post_plotted = False
+        self._finalize = []
         
         # Load attributes: for current instance
         self.load_attributes(kwargs)
@@ -3210,12 +3211,12 @@ class ScalarMappable:
         keepminmax = self.keepminmax
         
         # Min and max
-        if mode=='anomaly': mode = 'symetric'
-        elif mode=='smart': mode = 'auto'
-        elif mode=='basic': mode = 'normal'
         for key in 'positive', 'negative', 'symetric', 'anomaly':
             if kwargs.has_key(key) and kwargs[key]:
                 mode = key
+        if mode=='anomaly': mode = 'symetric'
+        elif mode=='smart': mode = 'auto'
+        elif mode=='basic': mode = 'normal'
         vmin = self.vmin if self.isset('vmin') else None
         vmax = self.vmax if self.isset('vmax') else None
         if mode == 'auto':
@@ -3235,7 +3236,7 @@ class ScalarMappable:
             vmax = max(N.abs(self.vmin), N.abs(self.vmax))
             vmin = -vmax
         self.levels_mode = mode
-           
+
         # Compute base levels
         levels = auto_scale((self.vmin, self.vmax), vmin=vmin, vmax=vmax, 
             nmax=self.nmax_levels, keepminmax=keepminmax==2)
@@ -3415,7 +3416,7 @@ class ScalarMappable:
 #            for b in self.get_brothers(notme=False, mefirst=True)
 #                if cb is not None]            
         
-    def colorbar(self, cax=None, **kwargs):
+    def colorbar(self, cax=None, fit=False, **kwargs):
         """Add a colorbar
         
         The colorbar is drawn only if :meth:`get_scalar_mappable` returns a valid
@@ -3463,6 +3464,16 @@ class ScalarMappable:
             cax = self.fig.add_axes(cax)
         # - plot it
         cb = self.fig.colorbar(sm, ax=self.axes, cax=cax, **kwargs)
+        # - fit to axes limits
+        if fit:
+            axbbox = self.axes.get_position()
+            caxbbox = cb.ax.get_position()
+            print 'avant', axbbox, caxbbox
+            if cb.orientation=='horizontal':
+                cb.ax.set_position([axbbox.x0, caxbbox.y0, axbbox.width, caxbbox.height])
+            else:
+                cb.ax.set_position([caxbbox.x0, axbbox.y0, caxbbox.width, axbbox.height])
+            print 'apres', cb.ax.get_position()
         # - ticks
         if levels is not None and 'format' not in kwargs:
             labels = cb.set_ticklabels(levels)
@@ -3517,7 +3528,7 @@ class ScalarMappable:
         # Save it
         self.savefig(savefig, **kw['savefig'])
         self.savefigs(savefigs, **kw['savefigs'])
-    
+   
         # Show or close
         if show:
             self.show(**kw['show'])
@@ -5633,7 +5644,7 @@ class Map(Plot2D):
         """Best location on the plot for an object according to land/sea mask"""
         return best_loc_map(self, onland=onland, **kwargs)
         
-        
+ 
     
 ############################################################
 ## Utilities
