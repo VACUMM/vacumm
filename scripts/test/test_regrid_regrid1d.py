@@ -1,6 +1,6 @@
-"""Test the new :func:`~vacumm.misc.grid.regridding.regrid1d` function"""
+"""Test the :func:`~vacumm.misc.grid.regridding.regrid1dnew` function"""
 from vcmq import N,MV2, create_dep, create_time, P,meshcells, minmax, code_base_name
-from vacumm.misc.grid.regridding import _regrid1dnew_
+from vacumm.misc.grid.regridding import regrid1dnew
 
 nt = 2
 nx = 4
@@ -43,10 +43,10 @@ depo1d = create_dep(N.arange(-4000., 1, 333.33))
 nzi = depi1d.shape[0]
 vari = MV2.asarray(N.ma.resize(depi1d[:], (nt, ny, nx, nzi)).transpose([0, 3, 1, 2]))
 vari.setAxis(1, depi1d)
-varol1 = _regrid1dnew_(vari, depo1d, method='linear')
-varol2 = _regrid1dnew_(vari, depo1d, method='linear', iaxi=0, iaxo=0, axi=depi1d)
+varol1 = regrid1dnew(vari, depo1d, method='linear')
+varol2 = regrid1dnew(vari, depo1d, method='linear', iaxi=0, iaxo=0, axi=depi1d)
 result.append(('assertEqual', [(varol1-varol2).std(), 0]))
-varoc = _regrid1dnew_(vari, depo1d, method='cellave')
+varoc = regrid1dnew(vari, depo1d, method='cellave')
 myplot(vari, depi1d, varol1, varoc, depo1d, code_base_name(ext='_0.png'))
 
 
@@ -60,10 +60,10 @@ vari = MV2.array(depi4d)
 vari.getAxis(1).designateLevel()
 depi4d = MV2.asarray(depi4d)
 depi4d.getAxis(1).designateLevel()
-varol1 = _regrid1dnew_(vari, depo1d, method='linear', axi=depi4d)
-varol2 = _regrid1dnew_(vari, depo1d, method='linear', iaxi=1, axi=depi4d)
+varol1 = regrid1dnew(vari, depo1d, method='linear', axi=depi4d)
+varol2 = regrid1dnew(vari, depo1d, method='linear', iaxi=1, axi=depi4d)
 result.append(('assertEqual', [(varol1-varol2).std(), 0]))
-varoc = _regrid1dnew_(vari, depo1d, method='cellave', iaxi=1, axi=depi4d)
+varoc = regrid1dnew(vari, depo1d, method='cellave', iaxi=1, axi=depi4d)
 myplot(vari, depi4d, varol1, varoc, depo1d, code_base_name(ext='_1.png'))
 
 
@@ -82,10 +82,10 @@ depi4d = MV2.asarray(depi4d)
 depi4d.getAxis(1).designateLevel()
 depo4d = MV2.asarray(depo4d)
 depo4d.getAxis(1).designateLevel()
-varol1 = _regrid1dnew_(vari, depo4d, axis=1, method='linear', axi=depi4d)
-varol2 = _regrid1dnew_(vari, depo4d, axis=1, method='linear', iaxi=1, axi=depi4d, iaxo=1)
+varol1 = regrid1dnew(vari, depo4d, axis=1, method='linear', axi=depi4d)
+varol2 = regrid1dnew(vari, depo4d, axis=1, method='linear', iaxi=1, axi=depi4d, iaxo=1)
 result.append(('assertEqual', [(varol1-varol2).std(), 0]))
-varoc = _regrid1dnew_(vari, depo4d, axis=1, method='cellave', iaxi=1, axi=depi4d, iaxo=1)
+varoc = regrid1dnew(vari, depo4d, axis=1, method='cellave', iaxi=1, axi=depi4d, iaxo=1)
 myplot(vari, depi4d, varol1, varoc, depo4d, code_base_name(ext='_2.png'))
 
 
@@ -104,10 +104,10 @@ depi4d = MV2.asarray(depi4d)
 depi4d.getAxis(1).designateLevel()
 depo3d = MV2.asarray(depo3d)
 depo3d.getAxis(1).designateLevel()
-varol1 = _regrid1dnew_(vari, depo3d, axis=1, method='linear', axi=depi4d)
-varol2 = _regrid1dnew_(vari, depo3d, axis=1, method='linear', iaxi=1, axi=depi4d, iaxo=0)
+varol1 = regrid1dnew(vari, depo3d, axis=1, method='linear', axi=depi4d)
+varol2 = regrid1dnew(vari, depo3d, axis=1, method='linear', iaxi=1, axi=depi4d, iaxo=0)
 result.append(('assertEqual', [(varol1-varol2).std(), 0]))
-varoc = _regrid1dnew_(vari, depo3d, axis=1, method='cellave', iaxi=1, axi=depi4d, iaxo=0)
+varoc = regrid1dnew(vari, depo3d, axis=1, method='cellave', iaxi=1, axi=depi4d, iaxo=0)
 myplot(vari, depi4d, varol1, varoc, depo3d, code_base_name(ext='_3.png'))
 
 # 4d->1d avec extrap=2
@@ -120,12 +120,11 @@ vari = MV2.array(depi4d)
 vari.getAxis(1).designateLevel()
 depi4d = MV2.asarray(depi4d)
 depi4d.getAxis(1).designateLevel()
-varol1 = _regrid1dnew_(vari, depo1d, method='linear', axi=depi4d, extrap=2)
-varol2 = _regrid1dnew_(vari, depo1d, method='linear', iaxi=1, axi=depi4d, extrap=2)
+varol1 = regrid1dnew(vari, depo1d, method='linear', axi=depi4d, extrap=2)
+varol2 = regrid1dnew(vari, depo1d, method='linear', iaxi=1, axi=depi4d, extrap=2)
 result.append(('assertEqual', [(varol1-varol2).std(), 0]))
-varoc = _regrid1dnew_(vari, depo1d, method='cellave', iaxi=1, axi=depi4d, extrap=2)
+varoc = regrid1dnew(vari, depo1d, method='cellave', iaxi=1, axi=depi4d, extrap=2)
 myplot(vari, depi4d, varol1, varoc, depo1d, code_base_name(ext='_4.png'))
-
 
 P.close()
 

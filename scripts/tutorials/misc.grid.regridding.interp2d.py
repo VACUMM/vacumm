@@ -52,4 +52,4 @@ add_grid((xi, yi), linewidth=.3)
 P.title(u'Natgrid')
 # -
 savefigs(__file__)
-
+P.close()

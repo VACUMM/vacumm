@@ -64,7 +64,8 @@ __all__ = ['fill1d', 'regular', 'regular_fill1d', 'cellave1d', 'spline_interp1d'
     'xy2grid', 'grid2xy', 'fill1d', 'GriddedMerger', 'regrid_method', 
     'cellave2d', 'interp2d', 'xy2xy', 'shift1d', 'shift2d', 
     'shiftgrid',  'transect', 'CDATRegridder', 'extend1d', 'extend2d', 
-    'extendgrid', 'regrid2d_method_name', 'fill1d2', 'krig', 'CurvedInterpolator']
+    'extendgrid', 'regrid2d_method_name', 'fill1d2', 'krig', 'CurvedInterpolator', 
+    'regrid1dnew']
 __all__.sort()
 
 # Fortran functions
@@ -476,7 +477,7 @@ def _toright_(ar, iax):
     return newar, bakmap
         
 
-def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None, 
+def regrid1dnew(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None, 
     xmap=None, xmapper=None, mask_thres=.5, extrap=0):
     """Interpolation along one axis
     
@@ -662,43 +663,9 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
         kwargs=dict(method=method,extrap=0)
         
         
-    # First guess
+    # Regrid
     varo2d = regrid_func(vari2d, axind, axond, missing_value, **kwargs)
 
-    # Mask
-    maski2d = vari2d==missing_value
-    if method and N.any(maski2d):
-        
-        # Float mask
-        maski2df = maski2d.astype('f')
-        masko2d = regrid_func(maski2df, axind, axond, missing_value,**kwargs)
-        masko2d[masko2d==missing_value] = 1.
-        
-        # Masking
-        if method == -1:
-            
-            # Cell case: threshold
-            varo2d[:] = N.where(masko2d>mask_thres, missing_value, varo2d)
-    
-        else:
-            
-            # Lower method
-            varolow = interp_func(vari2d, axind, axond, missing_value, 
-                min(abs(method), 2)-1, extrap=0)
-        
-            # Cubic case: lower order again
-            if method >= 2:
-                masko2dc = interp_func(maski2df, axind, axond, missing_value, 1)
-                masko2dc[masko2dc==missing_value] = 1.
-                varolowc = interp_func(vari2d, axind, axond, missing_value, 0)
-                varolow[:] = N.where(masko2dc!=0., varolowc, varolow)
-                del masko2dc, varolowc
-            
-            # Select between nearest and linear, or linear and cubic
-            varo2d[:] = N.where(masko2d!=0., varolow, varo2d)
-            del varolow
-            
-        del maski2df, masko2d
         
     # Extrapolation
     if isinstance(extrap, basestring):
@@ -739,6 +706,7 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
     gc.collect()
     return varo
 
+_regrid1dnew_ = regrid1dnew
 
 def nearest1d(vari, axo, **kwargs):
     """Interpolation along an axes
