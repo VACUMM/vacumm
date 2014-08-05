@@ -60,11 +60,11 @@ from kriging import krig as _krig_
 # Python functions
 __all__ = ['fill1d', 'regular', 'regular_fill1d', 'cellave1d', 'spline_interp1d', 
     'refine', 'GridData', 'griddata', 'cargen', 'fill2d', 'regrid2d', 
-    'SCRIP', 'scrip', 'regrid1d', 'interp1d', 'nearest1d', 'cubic1d',
+    'regrid1d', 'interp1d', 'nearest1d', 'cubic1d',
     'xy2grid', 'grid2xy', 'fill1d', 'GriddedMerger', 'regrid_method', 
     'cellave2d', 'interp2d', 'xy2xy', 'shift1d', 'shift2d', 
     'shiftgrid',  'transect', 'CDATRegridder', 'extend1d', 'extend2d', 
-    'extendgrid', 'regrid2d_method_name', 'fill1d2', 'krig']
+    'extendgrid', 'regrid2d_method_name', 'fill1d2', 'krig', 'CurvedInterpolator']
 __all__.sort()
 
 # Fortran functions
@@ -2153,7 +2153,7 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
             - ``"dstwgt"`` : distance weight data are used where interpolated mask is lower ``mask_thres``
         
         - **mask_thres**, optional: Threshold for masking points for some methods (~ land fraction) for
-          **rectangular grids only*:
+          **rectangular grids only**:
             
             - ``method="bilinear"`` and ``bilinear_masking="dstwght"``
             - ``method="cellave"`` or ``method="bining"``
@@ -2169,7 +2169,7 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
         
             - :func:`cargen` when "nat" or "carg" method is used
             - **mask_thres**, optional: Time steps when interpolated mask is greater than
-            this value are masked.
+              this value are masked.
         
     :Examples:
         
@@ -3471,6 +3471,91 @@ class CDATRegridder(object):
         
     __call__ = regrid
 
+
+class CurvedInterpolator(object):
+    """Interpolator from a curved grid to random points or another grid
+    
+    :Params:
+    
+        - **fromgrid**: Input grid, or variable with a grid.
+        - **topts**: Output coordinates or grid. It a tuple of coordinates, it is
+          assumed that it refers to random points, and NOT a grid.
+        - **g2g**, optional: Force the interpretation of ``topts`` as a grid or axes
+          of a grid.
+
+    :Examples:
+    
+        >>> interpolator = CurvedInterpolator(ssti.getGrid(), (lono, lato)) # lono/lato 1D
+        >>> interpolator = CurvedInterpolator(ssti.getGrid(), grido) # grid
+        >>> ssto = interpolator(ssti)
+    """
+    
+    def __init__(self, fromgrid, topts, g2g=False):
+        
+        # Input coordinates
+        xxi, yyi = get_xy(fromgrid, mesh=True, num=True)
+        self._shapei = xxi.shape
+
+        # Output coordinates
+        if cdms2.isVariable(topts): topts = topts.getGrid()
+        if g2g:
+            topts = get_grid(topts)
+        if isgrid(topts):
+            xxo, yyo = meshgrid(topts.getLongitude(), topts.getLatitude())
+            xo = xxo.ravel()
+            yo = yyo.ravel()
+            self._grido = topts
+            self._shapeo = topts.shape
+        else:
+            xo, yo = topts
+            if len(xo)!=len(yo):
+                raise VACUMMError('Output axes must have the same length: %i!=%i'%
+                    (len(xo), len(yo)))
+            xo = N.asarray(xo)
+            yo = N.asarray(yo)
+            self._grido = None
+            self._shapeo = xo.shape
+        
+        # Find relative positions
+        self._p, self._q = _curv2rel_(xxi, yyi, xo, yo)
+        
+    def interp(self, vari, method='bilinear'):
+        """Interpolate
+        
+        :Params:
+        
+            - **vari**: Variable to interpolate.
+            - **method**, optional: Interpolation method. One of "bilinear" and "nearest".
+        """
+        # Method and function
+        method = regrid2d_method_name(method)
+        valid_methods = ['bilinear', 'nearest']
+        if method not in valid_methods:
+            raise VACUMMError('Invalid interpolation method. Choose of: '+
+                ', '.join(valid_methods))
+        if method=='bilinear': method = 'bilin'
+        func = eval('_%s2dto1dc_reduc_'%method)
+        
+        # Interpolate
+        mv = vari.get_fill_value()
+        zzi = vari.asma() if cdms2.isVariable(vari) else N.ma.asarray(vari)
+        zzi = zzi.reshape((-1, )+self._shapei).filled()
+        zo = func(self._p, self._q, zzi, mv).reshape(vari.shape[:-2]+self._shapeo)
+        zo = N.ascontiguousarray(zo)
+        varo = N.ma.masked_values(zo, mv)
+        
+        # Finalize the cdms variable
+        if cdms2.isVariable(vari):
+            varo = MV2.asarray(varo)
+            cp_atts(vari, varo)
+            for i, ax in enumerate(vari.getAxisList()[:-2]):
+                varo.setAxis(i, ax)
+            if self._grido:
+                set_grid(varo, self._grido)
+        
+        return varo
+    
+    regrid = __call__ = interp
 
 ######################################################################
 ######################################################################
