@@ -1,0 +1,6 @@
+[config_fc]
+fcompiler=gnu95
+opt=-fopenmp -O3 -funroll-loops
+
+[build_ext]
+libraries=gomp
