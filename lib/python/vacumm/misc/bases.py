@@ -155,6 +155,17 @@ def code_base_name(iframe=0, ext=True):
     '''
     return os.path.basename(code_file_name(iframe+1, ext))
     
+def code_dir_name(iframe=0):
+    '''
+    Get the dirname of the file that hosts the code where it is called
+    
+    Parameters:
+        - **iframe**: int: Get the iframe'th caller function name.
+        - **ext**: Remove extension if False, replace it if string,
+          or leave it.
+    '''
+    return os.path.dirname(code_file_name(iframe+1))
+    
 def stack_trace(iframe=0):
     def etrace(frame, pad=60):
         o = frame.f_locals.get('self', '') # not the perfect way...

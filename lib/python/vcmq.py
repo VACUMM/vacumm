@@ -60,7 +60,7 @@ from vacumm.misc.atime import comptime, strftime, strptime, Intervals, IterDates
     lindates, ch_units, add_margin, round_date, midnight_date, midnight_interval, mpl, tic, toc
 
 
-from vacumm.misc.bases import psinfo, code_base_name, code_file_name
+from vacumm.misc.bases import psinfo, code_base_name, code_file_name, code_dir_name
     
 from vacumm.misc.io import list_forecast_files, netcdf3, netcdf4, ncread_files, ncread_var, \
     ncread_axis, ncget_var, ncget_axis, ncfind_var, ncfind_axis, NcIterBestEstimate,  \
