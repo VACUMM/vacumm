@@ -1424,6 +1424,8 @@ end subroutine mbilin2d
 ! =============================================================================
 subroutine bilin2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     ! bilinear interpolation of gridded data to random positions
+    
+    implicit none
 
     integer,intent(in) :: nxi,nyi,no,nz
     real(kind=8),intent(in) :: xi(nxi), yi(nyi), xo(no), yo(no)
@@ -1464,8 +1466,10 @@ end subroutine bilin2dto1d
 
 subroutine nearest2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     ! nearest neighbour interpolation of gridded data to random positions
+    
+    implicit none
 
-    integer,intent(in) :: nxi,nyi,no
+    integer,intent(in) :: nxi,nyi,no,nz
     real(kind=8),intent(in) :: xi(nxi), yi(nyi), xo(no), yo(no)
     real(kind=8),intent(in) :: zi(nz,nyi,nxi),mv
     real(kind=8),intent(out) :: zo(nz,no)
@@ -1589,7 +1593,7 @@ subroutine curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
     
         ! Find the closest corner
         call closest2d(xxi,yyi,xo(io),yo(io),nxi,nyi,ic,jc,.true.)
-        if(io==5)print*,ic,jc
+
         ! Curvilinear to rectangular
         binside = .false.
         main: do i=max(ic-1,1), min(ic,nxi-1)
@@ -1599,7 +1603,7 @@ subroutine curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
                 call curv2rect(xxi(j,i),xxi(j+1,i),xxi(j+1,i+1),xxi(j,i+1), &
                              & yyi(j,i),yyi(j+1,i),yyi(j+1,i+1),yyi(j,i+1), &
                              & xo(io), yo(io), a, b)
-                 if(io==5)print*,i,j,a,b          
+                             
                 ! Store absolute indices
                 binside = a>=0d0-tiny(0d0) .and. a<=1d0+tiny(0d0) &
                     & .and. b>=0d0-tiny(0d0) .and. b<=1d0+tiny(0d0)
@@ -1743,7 +1747,10 @@ end subroutine nearest2dto1dc
 subroutine mixt2dx   (vari, xi,  yi,  varo, xo,  yo,  mv, ext,       nxi,nyi,nxo,nyo,nz)
     ! Extension of avgext2d to third dimension (simple loop)
 
+    implicit none
+    
     ! Parameters
+    integer, intent(in) :: nxi,nyi,nxo,nyo,nz
     real(kind=8),intent(in) :: vari(nxi,nyi,nz),mv
     real(kind=8),intent(in) :: xi(nxi),yi(nyi),xo(nxo),yo(nyo)
     logical,intent(in) :: ext
