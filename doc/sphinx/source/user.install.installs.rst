@@ -6,6 +6,15 @@ Installations
 
 .. highlight:: bash
 
+In short
+--------
+
+Here is an example of basic installation inside UV-CDAT, 
+with some OpenMP parallelisation:
+
+    $ cp setup.cfg.omp setup.cfg
+    $ python setup.py install
+
 For all users
 -------------
 
@@ -73,18 +82,25 @@ following the instruction of the official documentations
 Two examples are provided, which differ in the way the fortran extension
 is compilated:
 
-- The :file:`setup.cfg.simple` simply specifies the compiler type.
-- The :file:`setup.cfg.omp` makes the compilation to use OpenMP.
+- The :file:`setup.cfg.simple` simply specifies the compiler type:
 
-Here is the content of the :file:`setup.cfg.omp` file:
+  .. literalinclude:: ../../../setup.cfg.simple
+        :language: ini
 
-.. literalinclude:: ../../../setup.cfg.omp
-    :language: ini
+- The :file:`setup.cfg.omp` makes the compilation to use OpenMP:
 
-For example, to quickly allow OpenMP parallelisation::
+  .. literalinclude:: ../../../setup.cfg.omp
+        :language: ini
 
-    $ ln -s setup.cfg.omp setup.cfg
-    $ python setup.py install
+For example, to quickly allow OpenMP parallelisation, 
+link to the right setup configuration file before installing::
+
+    $ cp setup.cfg.omp setup.cfg
+    $ python setup.py build_ext --force # to force the recompilation
+    
+    
+.. note:: If the :file:`setup.cfg` file doesn't exist, the :program:`setup.py`
+    will copy file:`setup.cfg.simple` into :file:`setup.cfg`.
 
 .. _user.install.install.config:
     
