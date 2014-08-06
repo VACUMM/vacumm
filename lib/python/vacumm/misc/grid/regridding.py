@@ -72,7 +72,8 @@ __all__.sort()
 _interp_funcs = ['interp1d', 'interp1dx', 'interp1dxx', 
     'remap1d', 'remap1dx', 'remap1dxx', 'nearest2d', 'bilin', 'dstwgt',
     'mbilin2d', 'mixt2dx', 'cargen', 'bilin2dto1d', 'extrap1d', 
-    'nearest2dto1d', 'nearest2dto1dc', 'bilin2dto1dc']
+    'nearest2dto1d', 'nearest2dto1dc', 'bilin2dto1dc', 'curv2rel', 
+    'bilin2dto1dc_reduc', 'nearest2dto1dc_reduc']
     
 # Load fortran
 _interp_funcs = ['%s as _%s_'%(ff, ff) for ff in _interp_funcs]
