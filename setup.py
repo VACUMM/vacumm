@@ -49,10 +49,6 @@ classifiers = ["Development Status :: 4 - Beta",
                "Operating System :: MacOS :: MacOS X", 
                ]
 
-# Setup config file
-if not os.path.exists('setup.cfg'):
-    shutil.copy('setup.cfg.simple', 'setup.cfg')
-
 # Setup
 from numpy.distutils.core import setup
 from numpy.distutils.misc_util import Configuration
@@ -147,7 +143,12 @@ class vacumm_bdist_rpm(distutils.command.bdist_rpm.bdist_rpm):
         #self.pre_uninstall = 'rpm-pre-uninstall'
 
 if __name__ == '__main__':
-    
+
+    # Setup config file
+    if not os.path.exists('setup.cfg'):
+        shutil.copy('setup.cfg.simple', 'setup.cfg')
+
+
     # Lauch setup
     setup(name='vacumm', 
         version = version,
