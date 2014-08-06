@@ -6,7 +6,7 @@ config = {
 }
 
 # Imports
-from vcmq import MV2, create_grid2d, code_base_name, os, CDATRegridder, N, set_grid, psinfo
+from vcmq import MV2, create_grid2d, code_file_name, os, CDATRegridder, N, set_grid, psinfo
 from vacumm.misc.grid import rotate_grid
 from time import time
 
@@ -22,7 +22,7 @@ gridor = create_grid2d(vari.getAxis(1)[:]*0.09*50/nx,
 gridoc = rotate_grid(gridi, 30)
 
 # Log
-logfile = code_base_name(ext='log')
+logfile = code_file_name(ext='log')
 if os.path.exists(logfile): os.remove(logfile)
 f = open(logfile, 'w')
 print >>f, 'NY=%(ny)i, NX=%(nx)i'%locals()

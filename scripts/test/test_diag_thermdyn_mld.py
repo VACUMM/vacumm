@@ -4,7 +4,7 @@
 ncfile = "menor.nc"
 
 # Imports
-from vcmq import DS, data_sample, mixed_layer_depth, rc, map2, os, code_base_name
+from vcmq import DS, data_sample, mixed_layer_depth, rc, map2, os, code_file_name
 
 # Read data
 ds = DS(data_sample(ncfile),'mars', logger_level='critical')
@@ -29,7 +29,7 @@ for i,(mode, var) in enumerate(mld.items()):
         subplot=(len(mld),1,i+1), figsize=(4.1,8),
         contour_linewidths=0.7, cmap='vacumm_rnb2_hymex', hspace=0.25, bottom=0.08,
         title='%%(long_name)s: mode = "%s"'%mode, show=False)
-figfile = code_base_name(ext='png')
+figfile = code_file_name(ext='png')
 if os.path.exists(figfile): os.remove(figfile)
 m.savefig(figfile)
 

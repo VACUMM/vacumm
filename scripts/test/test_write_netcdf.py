@@ -5,7 +5,7 @@ ncfile = "nobounds.nc"
 outfile = "result.nc"
 
 # Imports
-from vcmq import cdms2, warnings, data_sample
+from vcmq import cdms2, warnings, data_sample, code_dir_name, os
 from vacumm.misc.misc import get_atts
 
 # Warnings off
@@ -15,6 +15,7 @@ warnings.simplefilter('ignore')
 f = cdms2.open(data_sample(ncfile))
 
 # Open output file
+outfile = os.path.join(code_dir_name(), outfile)
 fw = cdms2.open(outfile,'w')
 
 # Cancel the default behaviour (<=> generating bounds variables)

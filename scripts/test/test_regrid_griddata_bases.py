@@ -1,5 +1,6 @@
 """Test external griddata and natgrid tools"""
 
+from vcmq import code_file_name
 
 # Generate data
 import numpy as N
@@ -44,7 +45,7 @@ P.title('CDAT Natgrid: err=%i%%'%((zzr-zzoc).std()*100/stdref))
 P.subplot(313)
 P.pcolormesh(zzok, **vminmax)
 P.title('MPL/R. Kern : err=%i%%'%((zzr-zzok).std()*100/stdref))
-P.savefig('test_regrid_griddata_bases.png')
+P.savefig(code_file_name(ext='png'))
 
 
 

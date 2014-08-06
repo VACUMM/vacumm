@@ -18,7 +18,7 @@ yslice=slice(0, 121)
 
 # Imports
 #from matplotlib import use ; use('Agg')
-from vcmq import cdms2, bounds1d, bounds2d, data_sample, MV2, cp_props, N, minmax, code_base_name, P, os, psinfo, gc
+from vcmq import cdms2, bounds1d, bounds2d, data_sample, MV2, cp_props, N, minmax, code_file_name, P, os, psinfo, gc
 #from cdms2.mvCdmsRegrid import CdmsRegrid
 from time import time
 from traceback import format_exc
@@ -66,7 +66,7 @@ xmin, xmax = minmax(loni.asma(),lono)
 ymin, ymax = minmax(lati.asma(), lato)
 nyo,nxo = grido.shape
 #print 'rank',rank
-basefile = code_base_name(ext=False)
+basefile = code_file_name(ext=False)
 repfile = basefile+'.nt%(nt)s-nz%(nz)s-nyi%(nyi)s-nxi%(nxi)s.log'%locals()
 if rank==0: 
     if os.path.exists(repfile): os.remove(repfile)

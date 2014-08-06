@@ -1,6 +1,6 @@
 """Test :func:`~vacumm.misc.grid.regridding.extend1d` and :func:`~vacumm.misc.grid.regridding.extend2d`"""
 
-from vcmq import N, create_grid2d, P, rc, plot2d, MV2, set_grid, savefigs, code_base_name
+from vcmq import N, create_grid2d, P, rc, plot2d, MV2, set_grid, savefigs, code_file_name
 from vacumm.misc.grid.regridding import extend1d, extend2d
 
 # Input data
@@ -31,5 +31,5 @@ varo = extend2d(vari, iext=2, jext=2, mode='linear')
 plot2d(varo, subplot=(2, 2, 2), 
     title='interp2d: mode=linear\niext=2, jext=2', **kw)
 P.tight_layout()
-savefigs(code_base_name(), verbose=False)
+savefigs(code_file_name(), verbose=False)
 P.close()

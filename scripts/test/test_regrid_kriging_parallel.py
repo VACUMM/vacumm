@@ -6,7 +6,7 @@ npmax = 500
 nproc = 2
 
 
-from vcmq import P, savefigs, code_base_name
+from vcmq import P, savefigs, code_file_name
 from vacumm.misc.grid.kriging import gridded_gauss3, random_gauss3, random_points, OrdinaryKriger
 from time import time
 
@@ -40,6 +40,6 @@ P.imshow(zzg, **kwim)
 P.scatter(xo, yo, c=zo, s=40, **kwsc)
 P.title('Interpolated points')
 P.tight_layout()
-savefigs(code_base_name(), verbose=False)
+savefigs(code_file_name(), verbose=False)
 P.close()
 

@@ -1,7 +1,7 @@
 """Test :meth:`vacumm.data.misc.arakawa.CGrid.interp`"""
 
 from vcmq import MV2, N, create_grid, create_dep, set_grid, map2, \
-    code_base_name, CGrid, minmax, curve2, add_grid
+    code_file_name, CGrid, minmax, curve2, add_grid
 
 # Initial variable
 grid = create_grid(N.arange(-7, 0.), N.arange(43, 50.))
@@ -29,13 +29,13 @@ kw.update(fill='scatter', contour=False, fill_s=60)
 markers = dict(u='>', v='^', f='D', t='o')
 for p in 't', 'u', 'v', 'f':
     m = map2(var[p][-1], fill_marker=markers[p], shadow=True, zorder=100, **kw)
-m.savefig(code_base_name(ext='_1.png'))
+m.savefig(code_file_name(ext='_1.png'))
 m.close()
 
 # Vertical plot
 curve2(var['t'][:, 0, 0], 'o-b', ymax=0, show=False, 
     title='Interpolations on an Arakawa C grid: T->W')
-curve2(var['w'][:, 0, 0], '^r', show=False, savefig=code_base_name(ext='_2.png'))
+curve2(var['w'][:, 0, 0], '^r', show=False, savefig=code_file_name(ext='_2.png'))
 
 
 result = [

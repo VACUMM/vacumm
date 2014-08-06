@@ -8,7 +8,7 @@ lon1 = 4.78
 lat1 = 42.01
 
 # Imports
-from vcmq import DS, data_sample, mixed_layer_depth, N, transect, section2, curve2, code_base_name, os
+from vcmq import DS, data_sample, mixed_layer_depth, N, transect, section2, curve2, code_file_name, os
 from vacumm.misc.plot import add_map_lines
 
 # Read data
@@ -44,7 +44,7 @@ curve2(xmld, 'w-', linewidth=2, show=False)
 add_map_lines(temp, xlons, xlats, map_zoom=0.5)
 
 # Save
-figfile = code_base_name(ext='png')
+figfile = code_file_name(ext='png')
 if os.path.exists(figfile): os.remove(figfile)
 s.savefig(figfile, pdf=True)
 

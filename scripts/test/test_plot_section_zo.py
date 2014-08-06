@@ -1,7 +1,7 @@
 """Test :func:`~vacumm.misc.plot.section2` with a Z- variable"""
 
 # Imports
-from vcmq import N, MV2, cdms2, create_dep, rc, section2, code_base_name, os
+from vcmq import N, MV2, cdms2, create_dep, rc, section2, code_file_name, os
 
 # Init data with z 1D
 nz = 8
@@ -23,7 +23,7 @@ kw = dict(show=False, bgcolor='0.5')
 section2(var, subplot=211, **kw)
 
 # Plot with z 2D
-figfile = code_base_name(ext='png')
+figfile = code_file_name(ext='png')
 if os.path.exists(figfile): os.remove(figfile)
 section2(var, yaxis=z2d, subplot=212, savefig=figfile, close=True, **kw)
 

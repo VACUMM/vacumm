@@ -1,5 +1,5 @@
 """Test function :func:`~vacumm.misc.plot.taylor` in different configurations"""
-from vcmq import taylor, rc, code_base_name, MV2, N
+from vcmq import taylor, rc, code_file_name, MV2, N
 
 # Make some data
 nt = 50
@@ -17,8 +17,8 @@ dat2.long_name = 'Set 2'
 
 # Plot
 rc('font', size=8)
-kwplot = dict(figsize=(5,5), savefigs_pdf=True, show=False, close=True, savefigs_verbose=False)
-basename = code_base_name(ext=False)+'_%i'
+kwplot = dict(figsize=(5,5), savefigs_pdf=False, show=False, close=True, savefigs_verbose=False)
+basename = code_file_name(ext=False)+'_%i'
 # - single variable
 taylor(dat1[0], ref1, savefigs=basename%0, colors='cyan', title='Basic', **kwplot)
 # - single variable without normalization

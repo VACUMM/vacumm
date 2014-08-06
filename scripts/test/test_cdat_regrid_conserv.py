@@ -1,6 +1,6 @@
 """Test CDAT conservative regridding"""
 from vcmq import N, meshbounds, bounds1d, cdms2, MV2, rc, P, add_grid, rcdefaults, \
-    create_lon, create_lat, savefigs, code_base_name
+    create_lon, create_lat, savefigs, code_file_name
     
 # Input grid
 x0, y0, nx, ny, dx, dy = 0., 0., 20, 15, 5., 5.
@@ -58,7 +58,7 @@ add_grid(grido, color='0.5')
 P.axis(axis)
 P.title('Regridded: max=%g min=%g'%(varo.max(), varo.min()))
 P.tight_layout()
-savefigs(code_base_name(), verbose=False)
+savefigs(code_file_name(), verbose=False)
 P.close()
 rcdefaults()
 

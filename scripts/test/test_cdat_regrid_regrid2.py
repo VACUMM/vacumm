@@ -1,6 +1,6 @@
 """Test the traditionnal CDAT regrid2 regridder"""
 
-from vcmq import MV2, create_grid, meshbounds, P, add_grid, N, bounds1d, plot2d, savefigs,code_base_name 
+from vcmq import MV2, create_grid, meshbounds, P, add_grid, N, bounds1d, plot2d, savefigs,code_file_name 
 from regrid2 import Horizontal
 
 # Input
@@ -47,7 +47,7 @@ P.pcolor(xxob, yyob, wo)
 add_grid(grido)
 P.title("Output weights")
 P.tight_layout()
-savefigs(code_base_name(),pdf=True, verbose=False)
+savefigs(code_file_name(),pdf=True, verbose=False)
 P.close()
 
 
