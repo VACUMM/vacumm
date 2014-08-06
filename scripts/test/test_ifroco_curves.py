@@ -40,7 +40,7 @@ units = cfgget('units', field)
 vmin = cfgget('vmin', field)
 vmax = cfgget('vmax', field)
 points = cfgget('points', field)
-print vmin, vmax
+
 # Interpolate to points
 lons = N.array([d[0] for d in points])
 lats = N.array([d[1] for d in points])
@@ -51,11 +51,12 @@ for i in xrange(ptdata.shape[1]):
     datas[i].long_name = points[i][2].decode('utf8')
 
 # Plot
+logofile = os.path.join(os.path.dirname(code_file_name()), logofile)
 x = plot_curves(datas, vmin=vmin, vmax=vmax, units=units, long_name=long_name, 
     title=long_long_name+u' aux bouées', logos=logofile, copyright=copyright, 
     date_locator=HourLocator(byhour=[0, 12]), date_formatter=Day12hFormatter('%a %d/%m'), 
-    hlitvs_units='day', savefig=__file__,
+    hlitvs_units='day', savefig=code_file_name(ext='png'),
 #    ylocator=MaxNlocator(integer=True), yminor_locator=MaxNlocator(integer=True, steps=2), 
-    close=False
+    close=True
     )
 #P.show()
