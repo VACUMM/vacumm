@@ -282,7 +282,7 @@ To add a new one:
      :func:`vacumm.misc.phys.units.deg2m` function, create a script called
      :file:`test_units_deg2m.py`.
    - Insert a docstring of a single line telling what the script tests.
-     See examples here: :ref:`appendix.test`.
+     See examples here: :ref:`appendix.tests`.
    - Make explicit imports (without \*)::
        
        from vcmq import DS
@@ -350,7 +350,7 @@ To add a new one:
      If the module already exists, just add your new test script to this loop. 
       
 3. If the test module does not exist, add an entry the ``TEST`` variable
-  of the :file:`test/Makefile` file.
+   of the :file:`test/Makefile` file.
 4. Update the documentation:
    
    .. code-block:: bash

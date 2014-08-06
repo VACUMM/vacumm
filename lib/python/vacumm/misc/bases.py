@@ -328,7 +328,9 @@ _logging_proxies += [
 def add_logging_proxies(cls):
     '''
     Register some Logger shortcuts for a given class (cls.<method> => cls.get_logger().<method>):
+    
         - %s
+        
     These shortcuts will be bound to the class and its instances using its get_logger method
     which must return a :class:`Logger` instance, so this method must be callable from the class or its
     instances (you may use the :class:`classinstancemethod` decorator as of :meth:`Object.get_logger`)

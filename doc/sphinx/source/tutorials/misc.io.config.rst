@@ -4,7 +4,7 @@ Les fichiers de config .cfg ou .ini
 ===================================
 
 On utilise le module :mod:`ConfigParser`.
-Voir aussi le tutoriel :ref:`user.tut.misc.config.`.
+Voir aussi le tutoriel :ref:`user.tut.misc.config`.
 
 Fichier de configuration initial :
 

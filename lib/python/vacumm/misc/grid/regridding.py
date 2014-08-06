@@ -501,7 +501,7 @@ def regrid1dnew(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=N
           Like ``axo``, it can be of any dimensions.
         - **iaxo**, optional: Dimension of ``axo`` on which the interpolation is performed
           when ``axo`` has more than one dimension.
-        - **iaxi**, optional: Same as ``iaxo`` but for ``axi`.
+        - **iaxi**, optional: Same as ``iaxo`` but for ``axi``.
         - **mask_thres**, optional: Time steps when interpolated mask is greater than
           this value are masked.
         - **extrap**, optional: Extrapolate outside input grid when the "nearest" method
