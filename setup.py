@@ -49,6 +49,9 @@ classifiers = ["Development Status :: 4 - Beta",
                "Operating System :: MacOS :: MacOS X", 
                ]
 
+# Setup config file
+if not os.path.exists('setup.cfg'):
+    shutil.copy('setup.cfg.simple', 'setup.cfg')
 
 # Setup
 from numpy.distutils.core import setup
