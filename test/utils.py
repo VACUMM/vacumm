@@ -3,13 +3,14 @@ import os
 from glob import glob
 from matplotlib import use ; use('Agg')
 from vcmq import *
-
+from matplotlib.pyplot import close
 
 cur_dir = os.path.abspath(os.path.dirname(__file__))
 test_dir = os.path.realpath(os.path.join(cur_dir,'../scripts/test'))
 
 method_template = """def {0}(self):
     execfile(self.get_path('{0}'))
+    close()
     self.handle_result(locals().get('result',None))
 """
 
