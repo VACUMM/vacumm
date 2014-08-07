@@ -82,11 +82,11 @@ You can update these rst files with the :program:`make.py` present in this direc
 
 .. note:: The title of each of these rst files is copied from the first line of the test script.
 
-If new files are created, add them to subversion.
+If new files are created, add them to subversion::
 
     $ svn add test_newtest.py
 
-Then make a commit:
+Then make a commit::
     
     $ svn ci -m 'adding new test rst files'
 
@@ -115,6 +115,14 @@ The documentation is generated in directories
 Regeneration of TikZ figures 
 ----------------------------
 
+.. sidebar:: What is PGF/TikZ ?
+
+    This is a library for creating high quality figures from an TeX source code.
+    The best overview is provided by the site that lists examples (tutorials): 
+    http://www.texample.net/tikz/examples .
+    Most of them are based on a more recent than the one installed by default on a system release.
+    Its on CVS *build* that the figures in this documentation are based.
+
 This documentation contains several figures drawn with 
 :program:`pdflatex` and 
 `PGF/TikZ <http://pgf.sourceforge.net>`_ (logo, architecture 
@@ -135,14 +143,6 @@ For installation, proceed as follows:
     $ unzip pgfCVS2010-09-28_TDS.zip
     $ rm pgfCVS2010-09-28_TDS.zip
 
-.. sidebar:: What is PGF/TikZ ?
-
-    This is a library for creating high quality figures from an TeX source code.
-    The best overview is provided by the site that lists examples (tutorials): 
-    http://www.texample.net/tikz/examples .
-    Most of them are based on a more recent than the one installed by default on a system release.
-    Its on CVS *build* that the figures in this documentation are based.
-
 Figure TikZ can now be generated with:  
 
 .. code-block:: bash
@@ -156,14 +156,18 @@ to ppm format and png formats.
 
 .. _user.dev.doc.auto:
     
-Automate it a crontab
----------------------
+Automate it in a crontab
+------------------------
 
 You can execute a script with at least the following commands, 
 and register it in a crontab::
     
+    
     # Go to the root directory of sources
     cd {/path/to/}vacumm/trunk
+    
+    # Make sure the fortran extensions are up-to-date
+    make lib
     
     # Generate figures of test files
     cd test
@@ -450,11 +454,11 @@ The procedure is as follows:
     
 .. code-block:: bash
 
-    $ python setup.py bdist
+    $ python setup.py sdist
     
 This command will then create a distributable file, whose name is close to
-:file:`vacumm-0.9-svn128.linux-x86_64.tar.gz`.
+:file:`vacumm-0.9-svn128.tar.gz`.
 This file can then be placed in the files section of the gforge site of the project 
-(`à cette adresse <https://forge.ifremer.fr/frs/admin/qrs.php?package=&group_id=93>`_).
+(`at this address <https://forge.ifremer.fr/frs/admin/qrs.php?package=&group_id=93>`_).
 
 
