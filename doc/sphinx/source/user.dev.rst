@@ -166,7 +166,10 @@ and register it in a crontab::
     # Go to the root directory of sources
     cd {/path/to/}vacumm/trunk
     
-    # Make sure the fortran extensions are up-to-date
+    # Update the tree
+    svn up
+    
+    # Make sure the fortran extensions are compilated
     make lib
     
     # Generate figures of test files
@@ -445,6 +448,44 @@ If you created the tag too quickly and need to correct something, then
         $ svn rm https://gforge.ifremer.fr/svn/vacumm/tags/vacumm-X.Y.Z
         
     - re-create the expected tag (``svn copy``, see above).
+    
+
+.. _user.dev.branch:
+    
+Working with branches
+=====================
+
+If you plan to make some sensitive changes that may require time
+to develop and test, you should consider making a branch for your developments.
+Proceed as follow.
+
+Create the branch ``mybranch`` from the trunk::
+
+    $ svn copy -m "create new branch mybranch" \
+        https://gforge.ifremer.fr/svn/vacumm/trunk \
+        https://gforge.ifremer.fr/svn/vacumm/branches/mybranch
+        
+Get it on your local copy of the tree::
+    
+    $ cd {/path/to/}branches
+    $ svn up mybranch
+
+Update it in case the trunk has changed::
+    
+    $ cd {/path/to/}branches/mybranch
+    $ svn up ^/trunk
+    
+Commit intermediate changes to your branch::
+    
+    $ cd {/path/to/}branches/mybranch
+    $ svn ci -m comment ...
+    
+Now that you have finished, merge it back with trunk::
+    
+    $ cd {/path/to/}trunk
+    $ svn --reintegrate https://gforge.ifremer.fr/svn/vacumm/branches/mybranch
+    $ svn -m "merge with branch mybranch"
+
 
 Distributing the library as a package
 =====================================
