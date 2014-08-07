@@ -154,6 +154,33 @@ The latex code is then compiled, generating a pdf which is then converted
 to ppm format and png formats.
 
 
+.. _user.dev.doc.auto:
+    
+Automate it a crontab
+---------------------
+
+You can execute a script with at least the following commands, 
+and register it in a crontab::
+    
+    # Go to the root directory of sources
+    cd {/path/to/}vacumm/trunk
+    
+    # Generate figures of test files
+    cd test
+    make
+    cd ..
+    
+    # Generate figures of tutorials
+    cd scripts/tutorials
+    make
+    cd ../..
+    
+    # Force the future generation of all colormap figures
+    touch lib/python/vacumm/misc/color.py
+    
+    # Generate sphinx docs
+    cd doc/sphinx
+    make
 
 .. _user.dev.tut:
     
