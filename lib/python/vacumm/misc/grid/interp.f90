@@ -66,6 +66,7 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
     real(kind=8) :: tension,bias,a0,a1,a2,a3 ! Hermit
     real(kind=8) :: zyi(nyi),zyo(nyo)
     real(kind=8),allocatable :: vc0(:),vc1(:)
+    logical :: bmask(nx,nyi)
 
     ! Treat only monotonically increasing grids
     zyi = yi
@@ -78,6 +79,7 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
     if(method>1) allocate(vc0(nx),vc1(nx))
     bias = 0.
     tension = 0.
+    bmask = abs((vari-mv)/mv)<=epsilon(0d0)*1.0001
         
     ! Loop on input grid
     iyo = 1
@@ -124,6 +126,7 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
                 varo(:,iyo) = &
                 &    (vari(:, iyi)*dy1 + vari(:, iyi+1)*dy0) / &
                 &    (dy0+dy1)
+                varo(:,iyo) = merge(mv, varo(:,iyo), any(bmask(:, iyi:iyi+1),dim=2) )
                 
             else
             
@@ -183,6 +186,11 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
                     &    (vc1-vari(:, iyi+1))        *(1-bias)*(1-tension)/2)
                     varo(:,iyo) = varo(:,iyo) + a3*vari(:, iyi+1)
                 endif
+                
+                ! Mask
+                varo(:,iyo) = merge(mv, varo(:,iyo), &
+                    & any(bmask(:, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
+
             endif
             iyo = iyo + 1
             
@@ -239,11 +247,12 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
     real(kind=8) :: zyi(nxb,nyi),zyo(nyo),mu(nxb)
     real(kind=8),allocatable :: vc0(:),vc1(:),a0(:),a1(:),a2(:),a3(:)
     integer :: ix0,ix1
-    logical :: bitv(nxb)
+    logical :: bitv(nxb), bmask(nx,nyi)
 
     ! Treat only monotonically increasing grids
+    bmask = abs((vari-mv)/mv)<=epsilon(0d0)*1.0001
     do ib = 1,nxb
-        if(all(vari(ib,:)==mv))cycle
+        if(all(bmask(ib,:)))cycle
         if (yi(ib,nyi)<yi(ib,1)) then
             zyi = -yi
         else
@@ -300,6 +309,8 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                         varo(ix0:ix1,iyo) = &
                         &    (vari(ix0:ix1, iyi)*dy1 + vari(ix0:ix1, iyi+1)*dy0) / &
                         &    (dy0+dy1)
+                        varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
+                            & any(bmask(ix0:ix1, iyi:iyi+1),dim=2) )
                     end where
                     
                 else
@@ -324,6 +335,8 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                             varo(ix0:ix1,iyo) = mu**3*varo(ix0:ix1,iyo) + mu**2*(vc0-vari(ix0:ix1, iyi)-varo(ix0:ix1,iyo))
                             varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + mu*(vari(ix0:ix1, iyi+1)-vc0)
                             varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1, iyi)
+                            varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
+                                & any(bmask(ix0:ix1, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
                         end where
                     
                     else
@@ -342,6 +355,8 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                             &    (vari(ix0:ix1, iyi+1)-vari(ix0:ix1,iyi))*(1+bias)*(1-tension)/2 + &
                             &    (vc1-vari(ix0:ix1, iyi+1))        *(1-bias)*(1-tension)/2)
                             varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + a3*vari(ix0:ix1, iyi+1)
+                            varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
+                                & any(bmask(ix0:ix1, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
                         end where
                         
                     endif
@@ -409,11 +424,12 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
     real(kind=8) :: zyi(nxb,nyi),zyo(nxb,nyo),mu(nxb)
     real(kind=8),allocatable :: vc0(:),vc1(:),a0(:),a1(:),a2(:),a3(:)
     integer :: ix0,ix1
-    logical :: bitv(nxb)
+    logical :: bitv(nxb), bmask(nx,nyi)
 
     ! Treat only monotonically increasing grids
+    bmask = abs((vari-mv)/mv)<=epsilon(0d0)*1.0001
     do ib = 1,nxb
-        if(all(vari(ib,:)==mv))cycle
+        if(all(bmask(ib,:)))cycle
         if (yi(ib,nyi)<yi(ib,1)) then
             zyi = -yi
         else
@@ -475,6 +491,8 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                         varo(ix0:ix1,iyo) = &
                         &    (vari(ix0:ix1, iyi)*dy1 + vari(ix0:ix1, iyi+1)*dy0) / &
                         &    (dy0+dy1)
+                        varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
+                            & any(bmask(ix0:ix1, iyi:iyi+1),dim=2) )
                     end where
                     
                 else
@@ -499,6 +517,8 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                             varo(ix0:ix1,iyo) = mu**3*varo(ix0:ix1,iyo) + mu**2*(vc0-vari(ix0:ix1, iyi)-varo(ix0:ix1,iyo))
                             varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + mu*(vari(ix0:ix1, iyi+1)-vc0)
                             varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1, iyi)
+                            varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
+                                & any(bmask(ix0:ix1, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
                         end where
                     
                     else
@@ -517,6 +537,8 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                             &    (vari(ix0:ix1, iyi+1)-vari(ix0:ix1,iyi))*(1+bias)*(1-tension)/2 + &
                             &    (vc1-vari(ix0:ix1, iyi+1))        *(1-bias)*(1-tension)/2)
                             varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + a3*vari(ix0:ix1, iyi+1)
+                            varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
+                                & any(bmask(ix0:ix1, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
                         end where
                         
                     endif
@@ -1790,15 +1812,15 @@ SUBROUTINE mixt2d(IDIM,JDIM,XX,YY,FF,MDIM,NDIM,RR,SS,GG)
 !
 !  ASSUMPTIONS
 !               (1) LINEAR INTERPOLATION AND EXTRAPOLATION ARE USED TO
-!                   EXPAND AND EXTENDTFF OVER THE INPUT GRID.
+!                  EXPAND AND EXTENDTFF OVER THE INPUT GRID.
 !               (2) GG IS OBTAINED BY AREA AVERAGING FF OVER THE CELL CE
-!                   ON (M,N).
+!                  ON (M,N).
 !               (3) NO ACCOUNT IS TAKEN OF SPHERICITY - I.E. THE INPUT A
-!                   OUTPUT GRIDS ARE ASSUMED TO BE RECTILINEAR.
+!                  OUTPUT GRIDS ARE ASSUMED TO BE RECTILINEAR.
 !               (4) THE OPERATION IS NOT INVERTABLE, NOR WILL IT YIELD
-!                   THE IDENTITY OPERATION IF THE INPUT AND OUTPUT GRIDS
-!                   ARE IDENTICAL.  THIS SUITS FINE TO COARSE INTERPOLAT
-!                   BUT MAY NOT ALWAYS SUIT COARSE TO FINE EXTRAPOLATION
+!                  THE IDENTITY OPERATION IF THE INPUT AND OUTPUT GRIDS
+!                  ARE IDENTICAL.  THIS SUITS FINE TO COARSE INTERPOLAT
+!                  BUT MAY NOT ALWAYS SUIT COARSE TO FINE EXTRAPOLATION
 !
 !
 !  METHOD: SCAN THE OBJECT GRID FOR N=1,N
