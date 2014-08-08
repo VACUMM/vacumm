@@ -155,6 +155,17 @@ def code_base_name(iframe=0, ext=True):
     '''
     return os.path.basename(code_file_name(iframe+1, ext))
     
+def code_dir_name(iframe=0):
+    '''
+    Get the dirname of the file that hosts the code where it is called
+    
+    Parameters:
+        - **iframe**: int: Get the iframe'th caller function name.
+        - **ext**: Remove extension if False, replace it if string,
+          or leave it.
+    '''
+    return os.path.dirname(code_file_name(iframe+1))
+    
 def stack_trace(iframe=0):
     def etrace(frame, pad=60):
         o = frame.f_locals.get('self', '') # not the perfect way...
@@ -317,7 +328,9 @@ _logging_proxies += [
 def add_logging_proxies(cls):
     '''
     Register some Logger shortcuts for a given class (cls.<method> => cls.get_logger().<method>):
+    
         - %s
+        
     These shortcuts will be bound to the class and its instances using its get_logger method
     which must return a :class:`Logger` instance, so this method must be callable from the class or its
     instances (you may use the :class:`classinstancemethod` decorator as of :meth:`Object.get_logger`)

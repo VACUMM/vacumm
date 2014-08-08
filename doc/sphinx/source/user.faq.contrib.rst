@@ -3,7 +3,7 @@
 Contribute to VACUMM
 ====================
 
-.. _user.faq.contrib.tut:
+.. _user.faq.contrib.bug:
 
 How to report a bug or ask for an enhancement?
 ----------------------------------------------
@@ -31,7 +31,7 @@ How to contribute to the documentation?
 The documentation is written in the `reStructuredText <http://docutils.sf.net/rst.html>`_ language,
 and generated and compilated with the `sphinx <http://sphinx-doc.org>`_ python utility.
 
-Just follow examples of the existing documentation sources in :doc:`doc/sphinx/source` 
+Just follow examples of the existing documentation sources in :file:`doc/sphinx/source` 
 to make modifications or add new content,
 then commit your files.
 If you want to compile the documentation, please go to section :ref:`user.dev.doc`.

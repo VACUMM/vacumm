@@ -278,15 +278,16 @@ def getvar_fmtdoc(func, **kwargs):
           Keys must correspond to a keyword name, and values correspond to a keyword
           description.
     
-    :Example: ::
-    
-        # Manual way
-        getvar_fmtdoc(OceanDataset.get_sst, extra_param='Its description')
+    :Example: 
+        ::
         
-        # Decorator way
-        @getvar_fmtdoc
-        def get_sst(self, *args, **kwargs):
-            ...
+            # Manual way
+            getvar_fmtdoc(OceanDataset.get_sst, extra_param='Its description')
+            
+            # Decorator way
+            @getvar_fmtdoc
+            def get_sst(self, *args, **kwargs):
+                ...
         
     """
     kwargs_params = kwargs.get('_kwargs', "Other keywords are passed to :func:`~vacumm.misc.io.ncread_files`.")

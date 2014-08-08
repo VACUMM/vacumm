@@ -5,7 +5,7 @@
 
     Tutorials: :ref:`user.tut.misc.grid.regridding`
 """
-# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
+# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010-2014)
 # 
 # raynaud@actimar.fr
 # 
@@ -43,6 +43,7 @@
 import gc, os, subprocess
 import re
 import warnings
+from collections import OrderedDict
 
 import numpy as N, cdms2,  MV2,  regrid2
 from cdms2.axis import TransientAxis
@@ -60,18 +61,22 @@ from kriging import krig as _krig_
 # Python functions
 __all__ = ['fill1d', 'regular', 'regular_fill1d', 'cellave1d', 'spline_interp1d', 
     'refine', 'GridData', 'griddata', 'cargen', 'fill2d', 'regrid2d', 
-    'SCRIP', 'scrip', 'regrid1d', 'interp1d', 'nearest1d', 'cubic1d',
+    'regrid1d', 'interp1d', 'nearest1d', 'cubic1d',
     'xy2grid', 'grid2xy', 'fill1d', 'GriddedMerger', 'regrid_method', 
     'cellave2d', 'interp2d', 'xy2xy', 'shift1d', 'shift2d', 
     'shiftgrid',  'transect', 'CDATRegridder', 'extend1d', 'extend2d', 
-    'extendgrid', 'regrid2d_method_name', 'fill1d2', 'krig']
+    'extendgrid', 'regrid2d_method_name', 'fill1d2', 'krig', 'CurvedInterpolator', 
+    'regrid1dnew', 'regrid2d_tool_name', 'regrid2dnew']
 __all__.sort()
 
 # Fortran functions
 _interp_funcs = ['interp1d', 'interp1dx', 'interp1dxx', 
     'remap1d', 'remap1dx', 'remap1dxx', 'nearest2d', 'bilin', 'dstwgt',
-    'mbilin2d', 'mixt2dx', 'cargen', 'bilin2dto1d', 'extrap1d', 
-    'nearest2dto1d', 'nearest2dto1dc', 'bilin2dto1dc']
+    'mbilin2d', 'mixt2dx', 'cargen', 'extrap1d', 'curv2rel', 
+    'nearest2dto1d', 'nearest2dto1dc', 'nearest2dto1dc_reduc', 
+    'bilin2dto1d', 'bilin2dto1dc', 'bilin2dto1dc_reduc', 
+    'dstwgt2dto1d', 'dstwgt2dto1dc', 'dstwgt2dto1dc_reduc', 
+    ]
     
 # Load fortran
 _interp_funcs = ['%s as _%s_'%(ff, ff) for ff in _interp_funcs]
@@ -84,7 +89,8 @@ except Exception, e:
     print 'Trying to build it...'
     import subprocess
     cmd = ["make"] # Compilation of all vacumm extensions from the root of sources
-    out = subprocess.Popen(cmd, cwd=os.path.dirname(__file__), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    out = subprocess.Popen(cmd, cwd=os.path.dirname(__file__), stdout=subprocess.PIPE, 
+        stderr=subprocess.PIPE).communicate()
     if out[1]!='':
         raise ImportError("Can't build _interp_ for importation:\n%s"%('\n'.join(out)))
     exec import_interp
@@ -476,7 +482,7 @@ def _toright_(ar, iax):
     return newar, bakmap
         
 
-def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None, 
+def regrid1dnew(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None, 
     xmap=None, xmapper=None, mask_thres=.5, extrap=0):
     """Interpolation along one axis
     
@@ -499,7 +505,7 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
           Like ``axo``, it can be of any dimensions.
         - **iaxo**, optional: Dimension of ``axo`` on which the interpolation is performed
           when ``axo`` has more than one dimension.
-        - **iaxi**, optional: Same as ``iaxo`` but for ``axi`.
+        - **iaxi**, optional: Same as ``iaxo`` but for ``axi``.
         - **mask_thres**, optional: Time steps when interpolated mask is greater than
           this value are masked.
         - **extrap**, optional: Extrapolate outside input grid when the "nearest" method
@@ -662,43 +668,9 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
         kwargs=dict(method=method,extrap=0)
         
         
-    # First guess
+    # Regrid
     varo2d = regrid_func(vari2d, axind, axond, missing_value, **kwargs)
 
-    # Mask
-    maski2d = vari2d==missing_value
-    if method and N.any(maski2d):
-        
-        # Float mask
-        maski2df = maski2d.astype('f')
-        masko2d = regrid_func(maski2df, axind, axond, missing_value,**kwargs)
-        masko2d[masko2d==missing_value] = 1.
-        
-        # Masking
-        if method == -1:
-            
-            # Cell case: threshold
-            varo2d[:] = N.where(masko2d>mask_thres, missing_value, varo2d)
-    
-        else:
-            
-            # Lower method
-            varolow = interp_func(vari2d, axind, axond, missing_value, 
-                min(abs(method), 2)-1, extrap=0)
-        
-            # Cubic case: lower order again
-            if method >= 2:
-                masko2dc = interp_func(maski2df, axind, axond, missing_value, 1)
-                masko2dc[masko2dc==missing_value] = 1.
-                varolowc = interp_func(vari2d, axind, axond, missing_value, 0)
-                varolow[:] = N.where(masko2dc!=0., varolowc, varolow)
-                del masko2dc, varolowc
-            
-            # Select between nearest and linear, or linear and cubic
-            varo2d[:] = N.where(masko2d!=0., varolow, varo2d)
-            del varolow
-            
-        del maski2df, masko2d
         
     # Extrapolation
     if isinstance(extrap, basestring):
@@ -739,6 +711,7 @@ def _regrid1dnew_(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi
     gc.collect()
     return varo
 
+_regrid1dnew_ = regrid1dnew
 
 def nearest1d(vari, axo, **kwargs):
     """Interpolation along an axes
@@ -2117,9 +2090,38 @@ def regrid2d_method_name(method, raiseerr=True):
     else:
         return method
 
+#: Available tools for each method
+regrid2_tools = OrderedDict([
+    ('cellave', dict(r2r=['regrid2', 'esmf'], c2c=['esmf'])), 
+    ('conserv', dict(r2r=['regrid2', 'esmf'], c2c=['esmf'])), 
+    ('nearest', dict(c2c=['vacumm'])), 
+    ('bilinear', dict(r2r=['vacumm','esmf','libcf'], r2c=['vacumm','esmf','libcf'], 
+        c2c=['esmf', 'libcf', 'vacumm'])), 
+    ('patch', dict(c2c=['esmf'])), 
+    ('dstwgt', dict(r2r=['vacumm'], c2c=['vacumm'])), 
+    ('carg', dict(r2r=['vacumm'])), 
+    ('nat', dict(c2r=['vacumm'])), 
+    ('bining', dict(c2r=['vacumm'])), 
+])
+    
+def regrid2d_tool_name(tool, raiseerr=True):
+    """Check the tool name and return its generic name"""
+    if tool is None or tool.lower()=='auto': return 'auto'
+    tool = tool.lower()
+    if tool.startswith('es'): return 'esmf'
+    if tool.startswith('lib') or tool.startswith('g'): return 'libcf'
+    if tool.startswith('cd') or tool.startswith('reg'): return 'regrid2'
+    if tool.startswith('v'): return 'vacumm'
+    if raiseerr:
+        raise VACUMMError('Invalid regrid2d tool. Please use for example one of these: '+
+            'regrid2, esmf, libcf, vacumm, auto')
+    else:
+        return method
+
+
 def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False, 
     bilinear_masking='dstwgt', ext_masking='poly', cdr=None, getcdr=False, usecdr=None, useoldcdr=True, 
-    mixt_fill=True,  check_mask=True, clipminmax=False, geo=None, **kwargs):
+    check_mask=True, clipminmax=False, geo=None, **kwargs):
     """Regrid a variable from a regular grid to another
     
     If the input or output grid is curvilinear and ``method`` is set to
@@ -2129,7 +2131,7 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
     
         - **vari**: Variable cdms on regular grid
         - **ggo**: Tuple of (x,y) or a cdms grid or a cdms variable with a grid
-        - **method**, optiona: One of:
+        - **method**, optional: One of:
         
             - ``"auto"``: method guessed according to resolution of input and output grid (see :func:`regrid_method`)
             - ``"nearest"``: nearest neighbour
@@ -2140,7 +2142,6 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
             - ``"bining"`` : simple averaging using bining (very high res. to low res.)
             - ``"nat"`` : Natgrid interpolation (low res. to high res.) (see :class:`GridData` for more info)
             - ``"carg"`` : Interpolation with minicargen(low res. to high res.) (see :func:`cargen` for more info)
-            
         - **cdr**, optional: :class:`CDATRegridder` instance.
         - **getcdr**, optional: Also return the computed :class:`CDATRegridder` instance.
         - **usecdr**, optional: Force the use or not of a :class:`CDATRegridder` instance,
@@ -2153,7 +2154,7 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
             - ``"dstwgt"`` : distance weight data are used where interpolated mask is lower ``mask_thres``
         
         - **mask_thres**, optional: Threshold for masking points for some methods (~ land fraction) for
-          **rectangular grids only*:
+          **rectangular grids only**:
             
             - ``method="bilinear"`` and ``bilinear_masking="dstwght"``
             - ``method="cellave"`` or ``method="bining"``
@@ -2169,7 +2170,7 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
         
             - :func:`cargen` when "nat" or "carg" method is used
             - **mask_thres**, optional: Time steps when interpolated mask is greater than
-            this value are masked.
+              this value are masked.
         
     :Examples:
         
@@ -2211,10 +2212,11 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
     curvedi = xi.ndim==2
     curvedo = xo.ndim==2
     curved = curvedi or curvedo
+    curvedio = curvedi and curvedo
     xxi, xxo, yyi, yyo = None, None, None, None
     if geo is None:
         geo = A.islon(loni) or A.islat(lati) or A.islon(lono) or A.islat(lato)
-    
+        
     # Bounds
     if method in _cellave_methods+['nearest']:
         funci = bounds2d if curvedi else bounds1d
@@ -2261,7 +2263,7 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
     if method == 'nearest':
 
         # Interpolation
-        varo3d = _regrid2d_nearest2d_(vari3d.filled(mv), xxi, yyi, xxo, yyo, geo, maskoext, mv)
+        varo3d = _regrid2d_nearest2d_(vari3d, xxi, yyi, xxo, yyo, mv, geo, maskoext)
         
     
     elif (not curved and method in ['mixt', 'dstwgt']) or \
@@ -2273,21 +2275,21 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
         
         # Interpolation
         #FIXME: wrapper pour dstwgt et mask... not sure
-        varo3d = wrapper(vari3d.filled(mv), xi, yi, xo, yo, geo, mv, ext)
+        varo3d = wrapper(vari3d, xi, yi, xo, yo, mv, geo, ext)
         
         # Masking
         if check_mask:
             
             if bilinear_masking == 'dstwgt':
-                masko = wrapper(maski3d, xi, yi, xo, yo, geo, 1., ext)
+                masko = wrapper(maski3d, xi, yi, xo, yo, 1., geo, ext)
                 if method != 'dstwgt':
-                    varo3d_dstwgt = _regrid2d_dstwgt_(vari3d.filled(mv), xi, yi, xo, yo, geo, mv, ext)
+                    varo3d_dstwgt = _regrid2d_dstwgt_(vari3d, xi, yi, xo, yo, mv, geo, ext)
                     varo3d[:] = N.where((masko<mask_thres) & (masko>0.), varo3d_dstwgt, varo3d)
                     del varo3d_dstwgt
                 varo3d[masko>=mask_thres] = mv
             else:
                 masko = varo3d==mv
-                varo3d_nearest = _regrid2d_nearest2d_(vari3d.filled(mv),xxi,yyi,xxo,yyo,geo,maskoext,mv)
+                varo3d_nearest = _regrid2d_nearest2d_(vari3d,xxi,yyi,xxo,yyo,mv,geo,maskoext)
                 varo3d = N.where(masko!=0., varo3d_nearest, varo3d)
                 del varo3d_nearest
             del masko
@@ -2350,7 +2352,7 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
         # Masking
         if check_mask:
             masko = _regrid2d_griddata_(maski3d, xi, yi, xo, yo, method, ext=ext, missing_value=1., **kwargs)
-#           varo3d_nearest = _regrid2d_nearest2d_(vari3d.filled(mv),xxi,yyi,xxo,yyo,geo,False,mv)
+#           varo3d_nearest = _regrid2d_nearest2d_(vari3d.filled(mv),xxi,yyi,xxo,yyo,mv,geo,False)
 #           varo3d = N.where(masko!=0., varo3d_nearest, varo3d)
             varo3d[masko>=mask_thres] = mv
             if method=='carg' and not ext:
@@ -2382,41 +2384,284 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
     return varo
 
 
-def _regrid2d_nearest2d_(vari3d, xxi, yyi, xxo, yyo, geo, maskoext, mv):
+def regrid2dnew(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,  
+    erode=False,  **kwargs):
+    """Regrid a variable from a regular grid to another
+    
+    If the input or output grid is curvilinear and ``method`` is set to
+    ``"linear"``, ``"cellave"`` or ``"conserv"``, the :class:`CDATRegridder` is used.
+    
+    :Params:
+    
+        - **vari**: Variable cdms on regular grid
+        - **ggo**: Tuple of (x,y) or a cdms grid or a cdms variable with a grid
+        - **method**, optional: One of:
+        
+            - ``"auto"``: method guessed between ``linear`` and ``cellave`` 
+              according to resolution of input and output grid (see :func:`regrid_method`)
+            - ``"nearest"``: nearest neighbour
+            - ``"linear"`` or ``"bilinear"``: bilinear interpolation (low res. to high res.)
+            - ``"dstwgt"`` : distance weighting between the four nearest grid points 
+              (low res. to high res.)
+            - ``"patch"`` : patch recovery interpolation (low res. to high res.)
+            - ``"cellave"`` : weighted regridding based on areas of cells (high res. to low res.)
+            - ``"conserv"`` : same as ``cell`` but conservative (high res. to low res.)
+           
+        - **tool**, optional: Regridder. One of:
+        
+            - ``"auto"``: tool guessed depending on the method, the first available tool
+              and the grids (rectangular or curvilinear).
+            - ``"vacumm"``: Internal routines.
+            - ``"esmf"`` and ``"libcf"``: Regridders provided by UVCDAT.
+            - ``"regrid2"``: Old regridder provided by CDAT (rectangular only).
+          
+        - **rgdr**, optional: An already set up regridder instance to speed up regridding:
+          :class:`CDATRegridder` instance for ``regrid2``, ``esmf`` and ``libcf`` tools,
+          else a :class;`CurvedInterpolator` instance for ``vacumm`` tool with
+          interpolation on curvilinear grids.
+        - **getrgdr**, optional: Also return the regridder instance if it applies, or None.
+        - Other keywords are passed to special interpolation functions depending on method and choices :
+        
+            - :func:`cargen` when "nat" or "carg" method is used
+            
+    :Tools/methods:
+    
+        Overview table of method availability for each tool.
+        ``RECT`` means that it only works with rectangular grids.
+    
+        +----------+--------+----------+------+-------+
+        | Met/Tool | Vacumm | regrid2d | ESMF | Libcf |
+        +==========+========+==========+======+=======+
+        | nearest  |   OK   |          |      |       |
+        +----------+--------+----------+------+-------+
+        | bilinear +   OK   |          |  OK  |  OK   |
+        +----------+--------+----------+------+-------+
+        |  dstwgt  |   OK   |          |      |       |
+        +----------+--------+----------+------+-------+
+        |  patch   +        |          |  OK  |       |
+        +----------+--------+----------+------+-------+
+        | cellave  |        |   RECT   |  OK  |       |
+        +----------+--------+----------+------+-------+
+        | conserv  +        |   RECT   |  OK  |       |
+        +----------+--------+----------+------+-------+
+        
+    :Examples:
+        
+        >>> regrid2d(var, (lon, lat), method='linear')
+        >>> regrid2d(var, grid, method='cellave')
+        >>> regrid2d(var, grid, method='nat', hor=.2)
+    """ 
+    
+    # Method
+    method = regrid2d_method_name(method)
+    if method == 'auto':
+        method = regrid2d_method_name(regrid_method(vari, ggo))
+    valid_methods = ['nearest', 'bilinear', 'cellave', 'conserv', 'dstwgt', 'patch']
+    if method not in valid_methods:
+        raise VACUMMError('Wrong regridding method: %s. Please choose one of :'+
+        ', '.join(valid_methods))
+    
+    # Check grids
+    vari = MV.asarray(vari)
+    if vari.getMissing() is None:
+        vari.setMissing(1.e20)
+    mv = vari.getMissing()        
+    ggi = curv2rect(get_grid(vari), mode='none')
+    nyi, nxi = ggi.shape
+    nzi = vari.size/(nxi*nyi)
+    ggo = get_grid(ggo)
+    ggor = curv2rect(ggo, mode='none')
+    nyo, nxo = ggo.shape
+    loni = get_axis(ggi, -1)
+    lati = get_axis(ggi, -2)
+    lono = get_axis(ggor, -1)
+    lato = get_axis(ggor, -2)
+    xo = lono[:]
+    yo = lato[:]
+    xi = loni[:]
+    yi = lati[:]
+    curvedi = xi.ndim==2
+    curvedo = xo.ndim==2
+    curved = curvedi or curvedo
+    curvedio = curvedi and curvedo
+    xxi, xxo, yyi, yyo = None, None, None, None
+#    if geo is None:
+#        geo = A.islon(loni) or A.islat(lati) or A.islon(lono) or A.islat(lato)
+    geo = True
+        
+    # Tool verification
+    tool = regrid2d_tool_name(tool)
+    tools = regrid2_tools[method]
+    for ttype in 'r2r', 'r2c', 'c2r', 'c2c':
+        if ttype not in tools: continue
+        if  (ttype=='r2r' and not curved) or \
+            (ttype=='c2r' and curvedi and not curvedo) or \
+            (ttype=='r2c' and curvedo and not curvedi) or \
+            (ttype=='c2c' and curved):
+            if tool=='auto':
+                tool = tools[ttype][0] # First available
+            elif tool not in tools[ttype]:
+                raise VACUMMError('Tool %s not available for these grids and this method: '%
+                    (tool, method))
+            break
+    else:
+        raise VACUMMError('No suitable tool found for these grids and this method: '+method)
+
+    # Bounds
+    if method in _cellave_methods+['nearest']:
+        funci = bounds2d if curvedi else bounds1d
+        loni.setBounds(funci(loni))
+        lati.setBounds(funci(lati))
+        funco = bounds2d if curvedo else bounds1d
+        lono.setBounds(funco(lono))
+        lato.setBounds(funco(lato))
+        
+    # 2D arrays
+    if curvedi or method=='nearest':
+        xxi, yyi = meshgrid(loni, lati)
+    if curvedi or curvedo or method=='nearest':
+        xxo, yyo = meshgrid(lono, lato)
+        
+    # 3D variable?
+    if vari.ndim != 3:
+        vari3d = MV.resize(vari, (nzi, nyi, nxi))
+        set_grid(vari3d, ggi)
+    else:
+        vari3d = vari
+
+    
+    # Interpolations !
+    rgdr = None
+    if tool in ['regrid2', 'esmf', 'libcf']: 
+        
+                
+#        # ESMF regridder
+#        if tool=='esmf' and method in ["cellave", "conserv"]:
+#            check_mask = True
+#            vari3d = MV2.where(maski3d, 0., vari3d) 
+#            set_grid(vari3d, ggi)
+#        else:
+#            check_mask = False
+        
+        # Regridder
+        if rgdr is None:
+            rgdr = CDATRegridder(vari3d, ggor, method=method, tool=tool)
+        
+        # Regrid data
+        varo3d = rgdr(vari3d)#, check_mask=check_mask)   
+#        del maski3d
+        
+    elif method == 'nearest':
+
+        varo3d = _regrid2d_nearest2d_(vari3d, xxi, yyi, xxo, yyo, mv, geo, False)
+        
+    elif method in ['bilinear', 'dstwgt']:
+        
+        if curvedi:
+            wrapper = eval('_regrid2d_%s_c2c_'%method)
+            varo3d, rgdr = wrapper(vari3d, xxi, yyi, xxo, yyo, mv, rgdr)
+            
+        elif curvedo:
+            wrapper = eval('_regrid2d_%s_r2c_'%method)
+            varo3d = wrapper(vari3d, xi, yi, xxo, yyo, mv)
+            
+        else:
+            wrapper = eval('_regrid2d_%s_r2r_'%method)
+            varo3d = wrapper(vari3d, xi, yi, xo, yo, mv, geo)
+            
+        
+    elif method == ['mixt']:
+        
+        
+        # Method
+        wrapper = eval('_regrid2d_%s_'%method)
+        
+        # Interpolation
+        varo3d = wrapper(vari3d, xi, yi, xo, yo, mv, geo, ext)
+        
+    else:
+        raise RuntimeError, "Well, what's this funckin' method you bastard huh: %s?"%method
+        
+
+    # Back to rights dims
+    if vari.ndim != 3:
+        varo = MV.resize(varo3d, vari.shape[:-2]+(nyo, nxo))
+        del vari3d, varo3d
+    else:
+        varo = varo3d
+        
+    # MV2 variable
+    varo[N.isnan(varo)] = mv
+    varo = MV2.masked_values(varo, mv, copy=0)
+#   if not isgrid(ggo, curv=True):
+    set_grid(varo, ggo)
+    if vari.ndim>2:
+        for iaxis in range(vari.ndim-2):
+            varo.setAxis(iaxis, vari.getAxis(iaxis))
+    cp_atts(vari, varo, id=True)
+    
+    if getrgdr: return varo, rgdr
+    return varo
+
+
+def _regrid2d_nearest2d_(vari3d, xxi, yyi, xxo, yyo, mv, geo, maskoext):
     """Wrapper to fortran _nearest2d_"""
-    varitmp = N.asarray(vari3d, order='F')
-    xxitmp = N.asarray(xxi, order='F')
-    yyitmp = N.asarray(yyi, order='F')
-    xxotmp = N.asarray(xxo, order='F')
-    yyotmp = N.asarray(yyo, order='F')
     nb = min(xxi.shape)/50 
     if nb == 1: nb = 0
 #    nb = -1
-    varo3d = N.asarray(_nearest2d_(varitmp, xxitmp, yyitmp, xxotmp, yyotmp, nb,  nogeo=not geo), order='C')
-    del varitmp, xxitmp, yyitmp, xxotmp, yyotmp
+    if N.ma.isMA(vari3d): vari3d = vari3d.filled(mv)
+    varo3d = N.asarray(_nearest2d_(vari3d, xxi, yyi, xxo, yyo, nb, not geo), order='C')
     if maskoext is not False:
         varo3d[maskoext] = mv
     return varo3d
 
-def _regrid2d_bilinear_(vari3d, xi, yi, xo, yo, geo, mv, ext):
+def _regrid2d_bilinear_r2r_(vari3d, xi, yi, xo, yo, mv, geo, ext=0):
     """Wrapper to fortran _bilin_"""
-    varitmp = N.asarray(vari3d, order='F')
-    varo3d =  N.asarray(_bilin_(varitmp, xi, yi, xo, yo, mv, nogeo=not geo), order='C')
-    del varitmp
+    if N.ma.isMA(vari3d): vari3d = vari3d.filled(mv)
+    varo3d =  N.asarray(_bilin_(vari3d, xi, yi, xo, yo, mv, not geo), order='C')
+    return varo3d
+_regrid2d_bilinear_ = _regrid2d_bilinear_r2r_
+    
+def _regrid2d_bilinear_r2c_(vari3d, xi, yi, xxo, yyo, mv):
+    """Wrapper to fortran _bilin2dto1d_"""
+    if N.ma.isMA(vari3d): vari3d = vari3d.filled(mv)
+    varo3d =  N.ascontiguousarray(_bilin2dto1d_(xi, yi, vari3d, xxo.ravel(), yo.ravel(), mv))
+    varo3d.shape = varo3d[:-1]+xxo.shape
     return varo3d
     
-def _regrid2d_dstwgt_(vari3d, xi, yi, xo, yo, geo, mv, ext):
-    """Wrapper to fortran _dstwgt_"""
-    varitmp = N.asarray(vari3d, order='F')
-    varo3d =  N.asarray(_dstwgt_(varitmp, xi, yi, xo, yo, mv, nogeo=not geo), order='C')
-    del varitmp
-    return varo3d
+def _regrid2d_bilinear_c2c_(vari3d, xxi, yyi, xxo, yyo, mv, rgdr=None):
+    """Wrapper to fortran _bilin2dto1dc_reduc_ through :class:`CurvedInterpolator`"""
+    if rgdr is None:
+        rgdr = CurvedInterpolator((xxi, yyi), (xxo, yyo), g2g=True)
+    varo3d =  N.ascontiguousarray(rgdr(vari3d, method='bilinear'))
+    return varo3d, rgdr
 
-def _regrid2d_mixt_(vari3d, xi, yi, xo, yo, geo, mv, ext):
+def _regrid2d_dstwgt_r2r_(vari3d, xi, yi, xo, yo, mv, geo, ext=0):
+    """Wrapper to fortran _bilin_"""
+    if N.ma.isMA(vari3d): vari3d = vari3d.filled(mv)
+    varo3d =  N.asarray(_dstwgt_(vari3d, xi, yi, xo, yo, mv, not geo), order='C')
+    return varo3d
+_regrid2d_dstwgt_ = _regrid2d_dstwgt_r2r_
+    
+def _regrid2d_dstwgt_r2c_(vari3d, xi, yi, xxo, yyo, mv):
+    """Wrapper to fortran _bilin2dto1d_"""
+    if N.ma.isMA(vari3d): vari3d = vari3d.filled(mv)
+    varo3d =  N.ascontiguousarray(_dstwgt2dto1d_(xi, yi, vari3d, xxo.ravel(), yo.ravel(), mv))
+    varo3d.shape = varo3d[:-1]+xxo.shape
+    return varo3d
+    
+def _regrid2d_dstwgt_c2c_(vari3d, xxi, yyi, xxo, yyo, mv, rgdr=None):
+    """Wrapper to fortran _bilin2dto1dc_reduc_ through :class:`CurvedInterpolator`"""
+    if rgdr is None:
+        rgdr = CurvedInterpolator((xxi, yyi), (xxo, yyo), g2g=True)
+    varo3d =  N.ascontiguousarray(rgdr(vari3d, method='dstwgt'))
+    return varo3d, rgdr
+    
+
+def _regrid2d_mixt_(vari3d, xi, yi, xo, yo, mv, geo, ext=0):
     """Wrapper to fortran _mixt2dx_"""
-    varitmp = N.asarray(vari3d.T, order='F')
-    varo3d = N.asarray(_mixt2dx_(varitmp, xi, yi,  xo, yo, mv, ext).T, order='C')
-    del varitmp
+    if N.ma.isMA(vari3d): vari3d = vari3d.filled(mv)
+    varo3d = N.asarray(_mixt2dx_(vari3d, xi, yi,  xo, yo, mv, ext).T, order='C')
     return varo3d
 
 def _regrid2d_bining_(vari3d, xxi, yyi, xo, yo, mv):
@@ -2424,7 +2669,7 @@ def _regrid2d_bining_(vari3d, xxi, yyi, xo, yo, mv):
     xbins = meshcells(xo)
     ybins = meshcells(yo)
     varo3d = N.zeros(vari3d.shape[:-2]+(len(yo), len(xo)))
-    for i, vari2d in enumerate(vari3d):
+    for i, vari2d in enumerate(vari3d.filled(mv)):
         if hasattr(vari2d, 'mask') and vari2d.mask.any():
             good = ~vari2d.mask
             xc = xxi[good]
@@ -3269,7 +3514,7 @@ class CDATRegridder(object):
         curved = len(fromgrid.getLatitude().shape) > 1 or len(togrid.getLatitude().shape) > 1
 
         # Default
-        regridTool = 'esmf'   
+        regridTool = None 
         regridMethod = 'linear'
 
 #        # Some keywords for longitudes
@@ -3289,17 +3534,17 @@ class CDATRegridder(object):
                     userSpecifiesMethod = True
                 del keywords[rm]
         # - tool
-        userSpecifiesTool = False
         for rt in 'rt', 'tool', 'regridtool', 'regrid_tool', 'regridTool':
             if keywords.has_key(rt):
                 if keywords[rt] is not None:
                     regridTool = keywords[rt]
-                    userSpecifiesTool = True
                 del keywords[rt]
 
-        # The method determines the tool
-        if re.search('(cons|cell|patch)', regridMethod, re.I):
-            if not curved and re.search('cons', regridMethod, re.I):
+        # The method and grid determine the tool
+        if not re.search('^(cons|cell)', regridMethod, re.I):
+            regridTool = 'esmf'
+        elif regridTool is None:
+            if not curved:
                 regridTool = 'regrid2'
             else:
                 regridTool = 'esmf'
@@ -3309,12 +3554,7 @@ class CDATRegridder(object):
             regridTool = 'esmf'
 
         # Clean regrid tool names
-        if re.search('(libcf|gs|gridspec)',regridTool, re.I):
-            regridTool = 'libcf'
-        elif re.search('^regrid',regridTool, re.I):
-            regridTool = 'regrid2'
-        else:
-            regridTool = 'esmf'
+        regridTool = regrid2d_tool_name(regridTool)
         self.tool = regridTool
 
         # Conservative versus cellave
@@ -3471,6 +3711,92 @@ class CDATRegridder(object):
         
     __call__ = regrid
 
+
+
+class CurvedInterpolator(object):
+    """Interpolator from a curved grid to random points or another grid
+    
+    :Params:
+    
+        - **fromgrid**: Input grid, or variable with a grid.
+        - **topts**: Output coordinates or grid. It a tuple of coordinates, it is
+          assumed that it refers to random points, and NOT a grid.
+        - **g2g**, optional: Force the interpretation of ``topts`` as a grid or axes
+          of a grid.
+
+    :Examples:
+    
+        >>> interpolator = CurvedInterpolator(ssti.getGrid(), (lono, lato)) # lono/lato 1D
+        >>> interpolator = CurvedInterpolator(ssti.getGrid(), grido) # grid
+        >>> ssto = interpolator(ssti)
+    """
+    valid_methods = ['bilinear', 'nearest', 'dstwgt']
+    
+    def __init__(self, fromgrid, topts, g2g=False):
+        
+        # Input coordinates
+        xxi, yyi = get_xy(fromgrid, mesh=True, num=True)
+        self._shapei = xxi.shape
+
+        # Output coordinates
+        if cdms2.isVariable(topts): topts = topts.getGrid()
+        if g2g:
+            topts = get_grid(topts)
+        if isgrid(topts):
+            xxo, yyo = meshgrid(topts.getLongitude(), topts.getLatitude())
+            xo = xxo.ravel()
+            yo = yyo.ravel()
+            self._grido = topts
+            self._shapeo = topts.shape
+        else:
+            xo, yo = topts
+            if len(xo)!=len(yo):
+                raise VACUMMError('Output axes must have the same length: %i!=%i'%
+                    (len(xo), len(yo)))
+            xo = N.asarray(xo)
+            yo = N.asarray(yo)
+            self._grido = None
+            self._shapeo = xo.shape
+        
+        # Find relative positions
+        self._p, self._q = _curv2rel_(xxi, yyi, xo, yo)
+        
+    def interp(self, vari, method='bilinear'):
+        """Interpolate
+        
+        :Params:
+        
+            - **vari**: Variable to interpolate.
+            - **method**, optional: Interpolation method. One of : %s.
+        """%', '.join(self.valid_methods)
+        # Method and function
+        method = regrid2d_method_name(method)
+        if method not in self.valid_methods:
+            raise VACUMMError('Invalid interpolation method. Choose of: '+
+                ', '.join(self.valid_methods))
+        if method=='bilinear': method = 'bilin'
+        func = eval('_%s2dto1dc_reduc_'%method)
+        
+        # Interpolate
+        mv = vari.get_fill_value()
+        zzi = vari.asma() if cdms2.isVariable(vari) else N.ma.asarray(vari)
+        zzi = zzi.reshape((-1, )+self._shapei).filled()
+        zo = func(self._p, self._q, zzi, mv).reshape(vari.shape[:-2]+self._shapeo)
+        zo = N.ascontiguousarray(zo)
+        varo = N.ma.masked_values(zo, mv)
+        
+        # Finalize the cdms variable
+        if cdms2.isVariable(vari):
+            varo = MV2.asarray(varo)
+            cp_atts(vari, varo)
+            for i, ax in enumerate(vari.getAxisList()[:-2]):
+                varo.setAxis(i, ax)
+            if self._grido:
+                set_grid(varo, self._grido)
+        
+        return varo
+    
+    regrid = __call__ = interp
 
 ######################################################################
 ######################################################################

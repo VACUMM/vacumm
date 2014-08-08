@@ -4,7 +4,7 @@
 ncfile = "menor.nc"
 
 # Imports
-from vcmq import data_sample, DS, N, MV2, shapiro2d, map2, code_base_name
+from vcmq import data_sample, DS, N, MV2, shapiro2d, map2, code_file_name
 
 # Read data
 ds = DS(data_sample(ncfile), 'mars', logger_level='critical')
@@ -24,5 +24,5 @@ map2((u[0], v[0]), title='Geostrophic velocity',
     quiver_samp=3, xymasked=False, quiver_norm=3, contour=False, 
     fill=False, figsize=(7, 7), quiver_linewidth=.3, quiver_width=0.003, 
     quiver_scale=10, right=1, colorbar_shrink=0.8, bottom=0.05, show=False, 
-    savefig=code_base_name())
+    savefig=code_file_name(), close=True)
 

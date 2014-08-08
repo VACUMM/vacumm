@@ -4,7 +4,7 @@
 ncfile = "mfs.nc"
 
 # Imports
-from vcmq import DS, os, map2, data_sample, code_base_name, isdep
+from vcmq import DS, os, map2, data_sample, code_file_name, isdep
 
 # Read data
 ncfile = data_sample(ncfile)

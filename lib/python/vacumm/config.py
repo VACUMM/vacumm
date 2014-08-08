@@ -777,7 +777,6 @@ def get_config(section=None, user=True, asstring=False, cfg=None,
                 cfgfiles = (cfgfiles, get_com_conf_file(), get_user_conf_file())
     
         # Load configurations
-        print cfgfiles
         cfg = load_configs(cfgfiles)
             
         

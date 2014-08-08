@@ -1,5 +1,5 @@
 """Testing CDAT regridding algorithm"""
-from vcmq import create_grid2d, meshbounds, set_grid, code_base_name, P, N, MV2, rc, add_grid
+from vcmq import create_grid2d, meshbounds, set_grid, code_file_name, P, N, MV2, rc, add_grid
 from collections import OrderedDict
 
 configs = OrderedDict(
@@ -38,14 +38,14 @@ set_grid(vari, gridi) # set grid and axes
 #gridi.setMask(vari.mask)
 
 # Define plot function
-figfile = code_base_name(ext=False)+'_%(ifig)i.png'
+figfile = code_file_name(ext=False)+'_%(ifig)i.png'
 #'%(tool)s_%(method)s.png'
 figfiles = []
 rc('font',size=9)
 kw = dict(vmin=vari.min(),vmax=vari.max())
     
 # Define logger
-logfile = code_base_name(ext='log')
+logfile = code_file_name(ext='log')
 f = open(logfile, 'w')
 def log(f, text): # logger
 #    print text

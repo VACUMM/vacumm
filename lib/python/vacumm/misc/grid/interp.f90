@@ -66,6 +66,7 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
     real(kind=8) :: tension,bias,a0,a1,a2,a3 ! Hermit
     real(kind=8) :: zyi(nyi),zyo(nyo)
     real(kind=8),allocatable :: vc0(:),vc1(:)
+    logical :: bmask(nx,nyi)
 
     ! Treat only monotonically increasing grids
     zyi = yi
@@ -78,6 +79,7 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
     if(method>1) allocate(vc0(nx),vc1(nx))
     bias = 0.
     tension = 0.
+    bmask = abs(vari-mv)<=abs(epsilon(0d0)*1.1*mv)
         
     ! Loop on input grid
     iyo = 1
@@ -124,6 +126,7 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
                 varo(:,iyo) = &
                 &    (vari(:, iyi)*dy1 + vari(:, iyi+1)*dy0) / &
                 &    (dy0+dy1)
+                varo(:,iyo) = merge(mv, varo(:,iyo), any(bmask(:, iyi:iyi+1),dim=2) )
                 
             else
             
@@ -183,6 +186,11 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
                     &    (vc1-vari(:, iyi+1))        *(1-bias)*(1-tension)/2)
                     varo(:,iyo) = varo(:,iyo) + a3*vari(:, iyi+1)
                 endif
+                
+                ! Mask
+                varo(:,iyo) = merge(mv, varo(:,iyo), &
+                    & any(bmask(:, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
+
             endif
             iyo = iyo + 1
             
@@ -239,11 +247,12 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
     real(kind=8) :: zyi(nxb,nyi),zyo(nyo),mu(nxb)
     real(kind=8),allocatable :: vc0(:),vc1(:),a0(:),a1(:),a2(:),a3(:)
     integer :: ix0,ix1
-    logical :: bitv(nxb)
+    logical :: bitv(nxb), bmask(nx,nyi)
 
     ! Treat only monotonically increasing grids
+    bmask = abs(vari-mv)<=(epsilon(0d0)*1.1*mv)
     do ib = 1,nxb
-        if(all(vari(ib,:)==mv))cycle
+        if(all(bmask(ib,:)))cycle
         if (yi(ib,nyi)<yi(ib,1)) then
             zyi = -yi
         else
@@ -300,6 +309,8 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                         varo(ix0:ix1,iyo) = &
                         &    (vari(ix0:ix1, iyi)*dy1 + vari(ix0:ix1, iyi+1)*dy0) / &
                         &    (dy0+dy1)
+                        varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
+                            & any(bmask(ix0:ix1, iyi:iyi+1),dim=2) )
                     end where
                     
                 else
@@ -324,6 +335,8 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                             varo(ix0:ix1,iyo) = mu**3*varo(ix0:ix1,iyo) + mu**2*(vc0-vari(ix0:ix1, iyi)-varo(ix0:ix1,iyo))
                             varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + mu*(vari(ix0:ix1, iyi+1)-vc0)
                             varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1, iyi)
+                            varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
+                                & any(bmask(ix0:ix1, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
                         end where
                     
                     else
@@ -342,6 +355,8 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                             &    (vari(ix0:ix1, iyi+1)-vari(ix0:ix1,iyi))*(1+bias)*(1-tension)/2 + &
                             &    (vc1-vari(ix0:ix1, iyi+1))        *(1-bias)*(1-tension)/2)
                             varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + a3*vari(ix0:ix1, iyi+1)
+                            varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
+                                & any(bmask(ix0:ix1, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
                         end where
                         
                     endif
@@ -409,11 +424,12 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
     real(kind=8) :: zyi(nxb,nyi),zyo(nxb,nyo),mu(nxb)
     real(kind=8),allocatable :: vc0(:),vc1(:),a0(:),a1(:),a2(:),a3(:)
     integer :: ix0,ix1
-    logical :: bitv(nxb)
+    logical :: bitv(nxb), bmask(nx,nyi)
 
     ! Treat only monotonically increasing grids
+    bmask = abs(vari-mv)<=abs(epsilon(0d0)*1.1*mv)
     do ib = 1,nxb
-        if(all(vari(ib,:)==mv))cycle
+        if(all(bmask(ib,:)))cycle
         if (yi(ib,nyi)<yi(ib,1)) then
             zyi = -yi
         else
@@ -475,6 +491,8 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                         varo(ix0:ix1,iyo) = &
                         &    (vari(ix0:ix1, iyi)*dy1 + vari(ix0:ix1, iyi+1)*dy0) / &
                         &    (dy0+dy1)
+                        varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
+                            & any(bmask(ix0:ix1, iyi:iyi+1),dim=2) )
                     end where
                     
                 else
@@ -499,6 +517,8 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                             varo(ix0:ix1,iyo) = mu**3*varo(ix0:ix1,iyo) + mu**2*(vc0-vari(ix0:ix1, iyi)-varo(ix0:ix1,iyo))
                             varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + mu*(vari(ix0:ix1, iyi+1)-vc0)
                             varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1, iyi)
+                            varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
+                                & any(bmask(ix0:ix1, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
                         end where
                     
                     else
@@ -517,6 +537,8 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                             &    (vari(ix0:ix1, iyi+1)-vari(ix0:ix1,iyi))*(1+bias)*(1-tension)/2 + &
                             &    (vc1-vari(ix0:ix1, iyi+1))        *(1-bias)*(1-tension)/2)
                             varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + a3*vari(ix0:ix1, iyi+1)
+                            varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
+                                & any(bmask(ix0:ix1, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
                         end where
                         
                     endif
@@ -966,7 +988,7 @@ end subroutine remap1dxx
 ! ======================================= 2D ==================================
 ! =============================================================================
 
-subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nxi, nyi, nxo, nyo, nz, nogeo)
+subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nogeo, nxi, nyi, nxo, nyo, nz)
     ! Nearest neighbour interpolation of two curvilinear grids
 
     implicit none
@@ -979,7 +1001,7 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nxi, nyi, nxo, nyo, nz,
     integer, intent(in), optional :: nogeo
 
     ! Local variables
-    integer :: ixo,iyo,xymin(2), znb, ixlastline,iylastline,znb2,ixlast,iylast
+    integer :: ixo,iyo, znb, ixlastline,iylastline,znb2,ixlast,iylast
     integer :: ixmin,ixmax,iymin,iymax, imin,jmin
     logical :: geo
 !    real(kind=8) :: georectif(nyi,nxi)
@@ -1096,10 +1118,10 @@ end subroutine closest2d
 
 ! =============================================================================
 
-subroutine bilin    (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo, nz, nogeo)
+subroutine bilin    (vari, xi, yi, varo, xo,  yo, mv, nogeo, nxi, nyi, nxo, nyo, nz)
     ! Simple bilinear interpolation between two regular grids
     !
-    ! See also mixt2d as an alternative method
+    ! See also :f:subr:`mixt2d` as an alternative method
 
     implicit none
     
@@ -1114,7 +1136,7 @@ subroutine bilin    (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
     real(kind=8) :: zxi(nxi),zyi(nyi),zxo(nxo),zyo(nyo)
     real(kind=8) :: dxi,dyi,fx,fy,fdxi
     integer :: ixi,iyi,ixo,iyo
-    logical :: geo
+    logical :: geo, bmaski(nz,nyi,nxi)
 
     ! Monotonically increasing
     zxi = xi
@@ -1135,7 +1157,9 @@ subroutine bilin    (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
 !     endif
     geo = .not. present(nogeo) .or. nogeo==0
     
+    ! Missing
     varo = mv
+    bmaski = abs(vari-mv)<abs(epsilon(1d0)*mv)
 
     ! Loop on input x
     iyo = 1
@@ -1193,6 +1217,11 @@ subroutine bilin    (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
                         & vari(:,iyi+1,ixi)*(1-fx)*fy     + &
                         & vari(:,iyi+1,ixi+1)*fx    *fy
                     
+                    ! Masking
+                    varo(:,iyo,ixo) = merge(mv, varo(:,iyo,ixo), &
+                        & bmaski(:,iyi,ixi).or.bmaski(:,iyi,ixi+1).or. &
+                        & bmaski(:,iyi+1,ixi).or.bmaski(:,iyi+1,ixi+1))
+                    
                     ! Next output x
                     ixo = ixo+1
                 enddo
@@ -1204,7 +1233,7 @@ subroutine bilin    (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
     enddo
 end subroutine bilin
 
-subroutine dstwgt   (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo, nz,  nogeo)
+subroutine dstwgt   (vari, xi, yi, varo, xo,  yo, mv, nogeo, nxi, nyi, nxo, nyo, nz)
     ! Simple distance weight interpolation between two regular grids
     ! It does not interpolate missing values
 
@@ -1218,7 +1247,7 @@ subroutine dstwgt   (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
     real(kind=8),intent(out) :: varo(nz,nyo,nxo)
 
     ! Local variables
-    real(kind=8) :: zxi(nxi),zyi(nyi),zxo(nxo),zyo(nyo)
+    real(kind=8) :: zxi(nxi),zyi(nyi),zxo(nxo),zyo(nyo),small
     real(kind=8) :: dxi,dyi,dd(4),ww(nz,4),dx0,dx1,dy0,dy1,wsum(nz),vv(nz,4),mvs(nz)
     integer :: ixi,iyi,ixo,iyo,i4
     logical :: geo
@@ -1245,6 +1274,7 @@ subroutine dstwgt   (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
     
     varo = mv
     vv = mv
+    small = epsilon(1d0)*1.1
 
     ! Loop on input x
     iyo = 1
@@ -1311,7 +1341,7 @@ subroutine dstwgt   (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
                     do i4=1,4
                         ww(:,i4) = 1./dd(i4)
                     enddo
-                    where(vv==mv)ww=0.
+                    where(abs((vv-mv))<mv*small)ww=0.
                     wsum = sum(ww,dim=2)!,mask=vv/=mv)
                     mvs = 0.
                     where(wsum==0.)
@@ -1422,50 +1452,13 @@ subroutine mbilin2d (vari, xi,  yi,  varo, xo,  yo, mv, ext,  nxi, nyi, no,  nog
 end subroutine mbilin2d
 
 ! =============================================================================
-subroutine bilin2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
-    ! bilinear interpolation of gridded data to random positions
-
-    integer,intent(in) :: nxi,nyi,no,nz
-    real(kind=8),intent(in) :: xi(nxi), yi(nyi), xo(no), yo(no)
-    real(kind=8),intent(in) :: zi(nz,nyi,nxi),mv
-    real(kind=8),intent(out) :: zo(nz,no)
-    
-    integer :: io,i,j
-    real(kind=8) :: a,b
-
-    zo = mv
-    do io = 1, no
-        if(xo(io)<xi(1).or.xo(io)>xi(nxi))cycle
-        if(yo(io)<yi(1).or.yo(io)>yi(nyi))cycle
-        
-        if(xi(nxi)==xo(io))then
-            i = nxi-1
-        else
-            i = minloc(xi,dim=1,mask=xi>xo(io))-1
-        endif
-        if(yi(nyi)==yo(io))then
-            j = nyi-1
-        else
-            j = minloc(yi,dim=1,mask=yi>yo(io))-1
-        endif
-        
-        a = abs(xo(io)-xi(i))
-        if(a>180.)a=360.-180.
-        
-        a = a/(xi(i+1)-xi(i))
-        b = (yo(io)-yi(j))/(yi(j+1)-yi(j))
-        
-        zo(:, io) = (1-b)*(1-a)*zi(:,j,  i) + &
-            &       (1-b)*a*zi(:,j,  i+1) + &
-            &        b*(1-a)*zi(:,j+1,i) + &
-            &        b*a*zi(:,j+1,i+1)
-    enddo
-end subroutine bilin2dto1d
 
 subroutine nearest2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     ! nearest neighbour interpolation of gridded data to random positions
+    
+    implicit none
 
-    integer,intent(in) :: nxi,nyi,no
+    integer,intent(in) :: nxi,nyi,no,nz
     real(kind=8),intent(in) :: xi(nxi), yi(nyi), xo(no), yo(no)
     real(kind=8),intent(in) :: zi(nz,nyi,nxi),mv
     real(kind=8),intent(out) :: zo(nz,no)
@@ -1474,6 +1467,8 @@ subroutine nearest2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     integer :: io,i,j
 
     zo = mv
+    !$OMP PARALLEL DO PRIVATE(io,i,j,dx)
+    !$& SHARED(xi,yi,zi,xo,yo,zo,nxi,nyi,no)
     do io = 1, no
 !        if(xo(io)<xi(1).or.xo(io)>xi(nxi))cycle
 !        if(yo(io)<yi(1).or.yo(io)>yi(nyi))cycle
@@ -1484,7 +1479,129 @@ subroutine nearest2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
         
         zo(:,io) = zi(:,j,i)
     enddo
+    !$OMP END PARALLEL DO
 end subroutine nearest2dto1d
+
+subroutine bilin2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
+    ! bilinear interpolation of gridded data to random positions
+    
+    implicit none
+
+    integer,intent(in) :: nxi,nyi,no,nz
+    real(kind=8),intent(in) :: xi(nxi), yi(nyi), xo(no), yo(no)
+    real(kind=8),intent(in) :: zi(nz,nyi,nxi),mv
+    real(kind=8),intent(out) :: zo(nz,no)
+    
+    integer :: io,i,j
+    real(kind=8) :: a,b
+    logical :: bmask(nz,nyi,nxi)
+
+    zo = mv
+    bmask = abs(zi-mv)<abs(mv*epsilon(0d0)*1.1)
+    !$OMP PARALLEL DO PRIVATE(io,i,j,a,b)
+    !$& SHARED(xi,yi,zi,xo,yo,zo,nxi,nyi,no)
+    do io = 1, no
+        if(xo(io)>=xi(1).and.xo(io)<=xi(nxi).and.&
+            & yo(io)>=yi(1).and.yo(io)<=yi(nyi))then
+                
+            if(xi(nxi)==xo(io))then
+                i = nxi-1
+            else
+                i = minloc(xi,dim=1,mask=xi>xo(io))-1
+            endif
+            if(yi(nyi)==yo(io))then
+                j = nyi-1
+            else
+                j = minloc(yi,dim=1,mask=yi>yo(io))-1
+            endif
+            
+            a = abs(xo(io)-xi(i))
+            if(a>180.)a=360.-180.
+            
+            a = a/(xi(i+1)-xi(i))
+            b = (yo(io)-yi(j))/(yi(j+1)-yi(j))
+            
+            zo(:, io) = (1-b)*(1-a)*zi(:,j,  i) + &
+                &       (1-b)*a*zi(:,j,  i+1) + &
+                &        b*(1-a)*zi(:,j+1,i) + &
+                &        b*a*zi(:,j+1,i+1)
+                
+            where(bmask(:,j,i).or.bmask(:,j,i+1).or.bmask(:,j+1,i).or.bmask(:,j+1,i+1))&
+                & zo(:, io)=mv
+        endif
+            
+    enddo
+    !$OMP END PARALLEL DO
+end subroutine bilin2dto1d
+
+subroutine dstwgt2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
+    ! Distance weight interpolation of gridded data to random positions
+    !
+    ! Distances are computed with the four corners of a cell and are relative
+    ! to the cell sizes. 
+    
+    implicit none
+
+    integer,intent(in) :: nxi,nyi,no,nz
+    real(kind=8),intent(in) :: xi(nxi), yi(nyi), xo(no), yo(no)
+    real(kind=8),intent(in) :: zi(nz,nyi,nxi),mv
+    real(kind=8),intent(out) :: zo(nz,no)
+    
+    integer :: io,i,j,i4
+    real(kind=8) :: dx0,dx1,dy0,dy1,dd(4),vv(nz,4),wsum(nz),ww(nz,4)
+    logical :: bmask(nz,nyi,nxi),bb(nz,4)
+
+    zo = mv
+    bmask = abs(zi-mv)<abs(mv*epsilon(0d0)*1.1)
+    !$OMP PARALLEL DO PRIVATE(io,i,j,dx0,dx1,dy0,dy1,vv,bb,dd,ww,wsum,i4)
+    !$& SHARED(xi,yi,zi,xo,yo,zo,nxi,nyi,no,bmask)
+    do io = 1, no
+    
+        if(xo(io)>=xi(1).and.xo(io)<=xi(nxi).and.&
+            & yo(io)>=yi(1).and.yo(io)<=yi(nyi))then
+        
+            ! Indices
+            if(xi(nxi)==xo(io))then
+                i = nxi-1
+            else
+                i = minloc(xi,dim=1,mask=xi>xo(io))-1
+            endif
+            if(yi(nyi)==yo(io))then
+                j = nyi-1
+            else
+                j = minloc(yi,dim=1,mask=yi>yo(io))-1
+            endif
+            
+            ! Distances
+            dx0 = (xo(io)-xi(i))/(xi(i+1)-xi(i))
+            dx1 = 1d0-dx0
+            dy0 = (yo(io)-yi(i))/(yi(i+1)-yi(i))
+            dy1 = 1d0-dy0
+            dd = (/sqrt(dx0**2+dy0**2),sqrt(dx0**2+dy1**2),&
+            &      sqrt(dx1**2+dy0**2),sqrt(dx1**2+dy1**2)/)
+            where(dd==0d0)dd=tiny(0d0)
+            
+            ! Weights
+            vv = reshape(zi(:,j:j+1,i:i+1),(/nz,4/))
+            bb = reshape(bmask(:,j:j+1,i:i+1),(/nz,4/))
+            ww = 0d0
+            do i4=1,4
+                ww(:,i4) = 1d0/dd(i4)
+            enddo
+            where(bb)ww=0d0
+            wsum = merge(1d0, sum(ww,dim=2), all(bb,dim=2))
+                        
+            ! Interpolation
+            zo(:,io) = merge(mv, sum(ww*vv, dim=2)/wsum, all(bb,dim=2))
+            
+        endif
+            
+    enddo
+    !$OMP END PARALLEL DO
+    
+end subroutine dstwgt2dto1d
+
+
 
 function linept(x,y,x1,x2,y1,y2)
     ! Coordinates of line point closest to target point
@@ -1589,7 +1706,7 @@ subroutine curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
     
         ! Find the closest corner
         call closest2d(xxi,yyi,xo(io),yo(io),nxi,nyi,ic,jc,.true.)
-        if(io==5)print*,ic,jc
+
         ! Curvilinear to rectangular
         binside = .false.
         main: do i=max(ic-1,1), min(ic,nxi-1)
@@ -1599,7 +1716,7 @@ subroutine curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
                 call curv2rect(xxi(j,i),xxi(j+1,i),xxi(j+1,i+1),xxi(j,i+1), &
                              & yyi(j,i),yyi(j+1,i),yyi(j+1,i+1),yyi(j,i+1), &
                              & xo(io), yo(io), a, b)
-                 if(io==5)print*,i,j,a,b          
+                             
                 ! Store absolute indices
                 binside = a>=0d0-tiny(0d0) .and. a<=1d0+tiny(0d0) &
                     & .and. b>=0d0-tiny(0d0) .and. b<=1d0+tiny(0d0)
@@ -1618,68 +1735,6 @@ subroutine curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
 
 end subroutine curv2rel
 
-subroutine bilin2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
-    ! Bilinear interpolation of gridded data with 2D AXES to random positions
-    ! This version takes relative positions with respect to output grid
-
-    implicit none
-
-    integer,intent(in) :: nxi,nyi,no,nz
-    real(kind=8),intent(in) :: p(no),q(no),zzi(nz,nyi,nxi),mv
-    real(kind=8),intent(out) :: zo(nz,no)
-    
-    integer :: io,i,j
-    real(kind=8) :: a,b
-    
-    zo = mv
-    
-    !$OMP PARALLEL DO PRIVATE(io,i,j,a,b)
-    !$& SHARED(p,q,zzi,zo,nxi,nyi,no)
-    do io = 1, no
-    
-        if(p(io)>0d0 .and. q(io)>0d0)then
-        
-            ! Cell 
-            a = mod(p(io),1d0)
-            b = mod(q(io),1d0)
-            i = int(p(io)-a)
-            j = int(q(io)-b)
-            
-            ! Interpolation
-            zo(:, io) = (1-b)*(1-a)*zzi(:,j,  i) + &
-            &       (1-b)*a*zzi(:,j,  i+1) + &
-            &        b*(1-a)*zzi(:,j+1,i) + &
-            &        b*a*zzi(:,j+1,i+1)
-            
-        endif
-
-    enddo
-    !$OMP END PARALLEL DO
-
-end subroutine bilin2dto1dc_reduc
-
-
-subroutine bilin2dto1dc(xxi,yyi,zzi,xo,yo,zo,mv,nxi,nyi,no,nz)
-    ! Bilinear interpolation of gridded data with 2D AXES to random positions
-
-    implicit none
-    
-    integer,intent(in) :: nxi,nyi,no,nz
-    real(kind=8),intent(in) :: xxi(nyi,nxi), yyi(nyi,nxi), xo(no), yo(no)
-    real(kind=8),intent(in) :: zzi(nz,nyi,nxi),mv
-    real(kind=8),intent(out) :: zo(nz,no)
-    
-    real(kind=8) :: p(no), q(no)
-    
-    ! Relative positions
-    call curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
-    
-    ! Interpolation
-    call bilin2dto1dc_reduc(p, q, zzi, zo, mv, nxi, nyi, no, nz)
-
-end subroutine bilin2dto1dc
-    
-    
 subroutine nearest2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
     ! Nearest interpolation of gridded data with 2D AXES to random positions
     ! This version takes relative positions with respect to output grid
@@ -1738,12 +1793,175 @@ subroutine nearest2dto1dc(xxi,yyi,zzi,xo,yo,zo,mv,nxi,nyi,no,nz)
 
 end subroutine nearest2dto1dc
 
+subroutine bilin2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
+    ! Bilinear interpolation of gridded data with 2D AXES to random positions
+    ! This version takes relative positions with respect to output grid
+
+    implicit none
+
+    integer,intent(in) :: nxi,nyi,no,nz
+    real(kind=8),intent(in) :: p(no),q(no),zzi(nz,nyi,nxi),mv
+    real(kind=8),intent(out) :: zo(nz,no)
+    
+    integer :: io,i,j
+    real(kind=8) :: a,b
+    logical :: bmask(nz,nyi,nxi)
+    
+    zo = mv
+    bmask = abs(zzi-mv)<abs(epsilon(0d0)*1.1*mv)
+    
+    !$OMP PARALLEL DO PRIVATE(io,i,j,a,b)
+    !$& SHARED(p,q,zzi,zo,nxi,nyi,no)
+    do io = 1, no
+    
+        if(p(io)>0d0 .and. q(io)>0d0)then
+        
+            ! Cell 
+            a = mod(p(io),1d0)
+            b = mod(q(io),1d0)
+            i = int(p(io)-a)
+            j = int(q(io)-b)
+            
+            
+            ! Interpolation
+            zo(:, io) = (1-b)*(1-a)*zzi(:,j,  i) + &
+            &       (1-b)*a*zzi(:,j,  i+1) + &
+            &        b*(1-a)*zzi(:,j+1,i) + &
+            &        b*a*zzi(:,j+1,i+1)
+            
+            ! Mask
+            zo(:, io) = merge(mv, zo(:, io), &
+                & any(reshape(bmask(:, j:j+1, i:i+1),(/nz,4/)), dim=2))
+            
+            
+        endif
+
+    enddo
+    !$OMP END PARALLEL DO
+
+end subroutine bilin2dto1dc_reduc
+
+
+subroutine bilin2dto1dc(xxi,yyi,zzi,xo,yo,zo,mv,nxi,nyi,no,nz)
+    ! Bilinear interpolation of gridded data with 2D AXES to random positions
+
+    implicit none
+    
+    integer,intent(in) :: nxi,nyi,no,nz
+    real(kind=8),intent(in) :: xxi(nyi,nxi), yyi(nyi,nxi), xo(no), yo(no)
+    real(kind=8),intent(in) :: zzi(nz,nyi,nxi),mv
+    real(kind=8),intent(out) :: zo(nz,no)
+    
+    real(kind=8) :: p(no), q(no)
+    
+    ! Relative positions
+    call curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
+    
+    ! Interpolation
+    call bilin2dto1dc_reduc(p, q, zzi, zo, mv, nxi, nyi, no, nz)
+
+end subroutine bilin2dto1dc
+    
+    
+subroutine dstwgt2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
+    ! Bilinear interpolation of gridded data with 2D AXES to random positions
+    ! This version takes relative positions with respect to output grid
+
+    implicit none
+
+    integer,intent(in) :: nxi,nyi,no,nz
+    real(kind=8),intent(in) :: p(no),q(no),zzi(nz,nyi,nxi),mv
+    real(kind=8),intent(out) :: zo(nz,no)
+    
+    integer :: io,i,j,i4
+    real(kind=8) :: a,b, vv(nz,4),dx0,dx1,dy0,dy1,ww(nz,4),wsum(nz),dd(4)
+    logical :: bmask(nz,nyi,nxi),bb(nz,4)
+    
+    zo = mv
+    bmask = abs(zzi-mv)<abs(epsilon(0d0)*1.1*mv)
+    
+    !$OMP PARALLEL DO PRIVATE(io,i,j,a,b,vv,bb,dd,ww,wsum,i4)
+    !$& SHARED(p,q,zzi,zo,bmask,nxi,nyi,no)
+    do io = 1, no
+    
+        if(p(io)>0d0 .and. q(io)>0d0)then
+        
+            ! Cell 
+            a = mod(p(io),1d0)
+            b = mod(q(io),1d0)
+            i = int(p(io)-a)
+            j = int(q(io)-b)
+            
+            ! Distances
+            dx0 = a
+            dx1 = 1d0-a
+            dy0 = b
+            dx1 = 1d0-b
+            dd = (/sqrt(dx0**2+dy0**2),sqrt(dx0**2+dy1**2),&
+            &      sqrt(dx1**2+dy0**2),sqrt(dx1**2+dy1**2)/)
+            
+            ! Data
+            vv = reshape(zzi(:,j:j+1,i:i+1),(/nz,4/))
+            
+            ! On a point?
+            if(any(dd==0d0))then
+            
+                zo(:,io) = vv(:, minloc(dd,dim=1))
+            
+            else
+            
+                ! Weights
+                bb = reshape(bmask(:,j:j+1,i:i+1),(/nz,4/))
+                ww = 0d0
+                do i4=1,4
+                    ww(:,i4) = 1d0/dd(i4)
+                enddo
+                where(bb)ww=0d0
+                wsum = merge(1d0, sum(ww,dim=2), all(bb,dim=2))
+                            
+                ! Interpolation
+                zo(:,io) = merge(mv, sum(ww*vv, dim=2)/wsum, all(bb,dim=2))
+                        
+            endif
+            
+        endif
+
+    enddo
+    !$OMP END PARALLEL DO
+
+end subroutine dstwgt2dto1dc_reduc
+
+
+subroutine dstwgt2dto1dc(xxi,yyi,zzi,xo,yo,zo,mv,nxi,nyi,no,nz)
+    ! Distance weight interpolation of gridded data with 2D AXES to random positions
+
+    implicit none
+    
+    integer,intent(in) :: nxi,nyi,no,nz
+    real(kind=8),intent(in) :: xxi(nyi,nxi), yyi(nyi,nxi), xo(no), yo(no)
+    real(kind=8),intent(in) :: zzi(nz,nyi,nxi),mv
+    real(kind=8),intent(out) :: zo(nz,no)
+    
+    real(kind=8) :: p(no), q(no)
+    
+    ! Relative positions
+    call curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
+    
+    ! Interpolation
+    call dstwgt2dto1dc_reduc(p, q, zzi, zo, mv, nxi, nyi, no, nz)
+
+end subroutine dstwgt2dto1dc
+    
+
 ! =============================================================================
 
 subroutine mixt2dx   (vari, xi,  yi,  varo, xo,  yo,  mv, ext,       nxi,nyi,nxo,nyo,nz)
     ! Extension of avgext2d to third dimension (simple loop)
 
+    implicit none
+    
     ! Parameters
+    integer, intent(in) :: nxi,nyi,nxo,nyo,nz
     real(kind=8),intent(in) :: vari(nxi,nyi,nz),mv
     real(kind=8),intent(in) :: xi(nxi),yi(nyi),xo(nxo),yo(nyo)
     logical,intent(in) :: ext
@@ -1776,25 +1994,23 @@ end subroutine mixt2dx
 SUBROUTINE mixt2d(IDIM,JDIM,XX,YY,FF,MDIM,NDIM,RR,SS,GG)
     real(kind=8), intent(in) :: XX(IDIM),YY(JDIM),RR(MDIM),SS(NDIM),FF(IDIM,JDIM)
     real(kind=8), intent(out) :: GG(MDIM,NDIM)
-!
-!
 !  ROUTINE TO INTERPOLATE FROM THE 2-DIMENSIONAL ARRAY FF DEFINED ON THE
 !  GRID XX X YY ONTO THE NEW GRID RR X SS FOR ARRAY GG.
 !
-!  ASSUMPTIONS
-!               (1) LINEAR INTERPOLATION AND EXTRAPOLATION ARE USED TO
-!                   EXPAND AND EXTENDTFF OVER THE INPUT GRID.
-!               (2) GG IS OBTAINED BY AREA AVERAGING FF OVER THE CELL CE
-!                   ON (M,N).
-!               (3) NO ACCOUNT IS TAKEN OF SPHERICITY - I.E. THE INPUT A
-!                   OUTPUT GRIDS ARE ASSUMED TO BE RECTILINEAR.
-!               (4) THE OPERATION IS NOT INVERTABLE, NOR WILL IT YIELD
-!                   THE IDENTITY OPERATION IF THE INPUT AND OUTPUT GRIDS
-!                   ARE IDENTICAL.  THIS SUITS FINE TO COARSE INTERPOLAT
-!                   BUT MAY NOT ALWAYS SUIT COARSE TO FINE EXTRAPOLATION
+!  :ASSUMPTIONS:
+!               1) LINEAR INTERPOLATION AND EXTRAPOLATION ARE USED TO
+!                  EXPAND AND EXTENDTFF OVER THE INPUT GRID.
+!               2) GG IS OBTAINED BY AREA AVERAGING FF OVER THE CELL CE
+!                  ON (M,N).
+!               3) NO ACCOUNT IS TAKEN OF SPHERICITY - I.E. THE INPUT A
+!                  OUTPUT GRIDS ARE ASSUMED TO BE RECTILINEAR.
+!               4) THE OPERATION IS NOT INVERTABLE, NOR WILL IT YIELD
+!                  THE IDENTITY OPERATION IF THE INPUT AND OUTPUT GRIDS
+!                  ARE IDENTICAL.  THIS SUITS FINE TO COARSE INTERPOLAT
+!                  BUT MAY NOT ALWAYS SUIT COARSE TO FINE EXTRAPOLATION
 !
 !
-!  METHOD: SCAN THE OBJECT GRID FOR N=1,N
+!  :Method: SCAN THE OBJECT GRID FOR N=1,N
 !          LOOP THROUGH INPUT GRID FOR ALL STRIPS ENCOMPASSING N
 !          SCAN THE OBJECT GRID FOR M=1,M FOR EACH
 !          LOOP THROUGH INPUT GRID FOR ALL X-CELLS AROUND M
@@ -1948,6 +2164,7 @@ END subroutine mixt2d
 ! =============================================================================
 
 subroutine cargen(xi,yi,zi,xo,yo,zo,mv,npt,nx,ny)
+    ! The famous cargen interpolator
 
 
   implicit none
@@ -2202,9 +2419,7 @@ subroutine cargen(xi,yi,zi,xo,yo,zo,mv,npt,nx,ny)
 end subroutine cargen
 
 subroutine zkrig(x0,y0,z0,x,y,z,n,npt)
-  !
-  !*************************************************************
-  !
+
   implicit none
 
   integer, intent(in) :: npt,n
@@ -2339,21 +2554,15 @@ subroutine zkrig(x0,y0,z0,x,y,z,n,npt)
 
   !
 end subroutine zkrig
-!
-!*************************************************************
-!*************************************************************
-!
+
 function plan(xpl,ypl,zpl,x1,y1)
-  !
-  !*************************************************************
-  !
+  ! Planar interpolation with 3 points
   implicit none
 
   real*8,intent(in):: xpl(3),ypl(3),zpl(3),x1,y1
   real*8 :: plan
   real*8 p,q,r,s,t,u,a,d,denom,b
-  !
-  !*************************************************************
+  
   !
   !    write(*,*) (xpl(j),j=1,3)
   !    write(*,*) (ypl(j),j=1,3)
@@ -2383,157 +2592,5 @@ function plan(xpl,ypl,zpl,x1,y1)
   !
 7 format(2f8.3,2x,6f10.4)
 end function plan
-
-
-!************************************************************
-!            Krigeage par Ben
-!************************************************************
-subroutine zkriben(x0,y0,z0,x,y,z,n,lag,cova,npt)
-  !
-  !*************************************************************
-  !
-  implicit none
-
-  integer,intent(in) :: n,npt
-  integer ordre(20),m!,nbsondmx
-!  parameter (nbsondmx=5000000)
-  real*8 yvois(20),zvois(20),dist(20),xvois(20)
-!  real*8,intent(in):: x(nbsondmx),y(nbsondmx),z(nbsondmx)
-  real*8,intent(in):: x(npt),y(npt),z(npt)
-  real*8 dist1(20,20)
-  real*8 co(4),co1(4,5),coe(4),d0i
-  real*8,intent(out) :: z0
-  real*8,intent(in) :: x0,y0,lag,cova
-  integer :: l,i,j
-  !
-  !*************************************************************
-  !
-
-  !
-  !      m=min0(12,n)
-  m=4
-  do j=1,m
-     ordre(j)=j
-     dist(j)=1.e+20
-  end do
-  do i=1,n
-     d0i=(x0-x(i))*(x0-x(i))+(y0-y(i))*(y0-y(i))
-     do j=1,m
-        if(d0i-dist(j).lt.0.0) then
-           do l=m,j+1,-1
-              ordre(l)=ordre(l-1)
-              dist(l)=dist(l-1)
-           end do
-           ordre(j)=i
-           dist(j)=d0i
-           go to 10
-        endif
-     end do
-10   continue
-  end do
-  !
-  !    write(*,*) m
-  do j=1,m
-     i=ordre(j)
-     zvois(j)=z(i)
-     xvois(j)=x(i)
-     yvois(j)=y(i)
-  enddo
-  !    write(*,*)'vois'
-  !    write(*,*) (dist(j),j=1,m)
-  !    write(*,*)'***********'
-
-  do j=1,m
-     do i=1,j
-        dist1(j,i)=(xvois(j)-xvois(i))*(xvois(j)-xvois(i))
-        dist1(j,i)=dist1(j,i)+(yvois(j)-yvois(i))*(yvois(j)-yvois(i))
-     enddo
-  enddo
-
-
-  do j=1,m
-     do i=1,j
-        co1(j,i)=cova*exp(-dist1(j,i)/lag)
-        co1(i,j)=co1(j,i)
-     enddo
-  enddo
-
-  do j=1,m
-     co(j)=cova*exp(-dist(j)/lag)
-     co1(j,5)=co(j)
-  enddo
-
-  ! resolution du systeme lineaire par le pivot maximal 
-  call gauss_max(co1,4,0)
-
-  do j=1,m
-     coe(j)=co1(j,5)
-  enddo
-
-  !    write(*,*)'-----------------'
-  z0=0.0
-  do j=1,m
-     z0=z0+coe(j)*zvois(j)
-     !    write(*,*)coe(j),zvois(j)
-  enddo
-  !    write(*,*)'-----------------'
-
-end subroutine zkriben
-
-
-!-----------------------------------------------------------------------
-!-----------------------------------------------------------------------
-subroutine gauss_max(a,n_max,n)
-  !-----------------------------------------------------------------------
-  ! procedure de resolution du syteme ax=b par ma methode du pivot maximum
-
-  implicit none
-
-  integer,intent(in) :: n_max
-  real*8,intent(inout) :: a(n_max,n_max+1)
-  integer,intent(in) :: n
-  integer h,i,j,k,l,m
-  real*8    b,c      
-
-  if(n.eq.1)then
-     a(1,1)=a(1,2)/a(1,1)
-     return
-  endif
-  m=n+1
-  i=1
-  do 40 l=2,n
-     b=a(i,i)
-     h=i
-     do 15 k=l,n
-        c=a(k,i)
-        if(abs(b)-abs(c)) 10,15,15
-10      h=k
-        b=c
-15      continue
-        a(h,i)=a(i,i)
-        a(i,1)=b
-        do 25 k=l,n
-25         a(k,1)=a(k,i)/b
-           do 35 j=l,m
-              c=a(h,j)
-              a(h,j)=a(i,j)
-              a(i,j)=c
-              do 35 k=l,n
-35               a(k,j)=a(k,j)-a(k,1)*c
-40               i=l
-                 b=a(i,i)
-                 a(i,1)=a(i,m)/b
-55               l=i
-                 i=i-1
-                 if(i) 85,85,60
-60               c=a(i,m)
-                 do 65 j=l,n
-65                  c=c-a(j,1)*a(i,j)
-                    a(i,1)=c/a(i,1)
-                    goto 55
-85                  return
-end subroutine gauss_max
-
-
 
 

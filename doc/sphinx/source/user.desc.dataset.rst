@@ -24,18 +24,18 @@ or extract a surface slice from 3D temperature.
 Specialized classes inherited from :class:`~vacumm.data.misc.dataset.Dataset`
 are implemented to manage the interface to the different sources of data.
 
-- There are some rather generic interfaces : 
+- There are some rather generic interfaces: 
   :class:`~vacumm.data.misc.dataset.OceanDataset`, 
   :class:`~vacumm.data.misc.dataset.OceanSurfaceDataset`, 
   :class:`~vacumm.data.misc.dataset.AtmosDataset`, 
   :class:`~vacumm.data.misc.dataset.AtmosSurfaceDataset`, 
   :class:`~vacumm.data.misc.dataset.GenericDataset`.
-- There are some very specialized ones :  
+- There are some very specialized ones:  
   :class:`~vacumm.data.model.mars3d.Mars3D`,
   :class:`~vacumm.data.model.nemo.Nemo`, 
   :class:`~vacumm.data.model.hycom.HYCOM`, 
   :class:`~vacumm.data.model.swan.SWAN`,
-  :class:`~vacumm.data.model.swan.CFSR,
+  :class:`~vacumm.data.model.swan.CFSR`,
   and more.
   This list will increase with time.
 
@@ -96,7 +96,7 @@ The functions that search for objects are
 :func:`~vacumm.misc.io.ncfind_axis`.
 
 
-:ref:`user.desc.dataset.cap.sim`
+.. _user.desc.dataset.cap.sim:
 
 Simple variables
 ----------------

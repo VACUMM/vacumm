@@ -4,7 +4,7 @@ nps = [100, 60, 40]
 npmax = 90
 dxy = 5
 
-from vcmq import P, simple_colors, savefigs, code_base_name, N
+from vcmq import P, simple_colors, savefigs, code_file_name, N
 from vacumm.misc.grid.kriging import cloud_split
 
 # Input clouds
@@ -39,7 +39,7 @@ for i, select in enumerate(indices):
     msize = max(len(x), msize)
 P.legend(loc='upper left').get_frame().set_alpha(.5)
 P.title('Split clouds: max size=%i'%npmax)
-savefigs(code_base_name(ext='png'), pdf=True, verbose=False)
+savefigs(code_file_name(ext='png'), pdf=True, verbose=False)
 #P.tight_layout()
 P.close()    
     

@@ -1,5 +1,7 @@
 include test/Makefile
 include release_notes.txt
+include setup.cfg.*
+exclude setup.cfg
 exclude scripts/tutorials/check.log
 recursive-exclude scripts *.so *.png *.pdf *.nc *.log
 recursive-include etc *

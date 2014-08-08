@@ -1,6 +1,6 @@
-.. _user.install.prereq:
-
 .. highlight:: bash
+
+.. _user.install.prereq:
 
 Prerequisites
 =============

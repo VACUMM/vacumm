@@ -15,7 +15,7 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) sou
 
 .PHONY: help clean html dirhtml pickle json htmlhelp qthelp latex changes linkcheck doctest
 
-all: pdf epub html
+all: html
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
@@ -41,8 +41,8 @@ clean:
 
 html: $(TUTFIG)
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
-	-cd $(BUILDDIR)/html && rm -f VACUMM.pdf && cp -f ../latex/VACUMM.pdf .
-	-cd $(BUILDDIR)/html && rm -f VACUMM.epub && cp -f ../epub/VACUMM.epub .
+	#-cd $(BUILDDIR)/html && rm -f VACUMM.pdf && cp -f ../latex/VACUMM.pdf .
+	#-cd $(BUILDDIR)/html && rm -f VACUMM.epub && cp -f ../epub/VACUMM.epub .
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 

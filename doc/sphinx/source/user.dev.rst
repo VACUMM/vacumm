@@ -82,11 +82,11 @@ You can update these rst files with the :program:`make.py` present in this direc
 
 .. note:: The title of each of these rst files is copied from the first line of the test script.
 
-If new files are created, add them to subversion.
+If new files are created, add them to subversion::
 
     $ svn add test_newtest.py
 
-Then make a commit:
+Then make a commit::
     
     $ svn ci -m 'adding new test rst files'
 
@@ -115,6 +115,14 @@ The documentation is generated in directories
 Regeneration of TikZ figures 
 ----------------------------
 
+.. sidebar:: What is PGF/TikZ ?
+
+    This is a library for creating high quality figures from an TeX source code.
+    The best overview is provided by the site that lists examples (tutorials): 
+    http://www.texample.net/tikz/examples .
+    Most of them are based on a more recent than the one installed by default on a system release.
+    Its on CVS *build* that the figures in this documentation are based.
+
 This documentation contains several figures drawn with 
 :program:`pdflatex` and 
 `PGF/TikZ <http://pgf.sourceforge.net>`_ (logo, architecture 
@@ -135,14 +143,6 @@ For installation, proceed as follows:
     $ unzip pgfCVS2010-09-28_TDS.zip
     $ rm pgfCVS2010-09-28_TDS.zip
 
-.. sidebar:: What is PGF/TikZ ?
-
-    This is a library for creating high quality figures from an TeX source code.
-    The best overview is provided by the site that lists examples (tutorials): 
-    http://www.texample.net/tikz/examples .
-    Most of them are based on a more recent than the one installed by default on a system release.
-    Its on CVS *build* that the figures in this documentation are based.
-
 Figure TikZ can now be generated with:  
 
 .. code-block:: bash
@@ -154,6 +154,40 @@ The latex code is then compiled, generating a pdf which is then converted
 to ppm format and png formats.
 
 
+.. _user.dev.doc.auto:
+    
+Automate it in a crontab
+------------------------
+
+You can execute a script with at least the following commands, 
+and register it in a crontab::
+    
+    
+    # Go to the root directory of sources
+    cd {/path/to/}vacumm/trunk
+    
+    # Update the tree
+    svn up
+    
+    # Make sure the fortran extensions are compilated
+    make lib
+    
+    # Generate figures of test files
+    cd test
+    make
+    cd ..
+    
+    # Generate figures of tutorials
+    cd scripts/tutorials
+    make
+    cd ../..
+    
+    # Force the future generation of all colormap figures
+    touch lib/python/vacumm/misc/color.py
+    
+    # Generate sphinx docs
+    cd doc/sphinx
+    make
 
 .. _user.dev.tut:
     
@@ -282,7 +316,7 @@ To add a new one:
      :func:`vacumm.misc.phys.units.deg2m` function, create a script called
      :file:`test_units_deg2m.py`.
    - Insert a docstring of a single line telling what the script tests.
-     See examples here: :ref:`appendix.test`.
+     See examples here: :ref:`appendix.tests`.
    - Make explicit imports (without \*)::
        
        from vcmq import DS
@@ -350,7 +384,7 @@ To add a new one:
      If the module already exists, just add your new test script to this loop. 
       
 3. If the test module does not exist, add an entry the ``TEST`` variable
-  of the :file:`test/Makefile` file.
+   of the :file:`test/Makefile` file.
 4. Update the documentation:
    
    .. code-block:: bash
@@ -414,6 +448,44 @@ If you created the tag too quickly and need to correct something, then
         $ svn rm https://gforge.ifremer.fr/svn/vacumm/tags/vacumm-X.Y.Z
         
     - re-create the expected tag (``svn copy``, see above).
+    
+
+.. _user.dev.branch:
+    
+Working with branches
+=====================
+
+If you plan to make some sensitive changes that may require time
+to develop and test, you should consider making a branch for your developments.
+Proceed as follow.
+
+Create the branch ``mybranch`` from the trunk::
+
+    $ svn copy -m "create new branch mybranch" \
+        https://gforge.ifremer.fr/svn/vacumm/trunk \
+        https://gforge.ifremer.fr/svn/vacumm/branches/mybranch
+        
+Get it on your local copy of the tree::
+    
+    $ cd {/path/to/}branches
+    $ svn up mybranch
+
+Update it in case the trunk has changed::
+    
+    $ cd {/path/to/}branches/mybranch
+    $ svn up ^/trunk
+    
+Commit intermediate changes to your branch::
+    
+    $ cd {/path/to/}branches/mybranch
+    $ svn ci -m comment ...
+    
+Now that you have finished, merge it back with trunk::
+    
+    $ cd {/path/to/}trunk
+    $ svn --reintegrate https://gforge.ifremer.fr/svn/vacumm/branches/mybranch
+    $ svn -m "merge with branch mybranch"
+
 
 Distributing the library as a package
 =====================================
@@ -423,11 +495,11 @@ The procedure is as follows:
     
 .. code-block:: bash
 
-    $ python setup.py bdist
+    $ python setup.py sdist
     
 This command will then create a distributable file, whose name is close to
-:file:`vacumm-0.9-svn128.linux-x86_64.tar.gz`.
+:file:`vacumm-0.9-svn128.tar.gz`.
 This file can then be placed in the files section of the gforge site of the project 
-(`à cette adresse <https://forge.ifremer.fr/frs/admin/qrs.php?package=&group_id=93>`_).
+(`at this address <https://forge.ifremer.fr/frs/admin/qrs.php?package=&group_id=93>`_).
 
 

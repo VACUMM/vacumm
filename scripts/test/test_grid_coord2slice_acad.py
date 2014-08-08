@@ -1,11 +1,11 @@
 """Test :func:`~vacumm.misc.grid.misc.coord2slice`"""
 
-from vcmq import code_base_name, P, os, N, create_lon
+from vcmq import code_file_name, P, os, N, create_lon, code_file_name
 from vacumm.misc.grid import coord2slice, create_grid, create_axes2d, meshbounds
 from vacumm.misc.plot import add_grid
 
 figfiles = []
-figfile = code_base_name(ext=False)+'_%i.png'
+figfile = code_file_name(ext=False)+'_%i.png'
 def plot(xx, yy, target, label, figfiles, figfile, lon=None, lat=None, show=False):
     xs, ys, mask = coord2slice(target, lon=lon, lat=lat)
     P.figure(figsize=(6, 3.5))

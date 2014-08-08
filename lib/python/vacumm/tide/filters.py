@@ -7,7 +7,7 @@ the time units between each coefficients.
 
 .. seealso::
 
-    :ref:`tut.tide.filters`
+    :ref:`user.tut.tide.filters`
 """
 # Copyright or © or Copr. vacumm (contributor(s) : Stephane Raynaud) (2011)
 # 
