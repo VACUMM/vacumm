@@ -1,6 +1,13 @@
 Release notes
 #############
 
+Version 2.3.1
+=============
+
+- Fortran regrid1d routines work directly with missing values. 
+- Unit tests save outputs in scripts directory.
+- Fixed installation issue with setup.*.
+
 Version 2.3.0
 =============
 

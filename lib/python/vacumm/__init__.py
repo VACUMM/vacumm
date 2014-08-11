@@ -35,14 +35,14 @@
 # 
 
 __project__ = 'vacumm'
-__version__ = '2.3.0'
+__version__ = '2.3.1'
 __release__ = '1'
-__date__ = '2014-08-05'
+__date__ = '2014-08-11'
 __author__ = u'Stéphane Raynaud, Jonathan Wilkins, Guillaume Charria'
 __email__ = 'raynaud@actimar.fr, wilkins@actimar.fr, charria@ifremer.fr'
 __copyright__ = 'Copyright (c) 2010-2014 Actimar/IFREMER'
 __description__ = """
-VACUMM libraries
+VACUMM library
 
 A collection of tools for VACUMM python codes.
 
