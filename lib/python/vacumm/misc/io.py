@@ -345,8 +345,6 @@ def list_forecast_files(filepattern, time=None, check=True,
             elif not glob.has_magic(filepattern):
                 date0 = date1 = None
                 for i in xrange(len(gfiles)-1):
-                    date0 = strptime(gfiles[i], filepattern)
-                    date1 = strptime(gfiles[i+1], filepattern)
                     try:
                         date0 = strptime(gfiles[i], filepattern)
                         date1 = strptime(gfiles[i+1], filepattern)
