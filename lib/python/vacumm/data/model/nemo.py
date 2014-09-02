@@ -55,7 +55,7 @@ class Nemo(OceanDataset):
     """
     
     
-    ncbj_specs = {
+    ncobj_specs = {
 
         # depth
         'depth':{'search':{'names':['depth']}}, 
@@ -84,52 +84,52 @@ class Nemo(OceanDataset):
         # meridional current (2d)
         #'vbt':{'search':{'names':['vomecrty']}}
         
-    # -- Atmosphere --
-        # net downward heat flux
-    'sohefldo':{'search':{'names':['sohefldo']}},
-
-    # cloud cover
-    'soccov':{'search':{'names':['soccov']}},
-
-    # surface heat flux: damping
-    'sohefldp':{'search':{'names':['sohefldp']}},
-
-        # specific humidity
-    'sohumspe':{'search':{'names':['sohumspe']}},
-
+        # -- Atmosphere --
+            # net downward heat flux
+        'sohefldo':{'search':{'names':['sohefldo']}},
+    
+        # cloud cover
+        'soccov':{'search':{'names':['soccov']}},
+    
+        # surface heat flux: damping
+        'sohefldp':{'search':{'names':['sohefldp']}},
+    
+            # specific humidity
+        'sohumspe':{'search':{'names':['sohumspe']}},
+    
         # latent downward heat flux
         'lathf':{'search':{'names':['solhflup']}},
-
-    # Longwave Downward Hear flux
-    'lwhf':{'search':{'names':['solwfldo']}},
-
-        # Sensible Downward Heat Flux
-    'senhf':{'search':{'names':['sosbhfup']}},
     
-        # Shortwave Radiation
-    'soshfldo':{'search':{'names':['soshfldo']}},
-
-    # Air temperature at 2m
-    'sotemair':{'search':{'names':['sotemair']}},
-
-    # Concentration/dilution water flux
-    'sowaflcd':{'search':{'names':['sowaflcd']}},
-
-    # Surface Water Flux: Damping
-    'sowafldp':{'search':{'names':['sowafldp']}},
-
-    # Net Upward Water Flux
-    'sowaflup':{'search':{'names':['sowaflup']}},
-
-    # Total Precip
-    'sowapre':{'search':{'names':['sowapre']}},
-
-    # Wind speed module at 10m
-    'sowindsp':{'search':{'names':['sowindsp']}},
-
-    # -- Rivers --
-    # River runoffs
-    'sornf':{'search':{'names':['sornf']}},
+        # Longwave Downward Hear flux
+        'lwhf':{'search':{'names':['solwfldo']}},
+    
+            # Sensible Downward Heat Flux
+        'senhf':{'search':{'names':['sosbhfup']}},
+        
+            # Shortwave Radiation
+        'soshfldo':{'search':{'names':['soshfldo']}},
+    
+        # Air temperature at 2m
+        'sotemair':{'search':{'names':['sotemair']}},
+    
+        # Concentration/dilution water flux
+        'sowaflcd':{'search':{'names':['sowaflcd']}},
+    
+        # Surface Water Flux: Damping
+        'sowafldp':{'search':{'names':['sowafldp']}},
+    
+        # Net Upward Water Flux
+        'sowaflup':{'search':{'names':['sowaflup']}},
+    
+        # Total Precip
+        'sowapre':{'search':{'names':['sowapre']}},
+    
+        # Wind speed module at 10m
+        'sowindsp':{'search':{'names':['sowindsp']}},
+    
+        # -- Rivers --
+        # River runoffs
+        'sornf':{'search':{'names':['sornf']}},
 
         # SST
         'sst':{
