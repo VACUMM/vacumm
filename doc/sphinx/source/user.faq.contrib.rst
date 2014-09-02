@@ -10,7 +10,7 @@ How to report a bug or ask for an enhancement?
 
 Please go to the `Mantis <https://forge.ifremer.fr/mantis/index.php?redirect=1&group_id=93&pluginname=mantis>`_ page of the project.
 You need to be registered.
-You can also contact the authors :ref:`here <contact>`.
+You can also contact the authors :ref:`here <contact.direct>`.
     
 How to add a new tutorial?
 --------------------------
