@@ -1398,7 +1398,7 @@ def var2d(*args, **kwargs):
     return create_var2d(*args, **kwargs)
 
 def num2axes2d(*args, **kwargs):
-    """Alias for :func:` axes2d`"""
+    """Alias for :func:`axes2d`"""
     return axes2d(*args, **kwargs)
 
 
@@ -1811,9 +1811,9 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., **kwarg
         
         .. math:: 
         
-            dx_{i,j} = \sqrt{(x_{i+1,j}-x_{i,j})^2+ (y_{i+1,j}-y{i,j})^2} 
+            dx_{i,j} = \sqrt{(x_{i+1,j}-x_{i,j})^2+ (y_{i+1,j}-y_{i,j})^2} 
             
-            dy_{i,j} = \sqrt{(x_{i,j+1}-x_{i,j})^2+ (y_{i,j+1}-y{i,j})^2}
+            dy_{i,j} = \sqrt{(x_{i,j+1}-x_{i,j})^2+ (y_{i,j+1}-y_{i,j})^2}
             
     :Examples:
     

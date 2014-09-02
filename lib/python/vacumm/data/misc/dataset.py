@@ -1415,6 +1415,37 @@ class Dataset(Object):
         grid = create_grid(axlon, axlat)
         return grid
         
+    def get_shape(self, dims='tzyx', warn=True):
+        """Get the dataset shape from known generic dims
+        
+        :Params:
+        
+            - **dims**, optional: Letters that select the generic dimensions to consider.
+            
+        :Return: A tuple of the size of dimensions. If a requested dim is not found,
+            None is returned for its size.
+            
+        """
+        shape = ()
+        getters = dict(x='lon', y='lat', z='level', t='time')
+        for d in dims:
+            if d in getters:
+                axis = getattr(self, 'get_'+getters[d])()
+                sh = axis.shape if axis is not None else None
+                if sh:
+                    if len(sh)==2: # 2D axes
+                        sh = sh[0] if d=='y' else sh[1]
+                    else:
+                        sh = sh[0]
+            else:
+                sh = None
+                if warn: self.warning('Invalid generic dim: %s'%d)
+            shape += sh, 
+        return shape
+    shape = property(fget=get_shape, doc='Generic shape of the dataset')
+                
+        
+        
     def _get_dxy_(self, xy, at='t', lon=None, lat=None, degrees=False, mode=None, 
         local=True, frompt=None, **kwargs):
         dxy = None
@@ -1620,7 +1651,7 @@ class Dataset(Object):
         
     def get_level(self, level=None, **kwargs):
         '''Get level axis, based on :func:`get_axis`'''
-        return self.get_axis('depth', level=level, **kwargs)
+        return self.get_axis('level', select=level, **kwargs)
     
 #    @getvar_fmtdoc
 #    def get_corio(self, **kwargs):

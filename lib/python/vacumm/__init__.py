@@ -48,11 +48,11 @@ A collection of tools for VACUMM python codes.
 
 Content:
 
-    - misc: generic library.
-    - data: Data management.
-    - diag: Advanced diagnostics.
-    - sphinxext: extensions to sphinx doc generator.
-    - bathy: bathymetric tools.
+    - misc: generic library
+    - data: data management
+    - diag: advanced diagnostics.
+    - sphinxext: extensions to sphinx doc generator
+    - bathy: bathymetric tools
     - data: library to read observations and modelled fields
     - validator: tools for model validation
     - markup: tools for html page generation
