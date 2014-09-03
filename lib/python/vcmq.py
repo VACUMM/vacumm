@@ -109,7 +109,8 @@ from vacumm.misc.grid.basemap import \
     
 from vacumm.misc.grid.masking import \
     erode_coast, polygon_mask, GetLakes, get_coast, polygons, polygon_select, zcompress, \
-    envelop, get_coastal_indices, grid_envelop
+    envelop, get_coastal_indices, grid_envelop, create_polygon, clip_shape, proj_shape, \
+    plot_polygon
     
 # - data
 

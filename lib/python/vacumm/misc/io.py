@@ -40,7 +40,7 @@ __all__ = ['list_forecast_files', 'NcIterBestEstimate', 'NcIterBestEstimateError
     'ncfind_var', 'ncfind_axis', 'ncfind_obj', 'ncget_var', 'ncread_var', 'ncread_files', 'ncread_best_estimate', 
     'ncget_grid', 'ncget_time','ncget_lon','ncget_lat','ncget_level', 'ncmatch_obj', 
     'ncget_axis', 'netcdf3', 'netcdf4', 'ncread_axis', 'ncread_obj', 'ncget_fgrid', 
-    'grib_read_files', 'nccache_get_time', 
+    'grib_read_files', 'nccache_get_time', 'grib2nc', 'grib_get_names', 
     'Shapes', 'XYZ', 'XYZMerger', 'write_snx', 'ColoredFormatter', 'Logger', 'TermColors' 
     ]
 __all__.sort()
@@ -345,8 +345,6 @@ def list_forecast_files(filepattern, time=None, check=True,
             elif not glob.has_magic(filepattern):
                 date0 = date1 = None
                 for i in xrange(len(gfiles)-1):
-                    date0 = strptime(gfiles[i], filepattern)
-                    date1 = strptime(gfiles[i+1], filepattern)
                     try:
                         date0 = strptime(gfiles[i], filepattern)
                         date1 = strptime(gfiles[i+1], filepattern)
@@ -2001,24 +1999,25 @@ class Shapes(object):
     
     Here are the conversion rules from shapefile to GEOS objects :
     
-        - Points and multipoints are interpreted as Points.
-        - Polylines are interpreted as LineString.
-        - Polygons are interpreted as Polygons
+        - Points and multipoints are interpreted as :class:`Points`.
+        - Polylines are interpreted as :class:`LineString`.
+        - Polygons are interpreted as :class:`Polygons`.
     
     :Params:
     
-        - **input**: Refers to a shapefile or is a shapes isntance ; 
+        - **input**: Refers to a shapefile or is a shapes instance ; 
           if a shapefile, it assumes that <input>.shp contains points, 
           multipoints, lines or polygons, and that <input>.dbf contains their attributes.
-        - **m*, optional: A Basemap instance for converting shapefile coordinates 
-          to geos polygons and for plotting.
-        - *inverse*, optional: Inverset the conversion with m .
+        - **proj*, optional: A projection function to convert coordinates. It must accept
+          the "inverse" keyword.
+        - **m*, optional: A Basemap instance for converting for plotting.
         - **clip*, optional: If in the form ``(xmin,ymin,xmax,ymax)``, 
           clips to this box ; if a polygon like argument, 
           it clips to this polygon 
           (see :func:`~vacumm.misc.grid.masking.polygons()` for arguments). 
           If simply ``True`` and *m* is present, it clips to the bounds of *m*.
         - **min_area*, optional: Minimal area to keep a polygon
+        - **samp**, optional: An integer to undersample coordinates of polygons and lines.
         - **shapetype**, optional: 
         
             - If 0, it must only deal with points ; 
@@ -2034,7 +2033,7 @@ class Shapes(object):
         # Inits
         if isinstance(input, list) and input: input = input[0]
         from_file = isinstance(input, str)
-        
+        default_proj = None
         if from_file:
         
             # From a shapefile
@@ -2054,26 +2053,32 @@ class Shapes(object):
                 shp = ShapeFile(input)
             self._prefix = input
 #           dbf = dbflib.open(input)
+            if hasattr(m, 'map'): m = m.map
             self._m = m
-            self._proj = m
-               
+            default_proj = None if m is None else m
+            if default_proj and (1, 1) == default_proj(1, 1):
+                default_proj = None
+            self._info = []
+         
+        elif isinstance(input, list): # From coordinates
+   
+            in_coords = input
+            self._m = m
+            default_proj = m
+            self._type = 5 if not len(in_coords) or in_coords[0].ndim==2 else 1
+            self._info = []
+            
+   
         else:
         
             # From a Shapes (or super) instance
-            in_shapes = input._shapes
-            self._m = input._m 
-            self._proj = input._proj
+            in_coords = input.get_data(proj=False)
+            self._m = input._m # overwrite m keyword
+            default_proj = input._proj
             self._type = [1, 3, 5][input._type]
             self._info = input._info
-        if callable(proj): self._proj = proj
-        self._data = None
-        self._shapes = []
-        
-        # Clipping zone
-        clip = self._clip_zone_(clip)
-
-        # Convert to GEOS
-        self._info = []
+            
+        # Get coordinates
         if from_file:
             if newreader:
                 self._type = shp.shapeType
@@ -2083,14 +2088,13 @@ class Shapes(object):
                 nshapes = shp.info()[0]
         else:
             nshapes = 1
-        xmin = N.inf
-        xmax = -N.inf
-        ymin = N.inf
-        ymax = -N.inf
+        coords = []
         if self._type in [1,8]: # A Point or MultiPoint file
             if shapetype is not None and shapetype != 0:
                 raise TypeError, 'Your shape type is not point'
             self._type = self.POINTS
+            
+            # Loop on shape groups
             for iobj in xrange(nshapes):
                 if from_file:
                     if newreader:
@@ -2098,33 +2102,13 @@ class Shapes(object):
                     else:
                         all_points = shp.read_object(iobj).vertices()
                 else:
-                    all_points = in_shapes
-                for point in all_points:
-                    if from_file:
-                        # Projection
-                        if callable(self._proj):
-                            point = self._proj(point[0], point[1], inverse=inverse)
-                        # Geos
-                        pt = Point(point)
-                    else:
-                        pt = point
-                    # Restrict zone
-                    if clip is not None:
-                        if pt.within(clip):
-                            break
-                        else:
-                            continue
-                    xmin = min(xmin, pt.boundary[0])
-                    xmax = max(xmax, pt.boundary[0])
-                    ymin = min(ymin, pt.boundary[1])
-                    ymax = max(ymax, pt.boundary[1])
-                    self._shapes.append(pt)
-                del all_points
+                    all_points = in_coords
+                coords.extend(all_points)
+                
+            # Merge coordinates
+            xy = N.asarray(coords)
+            
 #               if from_file: self._info.append(dbf.read_record(iobj))
-            self.xmin = xmin
-            self.xmax = xmax
-            self.ymin = ymin
-            self.ymax = ymax
             
         elif self._type in [3, 5]: # A Polyline or Polygon file
 
@@ -2140,7 +2124,7 @@ class Shapes(object):
                 else:
                     self._type = self.POLYGONS
                     
-            # Loop on shapes
+            # Loop on shape groups
             for iobj in xrange(nshapes):
                 if from_file:
                     if newreader:
@@ -2156,54 +2140,106 @@ class Shapes(object):
                     else:
                         all_polys = shp.read_object(iobj).vertices()
                 else:
-                    all_polys = in_shapes
-                for vert in all_polys:
-                    if from_file:
-                        # Data
-                        vert = N.asarray(vert, 'float64')
-                                                    
-                        # Under sampling
-                        if samp > 1 and vert.shape[0] > (2*samp+1):
-                            vert = vert[::samp]
-                    
-                        # Projection
-                        if callable(self._proj):
-                            vert[:, 0], vert[:, 1] = self._proj(vert[:, 0], vert[:, 1], inverse=inverse)
-                            
-                        # Geos conversions
-                        if self._type == 1: # LineStrings
-                            poly = LineString(vert)
-                        elif vert.shape[0] > 2 : # Polygons (2 should work, but not with EUROSION!)
-                            poly = Polygon(vert)
-                        else:
-                            continue
-                    else:
-                        poly = vert
-                        
-                    # Minimal area
-                    if min_area is not None and self._type == 2 and \
-                        min_area > 0. and poly.area() < min_area:
-                        continue
-                        
-                    # Restrict zone
-                    if clip is not None:
-                        if poly.intersects(clip): # Gets intersections only
-                            self._shapes.extend(poly.intersection(clip))
-                    else: # Keep all shapes
-                        self._shapes.append(poly)
-                    if from_file: del vert
-                del all_polys
+                    all_polys = in_coords
+                coords.extend(all_polys)
+                
+            # Merge coordinates
+            xy = N.concatenate(coords)
+                
 #               if from_file: self._info.append(dbf.read_record(iobj))
-            xy = N.concatenate([s.boundary for s in self._shapes])
+
+        else:
+            raise TypeError, 'Input shapefile must only contains 2D shapes'
+ 
+        # Bounds
+        if xy.shape[0]>0:
             self.xmin = xy[:, 0].min()
             self.xmax = xy[:, 0].max()
             self.ymin = xy[:, 1].min()
             self.ymax = xy[:, 1].max()
-            del xy
         else:
-            raise TypeError, 'Input shapefile must only contains 2D shapes'
+            self.xmin = N.inf
+            self.xmax = -N.inf
+            self.ymin = N.inf
+            self.ymax = -N.inf
+        del xy
+        self.xpmin = N.inf
+        self.xpmax = -N.inf
+        self.ypmin = N.inf
+        self.ypmax = -N.inf
 
+        # Projection
+        if callable(proj):
+            self._proj = proj
+        elif default_proj is not None:
+            self._proj = default_proj
+        elif proj is True or isinstance(proj, basestring):
+            self._proj = None
+            self._proj = self._get_proj_(proj)
+        else:
+            self._proj = False
+        if callable(self._m): # same projection as of map?
+            if proj is False:
+                self._m_projsync = N.allclose((1, 1), self._m(1, 1))
+            elif callable(self._proj) and self._proj is not self._m:
+                self._m_projsync = N.allclose(self._proj(1, 1), self._m(1, 1))
+        else:
+            self._m_projsync = None
+
+        # Clipping zone with projected coordinates
+        clip = self._clip_zone_(clip)
+
+        # Convert to shapes
         self._shaper = [Point, LineString, Polygon][self._type]
+        self._shapes = []
+        for coord in coords:
+            
+            # Numeric array
+            coord = N.asarray(coord)
+            
+            # Projection
+            if self._proj:
+                coord = N.asarray(self._proj(coord[..., 0], coord[..., 1])).T
+                
+            # Convert to shape instance
+            shape = self._shaper(coord)
+            
+            # Clip
+            if clip:
+                shapes = clip_shape(shape, clip)
+            else:
+                shapes = [shape]
+            
+            # Minimal area
+            if min_area is not None and self._shaper is Polygon and min_area > 0.:
+                shapes = filter(lambda sh: sh.area() >= min_area, shapes)
+            
+            # Store
+            self._shapes.extend(shapes)
+
+
+        # Final bounds
+        if clip is not None and min_area:
+            for shape in shapes:
+                
+                # Normal coordinates
+                xy = shape.get_xy(proj=None)
+                self.xpmin = min(self.xpmin, xy[..., 0].min())
+                self.xpmax = max(self.xpmax, xy[..., 0].max())
+                self.ypmin = min(self.ypmin, xy[..., 1].min())
+                self.ypmax = max(self.ypmax, xy[..., 1].max())
+                del xy
+                
+                # Projected coordinates
+                xy = shape.get_xy(proj=False)
+                self.xpmin = min(self.xpmin, xyp[..., 0].min())
+                self.xpmax = max(self.xpmax, xyp[..., 0].max())
+                self.ypmin = min(self.ypmin, xyp[..., 1].min())
+                self.ypmax = max(self.ypmax, xyp[..., 1].max())
+                del xyp
+            
+
+        # Finalize
         if from_file and not newreader:
             shp.close()
 #           dbf.close()
@@ -2214,24 +2250,36 @@ class Shapes(object):
             self._sorted = 0
          
     def _clip_zone_(self, clip):
-        m = self._m
-        if hasattr(m, 'map'): m = m.map
+        """Return a projected polygon or None"""
+        # From dictionary
         if isinstance(clip, dict):
            if 'lon' in clip and 'lat' in clip:
                clip = [clip['lon'][0], clip['lat'][0], clip['lon'][1], clip['lat'][1]]
+               
            else:
                clip = None
-        if clip is False: clip = None
+        
+        # No clipping
+        if clip is False: return
+        
+        # Guess or set it
         if clip is not None:
-            if clip not in [True, False]:
-                from grid.masking import polygons
-                clip = polygons([clip], proj=m)[0]
-            elif m is not None:
-                clip = Polygon(N.asarray([[m.xmin, m.ymin], [m.xmax, m.ymin], 
-                    [m.xmax, m.ymax], [m.xmin, m.ymax]], 'float64'))
-            else:
-                clip = None
-        return clip
+            
+            # Normal polygon
+            if clip is not True:
+                return create_polygon(clip, proj=self._proj)
+             
+            # Guess from map
+            if self._m is not None:
+                if self._m_projsync:
+                    proj = False
+                    data = N.asarray([m.xmin, m.ymin, m.xmax, m.ymax])
+                else:
+                    xx, yy = self._m([m.xmin, m.xmax, m.xmax, m.xmin], 
+                        [m.ymin, m.ymin, m.ymax, m.ymax], inverse=True)
+                    data = N.asarray([xx, yy])
+                return create_polygon(data, proj=False)
+                        
 
       
     def clip(self, zone, copy=True, sort=True, reverse=True, **kwargs):
@@ -2333,44 +2381,75 @@ class Shapes(object):
         """
         return self.get_type()==type
         
-    def get_shapes(self, key=None):
-        """Get the list of geos objects (polygons, etc)
-        
-        - *key*: A slice selector applied to the list."""
-        if key is None:
-            return self._shapes
-        return self._shapes[key]
-    
-    def get_proj(self, proj=False):
-        """Get a valid projection"""
-        if proj is True: 
+    def _get_proj_(self, proj=None):
+        """Get a valid projection function to operate on shapes coordinates"""
+        if proj is None: return 
+        if proj is True or isinstance(proj, basestring): 
             
             if callable(self._proj): # already projected
-                proj = False
+                return
                 
-            else: # get projection
-                if len(self)==0:
-                    gg = None
-                else:
-                    gg = ([self.xmin,self.xmax],[self.ymin,self.ymax])
-                proj=get_proj(gg)
+            if callable(self._m): # from map
+            
+                return self._m
                 
-        elif not callable(proj): # bad projection
-            proj = False
-        elif callable(self._proj): # already projected
+            # using grid.basemap.get_proj
+            if self.xmin>self.xmax:
+                gg = None
+            else:
+                gg = ([self.xmin,self.xmax],[self.ymin,self.ymax])
+            kw = dict(proj=proj) if isinstance(proj, basestring) else {}
+            return get_proj(gg, **kw)
+                
+        if callable(self._proj): # already projected
+        
+            if proj is False: # no projection -> project back
+                return lambda x, y, inverse=False: self._proj(x, y, inverse=not inverse)
             
             if proj is not self._proj: #re-projection
                 old_proj = proj
-                proj = lambda x, y: old_proj(*self._proj(x, y, inverse=True))
+                def proj(x, y, inverse=False):
+                    if inverse:
+                        return self._proj(*(old_proj(x, y, True)+(False, )))
+                    return old_proj(*self._proj(x, y, True))
                 
             else: # no need to project
-                proj = False
+                proj = None
                 
         return proj
     
     
     
-    def get_data(self, key=None, proj=False):
+    def get_shapes(self, key=None, proj=None):
+        """Get the list of geos objects (polygons, etc)
+        
+        :Param:
+        
+            - **key**: A slice selector applied to the list.
+            - **proj**: ``True``, or a callable to project or re-project coordinates.
+        """
+        # Objects to work on
+        if key is None:
+            shapes = self._shapes
+        else:
+            shapes = self._shapes[key]
+        single = not isinstance(shapes, list)
+        if single: shapes = [shapes]
+        
+        # Projection
+        proj = self._get_proj_(proj)
+        
+        # Loop on shapes
+        polys = []
+        for poly in shapes:
+            if proj:
+                poly = proj_shape(poly, proj)
+            polys.append(poly)
+            
+        if single: return polys[0]    
+        return polys
+    
+    def get_data(self, key=None, proj=None):
         """Get the numeric version of the list of geos objects (polygons, etc)
         
         :Param:
@@ -2380,12 +2459,17 @@ class Shapes(object):
         """
         if not len(self): return []
         # Projection
-        proj = self.get_proj(proj)
+        proj = self._get_proj_(proj)
+            
+        # Shapes to work on
+        if key is None:
+            shapes = self._shapes
+        else:
+            shapes = self._shapes[key]
+        single = not isinstance(shapes, list)
+        if single: shapes = [shapes]
             
         # Loop on shapes
-        shapes = self._shapes
-        if key is not None:
-            shapes = shapes[key:key+1]
         data = []
         for poly in shapes:
             xy = poly.boundary
@@ -2397,21 +2481,27 @@ class Shapes(object):
                     xy = N.asarray([xx, yy]).T
                     del xx, yy
             data.append(xy)
-            
+        
+        if single: return data[0]    
         return data
         
-    def get_points(self, key=None, split=True, proj=False):
+    def get_points(self, key=None, split=True, proj=None):
         """Get all the points from all the shapes as a tuple (x,y)"""
         if not len(self): return N.array([[],[]])
         
         # Projection
-        proj = self.get_proj(proj)
+        proj = self._get_proj_(proj)
                         
+        # Shapes to work on
+        if key is None:
+            shapes = self._shapes
+        else:
+            shapes = self._shapes[key]
+        single = not isinstance(shapes, list)
+        if single: shapes = [shapes]
+            
         # Loop in shapes
-        shapes = self._shapes
         xx, yy = [], []
-        if key is not None:
-            shapes = shapes[key:key+1]
         for poly in shapes:
             xy = poly.boundary
             if self.is_type(self.POINTS):
@@ -2426,7 +2516,7 @@ class Shapes(object):
         if proj: return N.asarray(proj(xx, yy))
         return N.asarray([xx, yy])
         
-    def get_xy(self, key=None,  proj=False):
+    def get_xy(self, key=None, proj=None):
         """Shortcut to ``get_points(split=false)``"""
         return self.get_points(split=False, key=key, proj=proj)
     xy = property(get_xy, doc="XY coordinates as a (2,npts) array")
@@ -2457,10 +2547,12 @@ class Shapes(object):
         
     def get_map(self):
         """Return the associated basemap instance if set"""
+        if hasattr(self._m, 'map'): return self._m.map
         return self._m
 
     def plot(self, select=None, ax=None, fill=None, points=False, lines=True, 
-        fillcolor=None, color='k', s=None, linewidth=None, m=None, show=True, alpha=1, **kwargs):
+        fillcolor=None, color='k', s=None, linewidth=None, m=None, show=True, 
+        alpha=1, autoscale=True, title=None, **kwargs):
         """Plot shapes
         
         :Params:
@@ -2479,7 +2571,8 @@ class Shapes(object):
             - **points_<params>**, optional: ``<param>`` is passed to 
               :class:`~matplotlib.pyplot.scatter`.
             - **m_<params>**, optional: ``<param>`` is passed to 
-              :class:`~vacumm.misc.plot.map2` if ``m is True``..
+              :class:`~vacumm.misc.plot.map2` if ``m is True``.
+            - **autoscale**, optional: Autoscale axis limits?
         """
         
         # Keywords
@@ -2518,7 +2611,7 @@ class Shapes(object):
                     kwmap['lat'] = (self.ymin-dy, self.ymax+dy)
             kwmap.setdefault('res', None)
             kwmap.setdefault('proj', 'merc')
-            kwmap.update(show=False, axes=ax, title=self.__class__.__name__)
+            kwmap.update(show=False, axes=ax, title=title)
             m = map2(**kwmap)
             ax = m.axes
             
@@ -2554,7 +2647,13 @@ class Shapes(object):
         for key in ['label']:
             if hasattr(kwargs, key):
                 getattr(cc, 'set_'+key, kwargs[key])
-                
+         
+        # Finalize
+        if title:
+            ax.set_title(title)
+        if autoscale:
+            ax.autoscale_view()
+        
         if show: P.show()
             
         return oo
@@ -4273,8 +4372,10 @@ def netcdf4(level=3, deflate=1, shuffle=1):
 from color import land, simple_colors, get_cmap
 import misc as M
 from plot import map2, _colorbar_, savefigs as Savefigs, markers as Markers, gobjs
-from grid.masking import polygons, convex_hull, rsamp, polygon_mask
+from grid.masking import polygons, convex_hull, rsamp, polygon_mask, proj_shape, \
+    create_polygon, clip_shape
 from grid.regridding import griddata, xy2xy
+from grid.basemap import get_proj
 from grid import create_grid, get_xy, curv2rect, isgrid
 from axes import guess_timeid, get_checker, istime, islon, islat, islevel
 from phys.units import deg2m, m2deg

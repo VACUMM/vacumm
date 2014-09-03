@@ -1,12 +1,22 @@
 Release notes
 #############
 
-Version 2.4.0
-=============
+In development
+==============
 
 - Added regrid2dnew with tool and method keywords.
 - Added dstwgt method for fortran interpolators from gridded to random points.
+- Plot.add_point() like methods now accept time arguments if applicable.
+- Tuples can be used to specify in time in time creation routines of atime.
+- Fixed bugs: list_forecast_files, Plot.add_lon/lat.
 
+
+Version 2.3.1
+=============
+
+- Fortran regrid1d routines work directly with missing values. 
+- Unit tests save outputs in scripts directory.
+- Fixed installation issue with setup.*.
 
 Version 2.3.0
 =============

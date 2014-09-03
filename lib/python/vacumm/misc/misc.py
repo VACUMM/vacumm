@@ -1660,7 +1660,7 @@ def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False, nos
                 continue
             
         # Named
-        elif hasattr(comp, 'id') and (comp.id in ids and not out) or (comp.id not in ids and out): 
+        elif hasattr(comp, 'id') and ((comp.id in ids and not out) or (comp.id not in ids and out)): 
             continue
             
         # Remove

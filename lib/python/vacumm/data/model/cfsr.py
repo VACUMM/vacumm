@@ -58,11 +58,11 @@ class CFSR(AtmosDataset):
 
         # surface wind
         'u10m':{
-            'search':{'names':['10u', 'U-component_of_wind']},
+            'search':{'names':['10u', 'u10'], 'standard_names':['U-component_of_wind']},
             'squeeze':'z'
         }, 
         'v10m':{
-            'search':{'names':['10v', 'V-component_of_wind']},
+            'search':{'names':['10v', 'v10'], 'standard_names':['V-component_of_wind']},
             'squeeze':'z'
         }, 
         

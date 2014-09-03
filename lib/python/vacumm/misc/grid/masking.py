@@ -57,7 +57,8 @@ __all__ = ['get_coast', 'get_coastal_indices', 'GetLakes', 'polygon_mask', 'mask
     'polygons', 'd2m', 'polygon_select', 'envelop', 'check_poly_islands', 
     'check_poly_straits','t2uvmasks', 'mask2d', 'grid_envelop', 'convex_hull', 
     'uniq', 'rsamp', 'zcompress', 'Lakes', 'erode_coast', 'resol_mask', 
-    'get_dist_to_coast', 'get_avail_rate']
+    'get_dist_to_coast', 'get_avail_rate', 'grid_envelop_mask', 'create_polygon', 
+    'clip_shape', 'proj_shape', 'plot_polygon', 'clip_shapes']
 __all__.sort()
 
 def get_coast(mask, land=True, b=True, borders=True, corners=True):
@@ -400,6 +401,9 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
         - **ocean**, optional: If True, keep only the ocean (= biggest lake).
         - **fractions**: If True or 1, return the total fraction of cells covered by the 
           polygons; if 2, returns the total area for each cell.
+        - **proj**, optional: Geographical projection function. 
+          See :func:`~vacumm.misc.grid.basemap.get_proj`. Use ``False`` to not
+          convert coordinates to meters, and speed up the routine.
         
     :Result:
     
@@ -408,8 +412,8 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
     
     # Get proper numeric axes
     gg = M.get_grid(gg)
-    curved = M.isgrid(gg, curv=True)
     proj = get_proj(gg)
+    curved = M.isgrid(gg, curv=True) or proj
     xx, yy = M.get_xy(gg, mesh=True, num=True, proj=proj)
     
     # Thresholds
@@ -617,6 +621,119 @@ def masked_ocean(vv, polys=None, **kwargs):
     pass
 
 
+def proj_shape(shape, proj):
+    """Project a Point, a Polygon or a LineString shape using a geographical projection
+    
+    :Params:
+    
+        - **shape**: A Point, Polygon, or a LineString instance with coordinates in degrees.
+        - **proj**: A projection function of instance. 
+          See :func:`~vacumm.misc.grid.basemap.get_proj`.
+        
+    :Return: A similar instance with its coordinates converted to meters
+    """
+    if not callable(proj): return shape
+        
+    # Point
+    if isinstance(shape, Point):
+        return Point(*proj(shape.boundary))
+        
+    # LineString and Polygon
+    return shape.__class__(proj(*shape.boundary.T).T)
+ 
+def clip_shape(shape, clip=None):
+    """Clip a :class:`Point`, a :class:`Polygon` or a :class:`LineString` 
+    shape using clipping polygon
+    
+    :Params:
+    
+        - **shape**: A valid :class:`Point`, a :class:`Polygon` or a 
+          :class:`LineString` instance.
+        - **clip**, optional: A clipping polygon.
+        
+    :Return: A possible empty list of intersection shapes.
+    """
+    if clip is None: return [shape]
+    clip = create_polygon(clip)
+    shapes = []
+    if shape.within(clip):
+        return [shape]
+    if shape.intersects(clip):
+        try:
+            return shape.intersection(clip)
+        except:
+            pass
+    return shapes
+
+def clip_shapes(shapes, clip=None):
+    """Same as :func:`clip_shape` but applied to a list of shapes"""
+    clip = create_polygon(clip)
+    shapes = []
+    for shape in shapes:
+        shapes.extend(clip_shape(shape, clip))
+    return shapes
+
+def create_polygon(data, proj=False, mode='poly'):
+    """Create a simple :class:`Polygon` instance using data
+    
+    :Param:
+    
+        - **data**: Can be either a ``(N,2)`` or ``(2,N)`` array,
+          a ``(xmin,ymin,xmax,ymax)`` list, tuple or array, or a Polygon.
+        - **proj**, optional: Geographical projection function.
+        - **mode**, optional: Output mode. ``"line"`` = :class:`LineString`,
+          ``"verts"`` = numpy vertices, else :class:`Polygon`.
+        
+    """
+    if isinstance(data, Polygon): 
+        if callable(proj):
+            data = data.boundary
+        else:
+            return data
+    
+    # Convert to numeric
+    data = N.asarray(data, 'float64')
+    
+    # xmin,ymin,xmax,ymax form
+    if data.ndim == 1:
+        assert len(data) == 4, '1D form must have 4 elements (xmin,ymin,xmax,ymax), not %i'%len(poly)
+        xmin,ymin,xmax,ymax = data
+        data =  N.asarray([[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]])
+        
+    # Check order
+    if data.shape[0] == 2:
+        data = data.T
+        
+    # Projection
+    if callable(proj):
+        xdata, ydata = proj(*data.T)
+        data = N.asarray([xdata, ydata]).T
+        
+    # Create Polygon or LineString
+    mode = str(mode)
+    if mode.startswith('v'): return data
+    shaper = LineString if mode.startswith('l') else Polygon
+    return shaper(data)
+
+def plot_polygon(poly, ax=None, **kwargs):
+    """Simply plot a polygon on the current plot using :func:`matplotlib.pyplot.plot`
+    
+    :Params:
+    
+        - **poly**: A valid :class:`Polygon` instance.
+        - Extra keyword are passed to plot function.
+    
+    """
+    xx = poly.boundary[:, 0]
+    yy = poly.boundary[:, 1]
+    xx = N.concatenate((xx, xx[:1]))
+    yy = N.concatenate((yy, yy[:1]))
+    if ax is None:
+        from matplotlib.pyplot import gca
+        ax = gca()
+    return ax.plot(xx, yy, **kwargs)
+    
+
 def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     """Return a list of Polygon instances
     
@@ -624,8 +741,10 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     
         - **polys**: A tuple or list of polygon proxies (see examples).
         - **shapetype**: 1 = Polygons, 2=Polylines(=LineStrings) [default: 2]
-        - **proj**: Geographical projection to convert positions.
+        - **proj**: Geographical projection to convert positions. No projection
+          by default.
         - **clip**, optional: Clip all polygons with this one.
+        
     
     :Example:
     
@@ -647,14 +766,16 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
         
     # Numeric or geos polygons
     out_polys = []
-    gmt_polys = []
+#    gmt_polys = []
     if shapetype == 1:
         shaper = LineString
     else:
         shaper = Polygon
     if clip is not None: 
         kwclip.setdefault('proj', proj)
-        clip = polygons([clip], **kwclip)[0]
+        clip = create_polygon(clip, **kwclip)
+        
+    # Loop on polygon data
     from misc import isgrid, isrect, curv2rect
     for poly in polys:
         
@@ -667,60 +788,35 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
             
         # It's already a polygon
         if isinstance(poly, Polygon): 
-            if clip is not None:
-                if poly.intersects(clip):
-                    try:
-                        out_polys.extend(poly.intersection(clip))
-                    except:
-                        pass
-            else:
-                out_polys.append(poly)
-            continue
+            pp = [poly]
         
         # Polygon from GMT
         if isinstance(poly, (str, Basemap)):
+            poly = GSHHS_BM(poly)
 #           gmt_polys.append(poly)
-            out_polys.extend(GSHHS_BM(poly, clip=clip))
+            out_polys.extend(GSHHS_BM(poly, clip=clip).get_shapes()) # FIXME: proj?
             continue
             
         # Shapes instance
         if isinstance(poly, Shapes):
+            
             # Good polygon?
             if poly.get_type() == 0 or poly.get_type() != shapetype:
                 continue
-            # Clip
-            poly.clip(clip)
+                
+#            # Clip
+#            poly.clip(clip)
+            
             # Append to list
             out_polys.extend(poly.get_shapes())
-            continue
+#            continue
         
-        # Convert to array
-        poly = N.asarray(poly, 'float64')
+        # Make sure to have a polygon with the right projection
+        poly = create_polygon(poly, proj=proj, aslinestring=shaper is LineString)
         
-        # xmin,ymin,xmax,ymax form
-        if poly.ndim == 1:
-            assert len(poly) == 4, '1D form must have 4 elements (xmin,ymin,xmax,ymax), not %i'%len(poly)
-            xmin,ymin,xmax,ymax = poly
-            poly = N.asarray([[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]])
-            
-        # Check order and geographic projection
-        if callable(proj):
-            poly = poly.copy()
-        if poly.shape[0] == 2:
-            if callable(proj):
-                poly[:] = proj(*poly)
-            poly = poly.transpose()
-        elif callable(proj):
-            poly[:, 0], poly[:, 1] = proj(poly[:, 0], poly[:, 1])
-
-        # Get polygon object
-        poly = shaper(poly)
+        # Clip
         if clip is not None:
-            if poly.intersects(clip):
-                try:
-                    out_polys.extend(poly.intersection(clip))
-                except:
-                    pass
+            out_polys.extend(clip_shape(poly, clip))
         else:
             out_polys.append(poly)
     
@@ -1047,15 +1143,17 @@ def grid_envelop(gg, centers=False, poly=True):
     return Polygon(N.asarray(zip(xp, yp)))
 
 def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
-    """Create a mask on output grid from the bounds of an input grids:
-    points of output grid that are not within these bounds of are masked.
+    """Create a mask on output grid from the bounds of an input grid:
+    points of output grid that are not within bounds of input grid are masked.
     
-    - **ggi**: Input grid or (lon,lat) or cdms variable.
-    - **ggo**: Output grid or (lon,lat) or cdms variable.
-    - Other keywords are passed to :func:`grid_envelop`
+    :Params:
+    
+        - **ggi**: Input grid or (lon,lat) or cdms variable.
+        - **ggo**: Output grid or (lon,lat) or cdms variable.
+        - Other keywords are passed to :func:`grid_envelop`
     
     :Returns:
-        A mask on output grid.
+        A mask on output grid, where True means "outside bounds of input grid".
     """
     
     if M.isgrid(ggi, curv=False): # Rectangular
@@ -1080,7 +1178,7 @@ def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
         vari[[0, -1]] = 1.
         vari[:, [0, -1]] = 1.
         M.set_grid(vari, M.curv_grid(xxb, yyb))
-        varo = regrid2d(vari, ggo, 'nearest', ext=True).filled(1.)
+        varo = regrid2d(vari, ggo, method='nearest', ext=True).filled(1.)
         return varo.astype('?')
         
 

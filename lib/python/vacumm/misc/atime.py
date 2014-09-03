@@ -616,6 +616,14 @@ def datetime(mytimes):
             res.append(num2date(mytime))
             continue
             
+        # Tuple
+        if isinstance(mytime, tuple):
+            if not mytime: continue
+            if len(mytime)==1: mytime += (1, )
+            if len(mytime)==2: mytime += (1, )
+            res.append(DT.datetime(*mytime))
+            continue
+            
         # Others
         ct = comptime(mytime)
         ct_seconds = int(round(ct.second))

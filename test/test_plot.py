@@ -15,6 +15,7 @@ class TSF(VCTestCase):
         'test_plot_section_quiver',
         'test_plot_hov_tz',
         'test_plot_streamplot',
+        'test_plot_core_add_thing',
         'test_plot_taylor', 
         ]:
         exec(method_template.format(test_name))

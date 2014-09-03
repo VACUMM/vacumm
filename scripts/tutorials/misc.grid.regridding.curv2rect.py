@@ -19,11 +19,11 @@ rgrid = cdms2.createRectGrid(lat1d, lon1d)
 
 print 'Regridding'
 print ' - nearest neighbours'
-hs_nearest = regrid2d(hs, rgrid, method='nearest')
-print ' - cell averages'
-hs_cell = regrid2d(hs, rgrid, method='cellave')
-print ' - bilinear'
-hs_bilin = regrid2d(hs, rgrid, method='bilinear')
+#hs_nearest = regrid2d(hs, rgrid, method='nearest')
+#print ' - cell averages'
+#hs_cell = regrid2d(hs, rgrid, method='cellave')
+#print ' - bilinear'
+#hs_bilin = regrid2d(hs, rgrid, method='bilinear')
 print ' - cargen'
 hs_carg = regrid2d(hs, rgrid, method='carg')
 print ' - natgrid'

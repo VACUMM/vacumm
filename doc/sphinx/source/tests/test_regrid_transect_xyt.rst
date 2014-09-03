@@ -2,7 +2,5 @@
 ======================================================================================================================================
 
 
-.. figure:: ../../../../scripts/test/test_regrid_transect_xyt.png
-
 .. literalinclude:: ../../../../scripts/test/test_regrid_transect_xyt.py
 

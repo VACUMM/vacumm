@@ -53,6 +53,7 @@ from ...misc.io import Shapes
 from misc import get_xy
 from ...misc.phys.constants import R as rsphere_mean
 from ...misc.misc import kwfilter, dict_check_defaults
+from vacumm.config import get_config_value
 
 #: Earth radius of wgs84 ellipsoid
 rshpere_wgs84 = (6378137.0,6356752.3141)
@@ -264,14 +265,15 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projectio
 
 
 def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
-    """Get a suitable map for converting degrees to meters
+    """Quickly create :class:`Basemap` instance
     
     :Params:
     
-        - **gg**: cdms grid or variable, or (xx,yy).
-        - *res*: Resolution [default: None]
-        - *proj*: Projection [default: None->'merc']
-        - *auto*: If True, get geo specs according to grid. If False, whole earth. If None, auto = res is None [default: False]
+        - **gg**, optional: cdms grid or variable, or (xx,yy).
+        - **res**, optional: Resolution.
+        - **proj**, optional: Projection [default: None->'merc']
+        - **auto**, optional: If True, get geo specs according to grid. If False, whole earth. 
+          If None, auto = res is None.
     
     .. todo:: Merge with :func:`create_map`
     """
@@ -299,97 +301,164 @@ def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
 class GSHHS_BM(Shapes):
     """Shoreline from USGS using Basemap
     
-    Initialized with a valid Basemap instance with resolution not equal to None, or thanks to arguments passed to :func:`vacumm.misc.plot.map()`
+    Initialized with a valid Basemap instance with resolution not equal to None, 
+    or thanks to arguments passed to :func:`create_mapplot.map`
         
     - *m*: Basemap instance [default: None]
     
     """
     def __init__(self, input=None, clip=None, sort=True, reverse=True, proj=False, **kwargs):
-        # Clipping argument
-        if clip is not None:
-            clip = polygons([clip])[0]
+    
+        # From another Shapes instance
+        if isinstance(input, Shape):
+            if m is not None and clip is None:
+                clip = [input.xmin, input.ymin, input.xmax, input.ymax]
+            input = input._m
             
-        from_map = not isinstance(input, Shapes)
-        if not from_map:
-            # Already a Shapes instance
-            self._m = input._m
-            self._proj = input._proj
-            polys = input._shapes
-        else:
-            # Get the map
-            if isinstance(input, Basemap):
-                assert input.resolution is not None, 'Your map needs its resolution to be set'
-                m = input
-            else:
-                if isinstance(input, str):
-                    kwargs['res'] = input
-                elif isinstance(input, dict):
-                    kwargs.update(input)
-                    
-                # Map extension from clip bounds
-                if clip is not None:
-                    bb = clip.boundary
-                    kwargs.setdefault('lon_min', bb[:, 0].min())
-                    kwargs.setdefault('lon_max', bb[:, 0].max())
-                    kwargs.setdefault('lat_min', bb[:, 1].min())
-                    kwargs.setdefault('lat_max', bb[:, 1].max())
-                    
-                # Default resolution is 'i' if nothing to estimate it
-                if not kwargs.has_key('res') and not kwargs.has_key('resolution') and \
-                    (   (not kwargs.has_key('lon') and 
-                            (not kwargs.has_key('lon_min') or not kwargs.has_key('lon_max'))) or 
-                        (not kwargs.has_key('lat') and 
-                            (not kwargs.has_key('lat_min') or not kwargs.has_key('lat_max')))):
-                    kwargs['res'] = 'i'
-                    
-                # Check lats
-                if kwargs.has_key('lat_min'): kwargs['lat_min'] = max(kwargs['lat_min'], -90)
-                if kwargs.has_key('lat_max'): kwargs['lat_max'] = min(kwargs['lat_max'], 90)
-                    
-                # Build the map
-                m = create_map(**kwargs)
-            polys = m.coastpolygons
-            self._m = m
-            self._proj = m.projtran
+        # Get the map
+        if not isinstance(input, Basemap):
             
-        # Convert to GEOS polygons and clip
-        self._shapes = []
-        for i, pp in enumerate(polys):
-
-            # Get the polygon
-            if not from_map:
-                poly = pp
-            else:
-                if m.coastpolygontypes[i] in [2,4]: continue # Skip lakes
-#                if callable(self._proj):
-#                    pp = self._proj(pp[0], pp[1])
-                poly = Polygon(N.asarray(pp,'float64').transpose())
-            
-            # Clip it
+            # Base to create the map
+            if isinstance(input, str):
+                kwargs['res'] = input
+            elif isinstance(input, dict):
+                kwargs.update(input)
+                
+            # Clipping zone
             if clip is not None:
-                if poly.intersects(clip):
-                    self._shapes.extend(poly.intersection(clip))
-            else:
-                self._shapes.append(poly)
-        self._info = []
-        self._type = 2
-        self._shaper = Polygon
-        if self._shapes:
-            xy = N.concatenate([s.boundary for s in self._shapes])
-            self.xmin = xy[:, 0].min()
-            self.xmax = xy[:, 0].max()
-            self.ymin = xy[:, 1].min()
-            self.ymax = xy[:, 1].max()
-            del xy
-        else:
-            xmin = N.inf
-            xmax = -N.inf
-            ymin = N.inf
-            ymax = -N.inf
+                
+                # Vertices
+                clip = create_polygon(clip, mode='verts')
         
-        # Sort polygons?
-        if sort:
-            self.sort(reverse=reverse)
+                # Map extension from clip bounds
+                kwargs.setdefault('lon_min', clip[:, 0].min())
+                kwargs.setdefault('lon_max', clip[:, 0].max())
+                kwargs.setdefault('lat_min', clip[:, 1].min())
+                kwargs.setdefault('lat_max', clip[:, 1].max())
+                    
+            # Default resolution is 'i' if nothing to estimate it
+            if not 'res' in kwargs and not 'resolution' in kwargs and \
+                (   (not 'lon' in kwargs and 
+                        (not 'lon_min' in kwargs or not 'lon_max' in kwargs)) or 
+                    (not 'lat' in kwargs and 
+                        (not 'lat_min' in kwargs or not 'lat_max' in kwargs))):
+                kwargs['res'] = 'i'
+                
+            # Check lats
+            if 'lat_min' in kwargs: kwargs['lat_min'] = max(kwargs['lat_min'], -89.99)
+            if 'lat_max' in kwargs: kwargs['lat_max'] = min(kwargs['lat_max'], 89.99)
+                
+            # Build the map
+            m = create_map(**kwargs)
+            self.res = m.resolution
+            
+        else:
+            
+            clip = False
+            m = input
+        
+        # Get unprojected polygons vertices
+        self.res = m.resolution
+        assert input.resolution is not None, 'Your map needs its resolution to be set'
+        all_verts = []
+        for verts in m.coastpolygons:
+            if m.coastpolygontypes[i] in [2,4]: continue # Skip lakes
+            if m.projection!='cyl': # Project back
+                verts = m.projtran(verts[0], verts[1], inverse=True)
+            all_verts.append(N.asarray(verts).T)
+                
+        # Final initialization
+        Shapes.__init__(self, all_verts, m=m, clip=clip, sort=sort, proj=proj, 
+            shapetype=Shapes.POLYGON, **kwargs)
+        
+    
+#    def __init__(self, input=None, clip=None, sort=True, reverse=True, proj=False, **kwargs):
+#        # Clipping argument
+#        if clip is not None:
+#            clip = create_polygon(clip)
+#            
+#        from_map = not isinstance(input, Shapes)
+#        if not from_map:
+#            # Already a Shapes instance
+#            self._m = input._m
+#            self._proj = input.get_proj(proj)
+#            polys = input.get_shapes(proj=proj)
+#            
+#        else:
+#            # Get the map
+#            if isinstance(input, Basemap):
+#                assert input.resolution is not None, 'Your map needs its resolution to be set'
+#                m = input
+#            else:
+#                if isinstance(input, str):
+#                    kwargs['res'] = input
+#                elif isinstance(input, dict):
+#                    kwargs.update(input)
+#                    
+#                # Map extension from clip bounds
+#                if clip is not None:
+#                    bb = clip.boundary
+#                    kwargs.setdefault('lon_min', bb[:, 0].min())
+#                    kwargs.setdefault('lon_max', bb[:, 0].max())
+#                    kwargs.setdefault('lat_min', bb[:, 1].min())
+#                    kwargs.setdefault('lat_max', bb[:, 1].max())
+#                    
+#                # Default resolution is 'i' if nothing to estimate it
+#                if not kwargs.has_key('res') and not kwargs.has_key('resolution') and \
+#                    (   (not kwargs.has_key('lon') and 
+#                            (not kwargs.has_key('lon_min') or not kwargs.has_key('lon_max'))) or 
+#                        (not kwargs.has_key('lat') and 
+#                            (not kwargs.has_key('lat_min') or not kwargs.has_key('lat_max')))):
+#                    kwargs['res'] = 'i'
+#                    
+#                # Check lats
+#                if kwargs.has_key('lat_min'): kwargs['lat_min'] = max(kwargs['lat_min'], -90)
+#                if kwargs.has_key('lat_max'): kwargs['lat_max'] = min(kwargs['lat_max'], 90)
+#                    
+#                # Build the map
+#                m = create_map(**kwargs)
+#                
+#                
+#            polys = m.coastpolygons
+#            self._m = m
+#            self._proj = proj
+#            
+#        # Convert to GEOS polygons and clip
+#        self._shapes = []
+#        for i, pp in enumerate(polys):
+#
+#            # Get the polygon with good projection
+#            if not from_map:
+#                poly = pp
+#            else:
+#                if m.coastpolygontypes[i] in [2,4]: continue # Skip lakes
+#                if callable(proj) and m.projection!='cyl': # Project back for reprojection
+#                    pp = m.projtran(pp[0], pp[1], inverse=True)
+#                poly = create_polygon(pp, proj=proj)
+#            
+#            # Clip it
+#            self._shapes.extend(clip_shape(poly, clip))
+#        
+#        # Save some info
+#        self._info = []
+#        self._type = 2
+#        self._shaper = Polygon
+#        if self._shapes:
+#            xy = N.concatenate([s.boundary for s in self._shapes])
+#            self.xmin = xy[:, 0].min()
+#            self.xmax = xy[:, 0].max()
+#            self.ymin = xy[:, 1].min()
+#            self.ymax = xy[:, 1].max()
+#            del xy
+#        else:
+#            xmin = N.inf
+#            xmax = -N.inf
+#            ymin = N.inf
+#            ymax = -N.inf
+#        
+#        # Sort polygons?
+#        if sort:
+#            self.sort(reverse=reverse)
             
 def merc(lon=None, lat=None, **kwargs):
     """Mercator map
@@ -419,22 +488,29 @@ def get_proj(gg=None, **kwargs):
     """Setup a default projection using x,y coordinates and 
     :class:`~mpl_toolkits.basemap.proj.Proj`
     
-    Projection is set by default to Mercator and cover the coordinates.
+    Projection is set by default to "laea" and cover the coordinates.
     
     :Params:
     
         - **gg**, optional: Grid or coordinates (see :func:`~vacumm.misc.grid.misc.get_xy`).
-          If not provided, lon bounds are set to (-180,180) and lat bounds to (-90,90).
-        - Other keywords are passed to :class:`~mpl_toolkits.basemap.proj.Proj`
+          If not provided, lon bounds are set to (-180,180) and lat bounds to (-89.99,89.99).
+        - Other keywords are passed to :class:`~mpl_toolkits.basemap.proj.Proj`. One of
+          them is the projection type, which defaults to configuration option 
+          :confopt:`[vacumm.misc.grid.basemap] proj`.
+          
+    :Return: A :class:`mpl_toolkits.basemap.proj.Proj` instance.
         
     :Examples:
     
-        >>> proj = get_proj(sst.getGrid())
+        >>> proj = get_proj(sst.getGrid(), proj='laea')
         >>> x, y = proj(lon, lat)
         
-        >>> proj = get_proj((lon,lat))
-        >>> xx, yy = N.meshgrid(lon,lat)
-        >>> xx,yy = proj(xx,yy)
+        >>> proj = get_proj((lon, lat))
+        >>> xx, yy = N.meshgrid(lon, lat)
+        >>> xx, yy = proj(xx, yy)
+        >>> print proj(xx, yy, inverse=True)
+        
+        >>> proj = get_proj(R=6000000.)
     """
     if gg is not None:
         x,y = get_xy(gg, num=True)
@@ -443,8 +519,12 @@ def get_proj(gg=None, **kwargs):
         xmin, ymin, xmax, ymax = -180, -90, 180, 90 
         y = [0]
     projparams = kwargs.copy()
-    dict_check_defaults(projparams, R=rsphere_mean, units='m', proj='merc', lat_ts = N.median(y))
+    ymax = min(ymax, 89.99)
+    ymin = max(ymin, -89.99)
+    dict_check_defaults(projparams, R=rsphere_mean, units='m', 
+        proj=get_config_value('vacumm.misc.grid.basemap', 'proj'),  
+        lat_ts = N.median(y) if len(y)>10 else N.mean(y))
     return Proj(projparams, xmin, ymin, xmax, ymax)
     
 
-from masking import polygons
+from masking import polygons, create_polygon, proj_shape, clip_shape

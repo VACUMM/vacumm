@@ -88,8 +88,6 @@ add_grid(gridci, **kwg)
 varo = regrid2dnew(varci, gridco, method='conserv', tool='esmf')
 plot2d(varo, title='ESMF / Conserv', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridci, **kwg)
-
-
 P.tight_layout()
-P.show()
+P.savefig(code_file_name(ext='png'))
 rcdefaults()
