@@ -779,7 +779,7 @@ class  NcSigmaGeneralized(NcSigma):
     sigma_name = 's'
     standard_names.update(
         cst = "ocean_s_coordinate_function_at_midlayer", 
-        csw = "ocean_s_coordinate_function_at_toplayer", 
+        csw = ["ocean_s_coordinate_function_at_toplayer", "ocean_s_coordinate_function_at_interface"]
     )
     standard_names[sigma_name] = [
         "ocean_s_coordinate", 
@@ -821,7 +821,7 @@ class  NcSigmaGeneralized(NcSigma):
     def load_stretchings(self):
         """Load stretching at mid and top layer and store them in :attr:`csu`"""
         self.cs = {}
-        for at in 'u', 't':
+        for at in 'w', 't':
             csname = "cs"+at
             if csname in self.names:
                 var = self.f(self.names[csname])
@@ -868,6 +868,7 @@ class  NcSigmaGeneralized(NcSigma):
             try:
             
                 # Read variables      
+#cval revoir le selector ici
                 if eta is None:
                     eta = self.get_eta(selector, mode='noerr')
                 elif eta is False:
