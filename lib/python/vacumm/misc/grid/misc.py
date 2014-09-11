@@ -871,7 +871,7 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
             oijk = (0, gg.shape[1-axis], 1)
             mask = N.ones(gg.shape, '?')
 #            mask[(ijk, None)[::1-2*axis]] = False
-            mask[(sel, None)[::1-2*axis]] = False
+            mask[(sel, slice(None))[::1-2*axis]] = False
         else:
             xijk, yijk, mask = _coord2ind2d_(gg, sel, mask=mask)
             if xijk is None: return None, None, mask
@@ -882,7 +882,7 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
             i, j, k = osel.indices(gg.shape[1-axis])
             oijk = (max(i, oijk[0]), min(j, oijk[1]), 1)
             bad = N.ones(gg.shape, '?')
-            bad[(None, slice(*oijk))[::1-2*axis]] = False
+            bad[(slice(None), slice(*oijk))[::1-2*axis]] = False
             mask |= bad
             del bad
             
@@ -2715,7 +2715,7 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
     :Params:
     
         - **dz**: Layer thickness from bottom to top.
-        - **ref**: Reference depthd for integration, wich depend
+        - **ref**: Reference depth for integration, which depends
           on ``refloc``:
           
             - ``"top"`` or ``"eta"`` or ``"ssh"``: Sea surface height.
