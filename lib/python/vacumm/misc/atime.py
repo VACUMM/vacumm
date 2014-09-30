@@ -45,6 +45,7 @@ from matplotlib.dates import DateFormatter, num2date, date2num
 from dateutil.rrule import rrule, MO, TU, WE, TH, FR, SA, SU, YEARLY, \
      MONTHLY, WEEKLY, DAILY, HOURLY, MINUTELY, SECONDLY
 
+import math
 import time,datetime as DT
 from re import split as resplit,match, compile as recompile
 import re
@@ -618,8 +619,8 @@ def datetime(mytimes):
             
         # Others
         ct = comptime(mytime)
-        ct_seconds = int(round(ct.second))
-        ct_microseconds = int(round(ct.second-ct_seconds))*1000
+        ct_seconds = int(math.floor(ct.second))
+        ct_microseconds = int((ct.second-ct_seconds)*1e6)
         
         # Quick fix for stupid seconds at 60
         if ct_seconds == 60:
