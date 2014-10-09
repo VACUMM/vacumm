@@ -3046,7 +3046,7 @@ class Plot1D(Plot):
         # Get axis and adjust order
         if axis is not None:
             if not isaxis(axis):
-                axis = create_axis(axis)
+                axis = cdms2.createAxis(axis)
                 cp_atts(self.data[0].getAxis(0), axis, overwrite=False)
             else: # adjust order
                 orders = [var.getOrder() for var in self.data]
