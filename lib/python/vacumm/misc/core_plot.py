@@ -64,7 +64,7 @@ from axes import check_axes, istime, axis_type, set_order, get_order, merge_orde
 from grid import get_axis, meshbounds, meshgrid, var2d
 from grid.masking import resol_mask
 from misc import kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts, \
-    auto_scale, zoombox, dict_check_defaults, basic_auto_scale, dict_copy_items
+    auto_scale, zoombox, dict_check_defaults, basic_auto_scale, dict_copy_items,dict_merge
 from color import get_cmap, cmap_magic, cmap_rainbow, RGB, land, whiten, darken, RGBA
 from _ext_plot import DropShadowFilter, FilteredArtistList, GrowFilter
 from phys.units import deg2m, tometric, m2deg
@@ -1870,6 +1870,57 @@ class Plot(object):
        
         return o
         
+    def add_arrow(self, x, y, udata,vdata,zorder=150,polar=False,degrees=True,shadow=False, glow=False,
+         quiverkey=False,xyscaler=None, **kwargs):
+        """Add an arrow to the map using :meth:`matplotlib.pyplot.quiver`
+        
+        :Params:
+        
+            - **x,y**: Coordinates of the position of the tail
+            - **udata**: X or radial component of arrows.
+            - **vdata**: Y or directional component of arrows.
+            - **polar**, optional: Consider polar coordinates: ``(u, v) -> (rho, theta)``
+            - **degrees**, optional: If True (default), trat ``theta`` as degrees, else radians.
+            - **quiver_<param>**, optional: ``<param>`` is passed to :func:`matplotlib.pyplot.quiver`.
+            - Other keywords are passed to :func:`matplotlib.pyplot.plot`.
+            
+        :See also: :func:`matplotlib.pyplot.scatter`
+        """
+        udata=N.asarray(udata)
+        vdata=N.asarray(vdata)
+        if polar:
+            u, v = udata,vdata 
+            m = u
+            angle = (v*N.pi/180.) if degrees else v
+            u = m * MV2.cos(angle)
+            v = m * MV2.sin(angle)
+            del angle
+            if hasattr(m, 'units'):
+                u.units = v.units = m.units
+            if hasattr(m, 'long_name'):
+                u.long_name = 'X component of '+m.long_name
+                v.long_name = 'Y component of '+m.long_name
+            # Data
+            udata, vdata = u,v
+
+        # Coordinates
+        x = N.asarray(x)
+        y = N.asarray(y)
+        if xyscaler is None and hasattr(self, 'xyscaler'): xyscaler = self.xyscaler
+        if callable(xyscaler):
+            x, y = xyscaler(x, y)
+        # Params
+        kwargs.update(zorder=zorder)
+        kwqv = kwfilter(kwargs,'quiver')
+        kwqvk = kwfilter(kwargs,'quiverkey')
+        #dict_copy_items(kwargs, [kwqv],'anim')
+        kwargs=dict_merge(kwargs,kwqv)
+        # Plot
+        o = self.axes.quiver(x, y, udata,vdata,  **kwargs)
+        self.register_obj(o, **kwargs)
+        if quiverkey :
+          self.quiverkey(o,**kwqvk)
+
     def add_line(self, extents, zorder=150, shadow=False, glow=False, color='r', 
         npts=10, xyscaler=None, **kwargs):
         """Add a line to the plot using :meth:`matplotlib.pyplots.plot`
