@@ -3723,6 +3723,28 @@ def add_map_point(gg, lon, lat, marker='o', color='r', size=40,  m=None, alpha=1
     if m is None: m = minimap(gg, **kwmap)
     return m.add_point(lon, lat, size=size, color=color, marker=marker, **kwargs)
     
+def add_map_places(gg, lon, lat,txt, marker='o', color='r', size=40,  m=None, alpha=1, **kwargs):
+    """Add a small map with one or several places at specified longitude and latitude
+    
+    :Params:
+    
+        - **gg**: Map limits passed to :func:`minimap` 
+          or  :meth:`~vacumm.misc.core_plot.Map` instance.
+        - **lon/lat**: Coordinates arrays of the points.
+        - **txt**: Text array associated to the points
+    
+    :See also: :func:`minimap` :meth:`~vacumm.misc.core_plot.Plot.add_place`
+    """        
+    kwmap = kwfilter(kwargs, 'map')
+    for att in 'bbox', 'bgcolor', 'fig':
+        if att in kwargs: kwmap[att] = kwargs.pop(att)
+    from core_plot import Map
+    if isinstance(gg, Map): m = gg
+    if m is None: m = minimap(gg, **kwmap)
+    for x,y,text in zip(lon,lat,txt):
+      m.add_place(x, y, text, shadow=False, glow=False, **kwargs)
+    return m
+
 def add_map_line(gg, extents, color='r', linewidth=1.5, m=None, **kwargs):
     """Add a small map with a line at specified longitudes and latitudes
     
