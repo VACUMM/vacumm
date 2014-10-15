@@ -2449,8 +2449,8 @@ class Shapes(object):
             x1, y1 = self._proj(x0+dx, y0+dx, inverse=True)
             return x1-x0, y1-y0
         elif not deg and not callable(self._proj): 
-            return resol(x, y, proj=True)
-        return resol(x, y, proj=False)
+            return resol((x, y), proj=True)
+        return resol((x, y), proj=False)
 
         
     def get_map(self):
