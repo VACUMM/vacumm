@@ -3707,11 +3707,17 @@ class Curve(Plot1D):
             kwfb.setdefault('zorder', ll[0].get_zorder()-0.01)
             kwfb.setdefault('linewidth', 0)
             kwfb.setdefault('interpolate', True)
-            if fill_between is True or fill_between is None: fill_between = 0.
+            if 'color' in kwline:
+                kwfb.setdefault('color', kwline['color'])
+            b0 = yy
+            if fill_between is True or fill_between is None: 
+                b1 = 0.
+            elif N.asarray(fill_between).ndim == 2:
+                b0, b1 = fill_between
             if self.order[0]=='d':
-                ff = self.axes.fill_between(xx, yy, fill_between, **kwfb)
+                ff = self.axes.fill_between(xx, b0, b1, **kwfb)
             else:
-                ff = self.axes.fill_betweenx(yy, xx, fill_between, **kwfb)
+                ff = self.axes.fill_betweenx(yy, b0, b1, **kwfb)
             self.add_obj('fill_between', ff)
             self.register_obj(ff, 'fill_between', **kwargs)
         # - error
