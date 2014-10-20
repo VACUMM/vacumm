@@ -763,7 +763,7 @@ def _trans_(trans, xx, yy):
     if xmin >= -0.1 and ymin >= -0.1 and (xmax > 720. or ymax > 90.): 
         return xx, yy
     # We use a existing basemap instance
-    if isinstance(trans, Basemap):
+    if callable(trans):
         return trans(xx, yy)
     # We create an instance
     lat_center = yy.mean()
@@ -775,21 +775,33 @@ def _trans_(trans, xx, yy):
 def d2m(x, y):
     return deg2m(x, y), deg2m(y)
     
-def polygon_select(xx, yy, polys, zz=None, mask=False,):
+def polygon_select(xx, yy, polys, zz=None, mask=False):
     """Select unstructered points that are inside polygons
     
-    - **xx**: Positions along X.
-    - **yy**: Positions along Y.
-    - **polys**: Polygons.
-    - *zz*: Values at theses positions.
-        
-    :Outputs:
+    :Params:
     
-        - if ``mask is False``: selected ``x,y`` or ``x,y,z`` 
-        - if ``mask is True``:
+        - **xx**: Positions along X.
+        - **yy**: Positions along Y.
+        - **polys**: Polygons.
+        - **zz**, optional: Values at theses positions.
+        - **mask**, optional: Return masked positions and values of True or 1,
         
-            - if ``zz is None``: the mask
-            - else: all ``x,y,z`` where ``z`` is masked
+    :Examples:
+    
+        >>> xs, ys = polygon_select(x, y, [poly1, poly2])
+        >>> xs, ys, zs = polygon_select(x, y, [poly1, poly2], z)
+        
+        >>> xmasked, ymasked, zmasked = polygon_select(x, y, polys, z, mask=True)
+        >>> print N.allclose(xs, xmasked.compressed())
+        
+        >>> valid = polygon_select(x, y, polys, mask=2)
+        >>> print N.allclose(xs, x[valid])
+        
+    :Outputs: Depends on ``mask``
+    
+        - False or 0: selected ``x,y`` or ``x,y,z`` 
+        - True/1: the same but as masked arrays
+        - 2: boolean array of valid points (the inverse of the mask)
     """
 
     # Get numeric axes
@@ -800,19 +812,21 @@ def polygon_select(xx, yy, polys, zz=None, mask=False,):
     polys = polygons(polys, lon=(xx.min(), xx.max()), lat=(yy.min(), yy.max()))
         
     # Create the mask
-    pmask = N.zeros(xx.shape, '?')
+    pmask = N.ones(xx.shape, '?')
     for ip, (x, y) in enumerate(zip(xx, yy)):
         for poly in polys:
             if Point((x,y)).within(poly):
-                pmask[ip] = True
+                pmask[ip] = False
                 break
     
     # Return mask or masked
     if mask:
-        if zz is None:
-            return pmask
+        if mask==2:
+            return ~pmask
         else:
-            return xx, yy, N.ma.masked_where(pmask, zz, copy=0)
+            return N.ma.masked_where(pmask, xx, copy=0), \
+                N.ma.masked_where(pmask, yy, copy=0), \
+                N.ma.masked_where(pmask, zz, copy=0)
             
     # Return selection
     good = ~pmask
