@@ -20,10 +20,13 @@ The general config file should be there:
 
 This file may make reference to secondary files.
 
-You can edit it with :func:`vacumm.config.edit_config`:
+You can edit it online with :func:`vacumm.config.edit_user_conf_file`:
     
     >>> from vacumm.config import edit_config
-    >>> edit_config()
+    >>> edit_user_conf_file()
+    
+In offline mode, use :program:`vacumm_edit_config.py` 
+:ref:`script <user.scripts.vacumm_edit_config>`.
 
 I am a developer and I want to create a configuration for my module
 -------------------------------------------------------------------

@@ -19,7 +19,10 @@ from matplotlib import use ; use('Agg')
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.append(os.path.abspath('.'))
 for path in ('../../../lib/python', '../../../lib/python/vacumm', 'sphinxext', '../../..'):
-    sys.path.insert(0, os.path.abspath(path))
+    cfile = sys._getframe(0).f_code.co_filename
+    cdir = os.path.dirname(cfile)
+    path = os.path.abspath(os.path.join(cdir, path))
+    sys.path.insert(0, path)
 
 # -- General configuration -----------------------------------------------------
 
