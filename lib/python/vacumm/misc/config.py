@@ -46,7 +46,8 @@ It is based on :mod:`configobj` and :mod:`validate` modules.
 
 import copy, datetime, inspect, os, operator, re, sys, shutil, traceback
 from optparse import OptionParser, OptionGroup, OptionContainer, Option,  OptionValueError, IndentedHelpFormatter, _
-from argparse import ArgumentParser, _ArgumentGroup, HelpFormatter as ArgHelpFormatter
+from argparse import ArgumentParser, _ArgumentGroup, HelpFormatter as ArgHelpFormatter, \
+    _HelpAction
 from warnings import warn
 
 from configobj import ConfigObj, flatten_errors
@@ -652,9 +653,22 @@ class ConfigManager(object):
         
         # Prepare the option parser
         if parser is None:
-            parser = ArgumentParser()
+            parser = ArgumentParser(add_help=False)
         elif isinstance(parser, dict):
+            parser['add_help'] = False
             parser = ArgumentParser(**parser)
+        else: # remove native help
+            for action in list(parser._actions):
+                if isinstance(action, _HelpAction):
+                    parser._actions.remove(action)
+                    for option_string in action.option_strings:
+                        if option_string in parser._option_string_actions:
+                            parser._option_string_actions.pop(option_string)
+            parser.add_help = False
+            
+        # Add short and long when no help
+        parser.add_argument('-h','--help', action='store_true', help='show a reduced help')
+        parser.add_argument('--long-help', action='store_true', help='show an extended help')
         
         # Add the cfgfile option (configurable)
         if cfgfileopt:
@@ -666,7 +680,7 @@ class ConfigManager(object):
                         cfgfileopt = '--'+cfgfileopt
                 cfgfileopt = (cfgfileopt,)
             parser.add_argument(*cfgfileopt,  
-                dest="cfgfile", help='Configuration file [default: "%(default)s"]', default=cfgfile)
+                dest="cfgfile", help='configuration file [default: "%(default)s"]', default=cfgfile)
         
         # Default config
         defaults = self.defaults()
@@ -1037,7 +1051,8 @@ class ConfigManager(object):
         return cfg2rst(self)
 
 
-def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', exc=[], **kwargs):
+def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg', 
+    exc=[], **kwargs):
     """Merge configuration and commandline arguments
     
     :Params:
@@ -1047,6 +1062,7 @@ def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', exc=[], **kwargs):
         - **cfgfileopt**, optional: Name of the option used to specify the 
           user config file. Example: ``'cfgfile'`` creates the option
           ``--cfgfile=<config file>``.
+        - **cfgfile**, optional: Default name for the loaded config file.
         - **exc**, optional: Config option name that must not be used to generated
           a commandline option.
         - Extra params are passed to :class:`ConfigManager` initialization.
@@ -1063,11 +1079,13 @@ def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', exc=[], **kwargs):
         4. Patch this configuration with user supplied options retrieved
            using the :class:`~argpase.ArgumentParser` parser ``parser``.
            
-        Technically it combines :class:`ConfigManager` and :meth:`ConfigManager.arg_patch`
+        Technically it combines :class:`ConfigManager` and :meth:`ConfigManager.arg_parse`
     """
-    return ConfigManager(cfgspecfile, **kwargs).arg_patch(parser, cfgfileopt='cfgfile', exc=exc)
+    return ConfigManager(cfgspecfile, **kwargs).arg_parse(
+        parser, cfgfileopt=cfgfileopt, exc=exc, cfgfile=cfgfile, getargs=True)
    
-def cfgoptparse(cfgspecfile, parser, cfgfileopt='cfgfile', exc=[], **kwargs):
+def cfgoptparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg', 
+    exc=[], **kwargs):
     """Merge configuration and commandline arguments
     
     :Params:
@@ -1077,6 +1095,7 @@ def cfgoptparse(cfgspecfile, parser, cfgfileopt='cfgfile', exc=[], **kwargs):
         - **cfgfileopt**, optional: Name of the option used to specify the 
           user config file. Example: ``'cfgfile'`` creates the option
           ``--cfgfile=<config file>``.
+        - **cfgfile**, optional: Default name for the loaded config file.
         - **exc**, optional: Config option name that must not be used to generated
           a commandline option.
         - Extra params are passed to :class:`ConfigManager` initialization.
@@ -1093,7 +1112,8 @@ def cfgoptparse(cfgspecfile, parser, cfgfileopt='cfgfile', exc=[], **kwargs):
            
         Technically it combines :class:`ConfigManager` and :meth:`ConfigManager.opt_patch`
     """
-    return ConfigManager(cfgspecfile, **kwargs).opt_patch(parser, cfgfileopt='cfgfile', exc=exc)
+    return ConfigManager(cfgspecfile, **kwargs).opt_parse(
+        parser, cfgfileopt=cfgfileopt, exc=exc, cfgfile=cfgfile, getparser=True)
         
 
 def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
