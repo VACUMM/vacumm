@@ -1,12 +1,17 @@
 Release notes
 #############
 
-Version 2.3.1
-=============
+In development
+==============
 
 - Fortran regrid1d routines work directly with missing values. 
 - Unit tests save outputs in scripts directory.
+- In curve2, an array can be passed to fill_between keyword.
+- Added add_arrow method to Plot2D.
+- Added add_map_places plot function.
 - Fixed installation issue with setup.*.
+- Fixed bugs: list_forecast_files, filter_selector, NEMO, coord2slice, 
+  Config.Manager, polygon_select.
 
 Version 2.3.0
 =============
