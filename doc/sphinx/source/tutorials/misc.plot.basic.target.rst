@@ -1,20 +1,19 @@
 .. _user.tut.misc.plot.basic.target:
 
-Diagramme cible
-===============
+Target diagram
+==============
 
-Il s'agit du pendant du :ref:`user.tut.misc.plot.basic.target`,
-mais tenant compte du biais.
+It has a similar usage to the :ref:`user.tut.misc.plot.basic.taylor`
+diagram, except that it takes the bias into account.
 
 
-Voir : :func:`~vacumm.misc.plot.target`.
+See also : :func:`~vacumm.misc.plot.dtarget`.
 
 .. _fig.misc.plot.basic.target:
 .. figure:: ../../../../scripts/tutorials/misc-plot-basic-target.png
     
-    On compare un jeu de données (modèle) à des observations
-    à l'aide d'un diagramme de cible.
-    Les données sont fictives et ne servent qu'à calculer les statistiques
-    nécessaires.
+    Comparison of model with observations at different time steps.
+    The colors indicate the RMS, which is proportional to the distance to the center
+    at coordinates (0,0).
 
 .. literalinclude:: ../../../../scripts/tutorials/misc.plot.basic.target.py

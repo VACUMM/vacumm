@@ -48,10 +48,10 @@ __all__ = [ 'traj', 'ellipsis',
     'colorbar', 'hldays',  'xscale', 'yscale', 'xrotate', 'yrotate', 
     'add_grid', 'savefigs', 'decorate_axis', 'markers', 'linestyles', 
     'make_movie', 'taylor', 'vtaylor', 'get_cls', 'dtaylor', 'rankhist', 
-    'curve2', 'bar2', 'stick2', 'hov2' , 'target', 'map2', 'section2', 
+    'curve2', 'bar2', 'stick2', 'hov2' , 'map2', 'section2', 
     'minimap', 'add_map_point', 'add_map_line', 'add_map_lines', 'add_map_box',  'rshpere_wgs84', 
     'add_glow', 'add_shadow', 'add_agg_filter', 'plot2d', 'hlitvs', 
-    'add_compass', 'add_param_label']
+    'add_compass', 'add_param_label', 'dtarget']
 __all__.sort()
 
 from string import Template
@@ -715,7 +715,7 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
 
 
 def dtarget(bias, rmsc, stdmod, stdref=None, colors='cyan', sizes=20, 
-    title='Target diagram', **kwargs):
+    title='Target diagram', cmap=None, units=None, colorbar=True, **kwargs):
     """Plot a (direct) target diagram from already computed statistics
     
     :Params:
@@ -738,6 +738,10 @@ def dtarget(bias, rmsc, stdmod, stdref=None, colors='cyan', sizes=20,
         :mod:`MV2` variables as arguments.
     """
     
+    kwscat = kwfilter(kwargs, 'scatter_')
+    kwscat.setdefault('cmap', cmap)
+    kwcb =kwfilter(kwargs, 'colorbar_') 
+    
     # Convert to masked arrays
     bias = N.ma.asarray(bias)
     if stdref is None: stdref = 1.
@@ -748,11 +752,13 @@ def dtarget(bias, rmsc, stdmod, stdref=None, colors='cyan', sizes=20,
     
     # Make plotted stats
     nrmsc = rmsc / stdref
+    nrmsc *= N.sign(stdmod-stdref)
     nbias = bias / stdref
-    nbias *= N.sign(stdmod-stdref)
     
     # Broadcast plot params
-    if isinstance(colors, N.ndarray):
+    if colors=='rms':
+        colors = N.sqrt(rmsc**2+bias**2)
+    elif isinstance(colors, N.ndarray):
         colors = N.resize(colors, bias.shape)
     else:
         if not isinstance(colors, list):
@@ -770,7 +776,7 @@ def dtarget(bias, rmsc, stdmod, stdref=None, colors='cyan', sizes=20,
     ax.set_aspect(1.)
 
     # Plot
-    ax.scatter(nrmsc, nbias, sizes, colors, **kwfilter(kwargs, 'scatter_'))
+    p = ax.scatter(nrmsc, nbias, sizes, colors, **kwscat)
     xmin, xmax, ymin, ymax = P.axis()
     xmax = max(-xmin, xmax, -ymin, ymax, 1.1)
     P.axis([-xmax, xmax, -xmax, xmax])
@@ -783,14 +789,23 @@ def dtarget(bias, rmsc, stdmod, stdref=None, colors='cyan', sizes=20,
         ax.add_patch(pstd)
     kwarc['linestyle'] = 'solid'
     ax.add_patch(Arc((0., 0.), 1., 1., **kwarc))
-       
+    
+    # Colorbar
+    if colorbar and isinstance(colors, N.ndarray):
+        label = 'RMS'
+        if units: label += ' [%s]'%units
+        kwcb.setdefault('label', label)
+        kwcb.setdefault('pad', 0.15)
+        kwcb.setdefault('fraction', 0.04)
+        P.colorbar(p, **kwcb)
             
     # Finish plot   
-    P.xlabel('$RMSC/\sigma_{obs}$', ha='left', va='bottom', position=(1., 0.))
+    P.xlabel(r'$RMSC/\sigma_{obs}$', ha='left', va='bottom', position=(1., 0.))
     P.ylabel('$Bias/\sigma_{obs}$', ha='left', va='top', rotation=0, position=(0., 0))
     kwargs['title'] = title 
     kwargs.update(autoresize=0, units=None, grid=False)
     _end_plot_(**kwargs)
+    return p
 
 target = dtarget
 
