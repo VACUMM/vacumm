@@ -659,13 +659,14 @@ class ConfigManager(object):
             parser = ArgumentParser(**parser)
         else: # remove native help
             for action in list(parser._actions):
-                if isinstance(action, _HelpAction):
+                if isinstance(action, _HelpAction) or \
+                    action.dest=='help' or action.dest=='long_help':
                     parser._actions.remove(action)
                     for option_string in action.option_strings:
                         if option_string in parser._option_string_actions:
                             parser._option_string_actions.pop(option_string)
             parser.add_help = False
-            
+
         # Add short and long when no help
         parser.add_argument('-h','--help', action='store_true', help='show a reduced help')
         parser.add_argument('--long-help', action='store_true', help='show an extended help')
