@@ -547,16 +547,22 @@ def comptime(mytime):
     
     return LH.put(res)
 
-def fixcomptime(mytime):
-    """Fix the 60s bug of :class:`cdtime.comptime` objects"""
-    if not isinstance(mytime, list):
-        if mytime.second>=60:
-            return mytime.add(0.0000001, cdtime.Second)
-        return mytime
-    for it, ct in enumerate(mytime):
-        if ct.second>=60:
-            mytime[it] = ct.add(0.0000001, cdtime.Second)
-    return mytime
+def fixcomptime(mytime, decimals=3, copy=False):
+    """Fix the 60s bug of :class:`cdtime.comptime` objects
+    
+    :Params:
+    
+        - **mytime**: Comptime or list of comptimes"""
+    LH = _LH_(mytime)
+    mytimes = LH.get()
+    if copy and LH.listtype is list: 
+        mytimes = list(mytimes)
+    for it, ct in enumerate(mytimes):
+        if N.round(ct.second, decimals=decimals)==60:
+            ct = cdtime.comptime(ct.year, ct.month, ct.day, ct.hour, ct.minute, 0)
+            ct = ct.add(1, cdtime.Minute)
+            mytimes[it] = ct
+    return LH.put(mytimes)
 
 def reltime(mytime, units):
     """Convert to func:`cdtime.reltime` format
