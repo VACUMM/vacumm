@@ -382,7 +382,7 @@ class Lakes(object):
 GetLakes = Lakes
 
 def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75], 
-    ocean=False, fractions=0, yclean=True, premask=None, proj=None):
+    ocean=False, fractions=0, yclean=True, premask=None, proj=False):
     """Create a mask on a regular or curvilinear grid according to a polygon list
     
     :Params:
@@ -409,7 +409,8 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
     # Get proper numeric axes
     gg = M.get_grid(gg)
     curved = M.isgrid(gg, curv=True)
-    proj = get_proj(gg)
+    if proj is not False:
+        proj = get_proj(gg)
     xx, yy = M.get_xy(gg, mesh=True, num=True, proj=proj)
     
     # Thresholds
