@@ -1261,7 +1261,8 @@ def get_grid(gg, geo=True, intercept=False, strict=False):
             yy.designateLatitude()
         
         # Create grid
-        if xx[:].ndim == 1 and yy[:].ndim == 1: # Rectangular
+        if (isinstance(xx,  tuple) or xx[:].ndim == 1) and \
+            (isinstance(yy, tuple) or yy[:].ndim == 1): # Rectangular
         
             return create_grid(xx, yy)
             
