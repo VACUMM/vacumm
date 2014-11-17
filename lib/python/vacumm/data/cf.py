@@ -404,6 +404,18 @@ var_specs = OrderedDict(
         long_names = "Significant height of wind and swell waves", 
         units = "m", 
     ), 
+    fp = dict(
+        names = ['fp'], 
+        standard_names = [], 
+        long_names = "Frequency of wind and swell waves at spectral peak", 
+        units = "s-1", 
+    ), 
+    th1p = dict(
+        names = ['th1p'], 
+        standard_names = ["sea_surface_wave_from_direction"], 
+        long_names = "Mean direction of wind and swell waves at spectral peak", 
+        units = "degree", 
+    ), 
     
 
 )
@@ -570,7 +582,10 @@ def get_loc(var, stype=None, mode='loc', default=None):
     stypes = stype if isinstance(stype, list) else [stype]
     
     # CDAT object (not a string)
-    if isinstance(var, list): var = var[0]
+    if isinstance(var, list): 
+        if len(var)==0: 
+            return default
+        var = var[0]
     if not isinstance(var, basestring):
         
         # First: _vacumm_cf_location
@@ -1165,7 +1180,10 @@ def cf2atts(name, select=None, exclude=None, ordered=True, **extra):
         
         # No lists or tuples
         value = specs[key]
-        if isinstance(value, (list, tuple)): value = value[0]
+        if isinstance(value, (list, tuple)): 
+            if len(value)==0:
+                continue
+            value = value[0]
         
         # Store it
         atts[attname] = value
