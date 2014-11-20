@@ -376,20 +376,22 @@ def bounds1d(xx):
 
     try:
         xx = xx.getValues().astype('d')
-    except:
-        xx = N.asarray(xx[:],'d')
+    except: 
+        if not isinstance(xx, N.ndarray):
+            xx = N.asarray(xx[:],'d')
+    M = numod(xx)
 
     if len(xx)>1:
-        leftPoint = N.array([1.5*xx[0]-0.5*xx[1]])
+        leftPoint = M.array([1.5*xx[0]-0.5*xx[1]])
         midArray = (xx[0:-1]+xx[1:])/2.0
-        rightPoint = N.array([1.5*xx[-1]-0.5*xx[-2]])
+        rightPoint = M.array([1.5*xx[-1]-0.5*xx[-2]])
         bnds = N.concatenate((leftPoint,midArray,rightPoint))
     else:
         delta = width/2.0
-        bnds = N.array([self[0]-delta,self[0]+delta])
+        bnds = M.array([self[0]-delta,self[0]+delta])
 
     # Transform to (n,2) array
-    retbnds = N.zeros((len(xx),2),'d')
+    retbnds = M.zeros((len(xx),2),'d')
     retbnds[:,0] = bnds[:-1]
     retbnds[:,1] = bnds[1:]
 
@@ -423,8 +425,10 @@ def bounds2d(*xyaxes):
         if hasattr(xy,'getValue'): xy = xy.getValue()
         assert xy.ndim == 2, 'You must pass 2d arrays as argument'
         ny,nx = xy.shape
+        
+        M = numod(xy)
 
-        bounds = N.zeros((ny,nx,4),'d')
+        bounds = M.zeros((ny,nx,4),'d')
 
         inside = quart * (xy[0:-1,0:-1] + xy[0:-1,1:] +
                           xy[1:  ,0:-1] + xy[1:  ,1:])
@@ -485,6 +489,8 @@ def meshgrid(x,y,copy=1):
 
     # Be sure to have numpy arrays and make a copy
     x = _cdat2num_(x)
+    Mx = numod(x)
+    My = numod(y)
     if N.ma.isMA(x):
         if copy: x = x.copy()
         xmask = N.ma.getmaskarray(x)
@@ -516,14 +522,12 @@ def meshgrid(x,y,copy=1):
 
     # From x 1d
     if x.ndim == 1 and y.ndim == 2 and y.shape[1] == x.shape[0]:
-        resize = N.ma.resize if N.ma.isMA(x) else N.resize
-        xx = resize(x,y.shape)
+        xx = Mx.resize(x,y.shape)
         return xx,y
     
     # From y 1d
     if y.ndim == 1 and x.ndim == 2 and x.shape[0] == y.shape[0]:
-        resize = N.ma.resize if N.ma.isMA(y) else N.resize
-        yy = resize(y,x.shape[::-1]).transpose()
+        yy = My.resize(y,x.shape[::-1]).transpose()
         return x,yy
     
     raise ValueError, "Unable to safely convert to 2D axes"
@@ -540,11 +544,13 @@ def bounds2mesh(xb,yb=None):
     """
     res = ()
     for xyb in xb, yb:
-        xyb = N.asarray(xyb)
+        if not isinstance(xyb, N.ndarray):
+            xyb = N.asarray(xyb)
+        M = numod(xyb)
         
         # 1D
         if xyb.ndim==2:
-            xy = N.zeros((len(xyb)+1, ),dtype=xb.dtype)
+            xy = M.zeros((len(xyb)+1, ),dtype=xb.dtype)
             xy[:-1] = xyb[:, 0]
             xy[-1] = xyb[-1, 1]
         
@@ -552,7 +558,7 @@ def bounds2mesh(xb,yb=None):
         else:
             ny,nx,nb = xyb.shape
             # - center + lower + left
-            xy = N.zeros((ny+1,nx+1),dtype=xyb.dtype)
+            xy = M.zeros((ny+1,nx+1),dtype=xyb.dtype)
             xy[:-1,:-1] = xyb[:,:,0]
             # - right
             xy[:-1,-1] = xyb[:,-1,1]
@@ -580,11 +586,13 @@ def meshcells(x, y=None):
         ``xxb(ny+1,nx+1),yyb(ny+1,nx+1)``
         
     """
-    x = N.asarray(x)
+    if not isinstance(x, N.ndarray):
+        x = N.asarray(x)
     if y is None and len(x.shape)==1:
         return  bounds2mesh(bounds1d(x))
-    if y is not None:   
-        y = N.asarray(y)
+    if y is not None:
+        if not  isinstance(y, N.ndarray):  
+            y = N.asarray(y)
         xy = meshgrid(x,y)
         return bounds2mesh(*bounds2d(*xy))
     else:
@@ -609,13 +617,16 @@ def meshweights(x, y=None, proj=None, axis=-1):
         ``ww(ny,nx)``
         
     """
-    x = N.asarray(x)
+    if not isinstance(x, N.ndarray):
+        x = N.asarray(x)
+        
     # Without y
     if y is None: 
  
         if axis<0: axis += x.ndim
         dx = x.copy()
-        dd = N.diff(x, axis=axis)
+        M = numod(x)
+        dd = M.diff(x, axis=axis)
         sl = [slice(None)]*x.ndim
         def ss(*sss):
             s = list(sl)
@@ -647,7 +658,8 @@ def meshweights(x, y=None, proj=None, axis=-1):
 #        return N.diff(meshcells(x))
         
     # With y
-    y = N.asarray(y)
+    if not  isinstance(y, N.ndarray):  
+        y = N.asarray(y)
     # - 2D
     if x.ndim==2:
         if proj is True: 
@@ -655,14 +667,15 @@ def meshweights(x, y=None, proj=None, axis=-1):
         xxb, yyb = meshcells(x, y)
         if proj:
             xxb, yyb = proj(xxb, yyb)
-        dxx = N.diff(xxb, axis=1)
-        dxy = N.diff(xxb, axis=0)
-        dyx = N.diff(yyb, axis=1)
-        dyy = N.diff(yyb, axis=0)
-        dx = N.sqrt(dxx**2+dyx**2)
+        M = numod(x)
+        dxx = M.diff(xxb, axis=1)
+        dxy = M.diff(xxb, axis=0)
+        dyx = M.diff(yyb, axis=1)
+        dyy = M.diff(yyb, axis=0)
+        dx = M.sqrt(dxx**2+dyx**2)
         del dxx, dyx 
         dx = 0.5*(dx[:-1]+dx[1:])
-        dy = N.sqrt(dxy**2+dyy**2)
+        dy = M.sqrt(dxy**2+dyy**2)
         del dxy, dyy 
         dy = 0.5*(dy[:, :-1]+dy[:, 1:])
         return dx*dy
@@ -681,9 +694,10 @@ def cells2grid(xxb,yyb):
 
     :Returns: ``xx(ny,nx),yy(ny,nx)``
     """
-    xxyy = [N.zeros((nx+1,ny+1),dtype=xxb.dtype),N.zeros((nx+1,ny+1),dtype=yyb.dtype)]
+    M = numod(xxb)
+    xxyy = [M.zeros((nx+1,ny+1),dtype=xxb.dtype), M.zeros((nx+1,ny+1), dtype=yyb.dtype)]
     bb = (xxb,yyb)
-    ij2ic = N.reshape([0,1,3,2],(2,2))
+    ij2ic = M.reshape([0,1,3,2],(2,2))
     for ib in 0,1:
         # Center
         xxyy[ib][1:-1,1:-1] = 0.25 * (bb[ib][1:,1:,0]+bb[ib][:-1,1:,1]+bb[ib][:-1,:-1,2]+bb[ib][1:,:-1,3])
@@ -770,13 +784,13 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
         if len(lon)==2: lon += 'cc', 
         if len(lon)==3: lon += None, 
     elif isinstance(lon, (int, float)):
-        lon = (lon, lon, 'ccb')
+        lon = (lon, lon, 'cob')
     if lat==':' or lat==slice(None): lat = None
     elif isinstance(lat, tuple):
         if len(lat)==2: lat += 'cc', 
         if len(lat)==3: lat += None,
     elif isinstance(lat, (int, float)):
-        lat = (lat, lat, 'ccb')
+        lat = (lat, lat, 'cob')
     
     # CDMS variable
     if cdms2.isVariable(gg) and not isaxis(gg):
@@ -861,6 +875,12 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
         raise VACUMMError("If gg is not a grid or an tuple, it must be an axis")
     axis = int(gg.isLongitude())
     sel, osel = (lat, lon)[::1-2*axis]
+    if axis:
+        minval, maxval = -720., 720
+        modeval = 'mask'
+    else:
+        minval, maxval = -90, 90
+        modeval = 'clip'
     
     # - 2D
     if len(gg.shape)==2:
@@ -873,7 +893,8 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
 #            mask[(ijk, None)[::1-2*axis]] = False
             mask[(sel, slice(None))[::1-2*axis]] = False
         else:
-            xijk, yijk, mask = _coord2ind2d_(gg, sel, mask=mask)
+            xijk, yijk, mask = _coord2ind2d_(gg, sel, mask=mask, 
+                minval=minval, maxval=maxval, modeval=modeval)
             if xijk is None: return None, None, mask
             ijk, oijk = (yijk, xijk)[::1-2*axis]
 
@@ -953,7 +974,8 @@ def _mask4tomask_(mask4):
     mask &= mask4[1:,1:]
     return mask
     
-def _coord2ind2d_(cc2d, sel, mask=None, maskonly=False):
+def _coord2ind2d_(cc2d, sel, mask=None, maskonly=False, 
+    minval=None, maxval=None, modeval='mask'):
     """Convert lon/lat 2d coord to index respectively with lon/lat selection
     
     :Params:
@@ -980,6 +1002,15 @@ def _coord2ind2d_(cc2d, sel, mask=None, maskonly=False):
     if isinstance(cc2d, FileAxis2D): cc2d = cc2d.clone()
     if cdms2.isVariable(cc2d): cc2d = cc2d.asma()
     
+    # Limits
+    if minval is not None or maxval is not None:
+        if minval is None: minval = -N.inf
+        if maxval is None: maxval = N.inf
+        if modeval=='mask':
+            cc2d = N.ma.masked_outside(cc2d, minval, maxval, False)
+        else:
+            cc2d = N.ma.clip(cc2d, minval, maxval)
+    
     # According to bounds of cells
     if 'b' in e:
         
@@ -994,14 +1025,14 @@ def _coord2ind2d_(cc2d, sel, mask=None, maskonly=False):
         maskmin = _coord2ind2d_(cc2db, selmin, mask=None, maskonly=True)
         if maskmin is None: return mask if maskonly else (None,None,mask) 
         xymask = _mask4tomask_(maskmin)
-        del maskmin
+#        del maskmin
         
         # Select max
         selmax = (-N.inf, sel[1])+(b[:2],)
         maskmax = _coord2ind2d_(cc2db, selmax, mask=None, maskonly=True)
         if maskmax is None: return mask if maskonly else (None,None,mask)
         xymask |= _mask4tomask_(maskmax)
-        del maskmax
+#        del maskmax
 
         # Merge
         if mask is not None:
@@ -1660,15 +1691,19 @@ def axis1d_from_bounds(axis1d,atts=None,numeric=False):
 
 
 
-def get_xy(gg, proj=False, mesh=None, num=False, **kwargs):
+def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
     """Get axes from gg
     
     :Params:
     
         - **gg**: (xx,yy) or grid (1D or 2D), cdms variable (see :func:`get_grid`), 
           or a dict of lon/lat/x/y, or a (2,npts) numpy array.
-        - *proj*: If True or basemap instance, convert to meters. If None, check if lon and lat axes to force conversion. [default: False]
-    
+        - **proj**, optional: If True or basemap instance, convert to meters. 
+          If None, check if lon and lat axes to force conversion. [default: False]
+        - **mesh**, optional: Get axes as 2D arrays.
+        - **num**, optional: Get axes as numpy arrays.
+        - **checklims**, optional: For 2D axes only, mask longitudes outside (-720,720),
+          and clip latitude outside (-90,90).
     :Example:
     
         >>> lon, lat = get_xy((xaxis,yaxis))
@@ -1714,6 +1749,21 @@ def get_xy(gg, proj=False, mesh=None, num=False, **kwargs):
     if num:
         xx = _cdat2num_(xx)
         yy = _cdat2num_(yy)
+        
+    # Check limits of 2D axes
+    if checklims:
+        if xx[:].ndim==2:
+            if isaxis(xx):
+                xx = xx.clone()
+                xx[:] = N.ma.masked_outside(xx[:], -720., 720., copy=False)
+            else:
+                xx = N.ma.masked_outside(xx[:], -720., 720., copy=False)
+        if yy[:].ndim==2:
+            if isaxis(yy):
+                yy = yy.clone()
+                yy[:] = N.ma.clip(yy[:], -720., 720.)
+            else:
+                yy = N.ma.clip(yy[:], -90., 90.)
         
     # Convert to meters?
     proj = kwargs.pop('m', proj)
@@ -1780,7 +1830,8 @@ def deg2xy(lon, lat, proj=None, inverse=False, mesh=None, **kwargs):
     return proj(lon, lat, inverse=inverse)
     
 
-def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., **kwargs):
+def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checklims=True, 
+    **kwargs):
     """Get the resolution of an axis or a grid
     
     :Params:
@@ -1851,7 +1902,8 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., **kwarg
 #            raise ValueError, 'Your axis is 2D, so you must pass a grid or a tuple or (lon, lat) instead'
         if proj:
             if not islon(axy): lat=0.
-            xy, _ = get_xy((axy, N.ones(axy[:].shape)+lat), num=True, proj=proj)
+            xy, _ = get_xy((axy, N.ones(axy[:].shape)+lat), num=True, proj=proj, 
+                checklims=checklims)
             xy = xy, 
         else:
             if isaxis(axy): axy = axy.getValue()
@@ -1859,7 +1911,7 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., **kwarg
             
     else: # grid or pair of axes
     
-        xy = get_xy(axy, num=True, proj=proj, mesh=True)
+        xy = get_xy(axy, num=True, proj=proj, mesh=True, checklims=checklims)
      
     res = ()
     if len(xy)==2 and (xy[0][:].ndim == 2 or xy[1][:].ndim == 2) : # 2x2D
@@ -1873,7 +1925,12 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., **kwarg
         #if xy[0].ndim==2:
         if len(xy[0].shape)==2:
             if axis<0: axis += xy[0].ndim
-            res = N.ma.abs(N.ma.diff(xy[0][:], axis=axis)), 
+            if checklims:
+                if axis==xy[0].ndim-1: # longitude
+                    xy = N.ma.masked_outside(xy[0], -720., 720.), 
+                else:
+                    xy = N.ma.clip(xy[0], -90., 90.), 
+                res = N.ma.abs(N.ma.diff(xy[0][:], axis=axis)), 
         else:
             for tmp in xy:
                 res += N.ma.abs(N.diff(tmp[:])), 
@@ -2339,6 +2396,8 @@ def isrect(gg, tol=1.e-2, mode="real", f=None, nocache=False):
     dx, dy = res
     # - relative resolution variations
     xx, yy = get_xy(gg, num=True)
+    xx = N.ma.masked_outside(xx, -720., 720., copy=False)
+    yy = N.ma.clip(yy, -90, 90.)
     Dx = N.ma.median(xx.ptp(axis=0))
     Dy = N.ma.median(yy.ptp(axis=-1))
     res = Dx < tol*dx and Dy < tol*dy
@@ -2807,7 +2866,7 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
 ######################################################################
 ######################################################################
 from ...misc.atime import ch_units,compress
-from ...misc import cp_atts,get_atts,set_atts,intersect
+from ...misc import cp_atts,get_atts,set_atts,intersect, numod
 from ...misc.axes import check_axes, islon, islat, islev, istime, create_lon, create_lat, isaxis, isdep
 from ...misc.phys import units
 from basemap import get_map, cached_map, cache_map, get_proj
