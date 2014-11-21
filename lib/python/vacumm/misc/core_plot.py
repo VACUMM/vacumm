@@ -3870,6 +3870,8 @@ class QuiverKey:
             units = ''
         latex_units = kwargs.pop('tex', None)
         if latex_units is None: latex_units = self.latex_units
+        if units is None:
+            units = ''
         if latex_units and not self.is_latex(units):
             units = '$%s$'%units
         try:
