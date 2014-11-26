@@ -1696,7 +1696,7 @@ def xy2xy(xi, yi, zi, xo, yo, nl=False, proj=True, **kwargs):
 
             # Check that output points are inside convex hull
             hull = convex_hull((xi[gi], yi[gi]), poly=True)
-            go = polygon_select(xo, yo, [hull], mask=True) ; del hull
+            go = polygon_select(xo, yo, [hull], mask=2) ; del hull
             if go.all():
                 del go
                 go = slice(None)
