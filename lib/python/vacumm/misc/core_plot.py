@@ -28,49 +28,56 @@
 #
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-
-from operator import isNumberType
 import os
-import numpy as N, MV2, cdms2
-MA = N.ma
 import re
-from warnings import warn
 from collections import OrderedDict
+from operator import isNumberType
+from warnings import warn
 
-import matplotlib.pyplot as P
 import matplotlib.cm as cm
-from matplotlib.figure import Figure
-from matplotlib.ticker import FormatStrFormatter, Formatter, Locator, NullLocator, AutoMinorLocator
-from matplotlib.dates import DateFormatter, MonthLocator, WeekdayLocator, YearLocator,DayLocator, \
-    HourLocator, MinuteLocator, SecondLocator, MONDAY, WEEKLY, YEARLY, MONTHLY, \
-    AutoDateLocator, AutoDateFormatter, MO, DAILY, HOURLY, num2date, MINUTELY, SECONDLY
 import matplotlib.dates
-from matplotlib.transforms import offset_copy
-from matplotlib.axis import Axis, XAxis, YAxis
+import matplotlib.pyplot as P
 import matplotlib.transforms as mtransforms
-from matplotlib.colors import Colormap, Normalize
-from matplotlib.patheffects import Normal
-from matplotlib.text import Text
-from mpl_toolkits.basemap import Basemap
+import numpy as N, MV2, cdms2
+from matplotlib.artist import Artist
 from matplotlib.axes import Subplot, Axes
+from matplotlib.axis import Axis, XAxis, YAxis
+from matplotlib.colors import Colormap, Normalize
+from matplotlib.dates import DateFormatter, MonthLocator, WeekdayLocator, \
+    YearLocator,DayLocator, HourLocator, MinuteLocator, SecondLocator, \
+    MONDAY, WEEKLY, YEARLY, MONTHLY, \
+    AutoDateLocator, AutoDateFormatter, MO, DAILY, HOURLY, num2date, MINUTELY, SECONDLY
+from matplotlib.figure import Figure
 from matplotlib.patches import Patch
 from matplotlib.path import Path
+from matplotlib.patheffects import Normal
 from matplotlib.text import Text
-from matplotlib.artist import Artist
+from matplotlib.text import Text
+from matplotlib.ticker import FormatStrFormatter, Formatter, Locator, \
+    NullLocator, AutoMinorLocator
+from matplotlib.transforms import offset_copy
+from mpl_toolkits.basemap import Basemap
 
-from atime import mpl, comptime, strftime
-from axes import check_axes, istime, axis_type, set_order, get_order, merge_orders, \
+from ._ext_plot import DropShadowFilter, FilteredArtistList, GrowFilter
+from .atime import mpl, comptime, strftime
+from .axes import check_axes, istime, axis_type, set_order, get_order, merge_orders, \
     check_order, order_match, isaxis
-from grid import get_axis, meshbounds, meshgrid, var2d
-from grid.masking import resol_mask
-from misc import kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts, \
-    auto_scale, zoombox, dict_check_defaults, basic_auto_scale, dict_copy_items,dict_merge
-from color import get_cmap, cmap_magic, cmap_rainbow, RGB, land, whiten, darken, RGBA
-from _ext_plot import DropShadowFilter, FilteredArtistList, GrowFilter
-from phys.units import deg2m, tometric, m2deg
-from filters import generic2d
-from remote import OutputWorkFile
-from vacumm.config import get_config_value
+from .color import get_cmap, cmap_magic, cmap_rainbow, RGB, land, whiten, darken, RGBA
+from .docstrings import docfiller
+from .filters import generic2d
+from .grid import get_axis, meshbounds, meshgrid, var2d
+from .grid.masking import resol_mask
+from .misc import kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts, \
+    auto_scale, zoombox, dict_check_defaults, basic_auto_scale, dict_copy_items, \
+    dict_merge
+from .phys.units import deg2m, tometric, m2deg
+from .remote import OutputWorkFile
+from ..config import get_config_value
+
+
+MA = N.ma
+
+
 
 __all__ = ['PlotError','Plot', 'Plot1D', 'Curve', 'Bar', 'Stick', 'Plot2D', 'Map', 'Hov', 'QuiverKey',
     'ScalarMappable','AutoDateFormatter2', 'AutoDateLocator2',
@@ -6778,7 +6785,6 @@ def add_compass(x, y, size=40, facecolor1='k', facecolor2='w', edgecolor='k',
 
     return patches, texts
 
-from docstrings import docfiller
 docfiller.scan(Plot, Plot.format_axes, Plot.load_data, Plot._check_order_,
     Plot.pre_plot, Plot.post_plot,
     Plot1D._set_axes_, Plot1D._check_order_,

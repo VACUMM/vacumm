@@ -4,27 +4,33 @@ Release notes
 In development
 ==============
 
-- In curve2, an array can be passed to fill_between keyword.
-- Added add_arrow method to Plot2D.
-- Added add_map_places plot function.
-- Fixed bugs: Config.Manager, polygon_select.
+
+Version 2.4.0
+==============
+
+- Added: Added fp + th1p + some wind variables to cf.
+- Added: add_arrow method to Plot2D.
+- Added: add_map_places plot function.
+- Improved: In curve2, an array can be passed to fill_between keyword.
+- Fixed: Config.Manager, polygon_select, polygon_mask, coord2slice, sigma,
+  tide.filters, StepsNorm, list_forecast_files, NEMO.
 
 Version 2.3.1
 =============
 
-- Fortran regrid1d routines work directly with missing values. 
+- Fortran regrid1d routines work directly with missing values.
 - Unit tests save outputs in scripts directory.
 - Fixed installation issue with setup.*.
 - Fixed bugs: list_forecast_files, filter_selector, NEMO, coord2slice.
-  
+
 Version 2.3.0
 =============
 
-- Added the new CurvedInterpolator based on some fortran code 
+- Added the new CurvedInterpolator based on some fortran code
   primarily used for computing transects.
-- New regrid1dnew that can regrid from a variable 1D axis to another 
+- New regrid1dnew that can regrid from a variable 1D axis to another
   variable 1D axis, like for instance from sigma to sigma coordinates.
-  It will later replace regrid1d. Extrapolation in regrid1dnew is 
+  It will later replace regrid1d. Extrapolation in regrid1dnew is
   now available for all methods.
 - Improvements for staggered grids in Dataset.
 - minimap can now display background data instead of ocean color.
@@ -33,7 +39,7 @@ Version 2.3.0
 - Better management of staggering in Dataset and arakawa (still experimental).
 - Removed setup.cfg and added two templates, with a simple one and
   another one for OpenMP parallelisation.
-- Fixed issues: vacumm config, sigma2depth, grid2xy, format_var, 
+- Fixed issues: vacumm config, sigma2depth, grid2xy, format_var,
   fortran_domain, etc.
 
 

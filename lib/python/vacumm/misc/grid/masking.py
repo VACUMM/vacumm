@@ -6,26 +6,26 @@
     Tutorials: :ref:`user.tut.misc.grid.masking`, :ref:`user.tut.misc.grid.polygons`
 """
 # Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
-# 
+#
 # raynaud@actimar.fr
-# 
-# 
+#
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -33,13 +33,13 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-# 
+#
 #print 'importing masking 0'
 
 import numpy as N
@@ -53,10 +53,10 @@ import gc
 from genutil import minmax
 cdms = cdms2
 
-__all__ = ['get_coast', 'get_coastal_indices', 'GetLakes', 'polygon_mask', 'masked_polygon', 
-    'polygons', 'd2m', 'polygon_select', 'envelop', 'check_poly_islands', 
-    'check_poly_straits','t2uvmasks', 'mask2d', 'grid_envelop', 'convex_hull', 
-    'uniq', 'rsamp', 'zcompress', 'Lakes', 'erode_coast', 'resol_mask', 
+__all__ = ['get_coast', 'get_coastal_indices', 'GetLakes', 'polygon_mask', 'masked_polygon',
+    'polygons', 'd2m', 'polygon_select', 'envelop', 'check_poly_islands',
+    'check_poly_straits','t2uvmasks', 'mask2d', 'grid_envelop', 'convex_hull',
+    'uniq', 'rsamp', 'zcompress', 'Lakes', 'erode_coast', 'resol_mask',
     'get_dist_to_coast', 'get_avail_rate']
 __all__.sort()
 
@@ -67,9 +67,9 @@ def get_coast(mask, land=True, b=True, borders=True, corners=True):
     - *land*: If True, coast is on land [default: True]
     - *corners*: If True, consider borders as coastal points [default: True]
     - *borders:* If True, consider corners as coastal points [default: True]
-    
+
     At each point, return 0 if not coast, else an interger ranging from 1 to (2**8-1) to describe the coast point::
-    
+
         128 4  64
         8   +   2
         16  1  32
@@ -118,7 +118,7 @@ def get_coastal_indices(mask, coast=None, asiijj=False, **kwargs):
     """Get indices of ocean coastal points from a 2D mask
 
     :Params:
-    
+
         - **mask**: Input mask with 0 on water and 1 on land.
         - *boundary*: If True, consider outside boundary as land [default: True]
         - *asiijj*: Get results as II,JJ instead of [(j0,i0),(j1,i1)...]
@@ -131,26 +131,26 @@ def get_coastal_indices(mask, coast=None, asiijj=False, **kwargs):
     ii = N.compress(coast.ravel(),ix.ravel())
     if asiijj: return ii, jj
     return zip(jj, ii)
-    
+
 def get_dist_to_coast(grid, mask=None, proj=True):
     """Get the distance to coast on grid
-    
+
     :Params:
-    
+
         - **grid**: (x,y), grid or variable with a grid.
-        - **mask**: Land/sea mask or variable with a mask. If not provided, 
+        - **mask**: Land/sea mask or variable with a mask. If not provided,
           gets mask from ``grid`` if it is a masked variable,
           or estimates it using :func:`polygon_mask`
           and a GHSSC shoreline resolution given by
           :func:`~vacumm.misc.grid.basemap.gshhs_autores`.
         - **proj**: Distance are computed by converting coordinates
           from degrees to meters.
-          
+
     :Example:
-    
+
         >>> dist = get_dist_to_coast(sst.getGrid(), sst.mask)
         >>> dist = get_dist_to_coast(sst)
-        
+
     :See also: :func:`get_coastal_indices`
     """
     if mask is None and N.ma.isMA(grid):
@@ -165,7 +165,7 @@ def get_dist_to_coast(grid, mask=None, proj=True):
         mask = N.ma.getmaskarray(mask)
     mask = mask2d(mask)
     ii, jj = get_coastal_indices(mask, asiijj=True)
-    good = ~mask 
+    good = ~mask
     xc = xx[jj, ii]
     yc = yy[jj, ii]
     nc = len(xc)
@@ -185,38 +185,38 @@ def get_dist_to_coast(grid, mask=None, proj=True):
         mindists.units = 'm'
         M.set_grid(mindists, M.get_grid(grid))
     return mindists
-    
-    
+
+
 
 def erode_coast(var, mask2d=None, copy=True, maxiter=10, corners=0., hardmask=None, **kwargs):
     """Erode coastal mask of ``var`` to fit to ``mask2d`` using 2D smoothing
-    
-    Soothing is performed using :func:`~vacumm.misc.filters.shapiro2d`, 
+
+    Soothing is performed using :func:`~vacumm.misc.filters.shapiro2d`,
     in a convergence loop. Loop is ended if :
-    
+
         - the mask no longer changes,
         - the number of iteration exceeds ``maxiter``.
-    
-    .. warning:: 
-    
+
+    .. warning::
+
         Must be used only for erodeing a thin border
         of the coast.
-    
+
     :Params:
-    
+
         - **var**: Atleast-2D A :mod:`MV2` variable with mask.
         - **mask2d**, optional: Reference 2D mask.
-        - **maxiter**, optional: Maximal number of iteration for convergence loop. 
+        - **maxiter**, optional: Maximal number of iteration for convergence loop.
           If equal to ``None``, no check is performed.
         - **corners**, optional: Weights of corners when calling :func:`~vacumm.misc.filters.shapiro2d`.
         - **copy**, optional: Modify the variable in place or copy it.
         - **hardmask**, optional: Mask always applied after an erosion step.
         - Other keywords are passed to :func:`~vacumm.misc.filters.shapiro2d`.
-        
-    :Return: 
-    
+
+    :Return:
+
         - A :mod:`MV2` variable
-        
+
     :Tutorial: :ref:`user.tut.misc.grid.masking.erode_coast`
     """
     from vacumm.misc.filters import shapiro2d
@@ -247,13 +247,13 @@ def erode_coast(var, mask2d=None, copy=True, maxiter=10, corners=0., hardmask=No
         i+=1
     varo[:] = MV2.masked_where(masknd, varo, copy=0)
     return varo
-        
+
 
 class Lakes(object):
     """Find lakes in a 2D mask where 0 is water and 1 is land
 
     :Example:
-    
+
         >>> from vacumm.misc.grid import Lakes
         >>> import numpy as N
         >>> from pylab import pcolor,show,title
@@ -280,34 +280,34 @@ class Lakes(object):
         self._imask = self._mask.astype('i')
         self._iy, self._ix = N.indices(mask.shape)
         self._np = self._imask.sum()
-        
+
         # Find lakes using labelling
         import scipy.ndimage
         self._lakes, self.nlakes = scipy.ndimage.label(1-self._imask)
         self._ncells = [N.equal(self._lakes, ilake).astype('i').sum() for ilake in xrange(1, self.nlakes+1)]
-    
+
         # Compute indices
         self._indices = []
         for ilake in xrange(1, self.nlakes+1):
             mask = self._lakes == ilake
             self._indices.append(zip(self._ix[mask], self._iy[mask]))
-        
+
         # Sorting argument
         self._argsort = N.argsort(self._ncells)[::-1]
 
 
     def __call__(self,**kwargs):
         return self.indices(**kwargs)
-        
+
     def __len__(self):
         return self.nlakes
-        
+
     def __getitem__(self, item):
         lakes = N.zeros(self._lakes.shape, 'l')
         for lakeid in self._size2ids_(item):
             lakes[self._lakes==lakeid] = lakeid
         return lakes
-            
+
     def _size2ids_(self, item):
         ids = N.arange(self.nlakes)[self._argsort[item]]
         ids += 1
@@ -316,7 +316,7 @@ class Lakes(object):
 
     def plot(self, **kwargs):
         """Display the lakes
-        
+
         Keywords are passed to :func`~matplotlib.pyplot.pcolor`
         """
         ny, nx = self._mask.shape
@@ -324,7 +324,7 @@ class Lakes(object):
         import pylab as P
         P.pcolor(xx, yy, self.lakes(), **kwargs)
         P.show()
-    
+
     def ncells(self):
         """Number of cell point for each lake"""
         return self._ncells
@@ -332,7 +332,7 @@ class Lakes(object):
 
     def indices(self, id=None, nbig=None):
         """Return a list of lake coordinates
-        
+
         - *id*: Select lake #<id>
         - *nbig*: Consider the first ``nbig`` greatest lakes
         """
@@ -347,7 +347,7 @@ class Lakes(object):
 
     def lakes(self, id=None, nbig=None):
         """Return an array of same size as masks, but with points in lakes set to its lake id, and others to set to zero
-        
+
         - *id*: Select lake #<id>
         - *nbig*: Consider the first ``nbig`` greatest lakes
         """
@@ -359,70 +359,70 @@ class Lakes(object):
 
     def mask(self, id=None, nbig=None, **kwargs):
         """Returns a boolean land/sea mask from lakes() (land is True)
-        
+
         - *id*: Select lake #<id>
         - *nmaxcells*: Do not consider lakes with number of points greater than nmaxcells
-        
+
         :Example:
-        
+
         >>> mask_lake2 = GetLakes(mask).mask(2)
         """
         return self.lakes(id=id, nbig=nbig) == 0
-        
+
     def ocean(self, mask=False):
         """Get the biggest lake or its mask (integer type)
-        
+
         - *mask*: If True, return the mask, not the lake [default: True]
         """
         if mask:
             return self.mask(nbig=1)
         return self[0]
 
-        
+
 GetLakes = Lakes
 
-def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75], 
+def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
     ocean=False, fractions=0, yclean=True, premask=None, proj=False):
     """Create a mask on a regular or curvilinear grid according to a polygon list
-    
+
     :Params:
-    
+
         - **gg**: A cdms grid or variable or a tuple of (xx,yy).
         - **polys**: A list of polygons or GMT resolutions or Shapes instance like shorelines.
         - **mode**, optional: Way to decide if a grid point is masked. Possible values are:
-        
-            - ``intersect``, 1, ``area`` (default): Masked if land area fraction is > ``thresholds[0]``. 
-              If more than one intersections, leand area fraction must be > ``thresholds[1]`` 
+
+            - ``intersect``, 1, ``area`` (default): Masked if land area fraction is > ``thresholds[0]``.
+              If more than one intersections, leand area fraction must be > ``thresholds[1]``
               to prevent masking straits.
             - else: Masked if grid point inside polygon.
-            
+
         - **thresholds**, optional: See ``intersect`` mode [default: [.5, .75]]
         - **ocean**, optional: If True, keep only the ocean (= biggest lake).
-        - **fractions**: If True or 1, return the total fraction of cells covered by the 
+        - **fractions**: If True or 1, return the total fraction of cells covered by the
           polygons; if 2, returns the total area for each cell.
-        
+
     :Result:
-    
+
         A :mod:`numpy` array of boolean (mask) with ``False`` on land.
     """
-    
+
     # Get proper numeric axes
     gg = M.get_grid(gg)
     curved = M.isgrid(gg, curv=True)
     if proj is not False:
         proj = get_proj(gg)
     xx, yy = M.get_xy(gg, mesh=True, num=True, proj=proj)
-    
+
     # Thresholds
     if not isinstance(thresholds, (list, tuple)):
         thresholds = [thresholds, thresholds]
     elif len(thresholds) == 1:
         thresholds += thresholds
-            
+
     # Bounds if mode is 'intersect'
     bmode = mode in ['intersect', 1, 'area']
     fmode = fractions #mode in [2, 'fractions', 3]
-    if fmode: 
+    if fmode:
         bmode = True
         mask = N.zeros(xx.shape)
     else:
@@ -456,17 +456,17 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
         dyy = N.diff(yyc, axis=0)
         for var in dxx, dxy, dyx, dyy:
             var /= 10.
-        
+
     if premask is not None:
         premask = N.asarray(premask, 'i')
-    
+
     # Get instances of Polygons
     polys = polygons(polys, clip=clip, shapetype=2, proj=proj, clip_proj=False)
-    
+
     # Loop on grid points
     skipped = 0
     for j in xrange(xx.shape[0]):
-        
+
         # Get polygons of the curent row
         ypolys = []
         if curved:
@@ -489,7 +489,7 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
             del rowdown, rowup
         else:
             rowpoly_array = N.array([
-                [xmin, yyb[j, 0, 0]-dy/10.], [xmax, yyb[j, 0, 0]-dy/10.], 
+                [xmin, yyb[j, 0, 0]-dy/10.], [xmax, yyb[j, 0, 0]-dy/10.],
                 [xmax, yyb[j, 0, 3]+dy/10.], [xmin, yyb[j, 0, 3]+dy/10.]])
         rowpoly = Polygon(rowpoly_array)
         for poly in polys:
@@ -507,14 +507,14 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
                 mask[j, i] = premask[j, i]
                 skipped += 1
                 continue
-        
+
             # Point is inside
             if not bmode:
                 for poly in ypolys:
                     mask[j, i] = Point((xx[j, i],yy[j, i])).within(poly)
                     if mask[j, i]: break
                 continue
-            
+
             # Check the cell
             cell_poly = Polygon(N.asarray([xxb[j, i, :], yyb[j, i, :]]).transpose())
             if isinstance(cell_poly, (LineString, Point)):
@@ -525,22 +525,22 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
                 if poly is None: continue
                 if isinstance(poly, (LineString, Point)):
                     raise TypeError, 'poly'
-                    
+
                 # Check X range
                 if xxb[j, i, :].max() <= poly.boundary[:, 0].min()  or \
-                    xxb[j, i, :].min() >= poly.boundary[:, 0].max(): 
+                    xxb[j, i, :].min() >= poly.boundary[:, 0].max():
                         continue
-                    
+
                 # Check if polygon covers cell
                 if cell_poly.within(poly):
                     nintersect = 1
                     intersect_area = cell_poly.area()
                     break
-                    
+
                 # One polygon
                 ok = False
                 if cell_poly.intersects(poly):
-                    
+
                     # Remove from list of polys if inside cell
                     if poly.within(cell_poly):
                         intersect_area += poly.area()
@@ -563,7 +563,7 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
                             break
                     del intersections
                 if ok: break
-                
+
             # Fraction
             land_fraction = intersect_area/cell_poly.area()
             if fmode: # Fraction only
@@ -572,18 +572,18 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
                 else:
                     mask[j, i] = land_fraction
                 continue
-                
+
             # Mask according to fraction (basic masking + strait checking)
             mask[j, i] = land_fraction >= thresholds[nintersect > 1]
 #           mask[j, i] = intersect_fraction < thresholds[1] and nintersect > 1
             del cell_poly
-            
+
         del ypolys
 
     # Select ocean only
     if ocean:
         return GetLakes(mask).ocean()
-    
+
     return mask
 
 
@@ -591,9 +591,9 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
 
 def masked_polygon(vv, polys, copy=0, reverse=False, **kwargs):
     """Mask a variable according to a polygon list
-    
+
     :Params:
-    
+
         - **vv**: The MV2 array.
         - **polys**, optional: Polygons (or something like that, see :func:`polygons`).
         - **copy**, optional: Copy data?.
@@ -603,7 +603,7 @@ def masked_polygon(vv, polys, copy=0, reverse=False, **kwargs):
     # Get mask
     mask = polygon_mask(vv, polys, **kwargs)
     if reverse: mask = ~mask
-    
+
     # Mask the variable
     vv2 = MV2.masked_where(mask, vv, copy=copy)
     vv2.id = vv.id
@@ -612,7 +612,7 @@ def masked_polygon(vv, polys, copy=0, reverse=False, **kwargs):
 
 def masked_ocean(vv, polys=None, **kwargs):
     """Remove lakes from a variable to keep only ocean where ocean the the biggest lake
-    
+
     - **vv**: The variable
     """
     pass
@@ -620,16 +620,16 @@ def masked_ocean(vv, polys=None, **kwargs):
 
 def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     """Return a list of Polygon instances
-    
+
     :Params:
-    
+
         - **polys**: A tuple or list of polygon proxies (see examples).
         - **shapetype**: 1 = Polygons, 2=Polylines(=LineStrings) [default: 2]
         - **proj**: Geographical projection to convert positions.
         - **clip**, optional: Clip all polygons with this one.
-    
+
     :Example:
-    
+
         >>> import numpy as N
         >>> X = [0,1,1,0]
         >>> Y = N.array([0,0,1,1])
@@ -638,14 +638,14 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
         >>> polygons( [polygons(([X,Y],), polygons(([X,Y],)])   # from polygins
         >>> polygons( [[min(X),min(Y),max(X),max(Y)],] )        # from bounds
     """
-    
+
     # Input
     if isinstance(polys, (Basemap, str, Polygon, N.ndarray, Shapes, AbstractGrid, tuple)):
         polys = [polys]
 
     if kwargs.has_key('m'): proj = kwargs['m']
     kwclip = kwfilter(kwargs, 'clip_')
-        
+
     # Numeric or geos polygons
     out_polys = []
     gmt_polys = []
@@ -653,21 +653,21 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
         shaper = LineString
     else:
         shaper = Polygon
-    if clip is not None: 
+    if clip is not None:
         kwclip.setdefault('proj', proj)
         clip = polygons([clip], **kwclip)[0]
     from misc import isgrid, isrect, curv2rect
     for poly in polys:
-        
+
         # Grid (cdms var, grid or tuple of axes) -> get envelop
         if cdms2.isVariable(poly) or isgrid(poly) or \
             (isinstance(poly, tuple) and len(poly)==2 and islon(poly[1]) and islat(poly[0])):
             grid = M.get_grid(poly)
             if grid is None: continue
             poly = grid_envelop(grid)
-            
+
         # It's already a polygon
-        if isinstance(poly, Polygon): 
+        if isinstance(poly, Polygon):
             if clip is not None:
                 if poly.intersects(clip):
                     try:
@@ -677,13 +677,13 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
             else:
                 out_polys.append(poly)
             continue
-        
+
         # Polygon from GMT
         if isinstance(poly, (str, Basemap)):
 #           gmt_polys.append(poly)
             out_polys.extend(GSHHS_BM(poly, clip=clip))
             continue
-            
+
         # Shapes instance
         if isinstance(poly, Shapes):
             # Good polygon?
@@ -694,16 +694,16 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
             # Append to list
             out_polys.extend(poly.get_shapes())
             continue
-        
+
         # Convert to array
         poly = N.asarray(poly, 'float64')
-        
+
         # xmin,ymin,xmax,ymax form
         if poly.ndim == 1:
             assert len(poly) == 4, '1D form must have 4 elements (xmin,ymin,xmax,ymax), not %i'%len(poly)
             xmin,ymin,xmax,ymax = poly
             poly = N.asarray([[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]])
-            
+
         # Check order and geographic projection
         if callable(proj):
             poly = poly.copy()
@@ -724,7 +724,7 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
                     pass
         else:
             out_polys.append(poly)
-    
+
 #   # Treat GMT polygons
 #   from ...misc.plot import map as Map
 #   for poly in gmt_polys:
@@ -746,9 +746,9 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
 #       else:
 #           continue
 #       out_polys.extend([Polygon(N.array(p).transpose()) for p in gmt_m.coastpolygons])
-   
+
     return out_polys
-    
+
 
 def _trans_(trans, xx, yy):
     #FIXME: see deg2map
@@ -761,7 +761,7 @@ def _trans_(trans, xx, yy):
     ymin = yy.min()
     xmax = xx.max()
     ymax = yy.max()
-    if xmin >= -0.1 and ymin >= -0.1 and (xmax > 720. or ymax > 90.): 
+    if xmin >= -0.1 and ymin >= -0.1 and (xmax > 720. or ymax > 90.):
         return xx, yy
     # We use a existing basemap instance
     if callable(trans):
@@ -775,32 +775,32 @@ def _trans_(trans, xx, yy):
 
 def d2m(x, y):
     return deg2m(x, y), deg2m(y)
-    
+
 def polygon_select(xx, yy, polys, zz=None, mask=False):
     """Select unstructered points that are inside polygons
-    
+
     :Params:
-    
+
         - **xx**: Positions along X.
         - **yy**: Positions along Y.
         - **polys**: Polygons.
         - **zz**, optional: Values at theses positions.
         - **mask**, optional: Return masked positions and values of True or 1,
-        
+
     :Examples:
-    
+
         >>> xs, ys = polygon_select(x, y, [poly1, poly2])
         >>> xs, ys, zs = polygon_select(x, y, [poly1, poly2], z)
-        
+
         >>> xmasked, ymasked, zmasked = polygon_select(x, y, polys, z, mask=True)
         >>> print N.allclose(xs, xmasked.compressed())
-        
+
         >>> valid = polygon_select(x, y, polys, mask=2)
         >>> print N.allclose(xs, x[valid])
-        
+
     :Outputs: Depends on ``mask``
-    
-        - False or 0: selected ``x,y`` or ``x,y,z`` 
+
+        - False or 0: selected ``x,y`` or ``x,y,z``
         - True/1: the same but as masked arrays
         - 2: boolean array of valid points (the inverse of the mask)
     """
@@ -811,7 +811,7 @@ def polygon_select(xx, yy, polys, zz=None, mask=False):
 
     # Get a proper polygon list
     polys = polygons(polys, lon=(xx.min(), xx.max()), lat=(yy.min(), yy.max()))
-        
+
     # Create the mask
     pmask = N.ones(xx.shape, '?')
     for ip, (x, y) in enumerate(zip(xx, yy)):
@@ -819,7 +819,7 @@ def polygon_select(xx, yy, polys, zz=None, mask=False):
             if Point((x,y)).within(poly):
                 pmask[ip] = False
                 break
-    
+
     # Return mask or masked
     if mask:
         if mask==2:
@@ -828,7 +828,7 @@ def polygon_select(xx, yy, polys, zz=None, mask=False):
             return N.ma.masked_where(pmask, xx, copy=0), \
                 N.ma.masked_where(pmask, yy, copy=0), \
                 N.ma.masked_where(pmask, zz, copy=0)
-            
+
     # Return selection
     good = ~pmask
     del pmask
@@ -843,22 +843,22 @@ def polygon_select(xx, yy, polys, zz=None, mask=False):
 
 def convex_hull(xy, poly=False, method='delaunay'):
     """Get the envelop of cloud of points
-    
+
     :Params:
-    
+
         - **xy**: (x,y) or array of size (2,nxy) (see :func:`~vacumm.misc.grid.misc.get_xy`).
-        - *poly*: 
-        
+        - *poly*:
+
             - ``True``: Return as Polygon instance.
             - ``False``: Return two 1D arrays ``xpts,ypts``
-            
-            - *method*: 
-            
+
+            - *method*:
+
                 - ``"angles"``: Recursive scan of angles between points.
                 - ``"delaunay"``: Use Delaunlay triangulation.
-            
+
     """
-    
+
     # Points
     xx, yy = M.get_xy(xy, proj=False)
     xx = N.asarray(xx)
@@ -866,26 +866,26 @@ def convex_hull(xy, poly=False, method='delaunay'):
     if xx.ndim>1:
         xx = xx.ravel()
         yy = yy.ravel()
-    
+
     # Various methods
     if method.startswith('delau'):
-        
+
         # Delaunay
         from matplotlib.delaunay import Triangulation
         xy = uniq(N.asarray([xx, yy]).transpose())
         hull = Triangulation(xy[:, 0], xy[:, 1]).hull
         xe = xy[:, 0][hull]
         ye = xy[:, 1][hull]
-        
+
     elif method == 'quarters':
-        
+
         np = len(xx)
-        
+
         # Most south point
         ip = N.argmin(yy)
         xe = [xx[ip]]
         ye = [yy[ip]]
-        
+
         # SW
         while True:
             good = xx>xe[-1]
@@ -893,7 +893,7 @@ def convex_hull(xy, poly=False, method='delaunay'):
             ip = N.argmin(yy[good])
             xe.append(xx[ip])
             ye.append(yy[ip])
-            
+
         # NW
         while True:
             good = yyx>ye[-1]
@@ -901,12 +901,12 @@ def convex_hull(xy, poly=False, method='delaunay'):
             ip = N.argmax(xx[good])
             xe.append(xx[ip])
             ye.append(yy[ip])
-        
+
         pass
         #TODO: finish convex_hull with quaters
-        
+
     elif method=='angles':
-        
+
         # Angles
         np = len(xx)
         xx0 = N.resize(xx, (np, np))
@@ -918,12 +918,12 @@ def convex_hull(xy, poly=False, method='delaunay'):
         angles = N.arctan2(dx, dy) ; del dx, dy
         idx = N.arange(np)
         angles[idx, idx] = 10.
-        
+
         # Most south point
         ip0 = ip = N.argmin(yy)
         xe = [xx[ip]]
         ye = [yy[ip]]
-        
+
         # Recursive search
         ic = 0
         while True:
@@ -935,10 +935,10 @@ def convex_hull(xy, poly=False, method='delaunay'):
             if ic > np: break
         xe = N.asarray(xe)
         ye = N.asarray(ye)
-    
+
     else:
         raise NotImplementedError
-    
+
     # Polygon or positions?
     if poly:
         return polygons([(xe, ye)], m=False)[0]
@@ -947,9 +947,9 @@ def convex_hull(xy, poly=False, method='delaunay'):
 
 def uniq(data):
     """Remove duplicates in data
-    
+
     :Example:
-    
+
     >>> import numpy as N
     >>> a = N.arange(20.).reshape((10,2))
     >>> a[5] = a[1]
@@ -968,7 +968,7 @@ def uniq(data):
         bad[i] = False
         keep = keep & ~bad
     return data[keep]
-    
+
 
 def envelop(*args, **kwargs):
     """Shortcut to :func:`convex_hull`"""
@@ -976,21 +976,21 @@ def envelop(*args, **kwargs):
 
 def grid_envelop(gg, centers=False, poly=True):
     """Return a polygon that encloses a grid
-    
+
     - **gg**: A cdms grid or a tuple of (lat,lon)
-    - *centers*: 
-    
-        - ``True``: The polygon is at the cell center. 
-        - ``False``: The polygon is at the cell corners. 
-        
-    - *poly*: 
-    
+    - *centers*:
+
+        - ``True``: The polygon is at the cell center.
+        - ``False``: The polygon is at the cell corners.
+
+    - *poly*:
+
         - ``True``: Return as Polygon instance.
         - ``False``: Return two 1D arrays ``xpts,ypts``
     """
     # Axes
     x, y = M.get_xy(gg, num=True)
-    
+
     # Rectangular grids
     gg = M.curv2rect(gg,mode=False)
     if M.isgrid(gg, curv=False):
@@ -1005,7 +1005,7 @@ def grid_envelop(gg, centers=False, poly=True):
         if poly:
             return Polygon(N.array([[x0, y0], [x1, y0], [x1, y1], [x0, y1]], 'd'))
         return N.array([x0, x1]), N.array([y0, y1])
-    
+
     # Get the 2D axes
     xx, yy = M.meshgrid(x, y)
     xxb, yyb = M.meshbounds(x, y)
@@ -1014,20 +1014,20 @@ def grid_envelop(gg, centers=False, poly=True):
     else:
         xxref, yyref = xxb, yyb
     ny, nx = xx.shape
-    
+
     # Get the limits
     xp = []
     yp = []
     for jslice, islice in (
-        (0,  slice(None)), # bottom          
+        (0,  slice(None)), # bottom
         (slice(1, -1),    -1),  # inner-left
         (-1, slice(None, None, -1)), # top
         (slice(-2, 0, -1), 0)): # inner right
-            
+
         # Border
         xborder = xxref[jslice, islice].tolist()
-        yborder = yyref[jslice, islice].tolist()        
-            
+        yborder = yyref[jslice, islice].tolist()
+
         # Smart compression
         if isinstance(jslice, int): # Along X
             if jslice: # top
@@ -1040,23 +1040,23 @@ def grid_envelop(gg, centers=False, poly=True):
             if islice: # right
                 ib0 = -2 ; ib1 = None
             else: # left
-                ib0 = 0 ; ib1 = 2 
+                ib0 = 0 ; ib1 = 2
             xpoly = xxb[jslice, ib0:ib1][::ny-2]
             ypoly = yyb[jslice, ib0:ib1][::ny-2]
         xline = xx[jslice, islice] ; xline = xline[::len(xline)-1]
         yline = yy[jslice, islice] ; yline = yline[::len(yline)-1]
-        poly1d = Polygon(N.asarray([[xpoly[0, 0], ypoly[0, 0]], 
-            [xpoly[0, -1], ypoly[0, -1]], [xpoly[-1, -1], ypoly[-1, -1]], 
+        poly1d = Polygon(N.asarray([[xpoly[0, 0], ypoly[0, 0]],
+            [xpoly[0, -1], ypoly[0, -1]], [xpoly[-1, -1], ypoly[-1, -1]],
             [xpoly[-1, 0], ypoly[-1, 0]]], 'd'))
         line1d = LineString(N.asarray([[xline[0], yline[0]], [xline[1], yline[1]]], 'd'))
         if line1d.within(poly1d): # Compression
             xborder = xborder[::len(xborder)-1]
             yborder = yborder[::len(yborder)-1]
-            
+
         # Add it
         xp += xborder
         yp += yborder
-        
+
     # Return the polygon or arrays
     if not poly: return N.asarray(xp), N.asarray(yp)
     return Polygon(N.asarray(zip(xp, yp)))
@@ -1064,15 +1064,15 @@ def grid_envelop(gg, centers=False, poly=True):
 def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
     """Create a mask on output grid from the bounds of an input grids:
     points of output grid that are not within these bounds of are masked.
-    
+
     - **ggi**: Input grid or (lon,lat) or cdms variable.
     - **ggo**: Output grid or (lon,lat) or cdms variable.
     - Other keywords are passed to :func:`grid_envelop`
-    
+
     :Returns:
         A mask on output grid.
     """
-    
+
     if M.isgrid(ggi, curv=False): # Rectangular
         x, y = M.get_xy(ggi)
         xb = M.bounds1d(x)
@@ -1080,14 +1080,14 @@ def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
         ggo = M.get_grid(ggo)
         xxo, yyo = M.meshgrid(*M.get_xy(ggo))
         return (xxo<=xb.min())|(xxo>=xb.max())|(yyo<=yb.min())|(yyo>=yb.max())
-    
+
     elif poly: # Using a polygon
-    
+
         # Envelop of the input grid
         poly = grid_envelop(ggi, **kwargs)
         # Mask on output grid
         return ~polygon_mask(ggo, [poly], mode='inside')
-        
+
     else: # Using regridding
         from regridding import regrid2d
         xxb, yyb = M.meshbounds(*M.meshbounds(*M.get_xy(ggi)))
@@ -1097,20 +1097,20 @@ def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
         M.set_grid(vari, M.curv_grid(xxb, yyb))
         varo = regrid2d(vari, ggo, 'nearest', ext=True).filled(1.)
         return varo.astype('?')
-        
+
 
 
 
 def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
     """Check that islands as greater as a cell are taken into account
-    
+
     - **mask**: The initial mask. A cdms variable with X (longitude) and Y (latitude), or a tuple (lon, lat, mask).
     - **polys**: Coastal polygons.
     - *offset*: Islands whose area is > 1-offset and < 1+offset % of the mean cell area are checked [default: .95]
     - *dcell*: dx and dy relative extension from the center of the cell in resolution units.
-    
+
     """
-    
+
     # Get mask and axes
     if isinstance(mask, tuple):
         if len(mask) == 3:
@@ -1120,20 +1120,20 @@ def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
             xx, yy = M.get_xy(gg)
     else:
         xx, yy = M.get_xy(mask)
-    
+
     # Resolution
     dx = N.diff(xx).mean()
     dy = N.diff(yy).mean()
     cell_area = N.sqrt(dx*dy)
-    
+
     # Loop on islands
     ni = 0
     for island_poly in polygons(polys):
-        
+
         # Select islands
         island_area = island_poly.area()
         if island_area < cell_area*offsetmin or island_area > cell_area*offsetmax: continue
-        
+
         # Define cells around
         xisland = island_poly.get_data()[:, 0]
         yisland = island_poly.get_data()[:, 1]
@@ -1143,7 +1143,7 @@ def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
         jmin, jmax, k = xx.mapInterval((ycisland-dy*dcell*1.1, ycisland+dy*dcell*1.1))
         amask = mask[jmin:jmax, imin:imax]
         xxb, yyb = _trans_(trans, bounds2d(amask.getAxis(-1)),  bounds2d(amask.getAxis(-2)))
-        
+
         # Get intersection areas
         areas = N.zeros(amask.shape, 'f')
         for j in xrange(amask.shape[-2]):
@@ -1151,24 +1151,24 @@ def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
                 cell_poly = Polygon(N.array([xxb[j, i, :].ravel(), yyb[j, i, :].ravel()]).transpose())
                 if cell_poly.intersects(island_poly):
                     areas[j, i] = cell_poly.intersection(island_poly).area()
-                    
+
         # It should be masked where area is max
         if not amask.flat[N.argmax(areas)]: ni += 1
         amask.flat[N.argmax(areas)] = True
         mask[jmin:jmax, imin:imax] = amask
-        
+
     print 'Masked %i islands' % ni
     return mask
-    
+
 def check_poly_straits(mask, polys, dcell=2, threshold=.75):
     """Check that straits are opened by counting the number of polygon intersection in each cell and the area of water
-    
+
     - **mask**: The initial mask. A cdms variable with X (longitude) and Y (latitude).
     - **polys**: Coastal polygons.
     - *dcell*: dx and dy relative extension from the center of the cell in resolution units.
     - *threshold*: Maximal fraction of cell area that must be covered of land (> .5) [default: .25]
     """
-    
+
     # Get mask and axes
     if isinstance(mask, tuple):
         if len(mask) == 3:
@@ -1178,18 +1178,18 @@ def check_poly_straits(mask, polys, dcell=2, threshold=.75):
             xx, yy = M.get_xy(gg)
     else:
         xx, yy = M.get_xy(mask)
-        
+
     # Get cell bounds
     xxb, yyb = bounds2d(xx),  bounds2d(yy)
-    
+
     # Loop on coastal points
     ns = 0
     for i, j in get_coastal_indices(mask):
-        
+
         # Cell polygon
         cell_poly = Polygon(N.array(xxb[j, i, :], yyb[j, i, :]).transpose())
         cell_area = cell_poly.area()
-        
+
         # Count polygon intersections
         npoly = 0
         area = 0.
@@ -1206,18 +1206,18 @@ def check_poly_straits(mask, polys, dcell=2, threshold=.75):
         else:
             # Several polygons = strait, so open
             mask[j, i] = npoly < 2
-            
+
     print 'Opened %i straits' %ns
     return mask
-    
+
 
 def t2uvmasks(tmask, getu=True, getv=True):
     """Compoute masks at U and V points from a mask at T points on a C grid (True is land)
-    
+
     - **tmask**: A 2D mask.
     - *getu*: Get the mask at U-points
     - *getv*: Get the mask at V-points
-    
+
     Return umask,vmask OR umask OR vmask depending on getu and getv.
     """
     if not getu and not getv: return
@@ -1232,14 +1232,14 @@ def t2uvmasks(tmask, getu=True, getv=True):
 
 def mask2d(mask, method='and'):
     """Convert a 3(or more)-D mask to 2D by performing compression on first axes
-    
+
     .. note::
-    
+
         Mask is False on ocean
-    
+
     - **mask**: At least 2D mask
     - *method*: Compression method
-    
+
         - ``"and"``: Only one point must be unmask to get the compressed dimension unmasked.
         - ``"or"``: All points must be unmask to get the compressed dimension unmasked.
     """
@@ -1253,18 +1253,18 @@ def mask2d(mask, method='and'):
     while mask.ndim != 2:
         mask = func.reduce(mask)
     return mask.astype(dtype)
-    
-    
+
+
 def _old_rsamp_(x, y, r, z=None, rmean=.7, proj=False, getmask=False):
     """Undersample data points using a radius of proximity
-    
+
     - **x**: 1D x array.
     - **y**: 1D Y array.
     - **r**: Radius of proximity.
     - *z*: 1D Z array.
     - *proj*: Geographic projection instance to convert coordinates.
     - *method*:
-    
+
         - ``mean``: Average neighbouring points.
         - ``pickup``: Pickup only the current point within the circle of proximity.
     """
@@ -1281,13 +1281,13 @@ def _old_rsamp_(x, y, r, z=None, rmean=.7, proj=False, getmask=False):
     close = N.zeros(n, '?')
     good = N.ones(n, '?')
     rmean = N.clip(rmean, 0., 1.)
-    
+
     # Projection
     if proj is True:
         proj = get_proj((x,y))
     if callable(proj):
         x, y = proj(x, y)
-        
+
     # Loop on valid points
     for i0 in xrange(n):
         if not good[i0]: continue
@@ -1309,13 +1309,13 @@ def _old_rsamp_(x, y, r, z=None, rmean=.7, proj=False, getmask=False):
     # Select valid points
     ret = (x[good], y[good])
     if z is not None:
-        ret += z[good], 
+        ret += z[good],
     del good
     return ret
 
 def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
     """Undersample data points using a radius of proximity
-    
+
     - **x**: 1D x array.
     - **y**: 1D Y array.
     - **r**: Radius of proximity.
@@ -1335,7 +1335,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
     good = N.ones(n, '?')
     rmean = N.clip(rmean, 0., 1.)
     rblock = int(max(1, rblock))
-    
+
     # Projection
     if proj is True:
         proj = get_proj((x,y))
@@ -1347,7 +1347,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
     ymin = y.min()
     xmax = x.max()
     ymax = y.max()
-    dx = xmax-xmin ; dy = ymax-ymin 
+    dx = xmax-xmin ; dy = ymax-ymin
     xmin -= .001*dx ; xmax += .001*dx
     ymin -= .001*dy ; ymax += .001*dy
     nxb = max(1, int((xmax-xmin)/(r*(rblock-1))))
@@ -1355,7 +1355,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
     rblock *= r
     xgood = N.zeros(n, '?')
     block = N.zeros(n, '?')
-    
+
     # Loop on x bands
     x0 = xmin+r-rblock
     for ixb in xrange(nxb):
@@ -1366,7 +1366,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
             x1 = x0 + rblock
         xgood[:] = (x>=x0)&(x<=x1)
         if not xgood.any(): continue
-        
+
         # Loop on y bands
         y0 = ymin+r-rblock
         for iyb in xrange(nyb):
@@ -1375,7 +1375,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
                 y1 = ymax
             else:
                 y1 = y0 + rblock
-                
+
             # Select the block
             block[:] = xgood&(y>=y0)&(y<=y1)
             xx = x[block]
@@ -1385,7 +1385,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
             if z is not None:
                 zz = z[block]
             gg = good[block]
-            
+
             # Loop on valid points
             for i0 in xrange(nn):
                 if not gg[i0]: continue
@@ -1402,7 +1402,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
                 gg[i0] = True
                 # del
                 del dst, close
-                
+
             # Store results
             good[block] = gg
             if z is not None:
@@ -1417,20 +1417,20 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
     if proj:
         ret = proj(ret[0], ret[1], inverse=True)
     if z is not None:
-        ret += z[good], 
+        ret += z[good],
     del good
     return ret
 
 
 def zcompress(z, *xy, **kwargs):
     """Compress 1D arrays according to the mask of the first one
-    
+
     - **z**: Reference (masked) array
     - *xy*: Additional arrays to be compressed
     - *numpify*: Force convertion to numpy array
-    
+
     :Example:
-    
+
     >>> z, x, y = zcompress(z, x, y, numpify=True)
     """
     if hasattr(z, 'mask') and z.mask is not N.ma.nomask:
@@ -1446,40 +1446,40 @@ def zcompress(z, *xy, **kwargs):
                 cp_atts(var, newvar, id=True)
             # Numpify
             if npf and hasattr(var, 'filled'):
-                ret += newvar.filled(), 
+                ret += newvar.filled(),
                 del newvar
             else:
-                ret += newvar, 
+                ret += newvar,
         return ret
-    ret = z, 
+    ret = z,
     ret += xy
     return ret
-   
-def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None, 
+
+def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
     relres=None, scaler=None, compact=False, relmargin=.05, nauto=20):
     """Create a mask based on resolution criteria for undersampling 2D data
-    
+
     :Params:
         - **grid**: A cdms array with a grid, a cdms grid or a tuple of axes.
-        - **res**, optional: Horizontal resolution of arrows 
+        - **res**, optional: Horizontal resolution of arrows
             (in both directions) for undersampling [default: ``None``].
             If ``'auto'``, resolution is computed so as to have at max ``nauto``
             arrow in along an axis. If it is a :class:`complex` type, its imaginary part
             set the ``nauto`` parameter and ``res`` is set to ``'auto'``.
-            
+
             .. warning::
-    
+
                 Use of ``res`` makes the supposition that X and y units are consistent.
-        
+
         - **xres**, optional: Same along X [default: ``res``]
         - **yres**, optional: Same along Y [default: ``res``]
-        - **relres**, optional: Relative resolution 
-            (in both directions). 
-            
-            - If > 0, = ``median(res)*relres``. 
-            - If < -1, =``min(res)*abs(relres)``. 
+        - **relres**, optional: Relative resolution
+            (in both directions).
+
+            - If > 0, = ``median(res)*relres``.
+            - If < -1, =``min(res)*abs(relres)``.
             - If < 0 and > -1, =max(res)*abs(relres)
-            
+
         - **xrelres**, optional: Same along X [default: ``relres``]
         - **yrelres**, optional: Same along Y [default: ``relres``]
         - **scaler**, optional: A callable object that transform X and Y coordinates.
@@ -1487,23 +1487,23 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
           if resolutions are negatives.
           A typical scaler is for example a geographic projection that convert degrees
           to meters (like a :class:`~mpl_toolkits.basemap.Basemap` instance).
-          
+
         - **compact**, optional: If no unsersampling is efective, returns ``False``.
-          
+
     .. note:: A resolution value set to ``False`` implies no undersampling.
-          
+
     :Example:
-    
+
         >>> mask = resol_mask((x2d, y2d), relres=2.5) # sampling=2.5
         >>> mask = resol_mask(var.getGrid(), xres=2., scaler=mymap, yres=-100.) # 100m
         >>> mask = resol_mask(var.getGrid(), res=20j) # at max 20 arrows per axis
         >>> mask = resol_mask(var.getGrid(), res='auto', nauto=20) # equivalent
-          
+
     .. note::
-    
-        It is usually better to regrid with a convenient method 
+
+        It is usually better to regrid with a convenient method
         instead of unsersample because of aliasing.
-        
+
     """
     # Params
     if isinstance(res, complex):
@@ -1513,11 +1513,11 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
         else:
             res = None
     if nauto is None: nauto = 20
-    
-    
+
+
     # Get numeric axes
     xx, yy = M.get_xy(grid, num=True, mesh=True, m=False)
-    
+
     # Scaler
     if scaler is None:
         scaler = get_proj((xx, yy))
@@ -1525,14 +1525,14 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
         xxs, yys = scaler(xx, yy)
     else:
         xxs, yys = xx, yy
-    
+
     # Guess reference resolution
     if res is not None:
         if xres is None: xres = res
         if yres is None: yres = res
     if relres is not None:
         if xrelres is None: xrelres = relres
-        if yrelres is None: yrelres = relres        
+        if yrelres is None: yrelres = relres
     if xres is False or xx.shape[1]<3: xres = None
     if yres is False or yy.shape[1]<3: yres = None
     if xrelres is False: xrelres = None
@@ -1566,7 +1566,7 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
         x2d = xx if xres > 0 else xxs
         y2d = yy if yres > 0 else yys
     if xres is not None or yres is not None:
-        xbres, ybres = M.resol((x2d, y2d), mode='raw')        
+        xbres, ybres = M.resol((x2d, y2d), mode='raw')
     if xres=='auto' or yres=='auto':
         xcres = N.ma.cumsum(xbres, axis=1)
         ycres = N.ma.cumsum(ybres, axis=0)
@@ -1575,14 +1575,14 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
         xres = yres = min(xares, yares)
     else:
         x2d = y2d = xbres = ybres = xcres = ycres = None
-        
+
     # Resolution along X
     if xres=='auto':
         xres = res
     if xres is not None: # From absolute resolution
         if xrelres is None: xrelres = 1.
         xbres /= N.abs(xres*N.abs(xrelres))
-        if xcres is None: 
+        if xcres is None:
             xcres = N.ma.cumsum(xbres, axis=1).astype('i')
         else:
             xcres /= N.abs(xres*N.abs(xrelres))
@@ -1603,7 +1603,7 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
     if yres is not None: # From absolute resolution
         if yrelres is None: yrelres = 1.
         ybres /= N.abs(yres*N.abs(yrelres))
-        if ycres is None: 
+        if ycres is None:
             ycres = N.ma.cumsum(ybres, axis=0).astype('i')
         else:
             ycres /= N.abs(yres*N.abs(yrelres))
@@ -1617,34 +1617,34 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
         del ycres, ydres, ybres
     else:
         ymask = False
-    
-    
+
+
     return xmask | ymask
- 
+
 def get_avail_rate(data, num=True, mode='rate'):
     """Get the availability rate of a masked array along its forst dimension
-   
+
     :Params:
-    
+
         - **data**: Mask or masked array.
         - **num**, optional: Get result as pure numpy array or formatted
           as input array when possible (MV2 array).
-        - **mode**, optional: 
-            
+        - **mode**, optional:
+
             - "rate": Output is between 0 and 1.
             - "pct": Same but in percents from 0 to 100.
             - "count": Count valid data.
     """
     # Get the mask
     mask = N.ma.getmaskarray(data) if N.ma.isMA(data) else data
-    
+
     # Count
     rate = mask.sum(axis=0)
     if mode=="rate" or mode=='pct':
         rate = rate.astype('f')/rate.shape[0]
         if mode=='pct':
             rate *= 100
-    
+
     # Format?
     if not num and cdms2.isVariable(data):
         rate = MV2.array(rate, copy=0)
@@ -1657,16 +1657,16 @@ def get_avail_rate(data, num=True, mode='rate'):
             rate.units = "%"
         else:
             rate.long_name = 'Number of valid data'
-            
+
     return rate
-        
-        
-    
+
+
+
 ######################################################################
 ######################################################################
 import misc as M
 from ...misc.axes import islon, islat
 from ...misc.phys.units import deg2m
 from ...misc.io import Shapes
-from basemap import GSHHS_BM, get_proj
+from .basemap import GSHHS_BM, get_proj
 from ...misc.misc import cp_atts, kwfilter

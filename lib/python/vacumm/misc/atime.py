@@ -3,26 +3,26 @@
 Time utilities
 """
 # Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud, Guillaume Charria) (2010)
-# 
+#
 # raynaud@actimar.fr
-# 
-# 
+#
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -30,28 +30,30 @@ Time utilities
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-# 
-import numpy as N,MV2,numpy.ma as MA,cdtime,cdms2 as cdms,types,cdutil, cdms2
+#
+import os
+import re
+import time,datetime as DT
+from operator import isNumberType, gt, ge, lt, le
+from re import split as resplit,match, compile as recompile
+import math
+
+import numpy as N, MV2, numpy.ma as MA, cdtime, cdms2 as cdms, cdutil, cdms2
 from cdms2.axis import CdtimeTypes,AbstractAxis,ComptimeType,ReltimeType,FileAxis
-MV = MV2
-from pytz import timezone, all_timezones
-from matplotlib.dates import DateFormatter, num2date, date2num
 from dateutil.rrule import rrule, MO, TU, WE, TH, FR, SA, SU, YEARLY, \
      MONTHLY, WEEKLY, DAILY, HOURLY, MINUTELY, SECONDLY
+from matplotlib.dates import DateFormatter, num2date, date2num
+from pytz import timezone, all_timezones
 
-import math
-import time,datetime as DT
-from re import split as resplit,match, compile as recompile
-import re
-import os
-from operator import isNumberType, gt, ge, lt, le
-from vacumm import VACUMMError
+
+MV = MV2
+
 
 
 # Variables
@@ -63,17 +65,17 @@ re_match_time = recompile(re_match_time_pattern+'$', re.I).match
 re_match_units_pattern = r'(%s) since '%'|'.join(str_unit_types)+re_match_time_pattern+'[ \w]*'
 re_match_units = recompile(re_match_units_pattern+'$', re.I).match
 
-__all__ = ['mpl_time_units','str_unit_types','re_split_date','now', 'add', 'axis_add', 
-'mpl', 'are_same_units', 'are_good_units', 'ch_units', 'comptime', 'reltime', 'datetime', 
-'is_cdtime', 'is_reltime', 'is_comptime', 'is_datetime', 'check_range', 'is_in_range', 
-'num_to_ascii', 'Gaps', 'unit_type', 'get_dt', 'compress', 'plot_dt', 'reduce', 'yearly', 
-'monthly', 'hourly', 'daily', 'hourly_exact', 'trend', 'detrend', 'strftime', 'strptime', 
-'tz_to_tz', 'from_utc', 'to_utc', 'paris_to_utc', 'DateSorter', 'SpecialDateFormatter', 
-'interp', 'is_time', 'selector', 'round_date', 'Intervals', 'utc_to_paris', 'ascii_to_num', 
-'lindates', 'itv_intersect', 'itv_union','day_of_the_year', 'pat2freq',  'strtime', 
-'is_strtime', 'time_type', 'is_axistime', 'notz',  'IterDates', 'numtime',  'is_numtime', 
-'pat2glob', 'midnight_date', 'midnight_interval','reduce_old', 'daily_bounds', 
-'hourly_bounds', 'time_split', 'time_split_nmax', 'add_margin', 'fixcomptime', 
+__all__ = ['mpl_time_units','str_unit_types','re_split_date','now', 'add', 'axis_add',
+'mpl', 'are_same_units', 'are_good_units', 'ch_units', 'comptime', 'reltime', 'datetime',
+'is_cdtime', 'is_reltime', 'is_comptime', 'is_datetime', 'check_range', 'is_in_range',
+'num_to_ascii', 'Gaps', 'unit_type', 'get_dt', 'compress', 'plot_dt', 'reduce', 'yearly',
+'monthly', 'hourly', 'daily', 'hourly_exact', 'trend', 'detrend', 'strftime', 'strptime',
+'tz_to_tz', 'from_utc', 'to_utc', 'paris_to_utc', 'DateSorter', 'SpecialDateFormatter',
+'interp', 'is_time', 'selector', 'round_date', 'Intervals', 'utc_to_paris', 'ascii_to_num',
+'lindates', 'itv_intersect', 'itv_union','day_of_the_year', 'pat2freq',  'strtime',
+'is_strtime', 'time_type', 'is_axistime', 'notz',  'IterDates', 'numtime',  'is_numtime',
+'pat2glob', 'midnight_date', 'midnight_interval','reduce_old', 'daily_bounds',
+'hourly_bounds', 'time_split', 'time_split_nmax', 'add_margin', 'fixcomptime',
 'is_interval', 'has_time_pattern', 'tsel2slice', 'time_selector', 'tic', 'toc']
 
 
@@ -82,84 +84,84 @@ __all__.sort()
 
 def pat2freq(pattern):
     """Get the maximal frequency ("days", "hours", etc) associated with a date pattern
-    
+
     :Params:
-    
+
         - **pattern**: A string containg date patterns (like '%d' or '%%d')
-        
-    :Return: 
-    
-        One of ``None``, ``"seconds"``, ``"minutes"``, ``"hours"``, 
+
+    :Return:
+
+        One of ``None``, ``"seconds"``, ``"minutes"``, ``"hours"``,
         ``"days"``, ``"months"``, ``"yaers"``.
-    
+
     :Example:
-    
+
     >>> print pat2freq('%d/%m/%Y')
     days
     """
-    
+
     # Patterns
     pats = (
-        ("seconds", ['S', 'T', 'X']), 
-        ('minutes', ['M', 'R']), 
-        ('hours', ['H']), 
-        ('days', ['d', 'D', 'F', 'a', 'A', 'e', 'j', 'u', 'w']), 
-        ('months', ['b', 'B', 'h', 'm']), 
-        ('years', ['C', 'g', 'G', 'y', 'Y']), 
+        ("seconds", ['S', 'T', 'X']),
+        ('minutes', ['M', 'R']),
+        ('hours', ['H']),
+        ('days', ['d', 'D', 'F', 'a', 'A', 'e', 'j', 'u', 'w']),
+        ('months', ['b', 'B', 'h', 'm']),
+        ('years', ['C', 'g', 'G', 'y', 'Y']),
     )
-    
+
     # Search
     for freq, pp in pats:
         for p in pp:
             if '%'+p in pattern:
                 return freq
-                
+
 def pat2glob(pattern, esc=False):
     """Convert a date pattern to a rough global matching pattern
-   
-    .. note:: 
-    
+
+    .. note::
+
         A global matching pattern is a UNIX file pattern.
         See :func:`glob.glob` for more information.
-        
+
     .. warning::
-    
+
         The output global pattern is NOT strict, and thus
         may embed more than requested by the date pattern.
-    
+
     :Params:
-    
+
         - **pattern**: A string containg date patterns (like '%d' or '%%d')
         - **esc**, optional: If ``True``, date patterns are escaped (like '%%d')
     """
     pats = {
-        'a':    '???', 
-        'A':    '*', 
-        'b':    '*', 
-        'B':    '???', 
-        'c':    '*', 
-        'd':    '[0-3][0-9]', 
-        'H':    '[012][0-9]', 
-        'I':    '[01][0-9]', 
-        'j':    '[0-3][0-9][0-9]', 
-        'm':    '[0-1][0-9]', 
-        'M':    '[0-5][0-9]', 
-        'p':    '[AP]M', 
-        'S':    '[0-6][0-9]', 
-        'U':    '[0-5][0-9]', 
-        'w':    '[0-6]', 
-        'W':    '[0-5][0-9]', 
-        'x':    '*', 
-        'X':    '*', 
-        'y':    '[0-9][0-9]', 
-        'Y':    '[0-2][0-9][0-9][0-9]', 
+        'a':    '???',
+        'A':    '*',
+        'b':    '*',
+        'B':    '???',
+        'c':    '*',
+        'd':    '[0-3][0-9]',
+        'H':    '[012][0-9]',
+        'I':    '[01][0-9]',
+        'j':    '[0-3][0-9][0-9]',
+        'm':    '[0-1][0-9]',
+        'M':    '[0-5][0-9]',
+        'p':    '[AP]M',
+        'S':    '[0-6][0-9]',
+        'U':    '[0-5][0-9]',
+        'w':    '[0-6]',
+        'W':    '[0-5][0-9]',
+        'x':    '*',
+        'X':    '*',
+        'y':    '[0-9][0-9]',
+        'Y':    '[0-2][0-9][0-9][0-9]',
     }
     pc = '%%' if esc else '%'
     for d, g in pats.items():
         pattern = pattern.replace(pc+d, g)
     return pattern
-    
-    
+
+
 
 def day_of_the_year(mytime):
     """Compute the day of the year of a specified date"""
@@ -172,18 +174,18 @@ def lindates(first, last, incr, units):
     """Create a list of linearly incrementing dates
 
     :Params:
-    
+
         - **first**: first date
         - **last**: first date
         - **incr**: increment step
         - **units**: units like "days" (see :func:`unit_type`)
-        
+
     :Example:
-    
+
         >>> dates = lindates('2000', '2002-05', 3, 'months')
-        
-    :Return: 
-    
+
+    :Return:
+
         - list of :func:`cdtime.comptime` dates
     """
     first = comptime(first)
@@ -198,9 +200,9 @@ def lindates(first, last, incr, units):
 
 def now(utc=False):
     """Return current time as :func:`cdtime.comptime`
-    
+
     :Params:
-    
+
         - **utc**, optional: Return UTC time [default: False]"""
     if utc:
         return comptime(DT.datetime.utcnow())
@@ -212,14 +214,14 @@ def add(mytime, amount, units=None, copy=True):
     """Add value to time
 
     :Params:
-    
+
         - **mytime**: Target time, list of times or time axis.
         - **amount**: Value to add.
         - **units**, optional: Units, needed if ``mytime`` is not a time axis.
         - **copy**, optional: Copy list or time axis?
-    
+
     Example:
-    
+
         >>> add('2008-02', 3, 'days')
         '2008-2-4 0:0:0.0'
     """
@@ -234,27 +236,27 @@ def add(mytime, amount, units=None, copy=True):
         assert hasattr(mytime,'units'), 'Your time axis must have an "units" attribute'
         mytime[:] = N.array([add(ct, amount, units).value for ct in mytime.asRelativeTime()])
         return mytime
-    
+
     # Handle lists
     if not isinstance(mytime, list): copy = False
     LH = _LH_(mytime)
     intimes = LH.get()
     outtimes = list(intimes) if copy else intimes
     for i, mytime in enumerate(intimes):
-        
+
         # Guess type
         typeback = time_type(mytime,  out='func')
         if typeback == reltime:
             myUnits = mytime.units
         mytime = comptime(mytime)
-        
+
         # Units
         units = unit_type(units)
         assert units is not None, 'You must provide valid time units'
-    
+
         # Add
         newtime = mytime.add(amount, units)
-    
+
         # Correction
         if units != cdtime.Second:
             mytimes = [mytime.year,mytime.month,mytime.day,
@@ -267,7 +269,7 @@ def add(mytime, amount, units=None, copy=True):
             if iunits < 2:
                 newtimes[iunits+1:] = mytimes[iunits+1:]
             newtime = cdtime.comptime(*newtimes)
-    
+
         # Back to correct type
         if typeback == reltime:
             mytime = typeback(newtime, myUnits)
@@ -285,23 +287,23 @@ axis_add = add
 
 def mpl(mytimes, copy=True):
     """Convert to Matplotlib units.
-    
+
     Time objects (or list of them) are converted to
-    pure numerical values.   
-  
+    pure numerical values.
+
     :Params:
-    
+
         - **mytimes**: Time object (or list), or time axis.
         - **copy**, optional: Copy time axis or not?
 
     .. note::
-    
+
         This function does not use :func:`ch_units`.
-        It uses Matplotlib internal function 
+        It uses Matplotlib internal function
         :func:`matplotlib.dates.date2num` instead.
-        
+
     :Example:
-    
+
         >>> taxis = create_time((0, 10.), 'hours since 2000-01-01')
         >>> maxis = mpl(taxis)
         >>> print maxis[0]
@@ -316,12 +318,12 @@ def mpl(mytimes, copy=True):
             taxis = mpl(taxis, copy=copy)
             mytimes.setAxis(mytimes.getOrder().index('t'), taxis)
         return mytimes
-        
+
     # Time axis
     if istime(mytimes):
         if copy: mytimes = mytimes.clone()
         mytimes._data_ = mytimes._data_ .astype('d')
-        if hasattr(mytimes, 'matplotlib_compatible') and mytimes.matplotlib_compatible: 
+        if hasattr(mytimes, 'matplotlib_compatible') and mytimes.matplotlib_compatible:
             return mytimes
         # Values
         mytimes.assignValue(mytimes.getValue().astype('d'))
@@ -335,13 +337,13 @@ def mpl(mytimes, copy=True):
         mytimes.units = 'days since '+str(ctref)
         mytimes.matplotlib_compatible = True
         return mytimes
-    
+
     # Time or list
     mytimes = datetime(mytimes)
     LH = _LH_(mytimes)
     intimes = LH.get()
     return LH.put([date2num(dt) for dt in datetime(intimes)])
-   
+
 
 
 # Obsolete :
@@ -350,18 +352,18 @@ to_mpl = mpl
 
 def are_same_units(units1, units2):
     """Compare time units
-    
+
     >>> are_same_units('days since 1900-1', 'days since 1900-01-01 00:00:0.0')
     True
-    
+
     """
     return cdtime.reltime(100,str(units1).lower())==cdtime.reltime(100, str(units2).lower())
 
 def are_good_units(units):
     """Check that units are well formatted
-    
+
     :Example:
-    
+
     >>> from vacumm.misc.atime import are_good_units
     >>> are_good_units('months since 2000')
     True
@@ -383,25 +385,25 @@ def ch_units(mytimes, newunits, copy=True):
     """Change units of a CDAT time axis or a list (or single element) or cdtime times
 
     :Params:
-    
+
         - **mytimes**: CDAT axis time object, a CDAT variable with a time axis,
           a valid time ot list of times.
         - **newunits**: New time units.
-        - **copy**, optional: Create a new axis instead of updating 
+        - **copy**, optional: Create a new axis instead of updating
           the current one.
-          
+
            .. note:: If ``mytimes is True``, then ``copy`` is set to ``False``.
 
-    :Return: 
-    
+    :Return:
+
         New time axis, or relatives times.
-    
+
     :Example:
-    
+
         >>> mytimes = ch_units(time_axis,relative=False,value=False,copy=True)
-        
+
     .. warning::
-    
+
         In the case of a single time object or a list of them, all object
         that is not :func:`cdtime.reltime` object will not be converted.
 
@@ -421,7 +423,7 @@ def ch_units(mytimes, newunits, copy=True):
         mytimes._data_ = mytimes._data_ .astype('d')
         mytimes.toRelativeTime(newunits)
         return mytimes
-       
+
     # Single or list of times
     if not isinstance(mytimes, list): copy = False
     LH = _LH_(mytimes)
@@ -431,29 +433,29 @@ def ch_units(mytimes, newunits, copy=True):
         if not is_reltime(mytime): continue
         outtimes[i] = mytime.tocomp().torel(newunits)
     return LH.put(outtimes)
-        
+
 
 def time_type(mytime, out='string', check=False):
     """Get the type of time
-    
+
     :Params:
-    
-        - **mytime**: A time of one of the following types: 
+
+        - **mytime**: A time of one of the following types:
           :func:`cdtime.comptime`, :func:`cdtime.reltime`,
           :func:`datetime.datetime` or a date string.
         - **out**, optional: Output format, one of:
-        
+
             - ``"string"``: Return one of ``"comptime"``, ``"reltime"``
               ``"datetime"``, ``"strtime"``, ``"numtime"``.
             - ``"type"``: Simply return result of ``type(mytime)``
-            - ``"func"``: Return the function used to convert 
-              to this type : :func:`comptime`, :func:`reltime`, 
+            - ``"func"``: Return the function used to convert
+              to this type : :func:`comptime`, :func:`reltime`,
               :func:`datetime`, :func:`numtime`.
-              
+
     :Return: ``None`` if not a time, or see **out**.
-              
+
     :Example:
-      
+
             >>> time_type('2000-10')
             'str'
             >>> time_type(cdtime.comptime(2000,10), out='func')
@@ -471,18 +473,18 @@ def comptime(mytime):
     """Convert to :func:`cdtime.comptime` format
 
     :Params:
-    
+
         - **mytime**: Time as string, :class:`~datetime.datetime`,
-          :func:`cdtime.comptime`, :func:`cdtime.reltime` 
+          :func:`cdtime.comptime`, :func:`cdtime.reltime`
           or a: mod:`cdms2` time axis.
-        
-    .. note:: 
-    
+
+    .. note::
+
         If not an :mod:`cdms2` time axis, first argument may be a list.
         In this case, a list is also returned.
-    
+
     :Example:
-    
+
     >>> from datetime import datetime ; import cdtime
     >>> from vacumm.misc.atime import comptime
     >>> comptime(datetime(2000,1,1))
@@ -491,15 +493,15 @@ def comptime(mytime):
     10
     >>> comptime('1900-01-01').year
     1900
-    
+
     :Sea also:
-    
-        :func:`reltime()` :func:`datetime()` 
+
+        :func:`reltime()` :func:`datetime()`
     """
 
     import cdtime,types
-    
-    
+
+
     # Time axis
     if is_axistime(mytime):
         mytime = mytime.asComponentTime()
@@ -515,18 +517,18 @@ def comptime(mytime):
         if is_comptime(mytime):
             res.append(mytime)
             continue
-            
+
         # Float or int
         if is_numtime(mytime):
             mytime = num2date(mytime)
-    
+
         # Datetime
         if is_datetime(mytime):
             mytime = str(mytime)
         elif isinstance(mytime, time.struct_time):
             res.append(cdtime.comptime(*mytime[:6]))
             continue
-    
+
         # String
         if isinstance(mytime, basestring):
             for c in 'TZ_':
@@ -534,28 +536,28 @@ def comptime(mytime):
             mytime = mytime.replace('/', '-').replace('h', ':')
             res.append(cdtime.s2c(mytime))
             continue
-    
+
         # Relative time
         if is_reltime(mytime):
             res.append(mytime.tocomp())
             continue
-            
+
         res.append(mytime)
-    
+
     # Fix 60s
     res = fixcomptime(res)
-    
+
     return LH.put(res)
 
 def fixcomptime(mytime, decimals=3, copy=False):
     """Fix the 60s bug of :class:`cdtime.comptime` objects
-    
+
     :Params:
-    
+
         - **mytime**: Comptime or list of comptimes"""
     LH = _LH_(mytime)
     mytimes = LH.get()
-    if copy and LH.listtype is list: 
+    if copy and LH.listtype is list:
         mytimes = list(mytimes)
     for it, ct in enumerate(mytimes):
         if N.round(ct.second, decimals=decimals)==60:
@@ -566,28 +568,28 @@ def fixcomptime(mytime, decimals=3, copy=False):
 
 def reltime(mytime, units):
     """Convert to func:`cdtime.reltime` format
-    
+
     :Params:
-    
+
         - **mytime**: Time as string, :class:`~datetime.datetime`,
           :func:`cdtime.comptime`, :func:`cdtime.reltime`, a number
           or a: mod:`cdms2` time axis.
-        
-    .. note:: 
-    
+
+    .. note::
+
         If not an :mod:`cdms2` time axis, first argument may be a list.
         In this case, a list is also returned.
-          
+
     :Sea also:
 
-        :func:`comptime` :func:`datetime` :func:`strtime`   :func:`numtime` 
+        :func:`comptime` :func:`datetime` :func:`strtime`   :func:`numtime`
     """
     # Time axis
     if istime(mytime):
-        if are_same_units(units, mytime.units): 
+        if are_same_units(units, mytime.units):
             return mytime
         return mytime.toRelativeTime(mytime)
-        
+
     # Other
     mytime = comptime(mytime)
     LH = _LH_(mytime)
@@ -595,21 +597,21 @@ def reltime(mytime, units):
 
 def datetime(mytimes):
     """Convert to :class:`datetime.datetime` format
-    
+
     :Params:
-    
+
         - **mytimes**: Time as string, :class:`~datetime.datetime`,
           :func:`cdtime.comptime`, :func:`cdtime.reltime`, a number,
           or a: mod:`cdms2` time axis.
-        
-    .. note:: 
-    
+
+    .. note::
+
         If not an :mod:`cdms2` time axis, first argument may be a list.
         In this case, a list is also returned.
-          
+
     :Sea also:
 
-        :func:`comptime` :func:`reltime`   :func:`strtime`    :func:`numtime` 
+        :func:`comptime` :func:`reltime`   :func:`strtime`    :func:`numtime`
     """
     if istime(mytimes):
         mytimes = comptime(mytimes)
@@ -617,65 +619,65 @@ def datetime(mytimes):
     mytimes = LH.get()
     res = []
     for mytime in mytimes:
-        
+
         # Numeric
         if is_numtime(mytime):
             res.append(num2date(mytime))
             continue
-            
+
         # Others
         ct = comptime(mytime)
         ct_seconds = int(math.floor(ct.second))
         ct_microseconds = int((ct.second-ct_seconds)*1e6)
-        
+
         # Quick fix for stupid seconds at 60
         if ct_seconds == 60:
             ct_seconds = 0
             ct = ct.add(1,cdtime.Minute)
-        res.append(DT.datetime(ct.year, ct.month, ct.day, 
+        res.append(DT.datetime(ct.year, ct.month, ct.day,
             ct.hour, ct.minute, ct_seconds, ct_microseconds))
     return LH.put(res)
- 
+
 def strtime(mytime):
     """Convert to valid string date
-    
+
     :Params:
-    
+
         - **mytime**: Time as string, :class:`~datetime.datetime`,
-          :func:`cdtime.comptime`, :func:`cdtime.reltime`, a number, 
+          :func:`cdtime.comptime`, :func:`cdtime.reltime`, a number,
           or a: mod:`cdms2` time axis.
-        
-    .. note:: 
-    
+
+    .. note::
+
         If not an :mod:`cdms2` time axis, first argument may be a list.
         In this case, a list is also returned.
-          
+
     :Sea also:
 
-        :func:`comptime` :func:`reltime`  :func:`datetime`  :func:`numtime`  
+        :func:`comptime` :func:`reltime`  :func:`datetime`  :func:`numtime`
     """
     ctimes = comptime(mytime)
     LH = _LH_(ctimes)
     ctimes = LH.get()
     return LH.put([str(ct) for ct in ctimes])
- 
+
 def numtime(mytime):
     """Convert to a numeric time using :func:`~matplotlib.dates.date2num`
-    
+
     :Params:
-    
+
         - **mytime**: Time as string, :class:`~datetime.datetime`,
           :func:`cdtime.comptime`, :func:`cdtime.reltime`, a number
           or a: mod:`cdms2` time axis.
-        
-    .. note:: 
-    
+
+    .. note::
+
         If not an :mod:`cdms2` time axis, first argument may be a list.
         In this case, a list is also returned.
-          
+
     :Sea also:
 
-        :func:`comptime` :func:`reltime`  :func:`datetime`  :func:`strtime`  
+        :func:`comptime` :func:`reltime`  :func:`datetime`  :func:`strtime`
     """
     dtimes = datetime(mytime)
     LH = _LH_(dtimes)
@@ -685,30 +687,30 @@ def numtime(mytime):
 
 def notz(mytime):
     """Suppres time zone
-    
+
     :Params:
-    
+
         - A :class:`datetime.datetime`
-    
+
     :Return:
-    
+
         - A :class:`datetime.datetime` instance with not TZ
     """
     return DT.datetime(*mytime.timetuple()[:6])
 
 def is_cdtime(mytime):
     """Check if a mytime is a cdat time (from cdtime)
-    
+
     Equivalent to::
-    
+
         is_reltime(mytime) or is_comptime()
 
     :Params:
-    
+
         - **mytime**: object to check
 
     :Example:
-    
+
         >>> import cdtime
         >>> from datetime import datetime
         >>> from vacumm.misc.atime import is_cdtime
@@ -718,10 +720,10 @@ def is_cdtime(mytime):
         True
         >>> is_cdtime(datetime(2000,2,1)
         False
-    
+
     :See also:
 
-        :func:`is_comptime()`:func:`is_reltime()`  :func:`is_time()`   :func:`is_datetime()`  
+        :func:`is_comptime()`:func:`is_reltime()`  :func:`is_time()`   :func:`is_datetime()`
 
     """
 
@@ -731,12 +733,12 @@ def is_reltime(mytime):
     """Check if a time is a cdat reltime (from :mod:`cdtime`)
 
     :Params:
-    
+
         - **mytime**: object to check
 
     :Sea also:
 
-        :func:`is_comptime()` :func:`is_reltime()` :func:`is_cdtime()`   :func:`is_time()`  
+        :func:`is_comptime()` :func:`is_reltime()` :func:`is_cdtime()`   :func:`is_time()`
     """
 
     return isinstance(mytime, ReltimeType)
@@ -745,12 +747,12 @@ def is_comptime(mytime):
     """Check if a time is a cdat comptime (from :mod:`cdtime`)
 
     :Params:
-    
+
         - **mytime**: object to check
 
     :Sea also:
 
-        :func:`is_datetime()` :func:`is_reltime()` :func:`is_cdtime()`  :func:`is_time()`  
+        :func:`is_datetime()` :func:`is_reltime()` :func:`is_cdtime()`  :func:`is_time()`
     """
 
     return isinstance(mytime, ComptimeType)
@@ -759,29 +761,29 @@ def is_datetime(mytime):
     """Check if a time is a :class:`datetime.datetime` time
 
     :Params:
-    
+
         - **mytime**: object to check
 
     :Sea also:
-        
-        :func:`is_comptime()` :func:`is_reltime()` :func:`is_cdtime()`   :func:`is_time()`  
+
+        :func:`is_comptime()` :func:`is_reltime()` :func:`is_cdtime()`   :func:`is_time()`
     """
 
     return isinstance(mytime, DT.datetime)
 
 def is_axistime(mytime):
     """Check if a time is a :mod:`cdms2` time axis
-    
+
     Simple shortcut to :func:`~vacumm.misc.axes.istime`.
 
     :Params:
-    
+
         - **mytime**: object to check
 
     :Sea also:
-        
-        :func:`~vacumm.misc.axes.istime` :func:`is_comptime()` 
-        :func:`is_reltime()` :func:`is_cdtime()`   :func:`is_time()`  
+
+        :func:`~vacumm.misc.axes.istime` :func:`is_comptime()`
+        :func:`is_reltime()` :func:`is_cdtime()`   :func:`is_time()`
     """
 
     return istime(mytime)
@@ -790,13 +792,13 @@ def is_strtime(mytime):
     """Check if a time is a valid string date
 
     :Params:
-    
+
         - **mytime**: object to check
 
     :Sea also:
-        
-        :func:`is_datetime()` :func:`is_comptime()` :func:`is_reltime()` 
-        :func:`is_cdtime()`   :func:`is_time()`  
+
+        :func:`is_datetime()` :func:`is_comptime()` :func:`is_reltime()`
+        :func:`is_cdtime()`   :func:`is_time()`
     """
     if not isinstance(mytime, basestring): return False
     m = re_match_time(mytime)
@@ -807,33 +809,33 @@ def is_strtime(mytime):
     #except:
         #return False
 
-    
+
 def is_numtime(mytime):
     """Simply check if a mytime is a number !
 
     :Params:
-    
+
         - **mytime**: object to check
 
     :Sea also:
-        
-        :func:`is_datetime()` :func:`is_comptime()` :func:`is_reltime()` 
-        :func:`is_cdtime()`   :func:`is_time()`  
+
+        :func:`is_datetime()` :func:`is_comptime()` :func:`is_reltime()`
+        :func:`is_cdtime()`   :func:`is_time()`
     """
     return isinstance(mytime, (int, float))
 
-    
+
 
 def check_range(this_time,time_range):
     """Check wether a time is before, within or after a range
 
     :Params:
-    
+
     - **this_time**: time to check (string or cdat time)
     - **time_range**: 2(or 3)-element range (strings or cdat times) like ('1975',1980-10-01','co)
-    
+
     :Example:
-    
+
         >>> from vacumm.misc.atime import comptime, reltime, check_range
         >>> check_range('2000-12', ('2000-11', '2001'))
         0
@@ -874,15 +876,15 @@ def is_in_range(this_time,time_range):
     """Check if a time is in specified closed/open range
 
     :Params:
-    
+
          - **this_time**: time to check (string or cdat time)
          - **time_range**: 2(or 3)-element range (strings or cdat times) like ('1975',1980-10-01','co)
-    
+
     :Example:
-    
+
         >>> is_in_range('2000-12', ('2000-11', '2001'))
         True
-    
+
     :Sea also:
 
         :func:`check_range()`
@@ -896,16 +898,16 @@ def num_to_ascii(yyyy=1,mm=1,dd=1,hh=0,mn=0,ss=0):
     """Convert from [yyyy,mm,dd,hh,mn,ss] or component time  or relative time to 'yyyy-mm-dd hh:mn:ss'
 
     :Params:
-    
+
         - *yyyy*: int year OR component OR relative time (cdms) [default: 1]
         - *mm*: month [default: 1]
         - *dd*: day [default: 1]
         - *hh*: hour [default: 0]
         - *mn*: minute [default: 0]
         - *ss*: second [default: 0]
-        
+
     :Example:
-    
+
         >>> num_to_ascii(month=2)
         0001-02-01 00:00:00
         >>> num_to_ascii(comptime(2000,10))
@@ -925,10 +927,10 @@ def num_to_ascii(yyyy=1,mm=1,dd=1,hh=0,mn=0,ss=0):
 
 
 def ascii_to_num(ss):
-    """ Convert from 'yyyy-mm-dd hh:mn:ss' to [yyyy,mm,dd,hh,mn,ss] 
-    
+    """ Convert from 'yyyy-mm-dd hh:mn:ss' to [yyyy,mm,dd,hh,mn,ss]
+
     :Example:
-    
+
         >>> ascii_to_num('2000-01')
         2000, 1, 1, 0, 0, 0
     """
@@ -966,27 +968,27 @@ class Gaps(cdms.tvariable.TransientVariable):
 
     A gap is defined as a missing time step or data.
     With this class, you can:
-    
+
     - get the gaps as a variable (the object itself)
     - where 1 refers to the start of gap and -1 to the end
     - print them (:meth:`show()`)
     - plot them (:meth:`plot()`)
     - save them in a netcdf or an ascii file (:meth:`save()`)
-    
+
     :Parameters:
-    
+
         - **var**: A cdms variable with a cdms time axis
         - *dt*: Time step [default: minimal time step]
         - *tolerance*: There is a gap when dt varies  of more than tolerance*min(dt) [default: 0.1]
         - *keyparam*: verbose Verbose mode
-    
+
     :Example:
-    
+
         >>> import vacumm.misc as M
         >>> import MV2
         >>> time = M.axes.create_time([1,2,4,5],units='days since 2000')
         >>> var = MV.arange
-    
+
     """
 
     def __init__(self, var, tolerance=0.1, verbose=True, dt=None, **kwargs):
@@ -1002,7 +1004,7 @@ class Gaps(cdms.tvariable.TransientVariable):
         except:
             raise RuntimeError, 'Your time axis needs units'
         kwdt = kwfilter(kwargs, 'dt')
-        
+
         if dt is None: dt = get_dt(mytime, **kwdt)
 
         # Time compression according to mask
@@ -1078,6 +1080,7 @@ class Gaps(cdms.tvariable.TransientVariable):
         if not self.ngap:
             print 'No gaps to print'
             return
+        from .io import col_printer
         cp = io.col_printer([['LENGTH',7,'%i'],['START',22,'%s'],['END',22,'%s']],**kwargs)
         for igap in xrange(self.ngap):
             cp(self._gaps[igap],self._ctime[igap*2],self._ctime[igap*2+1])
@@ -1088,7 +1091,7 @@ class Gaps(cdms.tvariable.TransientVariable):
         """Plot the gaps
 
         :Params:
-        
+
             - *color*: Color of gaps [default: 'red']
             - *figure*: Show results on a figure if there are gaps [default: True]
             - *show*: Show the figure plotted if gaps are found [default: True]
@@ -1140,7 +1143,7 @@ class Gaps(cdms.tvariable.TransientVariable):
         as displayed by (show())
 
         :Params:
-        
+
             - **file**: Netcdf file name
         """
         if file.split('.')[-1] in ['nc','cdf']:
@@ -1160,14 +1163,14 @@ def unit_type(units, string_type=False, s=True, raiseerr=True):
     """Returns a type of units in a suitable form with checkings.
 
     :Params:
-    
-        - **units**: A valid string or cdtime type of units.    
+
+        - **units**: A valid string or cdtime type of units.
         - *string_type*: Returns a string type instead of a cdtime type [default: False]
 
     :Return: A valid string or cdtime type of units
-    
+
     :Example:
-    
+
         >>> unit_type('minutes')
         >>> unit_type(cdtime.Minutes,True)
     """
@@ -1189,19 +1192,19 @@ def unit_type(units, string_type=False, s=True, raiseerr=True):
 
 
 def get_dt(axis, units=None):
-    """Returns the time steps of an axis. 
-    Value is computed according to the median time step, 
+    """Returns the time steps of an axis.
+    Value is computed according to the median time step,
     and returned in original or specified units.
 
     :Params:
-    
+
         - **axis**: A time axis.
         - **units**, optional: Another valid unit type (cdtime or string)
 
     :Return: Time step
 
     :Example:
-    
+
         >>> get_dt(var.getTime()
         >>> get_dt(var.getTime(), cdtime.Months)
         >>> get_dt(var.getTime(), 'months')
@@ -1219,7 +1222,7 @@ def get_dt(axis, units=None):
     dt = N.median(N.diff(axis[:]))
     if units is None or time_units[0] == units:
         return dt
-    
+
     # Other units
     time_units[0] = units
     time_units = ' '.join(time_units)
@@ -1370,7 +1373,7 @@ def yearly(data,**kwargs):
     """Convert to yearly means
 
     :Params:
-    
+
         - **data**: A cdms variable.
 
     :Return: A cdms variable on a hourly time axis
@@ -1388,7 +1391,7 @@ def monthly(data,**kwargs):
     """Convert to monthly means
 
     :Params:
-    
+
         - **data**: A cdms variable.
 
     :Return: A cdms variable on a hourly time axis
@@ -1406,7 +1409,7 @@ def hourly(data,frequency=24,**kwargs):
     """Convert to hourly means
 
     :Params:
-    
+
         - **data**: A cdms variable.
         - *frequency* Used when different from hourly is requested [default: 24]
 
@@ -1419,14 +1422,14 @@ def daily(data, hstart=0, **kwargs):
     """Convert to daily means
 
     :Params:
-    
+
         - **data**: A cdms variable with a time axis.
         - *hstart*: First hour of daily intervals.
-        
+
     :Example:
-    
+
         >>> dsst = daily(sst, hstart=12)
-        
+
     :See also: :func:`daily_bounds` :fun:`reduce`
 
     :Return: A cdms variable on a daily time axis
@@ -1444,12 +1447,12 @@ def hourly_exact(data,time_units=None,maxgap=None, ctlims=None):
     """Linearly interpolate data at exact beginning of hours
 
     :Params:
-    
+
         - **data**: Cdms variable.
         - *time_units*: Change time units.
         - *maxgap*: Maximal gap in hours to enable interpolation [default: None].
     """
-    
+
     from grid.misc import set_grid
 
     # Check time
@@ -1586,21 +1589,21 @@ def strftime(fmt,mytime=None):
     """Convert current time, datetime, cdtime or string time to strftime
 
     :Params:
-    
+
         - **fmt**: Time format with date patterns, like ``"%Y-%m-%d"``.
-        - **mytime**, optional: If None, takes current time using 
+        - **mytime**, optional: If None, takes current time using
          (:meth:`~datetime.datetime.now()`)
-         
+
     :Examples:
-    
+
         >>> print strftime('%Y-%m-%d')
         2014-02-25
         >>> ctime = strftime('%Hh%M', '2020')
         00h00
-        
+
     :Sea also:
-    
-        :meth:`datetime.datetime.strftime` and 
+
+        :meth:`datetime.datetime.strftime` and
         `this link <http://docs.python.org/dev/library/datetime.html#strftime-strptime-behavior>`_.
     """
 
@@ -1616,18 +1619,18 @@ def strptime(mytime,fmt):
     """Parse a string according to a format to retreive a component time
 
     :Params:
-    
+
         - **fmt**: Time format with date patterns, like ``"%Y-%m-%d"``.
         - **mytime**: Date string.
-        
+
     :Example:
-    
+
         >>> print strptime('25 Jan 2000, '%d %b %Y').month
         1
-        
+
     :Sea also:
-    
-        :meth:`datetime.datetime.strptime` and 
+
+        :meth:`datetime.datetime.strptime` and
         `this link <http://docs.python.org/dev/library/datetime.html#strftime-strptime-behavior>`_.
     """
     return comptime(time.strptime(mytime,fmt))
@@ -1666,14 +1669,14 @@ def tz_to_tz(mytime, old_tz, new_tz, copy=True):
             new_ct = comptime(old_tz.localize(datetime(ct)).astimezone(new_tz))
             mytime[it] = new_ct.torel(mytime.units).value
         return mytime
-        
+
     # Loop
     if not isinstance(mytime, list): copy = False
     LH = _LH_(mytime)
     intimes = LH.get()
     outtimes = list(intimes) if copy else intimes
     for i, mytime in enumerate(intimes):
-        
+
         # Guess type
         typeback = time_type(mytime,  out='func')
         if typeback is None:
@@ -1681,10 +1684,10 @@ def tz_to_tz(mytime, old_tz, new_tz, copy=True):
         if typeback == reltime:
             myUnits = mytime.units
         dt = datetime(mytime)
-        
-        # Change zone 
+
+        # Change zone
         new_dt = old_tz.localize(dt).astimezone(new_tz)
-        
+
         # Back to correct type
         if typeback == reltime:
             mytime = typeback(new_dt, myUnits)
@@ -1693,7 +1696,7 @@ def tz_to_tz(mytime, old_tz, new_tz, copy=True):
         outtimes[i] = mytime
 
     return LH.put(outtimes)
- 
+
 
 def from_utc(mytime,new_tz):
     return tz_to_tz(mytime,'UTC',new_tz)
@@ -1706,9 +1709,9 @@ def utc_to_paris(mytime):
 
 def tzname_to_tz(mytzname):
     """Get first time zone found from time zone short name
-    
+
     :Example:
-        
+
         >>> tz = tzname_to_tz('CEST')
     """
     for name in all_timezones:
@@ -1724,14 +1727,14 @@ class DateSorter(object):
     """Sort a list of date string, optionally using a date pattern
 
     Example:
-    
+
         >>> from vacumm.misc.atime import DateSorter
         >>> dates = ['annee 2006', 'annee 2002']
         >>> ds = DateSorter('annee %Y')
         >>> dates.sort(ds)
         >>> print dates
         ['2002', '2006']
-    
+
     """
     def __init__(self,pattern=None,basename=True):
         self.pattern = pattern
@@ -1755,9 +1758,9 @@ class SpecialDateFormatter(DateFormatter):
     Example: ['00h 01/10/2000' '02h' .... '23h'  '00h 01/10/2000'] to mark days and keep hours
     Here the 'phase' is 0 (00h) and the level is 3 (='day')
     """
-    
+
     def __init__(self,level,fmt=None,special_fmt=None,join=None,phase=None, **kwargs):
-        
+
 
         # Which level?
         slevels = ['year', 'month', 'day', 'hour', 'minute']
@@ -1788,7 +1791,7 @@ class SpecialDateFormatter(DateFormatter):
             if join is None:
                 join = False
         else:
-            if level == -2: 
+            if level == -2:
                 if fmt is None: fmt = '%Y'
             elif level == -3:
                 if fmt is None: self.fmt = "%M'%Ss''"
@@ -1796,12 +1799,12 @@ class SpecialDateFormatter(DateFormatter):
                 if fmt is None: self.fmt = '%Y-%d-%m %H:%M'
                 self.level = level = -1
             self.fmt = fmt
-            
+
         DateFormatter.__init__(self,fmt,**kwargs)
         if level<0: return
         self._phase = [1, 1, 0, 0, 0]
         if phase is not None: self._phase[level] = phase
-        
+
         # Joined format
         if join in [True, None]:
             join = '%n'
@@ -1817,73 +1820,73 @@ class SpecialDateFormatter(DateFormatter):
             return self.strftime(dt, self.special_fmt)
         # Intermediate label
         return self.strftime(dt, self.fmt)
-    
+
 
 
 def interp(vari,outtimes,squeeze=1, **kwargs):
     """Linear interpolation in time
 
     :Params:
-    
+
         - **vari****: A cdms variable with a time axis
         - **outtimes**: A time axis, or a list (or single element) of date strings, comptime, reltime, datetime times.
         - *squeeze*: Remove uneeded output dimensions [default: 1]
-        - all other keywords are passed to :func:`~vacumm.misc.grid.regridding.interp1d`.  
+        - all other keywords are passed to :func:`~vacumm.misc.grid.regridding.interp1d`.
     """
     # Convert to time axis
     if not istime(outtimes):
         outtimes = create_time(outtimes)
-        
+
     # Call to interp1d
     varo = G.regridding.interp1d(vari, outtimes, **kwargs)
-    
+
     # Squeeze?
     if squeeze:
         varo = varo(squeeze=1)
     return varo
-    
+
 
 
 def is_time(mytime, alsonum=False):
     """Check if mytime is a CDAT time, a :class:`datetime.datetime` or date valid string.
-    
+
     Equivalent to::
-        
+
         timetype(mytime) is not None
-        
+
     :Sea also:
 
-        :func:`is_datetime()` :func:`is_reltime()` :func:`is_cdtime()`  
-        :func:`is_numtime()` :func:`is_time()` 
+        :func:`is_datetime()` :func:`is_reltime()` :func:`is_cdtime()`
+        :func:`is_numtime()` :func:`is_time()`
     """
     ttype = time_type(mytime)
     return ttype and (alsonum or ttype!='numtime')
-    
+
 def is_interval(interval):
     """Check if interval is a valid time interval
-    
-    :Params: 
-    
-        - **interval**: It should be in the following generic form 
-        ``(<time0>,<time1>[,<bounds>])``, where ``<time?>`` is a valid time 
-        (see :func:`time_type` and :func:`is_valid`) and ``<bounds>`` are 
+
+    :Params:
+
+        - **interval**: It should be in the following generic form
+        ``(<time0>,<time1>[,<bounds>])``, where ``<time?>`` is a valid time
+        (see :func:`time_type` and :func:`is_valid`) and ``<bounds>`` are
         interval bounds such as ``"co"``.
     """
     if not isinstance(interval, (list, tuple)) or len(interval)<2 or len(interval)>3:
         return False
-    if not is_time(interval[0]) or not is_time(interval[1]): 
+    if not is_time(interval[0]) or not is_time(interval[1]):
         return False
-    if len(interval)==3 and (not isinstance(interval[2], basestring) 
+    if len(interval)==3 and (not isinstance(interval[2], basestring)
         or not len(interval[2])>1):
         return False
     return True
-    
+
 
 def selector(arg0, arg1=None, bounds=None, round=False, utc=True):
     """Time selector formatter that returns start date and end date as component times
 
     :Example:
-    
+
         >>> selector('2006','2007') # between two dates
         >>> selector(comptime(1950)) # from a date to now
         >>> selector(1,'month','co') # from now into the past
@@ -1906,17 +1909,17 @@ def selector(arg0, arg1=None, bounds=None, round=False, utc=True):
 
 def round_date(mydate, round_type, mode='round'):
     """Round a date to year, month, day, hour, minute or second
-    
+
     :Params:
-    
+
         - **mydate**: A date compatible with :func:`comptime`.
         - **round_type**: A string like "year".
         - **mode**, optional: Rounding mode
-        
+
             - ``"ceil"``: Choose the upper time.
             - ``"floor"``: Choose the lower time.
             - Else choose the nearest.
-    
+
     """
     if not isNumberType(round_type):
         round_type = str_unit_types.index(unit_type(round_type, string_type=True))
@@ -1933,16 +1936,16 @@ def round_date(mydate, round_type, mode='round'):
     if mode=='ceil':
         return ct1
     return ct0
-    
+
 def midnight_date(mydate):
     """Round a date to the closest midnight
-    
+
     :Example:
-    
+
         >>> print midnight_date('2010-11-29 23:10')
         2010-11-30 0:0:0.0
-        
-    
+
+
     :Return: :class:`cdtime.comptime` date at midnight
     """
     ctime = comptime(mydate)
@@ -1954,14 +1957,14 @@ def midnight_date(mydate):
 
 def midnight_interval(date):
     """Round dates of a closed interval to the closest midnight
-    
+
     :Example:
-    
+
         >>> print midnight_interval('2010-11-29 23:10')
         (2010-11-30 0:0:0.0, 2010-11-30 0:0:0.0, 'ccb')
         >>> print midnight_interval(('2010-11-29 23:10','2010-11-30 04'))
         (2010-11-30 0:0:0.0, 2010-11-30 0:0:0.0, 'ccb')
-    
+
     :Return: :class:`cdtime.comptime` interval
     """
     if not isinstance(date, tuple):
@@ -1978,9 +1981,9 @@ def midnight_interval(date):
 
 def daily_bounds(taxis, hstart=0):
     """Create a daily time bounds array from a time axis
-    
+
     :Params:
-    
+
         - **taxis**: A time axis or a variable with a time axis.
         - **hstart**, optional: First hour of each daily bounds.
     """
@@ -2004,9 +2007,9 @@ def daily_bounds(taxis, hstart=0):
 
 def hourly_bounds(taxis, mstart=0):
     """Create a hourly time bounds array from a time axis
-    
+
     :Params:
-    
+
         - **taxis**: A time axis or a variable with a time axis.
         - **mstart**, optional: First minute of each daily bounds.
     """
@@ -2027,24 +2030,24 @@ def hourly_bounds(taxis, mstart=0):
             bb[it,0] = bref.sub(1, cdtime.Hour).torel(tu).value
             bb[it,1] = bref.torel(tu).value
     return bb
-    
-    
+
+
 def reduce(vari, geterr=False, **kwargs):
     """Average time steps that have the same bounds or time
-    
+
     :Params:
-    
+
         - **vari**: Aray with a valid time axis.
-    
+
     :Example:
-    
+
         >>> taxis = sst.getTime()
         >>> tbounds = daily_bounds(taxis, hstart=12)
         >>> taxis.setBounds(tbounds)
-        >>> nightly_sst = reduce(sst) 
-    
+        >>> nightly_sst = reduce(sst)
+
     """
-     
+
     from grid.misc import set_grid
 
     # Inits
@@ -2056,7 +2059,7 @@ def reduce(vari, geterr=False, **kwargs):
     bb = taxis.getBounds()
     tt = taxis.getValue().astype('d')
     nti = len(tt)
-    
+
     # Compression intervals
     ii = N.arange(nti)
     if bb is None:
@@ -2067,7 +2070,7 @@ def reduce(vari, geterr=False, **kwargs):
         ddt = N.diff(bb, axis=0)
         it_lasts = ii[(ddt[:,0]!=0.)&(ddt[:,1]!=0.)].tolist()
     it_lasts.append(nti-1)
-    
+
     # Init output
     nto = len(it_lasts)
     varo = MV2.zeros((nto,)+vari.shape[1:], vari.dtype)
@@ -2085,7 +2088,7 @@ def reduce(vari, geterr=False, **kwargs):
         err.id += '_error'
         if hasattr(err, 'long_name'):
             err.long_name += ' average error'
-    
+
     # Loop on intervals
     mvari = vari.asma()
     it_first = 0
@@ -2099,7 +2102,7 @@ def reduce(vari, geterr=False, **kwargs):
             dbounds[it] = bb[it_last]
             dtime[it] = 0.5*(bb[it_last,0]+bb[it_last,1])
         it_first = it_last+1
-    
+
     # Finish
     dtime = create_time(dtime, taxis.units)
     if bb is not None:
@@ -2109,38 +2112,38 @@ def reduce(vari, geterr=False, **kwargs):
     if geterr:
         err.setAxis(0, dtime).reorder(order)
         err = err.reorder(order)
-        return varo, err 
+        return varo, err
     return varo
-    
+
 
 def add_margin(interval, lmargin, rmargin=None):
     """Add a margin to an interval
-    
+
     :Params:
-    
+
         - **interval**: A time interval or selector such as ``('2000', '20001', 'co')``
           Specified times may be of any valid type.
         - **lmargin**: Left margin. Examples:
-        
+
             - ``(3,'months')``: explicit.
             - ``'hours'``: Same as ````(1,'hours')``.
             - ``4``: Relative margin of size ``(interval[1]-interval[0)/4``.
             - ``False``: no margin.
-            
+
           A negative margin decrease the size of the interval.
-        
+
         - **rmargin**, optional: Right margin (defaults to the left).
-        
+
     :Example:
-    
+
         >>> print add_margin(('2000', '2001', 'co'), (5, 'days'))
         ('1999-12-27 0:0:0.0', '2001-1-6 0:0:0.0', 'co')
     """
     # Interval
     if not is_interval(interval):
         raise VACUMMError('Wrong time interval')
-    bb = interval[2] if len(interval)>2 else None   
-    
+    bb = interval[2] if len(interval)>2 else None
+
     # Format margin
     if lmargin is None: margin = 0
     margins = [lmargin, rmargin]
@@ -2165,17 +2168,17 @@ def add_margin(interval, lmargin, rmargin=None):
                 newmargin = margin
         margins[i] = list(newmargin)
     margins[0][0] = -margins[0][0]
-    
+
     # Apply
-    return type(interval)([add(interval[0], *margins[0]), 
+    return type(interval)([add(interval[0], *margins[0]),
         add(interval[1], *margins[1])]+[bb]*int(bb is not None))
-                
+
 
 class Intervals(object):
     """Iterator on intervals
-    
+
     :Params:
-    
+
         - **time_range**: Time range (optionally with bounds).
         - **dt**: Size of intervals.
         - **reverse**, optional: Reverse the iterator.
@@ -2184,24 +2187,24 @@ class Intervals(object):
         - **l/rmargin**, optional: Add a margin to the left and/or right of each interval.
           See :func:`add_margin`.
         - **innerbounds**, optional: Add bounds specs to inner intervals (like "cc").
-    
+
     :Example:
-    
+
         >>> for itv in Intervals(('2000','2001','co'),(2,'month')): print itv
         >>> Intervals(('2000','2001','co'),12).tolist()
-        >>> Intervals((cdtime.comptime(2000), '2001', 'month', 
+        >>> Intervals((cdtime.comptime(2000), '2001', 'month',
         ... reverse=True, lmargin=(3,'hours'))
-    
+
     """
-    def __init__(self, time_range, dt, reverse=False, roundto=None, bounds=True, 
+    def __init__(self, time_range, dt, reverse=False, roundto=None, bounds=True,
         lmargin=0, rmargin=None, innerbounds='co'):
-            
+
         # Global range
         if not is_interval(time_range):
             raise VACUMMError('Wrong time interval')
         start_date = comptime(time_range[0])
         end_date = comptime(time_range[1])
-        
+
         # dt
         if isNumberType(dt):
             units = 'seconds since 2000'
@@ -2212,7 +2215,7 @@ class Intervals(object):
             dt = tuple(dt)
         elif not isinstance(dt, tuple):
             dt = (1, dt)
-            
+
         # Round this range
         if roundto is True:
             roundto = dt[1]
@@ -2221,7 +2224,7 @@ class Intervals(object):
         end_date = self.round(end_date)
         self.lmargin = lmargin
         self.rmargin = rmargin
-        
+
         # Closed or open?
         self._lastbounds = None
         self._innerbounds = innerbounds
@@ -2230,15 +2233,15 @@ class Intervals(object):
         elif bounds in [True, None]:
             self._lastbounds = 'co'
         elif isinstance(bounds, basestring):
-            self._lastbounds = bounds            
+            self._lastbounds = bounds
         else:
             self._lastbounds = self._innerbounds = False
-            
+
         # Inits the iterator
         self._current_date = [start_date, end_date][reverse]
         self._first_date, self._last_date = [start_date, end_date][::1-2*reverse]
         self._reverse = reverse
-        
+
         # Interval as (value,units)
         self._dt = ([1, -1][reverse]*dt[0], dt[1])
 
@@ -2249,7 +2252,7 @@ class Intervals(object):
 
     def __iter__(self):
         return self
-        
+
     def next(self):
         # Iterator is consumed
         if self._current_date == self._last_date:
@@ -2279,25 +2282,25 @@ class Intervals(object):
         if self.lmargin!=0 and self.rmargin is not None:
             out = add_margin(out, self.lmargin, self.rmargin)
         return out
-    
+
     def tolist(self):
         return list(self)
 
 class IterDates(object):
     """Iterator on dates
-    
+
     Example:
-    
+
         >>> from vacumm.misc.atime import IterDates
         >>> for date in IterDates(('2000','2001'),(1,'month')): print date
         >>> for date in IterDates(('2000','2001'),12,closed=True): print date
-    
+
     """
     def __init__(self, time_range, dt, reverse=False, roundto=None, closed=False):
         # Global range
         start_date = comptime(time_range[0])
         end_date = comptime(time_range[1])
-        
+
         # dt
         if isNumberType(dt):
             units = 'seconds since 2000'
@@ -2306,17 +2309,17 @@ class IterDates(object):
                 'second')
         elif not isinstance(dt, tuple):
             dt = (1, dt)
-            
+
         # Round this range
         if roundto is True:
             roundto = interval[1]
         self._roundto = roundto
         start_date = self.round(start_date)
         end_date = self.round(end_date)
-        
+
         # Closed or open?
         self._closed = closed
-            
+
         # Inits the iterator
         self._first_date = [start_date, end_date][reverse]
         self._last_date = [start_date, end_date][1-reverse]
@@ -2325,7 +2328,7 @@ class IterDates(object):
         oper = 'l' if self._reverse else 'g'
         oper += 't' if self._closed else 'e'
         self._oper = eval(oper)
-        
+
         # Interval as (value,units)
         self._dt = ([1, -1][reverse]*dt[0], dt[1])
 
@@ -2336,7 +2339,7 @@ class IterDates(object):
 
     def __iter__(self):
         return self
-        
+
     def next(self):
         # Next date
         if self._current_date is None:
@@ -2351,20 +2354,20 @@ class IterDates(object):
         # Save and return
         self._current_date = next_date
         return next_date
-        
+
     def tolist(self):
         return [date for date in self]
 
 
 def time_split(what, how, roundit=None):
     """Generic function to split an interval into subintervals
-    
+
     :Params:
-    
+
         - **what**: Time interval, dates or time axis
           that can be converted using :func:`comptime`.
         - **how**: Splitting specifications.
-        
+
             #. A number: divide the interval in equal subintervals.
             #. A single or a list of dates: build subintervals
                with theses dates.
@@ -2372,9 +2375,9 @@ def time_split(what, how, roundit=None):
                dates and make as in 2.
             #. A :class:`Intervals` instance: directly generate
                a list of intervals.
-    
-        - **roundit**, optional: Round interval. Valid only if 
-          ``how`` is an time step specification such as 
+
+        - **roundit**, optional: Round interval. Valid only if
+          ``how`` is an time step specification such as
           ``(1,'year')`` or ``"year"`` (see :class:`Intervals`).
     """
     # Convert to comptime
@@ -2391,19 +2394,19 @@ def time_split(what, how, roundit=None):
     tminmax = (tmin, tmax, bb)
     if not how:
         return tminmax
-    
+
     # Single date
     if is_time(how): how = [how]
 
     # dt
     if isNumberType(how) or isinstance(how, basestring) or \
-        isinstance(how, tuple):  
+        isinstance(how, tuple):
         how = Intervals(tminmax[:2], how, roundto=roundit)
-    
+
     # Interval interator
     if isinstance(how, Intervals):
         how = [itv for itv in how]
-       
+
     # Date iterator
     elif isinstance(how, IterDates):
         how = [date for date in IterDates]
@@ -2417,7 +2420,7 @@ def time_split(what, how, roundit=None):
             how = [(how[i], how[i+1], 'co') for i in xrange(len(how)-1)]
     else:
         raise TypeError, "Can't recognize the split specification"
-                
+
     # Checks
     itvs = []
     for itv in how:
@@ -2444,32 +2447,32 @@ def time_split_nmax(what, nmax, roundit=True):
         nn = []
         for itv in itvs:
             ijk = taxis.mapIntervalExt(itv)
-            if ijk is None: 
+            if ijk is None:
                 continue
             nn.append(ijk[2]*(ijk[1]-ijk[0]))
         n = max(nn)
         if n<nmax: break
     return itvs
-    
-    
+
+
 
 def itv_intersect(itv1, itv2, bb=None, aslogical=False):
     """Return the intersection of 2 time intervals
-    
-    
+
+
     :Return: The interval or ``False`` if not intersection is found
     """
     # Check bounds
     b1 = 'cc' if len(itv1)==2 else itv1[2]
-    b2 = 'cc' if len(itv2)==2 else itv2[2]    
-    
+    b2 = 'cc' if len(itv2)==2 else itv2[2]
+
     # Comptime
     itv1 = [comptime(d) for d in itv1[:2]]
     itv2 = [comptime(d) for d in itv2[:2]]
 
 
     # Min
-    bbi = b1[0]+b2[0] 
+    bbi = b1[0]+b2[0]
     if itv1[0]==itv2[0]:
         itv = itv1[0],
         if not bb: bbo = 'c' if 'c' in bbi else 'o'
@@ -2477,9 +2480,9 @@ def itv_intersect(itv1, itv2, bb=None, aslogical=False):
         imin = itv1[0]<itv2[0]
         itv = (itv1[0], itv2[0])[imin],
         if not bb: bbo = bbi[imin]
-        
+
     # Max
-    bbi = b1[1]+b2[1] 
+    bbi = b1[1]+b2[1]
     if itv1[1]==itv2[1]:
         itv += itv1[1],
         if not bb: bbo = 'c' if 'c' in bbi else 'o'
@@ -2489,30 +2492,30 @@ def itv_intersect(itv1, itv2, bb=None, aslogical=False):
         if not bb: bbo += bbi[imax]
     if bb is None:
         bb = bbo
-     
+
     # Check
     if itv[1]<itv[0]: return False
     if itv[0]==itv[1] and bb is not False and 'o' in bb: return False
-    
+
     if aslogical: return True
-   
+
     return (itv+(bb,)) if bb is not False else itv
-        
-        
+
+
 def itv_union(itv1, itv2, bb=None):
     """Return the union of 2 time intervals"""
-    
+
     # Check bounds
     b1 = 'cc' if len(itv1)==2 else itv1[2]
-    b2 = 'cc' if len(itv2)==2 else itv2[2]  
-    
+    b2 = 'cc' if len(itv2)==2 else itv2[2]
+
     # Comptime
     itv1 = [comptime(d) for d in itv1[:2]]
     itv2 = [comptime(d) for d in itv2[:2]]
 
-    
+
     # Min
-    bbi = b1[0]+b2[0] 
+    bbi = b1[0]+b2[0]
     if itv1[0]==itv2[0]:
         itv = itv1[0],
         if not bb is None: bbo = 'c' if 'c' in bbi else 'o'
@@ -2520,9 +2523,9 @@ def itv_union(itv1, itv2, bb=None):
         imin = itv1[0]>itv2[0]
         itv = (itv1[0], itv2[0])[imin],
         if not bb: bbo = bbi[imin]
-        
+
     # Max
-    bbi = b1[1]+b2[1] 
+    bbi = b1[1]+b2[1]
     if itv1[1]==itv2[1]:
         itv += itv1[1],
         if not bb: bbo = 'c' if 'c' in bbi else 'o'
@@ -2532,10 +2535,10 @@ def itv_union(itv1, itv2, bb=None):
         if not bb: bbo += bbi[imax]
     if bb is None:
         bb = bbo
-        
+
     return (itv+(bb,)) if bb is not False else itv
-        
-        
+
+
 class _LH_(object):
     """To handle argument and result possibily as a list or tuple"""
     def __init__(self, myarg):
@@ -2565,33 +2568,33 @@ class _LH_(object):
                 if isinstance(result, func):
                     return result
                 return func(result)
-                
+
 def _d2sel_(taxis, dsel):
     """Extract time selections from a dict"""
-    return [sel for key,sel in dsel.items() 
+    return [sel for key,sel in dsel.items()
         if key in (['time', taxis.id]+cdms2.convention.time_aliases)
             and sel is not None]
-    
+
 def tsel2slice_old(taxis, *args, **kwargs):
     """Convert time selections on a time axis to a valid slice or None
-    
+
     :Params:
-    
+
         - **asind**, optional: Return indices instead of a slice.
         - **nonone**, optional: Return the full slice instead of ``None`` if everything is selected.
-        - Positional argument can be coordinates intervals, slices, 
+        - Positional argument can be coordinates intervals, slices,
           dictionaries or cdms2 selectors.
         - Optional arguments must have a key identified as time or be the axis id,
           and a value as coordinates or slice.
-          
+
     :Return:
-    
+
         - A :class:`slice` or ``(i,j,k)`` when possible.
         - ``None`` or the full slice if no slice needed (everything is selected).
         - ``False`` if no intersection is found.
-    
+
     :Example:
-    
+
         >>> myslice = tsel2slice(taxis, ('2000', '2002', 'co'), time=slice(4,6))
         >>> myslice = tsel2slice(taxis, cdms2.selectors.Selector(lon=(5,6), time=('2000','2002'))
         >>> myslice = tsel2slice(taxis, slice(10,12), dict(time=slice(4,5), time=('2000','2002'))
@@ -2613,66 +2616,66 @@ def tsel2slice_old(taxis, *args, **kwargs):
         elif isinstance(arg, dict):
             selects.extend(_d2sel_(taxis,arg))
         else:
-            if arg==':': 
+            if arg==':':
                 args = slice(None)
-            elif isinstance(arg,tuple): 
+            elif isinstance(arg,tuple):
                 ntup +=1
             elif not isinstance(arg, slice):
                 arg = (arg,arg,'ccb')
             selects.append(arg)
     selects.extend(_d2sel_(taxis, kwargs))
-    if len(selects)==0: 
+    if len(selects)==0:
         if asind: fullslice = fullslice.start,fullslice.stop,fullslice.step
         return fullslice if nonone else None
 
     # Apply successive selections
     ii = N.arange(len(taxis))
     for isel, sel in enumerate(selects):
-    
+
         # From coordinates to slice
         if isinstance(sel, tuple):
             ijk = taxis.mapIntervalExt(sel)
             if ijk is None: return False
             sel = slice(*ijk)
-        
+
         # Work on indices
         ii = ii[sel]
         if ii.size==0: return False
-            
+
         # Subaxis for future use
-        if ntup>1: 
+        if ntup>1:
             i,j,k = sel.indices(len(ii))
             taxis = taxis.subAxis(i,j,k)
-     
+
     # Deduce final indices
     i = ii[0]
     j = ii[-1]
     j += N.sign(j-i) if i!=j else 1
     if j<0: j = None
     k = 1 if ii.size==1 else (ii[1]-ii[0])
-    
+
     # Return
-    if not nonone and slice(i,j,k)==fullslice: return 
+    if not nonone and slice(i,j,k)==fullslice: return
     if asind: return i,j,k
     return slice(i,j,k)
 
 
 def time_selector(*args, **kwargs):
-    """Create a pure time selector with all arguments 
-    
+    """Create a pure time selector with all arguments
+
     All components that are not recongnized a time selection are not kept.
-    
+
     :Params:
-    
+
         - **ids**, optional: Special keyword to specify allowed time ids in addition
           to generic ones defined by :attr:`cdms2.convention.time_aliases`.
         - **out**, optional: Inverse the process by removing all time selections
           (see :func:`~vacumm.misc.misc.filter_selector`)?
-        - **keeppos**, optional: Remove positional components 
+        - **keeppos**, optional: Remove positional components
           (see :func:`~vacumm.misc.misc.filter_selector`)?
-        - **noslice**, optional: Remove slices  
+        - **noslice**, optional: Remove slices
           (see :func:`~vacumm.misc.misc.filter_selector`)?
-        - Positional argument can be coordinates intervals, slices, 
+        - Positional argument can be coordinates intervals, slices,
           dictionaries or cdms2 selectors.
         - Optional arguments must have a key identified as time,
           and a value as coordinates or slice.
@@ -2684,7 +2687,7 @@ def time_selector(*args, **kwargs):
     if ids is None: ids = []
     if isinstance(ids, basestring): ids = [ids]
     ids = list(ids)+['time']+cdms2.convention.time_aliases
-    
+
     # Build the selector using refinements
     newargs = []
     selector = cdms2.selectors.Selector()
@@ -2695,32 +2698,32 @@ def time_selector(*args, **kwargs):
         else:
             selector.refine(arg)
     selector.refine(**kwargs)
-    
+
     # Filter
     filter_selector(selector, ids=ids, copy=False, out=out, keeppos=keeppos)
-    
+
     return selector
-    
+
 def tsel2slice(taxis, *args, **kwargs):
     """Convert time selections on a time axis to a valid slice or None
-    
+
     :Params:
-    
+
         - **asind**, optional: Return indices instead of a slice.
         - **nonone**, optional: Return the full slice instead of ``None`` if everything is selected.
-        - Positional argument can be coordinates intervals, slices, 
+        - Positional argument can be coordinates intervals, slices,
           dictionaries or cdms2 selectors.
         - Optional arguments must have a key identified as time or be the axis id,
           and a value as coordinates or slice.
-          
+
     :Return:
-    
+
         - A :class:`slice` or ``(i,j,k)`` when possible.
         - ``None`` or the full slice if no slice needed (everything is selected).
         - ``False`` if no intersection is found.
-    
+
     :Examples:
-    
+
         >>> myslice = tsel2slice(taxis, ('2000', '2002', 'co'), time=slice(4,6))
         >>> myslice = tsel2slice(taxis, cdms2.selectors.Selector(lon=(5,6), time=('2000','2002'))
         >>> myslice = tsel2slice(taxis, slice(10,12), dict(time=slice(4,5), time=('2000','2002'))
@@ -2734,9 +2737,9 @@ def tsel2slice(taxis, *args, **kwargs):
     # Convert to list valid time selector
     kwargs['ids'] = [taxis.id]
     selector = time_selector(*args, **kwargs)
-    
+
     # No selection
-    if len(selector.components())==0: 
+    if len(selector.components())==0:
         if asind: fullslice = fullslice.start,fullslice.stop,fullslice.step
         return fullslice if nonone else None
 
@@ -2749,29 +2752,29 @@ def tsel2slice(taxis, *args, **kwargs):
         ii = ii(selector).filled()
     except:
         return False
-    
+
     # Deduce final indices
     i = ii[0]
     j = ii[-1]
     j += N.sign(j-i) if i!=j else 1
     if j<0: j = None
     k = 1 if ii.size==1 else (ii[1]-ii[0])
-    
+
     # Return
-    if not nonone and slice(i,j,k)==fullslice: return 
+    if not nonone and slice(i,j,k)==fullslice: return
     if asind: return i,j,k
     return slice(i,j,k)
 
 def tic():
     """Launch a time counter at the begining of your program.
-        
-          
+
+
     :Return:
-    
+
         - A time to be used with the toc() function.
-    
+
     :Examples:
-    
+
         >>> stime = tic()
     """
     import time as tc
@@ -2781,19 +2784,19 @@ def tic():
 
 def toc(stime=0.):
     """Compute the cost of the computation and display in an adapted format.
-    
+
     :Params:
-    
+
         - **stime**, optional: The initial time given by the tic() function.
-          
+
     :Return:
-    
+
         - Display the time spent in the program.
-    
+
     :Examples:
-    
+
         >>> stime = tic()
-        >>> 
+        >>>
         >>> toc(stime=stime)
     """
     import time as tc
@@ -2810,8 +2813,9 @@ def toc(stime=0.):
 
 #####################################################################
 ######################################################################
-from misc import cp_atts,isnumber,kwfilter,split_selector, filter_selector
+
 import grid as G
-from axes import istime,check_axes,check_axis,create_time, isaxis
-import io
+from .axes import istime,check_axes,check_axis,create_time, isaxis
+from .misc import cp_atts,isnumber,kwfilter,split_selector, filter_selector
+from vacumm import VACUMMError
 

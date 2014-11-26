@@ -7,26 +7,26 @@ It deals with bounds, areas, interpolations...
 See: :ref:`user.tut.misc.grid`.
 """
 # Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
-# 
+#
 # raynaud@actimar.fr
-# 
-# 
+#
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -34,13 +34,13 @@ See: :ref:`user.tut.misc.grid`.
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-# 
+#
 
 
 import operator
@@ -64,23 +64,23 @@ isseq = operator.isSequenceType
 isnum = operator.isNumberType
 isdic= ismap = operator.isMappingType
 
-__all__ = ['isgrid', 'get_resolution', 'get_distances', 'get_closest', 'get_closest_depth', 'get_geo_area', 
-    'bounds2d', 'bounds1d', 'get_axis', 'get_grid', 'get_grid_axes', "gridsel", 
-    'grid2d', 'num2axes2d', 'var2d', 'axis1d_from_bounds', 'get_xy', 
-    'deg2xy', 'set_grid', 'check_xy_shape', 'axes2d', 'meshgrid','meshbounds', 'meshweights', 
-    't2uvgrids', 'meshcells', 'cells2grid', 'curv_grid', 'bounds2mesh', 'resol', 
-    'create_grid', 'rotate_grid', 'isregular', 'monotonic', 'transect_specs', 
-    'depth2dz', 'isdepthup', 'makedepthup', 'dz2depth', 'get_axis_slices', 
-    'xextend', 'xshift', 'curv2rect',  'isrect', 'create_grid2d', 'create_var2d', 'create_axes2d', 
-    'merge_axis_slice', 'merge_axis_slices', 'get_zdim', 'coord2slice', 'mask2ind', 
+__all__ = ['isgrid', 'get_resolution', 'get_distances', 'get_closest', 'get_closest_depth', 'get_geo_area',
+    'bounds2d', 'bounds1d', 'get_axis', 'get_grid', 'get_grid_axes', "gridsel",
+    'grid2d', 'num2axes2d', 'var2d', 'axis1d_from_bounds', 'get_xy',
+    'deg2xy', 'set_grid', 'check_xy_shape', 'axes2d', 'meshgrid','meshbounds', 'meshweights',
+    't2uvgrids', 'meshcells', 'cells2grid', 'curv_grid', 'bounds2mesh', 'resol',
+    'create_grid', 'rotate_grid', 'isregular', 'monotonic', 'transect_specs',
+    'depth2dz', 'isdepthup', 'makedepthup', 'dz2depth', 'get_axis_slices',
+    'xextend', 'xshift', 'curv2rect',  'isrect', 'create_grid2d', 'create_var2d', 'create_axes2d',
+    'merge_axis_slice', 'merge_axis_slices', 'get_zdim', 'coord2slice', 'mask2ind',
     'varsel']
 __all__.sort()
 
 def isgrid(gg, curv=None):
     """Check if gg is a grid
-    
+
     :Params:
-    
+
         - **gg**: A cdms grid.
         - **curv**, optional: If True, restrict to curvilinear grids.
     """
@@ -92,9 +92,9 @@ def isgrid(gg, curv=None):
 
 def get_resolution(mygrid, lon_range=None,lat_range=None):
     """Get the mean resolution of a grid
-    
+
     .. warning:: Deprecated: please use :meth:`resol` instead.
-    
+
     """
 
     # Get data
@@ -159,16 +159,16 @@ def get_distances(xxa, yya, xxb, yyb, geo=False):
     """Find the distances (in m) between a series of points
 
     :Params:
-    
+
         - **xxa**: X coordinate of the first series
         - **yya**: Y //
         - **xxb**: X coordinate of the second series
         - **yyb**: Y //
         - **geo**, optional: Suppose X is longitude and Y is latitude [default: False]
-    
+
     :Return: Distances as an (nb,na) array.
     """
-    
+
     # Make sur to have iterable elements
     try:
         na = len(xxa)
@@ -177,7 +177,7 @@ def get_distances(xxa, yya, xxb, yyb, geo=False):
 
     xxa = N.array(xxa)
     yya = N.array(yya)
-    
+
     try:
         nb = len(xxb)
     except:
@@ -220,19 +220,19 @@ def get_closest(xx, yy, xp, yp, proj=True, mask=None,  gridded=True, **kwargs):
     """Find the closest unmasked point on a grid and return indices
 
     :Params:
-    
+
         - **xx**: 1D or 2D X axis, or random positions.
         - **yy**: 1D or 2D Y axis, or random positions.
         - **xp**: X position of the point (float)
         - **yp**: Y //
         - **geo**, optional: If True, force to treat the grid as geographical,
-          thus convert coordinates to meters using 
+          thus convert coordinates to meters using
           :func:`~vacumm.misc.phys.units.deg2m`.
-        - **gridded**, optional: Treat input as gridded points, 
+        - **gridded**, optional: Treat input as gridded points,
           otherwise treat them as random points (flatten ``xx`` and ``yy``).
 
-    :Returns: 
-    
+    :Returns:
+
         - ``(i,j)`` 2-element tuple of indices along y and x for gridded data,
         - OR ``i`` if not gridded.
     """
@@ -257,7 +257,7 @@ def get_closest(xx, yy, xp, yp, proj=True, mask=None,  gridded=True, **kwargs):
     # Geo grid distances
     if proj:
         if not callable(proj):
-            proj = get_proj((xx,yy))   
+            proj = get_proj((xx,yy))
         xx,yy = proj(xx,yy)
         xp,yp = proj(xp,yp)
 
@@ -281,7 +281,7 @@ def get_closest_depth(zz, zp, mask=None, **kwargs):
         - **zz**: 1D Z axis, or random positions.
         - **zp**: Z position of the point (float)
 
-    :Returns: 
+    :Returns:
 
         - ``(i,)`` 1-element tuple of indices along z for gridded data,
         - OR ``i`` if not gridded.
@@ -303,12 +303,12 @@ def get_geo_area(grid,mask=None):
     """Compute cell areas on the a regular geographical grid.
 
     :Params:
-    
+
         - **grid** The grid
         - *mask*: Force the use of this mask
 
     :Returns: 2D array of areas in m^2
-    
+
     .. TODO:: get_geo_area: treat 2D grid + use standard projection
     """
 
@@ -333,15 +333,15 @@ def get_geo_area(grid,mask=None):
 
 def isregular(axis, tol=.05, iaxis=None, dx=None):
     """Check is an 1S or 2D axis is regular
-    
+
     :Params:
-    
+
         - **axis**: A :mod:`cdms2` axis or :mod:`numpy` array
         - **tol**, optional: Relative tolerance
         - **iaxis**, optional: On which direction to operate for 2D axis
-    
+
     :Example:
-    
+
         >>> isregular(lon1d, dx=2., tol=.01)
         >>> isregular(lon2d, iaxis=1)
     """
@@ -360,14 +360,14 @@ def isregular(axis, tol=.05, iaxis=None, dx=None):
     if dx is None:
         dx = N.median(thisdx)
     return not ((dxx/dx)%1.>tol).any()
-    
+
 
 def bounds1d(xx):
-    """Compute bounds on a linear sequence or axis. 
+    """Compute bounds on a linear sequence or axis.
     It is based on :func:`cdms2.genGenericBounds` of CDAT.
-    
+
     :Example:
-    
+
         >>> bounds1d(xx).shape
         360, 2
 
@@ -376,7 +376,7 @@ def bounds1d(xx):
 
     try:
         xx = xx.getValues().astype('d')
-    except: 
+    except:
         if not isinstance(xx, N.ndarray):
             xx = N.asarray(xx[:],'d')
     M = numod(xx)
@@ -403,11 +403,11 @@ def bounds2d(*xyaxes):
     """Compute bounds on a rectangular grid.
 
     :Params:
-    
+
         - **xyaxes**: 2D arrays(ny,nx) (or 2x1D arrays)
 
     :Example:
-    
+
         >>> xx_bounds,yy_bounds = bounds2d(xx,yy)
 
     :Returns: ``xx(ny,nx,4),...``
@@ -425,7 +425,7 @@ def bounds2d(*xyaxes):
         if hasattr(xy,'getValue'): xy = xy.getValue()
         assert xy.ndim == 2, 'You must pass 2d arrays as argument'
         ny,nx = xy.shape
-        
+
         M = numod(xy)
 
         bounds = M.zeros((ny,nx,4),'d')
@@ -480,10 +480,10 @@ def meshgrid(x,y,copy=1):
     It works like :func:`numpy.meshgrid` but is more flexible.
 
     :Params:
-    
+
         - **x**: 1D or 2D array
         - **x**: 2D or 2D array
-    
+
     :Return: ``xx(ny,nx),yy(ny,nx)``
     """
 
@@ -508,7 +508,7 @@ def meshgrid(x,y,copy=1):
     # All is ok
     if x.ndim == 2 and x.shape == y.shape:
         return x,y
-    
+
     # From regular grid
     if x.ndim == 1 and y.ndim == 1:
         x, y = N.meshgrid(x,y)
@@ -524,22 +524,22 @@ def meshgrid(x,y,copy=1):
     if x.ndim == 1 and y.ndim == 2 and y.shape[1] == x.shape[0]:
         xx = Mx.resize(x,y.shape)
         return xx,y
-    
+
     # From y 1d
     if y.ndim == 1 and x.ndim == 2 and x.shape[0] == y.shape[0]:
         yy = My.resize(y,x.shape[::-1]).transpose()
         return x,yy
-    
+
     raise ValueError, "Unable to safely convert to 2D axes"
 
 def bounds2mesh(xb,yb=None):
     """Convert 2D 4-corners cell bounds arrays (results from :func:`bounds2d`) to 2D arrays
 
     :Params:
-    
+
         - **xb**: array(ny,nx,4) or array(nx,2)
         - **yb**: None or array(ny,nx,4) or array(ny,2)
-    
+
     :Return: ``xxb(ny+1,nx+1),yyb(ny+1,nx+1)``
     """
     res = ()
@@ -547,13 +547,13 @@ def bounds2mesh(xb,yb=None):
         if not isinstance(xyb, N.ndarray):
             xyb = N.asarray(xyb)
         M = numod(xyb)
-        
+
         # 1D
         if xyb.ndim==2:
             xy = M.zeros((len(xyb)+1, ),dtype=xb.dtype)
             xy[:-1] = xyb[:, 0]
             xy[-1] = xyb[-1, 1]
-        
+
         # 1D
         else:
             ny,nx,nb = xyb.shape
@@ -566,63 +566,63 @@ def bounds2mesh(xb,yb=None):
             xy[-1,:-1] = xyb[-1,:,3]
             # - top-left
             xy[-1,-1] = xyb[-1,-1,2]
-    
+
         if yb is None: return xy
-        res += xy, 
+        res += xy,
     return res
-    
-    
+
+
 def meshcells(x, y=None):
     """Return a 1D or 2D array corresponding the cell corners
 
     :params:
-    
+
         - **x**: 1D or 2D array
         - **y**: 1D or 2D array
-    
+
     :Returns:
         ``xxb(nx+1)``x
-        OR 
+        OR
         ``xxb(ny+1,nx+1),yyb(ny+1,nx+1)``
-        
+
     """
     if not isinstance(x, N.ndarray):
         x = N.asarray(x)
     if y is None and len(x.shape)==1:
         return  bounds2mesh(bounds1d(x))
     if y is not None:
-        if not  isinstance(y, N.ndarray):  
+        if not  isinstance(y, N.ndarray):
             y = N.asarray(y)
         xy = meshgrid(x,y)
         return bounds2mesh(*bounds2d(*xy))
     else:
         return bounds2mesh(bounds2d(x))
-    
+
 def meshweights(x, y=None, proj=None, axis=-1):
     """Return a 1D or 2D array corresponding the cell weights
 
     :Params:
-    
+
         - **x**: 1D or nD array
         - **y**: 1D or 2D array
-        - **proj**, optional: Geographic projection before computing weights 
+        - **proj**, optional: Geographic projection before computing weights
           (for 2D case only with both x and y)
-        
+
             - ``True``: use default mercator projection (see :func:`~vacumm.misc.grid.basemap.merc`),
             - else, directly apply projection.
-    
+
     :Returns:
         ``ww(nx)``
         OR
         ``ww(ny,nx)``
-        
+
     """
     if not isinstance(x, N.ndarray):
         x = N.asarray(x)
-        
+
     # Without y
-    if y is None: 
- 
+    if y is None:
+
         if axis<0: axis += x.ndim
         dx = x.copy()
         M = numod(x)
@@ -634,10 +634,10 @@ def meshweights(x, y=None, proj=None, axis=-1):
             return tuple(s)
         dx[ss(1, -1)] = .5*(dd[ss(None, -1)]+dd[ss(1, None)])
         dx[ss(0)] = dd[ss(0)]
-        dx[ss(-1)] = dd[ss(-1)]         
+        dx[ss(-1)] = dd[ss(-1)]
         del dd
         return dx
- 
+
 #        # 2D
 #        if x.ndim==2:
 #            if axis<0: axis = 2-axis
@@ -646,23 +646,23 @@ def meshweights(x, y=None, proj=None, axis=-1):
 #            if axis==0:
 #                dx[1:-1] = .5*(dd[:-1]+dd[1:])
 #                dx[0] = dd[0]
-#                dx[-1] = dd[-1]         
+#                dx[-1] = dd[-1]
 #            else:
 #                dx[:, 1:-1] = .5*(dd[:, :-1]+dd[:, 1:])
 #                dx[:, 0] = dd[:, 0]
 #                dx[:, -1] = dd[:, -1]
 #            del dd
 #            return dx
-#            
+#
 #        # 1D
 #        return N.diff(meshcells(x))
-        
+
     # With y
-    if not  isinstance(y, N.ndarray):  
+    if not  isinstance(y, N.ndarray):
         y = N.asarray(y)
     # - 2D
     if x.ndim==2:
-        if proj is True: 
+        if proj is True:
             proj = get_proj((x, y))
         xxb, yyb = meshcells(x, y)
         if proj:
@@ -673,22 +673,22 @@ def meshweights(x, y=None, proj=None, axis=-1):
         dyx = M.diff(yyb, axis=1)
         dyy = M.diff(yyb, axis=0)
         dx = M.sqrt(dxx**2+dyx**2)
-        del dxx, dyx 
+        del dxx, dyx
         dx = 0.5*(dx[:-1]+dx[1:])
         dy = M.sqrt(dxy**2+dyy**2)
-        del dxy, dyy 
+        del dxy, dyy
         dy = 0.5*(dy[:, :-1]+dy[:, 1:])
         return dx*dy
     # - 1D
     return meshweights(x, axis=axis), meshweights(y, axis=axis)
 #    return N.diff(meshcells(x)), N.diff(meshcells(y))
-    
+
 
 def cells2grid(xxb,yyb):
     """Convert a grid of cells (grid of corners, like results from :func:`meshcells`) to a grid (grid of centers)
 
     :Params:
-    
+
         - **xxb**: X of corners (ny+1,nx+1)
         - **yyb**: Y of corners (ny+1,nx+1)
 
@@ -710,65 +710,65 @@ def cells2grid(xxb,yyb):
             for i in 0,-1:
                 xxyy[ib][j,i] = bb[ib][j,i,ij2ic[j,i]]
     return xxyy[0],xxyy[1]
-    
+
 
 def meshbounds(*args):
     """A shortcut to :func:`meshcells`"""
     return meshcells(*args)
 
-def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True, 
+def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
     squeeze=False, **kwargs):
     """Convert from coordinates to indices on grid or axes
-    
+
     :Params:
-    
-        - **gg**: A grid, a cmds variable with a grid, 
+
+        - **gg**: A grid, a cmds variable with a grid,
           a tuple of axes or an axis.
-        - **lon/lat**: Interval of coordinates or slice. If single coordinates, the 
+        - **lon/lat**: Interval of coordinates or slice. If single coordinates, the
           interval becomes for instance ``(lon,lon,'ccb')``.
         - **mode**, optional: Output mode. You can pass only the first letter.
-        
+
             - ``"slice"``: Return a :class:`slice` object.
             - ``"indices"``: Return a 3-element tuple as in a :class:`slice` context
               ``(start,stop,step)``.
             - ``"array"``: Return an array of valid indices of shape ``(2,nvalid)``,
               where ``out[0]`` gives the X indices and ``out[1]`` gives the Y indices.
-              
+
         - **mask**, optional: Also use this mask to get indices
           (for 2D axes only).
         - **squeeze**, optional: If ``asslice`` is False ad
         - **asslice**, optional: DEPRECATED. Use ``mode='slice'`` instead.
-    
-    :Return: 
-    
-        In array mode, it always returns an array of indices of shape ``(2,nvalid)``, 
+
+    :Return:
+
+        In array mode, it always returns an array of indices of shape ``(2,nvalid)``,
         possibly empty if not intersection if found.
-    
+
         Here ``i/jslice`` is a slice or a tuple of indices,
         depending on asslice. It can also be ``None`` if
-        not intersection are found. 
-        
-        If ``gg`` is grid, a tuple of axes or a 2D axis: 
+        not intersection are found.
+
+        If ``gg`` is grid, a tuple of axes or a 2D axis:
         ``islice, jslice, mask``.
         In case of a tuple of 1D axes, ``mask`` is ``None`` because not relevant.
-        
+
         If ``gg`` is a 1D axis: ``ijslice``, just as the
         :meth:`mapIntervaExt`` method of 1D axes.
-        
+
     :Examples:
-    
+
         >>> ijk = coord2slice(lon1d, lon=(lon0,lon1), mode='i')
-        >>> xijk, yijk, mask = coord2slice((lon1d,lat1d), 
+        >>> xijk, yijk, mask = coord2slice((lon1d,lat1d),
             lon=(lon0,lon1), lat=slice(0,3), mode='i')
         >>> islice, jslice, mask = coord2slice(gridcurv, lat=(lat0,lat0,'ccb'), mode='s')
         >>> xijk, yijk, mask = coord2slice(lon2d, lon=(lon0,lon1), mode='i')
         >>> ij = coord2slice(grid, lon, lat, mode='a')
-        
+
     """
     # Output mode
     if 'asslice' in kwargs:
         mode = 'slice' if kwargs['asslice'] else 'indices'
-    if mode is None: 
+    if mode is None:
         mode = 'slice'
     else:
         mode = str(mode).lower()
@@ -776,41 +776,41 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
             raise VACUMMError('Wrong mode: %s. Choose one of: slice, indices, array'%mode)
     if mode[0]=='a':
         assubmask = True
-    
+
     # Format selector specs
     if lon==':' or lon==slice(None): lon = None
     if lon==':' or lon==slice(None): lon = None
     elif isinstance(lon, tuple):
-        if len(lon)==2: lon += 'cc', 
-        if len(lon)==3: lon += None, 
+        if len(lon)==2: lon += 'cc',
+        if len(lon)==3: lon += None,
     elif isinstance(lon, (int, float)):
         lon = (lon, lon, 'cob')
     if lat==':' or lat==slice(None): lat = None
     elif isinstance(lat, tuple):
-        if len(lat)==2: lat += 'cc', 
+        if len(lat)==2: lat += 'cc',
         if len(lat)==3: lat += None,
     elif isinstance(lat, (int, float)):
         lat = (lat, lat, 'cob')
-    
+
     # CDMS variable
     if cdms2.isVariable(gg) and not isaxis(gg):
-        
+
         gg = get_grid(gg)
-    
+
     # Grid
     if isgrid(gg):
-        
+
         # Get axes
         xx, yy = get_xy(gg)
-        
+
         # 2D
         if len(xx.shape)==2:
-            
+
             # As axes
             if not isaxis(xx) or not isaxis(yy):
                 xx, yy = create_axes2d(xx, yy)
-            
-            # Get indices            
+
+            # Get indices
             xii, xjj, mask = coord2slice(xx, lon=lon, mode='indices', mask=mask, assubmask=False)
             if xii is None: return None, None, mask
             yii, yjj, mask = coord2slice(yy, lat=lat, mode='indices', mask=mask, assubmask=False)
@@ -825,9 +825,9 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
             yijk = (jmin, jmax, 1)
             sxijk = slice(*xijk)
             syijk = slice(*yijk)
-            
-            # Submask and slices 
-            if mode[0]=='s': 
+
+            # Submask and slices
+            if mode[0]=='s':
                 xijk = sxijk
                 yijk = syijk
             if assubmask: mask = mask[syijk, sxijk]
@@ -836,41 +836,41 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
                 iijj.shape = 2, -1
                 return iijj[:, ~mask.ravel()]
             return xijk, yijk, mask
-            
+
         # 1D
-        
+
         # - as axes
         if not isaxis(xx): xx = create_lon(xx)
         if not isaxis(yy): yy = create_lon(yy)
-        
+
         # - indices
         cmode = mode if mode[0]!='a' else 'slice'
         xijk = coord2slice(xx, lon=lon, mode=cmode)
-        if xijk is None: 
+        if xijk is None:
             if mode[0]=='a': return N.zeros((2, 0))
             return None, None, None
         yijk = coord2slice(yy, lat=lat, mode=cmode)
-        if yijk is None: 
+        if yijk is None:
             if mode[0]=='a': return N.zeros((2, 0))
             return None, None, None
-        
+
         # - mask
         mask = None
 #        mask = N.ones((len(yy), len(xx)))
 #        mask[slice(*yijk), slice(*xijk)] = False
 
-            
+
         # - return
         if mode=='a':
             iijj = N.indices((len(yy), len(xx)))[:, yijk, xijk]
             iijj.shape = 2, -1
             return iijj
         return xijk, yijk, mask
-    
-    
+
+
     # Single Axis
-    
-    # - selector 
+
+    # - selector
     if not isaxis(gg):
         raise VACUMMError("If gg is not a grid or an tuple, it must be an axis")
     axis = int(gg.isLongitude())
@@ -881,10 +881,10 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
     else:
         minval, maxval = -90, 90
         modeval = 'clip'
-    
+
     # - 2D
     if len(gg.shape)==2:
-        
+
         # Selection with provided coordinates
         if isinstance(sel, slice):
             ijk = sel.indices(gg.shape[axis])
@@ -893,7 +893,7 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
 #            mask[(ijk, None)[::1-2*axis]] = False
             mask[(sel, slice(None))[::1-2*axis]] = False
         else:
-            xijk, yijk, mask = _coord2ind2d_(gg, sel, mask=mask, 
+            xijk, yijk, mask = _coord2ind2d_(gg, sel, mask=mask,
                 minval=minval, maxval=maxval, modeval=modeval)
             if xijk is None: return None, None, mask
             ijk, oijk = (yijk, xijk)[::1-2*axis]
@@ -906,8 +906,8 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
             bad[(slice(None), slice(*oijk))[::1-2*axis]] = False
             mask |= bad
             del bad
-            
-        
+
+
         # Submask and slices
         xijk, yijk = (oijk, ijk)[::1-2*axis]
         if mode[0]=='s':
@@ -921,7 +921,7 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
             iijj.shape = 2, -1
             return iijj[:, ~mask.ravel()]
         return  xijk, yijk, mask
-        
+
     # - 1D
     if isinstance(sel, slice):
         if mode[0]=='s': return sel
@@ -929,25 +929,25 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
         if mode[0]=='i': return ijk
     else:
         ijk = gg.mapIntervalExt(sel)
-    if ijk is None: 
+    if ijk is None:
         if mode[0]=='a': return N.array((0,))
         return
     if mode[0]=='s': ijk = slice(*ijk)
     elif mode[0]=='a':
         return N.arange(len(gg))[ijk]
-    return ijk            
-            
+    return ijk
+
 
 def mask2ind(mask, extended=False):
     """Convert a mask to min and max valid indices
-    
+
     :Params:
-    
-        - **mask**: N-dimensional array of logical where 
+
+        - **mask**: N-dimensional array of logical where
           valid points are at False.
         - **extended**, optional: Extend indices. Accepts
           ``True``, ``False``, ``int``, ``(intmin, intmax)``.
-    
+
     :Return: array(ndim,2) of (min,max) for each dimension
     """
     inds = N.indices(mask.shape)
@@ -973,20 +973,20 @@ def _mask4tomask_(mask4):
     mask &= mask4[1:,:-1]
     mask &= mask4[1:,1:]
     return mask
-    
-def _coord2ind2d_(cc2d, sel, mask=None, maskonly=False, 
+
+def _coord2ind2d_(cc2d, sel, mask=None, maskonly=False,
     minval=None, maxval=None, modeval='mask'):
     """Convert lon/lat 2d coord to index respectively with lon/lat selection
-    
+
     :Params:
-    
+
         - **cc2d**(ny,nx): Coordinates.
         - **sel**: Coordinates interval.
-    
+
     :Returns: ``None, None, mask`` or ``(imin,imax,istep),(jmin,jmax,jstep),mask(ny,nx)``
-    
-    """    
-    
+
+    """
+
     #  No selection
     if sel is None:
         nj, ni = cc2d.shape
@@ -994,14 +994,14 @@ def _coord2ind2d_(cc2d, sel, mask=None, maskonly=False,
             return [(0, nj, 1), (0, ni, 1), N.zeros((nj, ni), '?')]
         [(jmin, jmax), (imin, imax)] = mask2ind(mask)
         return [(imin, imax+1, 1), (jmin, jmax+1, 1), mask]
-     
+
     # Selection specs
     if len(sel)==2: sel = sel+('cc', )
     b = sel[2]
     e = b[2:]
     if isinstance(cc2d, FileAxis2D): cc2d = cc2d.clone()
     if cdms2.isVariable(cc2d): cc2d = cc2d.asma()
-    
+
     # Limits
     if minval is not None or maxval is not None:
         if minval is None: minval = -N.inf
@@ -1010,23 +1010,23 @@ def _coord2ind2d_(cc2d, sel, mask=None, maskonly=False,
             cc2d = N.ma.masked_outside(cc2d, minval, maxval, False)
         else:
             cc2d = N.ma.clip(cc2d, minval, maxval)
-    
+
     # According to bounds of cells
     if 'b' in e:
-        
+
         # Bounds become coordinates
         cc2db = meshcells(cc2d)
-        
+
         # Remove 'b' from interval specifications
-        selb = sel[:2]+(b[:2],)   # no 'b'   
-        
+        selb = sel[:2]+(b[:2],)   # no 'b'
+
         # Select min first
         selmin = (sel[0], N.inf)+(b[:2],)
         maskmin = _coord2ind2d_(cc2db, selmin, mask=None, maskonly=True)
-        if maskmin is None: return mask if maskonly else (None,None,mask) 
+        if maskmin is None: return mask if maskonly else (None,None,mask)
         xymask = _mask4tomask_(maskmin)
 #        del maskmin
-        
+
         # Select max
         selmax = (-N.inf, sel[1])+(b[:2],)
         maskmax = _coord2ind2d_(cc2db, selmax, mask=None, maskonly=True)
@@ -1037,35 +1037,35 @@ def _coord2ind2d_(cc2d, sel, mask=None, maskonly=False,
         # Merge
         if mask is not None:
             xymask |= mask
-        if maskonly or xymask.all(): 
-            return xymask if maskonly else (None,None,xymask) 
+        if maskonly or xymask.all():
+            return xymask if maskonly else (None,None,xymask)
         [(jmin, jmax), (imin, imax)] = mask2ind(xymask, 'n' in e)
         return [(imin, imax+1, 1), (jmin, jmax+1, 1), xymask]
-        
-        
+
+
     # Operators
     Less = N.ma.less if b[0]=='c' else N.ma.less_equal
     Greater = N.ma.greater if b[1]=='c' else N.ma.greater_equal
-    
+
     # Mask
     mask = False if mask is None else mask.copy()
     mask |= Less(cc2d, sel[0]).filled(True)
     mask |= Greater(cc2d, sel[1]).filled(True)
     if maskonly or mask.all():
         return mask if maskonly else (None, None, mask)
-    
+
     # Indices
     [(jmin, jmax), (imin, imax)] = mask2ind(mask, 'n' in e)
     return [(imin, imax+1, 1), (jmin, jmax+1, 1), mask]
-        
 
-def create_axes2d(x=None, y=None, bounds=False, numeric=False, 
-        lonid=None, latid=None, iid='ni', jid='nj', 
+
+def create_axes2d(x=None, y=None, bounds=False, numeric=False,
+        lonid=None, latid=None, iid='ni', jid='nj',
         xatts=None, yatts=None, xbounds2d=None, ybounds2d=None, nobounds=False):
     """Create 2D numerical of complete axes
-    
+
     :Example:
-    
+
         >>> lon2d, lat2d = create_axes2d(x2d, y2d)
 
     :Params:
@@ -1078,13 +1078,13 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
         - **ybounds2d**, optional: 2D bounds of input yaxis
         - **nobounds**, optional: create (True) or not (False - default) bounds of axis
         - **numeric**, optional: Only return numerical values instead of complete axes
-        - **bounds**, optional: Return extended axes positioned on bounds (useful for pcolor). 
+        - **bounds**, optional: Return extended axes positioned on bounds (useful for pcolor).
           Deprecated: use :func:`meshbounds` instead.
         - **lonid**, optional: Id of longitude axis [defaut='lon'].
         - **latid**, optional: Id of latitude axis [defaut='lat'].
         - **iid**, optional: Id of i axis [defaut='iid'].
         - **jid**, optional: Id of j axis [defaut='jid'].
-        
+
 
     :Return: ``xaxis2d,yaxis2d``
     """
@@ -1100,7 +1100,7 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
         hasy = 2
     else:
         hasy = 1
-    
+
     # - ids
     xaxis1d = yaxis1d = None
     if hasx:
@@ -1113,13 +1113,13 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
         if y[:].ndim==2 and hasattr(x, 'getAxis') and xaxis1d is None:
             xaxis1d = y.getAxis(-1)
             yaxis1d = y.getAxis(-2)
-    
+
     # Numeric part
-    if hasx: 
+    if hasx:
         xn = N.asarray(x[:])
         if xn.ndim==1 and y is None:
             raise VACUMMError("Can't create 2D from a single 1D X axis")
-    if hasy: 
+    if hasy:
         yn = N.asarray(y[:])
         if yn.ndim==1 and x is None:
             raise VACUMMError("Can't create 2D from a single 1D Y axis")
@@ -1137,7 +1137,7 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
 #        if hasy: yy = meshbounds(yy)
     if numeric:
         return xx, yy
-        
+
     # 2D axes
     if hasx == 2:
         xaxis2d = x
@@ -1147,7 +1147,7 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
         yaxis2d = y
     else:
         yaxis2d = TransientAxis2D(yy)
-    
+
     # 2D bounds
     if not nobounds:
         if hasx:
@@ -1160,7 +1160,7 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
                 yaxis2d.setBounds(ybounds2d)
             elif yaxis2d.getBounds() is None:
                 yaxis2d.setBounds(bounds2d(yy))
-   
+
     # 1D axes
     for axis2d in ([xaxis2d] if hasx else [])+([yaxis2d] if hasy else []):
         if xaxis1d is not None:
@@ -1171,10 +1171,10 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
             axis2d.setAxis(-2, yaxis1d)
         elif jid is not None:
             axis2d.getAxis(-2).id = jid
-    
-    
+
+
     # Format
-    if hasx: 
+    if hasx:
         xaxis2d.id = lonid or 'lon'
 #        xaxis2d = create_lon(xaxis2d, id=lonid or 'lon')
         xaxis2d.getAxis(1).designateLongitude()
@@ -1184,7 +1184,7 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
             xa = get_atts(x)
             xa.update(xatts)
             set_atts(xaxis2d, xatts)
-    if hasy: 
+    if hasy:
         yaxis2d.id = latid or 'lat'
 #        yaxis2d = create_lat(yaxis2d, id=latid or 'lat')
         yaxis2d.getAxis(1).designateLongitude()
@@ -1194,38 +1194,38 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
             ya = get_atts(y)
             ya.update(yatts)
             set_atts(yaxis2d, yatts)
-    
+
     # Output
     if not hasx and not hasy: return
     if not hasx: return yaxis2d
     if not hasy: return xaxis2d
     return xaxis2d, yaxis2d
-  
+
 def axes2d(*args, **kwargs):
     """Alias for :func:`create_axes2d`"""
     return create_axes2d(*args, **kwargs)
 
 def get_axis(gg, iaxis=0, geo=True, strict=False):
     """A robust way to get an axis from a variable or a grid
-    
+
     This is a generic way to get a 1D and 2D axes: the only
     way to get longitude and latitude axes of a curvilinear grid are the
     :meth:`getLongitude` and :meth:`getLatitude` methods
     (you can't use :meth:`getAxis` with such grid).
-    
+
     :Examples:
-    
+
         >>> lon = get_axis(grid, -1)
         >>> lat = get_axis(var, 0)
 
     :Params:
-    
+
         - **gg**: The variable or a grid (see :func:`get_grid`)
         - **iaxis**, optional: The axis number [default: 0]
 
     :Returns: The requested axis
     """
-    
+
     grid = get_grid(gg, intercept=False, geo=geo, strict=strict)
     if grid is not None:
         getfrom = grid
@@ -1243,27 +1243,27 @@ def get_axis(gg, iaxis=0, geo=True, strict=False):
 
 def get_grid(gg, geo=True, intercept=False, strict=False):
     """Get a cdms grid from gg
-    
+
     :Examples:
-    
+
         >>> grid = get_grid((lon, lat))
         >>> grid = get_grid(var)
         >>> grid = get_grid(grid) # does nothing
-    
+
     :Params:
-    
+
         - **g**: A cdms variable with a grid OR cdms grid OR a tuple like (xx,yy) where xx and yy are numpy arrays or cdms axes
         - **geo**, optional: Output grid must have longitude and latitude
         - **intercept**, optional: Raise an error in case of problem
     """
     # From a grid
-    if isgrid(gg): 
+    if isgrid(gg):
         gg.getAxis(-1).designateLongitude()
         gg.getAxis(-2).designateLatitude()
         return gg
-        
+
     # From a variable
-    if cdms.isVariable(gg): 
+    if cdms.isVariable(gg):
         if gg.getGrid() is not None or strict: return gg.getGrid()
         if len(gg.shape) < 2: return
         xx = gg.getLongitude()
@@ -1273,12 +1273,12 @@ def get_grid(gg, geo=True, intercept=False, strict=False):
         if yy is None:
             yy = gg.getAxis(-2)
         gg = (xx, yy)
-        
+
     # From a tuple of coordinates
     if isinstance(gg, tuple):
-        
+
         xx, yy = gg
-        
+
         # Check axis is compatible
         if isaxis(xx):
             if getattr(xx, 'axis', 'x').upper()!='X':
@@ -1290,40 +1290,40 @@ def get_grid(gg, geo=True, intercept=False, strict=False):
                 if not intercept: return
                 raise VACUMMError("Can't make a grid with %s axis as latitude"%yy.axis)
             yy.designateLatitude()
-        
+
         # Create grid
         if (isinstance(xx,  tuple) or xx[:].ndim == 1) and \
             (isinstance(yy, tuple) or yy[:].ndim == 1): # Rectangular
-        
+
             return create_grid(xx, yy)
-            
+
         elif xx[:].ndim == 2 or yy[:].ndim == 2: # Curvilinear
-            
+
             return curv_grid(xx, yy)
-            
+
         else: # Generic
-        
+
             return cdms.createGenericGrid(yy[:].ravel(), xx[:].ravel())
-            
+
     if intercept:
         raise VACUMMError('No way to guess the grid')
 
 def set_grid(var, gg, axes=True, intercept=False):
     """Set a grid to a variable
-    
+
     :Params:
-        
+
         - **var**: A cdms variable with at least 2 dimensions
         - **gg**: A cdms grid or tuple or axes (see :func:`get_grid`)
-        - **axes**, optional: Set grid raw axes to the variable (gg.getAxis(i)) 
+        - **axes**, optional: Set grid raw axes to the variable (gg.getAxis(i))
           which are different from real axes with curvilinear grids
-          
+
     :Return: ``var``
     """
     if not cdms2.isVariable(var):
         var = MV.asarray(var)
     gg = get_grid(gg, intercept=intercept)
-    if gg is not None: 
+    if gg is not None:
         for i in -2, -1:
             axis = gg.getAxis(i)
             setattr(axis, 'axis', ['Y', 'X'][i])
@@ -1333,12 +1333,12 @@ def set_grid(var, gg, axes=True, intercept=False):
 
 def get_grid_axes(gg, raw=False):
     """Get the (lat,lon) axes from a grid
-    
+
     :Params:
-    
+
         - **gg**: A cdms grid or a tuple or axes (see :func:`get_grid`)
         - **raw**, optional: If True, return raw axes which are different from real axes with curvilinear grids
-        
+
     :Return: ``(lon, lat)``
     """
     gg = get_grid(gg)
@@ -1350,20 +1350,20 @@ def curv_grid(xaxis, yaxis, xatts=None, yatts=None, id=None, mask=None, **kwargs
     """Create a curvilinear 2D grid from 1D or 2D axes
 
     :Params:
-    
+
         - **xaxis**: Numeric or formatted X axis
         - **yaxis**: Numeric or formatted Y axis
         - **xatts**, optional: Attributes of X axis
         - **yatts**, optional: Attributes of Y axis
         - **id**, optional: Id of the grid
         - Other keywords are passed to :func:`create_axes2d`
-        
+
     :Example:
-    
+
         >>> curvgrid = curv_grid(lon2d, lat2d)
-    
+
     :See also: :func:`create_grid2d`
-    
+
     """
     xaxis2d,yaxis2d = create_axes2d(xaxis, yaxis, xatts=xatts, yatts=yatts, numeric=False, **kwargs)
     if id is None: id = 'grid2d'
@@ -1372,21 +1372,21 @@ def curv_grid(xaxis, yaxis, xatts=None, yatts=None, id=None, mask=None, **kwargs
 def create_grid2d(*args, **kwargs):
     """Alias for :func:`curv_grid`"""
     return curv_grid(*args, **kwargs)
-    
+
 def grid2d(*args, **kwargs):
     """Alias for :func:`curv_grid`"""
     return create_grid2d(*args, **kwargs)
 
-def create_var2d(var, xaxis=None, yaxis=None, xatts=None, yatts=None, gid=None, copy=1, 
+def create_var2d(var, xaxis=None, yaxis=None, xatts=None, yatts=None, gid=None, copy=1,
     lonid=None, latid=None, iid=None, jid=None, **kwargs):
     """Create 2D cdms variable with on a proper 2d curvilinear grid
-    
+
     You should generally call this routine when you want to attach 2D axes
     to a variable. This may happen with netcdf that doesn't follow CF
     conventions, as in the example bellow.
-        
+
     :Example:
-    
+
         >>> f = cdms2.open('myfile.nc')
         >>> lon2d = f('X')
         >>> lat2d = f('Y')
@@ -1395,7 +1395,7 @@ def create_var2d(var, xaxis=None, yaxis=None, xatts=None, yatts=None, gid=None, 
         >>> sstc = create_var2d(sst, lon2d, lat2d)
 
     :Params:
-    
+
         - **var**: Numeric or formatted X axis
         - **xaxis**, optional: Numeric or formatted X axis. Mandatory if var is not a cdms variable!
         - **yaxis**, optional: Numeric or formatted Y axis. Mandatory if var is not a cdms variable!
@@ -1406,9 +1406,9 @@ def create_var2d(var, xaxis=None, yaxis=None, xatts=None, yatts=None, gid=None, 
         - All other keywords are passed to :func:`cdms.createVariable`
 
     :Return: A :mod:`MV2` array on a curvilinear grid.
-    
+
     :See also: :func:`curv_grid` :func:`get_axis`
-    
+
     """
 
     assert len(var.shape) >= 2, 'Input variable must have a at least 2d shape'
@@ -1418,9 +1418,9 @@ def create_var2d(var, xaxis=None, yaxis=None, xatts=None, yatts=None, gid=None, 
         if xaxis is None: xaxis = get_axis(var,1)
     var = MV2.array(var, copy=copy, **kwargs)
 
-    mygrid2d = curv_grid(xaxis, yaxis, xatts=xatts, yatts=yatts, id=gid, 
+    mygrid2d = curv_grid(xaxis, yaxis, xatts=xatts, yatts=yatts, id=gid,
         iid=iid, jid=jid, lonid=lonid)#,mask=MV.getmask(var))
-        
+
     set_grid(var, mygrid2d)
 
     return var
@@ -1436,37 +1436,37 @@ def num2axes2d(*args, **kwargs):
 
 def create_grid(lon, lat, mask=None, lonatts={}, latatts={}, curv=None, **kwargs):
     """Create a cdms rectangular or curvilinear grid from axes
-    
+
     :Params:
-    
+
         - **lon**: Array or axis of longitudes or any argument passed to :func:`~vacumm.misc.axes.create_lon`.
         - **lat**: Array or axis of latitudes or any argument passed to :func:`~vacumm.misc.axes.create_lat`.
         - **mask**, optional: Grid mask.
         - **(lon/lat)atts**, optional: Attributes to set for axes.
-        - **curv**, optional: 
-        
+        - **curv**, optional:
+
             - ``None``: If one axis is 2D, the grid will be curvilinear.
             - ``True|False``: Force the grid to be or not to be curvilinear.
-        
+
     :Return: A :mod:`cdms2` grid object.
-    
+
     :Example:
-    
+
         >>> create_grid([1.,3.,5.,7], numpy.arange(45., 60., .5))
         >>> create_grid((.1, 8., 1.), (45., 60., .5))
-    
-    :See also: :func:`~vacumm.misc.axes.create_lon` :func:`~vacumm.misc.axes.create_lat` 
-               :func:`get_grid` :func:`set_grid` 
+
+    :See also: :func:`~vacumm.misc.axes.create_lon` :func:`~vacumm.misc.axes.create_lat`
+               :func:`get_grid` :func:`set_grid`
     """
-    
+
     # Arrays
     if isinstance(lon, list): lon = N.asarray(lon)
     if isinstance(lat, list): lat = N.asarray(lat)
-    
+
     # Rectangular or curvilinear?
     if curv is None and not isinstance(lon, tuple) and not isinstance(lat, tuple):
         curv = lon[:].ndim != 1 or lat[:].ndim != 1
-        
+
     if not curv: # Rectangular
         # Get axes
         if not islon(lon):
@@ -1475,46 +1475,46 @@ def create_grid(lon, lat, mask=None, lonatts={}, latatts={}, curv=None, **kwargs
             lat = create_lat(lat, **latatts)
         # Create grid
         return cdms2.createRectGrid(lat, lon, mask=mask, **kwargs)
-        
+
     else: # Curvilinear
         return create_grid2d(lon, lat, xatts=lonatts, yatts=latatts, mask=mask, **kwargs)
 
 
 def gridsel(gg, lon=None, lat=None):
     """Extract a subregion from an axis or a grid
-    
+
     Lat and lon generic selection are used for
     spatial selections.
-    
+
     .. note:: Properly works on curved grids thanks to :func:`coord2slice`.
-    
+
     :Params:
-    
+
         - **gg**: 1D or 2D cdms2 axis, or a tuple of them , or a cdms2 grid.
         - **lon/lat**, optional: A slice, or a tuple of coordinates, or ':'.
-        
+
     :Return:
-    
+
         An extraction in the same format as input format
-        
+
     :Examples:
-    
+
         >>> gg = gridsel(gg, lon=(-6,4), lat=slice(0,34))
         >>> lon = gridsel(lon, lon=(-5,8))
         >>> lon,lat = gridsel((lon,lat), lat=':', lon=(0,2,'ccb'))
     """
-    
+
     # Format selector specs
     if lon==':' or lon==slice(None): lon = None
     elif isinstance(lon, tuple):
-        if len(lon)==2: lon += 'cc', 
-        if len(lon)==3: lon += None, 
+        if len(lon)==2: lon += 'cc',
+        if len(lon)==3: lon += None,
     if lat==':' or lat==slice(None): lat = None
     elif isinstance(lat, tuple):
-        if len(lat)==2: lat += 'cc', 
-        if len(lat)==3: lat += None, 
+        if len(lat)==2: lat += 'cc',
+        if len(lat)==3: lat += None,
     if lon is None and lat is None: gg
-    
+
     # Format input to always treat a grid
     if isinstance(gg, tuple): # (lon, lat) -> grid
         outtype = 'tuple'
@@ -1523,7 +1523,7 @@ def gridsel(gg, lon=None, lat=None):
         outtype = 'grid'
     elif isaxis(gg): # axis
 #        if len(gg.shape)==2 and (
-#            (lon is not None and not isinstance(lon, slice)) or 
+#            (lon is not None and not isinstance(lon, slice)) or
 #            (lat is not None and not isinstance(lat, slice))):
 #            raise VACUMMError("Can't apply geographical selection to a lonely 2D axis")
         if islon(gg, ro=True):
@@ -1537,22 +1537,22 @@ def gridsel(gg, lon=None, lat=None):
 
     # Selection
     if len((gg if outtype[0] not in ['g', 't'] else gg.getLongitude()).shape)==2: # Curvilinear
-        
+
         # Convert to slice
         islice, jslice, mask = coord2slice(gg, lon=lon, lat=lat)
-        
+
         # Grid
         if outtype[0] in ['g', 't']:
-            
+
             islice = islice.indices(gg.shape[1])
             jslice = jslice.indices(gg.shape[0])
-            gg = gg.subSlice(jslice, islice) 
+            gg = gg.subSlice(jslice, islice)
             if mask.any(): gg.setMask(mask)
-            
+
         else: # Axis
-        
+
             gg = gg[jslice, islice]
-        
+
 #        # Selection using slices
 #        if isinstance(lon, slice):
 #            if outtype=='lon':
@@ -1566,15 +1566,15 @@ def gridsel(gg, lon=None, lat=None):
 #            else:
 #                gg = create_grid(gg.getLongitude()[lat, :], gg.getLatitude()[lat, :])
 #            lat = None
-#        
+#
 #        # Selection using coordinates
 #        if lon is not None or lat is not None:
 #            mask,select = gg.intersect([lon, lat, None])
 #            gg = gg.subSlice(**select)
 #            gg.setMask(mask)
-    
+
     else: # Rectangular
-    
+
         if outtype in ['grid', 'tuple']:
             axlon = gg.getLongitude()
             axlat = gg.getLatitude()
@@ -1588,7 +1588,7 @@ def gridsel(gg, lon=None, lat=None):
             if ijk is None:
                 raise VACUMMError('Empty selection on axis: '+str(lon))
             lat = slice(*ijk)
-            
+
         # Selection using slices
         if isinstance(lon, slice):
             if outtype=='lon':
@@ -1608,44 +1608,44 @@ def gridsel(gg, lon=None, lat=None):
                 axlat = axlat.subaxis(*ii)
                 gg = create_grid(axlon, axlat)
             lat = None
-            
+
         # Selection using coordinates
         if lon is not None or lat is not None:
             if lat is None: lat = (-90, 90)
             if lon is None: lon = (-180, 180)
             gg = gg.subGridRegion(lat, lon)
-        
+
     # Out
     if outtype in ['lon', 'lat', 'grid']: return gg
     return (gg.getLongitude(), gg.getLatitude())
-select_region = gridsel        
-      
+select_region = gridsel
+
 def varsel(var, lon=None, lat=None, **kwargs):
     """Extract a subregion of a variable
-    
+
     Lat and lon generic selection are used for
     spatial selections.
-    
+
     If `var` has no grid or a rectangular grid, it simply
     equivalent to::
-    
+
         var(lon=lon, lat=lat, **kwargs)
-    
+
     .. note:: Properly works on curved grids thanks to :func:`coord2slice`.
-    
+
     :Params:
-    
+
         - **var**: MV2 array.
         - **lon/lat**: Coordinates intervals or slices.
         - Extra keywords are passed to the variable.
-    
+
     """
     grid = var.getGrid()
-    
+
     # Usual way
-    if not isgrid(grid, curv=True): 
+    if not isgrid(grid, curv=True):
         return var(lon=lon, lat=lat, **kwargs)
-    
+
     # Curved grid
     islice, jslice, mask = coord2slice(grid, lon=lon, lat=lat)
     xid = grid.getAxis(1).id
@@ -1654,7 +1654,7 @@ def varsel(var, lon=None, lat=None, **kwargs):
     if mask.any(): var[:] = MV2.masked_where(mask, var, copy=0)
     if kwargs: var = var(**kwargs)
     return var
-    
+
 
 def axis1d_from_bounds(axis1d,atts=None,numeric=False):
     """Create a numeric of formatted 1D axis from bounds
@@ -1663,9 +1663,9 @@ def axis1d_from_bounds(axis1d,atts=None,numeric=False):
 
     - *numeric*: Return a simple numeric array
     - *atts*: Attributes for outputs axis
-    
+
     :Example:
-    
+
     >>> xx = axis1d_from_bounds(xxb)
     """
 
@@ -1693,19 +1693,19 @@ def axis1d_from_bounds(axis1d,atts=None,numeric=False):
 
 def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
     """Get axes from gg
-    
+
     :Params:
-    
-        - **gg**: (xx,yy) or grid (1D or 2D), cdms variable (see :func:`get_grid`), 
+
+        - **gg**: (xx,yy) or grid (1D or 2D), cdms variable (see :func:`get_grid`),
           or a dict of lon/lat/x/y, or a (2,npts) numpy array.
-        - **proj**, optional: If True or basemap instance, convert to meters. 
+        - **proj**, optional: If True or basemap instance, convert to meters.
           If None, check if lon and lat axes to force conversion. [default: False]
         - **mesh**, optional: Get axes as 2D arrays.
         - **num**, optional: Get axes as numpy arrays.
         - **checklims**, optional: For 2D axes only, mask longitudes outside (-720,720),
           and clip latitude outside (-90,90).
     :Example:
-    
+
         >>> lon, lat = get_xy((xaxis,yaxis))
         >>> lon, lat = get_xy(grid)
         >>> x, y = get_xy(dict(lon=(-10,0), lat=(42,43,'cc')), proj=True)
@@ -1730,7 +1730,7 @@ def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
             else:
                 raise KeyError('Dictionay has no %s key'%' or '.join(keys))
         xx,yy = xy
-            
+
     else:
         if cdms.isVariable(gg) and gg.getGrid() is not None:
             gg = gg.getGrid()
@@ -1744,12 +1744,12 @@ def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
             assert gg.ndim > 1,  'Input must be at least a 2D array in this case'
             xx = gg.getAxis(-1)
             yy = gg.getAxis(-2)
-            
+
     # Pure numeric?
     if num:
         xx = _cdat2num_(xx)
         yy = _cdat2num_(yy)
-        
+
     # Check limits of 2D axes
     if checklims:
         if xx[:].ndim==2:
@@ -1764,14 +1764,14 @@ def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
                 yy[:] = N.ma.clip(yy[:], -720., 720.)
             else:
                 yy = N.ma.clip(yy[:], -90., 90.)
-        
+
     # Convert to meters?
     proj = kwargs.pop('m', proj)
     if proj is None:# and islon(xx) and islat(yy):
         proj = True
     if proj is not False:
         xx, yy = deg2xy(xx, yy, proj=proj, mesh=mesh, **kwargs)
-        
+
     # Mesh ?
     if mesh is True:# and (xx[:].ndim == 1 or  yy[:].ndim == 1):
         return meshgrid(xx[:], yy[:])
@@ -1792,89 +1792,89 @@ def _cdat2num_(xy):
 
 def deg2xy(lon, lat, proj=None, inverse=False, mesh=None, **kwargs):
     """Convert from degrees to map (m) coordinates using map projection, and reverse
-    
+
     :Params:
-    
+
         - **lon**: Longitudes in degrees
         - **lat**: Latitude in degrees
-        - **proj**, optional: Basemap object for projection. If False, returns (lon,lat). 
+        - **proj**, optional: Basemap object for projection. If False, returns (lon,lat).
           If None, a new instance using :func:`~vacumm.misc.grid.basemap.get_map` is created.
         - **inverse**, optional: Inverse transform (from meters to degrees)
-    
+
     :Example:
-    
+
         >>> x, y = deg2xy(lon, lat)
         >>> x2d, y2d = deg2xy(lon, lat, mesh=True)
     """
-    
+
     # Check shapes
     lon, lat = check_xy_shape(lon, lat, mesh=mesh)
-    
+
     # Nothing to do
     proj = kwargs.pop('m', proj)
     if proj is False: return lon, lat
-    
+
     # Check if we are sure to not have degrees
     xmin = lon.min()
     ymin = lat.min()
     xmax = lon.max()
     ymax = lat.max()
-    if not inverse and xmin >= -0.1 and ymin >= -0.1 and (xmax > 720. or ymax > 90.): 
+    if not inverse and xmin >= -0.1 and ymin >= -0.1 and (xmax > 720. or ymax > 90.):
         return lon, lat
-        
+
     # Need a projection instance
     if not callable(proj):
         proj = get_proj((lon,lat))
-            
+
     # Transform
     return proj(lon, lat, inverse=inverse)
-    
 
-def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checklims=True, 
+
+def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checklims=True,
     **kwargs):
     """Get the resolution of an axis or a grid
-    
+
     :Params:
-        
+
         - **axy**: It can be either
-        
+
             - a 1D axis or array
             - a grid of 1D or 2D axes or tuple of (lon,lat)
-            
-        - **mode**, optional: 
-            
+
+        - **mode**, optional:
+
             - ``"raw"``: Get the local resolution between "grid points".
             - ``"averaged"``: Return an averaged resolution (do not use if the grid highly anisotropic!!).
             - ``"local"``: The local resolution is averaged and extrapolated to grid points.
             - A string: An :mod:`numpy` attribute is used to compute the resolution.
               For instance ``"median"`` mode implies the use of :func:`numpy.median`.
             - A callable function: Directly used to compute the resolution.
-            
-        - **axis**, optional: Direction on which to compute resolution if a single 
+
+        - **axis**, optional: Direction on which to compute resolution if a single
           2D axis is passed.
         - **lat**, optional:: Latitude to use for projection of 1D zonal axis.
-          
+
     .. warning::
-    
+
         If you work on a pair of 2D axes, resolution is computed along
         grid axes, and NOT along X and Y.
-        In this case, X and Y must have consistent units, 
+        In this case, X and Y must have consistent units,
         and resolution along X and Y are defined by:
-        
-        .. math:: 
-        
-            dx_{i,j} = \sqrt{(x_{i+1,j}-x_{i,j})^2+ (y_{i+1,j}-y_{i,j})^2} 
-            
+
+        .. math::
+
+            dx_{i,j} = \sqrt{(x_{i+1,j}-x_{i,j})^2+ (y_{i+1,j}-y_{i,j})^2}
+
             dy_{i,j} = \sqrt{(x_{i,j+1}-x_{i,j})^2+ (y_{i,j+1}-y_{i,j})^2}
-            
+
     :Examples:
-    
+
         >>> dx = resol(lon)
         >>> dx,dy = resol(grid)
         >>> dx2d = resol(x2d, mode='loc')
         >>> dx2d, dy2d = resol((x1d, y2d))
     """
-    
+
     # Get what to inspect
     if cdms2.isVariable(axy):
         if not isaxis(axy):
@@ -1882,7 +1882,7 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkli
             assert axy is not None, 'You must pass a variable with a grid'
         else:
             axy = axy.asma()
-        
+
     # Check chache (for cdms grid and axes)
     if kwargs.get('averaged', False): # compat
         mode = 'averaged'
@@ -1894,47 +1894,47 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkli
         if hasattr(axy, '_x'+pres) and hasattr(axy, '_y'+pres):
             return getattr(axy, '_x'+pres), getattr(axy, '_y'+pres)
         if int(cache)>1: return
-        
+
     # Numerical values
     if not isgrid(axy) and not isinstance(axy, tuple): # single axis
-    
+
 #        if axy[:].ndim == 2:
 #            raise ValueError, 'Your axis is 2D, so you must pass a grid or a tuple or (lon, lat) instead'
         if proj:
             if not islon(axy): lat=0.
-            xy, _ = get_xy((axy, N.ones(axy[:].shape)+lat), num=True, proj=proj, 
+            xy, _ = get_xy((axy, N.ones(axy[:].shape)+lat), num=True, proj=proj,
                 checklims=checklims)
-            xy = xy, 
+            xy = xy,
         else:
             if isaxis(axy): axy = axy.getValue()
             xy = axy,
-            
+
     else: # grid or pair of axes
-    
+
         xy = get_xy(axy, num=True, proj=proj, mesh=True, checklims=checklims)
-     
+
     res = ()
     if len(xy)==2 and (xy[0][:].ndim == 2 or xy[1][:].ndim == 2) : # 2x2D
         # Mesh
         xy = meshgrid(*xy)
         # Loop on directions
         for i in -1, -2: # resx,resy
-            res += N.ma.sqrt(N.ma.diff(xy[0], axis=i)**2+N.ma.diff(xy[1], axis=i)**2), 
-    
+            res += N.ma.sqrt(N.ma.diff(xy[0], axis=i)**2+N.ma.diff(xy[1], axis=i)**2),
+
     else: # Single 1D or 2D
         #if xy[0].ndim==2:
         if len(xy[0].shape)==2:
             if axis<0: axis += xy[0].ndim
             if checklims:
                 if axis==xy[0].ndim-1: # longitude
-                    xy = N.ma.masked_outside(xy[0], -720., 720.), 
+                    xy = N.ma.masked_outside(xy[0], -720., 720.),
                 else:
-                    xy = N.ma.clip(xy[0], -90., 90.), 
-                res = N.ma.abs(N.ma.diff(xy[0][:], axis=axis)), 
+                    xy = N.ma.clip(xy[0], -90., 90.),
+                res = N.ma.abs(N.ma.diff(xy[0][:], axis=axis)),
         else:
             for tmp in xy:
-                res += N.ma.abs(N.diff(tmp[:])), 
-    
+                res += N.ma.abs(N.diff(tmp[:])),
+
     # Averages
     if mode.startswith('loc'):
         if xy[0].ndim==2: # 2D
@@ -1944,38 +1944,38 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkli
             else:
                 kk = [1, 0]
             for ik, k in enumerate(kk):
-                
+
                 # Init output
                 eshape = list(res[ik].shape)
                 eshape[k] += 1
-                eres += N.ma.resize(res[ik], eshape), 
-                
+                eres += N.ma.resize(res[ik], eshape),
+
                 # Slices specs
                 sl = get_axis_slices(res[ik].shape, k)
                 sle = get_axis_slices(eshape, k)
-                
-                # Core                
+
+                # Core
                 eres[ik][sle['mid']] = .5*(res[ik][sl['firsts']]+res[ik][sl['lasts']])
-                        
+
                 # Limits
                 eres[ik][sle['first']] = 1.5*res[ik][sl['first']]-0.5*res[ik][sl['firstp1']]
                 eres[ik][sle['last']] = 1.5*res[ik][sl['last']]-0.5*res[ik][sl['lastm1']]
-                
+
             res = eres
-            
+
         else: # 1D
-        
+
             eres = tuple([N.ma.resize(r, (r.shape[0]+1, )) for r in res])
             for ik in xrange(len(xy)):
                 eres[ik][1:-1] = .5*(res[ik][:-1]+res[ik][1:])
                 eres[ik][0] = 1.5*res[ik][0]-0.5*res[ik][1]
                 eres[ik][-1] = 1.5*res[ik][-1]-0.5*res[ik][-2]
             res = eres
-            
+
     elif mode != 'raw':
-        
+
         if not isinstance(mode, tuple):
-            mode = mode, 
+            mode = mode,
         if len(mode)<len(res):
             mode *= 2
         eres = []
@@ -1987,7 +1987,7 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkli
             else: func = m
             eres.append(func(dcell))
         res = tuple(eres)
-    
+
     # Caching
     if cache and (isinstance(mode, tuple) or not mode.startswith('loc')):
         if isgrid(axy):
@@ -1997,31 +1997,31 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkli
         elif isaxis(axy):
             setattr(axy, '_'+pres, res)
             setattr(axy, '_mres', mode)
-    
+
     if len(res) == 1: return res[0]
     return res
-    
+
 def check_xy_shape(xx, yy, mesh=None):
     """Check that xx and yy have the same shape
-    
+
     - **xx**: X positions (in meters or degrees).
     - **yy**: Y positions (in meters or degrees).
     - *mesh*: Return a 2D axes if True, or if None and xx and yy have not the same shape [default: None]
-    
+
     :Example:
-    
+
     >>> xx2d, yy2d = check_xy_shape(xx, yy, mesh=True)
     """
     # Numpy arrays
     xx = N.asarray(xx[:])
     yy = N.asarray(yy[:])
-    
+
     # Check if we want 2D axes
     if xx.shape != yy.shape:
         mesh = True
     if mesh is None:
         mesh = xx.shape == yy.shape
-        
+
     # Go
     if not mesh: return xx, yy
     if xx.ndim==2 and yy.ndim==2 and xx.shape==yy.shape: return xx, yy
@@ -2032,19 +2032,19 @@ def check_xy_shape(xx, yy, mesh=None):
 
 def t2uvgrids(gg, getu=True, getv=True, mask=None):
     """Convert a (C) grid at T-points to a grid at U- and/or V- points
-    
+
     :Params:
-    
+
         - **gg**: A (x,y) or a cdms grid or a cdms variable with a grid (see :func:`get_grid`)
         - *getu*: Get the grid at U-points [default: True]
         - *getv*: Get the grid at V-points [default: True]
-        - *mask*: If False, do not try to guess masks ; if None, try to get them from 
+        - *mask*: If False, do not try to guess masks ; if None, try to get them from
           original grid by conversion to U and V points with t2uvmask() [default: None]
-    
+
     :Return: ``ugrid,vgrid`` OR ``ugrid`` OR ``vgrid`` depending on getu and getv
-    
+
     :Example:
-    
+
         >>> gridu, gridv = t2uvgrids(gridt)
     """
     if not getu and not getv: return
@@ -2064,7 +2064,7 @@ def t2uvgrids(gg, getu=True, getv=True, mask=None):
         xu.long_name += ' at U-points'
         yu = yy.clone()
         gu = cdms.createRectGrid(yu, xu)
-        if mask is not None: 
+        if mask is not None:
             gu.setMask(t2uvmasks(umask, getv=False))
         if not getv: return gu
     # V-points
@@ -2074,39 +2074,39 @@ def t2uvgrids(gg, getu=True, getv=True, mask=None):
     yv.long_name += ' at V-points'
     xv = xx.clone()
     gv = cdms.createRectGrid(yv, xv)
-    if mask is not None: 
+    if mask is not None:
         gv.setMask(t2uvmasks(vmask, getu=False))
     if not getu: return gv
     return gu, gv
-        
+
 
 
 
 def rotate_grid(ggi, angle, pivot='center', **kwargs):
     """Rotate a grid
-    
+
     :Params:
-    
+
         - **ggi**: Cdms grid ou (lon,lat) or variable (see :func:`get_grid`).
         - **angle**: Angle in degrees.
         - **pivot**, optional: it can be either
-            
+
             - A tuple of (lon, lat)
             - A string that specify the vertical and horizontal position.
               Use the following keys : ``top``, ``bottom``, ``left``, ``right``, ``center``.
-            
+
         - Other keywords are passed to :func:`~vacumm.misc.grid.curv_grid`
-    
+
     :Returns: A curvilinear cdms grid.
-    
+
     :Example:
-    
+
         >>> mygrid = rotate_grid((lon,lat), 60., 'top right')
         >>> mygrid2 = rotate_grid(mygrid, 60., (-5.,45))
     """
     # Get 2D axes
     xxi, yyi = meshgrid(*get_xy(ggi))
-    
+
     # Find pivot
     if isinstance(pivot, tuple):
         xpivot, ypivot = pivot
@@ -2119,7 +2119,7 @@ def rotate_grid(ggi, angle, pivot='center', **kwargs):
         jpivot = [0, ny/2, -1][['bottom', 'center', 'top'].index(sypivot)]
         xpivot = xxi[jpivot, ipivot]
         ypivot = yyi[jpivot, ipivot]
-    
+
     # Rotate
     angle = angle*N.pi/180.
     xxo = xpivot + (xxi-xpivot)*N.cos(angle) - (yyi-ypivot)*N.sin(angle)
@@ -2129,19 +2129,19 @@ def rotate_grid(ggi, angle, pivot='center', **kwargs):
 
 def monotonic(xx, xref=None):
     """Make monotonic an array of longitudes
-    
+
     :Example:
-    
+
     >>> xxm = monotonic(xx, xref=120.)
     >>> print (N.diff(xxm)<0).any()
     False
     """
-    
+
     # Longitude reference
     modulo = xx.modulo if hasattr(xx, 'modulo') else 360.
     if xref is not None:
         xx[:] = (xx[:]-xref)%modulo+xref
-        
+
     # Monotonic modulo
     steps = N.diff(xx, axis=-1)
     bigsteps = N.abs(steps)>modulo/2.
@@ -2150,37 +2150,37 @@ def monotonic(xx, xref=None):
     fixsteps.cumsum(axis=-1, out=fixsteps)
     xx[..., 1:] += fixsteps
     return xx
-    
-    
-    
+
+
+
 def xextend(vari, n, mode=None):
     """Extend a variable along x axis
-    
+
     .. note:: x is the last axis and must be 1D
-    
+
     .. todo::
-    
+
         Make possible to use 2D axes with :func:`xextend`
-    
+
     :Parameters:
-    
+
         - **vari**: :mod:`cdms2` variable
         - **n**: size of the extention
-        
+
             - if an integer: ``nleft = nright = n``
             - else: nleft, nright = n
-            
+
         - **mode**, optional: mode of extension
-        
+
             - ``None``: choose ``"cyclic"`` is x axis
               has a "modulo" attribute
             - ``"cyclic"``: assume x axis is cyclic
             - ``"constant"``: extrapolate with first or last values
-            - else, extend with masked values 
+            - else, extend with masked values
               and linearly extrapolate positions
-          
+
     :Example:
-    
+
         >>> varo = xextend(vari, (5, 7), mode='cyclic')
     """
     # Get extension sizes and mode
@@ -2191,7 +2191,7 @@ def xextend(vari, n, mode=None):
         nleft, nright = n
     else:
         nleft = nright = n
-        
+
     # Intialize
     nxi = vari.shape[-1]
     nxo = nleft+nxi+nright
@@ -2200,7 +2200,7 @@ def xextend(vari, n, mode=None):
     varo[..., nleft:nleft+nxi] = vari
     cp_atts(vari, varo)
     axes = vari.getAxisList()
-    
+
     # Extend
     if mode == 'cyclic':
         if not hasattr(xi, 'modulo'):
@@ -2221,47 +2221,47 @@ def xextend(vari, n, mode=None):
                 varo[..., ileft] = vari[..., 0]
             for iright in xrange(nright):
                 varo[..., nxo-iright-1] = vari[..., -1]
-        
+
     # Insert axes
     xo = cdms2.createAxis(N.concatenate((xleft, xi[:], xright)).astype(xi[:].dtype))
     cp_atts(xi, xo)
     axes[-1] = xo
     varo.setAxisList(axes)
     return varo
-    
+
 def xshift(vari, n, mode=None, monot=True):
     """Shift a cyclic array along x axis
-    
+
     .. note:: x is the last axis and must be 1D
-    
+
     .. todo::
-    
+
         Make possible to use 2D axes with :func:`xshift`
-    
+
     :Params:
-    
+
         - **vari**: :mod:`cdms2` variable
         - **n**: size of the shift
-        
+
             Positive means east bound is moved toward east.
             If ``mode is None``:
-        
+
             - if an integer, use it as grid points
             - else (a float), use at as degrees.
-              
+
     :Example:
-    
+
         >>> varo = xshift(vari, 50)
     """
     # Get shift value
     xi = vari.getAxis(-1).getValue()
 #    if mode=='left':
-#        
+#
 #    if mode is None:
 #        if not isinstance(n, int):
 #            n = float(n)
-            
-        
+
+
     # Intialize
     varo = vari.clone()
     xo = xi.copy()
@@ -2281,36 +2281,36 @@ def xshift(vari, n, mode=None, monot=True):
         xi = monotonic(xi)
     varo.getAxis(-1).assignValue(xo)
     return varo
-    
-   
+
+
 def curv2rect(gg, mode="warn", tol=1.e-2, f=None):
     """Convert a curvilinear grid to a rectangular grid
-    
+
     .. warning::
-    
+
         This not an interpolation.
         Longitudes and latitudes are converted from 2D arrays
         to 1D arrays using axis averages.
-        
+
     :Params:
-    
+
       - **gg**: Grid, tuple of axes or MV2 variable.
       - **mode**, optional: what ot do when it does not seems to be rectangular
-        
+
             - ``"warn"``: simply show a warning,
             - ``"raise"``: raise a :class:`VACUMMError`,
             - ``"none"`` or ``False``: don't do it.
             - else just convert it at your own risks.
         - **tol**, optional: Tolerance (passed to :func:`isrect`).
         - **f**, optional: File object or name (passed to :func:`isrect`).
-        
+
     :Example:
-    
+
         >>> rgrid = curv2rect(cgrid)
         >>> rgrid = curv2rect((lon2d,lat2d))
-        
+
     :Params:
-    
+
         - **gg**: A variable or a curvilinear grid (see :func:`get_grid`)
     """
 
@@ -2322,7 +2322,7 @@ def curv2rect(gg, mode="warn", tol=1.e-2, f=None):
         if rgrid is not None and grid is not rgrid:
             set_grid(gg, rgrid)
         return gg
-    
+
     # Is it rectangular?
     gg = get_grid(gg)
     if gg is None: return
@@ -2343,51 +2343,51 @@ def curv2rect(gg, mode="warn", tol=1.e-2, f=None):
     cp_atts(gg.getLongitude(), grido.getLongitude())
     cp_atts(gg.getLatitude(), grido.getLatitude())
     return grido
-    
+
 def isrect(gg, tol=1.e-2, mode="real", f=None, nocache=False):
     """Check wether a grid is trully rectangular
-    
+
     :Params:
-    
+
         - **gg**: cdms2 grid, tuple of cdms axes or variabe with a grid.
         - **tol**, optional: Tolerance for coordinates deformation.
         - **mode**, optional: Simple or real check.
-        
+
             - ``"simple"``: Simply check if axes are 1D.
             - ``"real"``: Also check that axes along one direction do
               vary along the other direction with tolerance tol.
-        
+
         - **f**, optional: netcdf file object.
-    
+
     """
 
     # Check that it's a grid
     gg = get_grid(gg, intercept=False)
-        
-    # Already a rectangular 
+
+    # Already a rectangular
     is1d = isgrid(gg, curv=False)
     if not mode.startswith('r'): return is1d
     if is1d: return True
-    
+
     # File grid
     if not nocache and f is not None:
         from ...misc.io import ncget_fgrid
         fgrid = ncget_fgrid(f, gg)
     else:
         fgrid = None
-    
+
     # From cache
     if not nocache:
         for grid in fgrid, gg:
             if hasattr(grid, '_vacumm_isrect'):
                 return grid._vacumm_isrect
-        
-    # Check if this grid is really rectangular  
-    # - resolution from cache 
+
+    # Check if this grid is really rectangular
+    # - resolution from cache
     for grid in fgrid, gg:
         if grid is None: continue
         res = resol(grid, cache=2)
-        if res is not None: 
+        if res is not None:
             break
     else:
         res = resol(gg)
@@ -2401,30 +2401,30 @@ def isrect(gg, tol=1.e-2, mode="real", f=None, nocache=False):
     Dx = N.ma.median(xx.ptp(axis=0))
     Dy = N.ma.median(yy.ptp(axis=-1))
     res = Dx < tol*dx and Dy < tol*dy
-    
+
     # Cache result
-    for grid in gg, fgrid: 
+    for grid in gg, fgrid:
         if grid is not None:
             grid._vacumm_isrect = res
-        
+
     return res
-    
+
 
 def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=False):
     """Get specs for a transect given a grid and starting and ending points
-    
+
     :Params:
-    
+
         - **lon/lat0/1**: Coordinates of first and last point in degrees.
         - **subsamp**, optional: Subsampling with respect to grid cell.
         - **getxy**, optional: Also return projected coordinates.
         - **getproj**, optional: Also return projection map.
-        
+
     :Return: lons, lats[, xx, yy][, proj]
-        
+
     :See also: :func:`resol`, :meth:`mpl_toolkits.basemap.Basemap.gcpoints`.
     """
-    
+
     # Bounds and resolution
     dx, dy = resol(gg, proj='merc')
     m = get_map(gg, resol=None, proj='merc')
@@ -2440,7 +2440,7 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=F
         npts = Dy/dy
     npts *= subsamp
     npts = int(N.ceil(npts))
-    
+
     # Coordinates
     xx, yy = m.gcpoints(lon0, lat0, lon1, lat1, npts)
     lons, lats = m(xx, yy, inverse=True)
@@ -2448,26 +2448,26 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=F
     if getxy: ret += N.array(xx), N.array(yy)
     if getproj: ret += m
     return ret
- 
+
 
 def depth2dz(depth, axis=None, mode=None, masked=True):
     """Convert from depth to layer thickness
-    
+
     :Params:
-    
+
         - **depth**: 1D or ND array of depth (variable or axis).
         - **axis**, optional: Axis of vertical dimension.
           It is guessed of not provided.
         - **mode**, optional: Mode for defining the reference layer.
           Possible values: ``'first'``, ``'last'``, ``center`` or ``None``.
           It is either the first or the last layer. The layer is
-          computed normally like other layer by difference, 
+          computed normally like other layer by difference,
           whereas its opposite (hidden) layer is either masked or has its
-          thickness set the the thickness of its adjacent layer. 
+          thickness set the the thickness of its adjacent layer.
           If ``mode`` is set to ``None``, it set to ``'last'``
           if depths are positive up.
         - **masked**, optional: If True, hidden layer is masked.
-        
+
     """
     # Init
     if cdms2.isVariable(depth):
@@ -2482,58 +2482,58 @@ def depth2dz(depth, axis=None, mode=None, masked=True):
     if masked and not N.ma.isMA(dz):
         dz = N.ma.asarray(dz)
         dz[:] = N.ma.masked
-    
+
     # Guess axis to work on
     if axis is None: axis = _getzdim_(depth)
     slices = get_axis_slices(depth, axis)
-    
-    # Priority mode 
+
+    # Priority mode
     if isinstance(mode, basestring):
         mode = mode.lower()
     if mode not in ['last', 'first', None, 'center']:
         mode = None
     if mode is None:
         mode = ['first', 'last'][int(isdepthup(depth, axis=axis))]
-        
+
     # Compute
     if depth.shape[axis]==1:
         dz[:] = 0
         return dz
     if mode=='last':
-        
+
         dz[slices['lasts']] = depth[slices['lasts']]-depth[slices['firsts']]
         if not masked:
             dz[slices['first']] = dz[slices['firstp1']]
-            
+
     elif mode=='first':
-        
+
         dz[slices['firsts']] = depth[slices['firsts']]-depth[slices['lasts']]
         if not masked:
             dz[slices['last']] = dz[slices['lastm1']]
-            
+
     else: # center
-    
+
         dz[slices['mid']] = 0.5*(depth[slices['lastsp1']]-depth[slices['firstsm1']])
         if not masked:
             dz[slices['first']] = dz[slices['firstp1']]
             dz[slices['last']] = dz[slices['lastm1']]
-            
+
     dz[:] = abs(dz)
     return dz
-    
+
 def get_axis_slices(ndim, axis, **kwargs):
     """Get standard slices for an axis of a ndim array
-    
+
     :Params:
-    
+
         - **ndim**: The number of dimensions. It can also be
           a tuple (like an array shape) or an array.
         - **axis**: Index of the axis.
-        
-    :Return: A dictionary of tuples of slices. All tuples have a 
+
+    :Return: A dictionary of tuples of slices. All tuples have a
         length of ndim, and can be used has a slice for the array
         (see example).
-    
+
         - "all": Select everything.
         - "first"/"last": First and last.
         - "firstp1": Second element.
@@ -2545,15 +2545,15 @@ def get_axis_slices(ndim, axis, **kwargs):
         - "firstsm1": All but the last two.
         - "lastsp1": All but the first two.
         - "mid": All but the first and last.
-        
+
     :Example:
-    
+
         >>> var = N.arange(3*4).reshape(3, 4)
         >>> ss = get_axis_slices(var, axis=0)
         >>> var_north = var[ss['last']]
         >>> var_south = var[ss['first']]
    """
-    if hasattr(ndim, 'shape'): 
+    if hasattr(ndim, 'shape'):
         ndim = ndim.shape
     if hasattr(ndim, '__len__'):
         ndim = len(ndim)
@@ -2576,20 +2576,20 @@ def get_axis_slices(ndim, axis, **kwargs):
             ksel = list(sel)
             ksel[axis] = val
             kwargs[key] = ksel
-    return dict(all=sel, mid=selmid, lasts=sellasts, firsts=selfirsts, 
-        lastsp1=sellastsp1, firstsm1=selfirstsm1, 
-        last=sellast, first=selfirst, lastm1=sellastm1, firstp1=selfirstp1, 
+    return dict(all=sel, mid=selmid, lasts=sellasts, firsts=selfirsts,
+        lastsp1=sellastsp1, firstsm1=selfirstsm1,
+        last=sellast, first=selfirst, lastm1=sellastm1, firstp1=selfirstp1,
         lastm2=sellastm2, firstp2=selfirstp2, **kwargs)
 
 def merge_axis_slices(slices1, slices2):
     """Merge standard tuples of slices stored in dictionaries created with :func:`get_axis_slices`:
-    
+
     :Params:
-    
+
         - **slice1/2**: Dictionaries of tuples of slices.
-        
+
     :Example:
-    
+
         >>> slicesx = get_axis_slices(3, -1)  # for X
         >>> slicesy = get_axis_slices(3, -2)  # for Y
         >>> slices12 = merge_axis_slices(slicesx, slicesy) # for X and Y
@@ -2599,18 +2599,18 @@ def merge_axis_slices(slices1, slices2):
     for key in slices1:
         slicesm[key] = _merge_axis_slice_(slices1[key], slices2[key])
     return slicesm
-    
+
 def merge_axis_slice(sel1, sel2):
-    """Merge a single tuple of slices 
-    
+    """Merge a single tuple of slices
+
     Theses slices may have been created with :func:`get_axis_slices`
-    
+
     :Params:
-    
+
         - **sel1/2**: Tuples of slices.
-        
+
     :Example:
-    
+
         >>> sel1 = (slice(None), -2)
         >>> sel2 = (slice(1,4), slice(None)
         >>> merge_axis_slice(sel1, sel2)
@@ -2633,7 +2633,7 @@ def merge_axis_slice(sel1, sel2):
         else:
             selm.append(sel1[axis])
     return tuple(selm)
-        
+
 
 def get_zdim(var, axis=None, default=None, strict=True):
     """Get the index of the Z dimension"""
@@ -2662,21 +2662,21 @@ def get_zdim(var, axis=None, default=None, strict=True):
 _getzdim_ = get_zdim
 
 def isdepthup(depth, axis=None, ro=True):
-    """Guess if depth is positive up 
-    
+    """Guess if depth is positive up
+
     It first check "positive" attribute, then guess from values:
     more positive values means positive down.
-    
+
     ..warning:: Bad values must be masked
-    
+
     :Params:
-    
+
         - **depth**: Depth arrays or axis.
         - **axis**, optional: Z axis index.
         - **ro**, optional: Read-only? If False and if depth
           is an axis, its 'positive' attribute is marked
           'up' or 'down' upon the results.
-          
+
     :Return: ``None`` if not Z axis found, else ``True`` or ``False``
     """
     # From attribute
@@ -2685,39 +2685,39 @@ def isdepthup(depth, axis=None, ro=True):
         if positive.lower() in ['down', 'up']:
             return positive == 'up'
         positive = None
-    
+
     # Slices
     axis = get_zdim(depth, axis=axis, default=None)
     if axis is None: return
     slices = get_axis_slices(depth, axis)
-     
+
     # From values
     firstval = depth[slices['first']].max()
     lastval = depth[slices['last']].max()
     isup = N.abs(firstval)>N.abs(lastval)
-    
+
     # Set attribute
     if not ro and isaxis(depth):
         depth.positive = 'up' if isup else 'down'
     return isup
-    
-    
+
+
 def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
     """Make depth and variables positive up
-    
+
     :Params:
-    
+
         - **vv**: A single variable or a list of them.
-        - **depth**, optional: Explicit depths to not guess 
-          it with :meth:`getLevel`. If True or False, simply revert along Z 
+        - **depth**, optional: Explicit depths to not guess
+          it with :meth:`getLevel`. If True or False, simply revert along Z
           dimension.
         - **axis**, optional: Z dimension (else guessed with :func:`get_zdim`).
-    
+
     """
     # A list of variables
     single = not isinstance(vv, (list,tuple))
     if single: vv = [vv]
-    
+
     # Get depth
     getdepth = isaxis(depth) or isinstance(depth, N.ndarray)
     if depth is None:
@@ -2730,15 +2730,15 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
     if depth in [True, False]:
         isup = depth
     else:
-        
+
         axis = get_zdim(vv[0], axis, default=default, strict=strict)
-        
+
         # No depth found
-        if axis is None: 
+        if axis is None:
             vv = vv[0] if single else vv
             if getdepth: return vv, depth
             return vv
-            
+
         # Positive up?
         isup = isdepthup(depth, axis=axis, ro=ro)
 
@@ -2750,7 +2750,7 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
                 depth.positive = 'up'
             else:
                 depth[:] = depth.take(range(depth.shape[axis]-1, -1, -1), axis=axis)
-    
+
     # Revert variables or depths
     if not isup:
         for ivar, var in enumerate(vv):
@@ -2763,30 +2763,30 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
                 var[:] = var.take(range(var.shape[axis]-1, -1, -1), axis=axis)
                 depaxis = var.getAxis(axis)
                 depaxis.assignValue(-depaxis[::-1])
-            
+
     vv = vv[0] if single else vv
     if getdepth: return vv, depth
     return vv
-         
-    
+
+
 def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
     """Conversion from layer thickness to depths
-    
+
     :Params:
-    
+
         - **dz**: Layer thickness from bottom to top.
         - **ref**: Reference depth for integration, which depends
           on ``refloc``:
-          
+
             - ``"top"`` or ``"eta"`` or ``"ssh"``: Sea surface height.
             - ``"bottom"`` or ``"depth"`` or ``"bathy"``: Bottom depth.
             - Else, estimated by checking the standard_name of the
               variable, by checking if some values are negatives ('top'),
               or if maximal value is greater then 15. ('bottom').
-              
-        - **refloc**, optional: ``"top"``|``"eta"``, 
+
+        - **refloc**, optional: ``"top"``|``"eta"``,
           ``"bottom"``|``"depth"``,  or ``None``.
-        
+
     """
 
     # Init depths
@@ -2798,14 +2798,14 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
     depths.long_name = 'Depths'
     depths.units = 'm'
     depths.id = 'depths'
-    
+
     # Format dz
     dzm = dz.asma()
     if not withtime:
         dzm = dzm.reshape((1, )+dzm.shape)
     #TODO: dz2depth: dzshift
     #TODO: dz2depth: positive up/down
-        
+
     # Guess reference
     if ref is None: ref = 0.
     if isinstance(refloc, basestring): refloc = refloc.lower()
@@ -2815,7 +2815,7 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
     refsn = getattr(ref, 'standard_name', None)
     ref = ref.asma() if cdms2.isVariable(ref) else N.ma.asarray(ref)
     if refloc is None:
-        
+
         # From standard_name (using cf)
         if refsn is not None:
             try:
@@ -2827,7 +2827,7 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
                     refloc = 'bottom'
             except:
                 pass
-                
+
         # From values
         if refloc is None:
             if (ref<=0).any():
@@ -2835,17 +2835,17 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
             else:
                 vmax = ref.max()
                 refloc = 'bottom' if ref.max()>15 else 'top'
-    
+
     # Integrate
     depths[:] = dzm.cumsum(axis=1)
     del dzm
-    
+
     # Add reference
     if refloc == 'top':
         for it in xrange(nt):
             depths[it] -= depths[it, -1]
         depths[:] += ref
-        
+
     else:
         depths[:] -= ref
 
@@ -2856,19 +2856,19 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
         grid = dz.getGrid()
         if grid is not None:
             depths.setGrid(grid)
-    
+
     return depths
-    
-           
 
 
-        
+
+
+
 ######################################################################
 ######################################################################
 from ...misc.atime import ch_units,compress
 from ...misc import cp_atts,get_atts,set_atts,intersect, numod
 from ...misc.axes import check_axes, islon, islat, islev, istime, create_lon, create_lat, isaxis, isdep
 from ...misc.phys import units
-from basemap import get_map, cached_map, cache_map, get_proj
-from masking import t2uvmasks
-from vacumm import VACUMMError, VACUMMWarning
+from .basemap import get_map, cached_map, cache_map, get_proj
+from .masking import t2uvmasks
+from ...__init__ import VACUMMError, VACUMMWarning
