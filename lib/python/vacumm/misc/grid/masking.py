@@ -57,7 +57,7 @@ __all__ = ['get_coast', 'get_coastal_indices', 'GetLakes', 'polygon_mask', 'mask
     'polygons', 'd2m', 'polygon_select', 'envelop', 'check_poly_islands',
     'check_poly_straits','t2uvmasks', 'mask2d', 'grid_envelop', 'convex_hull',
     'uniq', 'rsamp', 'zcompress', 'Lakes', 'erode_coast', 'resol_mask',
-    'get_dist_to_coast', 'get_avail_rate', 'grid_envelop_mask', 'create_polygon', 
+    'get_dist_to_coast', 'get_avail_rate', 'grid_envelop_mask', 'create_polygon',
     'clip_shape', 'proj_shape', 'plot_polygon', 'clip_shapes']
 __all__.sort()
 
@@ -401,7 +401,7 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
         - **ocean**, optional: If True, keep only the ocean (= biggest lake).
         - **fractions**: If True or 1, return the total fraction of cells covered by the
           polygons; if 2, returns the total area for each cell.
-        - **proj**, optional: Geographical projection function. 
+        - **proj**, optional: Geographical projection function.
           See :func:`~vacumm.misc.grid.basemap.get_proj`. Use ``False`` to not
           convert coordinates to meters, and speed up the routine.
 
@@ -624,34 +624,34 @@ def masked_ocean(vv, polys=None, **kwargs):
 
 def proj_shape(shape, proj):
     """Project a Point, a Polygon or a LineString shape using a geographical projection
-    
+
     :Params:
-    
+
         - **shape**: A Point, Polygon, or a LineString instance with coordinates in degrees.
-        - **proj**: A projection function of instance. 
+        - **proj**: A projection function of instance.
           See :func:`~vacumm.misc.grid.basemap.get_proj`.
-        
+
     :Return: A similar instance with its coordinates converted to meters
     """
     if not callable(proj): return shape
-        
+
     # Point
     if isinstance(shape, Point):
         return Point(*proj(shape.boundary))
-        
+
     # LineString and Polygon
     return shape.__class__(proj(*shape.boundary.T).T)
- 
+
 def clip_shape(shape, clip=None):
-    """Clip a :class:`Point`, a :class:`Polygon` or a :class:`LineString` 
+    """Clip a :class:`Point`, a :class:`Polygon` or a :class:`LineString`
     shape using clipping polygon
-    
+
     :Params:
-    
-        - **shape**: A valid :class:`Point`, a :class:`Polygon` or a 
+
+        - **shape**: A valid :class:`Point`, a :class:`Polygon` or a
           :class:`LineString` instance.
         - **clip**, optional: A clipping polygon.
-        
+
     :Return: A possible empty list of intersection shapes.
     """
     if clip is None: return [shape]
@@ -676,40 +676,40 @@ def clip_shapes(shapes, clip=None):
 
 def create_polygon(data, proj=False, mode='poly'):
     """Create a simple :class:`Polygon` instance using data
-    
+
     :Param:
-    
+
         - **data**: Can be either a ``(N,2)`` or ``(2,N)`` array,
           a ``(xmin,ymin,xmax,ymax)`` list, tuple or array, or a Polygon.
         - **proj**, optional: Geographical projection function.
         - **mode**, optional: Output mode. ``"line"`` = :class:`LineString`,
           ``"verts"`` = numpy vertices, else :class:`Polygon`.
-        
+
     """
-    if isinstance(data, Polygon): 
+    if isinstance(data, Polygon):
         if callable(proj):
             data = data.boundary
         else:
             return data
-    
+
     # Convert to numeric
     data = N.asarray(data, 'float64')
-    
+
     # xmin,ymin,xmax,ymax form
     if data.ndim == 1:
         assert len(data) == 4, '1D form must have 4 elements (xmin,ymin,xmax,ymax), not %i'%len(poly)
         xmin,ymin,xmax,ymax = data
         data =  N.asarray([[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]])
-        
+
     # Check order
     if data.shape[0] == 2:
         data = data.T
-        
+
     # Projection
     if callable(proj):
         xdata, ydata = proj(*data.T)
         data = N.asarray([xdata, ydata]).T
-        
+
     # Create Polygon or LineString
     mode = str(mode)
     if mode.startswith('v'): return data
@@ -718,12 +718,12 @@ def create_polygon(data, proj=False, mode='poly'):
 
 def plot_polygon(poly, ax=None, **kwargs):
     """Simply plot a polygon on the current plot using :func:`matplotlib.pyplot.plot`
-    
+
     :Params:
-    
+
         - **poly**: A valid :class:`Polygon` instance.
         - Extra keyword are passed to plot function.
-    
+
     """
     xx = poly.boundary[:, 0]
     yy = poly.boundary[:, 1]
@@ -733,7 +733,7 @@ def plot_polygon(poly, ax=None, **kwargs):
         from matplotlib.pyplot import gca
         ax = gca()
     return ax.plot(xx, yy, **kwargs)
-    
+
 
 def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     """Return a list of Polygon instances
@@ -774,7 +774,7 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     if clip is not None:
         kwclip.setdefault('proj', proj)
         clip = create_polygon(clip, **kwclip)
-        
+
     # Loop on polygon data
     from misc import isgrid, isrect, curv2rect
     for poly in polys:
@@ -799,20 +799,21 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
 
         # Shapes instance
         if isinstance(poly, Shapes):
-            
+
             # Good polygon?
             if poly.get_type() == 0 or poly.get_type() != shapetype:
                 continue
-                
+
 #            # Clip
 #            poly.clip(clip)
-            
+
             # Append to list
             out_polys.extend(poly.get_shapes())
 #            continue
 
         # Make sure to have a polygon with the right projection
-        poly = create_polygon(poly, proj=proj, aslinestring=shaper is LineString)
+        poly = create_polygon(poly, proj=proj,
+            mode='line' if shaper is LineString else 'poly')
 
         # Clip
         if clip is not None:
@@ -1165,7 +1166,7 @@ def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
         - **ggi**: Input grid or (lon,lat) or cdms variable.
         - **ggo**: Output grid or (lon,lat) or cdms variable.
         - Other keywords are passed to :func:`grid_envelop`
-    
+
     :Returns:
         A mask on output grid, where True means "outside bounds of input grid".
     """
