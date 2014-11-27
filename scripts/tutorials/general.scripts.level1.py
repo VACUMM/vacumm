@@ -30,8 +30,8 @@ mld = mixed_layer_depth(temp, depth, mode='deltatemp', deltatemp=0.1)
 
 # Plot
 print 'plot'
-map2(mld, proj='merc', figsize=(6, 4), autoresize=0, 
-    fill='pcolormesh',  contour=False, 
+map2(mld, proj='merc', figsize=(6, 4), autoresize=0,
+    fill='pcolormesh',  contour=False, show=False,
     colorbar_shrink=0.7, right=1, savefigs=__file__)
 
 

@@ -4,7 +4,7 @@
 # Arguments
 import argparse, os
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("ncfile", help="model file", nargs="?", 
+parser.add_argument("ncfile", help="model file", nargs="?",
     default="menor.nc")
 parser.add_argument("-m", "--model", help="model type [default: %(default)s]",
     choices = ['ocean', 'mars', 'nemo'], default='mars')
@@ -12,9 +12,9 @@ parser.add_argument('-t', '--time', help='time selection, like \'("2000","2001",
 parser.add_argument('-x', '--lon', help='longitude selection, like \'(40,42)\'')
 parser.add_argument('-y', '--lat', help='latitude selection, like \'(40,42)\'')
 parser.add_argument('--title', help='alternative title')
-parser.add_argument('--fillmode', help='fill mode [default: %(default)s]', 
+parser.add_argument('--fillmode', help='fill mode [default: %(default)s]',
     choices=['nofill', 'pcolormesh', 'contourf'], default='contourf')
-parser.add_argument('--nodisp', help='do not display the figure', action='store_true')
+parser.add_argument('--disp', help='display the figure', action='store_true')
 parser.add_argument('-o', '--outputfig', help='file name for output figure')
 options = parser.parse_args()
 
@@ -48,8 +48,8 @@ if mld.ndim==3:
     mld = MV2.average(mld, axis=0)
 
 # Plot
-map2(mld, proj='merc', figsize=(6, 6), autoresize=0, 
-    title=options.title, colorbar_shrink=0.7, right=1, 
-    show=not options.nodisp, savefig=options.outputfig, savefig_verbose=True)
+map2(mld, proj='merc', figsize=(6, 6), autoresize=0,
+    title=options.title, colorbar_shrink=0.7, right=1,
+    show=options.disp, savefig=options.outputfig, savefig_verbose=True)
 
 
