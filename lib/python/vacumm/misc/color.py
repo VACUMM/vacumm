@@ -2416,12 +2416,7 @@ class StepsNorm(Normalize):
         val = result.copy()
         self.autoscale_None(result)
         vmin, vmax = self.vmin, self.vmax
-        
-        if cbook.iterable(value):
-            val = N.asarray(value).astype(N.float)
-        else:
-            val = N.array([value]).astype(N.float)
-        
+                
         if vmin==vmax:
             result.fill(0.)
         else:

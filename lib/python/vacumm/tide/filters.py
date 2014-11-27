@@ -47,6 +47,7 @@ import cdtime, numpy as N,MV2,cdms2,genutil.filters as F
 
 from vacumm.misc.axes import check_axis, check_axes, create_time
 from vacumm.misc.atime import unit_type,  compress,strftime
+from vacumm.misc.filters import running_average
 from vacumm.misc.grid import isregular
 from vacumm.misc.grid.regridding import interp1d
 from vacumm.misc import cp_atts
