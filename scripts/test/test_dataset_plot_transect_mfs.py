@@ -14,6 +14,6 @@ ds = DS(data_sample(ncfile), 'nemo', logger_level='critical')
 # Plot transect
 figfile = code_file_name(ext='png')
 if os.path.exists(figfile): os.remove(figfile)
-ds.plot_transect('temp', lons, lats, outaxis='dist', show=True, fill='contourf', 
+ds.plot_transect('temp', lons, lats, outaxis='dist', show=False, fill='contourf',
     figsize=(6,4), savefig=figfile, top=0.9, right=0.89, close=True)
 

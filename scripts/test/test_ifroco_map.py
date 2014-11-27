@@ -11,7 +11,7 @@ copyright = u"© Previmer"
 
 # Imports
 from vacumm.report.ifroco.maps import DS, cfgget, N, plot_map, P, data_sample
-from vcmq import code_file_name
+from vcmq import code_file_name, os
 
 # Read data
 ds = DS(data_sample('menor.nc'), 'mars', logger_level='critical')
@@ -27,5 +27,5 @@ if units: data.units = units
 
 # Plot
 logofile = os.path.join(os.path.dirname(code_file_name()), logofile)
-x = plot_map(data[0:1], levels=levels, extend=extend, close=True, 
+x = plot_map(data[0:1], levels=levels, extend=extend, close=True,
     savefig=code_file_name(), logos=logofile, copyright=copyright)
