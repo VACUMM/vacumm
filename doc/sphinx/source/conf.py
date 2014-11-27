@@ -30,22 +30,23 @@ for path in ('../../../lib/python', '../../../lib/python/vacumm', 'sphinxext', '
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
         'sphinx.ext.inheritance_diagram',
-        'sphinx.ext.autodoc', 
-        'sphinx.ext.autosummary', 
-        'sphinx.ext.intersphinx', 
-        'sphinx.ext.todo', 
-        'sphinx.ext.pngmath', 
+        'sphinx.ext.autodoc',
+        'sphinx.ext.autosummary',
+        'sphinx.ext.intersphinx',
+        'sphinx.ext.todo',
+        'sphinx.ext.pngmath',
         'sphinx.ext.ifconfig',
         'sphinx.ext.extlinks',
         'sphinx.ext.viewcode',
-        'sphinxcontrib.cheeseshop', 
+        'sphinxcontrib.cheeseshop',
         'sphinxcontrib.ansi',
         'sphinxcontrib.programoutput',
         'vacumm.sphinxext.fortran_domain',
         'vacumm.sphinxext.fortran_autodoc',
         'vacumm.sphinxext.overview',
+        'vacumm.sphinxext.docversions',
         'gen_gallery',
-        'gen_cmaps', 
+        'gen_cmaps',
         ]
 import vacumm
 vacumm.docfiller_verbose = True
@@ -72,7 +73,7 @@ copyright = u'2010-2013, Actimar/IFREMER'
 import setup
 version = setup.version_sphinx
 release = setup.release_sphinx
-            
+
 # Import of this file or use through sphinx?
 callfromsphinx = os.path.exists('contents.rst') and os.path.abspath(__file__) == __file__
 
@@ -240,7 +241,7 @@ intersphinx_mapping = {
     'scipy':('http://docs.scipy.org/doc/scipy/reference', None),
     'sphinx':('http://sphinx.pocoo.org', None),
     'interpsig2z':('http://relay.actimar.fr/~raynaud/interpsig2z', None),
-    'http://docs.python.org/dev': None, 
+    'http://docs.python.org/dev': None,
     }
 
 # Extlinks
@@ -260,7 +261,7 @@ overview_columns = 3
 if callfromsphinx:
     from vacumm.config import write_default_config
     write_default_config('vacumm.cfg')
-    
+
 unused_docs = ['tutorials/bathy.shorelines.sealevel.rst']
 
 todo_include_todos = True
@@ -283,14 +284,14 @@ if callfromsphinx:
     from vacumm.misc.config import opt2rst
     for ss in scripts:
         for script in glob.glob(os.path.abspath(os.path.join('../../../bin', ss))):
-            
+
             # Output rst file
             rstfile = os.path.join(binrstdir, '%s.help.txt'%os.path.basename(script[:-3]))
-            
+
             # Checks before processing
-            if os.path.exists(rstfile) and os.stat(script).st_mtime < os.stat(rstfile).st_mtime: 
+            if os.path.exists(rstfile) and os.stat(script).st_mtime < os.stat(rstfile).st_mtime:
                 continue
-            
+
             # Generate help
             try:
                 std,err = subprocess.Popen([script, "-h"], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
@@ -317,16 +318,16 @@ gen_gallery_paths = {
 
 # Colormaps
 gen_cmaps_prefix = 'misc-color-'
-gen_cmaps_extra_list = [ 
+gen_cmaps_extra_list = [
     # (function name, kwargs, figfile short name (no prefix+no ext)),
-    ('cmap_jets', dict(stretch=0.6), 'vacumm_jets+60'), 
-    ('cmap_jets', dict(stretch=-0.6), 'vacumm_jets-60'), 
-    ('cmap_magic', dict(), 'vacumm_magic'), 
-    ('cmap_magic', dict(n=10), 'vacumm_magic-n10'), 
-    ('cmap_magic', dict(anomaly=True), 'vacumm_magic-anom'), 
+    ('cmap_jets', dict(stretch=0.6), 'vacumm_jets+60'),
+    ('cmap_jets', dict(stretch=-0.6), 'vacumm_jets-60'),
+    ('cmap_magic', dict(), 'vacumm_magic'),
+    ('cmap_magic', dict(n=10), 'vacumm_magic-n10'),
+    ('cmap_magic', dict(anomaly=True), 'vacumm_magic-anom'),
     ('cmap_magic', dict(positive=True), 'vacumm_magic-pos'),
-    ('cmap_magic', dict(negative=True), 'vacumm_magic-neg'), 
-    ('cmap_rainbow', dict(n=5, stretcher='reduced_green'), 'vacumm_rainbow'), 
+    ('cmap_magic', dict(negative=True), 'vacumm_magic-neg'),
+    ('cmap_rainbow', dict(n=5, stretcher='reduced_green'), 'vacumm_rainbow'),
 ]
 
 # Autodoc (python)
@@ -338,6 +339,11 @@ programoutput_use_ansi = True # default is: False
 
 # Fortran autodoc
 fortran_src = [os.path.abspath('../../../lib/python/vacumm/misc/grid/interp.f90')]
+
+# Docversions
+docversions_subpath_doc = 'doc/sphinx'
+docversions_index_html = 'contents.html'
+
 
 def setup(app):
     app.add_object_type('confval', 'confval',

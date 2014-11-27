@@ -46,6 +46,7 @@ import numpy as N, MV2, cdms2, cdtime
 import pylab as P, operator
 from _geoslib import Point, LineString, Polygon
 from matplotlib.collections import LineCollection, PolyCollection
+from mpl_toolkits.basemap import Basemap
 
 from ..__init__ import VACUMMError
 
@@ -2028,11 +2029,15 @@ class Shapes(object):
     POINTS = POINT = 0
     LINES = LINE = 1
     POLYGONS = POLYS = POLY = POLYGON = 2
+    INPUT_POINTS = 1
+    INPUT_MULTIPOINTS = 8
+    INPUT_POLYLINES = 3
+    INPUT_POLYGONS = 5
     def __init__(self, input, m=None, proj=False, inverse=False, clip=True, shapetype=None,
         min_area=None, sort=True, reverse=True, samp=1):
 
         # Inits
-        if isinstance(input, list) and input: input = input[0]
+#        if isinstance(input, list) and input: input = input[0]
         from_file = isinstance(input, str)
         default_proj = None
 
@@ -2048,11 +2053,13 @@ class Shapes(object):
                 from mpl_toolkits.basemap.shapefile import Reader
                 newreader = True
                 shp = Reader(input)
+                input_type = shp.shapeType
             except Exception, e:
                 print>>sys.stderr, 'Cannot read %s:\n%s\nTrying with shapelib'%(input, e)
                 from shapelib import ShapeFile
                 newreader = False
                 shp = ShapeFile(input)
+                input_type = shp.info()[1]
             self._prefix = input
 #           dbf = dbflib.open(input)
             if hasattr(m, 'map'): m = m.map
@@ -2062,12 +2069,11 @@ class Shapes(object):
                 default_proj = None
             self._info = []
 
-        elif isinstance(input, list): # From coordinates
-
+        elif isinstance(input, (list, N.ndarray)): # From coordinates
             in_coords = input
             self._m = m
             default_proj = m
-            self._type = 5 if not len(in_coords) or in_coords[0].ndim==2 else 1
+            input_type = 5 if not len(in_coords) or in_coords[0].ndim==2 else 1
             self._info = []
 
         else:
@@ -2076,22 +2082,21 @@ class Shapes(object):
             in_coords = input.get_data(proj=False)
             self._m = input._m # overwrite m keyword
             default_proj = input._proj
-            self._type = [1, 3, 5][input._type]
+            input_type = [Shapes.INPUT_POINTS, Shapes.INPUT_POLYLINES,
+                Shapes.INPUT_POLYGONS][input._type]
             self._info = input._info
 
         # Get coordinates
         if from_file:
             if newreader:
-                self._type = shp.shapeType
                 nshapes = shp.numRecords
             else:
-                self._type = shp.info()[1]
                 nshapes = shp.info()[0]
         else:
             nshapes = 1
         coords = []
-        if self._type in [1,8]: # A Point or MultiPoint file
-            if shapetype is not None and shapetype != 0:
+        if input_type in [Shapes.INPUT_POINTS, Shapes.INPUT_MULTIPOINTS]: # A Point or MultiPoint file
+            if shapetype is not None and shapetype != self.POINTS:
                 raise TypeError, 'Your shape type is not point'
             self._type = self.POINTS
 
@@ -2111,27 +2116,28 @@ class Shapes(object):
 
 #               if from_file: self._info.append(dbf.read_record(iobj))
 
-        elif self._type in [3, 5]: # A Polyline or Polygon file
+        elif input_type in [Shapes.INPUT_POLYLINES, Shapes.INPUT_POLYGONS]: # A Polyline or Polygon file
 
             # Shape type
             if shapetype is not None:
-                if shapetype == 0:
+                if shapetype == Shapes.POINTS:
                     raise TypeError, 'Your shape type is point, not polyline or polygon'
                 else:
                     self._type = shapetype
             else:
-                if self._type==3:
-                    self._type = self.LINES
+                if input_type==Shapes.INPUT_POLYLINES:
+                    self._type = Shapes.LINES
                 else:
-                    self._type = self.POLYGONS
+                    self._type = Shapes.POLYGONS
 
             # Loop on shape groups
             for iobj in xrange(nshapes):
                 if from_file:
                     if newreader:
                         obj = shp.shapeRecord(iobj).shape
-                        nparts = len(obj.parts)
                         all_points = obj.points
+                        if len(all_points)==0: continue
+                        nparts = len(obj.parts)
                         if nparts==1:
                             all_polys = [all_points]
                         else:
@@ -2276,10 +2282,10 @@ class Shapes(object):
             if self._m is not None:
                 if self._m_projsync:
                     proj = False
-                    data = N.asarray([m.xmin, m.ymin, m.xmax, m.ymax])
+                    data = N.asarray([self._m.xmin, self._m.ymin, self._m.xmax, self._m.ymax])
                 else:
-                    xx, yy = self._m([m.xmin, m.xmax, m.xmax, m.xmin],
-                        [m.ymin, m.ymin, m.ymax, m.ymax], inverse=True)
+                    xx, yy = self._m([self._m.xmin, self._m.xmax, self._m.xmax, self._m.xmin],
+                        [self._m.ymin, self._m.ymin, self._m.ymax, self._m.ymax], inverse=True)
                     data = N.asarray([xx, yy])
                 return create_polygon(data, proj=False)
 
@@ -2617,6 +2623,7 @@ class Shapes(object):
             kwmap.update(show=False, axes=ax, title=title)
             m = map2(**kwmap)
             ax = m.axes
+        isbm = isinstance(m, Basemap)
 
         # Plot on what?
         if ax is None:
@@ -2640,16 +2647,20 @@ class Shapes(object):
                 cc = LineCollection(data, **kwlines)
             ax.add_collection(cc)
             oo.append(cc)
+            if isbm:
+                m.set_axes_limits(ax=ax)
 
         # Points
         if points:
             cc = ax.scatter(xx, yy, **kwpoints)
             oo.append(cc)
+            if isbm:
+                m.set_axes_limits(ax=ax)
 
         # Special properties
         for key in ['label']:
-            if hasattr(kwargs, key):
-                getattr(cc, 'set_'+key, kwargs[key])
+            if key in kwargs and hasattr(cc, 'set_'+key):
+                getattr(cc, 'set_'+key)(kwargs[key])
 
         # Finalize
         if title:

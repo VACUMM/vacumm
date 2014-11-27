@@ -9,6 +9,7 @@ In development
 - Plot.add_point() like methods now accept time arguments if applicable.
 - Tuples can be used to specify in time in time creation routines of atime.
 - Fixed bugs: list_forecast_files, Plot.add_lon/lat.
+- Fixed: ConfigManager.opt_parse.
 
 Version 2.4.0
 ==============

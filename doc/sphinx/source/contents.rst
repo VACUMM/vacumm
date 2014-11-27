@@ -5,6 +5,7 @@
 
     **Version :** |release|
 
+    .. docversions::
 
     **Table of content:**
 
@@ -16,7 +17,7 @@
     library/index
     appendix
     contact
-    
+
 .. only:: html
 
     **Indices and search**

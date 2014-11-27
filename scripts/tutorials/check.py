@@ -1,35 +1,39 @@
 #!/usr/bin/env python
 """This script run all tutorial script to check if they work
 
-Help: 
+Help:
 
     check --help
 """
 
 # Parse arguments
-from optparse import OptionParser, sys, os
-parser = OptionParser(usage="Usage: %prog [options] [pattern]",
+from argparse import ArgumentParser
+import sys, os
+parser = ArgumentParser(
     description="Check the execution of tutorials.\n\n[pattern] defaults to *.py.",)
-parser.add_option('-e','--exclude', action='append', dest="exclude", 
+parser.add_argument('pattern', default='*.py', help='file pattern  [%(default)s]',
+    nargs='*')
+parser.add_argument('-e','--exclude', action='append',
     help='add a glob pattern to exclude')
-parser.add_option('-l','--loglevel', action='store', dest="loglevel", 
-    choices=['debug', 'info', 'error'], default='info', 
-    help='logging level to console [%default]')
-options, args = parser.parse_args()
-if len(args)==0:
-    args = ['*.py']
+parser.add_argument('-l','--loglevel',
+    choices=['debug', 'info', 'error'], default='info',
+    help='logging level to console [%(default)s]')
+parser.add_argument('-c', '--cfgfile', default='check.cfg', help='configuration file')
+args = parser.parse_args()
 
 # Retreive the list of scripts
 include = []
 from glob import glob
 # - include
-for pat in args:
+if not isinstance(args.pattern, list):
+    args.pattern = [args.pattern]
+for pat in args.pattern:
     include.extend(glob(pat))
 include = [os.path.abspath(fn) for fn in include]
 # - exclude
-if options.exclude is not None:
+if args.exclude is not None:
     exclude = []
-    for pat in options.exclude:
+    for pat in args.exclude:
         exclude.extend(glob(pat))
     exclude = [os.path.abspath(fn) for fn in exclude] + [os.path.abspath(__file__)]
     files = []
@@ -42,27 +46,51 @@ files.sort()
 
 # Setup the logger
 from vacumm.misc.io import Logger
-logger = Logger('CHECK', 
-    logfile='.'.join([os.path.splitext(__file__)[0], 'log']), 
-    cfmt='[%(name)s] %(message)s', 
-    ffmt='%(asctime)s: [%(name)s] %(message)s', 
+logger = Logger('CHECK',
+    logfile='.'.join([os.path.splitext(__file__)[0], 'log']),
+    cfmt='[%(name)s] %(message)s',
+    ffmt='%(asctime)s: [%(name)s] %(message)s',
     full_line=True,
 )
-logger.set_loglevel(console=options.loglevel, file='debug')
-        
+logger.set_loglevel(console=args.loglevel, file='debug')
+
+# Configuration: arguments to scripts
+from ConfigParser import SafeConfigParser
+from vacumm.config import data_sample
+import re
+cfg = SafeConfigParser()
+cfg.read(args.cfgfile)
+re_data_sample = re.compile(r'(data_sample\([^\)]+\))', re.I)
+def convert_data_samples(argline, split=True):
+    aargs = re_data_sample.split(argline)
+    for i, arg in enumerate(aargs):
+        m = re_data_sample.match(arg)
+        if m:
+            arg = eval(arg)
+        aargs[i] = arg
+    if split: return aargs
+    return ''.join(aargs)
+def get_args(scriptname, split=True):
+    if scriptname.endswith('.py'):
+        scriptname = scriptname[:-3]
+    scriptname = os.path.basename(scriptname)
+    if cfg.has_option('args', scriptname):
+        argline = cfg.get('args', scriptname)
+        return convert_data_samples(argline, split=split)
+
+
 # Run them all
 import subprocess
 igood = 0
 ibad = 0
-from vacumm.config import data_sample
 for script in files:
-    if os.path.realpath(script)==os.path.realpath(__file__): 
+    if os.path.realpath(script)==os.path.realpath(__file__):
         logger.debug('%s: %s', os.path.basename(script), 'SKIPPED')
         continue
-    out, err = subprocess.Popen(["python", script,  '--var=temp', '--zoom-lat-min=48',  data_sample('mars3d.xy.nc')], 
+    out, err = subprocess.Popen(["python", script] + (get_args(script) or []),
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     script = os.path.basename(script)
-    if len(err)==0 or ('warning' in err.lower() and 'raise' not in err):
+    if len(err)==0 or 'Traceback'  not in err:
         logger.info('%s: %s', script, 'OK')
         igood +=1
     else:
