@@ -1,33 +1,33 @@
 # -*- coding: utf8 -*-
 """Variables and utilities about colors and color maps
 
-List of all available colormaps in matplotlib, including VACUMM colormaps 
+List of all available colormaps in matplotlib, including VACUMM colormaps
 (plotted with :func:`plot_cmaps`)
 
 .. image:: misc-color-cmaps.png
 
 """
 # Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
-# 
+#
 # raynaud@actimar.fr
-# 
-# 
+#
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -35,13 +35,13 @@ List of all available colormaps in matplotlib, including VACUMM colormaps
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-# 
+#
 import re
 import os
 import glob
@@ -87,18 +87,18 @@ _cpt_dir = os.path.join(os.path.dirname(__file__), 'cpt')
 RGB = ColorConverter().to_rgb
 RGBA = ColorConverter().to_rgba
 
-__all__ = ['cmap_custom', 'cmap_bwr', 'cmap_bwre', 'cmap_br', 'cmap_wr', 'cmap_wre', 'cmap_bathy', 
-    'cmap_jete', 'cmap_ajete', 'cmap_jets', 'cmap_wjets', 'cmap_ajets', 'cmap_smoothed_steps', 
-    'cmap_smoothed_regular_steps', 'cmap_ss', 'cmap_steps', 'cmap_regular_steps', 'cmap_rs', 
+__all__ = ['cmap_custom', 'cmap_bwr', 'cmap_bwre', 'cmap_br', 'cmap_wr', 'cmap_wre', 'cmap_bathy',
+    'cmap_jete', 'cmap_ajete', 'cmap_jets', 'cmap_wjets', 'cmap_ajets', 'cmap_smoothed_steps',
+    'cmap_smoothed_regular_steps', 'cmap_ss', 'cmap_steps', 'cmap_regular_steps', 'cmap_rs',
     'cmap_wjet', 'cmap_pe', 'cmap_grey', 'show_cmap', 'cmaps_mpl', 'cmaps_gmt', 'cmap_gmt',
     'cmaps_vacumm', 'print_cmaps_gmt',  'darken', 'whiten', 'to_shadow', 'StepsNorm',
-    'bistre', 'land', 'jean_pierre', 'decimaitre', 'RGB', 'RGBA', 'cmap_srs', 'cmap_rs', 
-    'cmap_linear', 'ocean', 'sea', 'plot_cmap', 'plot_cmaps', 'get_cmap', 'simple_colors', 
-    'cmap_land', 'cmap_topo', 'auto_cmap_topo', 'cmap_jet', 'cmap_rainbow', 'rainbow', 
-    'cmap_magic', 'cmap_mg', 'RangedLinearSegmentedColormap','Scalar2RGB', 'cmap_chla', 
+    'bistre', 'land', 'jean_pierre', 'decimaitre', 'RGB', 'RGBA', 'cmap_srs', 'cmap_rs',
+    'cmap_linear', 'ocean', 'sea', 'plot_cmap', 'plot_cmaps', 'get_cmap', 'simple_colors',
+    'cmap_land', 'cmap_topo', 'auto_cmap_topo', 'cmap_jet', 'cmap_rainbow', 'rainbow',
+    'cmap_magic', 'cmap_mg', 'RangedLinearSegmentedColormap','Scalar2RGB', 'cmap_chla',
     'cmap_previmer', 'cmap_rnb2_hymex','cmap_rainbow_sst_hymex','cmap_dynamic_cmyk_hymex',
-    'cmap_white_centered_hymex','cmap_red_tau_hymex', 'cmap_previmer2', 'cmap_ssec', 
-    'cmap_ncview_rainbow', 'cmap_eke', 'cmap_rb', 'cmap_currents', 'cmaps_registered', 
+    'cmap_white_centered_hymex','cmap_red_tau_hymex', 'cmap_previmer2', 'cmap_ssec',
+    'cmap_ncview_rainbow', 'cmap_eke', 'cmap_rb', 'cmap_currents', 'cmaps_registered',
     'cmap_br2']
 __all__.sort()
 
@@ -106,41 +106,41 @@ __all__.sort()
 # ----------
 def rainbow(n=None, mode='auto', first=None, last=None, middle=None, stretcher=None):
     """Get a list of nice rainbow colors
-    
+
     :Params:
-    
+
         - **n**, optional: Number of requested colors. It should be > 1. Defaults to ``None``
         - **mode**, optional: Mode for choosing extreme colors.
-        
+
             - ``"strict"``: Blue and red are first and last colors.
             - ``"first"``: ``(.5, 0, 1)`` is inserted as first color.
             - ``"last"``: ``(1, 0, .5)`` is inserted as last color.
             - ``"auto"`` or None: Switch to ``"extended"`` if ``n>6``.
             - ``"extended"`` or anything else: Like ``"first"`` and ``"last"``.
-        - **stretcher**, optional: Function that alter color steps 
-          from their range [0.->1.] to [0.->1.]. This must be used 
+        - **stretcher**, optional: Function that alter color steps
+          from their range [0.->1.] to [0.->1.]. This must be used
           for example to enhance a part of the colormap.
           Its value may also be a predefined function:
-          
+
             - ``"reduced_green"``: Shrink the green band.
-            
+
           .. note::
-          
+
             This function must return a monotonic array of increasing
             values included in the [0,1] interval.
-          
-    
+
+
     """
     # Special cases
     if n is None: n=5
     if n==0: return []
     if n==1: return ['.5']
-    
+
     # Base colors
     rbcols = [(0., 0., 1.), (0., 1., 1.), (0., 1., 0.), (1., 1., 0.), (1., 0., 0.)]
     rbfirst = (.5, 0., 1.)
     rblast = (1., 0., .5)
-    
+
     # Mode
     if mode is None: mode = 'auto'
     if mode == 'auto':
@@ -155,7 +155,7 @@ def rainbow(n=None, mode='auto', first=None, last=None, middle=None, stretcher=N
             rbcols = [rbfirst]+rbcols
         else:
             rbcols = [rbfirst]+rbcols+[rblast]
-            
+
     # Rainbow colors expanded to n colors
     base_cmap = cmap_custom(_regular_(rbcols, steptype='bounds'), ncol=512)
     positions = N.linspace(0., 1., n)
@@ -164,7 +164,7 @@ def rainbow(n=None, mode='auto', first=None, last=None, middle=None, stretcher=N
     if callable(stretcher):
         positions = N.clip(stretcher(positions), 0, 1)
     colors = [base_cmap(p)[:3] for p in positions]
-    
+
     # Special values
     if first is not None:
         colors[0] = first
@@ -172,7 +172,7 @@ def rainbow(n=None, mode='auto', first=None, last=None, middle=None, stretcher=N
         colors[-1] = last
     if middle is not None and n%2:
         colors[int(n/2)] = middle
-    
+
     return colors
 
 def _stretcher_reduced_green_(x):
@@ -191,20 +191,20 @@ def _nlev_(n):
 
 def cmap_rainbow(n=None, name='rainbow', smoothed=True, mode='auto', **kwargs):
     """Rainbow colormap
-    
+
     :Params:
-    
+
         - **n**, optional: Number of colors used (keyword passed to :func:`rainbow`).
         - **stretcher**, **first**, **last**, **middle**, optional: See :func:`rainbow`.
         - **rainbow_<param>**, optional: ``<param>`` is passed to func:`rainbow`
         - Extra keywords are passed to :func:`cmap_rs` or :func:`cmap_srs`
-        
+
     :Example:
-    
+
         >>> cmap = cmap_magic(10, first='.5', mode='last')
         >>> cmap = cmap_magic([5.,6.,7,8,9], stretcher='reduced_green')
- 
-        
+
+
     :Sample: .. image:: misc-color-vacumm_rainbow.png
     """
     from misc import kwfilter
@@ -225,30 +225,30 @@ def cmap_rainbow(n=None, name='rainbow', smoothed=True, mode='auto', **kwargs):
 def cmap_rb(*args, **kwargs):
     """Shortcut to :func:`cmap_rainbow`"""
     return cmap_rainbow(*args, **kwargs)
-    
+
 def cmap_magic(n=None, stretch = 0.4, mode='normal', white='.95', name='magic', **kwargs):
     """Magic rainbow colormap
-    
+
     Based upon :func:`cmap_rainbow` with specificities:
-    
+
         - ``n`` may be for example an array of levels.
         - ``smoothed`` is set to ``False`` by default.
         - ``stretch`` is set negative by default (``-attenuation``).
-    
+
     :Params:
-    
-        - **n**, optional: Number of colors used or 
+
+        - **n**, optional: Number of colors used or
           object with a length (like an array of levels).
         - Extra keywords are passed to :func:`rainbow`
-        
+
     :Example:
-    
+
         >>> ssta = MV2.arange(-2.6, 3.1, .1)
         >>> cmap = cmap_magic(ssta, anomaly=True)
         >>> cmap = cmap_magic(len(ssta))
-       
+
     :Samples:
-    
+
         - .. image:: misc-color-vacumm_magic.png
         - .. image:: misc-color-vacumm_magic-n10.png
         - .. image:: misc-color-vacumm_magic-anom.png
@@ -278,7 +278,7 @@ def cmap_magic(n=None, stretch = 0.4, mode='normal', white='.95', name='magic', 
     elif mode.startswith('sym'):
         keepc = broadcast(None, n)
         mid = int(n/2)
-        if n%2: # odd 
+        if n%2: # odd
             kwargs['lstretch'] = [0]*mid+broadcast(-stretch, mid+1)
             kwargs['rstretch'] = kwargs['lstretch'][::-1]
             kwargs['middle'] = '.8'
@@ -291,17 +291,17 @@ def cmap_magic(n=None, stretch = 0.4, mode='normal', white='.95', name='magic', 
     if pos is not None:
         n = pos
     return cmap_rainbow(n, name=name, **kwargs)
-    
+
 def cmap_mg(*args, **kwargs):
     """Shortcut to :func:`cmap_magic`"""
     return cmap_magic(*args, **kwargs)
 
 def cmap_custom(colors, name='mycmap', ncol=256, ranged=False, register=True, **kwargs):
     """Quick colormap creation
-    
+
     :Params:
-    
-        - **colors**: Like [(color1, position1),(color2, position2), etc...] or 
+
+        - **colors**: Like [(color1, position1),(color2, position2), etc...] or
           dict(red=((pos1,r1a,r1b), (pos2,r2a,r2b)),etc...)
         - **ncol/N**: Discretization.
         - **register**: Register the colormap into matplotlib to be accessible with its name?
@@ -342,11 +342,11 @@ def cmap_linear(c, **kwargs):
 # blue -> white -> red
 def cmap_bwr(wpos=0.5, wcol='w', name='vacumm_bwr'):
     """Blue->white->red colormap
-    
+
     :Params:
-    
-        - *white*: relative position of white color in the map [default: 0.5]   
-    
+
+        - *white*: relative position of white color in the map [default: 0.5]
+
     :Sample: .. image:: misc-color-vacumm_bwr.png
     """
     return cmap_custom((('b', 0), (wcol, wpos), ('r', 1)), name)
@@ -355,37 +355,37 @@ def cmap_bwr(wpos=0.5, wcol='w', name='vacumm_bwr'):
 # blue -> white -> red for Extremes : violet and pink and ends
 def cmap_bwre(wpos=0.5,gap=0.1, wcol='w', name='vacumm_bwre', **kwargs):
     """Returns a violet->blue->white->red colormap->yellow
-    
+
     - **white**, optional: relative position of white color in the map [default: 0.5]
     - **gap**, optional: Relative width of the pure central white gap [default: 0.1]
-    
+
     :Sample: .. image:: misc-color-vacumm_bwre.png
     """
     wstart = wpos*(1-gap)
     wstop = wpos + (1.-wpos)*gap
-    return  cmap_custom((((1, 0, 1), 0), ('b', .1), (wcol, wstart), 
+    return  cmap_custom((((1, 0, 1), 0), ('b', .1), (wcol, wstart),
         (wcol, wstop), ('r', .9), ((1, 1, 0), 1)), name, **kwargs)
 
 # blue -> red
 def cmap_br(sep=0.5, name='vacumm_br', **kwargs):
     """Blue->red colormap
-    
+
     :Params:
-    
+
         - **sep**, optional: relative position of the blue/red transition in the map [default: 0.5]
-    
+
     :Sample: .. image:: misc-color-vacumm_br.png
     """
     return cmap_custom( (('r', 0), ((.5, 0, .5), sep), ('b', 1)), name, **kwargs)
-    
+
 def cmap_br2(sep=0.5, white=.7, name="vacumm_br2", **kwargs):
     """Blue->light blue|light red-> red
-    
+
     :Params:
-    
+
         - **sep**, optional: relative position of the blue/red transition in the map [default: 0.5]
         - **white**, optional: Strenght of the whitening (see :func:`whiten`).
-    
+
     :Sample: .. image:: misc-color-vacumm_br.png
     """
     bsep = whiten('b', white)
@@ -399,7 +399,7 @@ def cmap_br2(sep=0.5, white=.7, name="vacumm_br2", **kwargs):
 # white -> red
 def cmap_wr(name='vacumm_wr', **kwargs):
     """White->red colormap
-    
+
     :Sample: .. image:: misc-color-vacumm_wr.png
     """
     return cmap_custom((('w', 0), ('r', 1)), name, **kwargs)
@@ -407,7 +407,7 @@ def cmap_wr(name='vacumm_wr', **kwargs):
 # white -> red
 def cmap_wre(name='vacumm_wre', **kwargs):
     """White->red->yellow colormap for positive extremes
-    
+
     :Sample: .. image:: misc-color-vacumm_wre.png
     """
     cdict = {'red':  ((0.,1.,1.),(.8,1.,1.),(1.,1.,1.)),
@@ -421,7 +421,7 @@ vi = 0.35 # violet
 _colors_bathy = (('k',0), ((0,.1,.9),vi), ((0,.8,.8),cy), ((.9,.9,.6),.9), ((.9,.9,.8),1))
 def cmap_bathy(start=0., stop=1., name='vacumm_bathy', **kwargs):
     """Colormap for bathymetry maps
-    
+
     :Sample: .. image:: misc-color-vacumm_bathy.png
     """
     this_cmap = cmap_custom(_colors_bathy, name, ranged=True, start=start, stop=stop, **kwargs)
@@ -429,15 +429,15 @@ def cmap_bathy(start=0., stop=1., name='vacumm_bathy', **kwargs):
     this_cmap.set_under(bistre)
     this_cmap.set_over(bistre)
     return this_cmap
-    
+
 _colors_land = ((_colors_bathy[-1][0], 0), ('#145D0A',.2),('#62CF60', .4), ('#A1A156',.6),('#6D461D', .85), ('#eeeeff', 1.))
 def cmap_land(start=0., stop=1., name='vacumm_land', **kwargs):
     """Colormap for land maps
-    
+
     :Params:
-    
+
         - **start/stop**, optional: Positions for a zoom in colormap.
-    
+
     :Sample: .. image:: misc-color-vacumm_land.png
     """
     this_cmap = cmap_custom(_colors_land, name, ranged=True, start=start, stop=stop, **kwargs)
@@ -446,24 +446,24 @@ def cmap_land(start=0., stop=1., name='vacumm_land', **kwargs):
     this_cmap.set_over(ocean)
     return this_cmap
 
-def cmap_topo(start=0., stop=1., name='vacumm_topo', zero=.5, over=_colors_bathy[0][0], 
+def cmap_topo(start=0., stop=1., name='vacumm_topo', zero=.5, over=_colors_bathy[0][0],
     under=_colors_land[-1][0], bad='0.5', **kwargs):
     """Colormap for bathy+land maps
-    
+
     :Params:
-    
+
         - **start/stop**, optional: Positions for a zoom in colormap.
         - **zero**, optional: Position of 0-depth color.
-        - **over**, optional: Color for values over maximal range 
+        - **over**, optional: Color for values over maximal range
           (see :meth:`~matplotlib.colors.Colormap.set_over`).
-        - **under**, optional: Color for values under maximal range 
+        - **under**, optional: Color for values under maximal range
           (see :meth:`~matplotlib.colors.Colormap.set_under`).
         - **bad**, optional: Color for bad values
           (see :meth:`~matplotlib.colors.Colormap.set_bad`).
-    
+
     :Sample: .. image:: misc-color-vacumm_topo.png
-    
-    :See also: :func:`cmap_bathy` :func:`cmap_land` 
+
+    :See also: :func:`cmap_bathy` :func:`cmap_land`
     """
     mycolors = tuple([(c[0], zero*c[1]) for c in _colors_bathy])
     mycolors += tuple([(c[0], zero+(1-zero)*c[1]) for c in _colors_land[1:]])
@@ -472,20 +472,20 @@ def cmap_topo(start=0., stop=1., name='vacumm_topo', zero=.5, over=_colors_bathy
     this_cmap.set_under(under)
     this_cmap.set_over(over)
     return this_cmap
- 
+
 def auto_cmap_topo(varminmax=(0., 1.), gzoom=1., xzoom=1., **kwargs):
     """Adjusted :func:`cmap_topo` colormap so that altitude 0 fall on center of full colormap by defaut
-    
+
     :Params:
-    
+
         - **varminmax**: Define the min and max of topo ; it can be either :
-            
+
             - a topo variable (array) from which min and max are computed
             - a tuple of (min, max) fo topo
-            
+
         - **gzoom**, optional: Global zoom in the colormap (>1.)
-        - **xzoom**, optional: Zoom out 
-        
+        - **xzoom**, optional: Zoom out
+
             - the land colormap if more ocean,
             - the ocean colormap if more land.
     """
@@ -519,12 +519,12 @@ def auto_cmap_topo(varminmax=(0., 1.), gzoom=1., xzoom=1., **kwargs):
     stop = zero + (stop-zero)/gzoom
     kwargs.setdefault('register', False)
     return cmap_topo(start, stop, 'vacumm_auto_cmap_topo', zero=zero, **kwargs)
-    
-    
+
+
 
 def cmap_jete(name='vacumm_jete', **kwargs):
     """Jet colormap with extremes
-    
+
     :Sample: .. image:: misc-color-vacumm_jete.png
     """
     cdict =   {'red':((0.,.75,.75),(0.22,0,0),  (0.4,0,0),(0.6,1,1),        (.78,1,1),  (1,1,1)),
@@ -534,7 +534,7 @@ def cmap_jete(name='vacumm_jete', **kwargs):
 
 def cmap_ajete(w=.02, name='vacumm_ajete', **kwargs):
     """Jet colormap with white at center and extremes, for anomaly plots
-    
+
     :Sample: .. image:: misc-color-vacumm_ajete.png
     """
     cdict =   {'red':((0.,.75,.75),(0.21,0,0),  (0.33,0,0),(.5-w/2,1,1),(.5+w/2,1,1),(0.67,1,1),        (.79,1,1),  (1,1,1)),
@@ -554,15 +554,15 @@ def cmap_jet(smoothed=False, name='vacumm_jet', **kwargs):
 
 def cmap_jets(name='vacumm_jets', **kwargs):
     """Jet colormap with smoothed steps
-    
+
     :Params: Passed to :func:`cmap_smoothed_regular_steps`
-     
+
     :Samples:
-    
+
         - .. image:: misc-color-vacumm_jets.png
         - .. image:: misc-color-vacumm_jets+60.png
         - .. image:: misc-color-vacumm_jets-60.png
-    
+
     :See also: :func:`cmap_smoothed_regular_steps`
     """
     colors = [(.75,0,1),(0,0,1),(0,1,1),(0,1,0),(1,1,0),(1,.5,0),(1,0,0)]
@@ -571,12 +571,12 @@ def cmap_jets(name='vacumm_jets', **kwargs):
 
 def cmap_wjets(wcol=".95", name='vacumm_wjets', **kwargs):
     """White jet colormap with smoothed steps
-    
-    :Params: 
-    
+
+    :Params:
+
         - **wcol**, optional: color of "white"
         - other options are passed to :func:`cmap_smoothed_regular_steps`
-    
+
     :Sample: .. image:: misc-color-vacumm_wjets.png
     """
 ##  colors = [(1,1,1),(0,0,1),(0,1,1),(0,1,0),(1,1,0),(1,.5,0),(1,0,0),(1,0,.75)]
@@ -588,12 +588,12 @@ def cmap_wjets(wcol=".95", name='vacumm_wjets', **kwargs):
 
 def cmap_ajets(wcol="w", name='vacumm_ajets', **kwargs):
     """Jet colormap with smoothed steps and white at center (for anomalies)
-    
-    :Params: 
-    
+
+    :Params:
+
         - **wcol**, optional: color of "white"
         - other options are passed to :func:`cmap_smoothed_regular_steps`
-    
+
     :Sample: .. image:: misc-color-vacumm_ajets.png
     """
 ##  colors = [(.75,0,1),(0,0,1),(0,1,1),(0,1,0),(1,1,0),(1,.5,0),(1,0,0)]
@@ -610,19 +610,19 @@ def _stretch_(value, stretch):
     if stretch == 0: return value
     if stretch < 0:
         return (1+stretch) * value
-    return value + stretch * (1-value) 
-    
-def cmap_smoothed_steps(colors, stretch=None, rstretch=0, lstretch=0, name='cmap_css', 
+    return value + stretch * (1-value)
+
+def cmap_smoothed_steps(colors, stretch=None, rstretch=0, lstretch=0, name='cmap_css',
     asdict=False, **kwargs):
     """Smoothed steps
-    
+
     :Params:
-    
+
         - **colors**, optional: Central positions for each colors [(col1,pos1),...]
-    
+
    :See also:
-    
-        :func:`cmap_steps` :func:`cmap_regular_steps` :func:`cmap_smoothed_regular_steps` 
+
+        :func:`cmap_steps` :func:`cmap_regular_steps` :func:`cmap_smoothed_regular_steps`
     """
     if stretch is not None: # compat
         if isinstance(stretch, tuple):
@@ -653,11 +653,11 @@ def cmap_smoothed_steps(colors, stretch=None, rstretch=0, lstretch=0, name='cmap
         rr.append((pos,r,r))
         gg.append((pos,g,g))
         bb.append((pos,b,b))
-            
+
     cdict = {'red':rr,'green':gg,'blue':bb}
     if asdict: return cdict
     return cmap_custom(cdict, name, **kwargs)
-    
+
 def cmap_ss(*args, **kwargs):
     """Shortcut to :func:`cmap_smoothed_steps`"""
     return cmap_smoothed_steps(*args, **kwargs)
@@ -666,19 +666,19 @@ def cmap_ss(*args, **kwargs):
 
 def cmap_smoothed_regular_steps(colors, steptype='center', **kwargs):
     """Smoothed regular steps
-    
+
     :Params:
-    
+
         - **colors**: [(r1,g1,b1),...]
         - Other keywords are passed to :func:`cmap_smoothed_steps()`
-    
+
     :See also:
-    
-        :func:`cmap_steps` :func:`cmap_smoothed_steps` :func:`cmap_regular_steps` 
+
+        :func:`cmap_steps` :func:`cmap_smoothed_steps` :func:`cmap_regular_steps`
         (:func:`cmap_regular_jets` for an example)
     """
     return cmap_smoothed_steps(_regular_(colors,steptype=steptype),**kwargs)
-    
+
 def cmap_srs(*args, **kwargs):
     """Shortcut to :func:`cmap_smoothed_regular_steps`"""
     return cmap_smoothed_regular_steps(*args, **kwargs)
@@ -701,12 +701,12 @@ def _regular_(colors, steptype='center', posmin=0., posmax=1.):
         rcolors.append((col,pos))
     return rcolors
 
-def cmap_steps(cols, stretch=None, lstretch=0., rstretch=0., keepc=None, name='cmap_steps', 
+def cmap_steps(cols, stretch=None, lstretch=0., rstretch=0., keepc=None, name='cmap_steps',
     **kwargs):
     """Colormap by steps
-    
+
     :Params:
-    
+
         - **cols**: [(col1,pos1),(col2,pos2),...]
         - **lstretch**, optional: Color darkening (<0) or whitening at start of steps (left)
         - **rstretch**, optional: Same but at end of steps (right)
@@ -714,10 +714,10 @@ def cmap_steps(cols, stretch=None, lstretch=0., rstretch=0., keepc=None, name='c
           it keeps center of steps intact, else it becomes a mean
           of left and right.
         - **ncol/N**: Discretization.
-    
+
     .See also:
-    
-        :func:`cmap_regular_steps` :func:`cmap_smoothed_steps` :func:`cmap_smoothed_regular_steps` 
+
+        :func:`cmap_regular_steps` :func:`cmap_smoothed_steps` :func:`cmap_smoothed_regular_steps`
     """
     if stretch is not None: # compat
         if isinstance(stretch, tuple):
@@ -739,7 +739,7 @@ def cmap_steps(cols, stretch=None, lstretch=0., rstretch=0., keepc=None, name='c
     apos = [p for (c, p) in cols]+[1.]
     for i,(col,pos) in enumerate(cols):
         r, g, b = RGB(col)
-        if i == 0: 
+        if i == 0:
             pos = 0.
         else:
             pr = _stretch_(pr, rstretch[i-1])
@@ -749,7 +749,7 @@ def cmap_steps(cols, stretch=None, lstretch=0., rstretch=0., keepc=None, name='c
         gg.append((pos, pg, _stretch_(g, lstretch[i])))
         bb.append((pos, pb, _stretch_(b, lstretch[i])))
         if keepc[i] is None:
-            keepc[i] = lstretch[i] != 0 and rstretch[i] != 0 
+            keepc[i] = lstretch[i] != 0 and rstretch[i] != 0
         if keepc[i]:
             rr.append((.5*(pos+apos[i+1]), r, r))
             gg.append((.5*(pos+apos[i+1]), g, g))
@@ -766,27 +766,27 @@ def cmap_steps(cols, stretch=None, lstretch=0., rstretch=0., keepc=None, name='c
 
 def cmap_regular_steps(colors, steptype='stair', **kwargs):
     """Colormap by regular steps
-    
+
     :Params:
-    
+
         - **cols**: [col1,col2,...]
         - **stretch**, optional: Color darkening (<0) or whitening within steps [default: -.6]
         - **steptype**, optional: 'center', 'stair' or 'bounds' [default: 'center']
         - Other keywords are passed to :func:`cmap_steps()`
-    
+
     :See also:
-    
-        :func:`cmap_steps` :func:`cmap_smoothed_steps` :func:`cmap_smoothed_regular_steps` 
-    """ 
+
+        :func:`cmap_steps` :func:`cmap_smoothed_steps` :func:`cmap_smoothed_regular_steps`
+    """
     return cmap_steps(_regular_(colors, steptype=steptype), **kwargs)
-    
+
 def cmap_rs(*args, **kwargs):
     """Shortcut to :func:`cmap_regular_steps`"""
     return cmap_regular_steps(*args, **kwargs)
 
 def cmap_wjet(wcol='.95', smoothed=True, name='vacumm_wjet', **kwargs):
     """jet colormap with white (or another color) at beginning
-    
+
     :Sample: .. image:: misc-color-vacumm_wjet.png
     """
     wcol = kwargs.get('first_color', wcol)
@@ -801,7 +801,7 @@ def cmap_wjet(wcol='.95', smoothed=True, name='vacumm_wjet', **kwargs):
 
 def cmap_pe(red=.8, name="vacumm_pe", **kwargs):
     """Colomap for positive extremes (white->grey->red)
-    
+
     :Sample: .. image:: misc-color-vacumm_pe.png
     """
     cdict = {'red':  ((0.,1.,1.),(red,.7,.7),(1.,1.,1.)),
@@ -811,7 +811,7 @@ def cmap_pe(red=.8, name="vacumm_pe", **kwargs):
 
 def cmap_grey(start=0, end=1., name="vacumm_grey", **kwargs):
     """Grey colormap from position ``start`` to position ``end``
-    
+
     :Sample: .. image:: misc-color-vacumm_grey.png
     """
     cdict = {'red':  ((0.,start,start),(1.,end,end)),
@@ -821,9 +821,9 @@ def cmap_grey(start=0, end=1., name="vacumm_grey", **kwargs):
 
 def cmap_chla(name='vacumm_chla', smoothed=True, **kwargs):
     """Colormap for Chlorophyll A
-    
+
     :Sample: .. image:: misc-color-vacumm_chla.png
-    
+
     :Source: IDL code from F. Gohin.
     """
     # From?
@@ -831,49 +831,49 @@ def cmap_chla(name='vacumm_chla', smoothed=True, **kwargs):
 #    cc = [(r/255.,  g/255., b/255.) for r, g, b in rgb]
 #    colors = _regular_(cc, steptype='bounds', posmax=220./256)
 #    colors.append(((200./255, )*3, 1.))
-    
+
     # From F. gohin (IDL)
-    param_red = N.array([0.00,0.00,0.00,0.00,0.00,0.53,0.45,0.35,0.48, 
-        0.43,0.53,0.67,0.80,0.50,0.60,0.72,0.80,0.87, 
-        0.43,0.60,0.12,0.00,0.00,0.00,0.00,0.00,0.00, 
-        0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.78,0.78, 
-        0.62,0.62,0.62,0.62,0.62,0.77,0.87,1.00,1.00, 
-        0.95,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00, 
-        1.00,1.00,1.00,0.87,0.75,0.60,0.53,0.65,0.72, 
-        0.82,0.92,1.00,1.00,1.00,1.00,0.87,0.80,0.72, 
+    param_red = N.array([0.00,0.00,0.00,0.00,0.00,0.53,0.45,0.35,0.48,
+        0.43,0.53,0.67,0.80,0.50,0.60,0.72,0.80,0.87,
+        0.43,0.60,0.12,0.00,0.00,0.00,0.00,0.00,0.00,
+        0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.78,0.78,
+        0.62,0.62,0.62,0.62,0.62,0.77,0.87,1.00,1.00,
+        0.95,1.00,1.00,1.00,1.00,1.00,1.00,1.00,1.00,
+        1.00,1.00,1.00,0.87,0.75,0.60,0.53,0.65,0.72,
+        0.82,0.92,1.00,1.00,1.00,1.00,0.87,0.80,0.72,
         0.65,0.60,0.57,0.57,0.93,0.80,0.70,0.50,0.40])
-    
-    param_green = N.array([0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00, 
-        0.45,0.55,0.70,0.80,0.80,0.87,0.95,0.97,0.97, 
-        0.97,0.97,0.97,0.97,0.97,0.97,0.97,1.00,0.88, 
-        0.75,0.60,0.55,0.65,0.75,0.85,0.93,0.78,0.96, 
-        0.70,0.70,0.70,0.70,0.00,0.88,0.95,1.00,1.00, 
-        0.95,1.00,1.00,0.95,0.90,0.83,0.75,0.65,0.58, 
-        0.50,0.30,0.00,0.00,0.00,0.00,0.38,0.50,0.58, 
-        0.68,0.78,0.85,0.00,0.65,0.80,0.72,0.65,0.57, 
+
+    param_green = N.array([0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,
+        0.45,0.55,0.70,0.80,0.80,0.87,0.95,0.97,0.97,
+        0.97,0.97,0.97,0.97,0.97,0.97,0.97,1.00,0.88,
+        0.75,0.60,0.55,0.65,0.75,0.85,0.93,0.78,0.96,
+        0.70,0.70,0.70,0.70,0.00,0.88,0.95,1.00,1.00,
+        0.95,1.00,1.00,0.95,0.90,0.83,0.75,0.65,0.58,
+        0.50,0.30,0.00,0.00,0.00,0.00,0.38,0.50,0.58,
+        0.68,0.78,0.85,0.00,0.65,0.80,0.72,0.65,0.57,
         0.50,0.35,0.28,0.17,0.92,0.80,0.70,0.50,0.40])
-    
-    param_blue = N.array([0.55,0.67,0.80,0.90,0.00,0.97,0.87,0.77,0.77, 
-        0.82,0.92,0.97,0.97,0.97,0.97,0.97,0.97,0.97, 
-        0.97,0.97,0.90,0.80,0.62,0.48,0.22,0.00,0.00, 
-        0.00,0.00,0.53,0.57,0.67,0.75,0.82,0.70,0.60, 
-        0.04,0.16,0.38,0.52,0.62,0.40,0.48,0.62,0.80, 
-        0.82,0.42,0.00,0.72,0.65,0.62,0.50,0.38,0.20, 
-        0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00, 
-        0.00,0.00,0.00,0.00,0.00,0.00,0.75,0.65,0.70, 
+
+    param_blue = N.array([0.55,0.67,0.80,0.90,0.00,0.97,0.87,0.77,0.77,
+        0.82,0.92,0.97,0.97,0.97,0.97,0.97,0.97,0.97,
+        0.97,0.97,0.90,0.80,0.62,0.48,0.22,0.00,0.00,
+        0.00,0.00,0.53,0.57,0.67,0.75,0.82,0.70,0.60,
+        0.04,0.16,0.38,0.52,0.62,0.40,0.48,0.62,0.80,
+        0.82,0.42,0.00,0.72,0.65,0.62,0.50,0.38,0.20,
+        0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,
+        0.00,0.00,0.00,0.00,0.00,0.00,0.75,0.65,0.70,
         0.60,0.50,0.40,0.18,0.93,0.80,0.70,0.50,0.40])
-    
-    indtab = N.array([51,127,124,118,117,116,114,113, 
-        112,108,109,107,106,94,98,99,100,101, 
-        102,104,92,86,85,83,84,81,80,79, 
-        78,77,76,75,74,73,72,70,69,68, 
+
+    indtab = N.array([51,127,124,118,117,116,114,113,
+        112,108,109,107,106,94,98,99,100,101,
+        102,104,92,86,85,83,84,81,80,79,
+        78,77,76,75,74,73,72,70,69,68,
         067,47, 47])
     indtab = -(indtab - 127)
-    
+
     param_red = param_red[indtab]
-    param_green = param_green[indtab] 
+    param_green = param_green[indtab]
     param_blue = param_blue[indtab]
-    
+
     colors = zip(param_red,param_green,param_blue)
 
     func = cmap_regular_steps if not smoothed else cmap_smoothed_regular_steps
@@ -881,14 +881,14 @@ def cmap_chla(name='vacumm_chla', smoothed=True, **kwargs):
 
 def cmap_previmer(name='vacumm_previmer', **kwargs):
     """Colormap from PREVIMER Website (http://www.previmer.org)
-    
+
     :Sample: .. image:: misc-color-vacumm_previmer.png
-    
+
     :Source: http://www.previmer.org (F. Lecornu, G. Charria)
     """
     post = N.array([2,3,4,5,6,7,8,9,10,10.5,11,11.5,12,12.5,13,13.5,14,14.5,15,15.5,16,16.5,17,17.5,18,18.5,19,19.5,20,20.5,21,22,23,24])
     norm = StepsNorm(post)
-    
+
     r1=N.array([212,191,165,153,97,83,65,48,34,12,8,24,42,56,75,90,105,122,132,134,175,216,250,252,252,252,252,245,231,213,200,185,167,152])
     r1 = r1/255.
     v1=N.array([154,117,95,66,29,46,61,78,94,114,134,150,165,182,199,216,231,244,250,250,250,250,247,231,207,174,141,118,101,87,70,55,40,22])
@@ -903,12 +903,12 @@ def cmap_previmer(name='vacumm_previmer', **kwargs):
 
 def cmap_previmer2(name='vacumm_previmer2', **kwargs):
     """Colormap from PREVIMER Website (http://www.previmer.org)
-    
-    Same as :func:`cmap_previmer` but extremes are used for 
+
+    Same as :func:`cmap_previmer` but extremes are used for
     :meth:`set_under` and :meth`set_over`.
-    
+
     :Sample: .. image:: misc-color-vacumm_previmer.png
-    
+
     :Source: http://www.previmer.org (F. Lecornu, G. Charria)
     """
     r = N.array([212,191,165,153,97,83,65,48,34,12,8,24,42,56,75,90,105,122,132,134,175,216,250,252,252,252,252,245,231,213,200,185,167,152.])
@@ -921,52 +921,52 @@ def cmap_previmer2(name='vacumm_previmer2', **kwargs):
     cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
-    return cmap    
+    return cmap
 
 def cmap_ssec(name='vacumm_ssec', **kwargs):
     """ Colormap from Ncview (http://fossies.org/dox/ncview-2.1.2/colormaps__ssec_8h_source.html)
-    
-    
+
+
     :Source: http://fossies.org/dox/ncview-2.1.2/colormaps__ssec_8h_source.html (ncview-2.1.2, G. Charria)
     """
-    
-    
-    d = N.array([0,0,45, 0,1,46, 0,2,47, 0,3,48, 0,5,49, 0,6,50, 0,7,51, 0,9,52, 
-    0,10,53, 0,11,54, 0,13,55, 0,14,56, 0,15,57, 0,17,58, 0,18,59, 0,19,60, 
-    0,21,62, 0,22,63, 0,23,64, 0,25,65, 0,26,66, 0,27,67, 0,29,68, 0,30,69, 
-    0,31,70, 0,33,71, 0,34,72, 0,35,73, 0,37,74, 0,38,75, 0,39,76, 0,40,77, 
-    0,42,79, 0,43,80, 0,44,81, 0,46,82, 0,47,83, 0,48,84, 0,50,85, 0,51,86, 
-    0,52,87, 0,54,88, 0,55,89, 0,56,90, 0,58,91, 0,59,92, 0,60,93, 0,62,94, 
-    0,63,96, 0,64,97, 0,66,98, 0,67,99, 0,68,100, 0,70,101, 0,71,102, 0,72,103, 
-    0,74,104, 0,75,105, 0,76,106, 0,77,107, 0,79,108, 0,80,109, 0,81,110, 0,83,111, 
-    0,84,113, 0,85,114, 0,87,115, 0,88,116, 0,89,117, 0,91,118, 0,92,119, 0,93,120, 
-    0,95,121, 0,96,122, 0,97,123, 0,99,124, 0,100,125, 0,101,126, 0,103,127, 0,104,128, 
-    0,105,130, 0,107,131, 0,108,132, 0,109,133, 0,111,134, 0,112,135, 0,113,136, 0,114,137, 
-    0,116,138, 0,117,139, 0,118,140, 0,120,141, 0,121,142, 0,122,143, 0,124,144, 0,125,145, 
-    0,126,147, 0,128,148, 0,129,149, 0,130,150, 0,132,151, 0,133,152, 0,134,153, 0,136,154, 
-    0,137,155, 0,138,156, 0,140,157, 0,141,158, 0,142,159, 0,144,160, 0,145,161, 0,146,162, 
-    0,148,164, 0,149,165, 0,150,166, 0,151,167, 0,153,168, 0,154,169, 0,155,170, 0,157,171, 
-    0,158,172, 0,159,173, 0,161,174, 0,162,175, 0,163,176, 0,165,177, 0,166,178, 0,167,180, 
-    0,169,181, 0,170,182, 0,171,183, 0,173,184, 0,174,185, 0,175,186, 0,177,187, 0,178,188, 
-    0,179,189, 0,181,190, 0,182,191, 0,183,192, 0,185,193, 0,186,194, 0,187,195, 0,188,197, 
-    0,190,198, 0,191,199, 0,192,200, 0,194,201, 0,195,202, 0,196,203, 0,198,204, 0,199,205, 
-    0,200,206, 0,202,207, 0,203,208, 0,204,209, 0,206,210, 0,207,211, 0,208,212, 0,210,214, 
-    0,211,215, 0,212,216, 0,214,217, 0,215,218, 0,216,219, 0,218,220, 0,219,221, 0,220,222, 
-    0,222,223, 0,223,224, 0,224,225, 0,225,226, 0,227,227, 0,228,228, 0,229,229, 8,230,222, 
-    17,231,214, 26,232,206, 34,233,198, 43,234,190, 52,235,182, 61,236,174, 70,236,166, 78,237,158, 
-    87,238,150, 96,239,143, 105,240,135, 114,241,127, 122,242,119, 131,242,111, 140,243,103, 149,244,95, 
-    157,245,87, 166,246,79, 175,247,71, 184,248,63, 193,248,55, 201,249,47, 210,250,39, 219,251,32, 
-    228,252,24, 237,253,16, 245,254,8, 254,254,0, 255,250,0, 255,245,0, 255,240,0, 255,236,0, 
-    255,231,0, 255,226,0, 255,221,0, 255,217,0, 255,212,0, 255,207,0, 255,202,0, 255,198,0, 
-    255,193,0, 255,188,0, 255,183,0, 255,179,0, 255,174,0, 255,169,0, 255,164,0, 255,160,0, 
-    255,155,0, 255,150,0, 255,145,0, 255,141,0, 255,136,0, 255,131,0, 255,126,0, 255,122,0, 
-    253,117,0, 249,113,0, 246,109,0, 242,105,0, 239,101,0, 236,97,0, 232,93,0, 229,89,0, 
-    225,85,0, 222,81,0, 219,77,0, 215,73,0, 212,69,0, 208,65,0, 205,61,0, 202,57,0, 
+
+
+    d = N.array([0,0,45, 0,1,46, 0,2,47, 0,3,48, 0,5,49, 0,6,50, 0,7,51, 0,9,52,
+    0,10,53, 0,11,54, 0,13,55, 0,14,56, 0,15,57, 0,17,58, 0,18,59, 0,19,60,
+    0,21,62, 0,22,63, 0,23,64, 0,25,65, 0,26,66, 0,27,67, 0,29,68, 0,30,69,
+    0,31,70, 0,33,71, 0,34,72, 0,35,73, 0,37,74, 0,38,75, 0,39,76, 0,40,77,
+    0,42,79, 0,43,80, 0,44,81, 0,46,82, 0,47,83, 0,48,84, 0,50,85, 0,51,86,
+    0,52,87, 0,54,88, 0,55,89, 0,56,90, 0,58,91, 0,59,92, 0,60,93, 0,62,94,
+    0,63,96, 0,64,97, 0,66,98, 0,67,99, 0,68,100, 0,70,101, 0,71,102, 0,72,103,
+    0,74,104, 0,75,105, 0,76,106, 0,77,107, 0,79,108, 0,80,109, 0,81,110, 0,83,111,
+    0,84,113, 0,85,114, 0,87,115, 0,88,116, 0,89,117, 0,91,118, 0,92,119, 0,93,120,
+    0,95,121, 0,96,122, 0,97,123, 0,99,124, 0,100,125, 0,101,126, 0,103,127, 0,104,128,
+    0,105,130, 0,107,131, 0,108,132, 0,109,133, 0,111,134, 0,112,135, 0,113,136, 0,114,137,
+    0,116,138, 0,117,139, 0,118,140, 0,120,141, 0,121,142, 0,122,143, 0,124,144, 0,125,145,
+    0,126,147, 0,128,148, 0,129,149, 0,130,150, 0,132,151, 0,133,152, 0,134,153, 0,136,154,
+    0,137,155, 0,138,156, 0,140,157, 0,141,158, 0,142,159, 0,144,160, 0,145,161, 0,146,162,
+    0,148,164, 0,149,165, 0,150,166, 0,151,167, 0,153,168, 0,154,169, 0,155,170, 0,157,171,
+    0,158,172, 0,159,173, 0,161,174, 0,162,175, 0,163,176, 0,165,177, 0,166,178, 0,167,180,
+    0,169,181, 0,170,182, 0,171,183, 0,173,184, 0,174,185, 0,175,186, 0,177,187, 0,178,188,
+    0,179,189, 0,181,190, 0,182,191, 0,183,192, 0,185,193, 0,186,194, 0,187,195, 0,188,197,
+    0,190,198, 0,191,199, 0,192,200, 0,194,201, 0,195,202, 0,196,203, 0,198,204, 0,199,205,
+    0,200,206, 0,202,207, 0,203,208, 0,204,209, 0,206,210, 0,207,211, 0,208,212, 0,210,214,
+    0,211,215, 0,212,216, 0,214,217, 0,215,218, 0,216,219, 0,218,220, 0,219,221, 0,220,222,
+    0,222,223, 0,223,224, 0,224,225, 0,225,226, 0,227,227, 0,228,228, 0,229,229, 8,230,222,
+    17,231,214, 26,232,206, 34,233,198, 43,234,190, 52,235,182, 61,236,174, 70,236,166, 78,237,158,
+    87,238,150, 96,239,143, 105,240,135, 114,241,127, 122,242,119, 131,242,111, 140,243,103, 149,244,95,
+    157,245,87, 166,246,79, 175,247,71, 184,248,63, 193,248,55, 201,249,47, 210,250,39, 219,251,32,
+    228,252,24, 237,253,16, 245,254,8, 254,254,0, 255,250,0, 255,245,0, 255,240,0, 255,236,0,
+    255,231,0, 255,226,0, 255,221,0, 255,217,0, 255,212,0, 255,207,0, 255,202,0, 255,198,0,
+    255,193,0, 255,188,0, 255,183,0, 255,179,0, 255,174,0, 255,169,0, 255,164,0, 255,160,0,
+    255,155,0, 255,150,0, 255,145,0, 255,141,0, 255,136,0, 255,131,0, 255,126,0, 255,122,0,
+    253,117,0, 249,113,0, 246,109,0, 242,105,0, 239,101,0, 236,97,0, 232,93,0, 229,89,0,
+    225,85,0, 222,81,0, 219,77,0, 215,73,0, 212,69,0, 208,65,0, 205,61,0, 202,57,0,
     198,53,0, 195,49,0, 191,45,0, 188,41,0, 185,37,0, 181,33,0, 178,29,0, 175,24,0])
     r = d[0::3]/255.
     g = d[1::3]/255.
     b = d[2::3]/255.
-    
+
     colors = zip(r,g,b)
     cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
@@ -1809,7 +1809,7 @@ def cmap_eke(name='vacumm_eke', **kwargs):
     0,
     0,
     0])
-    
+
 
     colors = zip(r,g,b)
     cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
@@ -1823,7 +1823,7 @@ def _local_cmap_cpt_(name, **kwargs):
         return cmap_d[name]
     sname = name[7:] if name.startswith('vacumm_') else name
     return cmap_gmt(os.path.join(_cpt_dir, sname+'.cpt'), register='vacumm_'+sname, **kwargs)
-    
+
 
 def cmap_currents(name='vacumm_currents', **kwargs):
     """A colormap for displaying currents"""
@@ -1831,19 +1831,19 @@ def cmap_currents(name='vacumm_currents', **kwargs):
 
 def cmap_rnb2_hymex(name="vacumm_rnb2_hymex", **kwargs):
     """RNB2 Colormap for HYMEX
-    
+
     .. note:: This colormap is registered in matplotlib under the name "vacumm_rnb2_hymex".
-    
+
     :Sample: .. image:: misc-color-vacumm_rnb2_hymex.png
     """
     data = [
-        ((0., 0, .6), 0.), 
-        ((0, 0.2, 1), .12), 
-        ((.2, .7, 1), .16), 
-        ((0, .8, 0), .27), 
-        ((1, 1, 0), .5), 
-        ((1, .1, .1), .82), 
-        ((.8, .1, .1), .9), 
+        ((0., 0, .6), 0.),
+        ((0, 0.2, 1), .12),
+        ((.2, .7, 1), .16),
+        ((0, .8, 0), .27),
+        ((1, 1, 0), .5),
+        ((1, .1, .1), .82),
+        ((.8, .1, .1), .9),
         ((.6, .25, .6), 1.)]
     cmap = cmap_smoothed_steps(data, name=name, **kwargs)
     cmap.set_under(data[0][0])
@@ -1852,18 +1852,18 @@ def cmap_rnb2_hymex(name="vacumm_rnb2_hymex", **kwargs):
 
 def cmap_rainbow_sst_hymex(name="vacumm_rainbow_sst_hymex", **kwargs):
     """RAINBOW_SST Colormap for HYMEX
-    
+
     .. note:: This colormap is registered in matplotlib under the name "vacumm_rainbow_sst_hymex".
-    
+
     :Sample: .. image:: misc-color-vacumm_rainbow_sst_hymex.png
     """
     data = [
-        ((0., 0, .52), 0.), 
-        ((0, 0.41, 1), .2), 
-        ((.09, .98, 0.91), .39), 
-        ((0.61, 1., 0.38), .53), 
-        ((1, 0.95, 0), .66), 
-        ((1, .2, 0), .85), 
+        ((0., 0, .52), 0.),
+        ((0, 0.41, 1), .2),
+        ((.09, .98, 0.91), .39),
+        ((0.61, 1., 0.38), .53),
+        ((1, 0.95, 0), .66),
+        ((1, .2, 0), .85),
         ((.61, 0, 0), 1.)]
     cmap = cmap_smoothed_steps(data, name=name, **kwargs)
     cmap.set_under(data[0][0])
@@ -1872,22 +1872,22 @@ def cmap_rainbow_sst_hymex(name="vacumm_rainbow_sst_hymex", **kwargs):
 
 def cmap_dynamic_cmyk_hymex(name="vacumm_dynamic_cmyk_hymex", **kwargs):
     """DYNAMIC_CMYK Colormap for HYMEX
-    
+
     .. note:: This colormap is registered in matplotlib under the name "vacumm_dynamic_cmyk_hymex".
-    
+
     :Sample: .. image:: misc-color-vacumm_dynamic_cmyk_hymex.png
     """
     data = [
-        ((0.94902, 0.94510, 0.94902), 0.), 
-        ((0.94510, 0.88627, 0.94118), .1), 
-        ((0.69804, 0.62745, 0.80392), .2), 
-        ((0.50196, 0.65098, 0.80784), .3), 
-        ((0.40392, 0.75686, 0.60784), .4), 
-        ((0.33725, 0.69412, 0.20000), .5), 
-        ((0.80000, 0.90588, 0.04314), .6), 
-        ((0.98039, 0.96078, 0.09804), .7), 
-        ((0.97255, 0.50980, 0.06667), .8), 
-        ((0.98039, 0.07059, 0.04706), .9), 
+        ((0.94902, 0.94510, 0.94902), 0.),
+        ((0.94510, 0.88627, 0.94118), .1),
+        ((0.69804, 0.62745, 0.80392), .2),
+        ((0.50196, 0.65098, 0.80784), .3),
+        ((0.40392, 0.75686, 0.60784), .4),
+        ((0.33725, 0.69412, 0.20000), .5),
+        ((0.80000, 0.90588, 0.04314), .6),
+        ((0.98039, 0.96078, 0.09804), .7),
+        ((0.97255, 0.50980, 0.06667), .8),
+        ((0.98039, 0.07059, 0.04706), .9),
         ((0.59608, 0.05882, 0.03137), 1.)]
     cmap = cmap_smoothed_steps(data, name=name, **kwargs)
     cmap.set_under(data[0][0])
@@ -1896,17 +1896,17 @@ def cmap_dynamic_cmyk_hymex(name="vacumm_dynamic_cmyk_hymex", **kwargs):
 
 def cmap_white_centered_hymex(name="vacumm_white_centered_hymex", **kwargs):
     """RNB2 Colormap for HYMEX
-    
+
     .. note:: This colormap is registered in matplotlib under the name "vacumm_white_centered_hymex".
-    
+
     :Sample: .. image:: misc-color-vacumm_white_centered_hymex.png
     """
     data = [
-        ((0, 1, 1), 0.), 
-        ((0.2, 0.2, 1), .2), 
-        ((1, 1, 1), .35), 
-        ((1, 1, 1), .65), 
-        ((1,0.2,0.2), .8), 
+        ((0, 1, 1), 0.),
+        ((0.2, 0.2, 1), .2),
+        ((1, 1, 1), .35),
+        ((1, 1, 1), .65),
+        ((1,0.2,0.2), .8),
         ((1, 1, 0), 1.)]
     cmap = cmap_smoothed_steps(data, name=name, **kwargs)
     cmap.set_under(data[0][0])
@@ -1915,17 +1915,17 @@ def cmap_white_centered_hymex(name="vacumm_white_centered_hymex", **kwargs):
 
 def cmap_red_tau_hymex(name="vacumm_red_tau_hymex", **kwargs):
     """RNB2 Colormap for HYMEX
-    
+
     .. note:: This colormap is registered in matplotlib under the name "vacumm_red_tau_hymex".
-    
+
     :Sample: .. image:: misc-color-vacumm_red_tau_hymex.png
     """
     data = [
-        ((1.0, 1.0, 1.0), 0.), 
-        ((1.0, 1.0,   0), .2), 
-        ((1.0, 0.8,0.05), .4), 
-        ((1.0, 0.6, 0.1), .6), 
-        ((1.0, 0.3, 0.1), .9), 
+        ((1.0, 1.0, 1.0), 0.),
+        ((1.0, 1.0,   0), .2),
+        ((1.0, 0.8,0.05), .4),
+        ((1.0, 0.6, 0.1), .6),
+        ((1.0, 0.3, 0.1), .9),
         ((1.0, 0.0,   0), 1.)]
     cmap = cmap_smoothed_steps(data, name=name, **kwargs)
     cmap.set_under(data[0][0])
@@ -1935,9 +1935,9 @@ def cmap_red_tau_hymex(name="vacumm_red_tau_hymex", **kwargs):
 
 def get_cmap(cmap=None, **kwargs):
     """A simple way to get a VACUMM, GMT or MPL colormap
-    
+
     :Example:
-    
+
         >>> get_cmap('jet')         # Matplotlib
         >>> pylab.jet()             # Matplotlib
         >>> pylab.get_cmap('jet')   # Matplotlib
@@ -1946,13 +1946,13 @@ def get_cmap(cmap=None, **kwargs):
         >>> cmap_grey(start=.2)     # VACUMM
         >>> get_cmap('gmt_gebco')   # GMT (registered in MPL)
         >>> cmap_gmt('gebco')       # GMT (registered in MPL)
-    
+
     :See also:
 
         :func:`cmap_gmt` :func:`matplotlib.pyplot.get_cmap`
     """
     if isinstance(cmap, Colormap):
-       return cmap 
+       return cmap
     if isinstance(cmap, basestring):
         if not kwargs: # Try an already registered colormap
             try:
@@ -1972,8 +1972,9 @@ def get_cmap(cmap=None, **kwargs):
     return cmap
 
 
-def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), show=True, aspect=.05, title=None, 
-    sa=dict(left=.0, right=1, top=1, bottom=.0), savefig=None, savefigs=None, **kwargs):
+def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25),
+    show=True, aspect=.05, title=None, sa=dict(left=.0, right=1, top=1, bottom=.0),
+    savefig=None, savefigs=None, close=True, **kwargs):
     """Display a colormap"""
     from vacumm.misc import kwfilter
     cmap = get_cmap(cmap)
@@ -1989,18 +1990,18 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), show=T
     x = N.arange(0,ncol,1.)
     dx = x[1]-x[0]
     interp = 'bilinear' if smoothed else "nearest"
-    p = P.imshow(P.outer(N.ones(1),x), aspect=aspect*ncol, 
-        cmap=cmap, origin="lower", 
+    p = P.imshow(P.outer(N.ones(1),x), aspect=aspect*ncol,
+        cmap=cmap, origin="lower",
         interpolation=interp, vmin=-.5, vmax=x[-1]+0.5)
-    P.fill([x[0]-dx/2, x[0]-dx/2, x[0]-dx/2-ncol/20.], [-.5, .5, 0], facecolor=p.to_rgba(-1), 
+    P.fill([x[0]-dx/2, x[0]-dx/2, x[0]-dx/2-ncol/20.], [-.5, .5, 0], facecolor=p.to_rgba(-1),
         edgecolor='none', linewidth=0)
-    P.fill([x[-1]+dx/2, x[-1]+dx/2, x[-1]+dx/2+ncol/20.], [-.5, .5, 0], facecolor=p.to_rgba(ncol+2), 
+    P.fill([x[-1]+dx/2, x[-1]+dx/2, x[-1]+dx/2+ncol/20.], [-.5, .5, 0], facecolor=p.to_rgba(ncol+2),
         edgecolor='none', linewidth=0)
     if title is None: title = cmap.name
     if title is not None and title is not False:
         from core_plot import add_glow
         add_glow(P.text(ncol/2., 0., title, color='k', ha='center', va='center'), alpha=0.5)
-        
+
     # Save and show
     if savefig is not None:
         P.savefig(savefig, **kwfilter(kwargs, 'savefig'))
@@ -2009,17 +2010,19 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), show=T
         Savefigs(savefigs, **kwfilter(kwargs, 'savefigs'))
     if show:
         P.show()
+    if close:
+        P.close()
 
 
-def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5, savefigs=None, 
+def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5, savefigs=None,
     aspect=0.05, **kwargs):
     """Display a list of or all colormaps"""
-    
+
     from vacumm.misc import kwfilter
     kwsf = kwfilter(kwargs, 'savefig')
     kwsfs = kwfilter(kwargs, 'savefigs')
     kwargs.pop('nrow', None)
-    
+
     # Default colormap list
     from vacumm.misc import kwfilter
     if cmaps is None:
@@ -2033,7 +2036,7 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5, savefi
             cmaps = cmaps_gmt()
         else:
             cmaps = [cmaps]
-            
+
     # Check validity
     goodcmaps = []
     for cmap in cmaps:
@@ -2044,7 +2047,7 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5, savefi
         except:
             continue
     cmaps = goodcmaps
-    
+
     # Uniq
     oldcmaps = cmaps
     cmaps = []
@@ -2055,10 +2058,10 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5, savefi
             names.append(cmap.name)
     ncmap = len(cmaps)
     assert ncmap, 'No valid cmap'
-    
+
     # Sort
     cmaps.sort(cmp=lambda a, b: cmp(a.name, b.name))
-    
+
     # Setup figure
     ncol = min(ncmap, ncol)
     nrow = (ncmap-1)/ncol+1
@@ -2068,17 +2071,18 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5, savefi
         figsize = (5*ncol, nrow*5*aspect*1.1)
     if figsize is not False:
         P.figure(figsize=figsize)
-        
+
     # Loop on colormaps
     ip = N.arange(ncol*nrow).reshape((nrow,ncol)).T.ravel()+1
     for i, cmap in enumerate(cmaps):
         ax = P.subplot(nrow, ncol, ip[i])
-        plot_cmap(cmap, show=False, ax=P.gca(), sa=dict(bottom=.01, top=.99, left=.01, right=.99), 
-            aspect=aspect, 
+        plot_cmap(cmap, show=False, ax=P.gca(),
+            sa=dict(bottom=.01, top=.99, left=.01, right=.99),
+            aspect=aspect, close=False,
             **kwargs)
         ax.set_anchor('C')
     P.subplots_adjust(wspace=0.0, hspace=0, top=0.98, bottom=0.02, left=0.02, right=0.98)
-    
+
     # Save and show
     if savefig is not None:
         P.savefig(savefig, **kwsf)
@@ -2086,16 +2090,16 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5, savefi
         from plot import savefigs as Savefigs
         Savefigs(savefigs, **kwsfs)
     if show: P.show()
-    
+
 def show_cmap(cmap, *args, **kwargs):
     """Alias for :func:`plot_cmap`"""
     return plot_cmap(cmap, *args, **kwargs)
 
 def cmaps_registered(include=None, exclude=None, names=True):
     """List colormap registered in matplotlib
-    
+
     :Params:
-    
+
         - **include**: Include only colormaps that have one of these prefixes.
         - **include**: Exclude colormaps that have one of these prefixes.
         - **names**: Return names OR colormaps.
@@ -2116,9 +2120,9 @@ def cmaps_registered(include=None, exclude=None, names=True):
 
 def cmaps_mpl(vacumm=True, gmt=True, names=True):
     """List available registered colormaps available directly from Matplotlib
-    
+
     :See also:
-    
+
         :func:`get_cmap`
     """
     exclude = []
@@ -2128,9 +2132,9 @@ def cmaps_mpl(vacumm=True, gmt=True, names=True):
 
 def cmaps_vacumm(names=True):
     """List available VACUMM colormaps
-    
+
     :See also:
-    
+
         :func:`get_cmap`
     """
     return cmaps_registered(include='vacumm_', names=names)
@@ -2138,9 +2142,9 @@ cmaps_act = cmaps_vacumm
 
 def cmaps_gmt(names=True):
     """List available GMT colormaps
-    
+
     :See also:
-        
+
         :func:`cmap_gmt` :func:`print_cmaps_gmt` :func:`get_cmap`
     """
     return cmaps_registered(include='GMT_', names=names)
@@ -2151,12 +2155,12 @@ def cmaps_gmt(names=True):
 #        f.close()
 #        cmaps.append(os.path.basename(file)[:-4])
 #    return cmaps
-        
+
 def print_cmaps_gmt():
     """List available gmt colormaps
-    
+
     :See also:
-        
+
         :func:`cmap_gmt` :func:`cmaps_gmt` :func:`get_cmap`
     """
     print 'List of available GMT colormaps: '+', '.join(cmaps_gmt(names=True))
@@ -2167,35 +2171,35 @@ def print_cmaps_gmt():
 #        name = os.path.basename(file)[:-4]
 #        description = lines[2].strip('# \t\n')
 #        print '%s %s' % ((name+':').ljust(20),description)
-        
+
 _re_split_gmt = re.compile(r'[\t/\-]+').split
 def cmap_gmt(name, register=True, **kwargs):
     """Get a colormap from GMT
-    
+
     :Params:
-    
+
         - **name**: GMT colormap name OR .cpt file name.
-    
+
     :See also:
-        
+
         :func:`cmaps_gmt` :func:`print_cmaps_gmt` :func:`get_cmap`
     """
     # Already registered
     if not name.endswith('.cpt'):
-        
+
 #        name = name.lower()
         if name.startswith('gmt_'): name = 'GMT_'+name[4:]
         mname = ('GMT_'+name) if not name.startswith('GMT_') else name
         if mname not in cmaps_gmt():
-            raise vacumm.VACUMMError('Invalid GMT colormap: %s. '%name + 
+            raise vacumm.VACUMMError('Invalid GMT colormap: %s. '%name +
                 'Please print available name with: print_cmaps_gmt()')
         return P.get_cmap(mname)
-     
+
     # From file
     import colorsys
     filePath = name
     name = os.path.basename(name[:-4])#.lower()
-    
+
     if not os.path.exists(filePath):
         raise vacumm.VACUMMError("Wrong GMT colormap file: "+filePath)
 
@@ -2231,7 +2235,7 @@ def cmap_gmt(name, register=True, **kwargs):
             btemp = float(ls[7])
 #        else:
 #            return
-            
+
 
     x.append(xtemp)
     r.append(rtemp)
@@ -2264,7 +2268,7 @@ def cmap_gmt(name, register=True, **kwargs):
         red.append([xNorm[i],r[i],r[i]])
         green.append([xNorm[i],g[i],g[i]])
         blue.append([xNorm[i],b[i],b[i]])
-    colorDict = {"red":red, "green":green, "blue":blue}    
+    colorDict = {"red":red, "green":green, "blue":blue}
     if register:
         if isinstance(register, basestring): name = register
     return cmap_custom(colorDict, name, register=register, **kwargs)
@@ -2272,14 +2276,14 @@ def cmap_gmt(name, register=True, **kwargs):
 
 def darken(c, f):
     """Darken a color 'c' by a factor 'f' (max when f=1)
-    
+
     :Params:
-    
+
         - **c**: Color
         - **f**: Factor between 0 and 1
-        
+
     :Sample:
-    
+
         >>> darken('r',0)
         (1.0, 0.0, 0.0)
         >>> darken('r',.5)
@@ -2294,7 +2298,7 @@ def darken(c, f):
             col = getattr(c, '_rgba'+att, None)
             if col is not None:
                 func = getattr(c, 'set'+att)
-                func(darken(col,f)+(col[3], ))             
+                func(darken(col,f)+(col[3], ))
         return c
     r,g,b,a = RGBA(c)
     f = 1-f
@@ -2302,17 +2306,17 @@ def darken(c, f):
     g = f*g
     b = f*b
     return r,g,b
-    
+
 def whiten(c, f):
     """Whiten a color 'c' by a factor 'f' (max when f=1)
-    
+
     :Params:
-    
+
         - **c**: Color
         - **f**: Factor between 0 and 1
-        
+
     :Sample:
-    
+
         >>> whiten('r',.5)
         (1.0, 0.5, 0.5)
         >>> whiten('r',0)
@@ -2327,7 +2331,7 @@ def whiten(c, f):
             col = getattr(c, '_rgba'+att, None)
             if col is not None:
                 func = getattr(c, 'set'+att)
-                func(whiten(col,f)+(col[3], ))             
+                func(whiten(col,f)+(col[3], ))
         return c
     r,g,b,a = RGBA(c)
     f = 1-f
@@ -2335,18 +2339,18 @@ def whiten(c, f):
     g = 1.-f*(1-g)
     b = 1.-f*(1-b)
     return r,g,b
-    
+
 
 def to_shadow(c,att=.3):
     """Return the shadow color of a color
-    
-    .. note:: 
-    
+
+    .. note::
+
         This is a simple shortcut to :func:`darken`
         with ``f=.3`` be default.
-    
+
     :Params:
-        
+
         - **c**: Color.
         - **att**, optional: Attenuation factor
     """
@@ -2356,7 +2360,7 @@ def to_shadow(c,att=.3):
 
 class StepsNorm(Normalize):
     """Normalize a given value to the 0-1 range on a stepped linear or log scale
-    
+
     See tutorial :ref:`user.tut.misc.plot.advanced.stepsnorm`
     """
     def __init__(self, levels, log=False, **kwargs):
@@ -2373,8 +2377,8 @@ class StepsNorm(Normalize):
             raise ValueError("minvalue must be less than or equal to maxvalue")
         elif self.log and self.vmin <= 0.:
             raise ValueError("minvalue must be greater than 0 when using log scale")
-        
-        
+
+
     @staticmethod
     def process_value(value):
         """
@@ -2406,17 +2410,17 @@ class StepsNorm(Normalize):
             is_scalar = True
             result = ma.array([value]).astype(N.float)
         return result, is_scalar
-        
+
 
     def __call__(self, value, clip=None):
         if clip is None:
             clip = self.clip
-        
+
         result, is_scalar = self.process_value(value)
         val = result.copy()
         self.autoscale_None(result)
         vmin, vmax = self.vmin, self.vmax
-                
+
         if vmin==vmax:
             result.fill(0.)
         else:
@@ -2468,20 +2472,20 @@ class StepsNorm(Normalize):
                 result[:] = N.where(mincheck&maxcheck, lev0+(pos-p0)*(lev1-lev0)/(p1-p0), result)
                 if self.log:
                     result = N.power(result)
-            
+
         if is_scalar:
             result = result[0]
         return result
-            
+
 
 class RangedLinearSegmentedColormap(Colormap):
     """
     :See also:
-    
+
         :class:`matplotlib.colors.LinearSegmentedColormap`
     """
     def __init__(self, name, segmentdata, N=256, start=0., stop=1.):
-        self.monochrome = False 
+        self.monochrome = False
         Colormap.__init__(self, name, N)
         self._segmentdata = segmentdata
         self._start = start
@@ -2503,14 +2507,14 @@ class RangedLinearSegmentedColormap(Colormap):
 
 class Scalar2RGB(object):
     """Converter from scalar to colors
-    
+
     :Params:
-    
+
         - **vminmax**: Either an array or a tuple of (min,max).
         - **cmap**, optional: A colormap.
-    
+
     :Example:
-    
+
         >>> cmap = cmap_srs(['b', 'r'])
         >>> c = Scalar2RGB((1.5, 20.6), cmap)
         >>> print c(1.5, alpha=.5), c(10), c(20.6), c(50)
@@ -2520,7 +2524,7 @@ class Scalar2RGB(object):
         [ 0.38627451  0.          0.61372549]]
 
     """
-    
+
     def __init__(self, vminmax, cmap=None):
         cmap = get_cmap(cmap)
         self.cmap = cmap
@@ -2528,22 +2532,22 @@ class Scalar2RGB(object):
         vmin, vmax = minmax(vminmax)
         self.norm = Normalize(vmin, vmax)
         self.sm = ScalarMappable(cmap=self.cmap, norm=self.norm)
-        
+
     def __call__(self, value, alpha=None):
         """Convert value to RGB(A)
-        
+
         :Params:
-        
+
             - **value**: A scalar or array.
             - **alpha**, optional: Add an alpha value to
               all colors.
         """
-        
+
         res =  self.sm.to_rgba(value, alpha)
         if alpha is not None: return res
         if isinstance(res, tuple): return res[:3]
         return res[:,:3]
-        
+
 
 # Register colormaps
 cmap_bwr()
@@ -2557,7 +2561,7 @@ cmap_land()
 cmap_topo()
 cmap_jete()
 cmap_ajete()
-cmap_jet()       
+cmap_jet()
 cmap_jets()
 cmap_wjets()
 cmap_ajets()

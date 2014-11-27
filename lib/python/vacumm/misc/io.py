@@ -46,6 +46,7 @@ import numpy as N, MV2, cdms2, cdtime
 import pylab as P, operator
 from _geoslib import Point, LineString, Polygon
 from matplotlib.collections import LineCollection, PolyCollection
+from mpl_toolkits.basemap import Basemap
 
 from ..__init__ import VACUMMError
 
@@ -2143,8 +2144,9 @@ class Shapes(object):
                 if from_file:
                     if newreader:
                         obj = shp.shapeRecord(iobj).shape
-                        nparts = len(obj.parts)
                         all_points = obj.points
+                        if len(all_points)==0: continue
+                        nparts = len(obj.parts)
                         if nparts==1:
                             all_polys = [all_points]
                         else:
@@ -2519,6 +2521,7 @@ class Shapes(object):
             kwmap.update(show=False, axes=ax, title=self.__class__.__name__)
             m = map2(**kwmap)
             ax = m.axes
+        isbm = isinstance(m, Basemap)
 
         # Plot on what?
         if ax is None:
@@ -2542,16 +2545,20 @@ class Shapes(object):
                 cc = LineCollection(data, **kwlines)
             ax.add_collection(cc)
             oo.append(cc)
+            if isbm:
+                m.set_axes_limits(ax=ax)
 
         # Points
         if points:
             cc = ax.scatter(xx, yy, **kwpoints)
             oo.append(cc)
+            if isbm:
+                m.set_axes_limits(ax=ax)
 
         # Special properties
         for key in ['label']:
-            if hasattr(kwargs, key):
-                getattr(cc, 'set_'+key, kwargs[key])
+            if key in kwargs and hasattr(cc, 'set_'+key):
+                getattr(cc, 'set_'+key)(kwargs[key])
 
         if show: P.show()
 
