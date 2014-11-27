@@ -4,6 +4,7 @@ Release notes
 In development
 ==============
 
+- Fixed: ConfigManager.opt_parse.
 
 Version 2.4.0
 ==============

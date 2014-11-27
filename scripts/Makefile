@@ -1,4 +1,4 @@
 all:
 	cd tutorials ; make
-	cd tests ; make
+	cd test ; make
 	cd courses ; make
