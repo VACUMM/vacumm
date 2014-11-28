@@ -16,6 +16,6 @@ curve2(sea_level, 'k', subplot=211, label='Original', title='Sea level at Brest'
 curve2(tide, 'b', label='Tidal signal', **kwplot)
 P.legend().legendPatch.set_alpha(.7)
 # - surcotes/decotes
-curve(cotes, 'r', subplot=212, hspace=.3, label='Demerliac', **kwplot)
+curve2(cotes, 'r', subplot=212, hspace=.3, label='Demerliac', **kwplot)
 P.legend().legendPatch.set_alpha(.7)
 savefigs(__file__, savefigs_pdf=True)

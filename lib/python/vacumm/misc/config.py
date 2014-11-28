@@ -5,23 +5,23 @@ if __name__ == '__main__':
     import sys; del sys.path[0]
 
 # Copyright or © or Copr. Actimar (2010)
-# 
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -29,24 +29,25 @@ if __name__ == '__main__':
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-# 
+#
 
 __author__ = 'Stéphane Raynaud, Jonathan Wilkins'
 __email__ = 'raynaud@actimar.fr, wilkins@actimar.fr'
 __doc__ = '''\
-Configuration management with validation capabilities and commandline interaction. 
+Configuration management with validation capabilities and commandline interaction.
 It is based on :mod:`configobj` and :mod:`validate` modules.
 '''
 
 import copy, datetime, inspect, os, operator, re, sys, shutil, traceback
 from optparse import OptionParser, OptionGroup, OptionContainer, Option,  OptionValueError, IndentedHelpFormatter, _
-from argparse import ArgumentParser, _ArgumentGroup, HelpFormatter as ArgHelpFormatter
+from argparse import ArgumentParser, _ArgumentGroup, HelpFormatter as ArgHelpFormatter, \
+    _HelpAction
 from warnings import warn
 
 from configobj import ConfigObj, flatten_errors
@@ -56,9 +57,9 @@ import validate
 try: import numpy
 except: numpy = None
 
-__all__ = ['ConfigException', 'ValidationWarning', 'ConfigManager', 'print_short_help', 
-    'opt2rst', 'cfg2rst', 'cfgargparse', 'cfgoptparse', 'getspec', 'get_secnames', 
-    ] 
+__all__ = ['ConfigException', 'ValidationWarning', 'ConfigManager', 'print_short_help',
+    'opt2rst', 'cfg2rst', 'cfgargparse', 'cfgoptparse', 'getspec', 'get_secnames',
+    ]
 
 class ConfigException(Exception):
     pass
@@ -72,8 +73,8 @@ class VdtSizeError(ValidateError):
 
 def _valwrap_(validator):
     '''
-    Wrap a validation function to allow extraneous named arguments in specfile, 
-    this is usefull when getting specification with 
+    Wrap a validation function to allow extraneous named arguments in specfile,
+    this is usefull when getting specification with
     validator._parse_with_caching(configspec[section][option])
     '''
     def validator_wrapper(value, *args, **kwargs):
@@ -144,7 +145,7 @@ def _valwraplist_(validator):
 def _validator_minmax_(value, min=None, max=None, default=(0, 100), type='float'):
     """Validator of a min,max pair"""
     if str(value)=='None': return None
-    if isinstance(value, list): 
+    if isinstance(value, list):
         value = tuple(value)
     elif isinstance(value, (str, unicode)):
         tmp=eval(value)
@@ -155,7 +156,7 @@ def _validator_minmax_(value, min=None, max=None, default=(0, 100), type='float'
     if not len(value)==2: raise VdtTypeError(value)
     out = ()
     for val in value:
-        if isinstance(val, (str, unicode)): 
+        if isinstance(val, (str, unicode)):
             try:
                 val = float(val)
             except:
@@ -164,7 +165,7 @@ def _validator_minmax_(value, min=None, max=None, default=(0, 100), type='float'
         if max is not None and val>float(max): val = float(max)
         if type=='int':
             val = int(val)
-        out += val, 
+        out += val,
     if out[0]>out[1]: return out[::-1]
     return out
 
@@ -180,7 +181,7 @@ def _validator_bbox_(value, default=None):
 
 def _validator_figsize_(value, default=(6, 6)):
     """Validator of a figure size (xsize,ysize)"""
-    if isinstance(value, list): 
+    if isinstance(value, list):
         value = tuple(value)
     elif isinstance(value, (str, unicode)):
         try:
@@ -190,21 +191,21 @@ def _validator_figsize_(value, default=(6, 6)):
     if not len(value)==2: raise VdtTypeError(value)
     out = ()
     for val in value:
-        if isinstance(val, (str, unicode)): 
+        if isinstance(val, (str, unicode)):
             try:
                 val = float(val)
             except:
                 raise VdtTypeError(value)
         val = max(0, val)
         val = min(20, val)
-        out += val, 
+        out += val,
     return out
-    
+
 def _validator_interval_(value, default=None):
     """Validator of an interval of coordinates (min, max [,bounds])"""
     if str(value) == 'None': return None
     if not isinstance(value, basestring):
-        if not isinstance(value, list): 
+        if not isinstance(value, list):
             raise VdtTypeError(value)
         value = ','.join(value)
     if value.startswith('('): value = value[1:]
@@ -217,12 +218,12 @@ def _validator_interval_(value, default=None):
             val = eval(val)
         except:
             pass
-        out += val, 
+        out += val,
     if len(values)==3 and values[2]:
         m =  re.search('([co]{1,2}[ne]{0,2})', values[2])
         if m is None:
             raise VdtTypeError(value)
-        out += m.group(1), 
+        out += m.group(1),
     return out
 
 class VdtDateTimeError(ValidateError):
@@ -258,7 +259,7 @@ def _validator_path_(value, default='', expand=None):
     Parse a value as a path
     :Params:
         -- **expand**: expandvars and expandhome on loaded path
-    
+
     **Warning: expand currently can't work with interpolation**
     '''
     if str(value) == 'None': return None
@@ -335,21 +336,21 @@ _validator_functions_ = dict((k, v['func']) for k,v in _validator_specs_.iterite
 class ConfigManager(object):
     """A configuration management class based on a configuration specification file
     and a :class:`validate.Validator`
-    
+
     :Example:
-    
+
         >>> Cfg = Config('config.ini', interpolation='template')
         >>> Cfg.opt_parse()
         >>> cfg = Cfg.load('config.cfg')
-        
+
     :See also: :class:`configobj.ConfigObj` and :class:`validate.Validator`
-    
+
     """
-    def __init__(self, cfgspecfile=None, validator=None, interpolation='template', 
+    def __init__(self, cfgspecfile=None, validator=None, interpolation='template',
         encoding=None, boolean_false=True):
         '''
         :Params:
-            - **cfgspecfile**: the specification file to be used with this 
+            - **cfgspecfile**: the specification file to be used with this
             - **validator**: a custom :class:`validate.Validator` to use or a mapping dict of validator functions
             - **interpolation**: see :class:`configobj.ConfigObj`
         '''
@@ -361,9 +362,9 @@ class ConfigManager(object):
         if isinstance(cfgspecfile, ConfigObj):
             self._configspec = cfgspecfile
         else:
-            self._configspec = ConfigObj(cfgspecfile, list_values=False, 
+            self._configspec = ConfigObj(cfgspecfile, list_values=False,
                 interpolation=False, encoding=encoding)
-        
+
         # Validator
         if isinstance(validator, Validator):
             self._validator = validator
@@ -381,73 +382,73 @@ class ConfigManager(object):
             for k, v in validator.items():
                 validator[k] = _valwrap_(v)
             self._validator.functions.update(validator)
-        
+
         # Makes sure that boolean has a default value
         self._boolean_false = boolean_false
         if boolean_false:
-            self._configspec.walk(_walker_set_boolean_false_by_default_, 
+            self._configspec.walk(_walker_set_boolean_false_by_default_,
                 validator=self._validator)
-            
+
         # Interpolation
         if interpolation is True: interpolation='template'
         self._interpolation = interpolation
-    
+
     def get_spec(self, sec, key):
         '''
         See :func:`getspec`
-        
+
         If sec is a basestring, use configspec[sec][key]
         Otherwise use sec as a configspec, sec[key]
         '''
         return getspec((self._configspec[sec] if isinstance(sec, basestring) else sec)[key], validator=self._validator)
     getspec = get_spec
-    
+
     def defaults(self, nocomments=False, interpolation=None):
         """Get the default config
-        
+
         :Params:
-        
+
             - **nocomments**, optional: Do not include option comments in config file.
               If equal to 2, remove section comments too.
             - **interpolation**, optional: if True, interpolate values.
-        
+
         :Return: A :class:`~configobj.ConfigObj` instance
         """
         if interpolation is None or interpolation is True: interpolation = self._interpolation
-        cfg = ConfigObj(interpolation=interpolation, configspec=self._configspec, 
+        cfg = ConfigObj(interpolation=interpolation, configspec=self._configspec,
             encoding=self._encoding)
         cfg.validate(self._validator, copy=True)
-        if nocomments: 
+        if nocomments:
             cfg.walk(_walker_remove_all_comments_, call_on_sections=int(nocomments)==2)
         elif self._configspec:
             cfg.inline_comments = self._configspec.inline_comments
         return cfg
-    
+
     def reset(self, cfgfile='config.cfg', backup=True, nocomments=True, verbose=True):
         """Reset a config file  to default values
-        
+
         :Params:
-        
+
             - **cfgfile**, optional: The configuration file to reset.
             - **backup**, optional: Backup the old config file.
             - **nocomments**, optional: Do not include comment in config file.
-            
+
         :Return: A :class:`~configobj.ConfigObj` instance
-        
+
         :See also: :meth:`defaults`
         """
-        
+
         # Load defaults
         cfg = self.defaults(nocomments=nocomments, interpolation=False)
-        
+
         # Remove old file
-        if os.path.exists(cfgfile): 
+        if os.path.exists(cfgfile):
             if backup:
                 shutil.copy(cfgfile, cfgfile+'.bak')
             os.remove(cfgfile)
         else:
             backup = False
-            
+
         # Write to new one
         cfg.filename = cfgfile
         cfg.write()
@@ -457,42 +458,42 @@ class ConfigManager(object):
                 print "Backuped old config file to: %s.bak"%cfgfile
         return cfg
 
-    def load(self, cfgfile='config.cfg', 
+    def load(self, cfgfile='config.cfg',
         validate='fix', geterr=False, patch=None, force=True, **kwpatch):
         """Get a :class:`~configobj.ConfigObj` instance loaded from a file
-        
+
         :Params:
-        
+
             - **cfgfile**, optional: config file
-            
+
                 - a config file name
                 - a :class:`~configobj.ConfigObj` instance
                 - ``None``: defaults to ``"config.cfg"``
-                
+
             - **validate**, optional: Type of validation
-            
+
                 - ``False``: no validation
                 - ``"fix"``: validation fixes and reports errors
                 - ``"report"``: validation reports errors
                 - ``"raise"``: validation raises errors
-            
+
             - **geterr**, optional: Return validation results as well
             - **force**, optional: Force re-instantiation of ``cfgfile`` when it is already
               a :class:`ConfigObj` instance.
-            
+
         :Return: Depends on ``geterr``
-        
+
             - if ``True``: ``(cfg, err)`` where is the result of :meth:`~configobj.ConfigObj.validate`
             - else: ``cfg`` (:class:`~configobj.ConfigObj` instance)
         """
-        
+
         # Load the config
         if cfgfile is not None and isinstance(cfgfile, basestring) and not os.path.exists(cfgfile):
             cfgfile = None
-            
+
         # Instantiate / Copy
         if not isinstance(cfgfile, ConfigObj) or force:
-            cfg = ConfigObj(cfgfile, interpolation=self._interpolation, 
+            cfg = ConfigObj(cfgfile, interpolation=self._interpolation,
                 configspec=self._configspec, encoding=self._encoding)
         else:
             cfg = cfgfile
@@ -505,84 +506,84 @@ class ConfigManager(object):
             if kwpatch: # Patch the patch!
                 patch = self.patch(patch, kwpatch, validate=False)
             self.patch(cfg, patch, validate=False)
-        
+
         # Validation
         if validate and self._configspec:
-        
+
             # Validation itself
             err = cfg.validate(self._validator, preserve_errors=True)
-            
+
             # Defaults for fixing
             if validate in ['fix', 'report']:
                 defaults = self.defaults()
-                
+
             # Loop on errors
             if isinstance(err, dict):
 
                 for sections, key, error in flatten_errors(cfg, err):
-                
+
                     # Format explicit message
                     if len(sections):
                         section = '['+']['.join(sections)+'] '
                     else:
                         section = ''
                     msg = 'Config value error: %s%s: %s'%(section, key, getattr(error, 'message', error))
-                    
+
                     # Check what to do
                     if validate in ['fix', 'report']:
-                        
-                    
+
+
                         # Report
                         sec = cfg
                         secd = defaults
                         for subsec in sections:
                             sec = sec[subsec]
-                            if subsec not in secd: 
+                            if subsec not in secd:
                                 secd = None
                                 break
                             secd = secd[subsec]
-                        if secd is None: 
+                        if secd is None:
 #                            sys.stderr.write(msg+"\nCan't set it to default value because"
 #                                " none available")
                             continue
-                        
+
                         # Loop on keys
                         keys = secd.keys() if key is None else [key]
                         for k in keys:
-                        
+
                             vdef = secd.get(k, None)
-                            sys.stderr.write(msg+'\nSetting it to default value: %s\n'%vdef)#,ValidationWarning) 
-                            
+                            sys.stderr.write(msg+'\nSetting it to default value: %s\n'%vdef)#,ValidationWarning)
+
                             # Reset to default
                             if validate=='fix':
                                 sec[k] = vdef
-                        
+
                     else: # Raise an error
                         raise ValidateError, msg
-                        
+
             if geterr:
                 return cfg, err
-        
+
         return cfg
-        
+
 
     def patch(self, cfg, cfgpatch, validate=False):
         """Replace config values of ``cfg`` by those of ``cfgpatch``
-        
+
         :Params:
-        
+
             - **cfg**: A :class:`~configobj.ConfigObj` instance, a config file or
               a dictionary, that must be patched.
-            - **cfgpatch**: A :class:`~configobj.ConfigObj` instance, a config file or 
+            - **cfgpatch**: A :class:`~configobj.ConfigObj` instance, a config file or
               a dictionary, used for patching.
             - **validate**, optional: If ``True``, validate configs if they have a valid config spec.
         """
-        if not isinstance(cfg, ConfigObj): 
+        if not isinstance(cfg, ConfigObj):
             cfg = ConfigObj(cfg, configspec=self._configspec, encoding=self._encoding)#, interpolation=False)
         #else:
             #cfg.interpolation = False
-        if not isinstance(cfgpatch, ConfigObj): 
-            cfgpatch = ConfigObj(cfgpatch, configspec=self._configspec, interpolation=False, 
+        if not isinstance(cfgpatch, ConfigObj):
+            cfgpatch = ConfigObj(cfgpatch, configspec=self._configspec, interpolation=False,
                 encoding=self._encoding)
         else:
             cfgpatch.interpolation = False
@@ -593,36 +594,36 @@ class ConfigManager(object):
         return cfg
 
     def arg_parse(
-            self, parser=None, exc=[], parse=True, args=None, 
+            self, parser=None, exc=[], parse=True, args=None,
             getparser=False, getargs=False, cfgfile='config.cfg',
-            patch=None, cfgfileopt='--cfgfile', cfgfilepatch='before', 
+            patch=None, cfgfileopt='--cfgfile', cfgfilepatch='before',
             nested=None):
         """Options (:mod:`argparse`) and config mixer.
-        
+
             1. Creates command-line options from config defaults
             2. Parse command-line argument and create a configuration patch
-            
-        For instance, the following config define the commandline option 
+
+        For instance, the following config define the commandline option
         ``--section1-my-section2-my-key`` with ``value`` as a default value, s
         tored in a special group of options with a short name and a long description::
-        
+
             [section1] # Short name : long description of the group
                 [[my_section2]]
                     my_key=value
-                    
+
         .. warning:: Section and option names must not contain any space-like character !
-        
-        .. note:: 
-        
+
+        .. note::
+
             If you want to prevent conflict of options, don't use ``"_"`` in
             section and option names.
-        
-        
+
+
         :Params:
-        
+
             - **parser**: optional, a default one is created if not given. This can be:
                 - a :class:`OptionParser` instance
-                - a :class:`dict` with keyword arguments for the one to be created 
+                - a :class:`dict` with keyword arguments for the one to be created
             - **exc**, optional: List of keys to be excluded from parsing.
             - **parse**, optional: If ``True``, parse commande line options and arguments
             - **args**, optional: List of arguments to parse instead of default sys.argv[1:]
@@ -643,19 +644,33 @@ class ConfigManager(object):
                 - Any False like value: the config file would not be used
             - **nested**: Name of a section whose defines the configuration.
               It must be used when the configuration in nested in more general configuration.
-            
+
         :Return:
             - the :class:`OptionParser` if parse is False
             - the resulting :class:`~configobj.ConfigObj` if parse is True and getparser is not True
             - the resulting :class:`~configobj.ConfigObj` and the :class:`OptionParser` if both parse and getparser are True
         """
-        
+
         # Prepare the option parser
         if parser is None:
-            parser = ArgumentParser()
+            parser = ArgumentParser(add_help=False)
         elif isinstance(parser, dict):
+            parser['add_help'] = False
             parser = ArgumentParser(**parser)
-        
+        else: # remove native help
+            for action in list(parser._actions):
+                if isinstance(action, _HelpAction) or \
+                    action.dest=='help' or action.dest=='long_help':
+                    parser._actions.remove(action)
+                    for option_string in action.option_strings:
+                        if option_string in parser._option_string_actions:
+                            parser._option_string_actions.pop(option_string)
+            parser.add_help = False
+
+        # Add short and long when no help
+        parser.add_argument('-h','--help', action='store_true', help='show a reduced help')
+        parser.add_argument('--long-help', action='store_true', help='show an extended help')
+
         # Add the cfgfile option (configurable)
         if cfgfileopt:
             if isinstance(cfgfileopt, basestring):
@@ -665,12 +680,12 @@ class ConfigManager(object):
                     else:
                         cfgfileopt = '--'+cfgfileopt
                 cfgfileopt = (cfgfileopt,)
-            parser.add_argument(*cfgfileopt,  
-                dest="cfgfile", help='Configuration file [default: "%(default)s"]', default=cfgfile)
-        
+            parser.add_argument(*cfgfileopt,
+                dest="cfgfile", help='configuration file [default: "%(default)s"]', default=cfgfile)
+
         # Default config
         defaults = self.defaults()
-        
+
         # Create global group of options from defaults
         # - inits
         re_match_initcom = re.compile(r'#\s*-\*-\s*coding\s*:\s*\S+\s*-\*-\s*').match
@@ -685,7 +700,7 @@ class ConfigManager(object):
         # - global options
         for key in defaults.scalars:
             if key not in exc:
-                _walker_argcfg_setarg_(defaults, key, group=group, exc=exc, nested=nested, 
+                _walker_argcfg_setarg_(defaults, key, group=group, exc=exc, nested=nested,
                     boolean_false=self._boolean_false)
 #                group.add_argument('--'+_cfg2optname_(key, nested), help=_shelp_(defaults, key))
             else:
@@ -700,18 +715,18 @@ class ConfigManager(object):
             section = defaults[key]
             group = parser.add_argument_group(*desc)
             defaults[key].walk(_walker_argcfg_setarg_, raise_errors=True,
-                call_on_sections=False, group=group, exc=exc, nested=nested, 
+                call_on_sections=False, group=group, exc=exc, nested=nested,
                 boolean_false=self._boolean_false)
-    
+
         # Now create a configuration instance from passed options
         if parse:
-            
+
             # Which args ?
             if args is None: args = sys.argv[1:]
-            
+
             # Parse
             options = parser.parse_args(list(args))
-            
+
             # Intercept helps
             if getattr(options, 'long_help', None):
                 parser.print_help()
@@ -722,7 +737,7 @@ class ConfigManager(object):
 
             # Create a configuration to feed
             cfg = ConfigObj(interpolation=self._interpolation, encoding=self._encoding)
-            
+
             # Initial config from defaults or the one supplied
             if patch:
                 self.patch(cfg, patch if isinstance(patch, ConfigObj) else defaults)
@@ -732,77 +747,77 @@ class ConfigManager(object):
                     cfgfilepatch = 'after'
                 else:
                     cfgfilepatch = 'before'
-                    
+
             # Feed config with cfgfile before command line options
             if cfgfilepatch == 'before' and getattr(options, 'cfgfile', None):
                 self.patch(cfg, self.load(options.cfgfile))
-                
+
             # Feed config with command line options
             defaults.walk(_walker_argcfg_setcfg_, raise_errors=True,
                 call_on_sections=False, cfg=cfg, options=options, nested=nested)
-                
+
             # Feed config with cfgfile after command line options
             if cfgfilepatch == 'after' and getattr(options, 'cfgfile', None):
                 self.patch(cfg, self.load(options.cfgfile))
-              
+
             if not getparser and not getargs: return cfg
-            out = cfg, 
-            if getparser: out += parser, 
-            if getargs: out += options, 
+            out = cfg,
+            if getparser: out += parser,
+            if getargs: out += options,
             return out
-            
+
         else:
             return parser
 
     def arg_patch(self, parser, exc=[], cfgfileopt='cfgfile'):
         """Call to :meth:`arg_parse` with an automatic patching of current configuration
-        
+
         :Return: ``cfg, args``
         """
-        
+
         # Create a patch configuration from commandline arguments
         cfgpatch, args = self.arg_parse(parser, exc=exc, cfgfileopt=cfgfileopt, getargs=True)
-        
+
         #  Load personal config file and default values
         cfg = self.load(args.cfgfile)
-        
+
         #  Patch it with commandeline options
         self.patch(cfg, cfgpatch)
-        
+
         return cfg, args
 
 
     def opt_parse(
-            self, parser=None, exc=[], parse=True, args=None, 
-            getparser=None, cfgfile='config.cfg', 
-            patch=None, cfgfileopt='--cfgfile', cfgfilepatch='before', 
+            self, parser=None, exc=[], parse=True, args=None,
+            getparser=None, cfgfile='config.cfg',
+            patch=None, cfgfileopt='--cfgfile', cfgfilepatch='before',
             nested=None):
         """Options (:mod:`optparse`) and config mixer.
-        
+
             1. Creates command-line options from config defaults
             2. Parse command-line argument and create a configuration patch
-            
-        For instance, the following config define the commandline option 
+
+        For instance, the following config define the commandline option
         ``--section1-my-section2-my-key`` with ``value`` as a default value, s
         tored in a special group of options with a short name and a long description::
-        
+
             [section1] # Short name : long description of the group
                 [[my_section2]]
                     my_key=value
-                    
+
         .. warning:: Section and option names must not contain any space-like character !
-        
-        .. note:: 
-        
+
+        .. note::
+
             If you want to prevent conflict of options, don't use ``"_"`` in
             section and option names.
-        
-        
+
+
         :Params:
-        
+
             - **parser**: optional, a default one is created if not given. This can be:
                 - a :class:`OptionParser` instance
-                - a :class:`dict` with keyword arguments for the one to be created 
+                - a :class:`dict` with keyword arguments for the one to be created
             - **exc**, optional: List of keys to be excluded from parsing.
             - **parse**, optional: If ``True``, parse commande line options and arguments
             - **args**, optional: List of arguments to parse instead of default sys.argv[1:]
@@ -820,19 +835,19 @@ class ConfigManager(object):
                 - True or 'before': the config file would be used before command line options
                 - 'after': the config file would be used after command line options
                 - Any False like value: the config file would not be used
-            
+
         :Return:
             - the :class:`OptionParser` if parse is False
             - the resulting :class:`~configobj.ConfigObj` if parse is True and getparser is not True
             - the resulting :class:`~configobj.ConfigObj` and the :class:`OptionParser` if both parse and getparser are True
         """
-        
+
         # Prepare the option parser
         if parser is None:
             parser = OptionParser()
         elif isinstance(parser, dict):
             parser = OptionParser(**parser)
-        
+
         # Add (or override!) option types checkers
         # Define a new Option class
         class option_class(Option):
@@ -842,7 +857,7 @@ class ConfigManager(object):
         def wrap_option_type_checker(func, islist):
             def wrapper_option_type_checker(opt, name, value):
                 if islist: # Use configobj list parser
-                    value,comment = ConfigObj(list_values=True, interpolation=False, 
+                    value,comment = ConfigObj(list_values=True, interpolation=False,
                         encoding=self._encoding)._handle_value(value)
                     return func(value)
                 else:
@@ -857,17 +872,17 @@ class ConfigManager(object):
             option_class.TYPE_CHECKER[name] = wrap_option_type_checker(func, islist)
         # Replace the parser Option class
         parser.option_class = option_class
-        
+
         # Add the cfgfile option (configurable)
         if cfgfileopt:
             if isinstance(cfgfileopt, basestring):
                 cfgfileopt = (cfgfileopt,)
-            parser.add_option(*cfgfileopt, action='store', type="string", 
+            parser.add_option(*cfgfileopt, action='store', type="string",
                 dest="cfgfile", help='Configuration file [default: "%s"]'%cfgfile, default=cfgfile)
-        
+
         # Default config
         defaults = self.defaults()
-        
+
         # Create global group of options from defaults
         # - inits
         re_match_initcom = re.compile(r'#\s*-\*-\s*coding\s*:\s*\S+\s*-\*-\s*').match
@@ -882,16 +897,15 @@ class ConfigManager(object):
         # - global options
         for key in defaults.scalars:
             if key not in exc:
-                _walker_optcfg_setopt_(defaults, key, raise_errors=True,
-                    call_on_sections=False, group=group, exc=exc, nested=nested, 
+                _walker_optcfg_setopt_(defaults, key, group=group, exc=exc, nested=nested,
                     boolean_false=self._boolean_false)
-#                group.add_option('--'+_cfg2optname_(key, nested), action='store', type="string", 
+#                group.add_option('--'+_cfg2optname_(key, nested), action='store', type="string",
 #                    dest=key, help=_shelp_(defaults, key))
             else:
                 pass
         # - add to parser
         parser.add_option_group(group)
-        
+
         # Create secondary option groups from defaults
         for key in defaults.sections:
             desc = ['Undocumented section']
@@ -901,13 +915,13 @@ class ConfigManager(object):
             section = defaults[key]
             group = OptionGroup(parser, *desc)
             defaults[key].walk(_walker_optcfg_setopt_, raise_errors=True,
-                call_on_sections=False, group=group, exc=exc, nested=nested, 
+                call_on_sections=False, group=group, exc=exc, nested=nested,
                 boolean_false=self._boolean_false)
             parser.add_option_group(group)
-    
+
         # Now create a configuration instance from passed options
         if parse:
-            
+
             if args is None: args = sys.argv[1:]
             (options, args) = parser.parse_args(list(args))
 
@@ -921,7 +935,7 @@ class ConfigManager(object):
 
             # Create a configuration to feed
             cfg = ConfigObj(interpolation=self._interpolation, encoding=self._encoding)
-            
+
             # Initial config from defaults or the one supplied
             if patch:
                 self.patch(cfg, patch if isinstance(patch, ConfigObj) else defaults)
@@ -931,15 +945,15 @@ class ConfigManager(object):
                     cfgfilepatch = 'after'
                 else:
                     cfgfilepatch = 'before'
-                    
+
             # Feed config with cfgfile before command line options
             if cfgfilepatch == 'before' and getattr(options, 'cfgfile', None):
                 self.patch(cfg, self.load(options.cfgfile))
-                
+
             # Feed config with command line options
             defaults.walk(_walker_optcfg_setcfg_, raise_errors=True,
                 call_on_sections=False, cfg=cfg, options=options, nested=nested)
-                
+
             # Feed config with cfgfile after command line options
             if cfgfilepatch == 'after' and getattr(options, 'cfgfile', None):
                 self.patch(cfg, self.load(options.cfgfile))
@@ -949,41 +963,41 @@ class ConfigManager(object):
 
     def opt_patch(self, parser, exc=[], cfgfileopt='cfgfile'):
         """Call to :meth:`arg_parse` with an automatic patching of current configuration
-        
+
         :Return: ``cfg, args``
         """
-        
+
         # Create a patch configuration from commandline arguments
         cfgpatch = self.opt_parse(parser, exc=exc, cfgfileopt=cfgfileopt)
-        
+
         #  Load personal config file and default values
         cfg = self.load(parser.values.cfgfile)
-        
+
         #  Patch it with commandeline options
         self.patch(cfg, cfgpatch)
-        
+
         return cfg
 
 
 
 
 
-    def opt_long_help(self, rst=True, usage="Usage: [prog] [options] ...", 
+    def opt_long_help(self, rst=True, usage="Usage: [prog] [options] ...",
         description="Long help based on config specs"):
         """Get the generic long help from config specs
-        
+
         :Params:
-        
+
             - **rst**, optional: Reformat output in rst.
         """
-        
+
         # Standard options
         parser = OptionParser(usage=usage, description=description, add_help_option=False )
         parser.add_option('-h','--help', action='store_true', dest="help",
             help='show a reduced help')
         parser.add_option('--long-help', action='store_true', dest="long_help",
             help='show an extended help')
-        
+
         # Configuration options
         self.opt_parse(parser, parse=False)
         if rst:
@@ -991,26 +1005,26 @@ class ConfigManager(object):
             shelp = parser.format_option_help(formatter).encode(sys.getdefaultencoding(), 'replace')
         else:
             shelp = parser.format_help().encode(sys.getdefaultencoding(), 'replace')
-        
+
         # Convert to rst
         if rst: shelp = opt2rst(shelp)
-            
+
         return shelp
-        
-    def arg_long_help(self, rst=True, usage=None, 
+
+    def arg_long_help(self, rst=True, usage=None,
         description="Long help based on config specs"):
         """Get the generic long help from config specs
-        
+
         :Params:
-        
+
             - **rst**, optional: Reformat output in rst.
         """
-        
+
         # Standard options
         parser = ArgumentParser(usage=usage, description=description, add_help=False )
         parser.add_argument('-h','--help', action='store_true', help='show a reduced help')
         parser.add_argument('--long-help', action='store_true', help='show an extended help')
-        
+
         # Configuration options
         self.arg_parse(parser, parse=False)
         if rst:
@@ -1023,91 +1037,97 @@ class ConfigManager(object):
             shelp = formatter.format_help()
         else:
             shelp = parser.format_help()
-            
+
         # Encoding
         shelp = shelp.encode(sys.getdefaultencoding(), 'replace')
-        
+
         # Convert to rst
         if rst: shelp = opt2rst(shelp)
-            
+
         return shelp
-        
+
     def get_rst(self):
         """Convert the default configuration to rst declarations with :func:`cfg2rst`"""
         return cfg2rst(self)
 
 
-def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', exc=[], **kwargs):
+def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
+    exc=[], **kwargs):
     """Merge configuration and commandline arguments
-    
+
     :Params:
-    
+
         - **cfgspecfile**: Config specification file (.ini).
         - **parser**: :class:`~argpase.ArgumentParser` instance.
-        - **cfgfileopt**, optional: Name of the option used to specify the 
+        - **cfgfileopt**, optional: Name of the option used to specify the
           user config file. Example: ``'cfgfile'`` creates the option
           ``--cfgfile=<config file>``.
+        - **cfgfile**, optional: Default name for the loaded config file.
         - **exc**, optional: Config option name that must not be used to generated
           a commandline option.
         - Extra params are passed to :class:`ConfigManager` initialization.
-        
+
     :Return: A :class:`ConfigObj` object
-    
+
     :Tasks:
-    
-        1. Initialize a default configuration (:class:`ConfigManager`) 
+
+        1. Initialize a default configuration (:class:`ConfigManager`)
            from the specification file given by ``cfgspecfile``.
         2. Generate associated commandline options.
-        3. Load a user configuration file (specified with the option 
+        3. Load a user configuration file (specified with the option
            whose name is given by ``cfgfileopt``).
         4. Patch this configuration with user supplied options retrieved
            using the :class:`~argpase.ArgumentParser` parser ``parser``.
-           
-        Technically it combines :class:`ConfigManager` and :meth:`ConfigManager.arg_patch`
+
+        Technically it combines :class:`ConfigManager` and :meth:`ConfigManager.arg_parse`
     """
-    return ConfigManager(cfgspecfile, **kwargs).arg_patch(parser, cfgfileopt='cfgfile', exc=exc)
-   
-def cfgoptparse(cfgspecfile, parser, cfgfileopt='cfgfile', exc=[], **kwargs):
+    return ConfigManager(cfgspecfile, **kwargs).arg_parse(
+        parser, cfgfileopt=cfgfileopt, exc=exc, cfgfile=cfgfile, getargs=True)
+
+def cfgoptparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
+    exc=[], **kwargs):
     """Merge configuration and commandline arguments
-    
+
     :Params:
-    
+
         - **cfgspecfile**: Config specification file (.ini).
         - **parser**: :class:`~argpase.ArgumentParser` instance.
-        - **cfgfileopt**, optional: Name of the option used to specify the 
+        - **cfgfileopt**, optional: Name of the option used to specify the
           user config file. Example: ``'cfgfile'`` creates the option
           ``--cfgfile=<config file>``.
+        - **cfgfile**, optional: Default name for the loaded config file.
         - **exc**, optional: Config option name that must not be used to generated
           a commandline option.
         - Extra params are passed to :class:`ConfigManager` initialization.
-    
+
     :Tasks:
-    
-        1. Initialize a default configuration (:class:`ConfigManager`) 
+
+        1. Initialize a default configuration (:class:`ConfigManager`)
            from the specification file given by ``cfgspecfile``.
         2. Generate associated commandline options.
-        3. Load a user configuration file (specified with the option 
+        3. Load a user configuration file (specified with the option
            whose name is given by ``cfgfileopt``).
         4. Patch this configuration with user supplied options retrieved
            using the :class:`~optpase.OptionParser` parser ``parser``.
-           
+
         Technically it combines :class:`ConfigManager` and :meth:`ConfigManager.opt_patch`
     """
-    return ConfigManager(cfgspecfile, **kwargs).opt_patch(parser, cfgfileopt='cfgfile', exc=exc)
-        
+    return ConfigManager(cfgspecfile, **kwargs).opt_parse(
+        parser, cfgfileopt=cfgfileopt, exc=exc, cfgfile=cfgfile, getparser=True)
+
 
 def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
     """Convert options displayed in an help string to rst declarations of options
-    
+
     This is useful for autodocumenting executable python scripts that show a formatted help.
-    
+
     :Params:
-    
+
         - **shelp**: Help string showing options (results from :option:``--help``).
         - **prog**, optional: Program name, otherwise guess it from usage.
-    
+
     :Output: String converted to rst format (with :rst:dir:`cmdoption` directives).
-    
+
     """
     rhelp = []
     multiline = False
@@ -1122,13 +1142,13 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
     re_sec = re.compile(r'^(?:  )?([\w\s]+):(?: (.+))?$').match
     secname = None
     for line in shelp.splitlines():
-        
+
         # Sections
         m = re_sec(line)
         if m and not line.lower().endswith('ex:'):
-            
+
             secname = m.group(1).title().strip()
-            
+
             # Usage
             if secname=='Usage' and m.group(2) is not None:
                 usage = m.group(2).strip()
@@ -1140,46 +1160,46 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
             else:
                 rhelp.extend([secfmt%locals(), ''])
             continue
-        
+
         # Options and other lines
         m = re_opt(line)
         if m:
-            
+
             rhelp.extend(['','\t.. cmdoption:: '+m.group(1), ''])
             multiline = True
             if m.group(2) is not None:
                 rhelp.append('\t\t'+m.group(2).strip())
-                
+
         elif secname and secname.lower()=='positional arguments' and line.startswith(' '*2):
-            
+
             sline = line.split()
             rhelp.extend(['','\t.. cmdoption:: '+sline[0], ''])
             multiline = True
             if len(sline)>1 is not None:
                 rhelp.append('\t\t'+' '.join(sline))
-                
+
         elif multiline and len(line.strip()) and line.startswith(' '*3):
-            
+
             indent = '\t\t'
             if secname=='Usage':
                 indent += '\t'
             rhelp.append(indent+line.strip())
         #elif secname==descname:
         #    rhelp.append('\t'+line)
-        
+
         else:
-            
+
             rhelp.append(line)
             multiline = False
             if secname=='Usage':
                 secname = descname
                 rhelp.extend([secfmt%locals(), ''])
-        
+
     return '\n'.join(rhelp)
 
 def _opt2cfgname_(name, nested):
     cfgkey = name.replace('-', '_')
-    if nested and cfgkey.startswith(nested+'_'): 
+    if nested and cfgkey.startswith(nested+'_'):
         cfgkey = cfgkey[len(nested+'_'):]
     return cfgkey
 
@@ -1197,11 +1217,11 @@ class _attdict_(dict):
 def getspec(spec, validator=None):
         '''
         Get an option specification.
-        
+
         :Params:
             - **spec**: the specification string
             - **validator**: (optional) the validator to use
-        
+
         :Return: A dict with keys:
             - **funcname**: the validation function name
             - **args**:  the positionnal arguments
@@ -1211,20 +1231,20 @@ def getspec(spec, validator=None):
             - **func**: the validation function
             - **opttype**: the function used with :mod:`optparse`
             - **argtype**: the function used with :mod:`argparse`
-        
+
         Read access to these keys can also be done as attribute of the returned dict
         (d.funcname == d['funcname'], ...)
-        
+
         For example, a specification file containing:
-        
+
         [section]
             option = integer(default=0, min=-10, max=10)
-            
+
         Would return: (integer, [], {'min': '-10', 'max': '10'}, 0)
-        
+
         This can be usefull when you added extraneous named arguments into your
         specification file for your own use.
-        
+
         '''
         if not validator:
             validator = Validator()
@@ -1265,13 +1285,13 @@ def _walker_optcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
     parents = _parent_list_(sec, names=False)
     cfgkey = '_'.join([p.name.strip('_') for p in parents]+[key])
     for option, value in options.__dict__.items():
-        
+
         # Option not set
         if value is None: continue
-        
+
         # Option matches key?
         if _opt2cfgname_(option, nested) != cfgkey.lower(): continue
-        
+
         # Check or create cfg genealogy
         s = cfg
         for p in parents:
@@ -1287,10 +1307,10 @@ def _walker_optcfg_setopt_(sec, key, group=None, exc=None, nested=None, boolean_
     pp = _parent_list_(sec)
     varname = '_'.join(pp+[key])
     optkey = _cfg2optname_(varname, nested)
-    
+
     # Check exceptions
     if key in exc: return
-    
+
     # Add option to group
     spec = _validator_specs_.get(sec.configspec[key].split('(', 1)[0], {})
     type = spec.get('opttype', 'string')
@@ -1307,8 +1327,8 @@ def _walker_optcfg_setopt_(sec, key, group=None, exc=None, nested=None, boolean_
             action=action,
             type=type,
             dest=varname,
-            help=_shelp_(sec, key), 
-            default=default, 
+            help=_shelp_(sec, key),
+            default=default,
     )
 
 def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
@@ -1317,13 +1337,13 @@ def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
     parents = _parent_list_(sec, names=False)
     cfgkey = '_'.join([p.name.strip('_') for p in parents]+[key])
     for option, value in options._get_kwargs():
-        
+
         # Option not set
         if value is None: continue
-        
+
         # Option matches key?
         if _opt2cfgname_(option, nested) != cfgkey.lower(): continue
-        
+
         # Check or create cfg genealogy
         s = cfg
         for p in parents:
@@ -1332,7 +1352,7 @@ def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
             s = s[p.name]
         s[key] = value
 
-def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding=None, 
+def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding=None,
     boolean_false=True):
     """Walker to set options"""
     # Find option key and output var name
@@ -1340,23 +1360,23 @@ def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding
     pp = _parent_list_(sec)
     varname = '_'.join(pp+[key])
     optkey = _cfg2optname_(varname, nested)
-    
+
     # Check exceptions
     if key in exc: return
     spec = _validator_specs_.get(sec.configspec[key].split('(', 1)[0], {})
-    
+
     # Define the wrapping function for argparse argument types which also handle list values
     def wrap_argparse_type(func, islist):
         def wrapper_argparse_type(value):
             if islist: # Use configobj list parser
-                value,comment = ConfigObj(list_values=True, interpolation=False, 
+                value,comment = ConfigObj(list_values=True, interpolation=False,
                     encoding=encoding)._handle_value(value)
                 return func(value)
             else:
                 return func(value)
         wrapper_argparse_type.__name__ += '-'+func.__name__
         return wrapper_argparse_type
-        
+
     # Add argument to group
     type = wrap_argparse_type(spec.get('func', lambda s:s), spec.get('iterable', None))
     kw = {}
@@ -1369,31 +1389,31 @@ def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding
     group.add_argument(
         '--'+optkey,
             action=action,
-            help=_shelp_(sec, key), 
+            help=_shelp_(sec, key),
             **kw
     )
 
-def _shelp_(sec, key, format='%(shelp)s [default: %(default)r]', mode='auto', 
+def _shelp_(sec, key, format='%(shelp)s [default: %(default)r]', mode='auto',
     undoc='Undocumented', adddot=True):
     """Get help string
-    
+
     :Params:
-    
+
         - **mode**:
-        
+
             - inline: inline comment only,
             - above: above comments only,
             - merge: merge inline and above comments,
             - auto: if one is empty use the other one, else use inline
-    
+
     """
     # filter
     def strip(c):
         return c.strip().strip('#').strip()
     abcoms = map(strip, filter(lambda c: c is not None, sec.comments[key]))
     incoms = map(strip, filter(lambda c: c is not None, [sec.inline_comments[key]]))
-    
-    
+
+
     # Merge comments above item and its inline comment
     if mode=='merge':
         comments = abcoms+incoms
@@ -1406,12 +1426,12 @@ def _shelp_(sec, key, format='%(shelp)s [default: %(default)r]', mode='auto',
         comments = abcoms
     else:
         comments = incoms
-        
+
     # Force comments to end with a dot '.'
     if adddot:
         comments = [c.endswith('.') and c or '%s.'%c for c in comments]
     shelp = '\n'.join(comments)
-    
+
     # If no comments
     if not shelp: shelp = undoc
     default = _sdefault_(sec, key)
@@ -1445,9 +1465,9 @@ def _walker_patch_(patch_sec, patch_key, cfg):
     except:
         pass
     sec[patch_key] = patch_sec[patch_key]
-    
+
 def _walker_cfg2rst_(cfg, key, lines):
-    
+
     # Name
     secnames = get_secnames(cfg)
     if key in cfg.sections:
@@ -1460,19 +1480,19 @@ def _walker_cfg2rst_(cfg, key, lines):
         else:
             name = key
         conftype = 'confopt'
-    
+
     # Description
     desc = cfg.inline_comments.get(key)
     if desc is None: desc = ''
     desc = desc.strip('#').strip()
-    
+
     # Formatting
     desc = redent(desc, 1)
     text = '.. %(conftype)s:: %(name)s\n\n%(desc)s\n'%locals()
     text = redent(text, cfg.depth)
-    
+
     lines.append(text)
- 
+
 
 def _walker_set_boolean_false_by_default_(sec, key, validator=None):
     if validator is None: return
@@ -1502,54 +1522,54 @@ def redent(text, n=1, indent='    '):
 
 def cfg2rst(cfg):
     """Convert a configuration to rst format
-    
+
     Configuration sections are declared with the rst directive
     "confsec" and options are declared with the rst directive
     "confopt".
-    
+
     For instance:
-    
+
     .. code-block:: ini
-    
+
         a=1 # desc a
         [s1] # desc s1
             b=2  # desc b
             [[s2]] # desc s2
                 c=$a-$b # desd c
                 [sec1] # section 1
-            
+
     is converted to:
-    
+
     .. code-block:: rst
-    
+
         .. confopt:: a
-        
+
             desc a
-        
+
         .. confsec:: [s1]
-        
+
             desc s1
-        
+
             .. confopt:: [s1] b
-            
+
                 desc b
-            
+
             .. confsec:: [s1][s2]
-            
+
                 desc s2
-            
+
                 .. confopt:: [s1][s2] c
-                
+
                     desd c
-    
+
     Then one can reference an option with for example ``:confopt:`[s1][s2]c`.
-    
+
     :Params:
-    
+
         - **cfg**: :class:`ConfigObj` or :class:`ConfigManager` instance.
           In the case of a :class:`ConfigManager`, the :meth:`~ConfigManager.defaults`
           are used.
-          
+
     :Return: rst string
     """
     out = ''
@@ -1558,7 +1578,7 @@ def cfg2rst(cfg):
     lines = []
     cfg.walk(_walker_cfg2rst_, call_on_sections=False, lines=lines)
     return '\n'.join(lines)
-    
+
 
 def print_short_help(parser, formatter=None):
     """Print all help of an :class:`~optparse.OptionParser` instance but those of groups."""
@@ -1582,9 +1602,9 @@ def print_short_help(parser, formatter=None):
         del result[-1]
         result.append(parser.format_epilog(formatter))
         print "".join(result)
-        
+
     elif isinstance(parser, ArgumentParser):
-        
+
         if formatter is None:
             formatter = parser._get_formatter()
 
@@ -1608,7 +1628,7 @@ def print_short_help(parser, formatter=None):
 
         # determine help from format above
         parser._print_message(formatter.format_help(), sys.stdout)
-        
+
 
 if __name__=='__main__':
     shelp="""Usage: showtime.py [options] ncfile

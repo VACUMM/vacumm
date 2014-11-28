@@ -17,8 +17,9 @@ for line in f:
 f.close()
 version_sphinx = release
 # - from svn
-if os.path.exists(os.path.join(rootdir,'.svn/entries')):
-    f = open('.svn/entries')
+svnfile = os.path.join(rootdir,'.svn/entries')
+if os.path.exists(svnfile):
+    f = open(svnfile)
     line = f.readlines()[3][:-1]
     f.close()
     release += '-svn%i'%eval(line)

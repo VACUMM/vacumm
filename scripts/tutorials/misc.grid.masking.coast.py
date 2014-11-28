@@ -46,5 +46,4 @@ map2(mask1, subplot=224, key=4, **kwplot)
 # Figure
 from vacumm.misc.plot import savefigs
 savefigs(__file__, pdf=True)
-P.show()
-
+P.close()

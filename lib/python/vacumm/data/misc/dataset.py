@@ -159,17 +159,17 @@ def _get_var_(self, name, mode=None, **kwargs):
     # Get it from other locations
     if check_mode('stag', mode):
         kwargs = kwargs.copy()
-        loc = kwargs.pop('at', None)
-        if loc is None:
-            loc = get_loc(name, 'name', mode='ext', default=default_location)
+        toloc = kwargs.pop('at', None)
+        if toloc is None:
+            toloc = get_loc(name, 'name', mode='ext', default=default_location)
         locations = list(arakawa_locations)
-        locations.remove(loc)
+        locations.remove(toloc)
         if ploc:
             if ploc in locations: locations.remove(ploc)
             locations.insert(0, ploc)
         for fromloc in locations: #TODO: arakawa: clever order for loc2loc tries (use closer neighbours)
             fname = change_loc_single(gname, 'name', fromloc)
-            var = self.get_variable(fname, at=loc, at_fromloc=fromloc, **kwargs)
+            var = self.get_variable(fname, at=toloc, at_fromloc=fromloc, **kwargs)
             if var is not None: return var
         
         if check_mode('stag', mode, strict=True): 
@@ -1772,7 +1772,7 @@ class Dataset(Object):
         """
         # No grid type
         atts = get_atts(var, extra=hidden_cf_atts+cdms2_arakawa_atts)
-        if not self.arakawa_grid_type or var.getGrid() is None:
+        if not self.arakawa_grid_type:# or var.getGrid() is None:
             if copy: 
                 var = var.clone()
             set_atts(var, atts)
@@ -1849,7 +1849,7 @@ class Dataset(Object):
                 var = var(order=order)
             
             # Rectangular if possible
-            if torect: self.torect(var)
+            if torect: self.torect(var, curvsel)
             
             # At/toloc
             if at:
@@ -1880,7 +1880,7 @@ class Dataset(Object):
             
         return var
     
-    def torect(self, var):
+    def torect(self, var, curvsel=None):
         """Place a variable on rectangular grid if possible using 
         :func:`~vacumm.misc.grid.regridding.curv2rect`
         
@@ -1898,6 +1898,9 @@ class Dataset(Object):
         lonid = getattr(lon, '_oldid', lon.id)
         latid = getattr(lat, '_oldid', lat.id)
         ids = (lonid, latid)
+        if curvsel:
+            ids += curvsel.geosels, 
+        ids = str(ids)
         
         # Check cache
         if not hasattr(self, '_rgrids'):

@@ -317,21 +317,28 @@ To add a new one:
      :file:`test_units_deg2m.py`.
    - Insert a docstring of a single line telling what the script tests.
      See examples here: :ref:`appendix.tests`.
-   - Make explicit imports (without \*)::
+   - Make explicit imports (without \*):
        
+     .. code-block:: rst
+   
        from vcmq import DS
    
-   - If you create one or several figure, use the follwing syntax
-     to name you file::
+   - If you create one or several figures, use the following syntax
+     to name your file:
        
-       from vcmq import code_base_name
+     .. code-block:: python
+     
+       from vcmq import code_file_name
        
        # single file
        figfile = code_base_name()
        
        # multiple files
-       figfile1 = code_base_name(ext='_1.png')
-       figfile2 = code_base_name(ext='_2.png')
+       figfile1 = code_file_name(ext='_1.png')
+       figfile2 = code_file_name(ext='_2.png')
+       
+     All your figure files will be created in the same directory as
+     the script, either executed directly or from the :mod:`unittest` framework.
        
    - At the end of the script, you can set the ``result`` variable.
      This variable will be latter used by the testing framework to 
@@ -349,26 +356,31 @@ To add a new one:
        to the method.
      - A callable object: The second element is passed to this object.
      
-     Example::
+     Example:
          
+     .. code-block:: python
+     
          result = [
             ('files', 'myfile.nc'), ('files', ['myfile1.cfg', 'myfile2.cfg']),
             ('assertEqual', (var1, 1.5)), ('assertTrue', N.ma.allclose(var1,var2)),
             (mytestfunc, (arg1, arg2))]
             
-2. Create a test module in the :file:`test` directory, if it does not exist,
-   with the follwing rules:
+2. The script must now be integrated to the :mod:`unittest` framework.
+   Create a test module in the :file:`test` directory, if it does not exist,
+   with the following rules:
        
    - Its name follows the same naming rules has for the test script:
      it is the root part of the names of the test scripts it will test.
      Using the example above, it must be named :file:`test_units.py`,
      and contain all the test of the :mod:`vacumm.misc.phys.units` module.
-   - Its contents must be close to the following example::
+   - Its contents must be close to the following example:
        
+     .. code-block:: python
+     
         from utils import *
 
 
-        class TestSequenceFunctions(VCTestCase):
+        class TSF(VCTestCase):
 
             for test_name in [
                 'test_units_deg2m',
@@ -379,16 +391,15 @@ To add a new one:
         if __name__ == '__main__':
             unittest.main()
                 
-     The header of the :class:`TestSequenceFunctions` contains a loop
+     The header of the :class:`TSF` 
+     (or :class:`TestSequenceFunctions`) class contains a loop
      on all the test scripts names (without suffix) that will be tested.
      If the module already exists, just add your new test script to this loop. 
       
 3. If the test module does not exist, add an entry the ``TEST`` variable
    of the :file:`test/Makefile` file.
-4. Update the documentation:
-   
-   .. code-block:: bash
-   
+4. Update the documentation::
+      
         $ cd doc/sphinx/source/tests
         $ make.py
         
@@ -410,6 +421,7 @@ To add a new one:
             test_units_*
     
    Then commit this file too.
+
 
 Tagging of versions
 ===================
@@ -438,8 +450,15 @@ When a version is ready to be tagged, proceed with the following steps:
 Using a tag named with ``'vacumm'`` and the version string ``'X.Y.Z'`` together is a preferred way since a checkout will then result in an explicit :file:`vacumm-X.Y.Z` directory (instead of a lonely :file:`X.Y.Z`).
 
 After a tag have been created, you can then change :attr:`vacumm.__version__` from, for example ``1.0.0`` to ``1.1.0.alpha`` to mark a difference for the people who uses the trunk.
-However these users must be aware of what they're doing and then know if the ``1.0.0`` version they're using is the trunk or the real 1.0.0 version.
+However these users must be aware of what they're doing and then know if the ``1.0.0`` version they're using is the trunk or the real ``1.0.0`` version.
 The most important thing to do is to correctly setup the version number before creating a new tag.
+The rules for changing setting the version number are typically the following:
+    
+    - If the changes are mainly bug fixes, change the last digit: ``1.0.X``.
+    - If the changes are new features of medium importance or 
+      changes that does not affect compatibility, change the second digit: ``1.X.0``.
+    - If a major feature has been added or if changes add important incompatibilities,
+      changes the first digit: ``X.0.0``.
 
 If you created the tag too quickly and need to correct something, then
     - fix it
@@ -473,7 +492,7 @@ Get it on your local copy of the tree::
 Update it in case the trunk has changed::
     
     $ cd {/path/to/}branches/mybranch
-    $ svn up ^/trunk
+    $ svn merge ^/trunk
     
 Commit intermediate changes to your branch::
     

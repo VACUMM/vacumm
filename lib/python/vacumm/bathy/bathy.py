@@ -492,7 +492,7 @@ class XYZBathy(XYZ):
         
 
         # Shoreline for masking
-        if mask is not None and mask is not False and mask is not MV2.nomask:
+        if mask is not None and mask is not False and mask is not MV2.nomask and grid is not None:
             
             # Clip for polygons
             kwmask = kwfilter(kwargs, 'mask')
