@@ -11,6 +11,9 @@ In development
 - Fixed bugs: list_forecast_files, Plot.add_lon/lat.
 - Fixed: ConfigManager.opt_parse.
 
+- Added: docversions sphinx extension.
+- Fixed: ConfigManager.opt_parse, Shapes.
+
 Version 2.4.0
 ==============
 

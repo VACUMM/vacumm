@@ -37,6 +37,6 @@ data_out = regrid1d(data_in, depth_out, axis=1, method='linear',
 # Plot
 kw = dict(vmin=10, vmax=14, xhide='auto', add_grid=True, ymax=0, fill='contourf')   # FILL=PCOLOR ?
 section2(data_in[0, :, 10], yaxis=depths_in[0, :, 10], subplot=211, title='Sigma', show=False, **kw)
-s = section2(data_out[0, :, 10], subplot=212, title='Z', **kw)
+s = section2(data_out[0, :, 10], subplot=212, title='Z', savefig=__file__, **kw)
 
 

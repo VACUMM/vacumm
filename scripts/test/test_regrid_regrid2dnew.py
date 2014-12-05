@@ -58,7 +58,7 @@ plot2d(varo, title='VACUMM / Bilinear', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridri, **kwg)
 # - bilin c2c / vacumm
 varo = regrid2dnew(varci, gridco, method='bilinear', tool='vacumm')
-plot2d(varo, title='ESMF / Bilinear', subplot=(4,3,ip), **kw);ip+=1
+plot2d(varo, title='VACUMM / Bilinear', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridci, **kwg)
 # - bilin c2c / emsf
 varo = regrid2dnew(varci, gridco, method='bilinear', tool='esmf')
@@ -74,7 +74,7 @@ plot2d(varo, title='VACUMM / Dstwgt', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridci, **kwg)
 # - patch c2c / emsf
 varo = regrid2dnew(varci, gridco, method='patch', tool='esmf')
-plot2d(varo, title='ESMF / Bilinear', subplot=(4,3,ip), **kw);ip+=1
+plot2d(varo, title='ESMF / Patch', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridci, **kwg)
 # - cellave r2r / regrid2
 varo = regrid2dnew(varri, gridro, method='cellave', tool='regrid2')
