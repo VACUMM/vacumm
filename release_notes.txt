@@ -4,7 +4,8 @@ Release notes
 In development
 ==============
 
-- Fixed: ConfigManager.opt_parse.
+- Added: docversions sphinx extension.
+- Fixed: ConfigManager.opt_parse, Shapes.
 
 Version 2.4.0
 ==============

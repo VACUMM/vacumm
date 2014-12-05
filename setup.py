@@ -40,14 +40,14 @@ url="http://www.ifremer.fr/vacumm"
 classifiers = ["Development Status :: 4 - Beta",
                "Intended Audience :: Science/Research",
                "License :: CeCiLL",
-               "Programming Language :: Python :: 2", 
-               "Topic :: Scientific/Engineering :: Physics", 
+               "Programming Language :: Python :: 2",
+               "Topic :: Scientific/Engineering :: Physics",
                "Topic :: Scientific/Engineering :: Mathematics",
-               "Topic :: Scientific/Engineering :: Atmospheric Science", 
+               "Topic :: Scientific/Engineering :: Atmospheric Science",
                "Topic :: Software Development :: Libraries :: Python Modules",
-               "Operating System :: POSIX", 
-               "Operating System :: UNIX", 
-               "Operating System :: MacOS :: MacOS X", 
+               "Operating System :: POSIX",
+               "Operating System :: UNIX",
+               "Operating System :: MacOS :: MacOS X",
                ]
 
 # Setup
@@ -55,21 +55,21 @@ from numpy.distutils.core import setup
 from numpy.distutils.misc_util import Configuration
 def configuration(parent_package='',top_path=None):
     from numpy.distutils.misc_util import Configuration
-    
+
     # Initialize
-    config = Configuration(None, 
-        parent_package=parent_package, 
-        top_path=top_path, 
+    config = Configuration(None,
+        parent_package=parent_package,
+        top_path=top_path,
     )
-    
+
     # Set options
     config.set_options(
         ignore_setup_xxx_py=True,
         assume_default_configuration=True,
-        quiet=True, 
-        delegate_options_to_subpackages=True, 
-    )   
-   
+        quiet=True,
+        delegate_options_to_subpackages=True,
+    )
+
     # Add scripts
     from glob import glob
     scripts = []
@@ -86,10 +86,10 @@ def configuration(parent_package='',top_path=None):
     config.add_data_dir(('vacumm/vacumm-scripts/test', 'scripts/test')) # test scripts
     config.add_data_dir(('vacumm/vacumm-scripts/tutorials', 'scripts/tutorials')) # tutorials
     config.add_data_dir(('vacumm/vacumm-scripts/courses', 'scripts/courses')) # courses
-    
-       
+
+
     return config
-    
+
 # Add the --cfgfile option to install command
 from numpy.distutils.command.install_data import install_data as numpy_install_data
 #from numpy.distutils.command.sdist import sdist as numpy_sdist
@@ -116,7 +116,7 @@ class vacumm_install_data(numpy_install_data):
 from numpy.distutils.command.install import install as numpy_install
 class vacumm_install(numpy_install):
     user_options = numpy_install.user_options + [
-        ('cfgfiles=', None, "VACUMM main and secondary configuration files to replace defaut values"), 
+        ('cfgfiles=', None, "VACUMM main and secondary configuration files to replace defaut values"),
     ]
     def initialize_options (self):
         numpy_install.initialize_options(self)
@@ -151,7 +151,7 @@ if __name__ == '__main__':
 
 
     # Lauch setup
-    setup(name='vacumm', 
+    setup(name='vacumm',
         version = version,
         description = description,
         long_description = long_description,
@@ -160,13 +160,13 @@ if __name__ == '__main__':
         maintainer = author,
         maintainer_email = author_email,
         license = license,
-        url=url, 
-        package_dir= {'':'lib/python'}, 
-        py_modules = ['vcmq'], 
-        classifiers = classifiers, 
-        cmdclass={'install':vacumm_install, 'install_data':vacumm_install_data, 'bdist_rpm':vacumm_bdist_rpm}, 
+        url=url,
+        package_dir= {'':'lib/python'},
+        py_modules = ['vcmq'],
+        classifiers = classifiers,
+        cmdclass={'install':vacumm_install, 'install_data':vacumm_install_data, 'bdist_rpm':vacumm_bdist_rpm},
         configuration=configuration
-          
+
     )
 
 

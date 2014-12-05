@@ -93,7 +93,7 @@ __all__ = [ 'traj', 'ellipsis',
     'curve2', 'bar2', 'stick2', 'hov2' , 'map2', 'section2',
     'minimap', 'add_map_point', 'add_map_line', 'add_map_lines', 'add_map_box',  'rshpere_wgs84',
     'add_glow', 'add_shadow', 'add_agg_filter', 'plot2d', 'hlitvs',
-    'add_compass', 'add_param_label', 'dtarget']
+    'add_compass', 'add_param_label', 'dtarget', 'add_map_places']
 __all__.sort()
 
 
@@ -3749,7 +3749,8 @@ def add_map_point(gg, lon, lat, marker='o', color='r', size=40,  m=None, alpha=1
     if m is None: m = minimap(gg, **kwmap)
     return m.add_point(lon, lat, size=size, color=color, marker=marker, **kwargs)
 
-def add_map_places(gg, lon, lat,txt, marker='o', color='r', size=40,  m=None, alpha=1, **kwargs):
+def add_map_places(gg, lon, lat, txt, marker='o', color='r', size=40,  m=None,
+        alpha=1, **kwargs):
     """Add a small map with one or several places at specified longitude and latitude
 
     :Params:
