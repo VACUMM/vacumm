@@ -1148,6 +1148,8 @@ class Dataset(Object):
         if ncvarid is None:
             ncvarid = ncfind_var(self.dataset[0], search, searchmode=searchmode)
         self._set_cached_ncid_(genname, ncvarid)
+        if ncvarid is not None and  isaxis(self.dataset[0][ncvarid]):
+            ncvarid = None
         if ncvarid is None:
             if warn:
                 self.warning('Variable not found with search specs: %s (in file %s)', search, self.dataset[0])
