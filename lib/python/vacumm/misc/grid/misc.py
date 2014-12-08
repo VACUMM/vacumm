@@ -1752,6 +1752,12 @@ def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
 
     # Check limits of 2D axes
     if checklims:
+
+        if not  isinstance(xx, N.ndarray):
+            xx = N.asarray(xx)
+        if not isinstance(yy, N.ndarray):
+            yy = N.asarray(yy)
+
         if xx[:].ndim==2:
             if isaxis(xx):
                 xx = xx.clone()
