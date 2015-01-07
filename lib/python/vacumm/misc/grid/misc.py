@@ -1747,10 +1747,10 @@ def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
 
     # Pure numeric?
     xxn = _cdat2num_(xx)
-    xxn = _cdat2num_(yy)
+    yyn = _cdat2num_(yy)
     if num:
         xx = xxn
-        yy = xxn
+        yy = yyn
 
     # Check limits of 2D axes
     if checklims:
