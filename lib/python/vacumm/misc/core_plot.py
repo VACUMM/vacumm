@@ -709,7 +709,8 @@ class Plot(object):
 
 
     def pre_plot(self, axes=None, figure=None, figsize=None, subplot=None, twin=None,
-        subplots_adjust=None, bgcolor=None, noframe=False, fullscreen=False, verbose=False, **kwargs):
+        subplots_adjust=None, bgcolor=None, noframe=False, fullscreen=False,
+        verbose=False, axes_host=False, axes_xoffset=0, **kwargs):
         """Initialize the plot
 
         :Tasks:
@@ -794,16 +795,30 @@ class Plot(object):
             self.fig.subplots_adjust(**subplots_adjust)
 
         # Axes
+        if axes_host and axes is None and subplot is None and not axes_rect  \
+                and twin is None:
+            subplot = 111
         if axes is not None:
             self.axes = axes
             if self.axes.get_figure() != self.fig:
                 if verbose: print 'Axes does not match figure'
                 self.fig = self.axes.get_figure()
         elif subplot is not None:
-            if isinstance(subplot,(list,tuple)):
-                self.axes = self.fig.add_subplot(*subplot,**kwaxes)
+            if axes_host:
+#                from mpl_toolkits.axes_grid1 import host_subplot
+                from mpl_toolkits.axes_grid1.parasite_axes import host_subplot_class_factory
+                from mpl_toolkits.axisartist import Axes as AAxes
+                host_subplot_class = host_subplot_class_factory(AAxes)
+                if isinstance(subplot,(list,tuple)):
+                    self.axes = host_subplot_class(self.fig, *subplot, **kwaxes)
+                else:
+                    self.axes = host_subplot_class(self.fig, subplot, **kwaxes)
+                self.fig.add_subplot(self.axes)
             else:
-                self.axes = self.fig.add_subplot(subplot,**kwaxes)
+                if isinstance(subplot,(list,tuple)):
+                    self.axes = self.fig.add_subplot(*subplot,**kwaxes)
+                else:
+                    self.axes = self.fig.add_subplot(subplot,**kwaxes)
         elif axes_rect:
             self.axes = self.fig.add_axes(*axes_rect,**kwaxes)
         else:
@@ -811,7 +826,20 @@ class Plot(object):
                 self.axes = twinxy(twin, ax=self.axes)
             else:
                 self.axes = P.gca()
-        self.fig.sca(self.axes)
+        try: # Fails with host
+            self.fig.sca(self.axes)
+        except:
+            pass
+        if axes_xoffset and hasattr(self.axes, 'get_grid_helper'):
+            new_fixed_axis = self.axes.get_grid_helper().new_fixed_axis
+            if axes_xoffset>0:
+                loc = 'right'
+            else:
+                loc = 'left'
+            offset = (axes_xoffset, 0)
+            self.axes.axis[loc] = new_fixed_axis(loc=loc, axes=self.axes, offset=offset)
+            self.axes.axis[loc].toggle(all=True)
+
         if noframe:
             self.axes.set_frame_on(False)
         if bgcolor is not None:
@@ -1485,6 +1513,8 @@ class Plot(object):
         if (transform is self.axes.transData or transform in self.axes.transData._parents.values() \
             or str(self.axes.transData) in str(transform)) and xyscaler is not False: # Add transform from ie degrees to m
             if xyscaler is None and hasattr(self, 'xyscaler'): xyscaler = self.xyscaler
+            x = _asnum_(x)
+            y = _asnum_(y)
             if xyscaler:
                 x, y = xyscaler(x, y)
 
@@ -2038,7 +2068,8 @@ class Plot(object):
 
         return o
 
-    def add_place(self, x, y, text, zorder=150, shadow=False, glow=False, text_offset=(0, 10), **kwargs):
+    def add_place(self, x, y, text, zorder=150, shadow=False, glow=False,
+            text_offset=(0, 10), **kwargs):
         """Place a point using :meth:`add_point` and a label using :meth:`add_text`
 
         :Examples:
@@ -6097,8 +6128,8 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
     if not nominor and not isinstance(minor_locator, NullLocator):
         if minor_formatter is True:
             minor_formatter = AutoDateFormatter2()
-        elif isinstance(minor_formatter, str):
-            minor_formatter = DateFormatter(fmt)
+        elif isinstance(minor_formatter, basestring):
+            minor_formatter = DateFormatter(minor_formatter)
         if minor_formatter:
             axis.set_minor_formatter(minor_formatter)
 
@@ -6820,6 +6851,31 @@ def _asnum_(xy):
     if single: return out[0]
     return out
         
+
+def _asnum_(xy):
+    """Get xy as a number
+
+    If it is a number or a numpy array, it not converted,
+    else it is converted with :func:`numtime`.
+
+    xy can also be a list, a list of lists, etc.
+    """
+    if isinstance(xy, N.ndarray): return xy
+    single = not isinstance(xy, list)
+    xys = xy if not single else [xy]
+    out = []
+    for xy in xys:
+        if is_numtime(xy):
+            out.append(xy)
+            continue
+        if isinstance(xy, list):
+            out.extend(xy)
+            continue
+        xy = numtime(xy)
+        out.append(xy)
+    if single: return out[0]
+    return out
+
 
 docfiller.scan(Plot, Plot.format_axes, Plot.load_data, Plot._check_order_,
     Plot.pre_plot, Plot.post_plot,

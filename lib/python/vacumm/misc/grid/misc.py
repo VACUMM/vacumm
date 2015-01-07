@@ -1746,19 +1746,21 @@ def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
             yy = gg.getAxis(-2)
 
     # Pure numeric?
+    xxn = _cdat2num_(xx)
+    yyn = _cdat2num_(yy)
     if num:
-        xx = _cdat2num_(xx)
-        yy = _cdat2num_(yy)
+        xx = xxn
+        yy = yyn
 
     # Check limits of 2D axes
     if checklims:
-        if xx[:].ndim==2:
+        if xxn[:].ndim==2:
             if isaxis(xx):
                 xx = xx.clone()
                 xx[:] = N.ma.masked_outside(xx[:], -720., 720., copy=False)
             else:
                 xx = N.ma.masked_outside(xx[:], -720., 720., copy=False)
-        if yy[:].ndim==2:
+        if yyn[:].ndim==2:
             if isaxis(yy):
                 yy = yy.clone()
                 yy[:] = N.ma.clip(yy[:], -720., 720.)
@@ -1776,10 +1778,10 @@ def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
     if mesh is True:# and (xx[:].ndim == 1 or  yy[:].ndim == 1):
         return meshgrid(xx[:], yy[:])
     elif mesh is False:
-        if xx[:].ndim == 2:
-            xx = _cdat2num_(xx)[0]
-        if yy[:].ndim == 2:
-            yy = _cdat2num_[:, 0]
+        if xxn[:].ndim == 2:
+            xx = xxn[0]
+        if yyn[:].ndim == 2:
+            yy = xxn[:, 0]
 
     return  xx, yy
 

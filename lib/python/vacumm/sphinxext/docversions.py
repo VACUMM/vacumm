@@ -40,6 +40,7 @@ from collections import OrderedDict
 from glob import glob
 
 from sphinx.directives import Directive
+from sphinx.util.console import bold
 from docutils.parsers.rst.directives import unchanged,single_char_or_unicode,positive_int
 from docutils import nodes
 from docutils.statemachine import string2lines
@@ -49,7 +50,8 @@ class VersionFinder(object):
 
         # Store config
         self.subpath_doc = config.docversions_subpath_doc.strip(os.path.sep)
-        self.subpath_buildhtml = os.path.join(self.subpath_doc, config.docversions_subpath_buildhtml)
+        self.subpath_buildhtml = os.path.join(self.subpath_doc,
+            config.docversions_subpath_buildhtml)
         self.subpath_version_file = config.docversions_subpath_version_file
         self.subpath_version_var = config.docversions_subpath_version_var
         self.subpath_versions = config.docversions_subpath_versions
@@ -57,16 +59,27 @@ class VersionFinder(object):
         self.template = config.docversions_template
 
         # Where are we?
-        self.current_src_dir = os.path.abspath(os.path.join(*['..']*(self.subpath_doc.count(os.path.sep)+1)))
+        self.current_src_dir = os.path.abspath(
+            os.path.join(*['..']*(self.subpath_doc.count(os.path.sep)+1)))
         self.current_html_dir = os.path.join(self.current_src_dir, self.subpath_buildhtml)
         if os.path.basename(self.current_src_dir) =='trunk' :
             self.trunk_path = self.current_src_dir
             self.tags_path = os.path.abspath(os.path.join(self.trunk_path, '../tags'))
+            self.branches_path = os.path.abspath(
+                os.path.join(self.trunk_path, '../branches'))
         else:
-            self.tags_path = os.path.abspath(
-                os.path.join(self.current_src_dir, '..'))
             self.trunk_path = os.path.abspath(
                 os.path.join(self.current_src_dir, '../../trunk'))
+            upper_path = os.path.abspath(
+                os.path.join(self.current_src_dir, '..'))
+            if upper_path=='tags':
+                self.tags_path = upper_path
+                self.branches_path = os.path.abspath(
+                    os.path.join(self.current_src_dir, '../../branches'))
+            else:
+                self.branches_path = upper_path
+                self.tags_path = os.path.abspath(
+                    os.path.join(self.current_src_dir, '../../tags'))
 
 
     def find_version_label(self, src_dir):
@@ -86,7 +99,7 @@ class VersionFinder(object):
             print e.message
 
 
-    def get_other_version_specs(self, src_dir):
+    def get_tag_specs(self, src_dir):
         """Get the version name and directories knowing the src dir"""
         if not os.path.isdir(src_dir): return
         if src_dir==self.current_src_dir: return
@@ -99,6 +112,12 @@ class VersionFinder(object):
         html_dir = os.path.join(src_dir, self.subpath_buildhtml)
         if os.path.isdir(html_dir):
             return (version, html_dir)
+
+    def get_branch_specs(self, src_dir):
+        """Get the branch name, version name and directories knowing the src dir"""
+        specs = self.get_tag_specs(src_dir)
+        if specs is None: return
+        return os.path.basename(src_dir), specs[1]
 
 
 
@@ -143,21 +162,30 @@ class DocversionsDirective(Directive):
 def store_versions(app):
     """Find versions and store them in app.builder.env"""
 
+    app.info(bold('searching for other html docs...'), nonl=True)
+
     # Version finder
     VF = VersionFinder(app.config)
 
     # Find directory and name of versions
     versions = []
     # - trunk
-    specs = VF.get_other_version_specs(VF.trunk_path)
+    specs = VF.get_tag_specs(VF.trunk_path)
     if specs:
         versions.append(('trunk',)+specs[1:])
     # - tags
     if os.path.isdir(VF.tags_path):
         for src_dir in sorted(glob(VF.tags_path+'/*')):
-            specs = VF.get_other_version_specs(src_dir)
+            specs = VF.get_tag_specs(src_dir)
             if specs:
                 versions.append(specs)
+    # - branches
+    if os.path.isdir(VF.branches_path):
+        for src_dir in sorted(glob(VF.branches_path+'/*')):
+            specs = VF.get_branch_specs(src_dir)
+            if specs:
+                versions.append(specs)
+
 
     # Store them
     app.builder.env.docversions_list = versions
@@ -166,6 +194,7 @@ def store_versions(app):
     app.builder.env.docversions_index_html = VF.index_html
     app.builder.env.docversions_template = VF.template
 
+    app.info('done')
 
 def setup(app):
     app.add_config_value('docversions_subpath_doc', 'doc', 'html')

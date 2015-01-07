@@ -2421,6 +2421,14 @@ class StepsNorm(Normalize):
         self.autoscale_None(result)
         vmin, vmax = self.vmin, self.vmax
 
+        # if theses 4 lines are not present, color of the 2D scalar field 
+        # in map2 is black for the values whose range is over the max value in colorbar
+        if cbook.iterable(value):
+            val = N.asarray(value).astype(N.float)
+        else:
+            val = N.array([value]).astype(N.float)
+        #
+
         if vmin==vmax:
             result.fill(0.)
         else:

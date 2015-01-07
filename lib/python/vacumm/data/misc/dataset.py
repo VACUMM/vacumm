@@ -88,7 +88,7 @@ from vacumm.misc.grid.misc import meshweights, resol, create_grid, set_grid, \
     dz2depth, depth2dz, isdepthup, gridsel, makedepthup, curv2rect, isgrid,  \
     coord2slice
 from vacumm.misc.grid.regridding import resol, interp1d, regrid1d, grid2xy, transect,  \
-    shift1d, shift2d, extend1d, extend2d
+    shift1d, shift2d, extend1d, extend2d, regrid1dnew
 from vacumm.misc.misc import is_iterable, kwfilter, squeeze_variable, dict_filter_out,  \
     get_atts, set_atts
 from vacumm.misc.phys.constants import g
@@ -2374,6 +2374,7 @@ class OceanDataset(OceanSurfaceDataset):
         kwdepth = kwfilter(kwargs, 'depth_')
         kwdepth.update(kwvar)
         kwinterp = kwfilter(kwargs, 'interp_', axis=1)
+        kwinterp.setdefault('method', 'linear')
 
         # Get data
         var = self.get(varname, **kwvar)
@@ -2388,11 +2389,14 @@ class OceanDataset(OceanSurfaceDataset):
 
         if isinstance(vardepth,tuple):
             vardepth=vardepth[0]
-
+        iaxi = -3
         if len(vardepth.shape)>1:
-            var, vardepth = grow_variables(var, vardepth)
-            kwinterp.update(xmap=[0,2,3], xmapper=vardepth(order='...z').filled(0.))
-        lvar = interp1d(var, zo, **kwinterp)
+#            var, vardepth = grow_variables(var, vardepth)
+            kwinterp.update(axi=vardepth.filled(0.))
+            iaxo = iaxi
+        else:
+            iaxo = 0
+        lvar = regrid1dnew(var, zo, iaxi = iaxi, iaxo=iaxo, **kwinterp)
 
         # Time average
         if timeavg and lvar.getOrder().startswith('t') and lvar.shape[0]>1:
