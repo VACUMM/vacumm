@@ -12,34 +12,38 @@ from vacumm.misc import N_choose, grow_depth, grow_lat
 from vacumm.misc.misc import grow_variables
 
 try:
-    from seawater.csiro import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0
+    from seawater import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0
 except:
-    warn('Failed to import seawater.csiro')
+    try:
+        from seawater.csiro import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0
+    except:
+        warn('Failed to import seawater functions')
 
 
-def density(temp, sal, depth=None, lat=None, potential=True, 
+def density(temp, sal, depth=None, lat=None, potential=False,
     getdepth=False, getlat=False, format_axes=False):
     """Compute density from temperature, salinity and depth (and latitude)
-    
-    
+
+
     :Params:
-    
+
         - **temp**: Insitu or potential temperature.
         - **sal**: Salinity.
         - **depth**, optional: Depth at temperature and salinty points.
           Assumed to be 0 if not found.
         - **lat**, optional: Latitude. Error when not found.
-        - **potential**, optional: True to get the potential density.
-        
+        - **potential**, optional: True to get the potential density (at atmospheric
+          pressure).
+
     :Algo:
-    
+
         >>> pressure = seawater.csiro.pres(depth, lat)
         >>> density = seawater.csiro.dens(sal, temp, depth)
     """
-    
+
     # Compute
     if not potential: # In-situ
-    
+
         # Get depth and latitude
         lat = grow_lat(temp, lat, mode='raise', getvar=False)
         if lat is None: raise VACUMMError('No latitude found for density')
@@ -48,58 +52,58 @@ def density(temp, sal, depth=None, lat=None, potential=True,
             depth = -depth
         if (depth.asma()<0).any():
             depth = depth-depth.min() # top=0
-    
+
         # Get density
         pres = sw_pres(depth, lat)
         dens = sw_dens(sal, temp, pres) ; del pres
-        
+
     else: # Potential
-        
+
         dens = sw_dens0(sal, temp)
         getdepth = getlat = False
-    
+
     # Format
     dens.setAxisList(temp.getAxisList())
     set_grid(dens, get_grid(temp))
     format_var(dens, 'dens', format_axes=format_axes)
-    
+
     # Out
     if not getdepth and not getlat: return dens
-    dens = dens, 
-    if getdepth: dens += depth, 
-    if getlat: dens += lat, 
+    dens = dens,
+    if getdepth: dens += depth,
+    if getlat: dens += lat,
     return dens
-    
 
-def mixed_layer_depth(data, depth=None, lat=None, zaxis=None, 
-    mode=None, deltatemp=.2, deltadens=.01, kzmax=0.0005, 
+
+def mixed_layer_depth(data, depth=None, lat=None, zaxis=None,
+    mode=None, deltatemp=.2, deltadens=.01, kzmax=0.0005,
     potential=True, format_axes=False):
     """Get mixed layer depth from temperature and salinity
-    
+
     :Params:
-    
+
         - **temp**: Insitu or potential temperature.
         - **sal**: Salinity.
         - **depth**, optional: Depth at temperature and salinty points.
         - **lat**, optional: Latitude.
         - **mode**, optional: ``"deltatemp"``, ``"deltadens"``, ``"kz"``
           or ``"twolayers"``
-        
-    
+
+
     :Raise: :class:`~vacumm.VACUMMError` if can't get depth (and latitude for density).
     """
-        
-    # TODO: positive up  
-    
+
+    # TODO: positive up
+
     # Inspection
     if isinstance(data, tuple): # data = temp,sal
-    
+
         temp, sal=data
-    
+
         # Get density
         if mode!='deltatemp':
-            
-            res = density(temp, sal, depth=depth, lat=lat, 
+
+            res = density(temp, sal, depth=depth, lat=lat,
                 format_axes=False, potential=potential, getdepth=True)
             if isinstance(res, tuple):
                 dens, depth = res
@@ -110,40 +114,40 @@ def mixed_layer_depth(data, depth=None, lat=None, zaxis=None,
                 mode = 'deltadens'
 
         else:
-            
+
             temp = data[0]
-        
+
         # Check mode
         if mode == 'kz':
             warn("Switching MLD computation mode to 'deltadens'")
             mode = "deltadens"
-        
+
     elif match_var(data, 'temp', mode='nslu'):
-        
+
         if mode is not None and mode!='deltatemp':
             warn("Switching MLD computation mode to 'deltatemp'")
         mode = 'deltatemp'
         temp = data
-        
+
     elif match_var(data, 'dens', mode='nslu'):
-        
+
         if mode in ['kz', 'deltatemp']:
             warn("Switching MLD computation mode to 'deltadens'")
             mode = None
         if mode is None:
             mode = "deltadens"
         dens = data
-    
+
     elif match_var(data, 'kz', mode='nslu'):
-        
+
         if mode is None:
             mode = "kz"
         if mode != "kz":
             warn("Switching MLD computation mode to 'kz'")
         kz = data
-    
+
     else:
-        
+
         if mode in ['deltadens', 'twolayers']:
             dens = data
         elif mode == "deltatemp":
@@ -154,9 +158,9 @@ def mixed_layer_depth(data, depth=None, lat=None, zaxis=None,
             raise VACUMMError("Invalid MLD computation mode : '%s'"%mode)
         else:
             raise VACUMMError("Can't guess MLD computation mode")
-        
+
         temp = delta
-        
+
     # Find Z dim
     data0 = data[0] if isinstance(data, tuple) else data
     depth = grow_depth(data0, depth, mode='raise', getvar=False)
@@ -164,7 +168,7 @@ def mixed_layer_depth(data, depth=None, lat=None, zaxis=None,
     if zaxis is None:
         raise VACUMMError("Can't guess zaxis")
     slices = get_axis_slices(data0, zaxis)
-    
+
     # Init MLD
     axes = data0.getAxisList()
     del axes[zaxis]
@@ -172,10 +176,10 @@ def mixed_layer_depth(data, depth=None, lat=None, zaxis=None,
     set_grid(mld, get_grid(data0))
     format_var(mld, 'mld', format_axes=format_axes)
     mld[:] = MV2.masked
-        
+
     # Two-layers
     if mode=='twolayers':
-        
+
         densbot = dens[slices['first']]
         denstop = dens[slices['last']]
         del dens
@@ -183,7 +187,7 @@ def mixed_layer_depth(data, depth=None, lat=None, zaxis=None,
         H = -1.5*depth[slices['last']] + 0.5*depth[slices['lastm1']]
         mld[:] = -H*(densbot-denstop)/(densbot-denstop)
         del H
-        
+
     elif mode=='deltadens':
 
         denscrit = dens[slices['last']]+deltadens
@@ -191,25 +195,25 @@ def mixed_layer_depth(data, depth=None, lat=None, zaxis=None,
         del dens
 
     elif mode=='deltatemp':
-        
+
         tempcrit = temp[slices['last']]-deltatemp
         mld[:] = -_val2z_(temp, depth, tempcrit, zaxis, 1)
-        
+
     elif mode=='kz':
 
         mld[:] = -_val2z_(kz, depth, kzmax, zaxis, 1)
-                
+
     else:
-        
-        raise VACUMMError("Invalid mode for computing MLD (%s)."%mode + 
+
+        raise VACUMMError("Invalid mode for computing MLD (%s)."%mode +
             "Please choose one of: deltadens, twolayers")
-    
+
     # Mask zeros
     mld[:] = MV2.masked_values(mld, 0., copy=0)
-    
+
     return mld
-    
-    
+
+
 
 def _val2z_(var, dep, varref, axis, monosign):
     """Compute depth for a given reference data value"""
@@ -231,11 +235,11 @@ def _val2z_(var, dep, varref, axis, monosign):
     rvar = rvar.copy()
     nz = rvar.shape[0]   # nb of elements along the first axis (z in general)
     maskland = N.ma.getmaskarray(rvar)[-1]
-    
+
     # Monotonic
     rvar *= monosign
     varref *= monosign
-    dvar = N.ma.diff(rvar, axis=0)    
+    dvar = N.ma.diff(rvar, axis=0)
 
     # Find z index
     dvarref = rvar-varref
@@ -246,8 +250,8 @@ def _val2z_(var, dep, varref, axis, monosign):
     del iiz0
     maskdz = iz0.mask
     iz0 = iz0.filled(0.)
-    
-    
+
+
     # Interpolation
     dvar0 = N_choose(iz0, dvar)
     dvar0[maskdz] = 1.
@@ -256,13 +260,13 @@ def _val2z_(var, dep, varref, axis, monosign):
     rdep.set_fill_value(0.)
     rdepref = N_choose(iz0+1, rdep)*w1
     rdepref += N_choose(iz0, rdep)*(1-w1)
-    
+
     # Masking
     rdepref[maskland] = N.ma.masked
     rdepref = N.ma.where(~maskland&maskdz, rdep.min(axis=0), rdepref)
-    
+
     return rdepref
-    
+
 
 def _valmin2z_(var, dep, varmax, axis, monosign):
     """Compute depth at which data value at lower than a reference value"""
@@ -280,7 +284,7 @@ def _valmin2z_(var, dep, varmax, axis, monosign):
     rvar = rvar.copy()
     nz = rvar.shape[0]
     maskland = N.ma.getmaskarray(rvar)[-1]
-    
+
     # Monotonic (greater at surface)
     rvar *= monosign
 
@@ -292,20 +296,20 @@ def _valmin2z_(var, dep, varmax, axis, monosign):
     del iiz
     maskz = iz0.mask
     iz = iz0.filled(0.)
-    
+
     # Values
     rdepref = N_choose(iz, rdep)
-    
+
     # Masking
     rdepref[maskland] = N.ma.masked
     rdepref = N.ma.where(~maskland&maskz, rdep.min(axis=0), rdepref)
-    
+
     return rdepref
 
 if __name__=='__main__':
-    
-    
-    
+
+
+
 #    print 'hoho'
     nx = 4
     ny = 2
@@ -313,17 +317,17 @@ if __name__=='__main__':
     depth = N.ma.arange(nz*nx*ny**1.).reshape(nz, ny, nx)
     depth = depth-depth.max()
     # partie ci-dessus inutile en fait
-    
+
 #    var = N.round(N.sqrt(-depth)*10)
 #    var[:,1, 2] = N.ma.masked
-#    
+#
 #    varref = var[-1]+44#15.7
-#    varref[:] = 23  
-#    varref[:] = 67.5  
-#    
+#    varref[:] = 23
+#    varref[:] = 67.5
+#
 #    var = var[::-1]
 #    varref = var[-1]*0+67.5
-#  
+#
     # tableaux 1D (29 elements)
     var = N.ma.array([13.1168556213, 13.120059967, 13.1211280823, 13.1211280823, 13.1211280823
 , 13.1211280823, 13.1179237366, 13.1136512756, 13.1093788147, 13.1083106995
@@ -340,7 +344,7 @@ if __name__=='__main__':
 
     varref = var[-1]-0.2
     print varref, var[-1]
-    
+
     var = N.ma.array([13.1157875061, 13.1157875061, 13.1157875061, 13.1157875061, 13.1157875061
 , 13.1168556213, 13.1168556213, 13.1168556213, 13.1168556213, 13.1179237366
 , 13.1189918518, 13.1275367737, 13.1414222717, 13.1168556213, 13.1019010544
@@ -355,9 +359,9 @@ if __name__=='__main__':
 , -53.5577850342, -29.7046699524, -13.8025913239, -5.85155200958, -1.87603235245])
     varref = var[-1]-0.2
     print varref, var[-1]
-   
+
     depref = _val2z_(var, depth, varref, 0, 1)
-    
+
 #    print 'var',var[:,0]
 #    print 'varref', varref[0]
 #    print 'dep',depth[:,0]
