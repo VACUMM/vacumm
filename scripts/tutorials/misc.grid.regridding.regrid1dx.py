@@ -19,7 +19,7 @@ dep[-1] = depths[-1].max()
 
 # Regrillage lineaire
 from vacumm.misc.grid.regridding import regrid1d
-tr = regrid1d(t, dep, 'linear', axis=0, xmap=-1, xmapper=depths.T)
+tr = regrid1d(t, dep, 'linear', axi=depths, axis=0)
 tr.long_name = 'Interpolated'
 t.getAxis(0).designateLevel()
 

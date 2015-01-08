@@ -8,7 +8,7 @@ precip.setAxis(0, hours)
 precip.units = 'mm'
 precip.long_name = 'Original'
 
-# Nouvel echantillonnage / 2h 
+# Nouvel echantillonnage / 2h
 hours2 = create_time((10, 30., 2), 'hours since 2000')
 
 # Regrillage 1D conservatif
@@ -28,9 +28,9 @@ print '- remapped =', precip2.sum()
 # Plots
 from vacumm.misc.plot import savefigs
 from vacumm.misc.plot import bar2
-kwplot = dict(color='#00ffff',edgecolor='#55aaaa', 
+kwplot = dict(color='#00ffff',edgecolor='#55aaaa',
     width=.9, date_fmt='%Hh', show=False)
-b = bar2(precip, figsize=(5.5, 6), xhide=True, 
+b = bar2(precip, figsize=(5.5, 6), xhide=True,
     subplot=211, top=.9, **kwplot)
 b.figtext('Precipitations', style='italic')
 bar2(precip2, subplot=212, **kwplot)

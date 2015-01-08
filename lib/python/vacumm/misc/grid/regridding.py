@@ -74,7 +74,7 @@ __all__ = ['fill1d', 'regular', 'regular_fill1d', 'cellave1d', 'spline_interp1d'
     'cellave2d', 'interp2d', 'xy2xy', 'shift1d', 'shift2d',
     'shiftgrid',  'transect', 'CDATRegridder', 'extend1d', 'extend2d',
     'extendgrid', 'regrid2d_method_name', 'fill1d2', 'krig', 'CurvedInterpolator',
-    'regrid1dnew', 'regrid2d_tool_name', 'regrid2dnew']
+    'regrid1dold', 'regrid2d_tool_name', 'regrid2dnew']
 __all__.sort()
 
 # Fortran functions
@@ -130,7 +130,7 @@ def regrid1d_method_name(method, raiseerr=True):
         return method
 
 
-def regrid1d(vari, axo, method='auto', axis=None, xmap=None, xmapper=None, mask_thres=.5,
+def regrid1dold(vari, axo, method='auto', axis=None, xmap=None, xmapper=None, mask_thres=.5,
     extrap=0):
     """Interpolation along one axis
 
@@ -490,7 +490,7 @@ def _toright_(ar, iax):
     return newar, bakmap
 
 
-def regrid1dnew(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None,
+def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None,
     xmap=None, xmapper=None, mask_thres=.5, extrap=0):
     """Interpolation along one axis
 
@@ -723,7 +723,6 @@ def regrid1dnew(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=N
     gc.collect()
     return varo
 
-_regrid1dnew_ = regrid1dnew
 
 def nearest1d(vari, axo, **kwargs):
     """Interpolation along an axes

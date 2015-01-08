@@ -25,7 +25,6 @@ xe_nea = interp1d(xe, new_time, method='nearest')
 xe_nea.long_name = 'Nearest'
 # - linear
 xe_lin = interp1d(xe, new_time, method='linear')
-
 xe_lin.long_name = 'Linear'
 # - cubic
 xe_cub = interp1d(xe, new_time, method='cubic')
