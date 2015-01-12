@@ -1678,7 +1678,7 @@ def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False, nos
     return selector
 
 
-def squeeze_variable(var, spec=True):
+def squeeze_variable(var, spec=True, asmv=False):
     """Remove singleton axes from a MV2 variable
 
     :Params:
@@ -1691,6 +1691,10 @@ def squeeze_variable(var, spec=True):
             - A string containing geo letters like 'xyzt' to remove
               axes according to their type.
 
+        - **asmv**, optional: If True and input is a MV2 array,
+          always return a MV2 array, even if all
+          result is a scalar value or masked.
+
 
     :Examples:
 
@@ -1698,11 +1702,17 @@ def squeeze_variable(var, spec=True):
         >>> squeeze_variable(var, spec='tx')
     """
     # Nothing to do
-    if spec is False or spec==0: return var
+    if spec is False or spec==0 or not isinstance(var, N.ndarray):
+        return var
 
     # Squeeze all singletons
+    if not cdms2.isVariable(var):
+        return var.squeeze()
     if spec is True or spec is None or spec==1:
-        return var(squeeze=1)
+        var = var(squeeze=1)
+        if asmv and not cdms2.isVariable(var):
+            return MV2.asarray(var)
+        return var
 
     # Squeeze selection
     if isinstance(spec, basestring):

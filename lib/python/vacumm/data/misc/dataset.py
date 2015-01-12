@@ -1843,7 +1843,7 @@ class Dataset(Object):
             # Squeeze singletons.
             if squeeze:
                 self.debug('Squeezing variable: %s', self.describe(var))
-                var = squeeze_variable(var, squeeze)
+                var = squeeze_variable(var, squeeze, asmv=True)
 
             # Reorder
             if order:
@@ -1851,7 +1851,8 @@ class Dataset(Object):
                 var = var(order=order)
 
             # Rectangular if possible
-            if torect: self.torect(var, curvsel)
+            if torect:
+                self.torect(var, curvsel)
 
             # At/toloc
             if at:
