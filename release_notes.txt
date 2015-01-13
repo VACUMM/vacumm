@@ -5,7 +5,7 @@ In development
 ==============
 
 - Added: docversions sphinx extension.
-- Fixed: ConfigManager.opt_parse, Shapes.
+- Fixed: ConfigManager.opt_parse/arg_parse, Shapes, get_proj.
 
 Version 2.4.0
 ==============

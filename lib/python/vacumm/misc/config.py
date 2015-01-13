@@ -47,7 +47,7 @@ It is based on :mod:`configobj` and :mod:`validate` modules.
 import copy, datetime, inspect, os, operator, re, sys, shutil, traceback
 from optparse import OptionParser, OptionGroup, OptionContainer, Option,  OptionValueError, IndentedHelpFormatter, _
 from argparse import ArgumentParser, _ArgumentGroup, HelpFormatter as ArgHelpFormatter, \
-    _HelpAction
+    _HelpAction, Action as AP_Action, SUPPRESS as AP_SUPPRESS
 from warnings import warn
 
 from configobj import ConfigObj, flatten_errors
@@ -668,8 +668,8 @@ class ConfigManager(object):
             parser.add_help = False
 
         # Add short and long when no help
-        parser.add_argument('-h','--help', action='store_true', help='show a reduced help')
-        parser.add_argument('--long-help', action='store_true', help='show an extended help')
+        parser.add_argument('-h','--help', action=AP_ShortHelpAction, help='show a reduced help')
+        parser.add_argument('--long-help', action=_HelpAction, help='show an extended help')
 
         # Add the cfgfile option (configurable)
         if cfgfileopt:
@@ -726,14 +726,6 @@ class ConfigManager(object):
 
             # Parse
             options = parser.parse_args(list(args))
-
-            # Intercept helps
-            if getattr(options, 'long_help', None):
-                parser.print_help()
-                sys.exit()
-            elif getattr(options, 'help', None):
-                print_short_help(parser)
-                sys.exit()
 
             # Create a configuration to feed
             cfg = ConfigObj(interpolation=self._interpolation, encoding=self._encoding)
@@ -1628,6 +1620,14 @@ def print_short_help(parser, formatter=None):
 
         # determine help from format above
         parser._print_message(formatter.format_help(), sys.stdout)
+
+
+class AP_ShortHelpAction(_HelpAction):
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        print_short_help(parser)
+        parser.exit()
+
 
 
 if __name__=='__main__':
