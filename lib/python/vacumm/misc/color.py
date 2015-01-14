@@ -2370,7 +2370,7 @@ class StepsNorm(Normalize):
             self.vmin = levels.min()
         if self.vmax is None:
             self.vmax = levels.max()
-        self.levels = N.unique(N.clip(levels, self.vmin, self.vmax))
+        self.levels = N.unique(N.clip(levels, self.vmin, self.vmax)).astype('d')
         self.positions = N.linspace(0, 1., len(self.levels))
         self.log = log
         if self.vmin > self.vmax:
@@ -2421,12 +2421,12 @@ class StepsNorm(Normalize):
         self.autoscale_None(result)
         vmin, vmax = self.vmin, self.vmax
 
-        # if theses 4 lines are not present, color of the 2D scalar field 
+        # if theses 4 lines are not present, color of the 2D scalar field
         # in map2 is black for the values whose range is over the max value in colorbar
-        if cbook.iterable(value):
-            val = N.asarray(value).astype(N.float)
-        else:
-            val = N.array([value]).astype(N.float)
+#        if cbook.iterable(value):
+#            val = N.asarray(value).astype(N.float)
+#        else:
+#            val = N.array([value]).astype(N.float)
         #
 
         if vmin==vmax:
@@ -2436,11 +2436,6 @@ class StepsNorm(Normalize):
                 mask = ma.getmask(val)
                 result = ma.array(N.clip(val.filled(vmax), vmin, vmax),
                     mask=mask)
-#            else:
-#                result = ma.array(val)*ma.nomask
-#                print result
-#                result[val>self.vmax] = 1.1
-#                result[val<self.vmin] = -0.1
             if self.log and N.any(self.levels<=0):
                 raise ValueError("All levels must be greater than 0 when using log scale")
             nlev = len(self.levels)

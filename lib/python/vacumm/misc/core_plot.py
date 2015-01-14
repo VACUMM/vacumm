@@ -4455,6 +4455,10 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         if norm is None:
             from color import StepsNorm
             norm = StepsNorm(levels, **kwnorm)
+        elif norm is True:
+            norm = Normalize(min(levels), max(levels))
+        else:
+            norm = None
 
         # Data
         data = self.get_data(scalar=True)
