@@ -657,19 +657,24 @@ class ConfigManager(object):
         elif isinstance(parser, dict):
             parser['add_help'] = False
             parser = ArgumentParser(**parser)
-        else: # remove native help
+        else: # remove helps
             for action in list(parser._actions):
-                if isinstance(action, _HelpAction) or \
-                    action.dest=='help' or action.dest=='long_help':
+                if isinstance(action, (_HelpAction, AP_ShortHelpAction)):
                     parser._actions.remove(action)
                     for option_string in action.option_strings:
                         if option_string in parser._option_string_actions:
                             parser._option_string_actions.pop(option_string)
+            for group in parser._action_groups:
+                for action in list(group._group_actions):
+                    if isinstance(action, (_HelpAction, AP_ShortHelpAction)):
+                        group._group_actions.remove(action)
             parser.add_help = False
 
-        # Add short and long when no help
-        parser.add_argument('-h','--help', action=AP_ShortHelpAction, help='show a reduced help')
-        parser.add_argument('--long-help', action=_HelpAction, help='show an extended help')
+        # Add short and long helps
+        parser.add_argument('-h','--help', action=AP_ShortHelpAction,
+            help='show a reduced help and exit')
+        parser.add_argument('--long-help', action=_HelpAction,
+            help='show an extended help and exit')
 
         # Add the cfgfile option (configurable)
         if cfgfileopt:
@@ -681,7 +686,8 @@ class ConfigManager(object):
                         cfgfileopt = '--'+cfgfileopt
                 cfgfileopt = (cfgfileopt,)
             parser.add_argument(*cfgfileopt,
-                dest="cfgfile", help='configuration file [default: "%(default)s"]', default=cfgfile)
+                dest="cfgfile", help='user configuration file that overrides defauts'
+                    '[default: "%(default)s"]', default=cfgfile)
 
         # Default config
         defaults = self.defaults()
@@ -1151,6 +1157,9 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
                 multiline = True
             else:
                 rhelp.extend([secfmt%locals(), ''])
+                if m.group(2) is not None:
+                    rhelp.extend(['', '\t'+m.group(2)])
+                    multiline = True
             continue
 
         # Options and other lines
@@ -1168,7 +1177,7 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
             rhelp.extend(['','\t.. cmdoption:: '+sline[0], ''])
             multiline = True
             if len(sline)>1 is not None:
-                rhelp.append('\t\t'+' '.join(sline))
+                rhelp.append('\t\t'+' '.join(sline[1:]))
 
         elif multiline and len(line.strip()) and line.startswith(' '*3):
 
@@ -1181,7 +1190,10 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
 
         else:
 
-            rhelp.append(line)
+            indent = ''
+            if secname==descname:
+                indent += '\t'
+            rhelp.append(indent+line)
             multiline = False
             if secname=='Usage':
                 secname = descname
@@ -1632,7 +1644,9 @@ class AP_ShortHelpAction(_HelpAction):
 
 if __name__=='__main__':
     shelp="""Usage: showtime.py [options] ncfile
+           [--logger-level LOGGER_LEVEL] [--logger-file LOGGER_FILE]
 
+Show time axis dates of netcdf file.
 Show time axis dates of netcdf file.
 
 Options:
@@ -1648,19 +1662,19 @@ Options:
   -f FORMAT, --format=FORMAT
                         date format (default: %Y-%m-%d %H:%M:%S)
 """
-    shelp="""Options:
-  -h, --help            show a reduced help
-  --long-help           show an extended help
-  --cfgfile=CFGFILE     Configuration file [default: "config.cfg"]
-
-  Global configuration options:
-     Important general configuration options
-
-    --mars=MARS         complete configuration of mars. [default:
-                        'MANGA-V8.11']
-    --mars-version=MARS_VERSION
-                        MARS version. [default: 'V8.11']
-"""
+#    shelp="""Options:
+#  -h, --help            show a reduced help
+#  --long-help           show an extended help
+#  --cfgfile=CFGFILE     Configuration file [default: "config.cfg"]
+#
+#  Global configuration options:
+#     Important general configuration options
+#
+#    --mars=MARS         complete configuration of mars. [default:
+#                        'MANGA-V8.11']
+#    --mars-version=MARS_VERSION
+#                        MARS version. [default: 'V8.11']
+#"""
     print opt2rst(shelp)
 
 
