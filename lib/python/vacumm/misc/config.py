@@ -1494,7 +1494,6 @@ def _walker_cfg2rst_(cfg, key, lines):
     desc = redent(desc, 1)
     text = '.. %(conftype)s:: %(name)s\n\n%(desc)s\n'%locals()
     text = redent(text, cfg.depth)
-
     lines.append(text)
 
 
@@ -1580,7 +1579,7 @@ def cfg2rst(cfg):
     if isinstance(cfg, ConfigManager):
         cfg = cfg.defaults()
     lines = []
-    cfg.walk(_walker_cfg2rst_, call_on_sections=False, lines=lines)
+    cfg.walk(_walker_cfg2rst_, call_on_sections=True, lines=lines)
     return '\n'.join(lines)
 
 
