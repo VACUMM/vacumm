@@ -347,12 +347,16 @@ class ConfigManager(object):
 
     """
     def __init__(self, cfgspecfile=None, validator=None, interpolation='template',
-        encoding=None, boolean_false=True):
+        encoding=None, boolean_false=True, splitsecdesc=False):
         '''
         :Params:
-            - **cfgspecfile**: the specification file to be used with this
-            - **validator**: a custom :class:`validate.Validator` to use or a mapping dict of validator functions
-            - **interpolation**: see :class:`configobj.ConfigObj`
+            - **cfgspecfile**, optional: The specification file to be used with this.
+            - **validator**, optional: A custom :class:`validate.Validator`
+              to use or a mapping dict of validator functions.
+            - **interpolation**, optional: See :class:`configobj.ConfigObj`.
+            - **boolean_false**, optional: Make sure that booleans have a default value.
+            - **splitsecdesc**, optional: Section descriptions are split in two
+              components separated by ':'.
         '''
         # Specifications
         self._encoding = encoding
@@ -383,7 +387,7 @@ class ConfigManager(object):
                 validator[k] = _valwrap_(v)
             self._validator.functions.update(validator)
 
-        # Makes sure that boolean has a default value
+        # Makes sure that booleans have a default value
         self._boolean_false = boolean_false
         if boolean_false:
             self._configspec.walk(_walker_set_boolean_false_by_default_,
@@ -696,7 +700,7 @@ class ConfigManager(object):
         # - inits
         re_match_initcom = re.compile(r'#\s*-\*-\s*coding\s*:\s*\S+\s*-\*-\s*').match
         if len(defaults.initial_comment)==0 or re_match_initcom(defaults.initial_comment[0]) is None:
-            desc = ['Global configuration options']
+            desc = ['global configuration options']
         else:
             re_match_initcom(defaults.initial_comment[0]), defaults.initial_comment[0]
             icom = int(re_match_initcom(defaults.initial_comment[0]) is not None)
@@ -714,10 +718,14 @@ class ConfigManager(object):
 
         # Create secondary option groups from defaults
         for key in defaults.sections:
-            desc = ['Undocumented section']
-            comment = defaults.inline_comments[key]
+            desc = [key]
+            comment = defaults.inline_comments[key] # FIXME: always empty!
             if comment is not None:
-                desc = comment.strip('# ').split(':', 1)
+                desc = comment.strip('# ')
+                if ':' in desc:
+                    desc = desc.split(':', 1)
+                else:
+                    desc = [key.lower(), desc]
             section = defaults[key]
             group = parser.add_argument_group(*desc)
             defaults[key].walk(_walker_argcfg_setarg_, raise_errors=True,
