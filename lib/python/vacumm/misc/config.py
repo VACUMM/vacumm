@@ -367,7 +367,7 @@ class ConfigManager(object):
             self._configspec = cfgspecfile
         else:
             self._configspec = ConfigObj(cfgspecfile, list_values=False,
-                interpolation=False, encoding=encoding)
+                interpolation=False, encoding=encoding, raise_errors=True)
 
         # Validator
         if isinstance(validator, Validator):

@@ -72,7 +72,7 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'create_selector', 'selector2str', 'split_selector', 'squeeze_variable', 'dict_copy_items',
     "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
     'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out',
-    'kwfilterout', 'filter_selector']
+    'kwfilterout', 'filter_selector', 'isempty']
 __all__.sort()
 
 def broadcast(set, n, mode='last', **kwargs):
@@ -922,6 +922,12 @@ def tunique(mytuple):
         utuple += item,
     return utuple
 
+def isempty(x):
+    """Check if empty"""
+    try:
+        return not bool(x)
+    except:
+        return False
 
 def dict_merge(*dd, **kwargs):
     """Merge dictionaries
@@ -938,6 +944,8 @@ def dict_merge(*dd, **kwargs):
         - **mergelists**, optional: Also merge list items [default: False].
         - **unique**, optional: Uniquify lists and tuples [default: True].
         - **skipnones**, optional: Skip Nones [default: True].
+        - **skipempty**, optional: Skip everything is not converted to False
+          using bool [default: False].
         - **cls**, optional: Class to use. Default to the first class found in arguments
           that is not a :class:`dict`, else defaults to :class:`dict`.
 
@@ -955,6 +963,7 @@ def dict_merge(*dd, **kwargs):
     mergetuples = kwargs.get('mergetuples', False)
     unique = kwargs.get('unique', True)
     skipnones = kwargs.get('skipnones', True)
+    overwriteempty = kwargs.get('overwriteempty', False)
     cls = kwargs.get('cls')
     dd = filter(None, dd)
 
@@ -970,9 +979,11 @@ def dict_merge(*dd, **kwargs):
     outd = cls()
     for d in dd:
         if not isinstance(d, dict): continue
+
+        # Content
         for key, val in d.iteritems():
             if skipnones and val is None: continue
-            if key not in outd: # Not set so we set
+            if key not in outd or (overwriteempty and isempty(outd[key])): # Not set so we set
                 outd[key] = val
             elif mergesubdicts and isinstance(outd[key], cls) and isinstance(val, cls): # Merge subdict
                 outd[key] = dict_merge(outd[key] , val, **kwargs)
@@ -984,6 +995,18 @@ def dict_merge(*dd, **kwargs):
                 outd[key] += val
                 if unique:
                     outd[key] = tunique(outd[key])
+
+        # Comments for ConfigObj instances
+        from configobj import ConfigObj
+        if cls is ConfigObj:
+            if not outd.initial_comment and hasattr(d, 'initial_comment'):
+               outd.initial_comment = d.initial_comment
+            if not outd.final_comment and hasattr(d, 'final_comment'):
+               outd.final_comment = d.final_comment
+            if hasattr(d, 'inline_comments') and d.inline_comments:
+                outd.inline_comments = dict_merge(outd.inline_comments, d.inline_comments,
+                    overwriteempty=True)
+
 
     return outd
 
