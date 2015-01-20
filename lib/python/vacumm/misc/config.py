@@ -47,7 +47,7 @@ It is based on :mod:`configobj` and :mod:`validate` modules.
 import copy, datetime, inspect, os, operator, re, sys, shutil, traceback
 from optparse import OptionParser, OptionGroup, OptionContainer, Option,  OptionValueError, IndentedHelpFormatter, _
 from argparse import ArgumentParser, _ArgumentGroup, HelpFormatter as ArgHelpFormatter, \
-    _HelpAction
+    _HelpAction, Action as AP_Action, SUPPRESS as AP_SUPPRESS
 from warnings import warn
 
 from configobj import ConfigObj, flatten_errors
@@ -347,12 +347,16 @@ class ConfigManager(object):
 
     """
     def __init__(self, cfgspecfile=None, validator=None, interpolation='template',
-        encoding=None, boolean_false=True):
+        encoding=None, boolean_false=True, splitsecdesc=False):
         '''
         :Params:
-            - **cfgspecfile**: the specification file to be used with this
-            - **validator**: a custom :class:`validate.Validator` to use or a mapping dict of validator functions
-            - **interpolation**: see :class:`configobj.ConfigObj`
+            - **cfgspecfile**, optional: The specification file to be used with this.
+            - **validator**, optional: A custom :class:`validate.Validator`
+              to use or a mapping dict of validator functions.
+            - **interpolation**, optional: See :class:`configobj.ConfigObj`.
+            - **boolean_false**, optional: Make sure that booleans have a default value.
+            - **splitsecdesc**, optional: Section descriptions are split in two
+              components separated by ':'.
         '''
         # Specifications
         self._encoding = encoding
@@ -363,7 +367,7 @@ class ConfigManager(object):
             self._configspec = cfgspecfile
         else:
             self._configspec = ConfigObj(cfgspecfile, list_values=False,
-                interpolation=False, encoding=encoding)
+                interpolation=False, encoding=encoding, raise_errors=True)
 
         # Validator
         if isinstance(validator, Validator):
@@ -383,7 +387,7 @@ class ConfigManager(object):
                 validator[k] = _valwrap_(v)
             self._validator.functions.update(validator)
 
-        # Makes sure that boolean has a default value
+        # Makes sure that booleans have a default value
         self._boolean_false = boolean_false
         if boolean_false:
             self._configspec.walk(_walker_set_boolean_false_by_default_,
@@ -657,19 +661,24 @@ class ConfigManager(object):
         elif isinstance(parser, dict):
             parser['add_help'] = False
             parser = ArgumentParser(**parser)
-        else: # remove native help
+        else: # remove helps
             for action in list(parser._actions):
-                if isinstance(action, _HelpAction) or \
-                    action.dest=='help' or action.dest=='long_help':
+                if isinstance(action, (_HelpAction, AP_ShortHelpAction)):
                     parser._actions.remove(action)
                     for option_string in action.option_strings:
                         if option_string in parser._option_string_actions:
                             parser._option_string_actions.pop(option_string)
+            for group in parser._action_groups:
+                for action in list(group._group_actions):
+                    if isinstance(action, (_HelpAction, AP_ShortHelpAction)):
+                        group._group_actions.remove(action)
             parser.add_help = False
 
-        # Add short and long when no help
-        parser.add_argument('-h','--help', action='store_true', help='show a reduced help')
-        parser.add_argument('--long-help', action='store_true', help='show an extended help')
+        # Add short and long helps
+        parser.add_argument('-h','--help', action=AP_ShortHelpAction,
+            help='show a reduced help and exit')
+        parser.add_argument('--long-help', action=_HelpAction,
+            help='show an extended help and exit')
 
         # Add the cfgfile option (configurable)
         if cfgfileopt:
@@ -681,7 +690,8 @@ class ConfigManager(object):
                         cfgfileopt = '--'+cfgfileopt
                 cfgfileopt = (cfgfileopt,)
             parser.add_argument(*cfgfileopt,
-                dest="cfgfile", help='configuration file [default: "%(default)s"]', default=cfgfile)
+                dest="cfgfile", help='user configuration file that overrides defauts'
+                    '[default: "%(default)s"]', default=cfgfile)
 
         # Default config
         defaults = self.defaults()
@@ -690,7 +700,7 @@ class ConfigManager(object):
         # - inits
         re_match_initcom = re.compile(r'#\s*-\*-\s*coding\s*:\s*\S+\s*-\*-\s*').match
         if len(defaults.initial_comment)==0 or re_match_initcom(defaults.initial_comment[0]) is None:
-            desc = ['Global configuration options']
+            desc = ['global configuration options']
         else:
             re_match_initcom(defaults.initial_comment[0]), defaults.initial_comment[0]
             icom = int(re_match_initcom(defaults.initial_comment[0]) is not None)
@@ -708,10 +718,14 @@ class ConfigManager(object):
 
         # Create secondary option groups from defaults
         for key in defaults.sections:
-            desc = ['Undocumented section']
-            comment = defaults.inline_comments[key]
+            desc = [key]
+            comment = defaults.inline_comments[key] # FIXME: always empty!
             if comment is not None:
-                desc = comment.strip('# ').split(':', 1)
+                desc = comment.strip('# ')
+                if ':' in desc:
+                    desc = desc.split(':', 1)
+                else:
+                    desc = [key.lower(), desc]
             section = defaults[key]
             group = parser.add_argument_group(*desc)
             defaults[key].walk(_walker_argcfg_setarg_, raise_errors=True,
@@ -726,14 +740,6 @@ class ConfigManager(object):
 
             # Parse
             options = parser.parse_args(list(args))
-
-            # Intercept helps
-            if getattr(options, 'long_help', None):
-                parser.print_help()
-                sys.exit()
-            elif getattr(options, 'help', None):
-                print_short_help(parser)
-                sys.exit()
 
             # Create a configuration to feed
             cfg = ConfigObj(interpolation=self._interpolation, encoding=self._encoding)
@@ -1159,6 +1165,9 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
                 multiline = True
             else:
                 rhelp.extend([secfmt%locals(), ''])
+                if m.group(2) is not None:
+                    rhelp.extend(['', '\t'+m.group(2)])
+                    multiline = True
             continue
 
         # Options and other lines
@@ -1176,7 +1185,7 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
             rhelp.extend(['','\t.. cmdoption:: '+sline[0], ''])
             multiline = True
             if len(sline)>1 is not None:
-                rhelp.append('\t\t'+' '.join(sline))
+                rhelp.append('\t\t'+' '.join(sline[1:]))
 
         elif multiline and len(line.strip()) and line.startswith(' '*3):
 
@@ -1189,7 +1198,10 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
 
         else:
 
-            rhelp.append(line)
+            indent = ''
+            if secname==descname:
+                indent += '\t'
+            rhelp.append(indent+line)
             multiline = False
             if secname=='Usage':
                 secname = descname
@@ -1490,7 +1502,6 @@ def _walker_cfg2rst_(cfg, key, lines):
     desc = redent(desc, 1)
     text = '.. %(conftype)s:: %(name)s\n\n%(desc)s\n'%locals()
     text = redent(text, cfg.depth)
-
     lines.append(text)
 
 
@@ -1576,7 +1587,7 @@ def cfg2rst(cfg):
     if isinstance(cfg, ConfigManager):
         cfg = cfg.defaults()
     lines = []
-    cfg.walk(_walker_cfg2rst_, call_on_sections=False, lines=lines)
+    cfg.walk(_walker_cfg2rst_, call_on_sections=True, lines=lines)
     return '\n'.join(lines)
 
 
@@ -1630,9 +1641,19 @@ def print_short_help(parser, formatter=None):
         parser._print_message(formatter.format_help(), sys.stdout)
 
 
+class AP_ShortHelpAction(_HelpAction):
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        print_short_help(parser)
+        parser.exit()
+
+
+
 if __name__=='__main__':
     shelp="""Usage: showtime.py [options] ncfile
+           [--logger-level LOGGER_LEVEL] [--logger-file LOGGER_FILE]
 
+Show time axis dates of netcdf file.
 Show time axis dates of netcdf file.
 
 Options:
@@ -1648,19 +1669,19 @@ Options:
   -f FORMAT, --format=FORMAT
                         date format (default: %Y-%m-%d %H:%M:%S)
 """
-    shelp="""Options:
-  -h, --help            show a reduced help
-  --long-help           show an extended help
-  --cfgfile=CFGFILE     Configuration file [default: "config.cfg"]
-
-  Global configuration options:
-     Important general configuration options
-
-    --mars=MARS         complete configuration of mars. [default:
-                        'MANGA-V8.11']
-    --mars-version=MARS_VERSION
-                        MARS version. [default: 'V8.11']
-"""
+#    shelp="""Options:
+#  -h, --help            show a reduced help
+#  --long-help           show an extended help
+#  --cfgfile=CFGFILE     Configuration file [default: "config.cfg"]
+#
+#  Global configuration options:
+#     Important general configuration options
+#
+#    --mars=MARS         complete configuration of mars. [default:
+#                        'MANGA-V8.11']
+#    --mars-version=MARS_VERSION
+#                        MARS version. [default: 'V8.11']
+#"""
     print opt2rst(shelp)
 
 

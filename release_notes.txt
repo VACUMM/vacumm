@@ -11,8 +11,14 @@ In development
 - Fixed bugs: list_forecast_files, Plot.add_lon/lat.
 - Fixed: ConfigManager.opt_parse.
 
+- Fixed: cfg2rst, StepsNorm.
+
+Version 2.4.1
+==============
+
 - Added: docversions sphinx extension.
-- Fixed: ConfigManager.opt_parse, Shapes.
+- Fixed: ConfigManager.opt_parse/arg_parse, Shapes, get_proj, get_xy,
+  seawater import, are_good_units, Shapes.__init__/plot.
 
 Version 2.4.0
 ==============
@@ -21,7 +27,7 @@ Version 2.4.0
 - Added: add_arrow method to Plot2D.
 - Added: add_map_places plot function.
 - Improved: In curve2, an array can be passed to fill_between keyword.
-- Fixed: Config.Manager, polygon_select, polygon_mask, coord2slice, sigma,
+- Fixed: ConfigManager, polygon_select, polygon_mask, coord2slice, sigma,
   tide.filters, StepsNorm, list_forecast_files, NEMO.
 
 Version 2.3.1

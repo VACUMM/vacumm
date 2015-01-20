@@ -549,7 +549,7 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
     axes = vari.getAxisList()
     grid = vari.getGrid()
     missing_value = vari.getMissing()
-    if missing_value is None:
+    if missing_value is None or N.isnan(missing_value):
         vari.setMissing(1.e20)
     missing_value = vari.getMissing()
 
@@ -2477,7 +2477,8 @@ def regrid2dnew(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
 
     # Check grids
     vari = MV.asarray(vari)
-    if vari.getMissing() is None:
+    mv = vari.getMissing()
+    if mv is None or N.isnan(mv):
         vari.setMissing(1.e20)
     mv = vari.getMissing()
     ggi = curv2rect(get_grid(vari), mode='none')
