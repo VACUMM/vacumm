@@ -4,7 +4,12 @@ Release notes
 In development
 ==============
 
-- Fixed: cfg2rst, StepsNorm.
+
+Version 2.4.2
+==============
+
+- Upgraded: Logger.
+- Fixed: cfg2rst, ConfigManager, StepsNorm.
 
 Version 2.4.1
 ==============
