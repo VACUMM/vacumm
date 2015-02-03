@@ -104,7 +104,16 @@ def gen_gallery(app, doctree):
 
             # Check if rst file exists
             if not os.path.exists(os.path.join(srcdir, rstdir, basename+'.rst')):
-                continue
+
+                # Ok loof for a rst file whose basename matches end for png basename
+                rstfiles = filter(
+                    lambda fname: basename.endswith(
+                        os.path.splitext(os.path.basename(fname))[0]),
+                    glob.glob(os.path.join(srcdir, rstdir, '*.rst')))
+                if not rstfiles:
+                    continue
+                basename = os.path.splitext(os.path.basename(rstfiles[0]))[0]
+
 
             # Check nmax
             if len([True for bn in basenames if bn==basename])>nmax:
