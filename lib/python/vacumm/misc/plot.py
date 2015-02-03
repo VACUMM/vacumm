@@ -69,7 +69,8 @@ from .color import simple_colors, Scalar2RGB, get_cmap
 from .color import get_cmap, Scalar2RGB
 from .core_plot import dict_aliases, latlab, add_shadow, get_axis, AutoDualDateFormatter, AutoDateLocator2, geo_scale, kwfilter, meshgrid, m2deg, zoombox, lonlab, deplab, add_glow, DualDateFormatter, meshbounds, dict_check_defaults, auto_scale, var2d, AutoDateFormatter2
 from .core_plot import add_glow, add_shadow, add_agg_filter, hlitvs, AutoDateFormatter2,  \
-    AutoDateLocator2, AutoDateMinorLocator, AutoDualDateFormatter, add_compass
+    AutoDateLocator2, AutoDateMinorLocator, AutoDualDateFormatter, add_compass, \
+    add_right_label, add_left_label, add_top_label, add_bottom_label
 from .core_plot import add_param_label
 from .docstrings import docfill
 from .grid import regridding
@@ -93,7 +94,8 @@ __all__ = [ 'traj', 'ellipsis',
     'curve2', 'bar2', 'stick2', 'hov2' , 'map2', 'section2',
     'minimap', 'add_map_point', 'add_map_line', 'add_map_lines', 'add_map_box',  'rshpere_wgs84',
     'add_glow', 'add_shadow', 'add_agg_filter', 'plot2d', 'hlitvs',
-    'add_compass', 'add_param_label', 'dtarget', 'add_map_places']
+    'add_compass', 'add_param_label', 'dtarget', 'add_map_places',
+    'add_right_label', 'add_left_label', 'add_top_label', 'add_bottom_label']
 __all__.sort()
 
 
@@ -1871,10 +1873,12 @@ def add_key(key=None, pos=1, fmt='%s)', xmargin=10, ymargin=10, fig=None, axes=N
     if key is None or key is True:
         key = max(1, fig.axes.index(axes)+1)
     if isinstance(key, int):
+        key = max(key, 1)
         key = 'abcdefghijklmnopqrstuvwxyz'[key-1]
     key = fmt%key
 
     # Position
+    pos = kwargs.pop('loc', pos)
     if isinstance(pos, (list, tuple)):
         xpos, ypos = pos
         gpos = [[1, 2], [3, 4]][xpos < .5]
@@ -1893,8 +1897,8 @@ def add_key(key=None, pos=1, fmt='%s)', xmargin=10, ymargin=10, fig=None, axes=N
 
     # Margin
     from matplotlib.transforms import ScaledTranslation
-    xmargin = 1.*N.abs(xmargin)*(1 - 2*(pos not in [1, 2, -3, -4]))
-    ymargin = 1.*N.abs(ymargin)*(1 - 2*(pos in [1, 4, -2, -3]))
+    xmargin = 1.*N.abs(xmargin)*(1 - 2*(pos in [-1, 2, -3, 4]))
+    ymargin = 1.*N.abs(ymargin)*(1 - 2*(pos in [1, 2, -3, -4]))
     transMargin = ScaledTranslation(xmargin/fig.dpi, ymargin/fig.dpi,
         fig.dpi_scale_trans)
 
@@ -2852,7 +2856,9 @@ _fill_doc_(xdate, ydate, taylor, dtaylor)
 def curve2(*args, **kwargs):
     """curve2(data, axis=None, title=None, savefig=None, show=True, **kwargs)
 
-    Plot 1D data as a curve and get a :class:`~vacumm.misc.core_plot.Curve` object.
+    Plot 1D data as a curve and return a :class:`~vacumm.misc.core_plot.Curve` object
+    with properties also from :class:`~vacumm.misc.core_plot.Plot` and
+    :class:`~vacumm.misc.core_plot.Plot1D`.
 
 
     :Examples:
@@ -2953,7 +2959,9 @@ def curve2(*args, **kwargs):
 def bar2(*args, **kwargs):
     """bar2(data, width=1.,lag=0, align='center', offset=None, title=None, savefig=None, show=True, **kwargs)
 
-    Plot data as a bar plot and get a :class:`~vacumm.misc.core_plot.Bar` object.
+    Plot data as a bar plot and return a :class:`~vacumm.misc.core_plot.Bar` object
+    with properties also from :class:`~vacumm.misc.core_plot.Plot` and
+    :class:`~vacumm.misc.core_plot.Plot1D`.
 
     :Examples:
 
@@ -3043,7 +3051,11 @@ def bar2(*args, **kwargs):
 def stick2(*args, **kwargs):
     """stick2(udata, vdata, polar=False, degrees=True, mod=False, pos=None, width=None, scale=None, color='k', line=True, levels=None, cmap=None, shadow=False, **kwargs)
 
-    Plot data as a stick plot and get a :class:`~vacumm.misc.core_plot.Stick` object.
+    Plot data as a stick plot and return a :class:`~vacumm.misc.core_plot.Stick` object
+    with properties also from :class:`~vacumm.misc.core_plot.Plot`,
+    :class:`~vacumm.misc.core_plot.Plot1D`, :class:`~vacumm.misc.core_plot.Curve`,
+    :class:`~vacumm.misc.core_plot.ScalarMappable` and
+    :class:`~vacumm.misc.core_plot.QuiverKey`.
 
     :Example:
 
@@ -3276,7 +3288,12 @@ def hov2(*args, **kwargs):
 def map2(*args, **kwargs):
     """map2(data=None, proj='cyl', res='auto', lon=None, lat=None, contour=True, fill='pcolor', levels=None, colorbar=True, xaxis=None, yaxis=None, title=None, savefig=None, show=True, **kwargs)
 
-    Plot an empty map or data on a map and get a :class:`~vacumm.misc.core_plot.Map` object.
+    Plot an empty map or data on a map and return a :class:`~vacumm.misc.core_plot.Map`
+    object
+    with properties also from :class:`~vacumm.misc.core_plot.Plot`,
+    :class:`~vacumm.misc.core_plot.Plot2D`,
+    :class:`~vacumm.misc.core_plot.ScalarMappable` and
+    :class:`~vacumm.misc.core_plot.QuiverKey`.
 
     :Example:
 
@@ -3439,7 +3456,11 @@ def section2(*args, **kwargs):
     """section2(data, contour=True, fill='pcolor', levels=None, colorbar=True, title=None, xaxis=None, yaxis=None, **kwargs)
 
     Plot geographical data as a vertical-horizontal section
-    and get a :class:`~vacumm.misc.core_plot.Section` object.
+    and return a :class:`~vacumm.misc.core_plot.Section` object
+    with properties also from :class:`~vacumm.misc.core_plot.Plot`,
+    :class:`~vacumm.misc.core_plot.Plot2D`,
+    :class:`~vacumm.misc.core_plot.ScalarMappable` and
+    :class:`~vacumm.misc.core_plot.QuiverKey`.
 
     :Example:
 
@@ -3560,7 +3581,11 @@ def section2(*args, **kwargs):
 def plot2d(*args, **kwargs):
     """plot2d(data, contour=True, fill='pcolor', levels=None, colorbar=True, xaxis=None, yaxis=None, title=None, savefig=None, show=True, **kwargs)
 
-    Generic plot of a 2D variable and get a :class:`~vacumm.misc.core_plot.Plot2D` object.
+    Generic plot of a 2D variable and return
+    a :class:`~vacumm.misc.core_plot.Plot2D` object
+    with properties also from :class:`~vacumm.misc.core_plot.Plot`,
+    :class:`~vacumm.misc.core_plot.ScalarMappable` and
+    :class:`~vacumm.misc.core_plot.QuiverKey`.
 
     :Example:
 

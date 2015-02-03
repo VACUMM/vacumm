@@ -1618,6 +1618,14 @@ class Plot(object):
             - **text**: Text to plot.
             - **transform**, optional: Type of coordinates
               (like ``"axes"`` or ``"data"``).
+            - **shadow**, optional: Add a droped shadow below the text
+              (see :func:`add_shadow`).
+            - **shadow_<param>**, optional: ``<param>`` is passed to :func:`add_shadow`.
+            - **glow**, optional: Add a glow effect the text
+              (see :func:`add_glow`).
+            - **glow_<param>**, optional: ``<param>`` is passed to :func:`add_glow`.
+            - Other keywords are passed to :func:`matplotlib.pyplot.text`.
+
         """
         # Keywords
         kwsh = kwfilter(kwargs, 'shadow')
@@ -1668,7 +1676,7 @@ class Plot(object):
     def add_left_label(self, text, **kwargs):
         """Add a text label to the left of the plot
 
-        :See also: :func:`add_left_label`
+        :See also: :func:`~vacumm.misc.plot.add_left_label`
         """
         kwargs['ax'] = self.axes
         return add_left_label(text, **kwargs)
@@ -1676,7 +1684,7 @@ class Plot(object):
     def add_right_label(self, text, **kwargs):
         """Add a text label to the right of the plot
 
-        :See also: :func:`add_right_label`
+        :See also: :func:`~vacumm.misc.plot.add_right_label`
         """
         kwargs['ax'] = self.axes
         return add_right_label(text, **kwargs)
@@ -1684,7 +1692,7 @@ class Plot(object):
     def add_top_label(self, text, **kwargs):
         """Add a text label to the top of the plot
 
-        :See also: :func:`add_top_label`
+        :See also: :func:`~vacumm.misc.plot.add_top_label`
         """
         kwargs['ax'] = self.axes
         return add_top_label(text, **kwargs)
@@ -1692,7 +1700,7 @@ class Plot(object):
     def add_bottom_label(self, text, **kwargs):
         """Add a text label to the bottom of the plot
 
-        :See also: :func:`add_bottom_label`
+        :See also: :func:`~vacumm.misc.plot.add_bottom_label`
         """
         kwargs['ax'] = self.axes
         return add_bottom_label(text, **kwargs)
@@ -2074,7 +2082,8 @@ class Plot(object):
 
         :Examples:
 
-            - o.add_place(-5, 44, 'Buoy 654', text_offset=(20,0), text_ha='left',
+            >>> m = map2(sst, show=False)
+            >>> m.add_place(-5, 44, 'Buoy 654', text_offset=(20,0), text_ha='left',
                 text_color='b', point_size=100, shadow=True)
 
         :Params:
@@ -6419,10 +6428,6 @@ def best_loc_map(m, onland=True, allowed=_locations):
         sloc = '%s %s'%(['left', 'center', 'right'][imax], ['bottom', 'center', 'top'][jmax])
 
     return _loc2tuple_(sloc)
-
-
-
-
 
 
 
