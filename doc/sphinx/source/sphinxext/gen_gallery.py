@@ -22,8 +22,14 @@ template = """\
 %s
 {%% endblock %%}
 """
+#link_template = """\
+#<a href="%s"><img src="%s" border="0" alt="%s"/></a>
+#""" # (link, thumbfile, basename)
 link_template = """\
-<a href="%s"><img src="%s" border="0" alt="%s"/></a>
+<figure>
+    <a href="%(link)s"><img src="%(thumbfile)s" border="0" alt="%(basename)s"/></a><br/>
+    <figcaption><a href="%(link)s">%(basename)s</a></figcaption>
+</figure>
 """
 
 header_template = u"""<div class="section" id="%(subdir)s">\
@@ -51,13 +57,13 @@ def gen_gallery(app, doctree):
 
     htmldir = app.builder.outdir
     srcdir = app.builder.srcdir
-    
+
     # From config
     rootdir = app.config.gen_gallery_root
     paths = app.config.gen_gallery_paths
     skips = set(app.config.gen_gallery_skips)
     nmax = app.config.gen_gallery_nmax
-    
+
     # Inits
     thumbnails = {}
     rows = []
@@ -65,7 +71,7 @@ def gen_gallery(app, doctree):
 
     # Loop on subdirs
     for subdir, conf in paths.items():
-        
+
         # Check dirs
         figdir = conf.get('figdir', subdir)
         rstdir = conf.get('rstdir',figdir)
@@ -95,7 +101,7 @@ def gen_gallery(app, doctree):
             m = multiimage_match(basename)
             if m is not None:
                 basename = m.group(1)
-                
+
             # Check if rst file exists
             if not os.path.exists(os.path.join(srcdir, rstdir, basename+'.rst')):
                 continue
@@ -103,13 +109,13 @@ def gen_gallery(app, doctree):
             # Check nmax
             if len([True for bn in basenames if bn==basename])>nmax:
                 continue
-             
+
             # Is thumbnail out of date?
             orig_path = str(os.path.join(pngdir, filename))
             thumb_path = str(os.path.join(thumbdir, filename))
             if out_of_date(orig_path, thumb_path):
                 thumbnails[orig_path] = thumb_path
-            
+
             # Register
             basenames.append(basename)
             data.append((rstdir, basename,
@@ -120,7 +126,7 @@ def gen_gallery(app, doctree):
         for (rstdir, basename, thumbfile) in data:
             if thumbfile is not None:
                 link = '%s/%s.html'%(rstdir, basename)
-                rows.append(link_template%(link, thumbfile, basename))
+                rows.append(link_template%locals())
 
         if len(data) == 0:
             app.warn("no thumbnails were found in %s" % subdir)
