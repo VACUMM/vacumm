@@ -36,9 +36,10 @@ c.add_figtext(0.95, 0.95, 'Figure text 2', ha='right', style='italic')
 
 # Map
 f = cdms2.open(data_sample('mars3d.xy.nc'))
-sst = f('temp', lat=(47.75, 49))
+h0 = f('temp', lat=(47.75, 49))
 f.close()
-m = map2(sst, fill='pcolormesh', contour=False, colorbar=False, subplot=212, show=False)
+m = map2(h0, fill='pcolormesh', title='Bathy', contour=False, colorbar=False,
+    subplot=212, proj='lcc', show=False, cmap='GMT_gebco_r')
 
 # Add a letter for subfigures like "b)"
 m.add_key('B', pos='top right', xmargin=20)
@@ -54,11 +55,19 @@ m.add_line([-5.3, 48, -5, 49], color='r')
 m.add_lines([-5.3, -4.7, -5], [48, 48.5, 49], color='g')
 
 # Add box
-m.add_box([-6.2, 48.1, -5.5, 48.9], color='k', shadow=True, linewidth=3)
+m.add_box([-6.1, 48.1, -5.5, 48.9], color='k', shadow=True, linewidth=3)
 
 # Add arrow
 m.add_arrow(-6, 48.5, 5, 5)
 
+# Add map scale (maps only)
+m.add_mapscale(barstyle='fancy')
+
+# Add compass(maps only)
+m.add_compass(pos=(0.97, .5))
+
+# Add both!
+m.add_mscp(pos='upper left')
+
 P.tight_layout()
 m.savefigs(__file__)
-m.show()

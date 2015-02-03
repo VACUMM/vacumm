@@ -5551,13 +5551,15 @@ class Map(Plot2D):
             del kwms['transform']
 
         # Mapscale
-        ms, pos = self.add_mapscale(pos=pos, posref=posref, getpos=True, **kwms)
+        kwms.setdefault('pos', pos)
+        ms, pos = self.add_mapscale(posref=posref, getpos=True, **kwms)
 
         # Compass above mapscale
         pos = self(*pos)
         pos = self(pos[0], pos[1]+msoffset*3, inverse=True)
         kwcp.update(transform = 'data', offset=cpoffset)
-        cp = self.add_compass(pos=pos, posref=posref, size=compass_size, **kwcp)
+        kwcp.setdefault('pos', pos)
+        cp = self.add_compass(posref=posref, size=compass_size, **kwcp)
 
         return ms+list(cp)
 
