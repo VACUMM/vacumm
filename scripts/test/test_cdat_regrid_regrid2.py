@@ -1,11 +1,11 @@
 """Test the traditionnal CDAT regrid2 regridder"""
 
-from vcmq import MV2, create_grid, meshbounds, P, add_grid, N, bounds1d, plot2d, savefigs,code_file_name 
+from vcmq import MV2, create_grid, meshbounds, P, add_grid, N, bounds1d, plot2d, savefigs,code_file_name
 from regrid2 import Horizontal
 
 # Input
 nx, ny = 6, 4
-vari = MV2.array(N.arange(nx*ny*1.).reshape(ny, nx))
+vari = MV2.array(N.arange(nx*ny*1.).reshape(ny, nx), fill_value=1e20)
 xi = vari.getAxis(-1)
 xi[:] *= 2
 yi = vari.getAxis(-2)
@@ -30,8 +30,8 @@ xxob, yyob = meshbounds(xo, yo)
 varo, wo = vari.regrid(grido, tool='regrid2', returnTuple=1)
 
 # Plot
-kw = dict(fill='pcolor', contour=False, xhide=True, yhide=True, 
-    xticks=[], yticks=[], cmap='jet', 
+kw = dict(fill='pcolor', contour=False, xhide=True, yhide=True,
+    xticks=[], yticks=[], cmap='jet',
     colorbar=False, show=False)
 P.figure(figsize=(6, 3))
 p = plot2d(vari, subplot=131, title='Original', **kw)
