@@ -11,11 +11,23 @@ In development
 - Fixed bugs: list_forecast_files, Plot.add_lon/lat.
 - Fixed: ConfigManager.opt_parse.
 
-- Fixed: cfg2rst, StepsNorm.
+Version 2.5.0
+==============
+
+- Added: Plot.add_annotation, gfdl colormap.
+- Added: misc.plot.advanced.add_things tutorial.
+- Fixed: gen_gallery.
+
+Version 2.4.2
+==============
+
+- Added: misc.isempty.
+- Fixed: cfg2rst, ConfigManager, StepsNorm.
 
 Version 2.4.1
 ==============
 
+- Upgraded: Logger.
 - Added: docversions sphinx extension.
 - Fixed: ConfigManager.opt_parse/arg_parse, Shapes, get_proj, get_xy,
   seawater import, are_good_units, Shapes.__init__/plot.

@@ -25,7 +25,7 @@ div.sidebar {
     -webkit-box-shadow: 3px 1px 3px #d8d8d8;
     -moz-box-shadow: 4px 4px 3px #d8d8d8;
 }
-        
+
 
 dl.ftype > dt, dl.fvar > dt, dl.method > dt, dl.classmethod > dt, dl.staticmethod > dt, dl.class > dt, dl.attribute > dt, dl.type > dt, dl.variable > dt, dl.program > dt, dl.subroutine > dt {
     background-color: #EFEFEF;
@@ -70,7 +70,7 @@ dl.data > dt > tt.descclassname, dl.function > dt > tt.descclassname, dl.class >
     display:none;
 }
 
-/*.highlight-python > 
+/*.highlight-python >
     border-top-color: #68A4C4;
     border-bottom-color: #68A4C4;
 */
@@ -97,3 +97,18 @@ p.caption {
     font-style : italic;
 }
 
+/* Gallery */
+figure {
+  margin: 1em;
+  display: inline-block;
+}
+
+figure img {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+figcaption {
+    text-align: center;
+    font-size:small;
+}

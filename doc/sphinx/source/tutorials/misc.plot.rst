@@ -27,6 +27,7 @@ Cas complexes
 -------------
 .. toctree::
 
+    misc.plot.advanced.add_things
     misc.plot.advanced.meteo
     misc.plot.advanced.meteo2d
     misc.plot.advanced.quiver_anim

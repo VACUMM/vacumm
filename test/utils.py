@@ -15,23 +15,23 @@ method_template = """def {0}(self):
 """
 
 class VCTestCase(unittest.TestCase):
-    
+
     def get_path(self, test_name):
         """Get the path to the test script"""
         return os.path.join(test_dir, test_name+'.py')
-    
+
     def handle_result(self, result=None):
         """Handle result from test scripts"""
         if isinstance(result, dict): result = result.items()
         if not isinstance(result, (list, tuple)): return
-        
+
         # Loop on content
         for key, values in result:
             self.check_single_result(key, values)
-            
-            
+
+
     def check_single_result(self, key, values):
-        
+
         # Files exist
         if key=='files':
             files = values
@@ -40,18 +40,18 @@ class VCTestCase(unittest.TestCase):
             for fn in files:
                 self.assertTrue(os.path.exists(fn))
             return
-        
-        # Function that returns True if succeeded 
+
+        # Function that returns True if succeeded
         if callable(key):
             if not isinstance(values, (list,tuple)):
                 values = [values]
             self.assertTrue(key(*values))
             return
-            
+
         # Assertions
-        if key.startswith('assert'): 
+        if key.startswith('assert'):
             if not isinstance(values, (list,tuple)):
                 values = [values]
             getattr(self, key)(*values)
             return
-        
+
