@@ -33,6 +33,15 @@ c.add_time_label(tmin, vmin, tmin, fmt='Min at%n%H:%M %d/%m/%Y', va='top', ha='c
 c.add_figtext('Figure text 1')
 c.add_figtext(0.95, 0.95, 'Figure text 2', ha='right', style='italic')
 
+# Add param info
+c.add_param_label(dict(param1=1, param2='Good thing'), color='r')
+
+# Add annotation
+c.add_annotation(tmin, vmin, -150, -20, 'The min !',
+    bbox=dict(facecolor='y', alpha=.5, pad=10),
+    arrowprops=dict(arrowstyle='fancy', facecolor='y',
+        connectionstyle="arc3,rad=-.3", linewidth=0.3))
+
 
 # Map
 f = cdms2.open(data_sample('mars3d.xy.nc'))
@@ -70,4 +79,5 @@ m.add_compass(pos=(0.97, .5))
 m.add_mscp(pos='upper left')
 
 P.tight_layout()
+P.subplots_adjust(bottom=0.08)
 m.savefigs(__file__)

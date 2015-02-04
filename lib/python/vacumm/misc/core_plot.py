@@ -1732,6 +1732,70 @@ class Plot(object):
         kwargs['fig'] = self.fig
         return add_param_label(text, **kwargs)
 
+    def add_annotation(self, x, y, xtext, ytext, text='', xycoords='data',
+        textcoords='offset points', arrowprops='->',
+        shadow=False, glow=False,
+        xyscaler=None, strip=True, **kwargs):
+        """Add an annotation to the plot axes using :func:`matplotlib.pyplot.annotate`
+
+        :Params:
+
+            - **x,y**: Coordinates of the text.
+            - **text**: Text to plot.
+            - **xycoords/transform**, optional: Type of coordinates of point
+              (like ``"axes"`` or ``"data"``).
+            - **textcoords**, optional: Type of coordinates of text
+              (like ``"axes"`` or ``"data"``).
+            - **arrowprops**, optional: Dictionary of arrow properties or
+              string thet defines the arrow style.
+            - **shadow**, optional: Add a droped shadow below the text
+              (see :func:`add_shadow`).
+            - **shadow_<param>**, optional: ``<param>`` is passed to :func:`add_shadow`.
+            - **glow**, optional: Add a glow effect the text
+              (see :func:`add_glow`).
+            - **glow_<param>**, optional: ``<param>`` is passed to :func:`add_glow`.
+            - Other keywords are passed to :func:`matplotlib.pyplot.annotate`.
+
+        """
+        # Keywords
+        kwsh = kwfilter(kwargs, 'shadow')
+        kwgl = kwfilter(kwargs, 'glow')
+
+        # Coordinates transform
+        xycoords = kwargs.pop('transform', xycoords)
+        xycoords = self._transform_(xycoords, 'data')
+        if not isinstance(xycoords, basestring) and \
+                xycoords not in [self.axes.transAxes, self.fig.transFigure]:
+            x, y = self.get_xy(x, y, xycoords, xyscaler=xyscaler)
+        if textcoords is None:
+            textcoords = xycoords
+        else:
+            textcoords = self._transform_(textcoords, 'offset points')
+        if not isinstance(textcoords, basestring) and \
+                textcoords not in [self.axes.transAxes, self.fig.transFigure]:
+            xtext, ytext = self.get_xy(xtext, ytext, xycoords, xyscaler=xyscaler)
+
+        # Arrow properties
+        if isinstance(arrowprops, basestring):
+            arrowprops = dict(arrowstyle=arrowprops)
+        elif not isinstance(arrowprops, dict):
+            arrowprops = {}
+        arrowprops.setdefault('arrowstyle', '->')
+
+        # Plot
+        if strip: text = text.strip()
+        obj = self.axes.annotate(xy=(x, y), xytext=(xtext, ytext), s=text,
+            xycoords=xycoords, textcoords=textcoords, arrowprops=arrowprops, **kwargs)
+        obj = self.add_axobj('text', obj)
+        self.register_obj(obj, **kwargs)
+
+        # Path effects
+        if shadow: self.register_obj(self.add_shadow(obj, **kwsh), **kwargs)
+        if glow: self.register_obj(self.add_glow(obj, **kwgl), **kwargs)
+
+        return obj
+
+
     def hlitvs(self, **kwargs):
         """Highlight intervals with grey/white background alternance
 
@@ -6692,7 +6756,8 @@ def _transform_(transform, default=None, ax=None, fig=None):
             if fig is None:
                 fig = P.gcf() if ax is None else ax.fig
             return fig.transFigure
-        return getattr(ax, 'trans'+transform.title())
+        if hasattr(ax, 'trans'+transform.title()):
+            return getattr(ax, 'trans'+transform.title())
     return transform
 
 
