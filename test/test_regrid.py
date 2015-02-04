@@ -1,7 +1,7 @@
 from utils import *
 
 
-class TestSequenceFunctions(VCTestCase):
+class TSF(VCTestCase):
 
     for test_name in [
         'test_regrid_fortran_extrap1d',
@@ -18,7 +18,7 @@ class TestSequenceFunctions(VCTestCase):
         'test_regrid_kriging_parallel',
         ]:
         exec(method_template.format(test_name))
-        
-        
+
+
 if __name__ == '__main__':
     unittest.main()
