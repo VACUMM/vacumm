@@ -10,5 +10,5 @@ def configuration(parent_package='',top_path=None):
     config.add_subpackage('bathy')
     config.add_subpackage('tide')
     config.add_subpackage('validator')
-    config.add_data_files('config.cfg')
+    config.add_data_files('vacumm.cfg')
     return config

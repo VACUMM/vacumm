@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 """Edit your user configuration file of VACUMM"""
+print 'This script is deprecated. Please use "vacumm_config.py edit" instead'
 
 # Arguments
 from optparse import OptionParser
 import sys, os, shutil
-parser = OptionParser(#usage="Usage: %prog [options]", 
+parser = OptionParser(#usage="Usage: %prog [options]",
     description="Edit your user configuration file of VACUMM")
 parser.add_option('-e', '--editor', action='store', dest='editor',
-    help='alternative editor (defaults to environment variable EDITOR or VISUAL)')    
-    
+    help='alternative editor (defaults to environment variable EDITOR or VISUAL)')
+
 # Parse
 (options, args) = parser.parse_args()
 
