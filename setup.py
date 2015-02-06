@@ -19,21 +19,26 @@ version_sphinx = release
 # - from svn
 svnfile = os.path.join(rootdir,'.svn/entries')
 if os.path.exists(svnfile):
-    f = open(svnfile)
-    line = f.readlines()[3][:-1]
-    f.close()
-    release += '-svn%i'%eval(line)
+    try:
+        f = open(svnfile)
+        line = f.readlines()[3][:-1]
+        f.close()
+        release += '-svn%i'%eval(line)
+    except:
+        pass
 release_sphinx = release
 
 # Infos
 name="vacumm"
 version = release
-description = 'Outils python pour VACUMM'
-long_description = "Validation, Analyse, Comparaison dU Modèle Mars Utilitaires pour valider, analyser les sorties du modèle MArs et comparer avec données in-situ "
+description = 'A library for ocean science'
+#long_description = "Validation, Analyse, Comparaison dU Modèle Mars Utilitaires pour valider, analyser les sorties du modèle MArs et comparer avec données in-situ "
+long_description = "A library and a collection of scripts for ocean science, " + \
+    "mainly designed for data analysis and model validation"
 author = 'Actimar / IFREMER'
-author_email = 'raynaud@actimar.fr'
+author_email = 'raynaud@actimar.fr or charria@ifremer.fr'
 maintainer = "Actimar / IFREMER"
-maintainer_email = "raynaud@actimar.fr ou Sebastien.Theetten@ifremer.fr"
+maintainer_email = author_email
 plateform = 'Linux/UNIX/BSD'
 license="CeCiLL"
 url="http://www.ifremer.fr/vacumm"

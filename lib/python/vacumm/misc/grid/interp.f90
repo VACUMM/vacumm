@@ -1,24 +1,24 @@
 ! Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
-! 
+!
 ! raynaud@actimar.fr
-! 
-! 
+!
+!
 ! This software is a computer program whose purpose is to provide
 ! utilities for handling oceanographic and atmospheric data,
 ! with the ultimate goal of validating the MARS model from IFREMER.
-! 
+!
 ! This software is governed by the CeCILL license under French law and
-! abiding by the rules of distribution of free software.  You can  use, 
+! abiding by the rules of distribution of free software.  You can  use,
 ! modify and/ or redistribute the software under the terms of the CeCILL
 ! license as circulated by CEA, CNRS and INRIA at the following URL
-! "http://www.cecill.info". 
-! 
+! "http://www.cecill.info".
+!
 ! As a counterpart to the access to the source code and  rights to copy,
 ! modify and redistribute granted by the license, users are provided only
 ! with a limited warranty  and the software's author,  the holder of the
 ! economic rights,  and the successive licensors  have only  limited
-! liability. 
-! 
+! liability.
+!
 ! In this respect, the user's attention is drawn to the risks associated
 ! with loading,  using,  modifying and/or developing or reproducing the
 ! software by the user in light of its specific status of free software,
@@ -26,13 +26,13 @@
 ! therefore means  that it is reserved for developers  and  experienced
 ! professionals having in-depth computer knowledge. Users are therefore
 ! encouraged to load and test the software's suitability as regards their
-! requirements in conditions enabling the security of their systems and/or 
-! data to be ensured and,  more generally, to use and operate it in the 
-! same conditions as regards security. 
-! 
+! requirements in conditions enabling the security of their systems and/or
+! data to be ensured and,  more generally, to use and operate it in the
+! same conditions as regards security.
+!
 ! The fact that you are presently reading this means that you have had
 ! knowledge of the CeCILL license and that you accept its terms.
-! 
+!
 ! =============================================================================
 ! ================================== 1D =======================================
 ! =============================================================================
@@ -51,7 +51,7 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
     ! See: http://local.wasp.uwa.edu.au/~pbourke/miscellaneous/interpolation/
 
     implicit none
-    
+
     ! Extrernal
     integer, intent(in) :: nx,nyi,nyo,method
     real(kind=8), intent(in) :: vari(nx,nyi)
@@ -59,7 +59,7 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
     real(kind=8), intent(in) :: mv
     real(kind=8), intent(out) :: varo(nx,nyo)
     integer, intent(in), optional :: extrap
-    
+
     ! Internal
     integer :: iyi,iyo
     real(kind=8) :: dy0,dy1,yi0,yi1,mu
@@ -73,63 +73,63 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
     zyo = yo
     if (yi(nyi)<yi(1))zyi = -yi
     if (nyo>1.and.yo(nyo)<yo(1))zyo = -yo
-    
+
     ! Initialisation
     varo = mv
     if(method>1) allocate(vc0(nx),vc1(nx))
     bias = 0.
     tension = 0.
     bmask = abs((vari-mv)/mv)<=epsilon(0d0)*1.0001
-        
+
     ! Loop on input grid
     iyo = 1
     do iyi = 1, nyi-1
-    
+
         yi0 = zyi(iyi)
         yi1 = zyi(iyi+1)
 
         if (yi1<zyo(1)) cycle
         if (yi0>zyo(nyo)) exit
-            
+
         ! Loop on output grid
         do while (iyo <= nyo )
-         
+
              ! Out of interval
             if (zyo(iyo) < yi0) then
                 iyo = iyo + 1
                 cycle
             endif
             if (zyo(iyo) > yi1) exit
-    
+
             ! Distances to neighbours
             dy0 = zyo(iyo)-yi0
             dy1 = yi1-zyo(iyo)
-            
+
             ! Interpolation
             if (dy0==0.) then
                 varo(:,iyo) = vari(:, iyi)
             else if (dy1==0.) then
                 varo(:,iyo) = vari(:, iyi+1)
-                
+
             elseif (method==0) then
-            
+
                 ! Nearest neighbour
                 if (dy0 < dy1) then
                     varo(:,iyo) = vari(:, iyi)
                 else
                     varo(:,iyo) = vari(:, iyi+1)
                 endif
-                
+
             elseif (method==1)then
-            
+
                 ! Linear
                 varo(:,iyo) = &
                 &    (vari(:, iyi)*dy1 + vari(:, iyi+1)*dy0) / &
                 &    (dy0+dy1)
                 varo(:,iyo) = merge(mv, varo(:,iyo), any(bmask(:, iyi:iyi+1),dim=2) )
-                
+
             else
-            
+
                 ! Cubic and Hermit
                 !
                 if (iyi==1)then ! y0
@@ -143,9 +143,9 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
                     vc1 = vari(:, iyi+2)
                 endif
                 mu = dy0/(dy0+dy1)
-                
+
                 if (method==2)then
-                
+
                     ! Cubic
                     !   mu2 = mu*mu;
                     !   a0 = y3 - y2 - y0 + y1;
@@ -153,14 +153,14 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
                     !   a2 = y2 - y0;
                     !   a3 = y1;
                     !   return (a0*mu*mu2+a1*mu2+a2*mu+a3);
-                     
+
                     varo(:,iyo) = vc1 - vari(:, iyi+1) - vc0 + vari(:, iyi) !a0
                     varo(:,iyo) = mu**3*varo(:,iyo) + mu**2*(vc0-vari(:, iyi)-varo(:,iyo)) ! a0*mu^3 + a1*mu
                     varo(:,iyo) = varo(:,iyo) + mu*(vari(:, iyi+1)-vc0)
                     varo(:,iyo) = varo(:,iyo) + vari(:, iyi)
-                
+
                 else
-                
+
                     ! Hermit
                     !   mu2 = mu * mu;
                     !   mu3 = mu2 * mu;
@@ -186,17 +186,17 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
                     &    (vc1-vari(:, iyi+1))        *(1-bias)*(1-tension)/2)
                     varo(:,iyo) = varo(:,iyo) + a3*vari(:, iyi+1)
                 endif
-                
+
                 ! Mask
                 varo(:,iyo) = merge(mv, varo(:,iyo), &
                     & any(bmask(:, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
 
             endif
             iyo = iyo + 1
-            
+
         end do
     end do
-    
+
     ! Extrapolation with nearest
     !if(method==0 .and.present(extrap).and.extrap/=0)then
     if(present(extrap).and.extrap/=0)then
@@ -210,10 +210,10 @@ subroutine interp1d(vari, yi, varo, yo, mv, method, nx, nyi, nyo, extrap)
             do iyo=nyo,1,-1
                 if(zyi(nyi)>zyo(iyo))exit
                 varo(:,iyo) = vari(:,nyi)
-            enddo            
+            enddo
         endif
     endif
-    
+
 
 end subroutine interp1d
 
@@ -231,7 +231,7 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
     ! See: http://local.wasp.uwa.edu.au/~pbourke/miscellaneous/interpolation/
 
     implicit none
-    
+
     ! Extrernal
     integer, intent(in) :: nx,nyi,nyo,method,nxb
     real(kind=8), intent(in) :: vari(nx,nyi)
@@ -239,7 +239,7 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
     real(kind=8), intent(in) :: mv
     real(kind=8), intent(out) :: varo(nx,nyo)
     integer, intent(in), optional :: extrap
-    
+
     ! Internal
     integer :: iyi,iyo,ib
     real(kind=8) :: dy0(nxb),dy1(nxb)
@@ -265,34 +265,34 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
     else
         zyo = yo
     endif
-    
+
     ! Initialisation
     varo = mv
     if(method>1) allocate(vc0(nxb),vc1(nxb))
     if(method==3)allocate(a0(nxb),a1(nxb),a2(nxb),a3(nxb))
     bias = 0.
     tension = 0.
-        
+
     ! Loop on input grid
     do iyi = 1, nyi-1
-    
+
         ! Loop on output grid
         do iyo = 1,nyo
-        
+
             dy0 = zyo(iyo)-zyi(:,iyi)
             dy1 = zyi(:,iyi+1)-zyo(iyo)
             bitv = zyo(iyo)>=zyi(:,iyi).and.zyo(iyo)<=zyi(:,iyi+1)
             mu = dy0/(dy0+dy1)
-                
+
             ! Loop on blocks
             do ib = 1, nx/nxb
-            
+
                 ! Block
                 ix0 = 1+(ib-1)*nxb
                 ix1 = ix0+nxb-1
-        
+
                 if (method==0) then
-                
+
                     ! Nearest
                     where(bitv)
                         where(dy0<dy1)
@@ -301,9 +301,9 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                             varo(ix0:ix1,iyo) = vari(ix0:ix1,iyi+1)
                         end where
                     end where
-                    
+
                 elseif(method==1)then
-                
+
                     ! Linear
                     where(bitv)
                         varo(ix0:ix1,iyo) = &
@@ -312,7 +312,7 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                         varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
                             & any(bmask(ix0:ix1, iyi:iyi+1),dim=2) )
                     end where
-                    
+
                 else
 
                     ! Extrapolations
@@ -328,7 +328,7 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                     endif
 
                     if (method==2)then
-                
+
                         ! Cubic
                         where(bitv)
                             varo(ix0:ix1,iyo) = vc1 - vari(ix0:ix1, iyi+1) - vc0 + vari(ix0:ix1, iyi)
@@ -338,9 +338,9 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                             varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
                                 & any(bmask(ix0:ix1, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
                         end where
-                    
+
                     else
-                    
+
                         ! Hermit
                         a0 = 2*mu**3 - 3*mu**2 + 1
                         a1 =    mu**3 - 2*mu**2 + mu
@@ -358,7 +358,7 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                             varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
                                 & any(bmask(ix0:ix1, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
                         end where
-                        
+
                     endif
                 endif
             end do
@@ -387,7 +387,7 @@ subroutine interp1dx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
             endif
         enddo
     endif
-    
+
     ! Deallocations
     if(method>1) deallocate(vc0,vc1)
     if(method==3)deallocate(a0,a1,a2,a3)
@@ -408,7 +408,7 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
     ! See: http://local.wasp.uwa.edu.au/~pbourke/miscellaneous/interpolation/
 
     implicit none
-    
+
     ! Extrernal
     integer, intent(in) :: nx,nyi,nyo,method,nxb
     real(kind=8), intent(in) :: vari(nx,nyi)
@@ -416,7 +416,7 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
     real(kind=8), intent(in) :: mv
     real(kind=8), intent(out) :: varo(nx,nyo)
     integer, intent(in), optional :: extrap
-    
+
     ! Internal
     integer :: iyi,iyo,ib
     real(kind=8) :: dy0(nxb),dy1(nxb)
@@ -447,34 +447,34 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
 !    else
 !        zyo = yo
 !    endif
-    
+
     ! Initialisation
     varo = mv
     if(method>1) allocate(vc0(nxb),vc1(nxb))
     if(method==3)allocate(a0(nxb),a1(nxb),a2(nxb),a3(nxb))
     bias = 0.
     tension = 0.
-        
+
     ! Loop on input grid
     do iyi = 1, nyi-1
-    
+
         ! Loop on output grid
         do iyo = 1,nyo
-        
+
             dy0 = zyo(:,iyo)-zyi(:,iyi)
             dy1 = zyi(:,iyi+1)-zyo(:,iyo)
             bitv = zyo(:,iyo)>=zyi(:,iyi).and.zyo(:,iyo)<=zyi(:,iyi+1)
             mu = dy0/(dy0+dy1)
-                
+
             ! Loop on blocks
             do ib = 1, nx/nxb
-            
+
                 ! Block
                 ix0 = 1+(ib-1)*nxb
                 ix1 = ix0+nxb-1
-        
+
                 if (method==0) then
-                
+
                     ! Nearest
                     where(bitv)
                         where(dy0<dy1)
@@ -483,9 +483,9 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                             varo(ix0:ix1,iyo) = vari(ix0:ix1,iyi+1)
                         end where
                     end where
-                    
+
                 elseif(method==1)then
-                
+
                     ! Linear
                     where(bitv)
                         varo(ix0:ix1,iyo) = &
@@ -494,7 +494,7 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                         varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
                             & any(bmask(ix0:ix1, iyi:iyi+1),dim=2) )
                     end where
-                    
+
                 else
 
                     ! Extrapolations
@@ -510,7 +510,7 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                     endif
 
                     if (method==2)then
-                
+
                         ! Cubic
                         where(bitv)
                             varo(ix0:ix1,iyo) = vc1 - vari(ix0:ix1, iyi+1) - vc0 + vari(ix0:ix1, iyi)
@@ -520,9 +520,9 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                             varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
                                 & any(bmask(ix0:ix1, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
                         end where
-                    
+
                     else
-                    
+
                         ! Hermit
                         a0 = 2*mu**3 - 3*mu**2 + 1
                         a1 =    mu**3 - 2*mu**2 + mu
@@ -540,7 +540,7 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
                             varo(ix0:ix1,iyo) = merge(mv, varo(ix0:ix1,iyo), &
                                 & any(bmask(ix0:ix1, max(iyi-1,1):min(iyi+2,nyi)), dim=2) )
                         end where
-                        
+
                     endif
                 endif
             end do
@@ -569,7 +569,7 @@ subroutine interp1dxx(vari, yi, varo, yo, mv, method, nx, nxb, nyi, nyo, extrap)
             endif
         enddo
     endif
-    
+
     ! Deallocations
     if(method>1) deallocate(vc0,vc1)
     if(method==3)deallocate(a0,a1,a2,a3)
@@ -587,54 +587,54 @@ subroutine extrap1d(vari, varo, mv, extrap, nx, ny)
     !
 
     implicit none
-    
+
     ! Extrernal
     integer, intent(in) :: nx,ny
     real(kind=8), intent(in) :: vari(nx,ny)
     real(kind=8), intent(in) :: mv
     real(kind=8), intent(out) :: varo(nx,ny)
     integer, intent(in), optional :: extrap
-    
+
     ! Internal
     integer :: ix,iy, jj(ny), iymin, iymax
     logical :: valid(ny)
-    
+
     ! Initialisation
     varo = vari
-    if(extrap==0)return    
+    if(extrap==0)return
     jj = (/(iy, iy=1,ny)/)
-        
+
     ! Loop on extra dim
-    !$OMP PARALLEL DO PRIVATE(ix,iymin,iymax,valid) 
+    !$OMP PARALLEL DO PRIVATE(ix,iymin,iymax,valid)
     !$& SHARED(vari,jj,varo,extrap)
     do ix = 1, nx
-        
+
         valid = abs(vari(ix,:)-mv)>tiny(1d0)
-        
+
         if(any(valid))then
-        
+
             if(extrap==-1 .or. extrap==2)then
                 iymin = minval(jj, mask=valid)
                 if(iymin>1) varo(ix,1:iymin-1) = varo(ix,iymin)
             endif
-            
+
             if(extrap==1 .or. extrap==2)then
                 iymax = maxval(jj, mask=valid)
                 if(iymax<ny) varo(ix,iymax+1:ny) = varo(ix,iymax)
             endif
-            
+
         endif
 
     enddo
     !$OMP END PARALLEL DO
-    
+
 end subroutine extrap1d
 
 ! =============================================================================
 
 subroutine remap1d(vari, yi, varo, yo, mv, conserv, nx, nyi, nyo, yib, yob,extrap)
     ! Remapping along the second axis (y)
-    
+
     implicit none
 
     ! Extrernal
@@ -649,7 +649,7 @@ subroutine remap1d(vari, yi, varo, yo, mv, conserv, nx, nyi, nyo, yib, yob,extra
     ! Local
     integer :: iyi,iyo
     real(kind=8) :: zyib(nyi+1),zyob(nyo+1),wo(nx),dyio
-    
+
     ! Bounds
     if(present(yib).and. .not.all(yib==0d0))then
         zyib = yib
@@ -700,7 +700,7 @@ subroutine remap1d(vari, yi, varo, yo, mv, conserv, nx, nyi, nyo, yib, yob,extra
                 wo = wo + dyio
                 varo(:,iyo) = varo(:,iyo) + vari(:,iyi)*dyio
             endwhere
-            
+
             ! Next input cell?
             if(zyib(iyi+1)>zyob(iyo+1)) exit
             iyi = iyi +1
@@ -715,9 +715,9 @@ subroutine remap1d(vari, yi, varo, yo, mv, conserv, nx, nyi, nyo, yib, yob,extra
 !        elsewhere
 !            varo(:,iyo) = mv
 !        endwhere
-        
+
     enddo
-    
+
 end subroutine remap1d
 
 subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob,extrap)
@@ -731,7 +731,7 @@ subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob
     !
 
     implicit none
-    
+
     ! Extrernal
     integer, intent(in) :: nx,nyi,nyo,nxb
     integer, intent(in) ::  conserv
@@ -741,7 +741,7 @@ subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob
     real(kind=8), intent(out) :: varo(nx,nyo)
     real(kind=8), intent(in), optional :: yib(nxb,nyi+1), yob(nyo+1)
     integer, intent(in), optional :: extrap
- 
+
     ! Local
     integer :: iyi,iyo,ib
     real(kind=8) :: zyib(nxb,nyi+1),zyob(nyo+1),wo(nx),dyi(nxb)
@@ -769,78 +769,78 @@ subroutine remap1dx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yob
     ! Extrapolation with nearest bound
     if(present(extrap).and.extrap/=0)then
        if(extrap==-1 .or. extrap==2)then
-           where (zyib(:,1) > zyob(1)) zyib(:,1)=zyob(1) 
+           where (zyib(:,1) > zyob(1)) zyib(:,1)=zyob(1)
        endif
        if(extrap==1 .or. extrap==2)then
-           where (zyib(:,nyi+1) < zyob(nyo+1)) zyib(:,nyi+1)=zyob(nyo+1) 
+           where (zyib(:,nyi+1) < zyob(nyo+1)) zyib(:,nyi+1)=zyob(nyo+1)
        endif
     endif
-    
+
     ! Initialisation
     varo = 0.
     if(conserv==0)dyi = 1.
-        
+
     ! Loop on output grid
     do iyo = 1,nyo
-            
+
         wo = 0.
-        
+
         ! Loop on input grid
         do iyi = 1, nyi
 
             ! No intersection
             if(all(zyib(:, iyi)>=zyob(iyo+1)))exit
             if(all(zyib(:, iyi+1)<zyob(iyo)))cycle
-            
+
             ! Conditional arrays
             mapi(:,1) = zyib(:, iyi)>=zyob(iyo).and.zyib(:, iyi+1)<=zyob(iyo+1)
             mapi(:,2) = zyib(:, iyi)< zyob(iyo).and.zyib(:, iyi+1)> zyob(iyo+1)
             mapi(:,3) = zyib(:, iyi)< zyob(iyo).and.zyib(:, iyi+1)>zyob(iyo)
             mapi(:,4) = zyib(:, iyi)< zyob(iyo+1).and.zyib(:, iyi+1)> zyob(iyo+1)
-            
+
             ! Conservative
             if(conserv==1) dyi = zyib(:, iyi+1)-zyib(:, iyi)
-    
+
             ! Loop on blocks
             do ib = 1, nx/nxb
-            
+
                 ! Block
                 ix0 = 1+(ib-1)*nxb
                 ix1 = ix0+nxb-1
                 where(vari(ix0:ix1,iyi)/=mv)
                     where(mapi(:,1))
-                    
+
                         ! Input inside
                         varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
                         &    *(zyib(:, iyi+1)-zyib(:, iyi))/dyi
                         wo(ix0:ix1) = wo(ix0:ix1) + zyib(:, iyi+1)-zyib(:, iyi)
-                        
+
                     elsewhere(mapi(:,2))
-                    
+
                         ! Output inside
                         varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
                         &    *(zyob(iyo+1)-zyob(iyo))/dyi
                         wo(ix0:ix1) = wo(ix0:ix1) + (zyob(iyo+1)-zyob(iyo))
-                        
+
                     elsewhere(mapi(:,3))
-                    
+
                         ! Input partly below
                         varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
                         &    *(zyib(:, iyi+1)-zyob(iyo))/dyi
                         wo(ix0:ix1) = wo(ix0:ix1) + zyib(:, iyi+1)-zyob(iyo)
-                    
+
                     elsewhere(mapi(:,4))
-                    
+
                         ! Input partly above
                         varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
                         &    *(zyob(iyo+1)-zyib(:, iyi))/dyi
                         wo(ix0:ix1) = wo(ix0:ix1) + (zyob(iyo+1)-zyib(:, iyi))
-                        
+
                     endwhere
                 endwhere
             enddo
         enddo
-            
+
         ! Normalize
         if(conserv==1)where(wo/=0.)wo = 1.
         where(wo/=0.)
@@ -863,7 +863,7 @@ subroutine remap1dxx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yo
     !
 
     implicit none
-    
+
     ! Extrernal
     integer, intent(in) :: nx,nyi,nyo,nxb
     integer,intent(in) ::  conserv
@@ -873,7 +873,7 @@ subroutine remap1dxx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yo
     real(kind=8), intent(out) :: varo(nx,nyo)
     real(kind=8), intent(in), optional :: yib(nxb,nyi+1), yob(nxb,nyo+1)
     integer, intent(in), optional :: extrap
-   
+
     ! Local
     integer :: iyi,iyo,ib
     real(kind=8) :: zyib(nxb,nyi+1),zyob(nxb,nyo+1),wo(nx),dyi(nxb)
@@ -901,10 +901,10 @@ subroutine remap1dxx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yo
     ! Extrapolation with nearest bound
     if(present(extrap).and.extrap/=0)then
        if(extrap==-1 .or. extrap==2)then
-           where (zyib(:,1) > zyob(:,1)) zyib(:,1)=zyob(:,1) 
+           where (zyib(:,1) > zyob(:,1)) zyib(:,1)=zyob(:,1)
        endif
        if(extrap==1 .or. extrap==2)then
-           where (zyib(:,nyi+1) < zyob(:,nyo+1)) zyib(:,nyi+1)=zyob(:,nyo+1) 
+           where (zyib(:,nyi+1) < zyob(:,nyo+1)) zyib(:,nyi+1)=zyob(:,nyo+1)
        endif
     endif
 
@@ -914,65 +914,65 @@ subroutine remap1dxx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yo
 
     ! Loop on output grid
     do iyo = 1,nyo
-            
+
         wo = 0.
-        
+
         ! Loop on input grid
         do iyi = 1, nyi
 
             ! No intersection
             if(all(zyib(:, iyi)>=zyob(:, iyo+1)))exit
             if(all(zyib(:, iyi+1)<zyob(:, iyo)))cycle
-            
+
             ! Conditional arrays
             mapi(:,1) = zyib(:, iyi)>=zyob(:, iyo).and.zyib(:, iyi+1)<=zyob(:, iyo+1) ! Inside
             mapi(:,2) = zyib(:, iyi)< zyob(:, iyo).and.zyib(:, iyi+1)> zyob(:, iyo+1) ! Embed
             mapi(:,3) = zyib(:, iyi)< zyob(:, iyo).and.zyib(:, iyi+1)>zyob(:, iyo) ! Below
             mapi(:,4) = zyib(:, iyi)<zyob(:, iyo+1).and.zyib(:, iyi+1)> zyob(:, iyo+1) ! Above
-            
+
             ! Conservative
             if(conserv==1) dyi = zyib(:, iyi+1)-zyib(:, iyi)
-    
+
             ! Loop on blocks
             do ib = 1, nx/nxb
-            
+
                 ! Block
                 ix0 = 1+(ib-1)*nxb
                 ix1 = ix0+nxb-1
                 where(vari(ix0:ix1,iyi)/=mv)
                     where(mapi(:,1))
-                    
+
                         ! Input inside
                         varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
                         &    *(zyib(:, iyi+1)-zyib(:, iyi))/dyi
                         wo(ix0:ix1) = wo(ix0:ix1) + zyib(:, iyi+1)-zyib(:, iyi)
-                        
+
                     elsewhere(mapi(:,2))
-                    
+
                         ! Output inside
                         varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
                         &    *(zyob(:, iyo+1)-zyob(:, iyo))/dyi
                         wo(ix0:ix1) = wo(ix0:ix1) + zyob(:, iyo+1)-zyob(:, iyo)
-                        
+
                     elsewhere(mapi(:,3))
-                    
+
                         ! Input partly below
                         varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
                         &    *(zyib(:, iyi+1)-zyob(:, iyo))/dyi
                         wo(ix0:ix1) = wo(ix0:ix1) + zyib(:, iyi+1)-zyob(:, iyo)
-                    
+
                     elsewhere(mapi(:,4))
-                    
+
                         ! Input partly above
                         varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + vari(ix0:ix1,iyi)&
                         &    *(zyob(:, iyo+1)-zyib(:, iyi))/dyi
                         wo(ix0:ix1) = wo(ix0:ix1) + zyob(:, iyo+1)-zyib(:, iyi)
-                        
+
                     endwhere
                 endwhere
             enddo
         enddo
-        
+
         ! Normalize
         if(conserv==1)where(wo>0d0)wo = 1.
         where(wo>0d0)
@@ -1007,7 +1007,7 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nxi, nyi, nxo, nyo, nz,
 !    real(kind=8) :: georectif(nyi,nxi)
 !    real(kind=8) :: zxxi(nyi,nxi), zxxo(nyo,nxo)
 !     real(kind=8),allocatable :: zxib(:,:) ,zyib(:,:)
-    
+
 !    interface
 !        function closest2d(xxi,yyi,xo,yo,georectif,geo)
 !        real(kind=8),intent(in) :: xxi(:,:),yyi(:,:),xo,yo,georectif(:,:)
@@ -1030,12 +1030,12 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nxi, nyi, nxo, nyo, nz,
 !        zxxi = xxi
 !        zxxo = xxo
 !    endif
-    
+
     geo = .not. present(nogeo) .or. nogeo==0
 
     ! Loop on output points
     if(nb==0)then
-    
+
         ! Scan all input points everytime
         do iyo = 1, nyo
             do ixo = 1, nxo
@@ -1044,7 +1044,7 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nxi, nyi, nxo, nyo, nz,
             enddo
 !             exit
         enddo
-    
+
      else
         if(nb<0)then
             znb = 10
@@ -1056,7 +1056,7 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nxi, nyi, nxo, nyo, nz,
         iylast = 1
         do ixo = 1, nxo
             do iyo = 1, nyo
-            
+
                 ! Try a small block
                 ixmin = max(1,ixlast-znb2)
                 ixmax = min(nxi,ixlast+znb2)
@@ -1066,7 +1066,7 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nxi, nyi, nxo, nyo, nz,
                     & yyi(iymin:iymax,ixmin:ixmax),xxo(iyo,ixo),yyo(iyo,ixo),nxi,nyi,imin,jmin,.not. geo)
                 imin = imin+ixmin-1
                 jmin = jmin+iymin-1
-                
+
                 ! Fall on bounds so use full block
                 if((imin==ixmin.and.ixmin/=1).or.(imin==ixmax.and.ixmax/=nxi).or.&
                     & (jmin==iymin.and.iymin/=1).or.(jmin==iymax.and.iymax/=nyi))&
@@ -1074,7 +1074,7 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nxi, nyi, nxo, nyo, nz,
 
                 ! Store value
                 varo(:,iyo,ixo) = vari(:,jmin,imin)
-                
+
                 ! Update min/max positions
                 if(ixo==nxo)then
                     ixlast = ixlastline
@@ -1088,7 +1088,7 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nxi, nyi, nxo, nyo, nz,
                     endif
                 endif
             enddo
-            
+
          enddo
     endif
 end subroutine nearest2d
@@ -1102,7 +1102,7 @@ subroutine closest2d(xxi,yyi,xo,yo,nxi,nyi,i,j,nogeo)
     logical,intent(in) :: nogeo
     real(kind=8) :: dx(nyi,nxi)
     integer:: ij(2)
-    
+
     if(nogeo)then
         dx = xxi-xo
     else
@@ -1113,7 +1113,7 @@ subroutine closest2d(xxi,yyi,xo,yo,nxi,nyi,i,j,nogeo)
     ij = minloc(dx**2+(yyi-yo)**2)
     i = ij(2)
     j = ij(1)
-     
+
 end subroutine closest2d
 
 ! =============================================================================
@@ -1124,7 +1124,7 @@ subroutine bilin    (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
     ! See also mixt2d as an alternative method
 
     implicit none
-    
+
     ! Parameters
     integer,intent(in) :: nxi,nyi,nxo,nyo,nz
     real(kind=8),intent(in) :: vari(nz,nyi,nxi),mv
@@ -1156,7 +1156,7 @@ subroutine bilin    (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
 !         where(zxo<zxo(1))zxo=zxo+360.
 !     endif
     geo = .not. present(nogeo) .or. nogeo==0
-    
+
     varo = mv
 
     ! Loop on input x
@@ -1169,7 +1169,7 @@ subroutine bilin    (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
 
         ! Cell height
         dyi = zyi(iyi+1)-zyi(iyi)
-        
+
         ! Loop on output y
         do while (iyo<=nyo.and.zyo(iyo)<=zyi(iyi+1))
 
@@ -1178,14 +1178,14 @@ subroutine bilin    (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
                 iyo = iyo+1
                 cycle
             endif
-            
+
             ! Y weight
             fy = (zyo(iyo)-zyi(iyi))/dyi
-        
+
             ! Loop on input x
             ixo = 1
             do ixi = 1, nxi-1
-        
+
                 ! Must overlap
                 if (zxi(ixi+1)<zxo(1))cycle
                 if (zxi(ixi)>zxo(nxo))exit
@@ -1193,10 +1193,10 @@ subroutine bilin    (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
                 ! Cell width
                 dxi = zxi(ixi+1)-zxi(ixi)
                 if(geo.and.dxi>180.)dxi=360.-dxi
-        
+
                 ! Loop on output x
                 do while (ixo<=nxo.and.zxo(ixo)<=zxi(ixi+1))
-                
+
                     ! Still not inside
                     if(zxo(ixo)<zxi(ixi))then
                         ixo = ixo+1
@@ -1206,7 +1206,7 @@ subroutine bilin    (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
                     ! X weight
                     fdxi = zxo(ixo)-zxi(ixi)
                     if(geo.and.fdxi>180.)fdxi=360.-fdxi
-                    fx = fdxi/dxi                        
+                    fx = fdxi/dxi
 
                     ! Interpolation
                     varo(:,iyo,ixo) = &
@@ -1214,7 +1214,7 @@ subroutine bilin    (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
                         & vari(:,iyi  ,ixi+1)*fx    *(1-fy) + &
                         & vari(:,iyi+1,ixi)*(1-fx)*fy     + &
                         & vari(:,iyi+1,ixi+1)*fx    *fy
-                    
+
                     ! Next output x
                     ixo = ixo+1
                 enddo
@@ -1231,7 +1231,7 @@ subroutine dstwgt   (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
     ! It does not interpolate missing values
 
     implicit none
-    
+
     ! Parameters
     integer,intent(in) :: nxi,nyi,nxo,nyo,nz
     real(kind=8),intent(in) :: vari(nz,nyi,nxi),mv
@@ -1244,7 +1244,7 @@ subroutine dstwgt   (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
     real(kind=8) :: dxi,dyi,dd(4),ww(nz,4),dx0,dx1,dy0,dy1,wsum(nz),vv(nz,4),mvs(nz)
     integer :: ixi,iyi,ixo,iyo,i4
     logical :: geo
-    
+
     geo  = .not.present(nogeo) .or. nogeo==0
 
     ! Monotonically increasing
@@ -1264,7 +1264,7 @@ subroutine dstwgt   (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
 !         where(zxi<zxi(1))zxi=zxi+360.
 !         where(zxo<zxo(1))zxo=zxo+360.
 !     endif
-    
+
     varo = mv
     vv = mv
 
@@ -1278,7 +1278,7 @@ subroutine dstwgt   (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
 
         ! Cell height
         dyi = zyi(iyi+1)-zyi(iyi)
-        
+
         ! Loop on output y
          do while (iyo<=nyo.and.zyo(iyo)<zyi(iyi+1))
 
@@ -1287,15 +1287,15 @@ subroutine dstwgt   (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
                 iyo = iyo+1
                 cycle
             endif
-            
+
             ! Y axis
             dy0 = zyo(iyo)-zyi(iyi)
             dy1 = zyi(iyi+1)-zyo(iyo)
-        
+
             ! Loop on input x
             ixo = 1
             do ixi = 1, nxi-1
-        
+
                 ! Must overlap
                 if (zxi(ixi+1)<zxo(1))cycle
                 if (zxi(ixi)>zxo(nxo))exit
@@ -1303,10 +1303,10 @@ subroutine dstwgt   (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
                 ! Cell width
                 dxi = zxi(ixi+1)-zxi(ixi)
                 if(geo.and.dxi>180.)dxi=360.-dxi
-        
+
                 ! Loop on output x
                 do while (ixo<=nxo.and.zxo(ixo)<zxi(ixi+1))
-                
+
                     ! Still not inside
                     if(zxo(ixo)<zxi(ixi))then
                         ixo = ixo+1
@@ -1339,8 +1339,8 @@ subroutine dstwgt   (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
                     where(wsum==0.)
                         wsum = 1.
                         mvs = mv
-                    endwhere 
-                    
+                    endwhere
+
                     ! Interpolation
                      varo(:,iyo,ixo) = sum(ww*vv, dim=2)/wsum+mvs
 
@@ -1353,7 +1353,7 @@ subroutine dstwgt   (vari, xi,  yi,  varo, xo,  yo, mv,       nxi, nyi, nxo, nyo
             iyo = iyo+1
         enddo
     enddo
-end 
+end
 
 
 
@@ -1375,12 +1375,12 @@ subroutine mbilin2d (vari, xi,  yi,  varo, xo,  yo, mv, ext,  nxi, nyi, no,  nog
     integer :: ix, iy, io, ix1, iy1
     real(kind=8) :: ww(2,2), zz(2,2), dx, dy, fx, fy, pi, zxi(nxi),zxo(no)
     logical ::  ms(2,2), ma(2,2),geo
-    
+
 
     ! Inits
     pi = 3.14159d0
     varo = mv
-    
+
     ! Geo
     geo = .not. present(nogeo) .or. nogeo==0
     if(geo)then
@@ -1390,14 +1390,14 @@ subroutine mbilin2d (vari, xi,  yi,  varo, xo,  yo, mv, ext,  nxi, nyi, no,  nog
         zxi = xi
         zxo = xo
     endif
-    
+
     ! Loop on output points
     do io = 1, no
-        
+
         ! Check bounds
         if (zxo(io)<zxi(1).or.zxo(io)>zxi(nxi)) cycle
         if (yo(io)<yi(1).or.yo(io)>yi(nyi)) cycle
-        
+
         ! Find indices for current position
         ix = count(zxi<=zxo(io))
         iy = count(yi<=yo(io))
@@ -1409,11 +1409,11 @@ subroutine mbilin2d (vari, xi,  yi,  varo, xo,  yo, mv, ext,  nxi, nyi, no,  nog
         zz(1,2) = vari(iy,ix1)
         zz(2,1) = vari(iy1,ix)
         zz(2,2) = vari(iy1,ix1)
-        
+
         ! Check that we have all needed points
         ms = zz==mv
         if(all(ms).or.(.not.ext.and.any(ms)))cycle
-        
+
         ! Cell size
         dx = abs(zxi(ix1)-zxi(ix))
         if(ix==ix1)then
@@ -1438,7 +1438,7 @@ subroutine mbilin2d (vari, xi,  yi,  varo, xo,  yo, mv, ext,  nxi, nyi, no,  nog
         ma = ww/=0..and..not.ms
         if(all(.not.ma))cycle
         varo(io) = sum(zz*ww,mask=ma)/sum(ww,mask=ma)
-        
+
     enddo
 
 end subroutine mbilin2d
@@ -1446,14 +1446,14 @@ end subroutine mbilin2d
 ! =============================================================================
 subroutine bilin2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     ! bilinear interpolation of gridded data to random positions
-    
+
     implicit none
 
     integer,intent(in) :: nxi,nyi,no,nz
     real(kind=8),intent(in) :: xi(nxi), yi(nyi), xo(no), yo(no)
     real(kind=8),intent(in) :: zi(nz,nyi,nxi),mv
     real(kind=8),intent(out) :: zo(nz,no)
-    
+
     integer :: io,i,j
     real(kind=8) :: a,b
 
@@ -1461,7 +1461,7 @@ subroutine bilin2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     do io = 1, no
         if(xo(io)<xi(1).or.xo(io)>xi(nxi))cycle
         if(yo(io)<yi(1).or.yo(io)>yi(nyi))cycle
-        
+
         if(xi(nxi)==xo(io))then
             i = nxi-1
         else
@@ -1472,13 +1472,13 @@ subroutine bilin2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
         else
             j = minloc(yi,dim=1,mask=yi>yo(io))-1
         endif
-        
+
         a = abs(xo(io)-xi(i))
         if(a>180.)a=360.-180.
-        
+
         a = a/(xi(i+1)-xi(i))
         b = (yo(io)-yi(j))/(yi(j+1)-yi(j))
-        
+
         zo(:, io) = (1-b)*(1-a)*zi(:,j,  i) + &
             &       (1-b)*a*zi(:,j,  i+1) + &
             &        b*(1-a)*zi(:,j+1,i) + &
@@ -1488,7 +1488,7 @@ end subroutine bilin2dto1d
 
 subroutine nearest2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     ! nearest neighbour interpolation of gridded data to random positions
-    
+
     implicit none
 
     integer,intent(in) :: nxi,nyi,no,nz
@@ -1496,7 +1496,7 @@ subroutine nearest2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     real(kind=8),intent(in) :: zi(nz,nyi,nxi),mv
     real(kind=8),intent(out) :: zo(nz,no)
     real(kind=8) :: dx(nxi)
-    
+
     integer :: io,i,j
 
     zo = mv
@@ -1507,7 +1507,7 @@ subroutine nearest2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
         where(dx>180.)dx=360.-dx
         i = minloc(dx,dim=1)
         j = minloc(abs(yi-yo(io)),dim=1)
-        
+
         zo(:,io) = zi(:,j,i)
     enddo
 end subroutine nearest2dto1d
@@ -1531,20 +1531,20 @@ end function linept
 !    xy = linept(x,y,x1,x2,y1,y2)
 !    dstpt2line = sqrt((xy(1)-x)**2+(xy(2)-y)**2)
 !end function dstpt2line
-    
+
 subroutine curv2rect(x1,x2,x3,x4,y1,y2,y3,y4,x,y,p,q)
     ! Coordinate transform from curvilinear to rectangular
-    ! 
+    !
     !:Source: http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19890018062_1989018062.pdf
-    
+
     implicit none
-    
+
     real(kind=8), intent(in) :: x1,x2,x3,x4,y1,y2,y3,y4,x,y
     real(kind=8), intent(out) :: p,q
     real(kind=8) :: p1,p2 ,q1,q2, AA, BB, CC, DD, a,b,c,d,e,f,sDD,xx,yy,small
-    
+
     small = epsilon(1d0)*2
-    
+
     ! Coefs
     a = x4 -x1
     b = x2 -x1
@@ -1552,7 +1552,7 @@ subroutine curv2rect(x1,x2,x3,x4,y1,y2,y3,y4,x,y,p,q)
     d = y4 -y1
     e = y2 -y1
     f = y3-y4-y2 +y1
-    
+
     ! Solve A*p**2 + B*p + C = 0
     yy = y-y1
     xx = x-x1
@@ -1568,7 +1568,7 @@ subroutine curv2rect(x1,x2,x3,x4,y1,y2,y3,y4,x,y,p,q)
         p1 = (-BB-sDD)/(2*AA)
         p2 = (-BB+sDD)/(2*AA)
     endif
-    
+
     ! Get q from p
     if(abs(b+c*p1)>small)then
         q1 = (xx-a*p1)/(b+c*p1)
@@ -1589,19 +1589,19 @@ subroutine curv2rect(x1,x2,x3,x4,y1,y2,y3,y4,x,y,p,q)
         p = p1
         q = q1
     endif
-    
+
 end subroutine curv2rect
 
 subroutine curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
     ! Convert a series of absolute coordinates to coordinates relative to
-    ! a curved grid 
-    
+    ! a curved grid
+
     implicit none
 
     integer,intent(in) :: nxi,nyi,no
     real(kind=8),intent(in) :: xxi(nyi,nxi), yyi(nyi,nxi), xo(no), yo(no)
     real(kind=8),intent(out) :: p(no), q(no)
-    
+
     integer :: io,i,j,ic,jc
     real(kind=8) :: a,b
     logical :: binside
@@ -1612,7 +1612,7 @@ subroutine curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
     !$OMP PARALLEL DO PRIVATE(io,i,j,ic,jc,a,b,binside)
     !$& SHARED(xxi,yyi,xo,yo,nxi,nyi,no,p,q)
     do io = 1, no
-    
+
         ! Find the closest corner
         call closest2d(xxi,yyi,xo(io),yo(io),nxi,nyi,ic,jc,.true.)
 
@@ -1620,12 +1620,12 @@ subroutine curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
         binside = .false.
         main: do i=max(ic-1,1), min(ic,nxi-1)
             do j = max(jc-1,1), min(jc,nyi-1)
-            
+
                 ! Get relative position
                 call curv2rect(xxi(j,i),xxi(j+1,i),xxi(j+1,i+1),xxi(j,i+1), &
                              & yyi(j,i),yyi(j+1,i),yyi(j+1,i+1),yyi(j,i+1), &
                              & xo(io), yo(io), a, b)
-                             
+
                 ! Store absolute indices
                 binside = a>=0d0-tiny(0d0) .and. a<=1d0+tiny(0d0) &
                     & .and. b>=0d0-tiny(0d0) .and. b<=1d0+tiny(0d0)
@@ -1634,7 +1634,7 @@ subroutine curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
                     q(io) = dble(j) + b
                     exit main
                 endif
-                
+
             enddo
 !            if(binside)exit
         enddo main
@@ -1653,30 +1653,30 @@ subroutine bilin2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
     integer,intent(in) :: nxi,nyi,no,nz
     real(kind=8),intent(in) :: p(no),q(no),zzi(nz,nyi,nxi),mv
     real(kind=8),intent(out) :: zo(nz,no)
-    
+
     integer :: io,i,j
     real(kind=8) :: a,b
-    
+
     zo = mv
-    
+
     !$OMP PARALLEL DO PRIVATE(io,i,j,a,b)
     !$& SHARED(p,q,zzi,zo,nxi,nyi,no)
     do io = 1, no
-    
+
         if(p(io)>0d0 .and. q(io)>0d0)then
-        
-            ! Cell 
+
+            ! Cell
             a = mod(p(io),1d0)
             b = mod(q(io),1d0)
             i = int(p(io)-a)
             j = int(q(io)-b)
-            
+
             ! Interpolation
             zo(:, io) = (1-b)*(1-a)*zzi(:,j,  i) + &
             &       (1-b)*a*zzi(:,j,  i+1) + &
             &        b*(1-a)*zzi(:,j+1,i) + &
             &        b*a*zzi(:,j+1,i+1)
-            
+
         endif
 
     enddo
@@ -1689,23 +1689,23 @@ subroutine bilin2dto1dc(xxi,yyi,zzi,xo,yo,zo,mv,nxi,nyi,no,nz)
     ! Bilinear interpolation of gridded data with 2D AXES to random positions
 
     implicit none
-    
+
     integer,intent(in) :: nxi,nyi,no,nz
     real(kind=8),intent(in) :: xxi(nyi,nxi), yyi(nyi,nxi), xo(no), yo(no)
     real(kind=8),intent(in) :: zzi(nz,nyi,nxi),mv
     real(kind=8),intent(out) :: zo(nz,no)
-    
+
     real(kind=8) :: p(no), q(no)
-    
+
     ! Relative positions
     call curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
-    
+
     ! Interpolation
     call bilin2dto1dc_reduc(p, q, zzi, zo, mv, nxi, nyi, no, nz)
 
 end subroutine bilin2dto1dc
-    
-    
+
+
 subroutine nearest2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
     ! Nearest interpolation of gridded data with 2D AXES to random positions
     ! This version takes relative positions with respect to output grid
@@ -1715,24 +1715,24 @@ subroutine nearest2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
     integer,intent(in) :: nxi,nyi,no,nz
     real(kind=8),intent(in) :: p(no),q(no),zzi(nz,nyi,nxi),mv
     real(kind=8),intent(out) :: zo(nz,no)
-    
+
     integer :: io,i,j
     real(kind=8) :: a,b
-    
+
     zo = mv
 
     !$OMP PARALLEL DO PRIVATE(io,i,j,a,b)
     !$& SHARED(p,q,zzi,zo,nxi,nyi,no)
     do io = 1, no
-    
+
         if(p(io)>0d0 .and. q(io)>0d0)then
-        
-            ! Cell 
+
+            ! Cell
             a = mod(p(io),1d0)
             b = mod(q(io),1d0)
             i = int(p(io)-a)
             j = int(q(io)-b)
-            
+
             ! Interpolation
             if(a>0.5)i = i+1
             if(b>0.5)j = j+1
@@ -1753,9 +1753,9 @@ subroutine nearest2dto1dc(xxi,yyi,zzi,xo,yo,zo,mv,nxi,nyi,no,nz)
     real(kind=8),intent(in) :: xxi(nyi,nxi), yyi(nyi,nxi), xo(no), yo(no)
     real(kind=8),intent(in) :: zzi(nz,nyi,nxi),mv
     real(kind=8),intent(out) :: zo(nz,no)
-    
+
     real(kind=8) :: p(no), q(no)
-    
+
     ! Relative positions
     call curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
 
@@ -1770,7 +1770,7 @@ subroutine mixt2dx   (vari, xi,  yi,  varo, xo,  yo,  mv, ext,       nxi,nyi,nxo
     ! Extension of avgext2d to third dimension (simple loop)
 
     implicit none
-    
+
     ! Parameters
     integer, intent(in) :: nxi,nyi,nxo,nyo,nz
     real(kind=8),intent(in) :: vari(nxi,nyi,nz),mv
@@ -1781,7 +1781,7 @@ subroutine mixt2dx   (vari, xi,  yi,  varo, xo,  yo,  mv, ext,       nxi,nyi,nxo
     ! Local variables
     integer :: iz,ixy
     real(kind=8) :: xymin,xymax
-    
+
     do iz = 1, nz
         ! Inter- and extra-polation
         call mixt2d(nxi,nyi,xi,yi,vari(:,:,iz),nxo,nyo,xo,yo,varo(:,:,iz))
@@ -1799,7 +1799,7 @@ subroutine mixt2dx   (vari, xi,  yi,  varo, xo,  yo,  mv, ext,       nxi,nyi,nxo
             enddo
         endif
     enddo
-    
+
 end subroutine mixt2dx
 
 SUBROUTINE mixt2d(IDIM,JDIM,XX,YY,FF,MDIM,NDIM,RR,SS,GG)
@@ -2029,10 +2029,10 @@ subroutine cargen(xi,yi,zi,xo,yo,zo,mv,npt,nx,ny)
 !   modeinterp=1
   !1. Mod�le lin�aire ifremer (� prendre par defaut)
   !2. Mod�le exponentiel (� develloper pour parametrer lag et cova)
-  ! tester avec cova=1 et trouver la gamme de valeur pour la quelle lag 
+  ! tester avec cova=1 et trouver la gamme de valeur pour la quelle lag
   ! n'a plus d'influence sur hmax et hymax
-  ! Puis caler cova par rapport � la bathy max de la zone 
-  lag=10.0   !distance entre 2 points bathy 
+  ! Puis caler cova par rapport � la bathy max de la zone
+  lag=10.0   !distance entre 2 points bathy
   cova=0.25  !covariance
 
   !=========================================================================
@@ -2065,7 +2065,7 @@ subroutine cargen(xi,yi,zi,xo,yo,zo,mv,npt,nx,ny)
   zo = mv
 
   !-------------------------------------------------------
-  !         INTERPOLATION    
+  !         INTERPOLATION
   !-------------------------------------------------------
 
   del2=(dgac/rad)**2
@@ -2099,7 +2099,7 @@ subroutine cargen(xi,yi,zi,xo,yo,zo,mv,npt,nx,ny)
   minig=99.0
   maxig=-99.0
   minifi=99.0
-  maxifi=-99.0    
+  maxifi=-99.0
 
 
   do jy=1,nby
@@ -2157,7 +2157,7 @@ subroutine cargen(xi,yi,zi,xo,yo,zo,mv,npt,nx,ny)
         !----------------------------------------------------------
         !
 
-        do j=jmin,jmax    
+        do j=jmin,jmax
           fi=yo(j)
           do i=imin,imax
 
@@ -2191,7 +2191,7 @@ subroutine cargen(xi,yi,zi,xo,yo,zo,mv,npt,nx,ny)
                     x0=-g/rad
                     !
                     !--------------------------------------------------------------------
-                    ! s il y a au moins trois sondes dans ce gros carreau on va pouvoir 
+                    ! s il y a au moins trois sondes dans ce gros carreau on va pouvoir
                     ! faire un krigeage
                     !--------------------------------------------------------------------
                     !
@@ -2232,7 +2232,6 @@ end subroutine cargen
 
 subroutine zkrig(x0,y0,z0,x,y,z,n,npt)
   !
-  !*************************************************************
   !
   implicit none
 
@@ -2345,7 +2344,7 @@ subroutine zkrig(x0,y0,z0,x,y,z,n,npt)
      zvois(1)=zvois(2)
      zvois(2)=bid
      go to 500
-  elseif(ifois.eq.2) then 
+  elseif(ifois.eq.2) then
      bid=xvois(1)
      xvois(1)=xvois(3)
      xvois(3)=bid
@@ -2374,7 +2373,6 @@ end subroutine zkrig
 !
 function plan(xpl,ypl,zpl,x1,y1)
   !
-  !*************************************************************
   !
   implicit none
 
@@ -2419,7 +2417,6 @@ end function plan
 !************************************************************
 subroutine zkriben(x0,y0,z0,x,y,z,n,lag,cova,npt)
   !
-  !*************************************************************
   !
   implicit none
 
@@ -2492,7 +2489,7 @@ subroutine zkriben(x0,y0,z0,x,y,z,n,lag,cova,npt)
      co1(j,5)=co(j)
   enddo
 
-  ! resolution du systeme lineaire par le pivot maximal 
+  ! resolution du systeme lineaire par le pivot maximal
   call gauss_max(co1,4,0)
 
   do j=1,m
@@ -2513,7 +2510,6 @@ end subroutine zkriben
 !-----------------------------------------------------------------------
 !-----------------------------------------------------------------------
 subroutine gauss_max(a,n_max,n)
-  !-----------------------------------------------------------------------
   ! procedure de resolution du syteme ax=b par ma methode du pivot maximum
 
   implicit none
@@ -2522,7 +2518,7 @@ subroutine gauss_max(a,n_max,n)
   real*8,intent(inout) :: a(n_max,n_max+1)
   integer,intent(in) :: n
   integer h,i,j,k,l,m
-  real*8    b,c      
+  real*8    b,c
 
   if(n.eq.1)then
      a(1,1)=a(1,2)/a(1,1)

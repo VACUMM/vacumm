@@ -7,7 +7,7 @@ def configuration(parent_package='',top_path=None):
     config.add_subpackage('phys')
     config.add_subpackage('axml')
 #   config.add_subpackage('easyPypar')
-    config.add_data_files('config.cfg')
+    config.add_data_files('vacumm.cfg')
     config.add_data_files('cpt/*')
     return config
 

@@ -3,6 +3,8 @@
 :mod:`vacumm.misc.grid.regridding` -- Regridding and interpolation
 ------------------------------------------------------------------
 
+This modules uses some fortran routines: :ref:`lib.misc.grid.finterp`.
+
 .. overview:: vacumm.misc.grid.regridding
 
 .. .:Inheritance diagram: 
