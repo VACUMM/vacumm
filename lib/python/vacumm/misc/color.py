@@ -1035,7 +1035,7 @@ def cmap_ncview_rainbow(name='vacumm_ncview_rainbow', **kwargs):
     cmap.set_over(colors[-1])
     return cmap
 
-def cmap_nice_gfdl(name='nice_gfdl', **kwargs):
+def cmap_nice_gfdl(name='vacumm_nice_gfdl', **kwargs):
     """ GFDL colormap (http://www.gfdl.noaa.gov/visualization)
 
 
@@ -2828,6 +2828,8 @@ cmap_ncview_rainbow()
 cmap_eke()
 cmap_currents()
 cmap_nice_gfdl()
+cmap_ssec()
+
 for _name in basemap_cm.datad.keys():
 #    sname = _name.lower() if _name.startswith('GMT_') else _name
     _cmap = getattr(basemap_cm, _name)
