@@ -2827,6 +2827,7 @@ cmap_red_tau_hymex()
 cmap_ncview_rainbow()
 cmap_eke()
 cmap_currents()
+cmap_nice_gfdl()
 for _name in basemap_cm.datad.keys():
 #    sname = _name.lower() if _name.startswith('GMT_') else _name
     _cmap = getattr(basemap_cm, _name)
