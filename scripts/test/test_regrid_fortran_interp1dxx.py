@@ -1,4 +1,4 @@
-"""Test the fortran function :f:func:`interp1dx`"""
+"""Test the fortran function :f:func:`interp1dxx`"""
 from vcmq import N, P,meshcells, minmax, code_file_name, os
 from vacumm.misc.grid._interp_ import interp1dxx
 

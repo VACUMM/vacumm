@@ -8,7 +8,7 @@ To add a new test, see :ref:`user.dev.test`.
 Grids
 -----
 
-Testing module :mod:`~vacumm.misc.grid`
+Testing :mod:`~vacumm.misc.grid` module.
 
 .. toctree::
     :glob:
@@ -18,37 +18,58 @@ Testing module :mod:`~vacumm.misc.grid`
 Graphics
 --------
 
-Testing module :mod:`~vacumm.misc.plot`.
+Testing :mod:`~vacumm.misc.plot` module.
 
 .. toctree::
     :glob:
 
     test_plot_*
-    
+
 Stats
 -----
 
-Testing module :mod:`~vacumm.misc.stats`.
+Testing :mod:`~vacumm.misc.stats` module.
 
 .. toctree::
     :glob:
 
     test_stats_*
-    
+
 Regridding
 ----------
 
-Testing module :mod:`~vacumm.misc.grid.regridding` and :mod:`~vacumm.misc.grid.kriging`.
+Testing :mod:`~vacumm.misc.grid.regridding` and :mod:`~vacumm.misc.grid.kriging` modules.
 
 .. toctree::
     :glob:
 
     test_regrid_*
-    
+
+In/output
+---------
+
+Testing :mod:`~vacumm.misc.io` module.
+
+.. toctree::
+    :glob:
+
+    test_io_*
+    test_write_netcdf.rst
+
+Masking
+-------
+
+Testing :mod:`~vacumm.misc.grid.masking` module.
+
+.. toctree::
+    :glob:
+
+    test_mask_*
+
 Diagnostics
 -----------
 
-Testing module :mod:`~vacumm.diag`.
+Testing :mod:`~vacumm.diag` module.
 
 .. toctree::
     :glob:
@@ -62,7 +83,7 @@ The :class:`~vacumm.data.misc.dataset.Dataset` class
     :glob:
 
     test_dataset_*
- 
+
 The :class:`~vacumm.data.misc.dataset.arakawa` module
 -----------------------------------------------------
 
@@ -70,7 +91,7 @@ The :class:`~vacumm.data.misc.dataset.arakawa` module
     :glob:
 
     test_arakawa_*
-    
+
 The :class:`~vacumm.report.ifroco` module
 -----------------------------------------
 
@@ -78,7 +99,7 @@ The :class:`~vacumm.report.ifroco` module
     :glob:
 
     test_ifroco_*
- 
+
 Pure CDAT
 ---------
 
@@ -86,8 +107,8 @@ Pure CDAT
     :glob:
 
     test_cdat_*
- 
- 
+
+
 Other tests
 -----------
 

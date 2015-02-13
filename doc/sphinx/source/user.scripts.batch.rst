@@ -9,8 +9,8 @@ This script helps you running a script in batch mode.
 
 ::
 
-    shell> python.batch -h
-    shell> python.batch myscript.py --options arguments
+    $ python.batch -h
+    $ python.batch myscript.py --options arguments
 
 All the options and arguments are passed to the python script.
 
@@ -22,12 +22,12 @@ Therefore, it is suggested than you make a copy of it and edit it.
 
     If you use the environment modules,
     you can set the :envvar:`VACUMM_MODULES` environment variable
-    to the directory of module files that contain the 
-    ::file:`vacumm` module file.    
+    to the directory of module files that contain the
+    ::file:`vacumm` module file.
     For instance, here we make the supposition that the
-    :file:`/home/me/modulefiles/vacumm` exists:
+    :file:`/home/me/modulefiles/vacumm` exists::
 
-        bash> export VACUMM_MODULES=/home/me/modulefiles
+        $ export VACUMM_MODULES=/home/me/modulefiles
 
 
 

@@ -1,7 +1,7 @@
-"""Test the :func:`~vacumm.misc.grid.regridding.regrid2dnew` function"""
+"""Test the :func:`~vacumm.misc.grid.regridding.regrid2d` function"""
 from vcmq import P, N, MV2, code_file_name, os, add_grid, rotate_grid, set_grid, \
     create_grid, rc, rcdefaults, plot2d
-from vacumm.misc.grid.regridding import regrid2dnew
+from vacumm.misc.grid.regridding import regrid2d
 
 
 # Input grid and data
@@ -49,43 +49,43 @@ ip = 1
 plot2d(varri, title='Original rectangular', figsize=(7, 7), subplot=(4,3,ip), **kw);ip+=1
 plot2d(varci, title='Original curvilinear', subplot=(4,3,ip), **kw);ip+=1
 # - nearest
-varo = regrid2dnew(varci, gridco, method='nearest', tool='vacumm')
+varo = regrid2d(varci, gridco, method='nearest', tool='vacumm')
 plot2d(varo, title='VACUMM / Nearest', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridci, **kwg)
 # - bilin r2r / vacumm
-varo = regrid2dnew(varri, gridro, method='bilinear', tool='vacumm')
+varo = regrid2d(varri, gridro, method='bilinear', tool='vacumm')
 plot2d(varo, title='VACUMM / Bilinear', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridri, **kwg)
 # - bilin c2c / vacumm
-varo = regrid2dnew(varci, gridco, method='bilinear', tool='vacumm')
+varo = regrid2d(varci, gridco, method='bilinear', tool='vacumm')
 plot2d(varo, title='VACUMM / Bilinear', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridci, **kwg)
 # - bilin c2c / emsf
-varo = regrid2dnew(varci, gridco, method='bilinear', tool='esmf')
+varo = regrid2d(varci, gridco, method='bilinear', tool='esmf')
 plot2d(varo, title='ESMF / Bilinear', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridci, **kwg)
 # - bilin c2c / libcf
-varo = regrid2dnew(varci, gridco, method='bilinear', tool='libcf')
+varo = regrid2d(varci, gridco, method='bilinear', tool='libcf')
 plot2d(varo, title='LibCF / Bilinear', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridci, **kwg)
 # - dstwgt c2c / vacumm
-varo = regrid2dnew(varci, gridco, method='dstwgt', tool='vacumm')
+varo = regrid2d(varci, gridco, method='dstwgt', tool='vacumm')
 plot2d(varo, title='VACUMM / Dstwgt', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridci, **kwg)
 # - patch c2c / emsf
-varo = regrid2dnew(varci, gridco, method='patch', tool='esmf')
+varo = regrid2d(varci, gridco, method='patch', tool='esmf')
 plot2d(varo, title='ESMF / Patch', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridci, **kwg)
 # - cellave r2r / regrid2
-varo = regrid2dnew(varri, gridro, method='cellave', tool='regrid2')
+varo = regrid2d(varri, gridro, method='cellave', tool='regrid2')
 plot2d(varo, title='Regrid2 / Cellave', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridri, **kwg)
 # - cellave c2c / esmf
-varo = regrid2dnew(varci, gridco, method='cellave', tool='esmf')
+varo = regrid2d(varci, gridco, method='cellave', tool='esmf')
 plot2d(varo, title='ESMF / Cellave', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridci, **kwg)
 # - conserv c2c / esmf
-varo = regrid2dnew(varci, gridco, method='conserv', tool='esmf')
+varo = regrid2d(varci, gridco, method='conserv', tool='esmf')
 plot2d(varo, title='ESMF / Conserv', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridci, **kwg)
 P.tight_layout()

@@ -8,7 +8,8 @@ VACUMM configuration
 
 .. toctree::
     :maxdepth: 2
-    
+
+    user.scripts.vacumm_config
     user.scripts.vacumm_print_config
     user.scripts.vacumm_edit_config
 
@@ -18,7 +19,7 @@ Technical scripts
 
 .. toctree::
     :maxdepth: 2
-    
+
     user.scripts.showtime
     user.scripts.showdt
     user.scripts.showgrid
@@ -27,14 +28,14 @@ Technical scripts
     user.scripts.showbat
     user.scripts.showbatsec
     user.scripts.make_movie
-   
+
 
 Physics
 =======
 
 .. toctree::
     :maxdepth: 1
-    
+
     user.scripts.common_options
     user.scripts.merge_profiles
     user.scripts.profile
@@ -50,7 +51,7 @@ Validation
 
 .. toctree::
     :maxdepth: 1
-    
+
     user.scripts.evalrunsst
     user.scripts.evalrunprofiles
 
@@ -58,7 +59,8 @@ Validation
 Misc
 ====
 
-.. toctree:
+.. toctree::
     :maxdepth: 2
-    
+
     user.scripts.batch
+    user.scripts.vacumm_courses

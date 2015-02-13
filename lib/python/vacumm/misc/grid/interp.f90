@@ -984,6 +984,375 @@ subroutine remap1dxx(vari, yi, varo, yo, mv, conserv, nx, nxb, nyi, nyo, yib, yo
 
 end subroutine remap1dxx
 
+
+subroutine cellerr1d(vari, yi, varo, yo, mv, errm, errl, erro, yob, nx, nxb, nyi, nyo)
+    ! Error-based weighthed local mooving average interpolation between
+    ! two variables axes in space (y) with interpolation error estimate
+    !
+    ! :Params:
+    !
+    !   - vari: input variable
+    !   - varo: output variable
+    !   - yi: input y axis
+    !   - yo: output y axis
+    !   - mv: missing value (used only for initialisation)
+    !   - errm: input measurement error
+    !   - errl: input lag error per yi units
+    !   - erro: output error
+    !
+
+    implicit none
+
+    ! Extrernal
+    integer, intent(in) :: nx,nyi,nyo,nxb
+    real(kind=8), intent(in) :: vari(nx,nyi), errm(nx,nyi)
+    real(kind=8), intent(in) :: yi(nyi), yo(nyo), errl(nxb)
+    real(kind=8), intent(in) :: mv
+    real(kind=8), intent(out) :: varo(nx,nyo), erro(nx,nyo)
+    real(kind=8), intent(in), optional :: yob(nyo+1)
+
+    ! Local
+    integer :: iyi,iyo,ib
+    real(kind=8) :: zyob(nyo+1),zyi(nyi), zyo(nyo), zerrl(nxb)
+    integer :: ix0,ix1
+    logical :: goodi(nx,nyi), berrl(nxb)
+
+    ! Masks
+    goodi = abs(vari-mv)>abs(epsilon(1d0)*mv)
+    berrl = abs(errl-mv)<=abs(epsilon(1d0)*mv)
+
+   ! Coordinates
+    if (yi(nyi)<yi(1)) then
+        zyi = -yi
+    else
+        zyi = yi
+    endif
+     if (yo(nyo)<yo(1)) then
+        zyo = -yo
+    else
+        zyo = yo
+    endif
+    if(present(yob).and. .not.all(yob==0d0))then
+        zyob = yob
+    else
+        if(nyo==1)then
+            zyob(1) = min(yo(1), minval(yi))
+            zyob(2) = max(yo(2), maxval(yi))
+        else
+            zyob(2:nyo-1) = (yo(2:nyo)+yo(1:nyo-1))*.5
+            zyob(1)     = yo(1)  +(yo(1)  -yo(2))    *.5
+            zyob(nyo+1) = yo(nyo)+(yo(nyo)-yo(nyo-1))*.5
+        endif
+    endif
+    if (zyob(nyo)<zyob(1)) zyob = -zyob
+
+
+    ! Initialisation
+    varo = 0d0
+    erro = 0d0
+
+    ! Loop on output grid
+    iyi = 1
+    do iyo = 1,nyo
+
+        ! Loop on input grid
+        do while (iyi<=nyi)
+
+            ! Not useful
+            if(zyi(iyi)>zyob(iyo+1)) exit
+            if(zyi(iyi)<zyob(iyo).or..not.any(goodi(:,iyi)))then
+                iyi = iyi +1
+                cycle
+            endif
+
+            ! Quadratic lag error
+            where(berrl)
+                zerrl = 0d0
+            elsewhere(errl<0)
+                zerrl = errl**2 * abs(zyi(iyi)-zyo(iyo))
+            elsewhere
+                zerrl = errl * abs(zyi(iyi)-zyo(iyo))
+            endwhere
+
+            ! Loop on blocks
+            do ib = 1, nx/nxb
+
+                ! Block
+                ix0 = 1+(ib-1)*nxb
+                ix1 = ix0+nxb-1
+                where(goodi(ix0:ix1,iyi))
+
+                    varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + &
+                        & vari(ix0:ix1,iyi) / (errm(:, iyi)**2 + zerrl)
+                    erro(ix0:ix1,iyo) = erro(ix0:ix1,iyo) + &
+                        & 1d0 / (errm(:, iyi)**2 + zerrl)
+
+                endwhere
+            enddo
+
+            iyi = iyi + 1
+
+        enddo
+
+        ! Normalize
+        where(erro(:,iyo)>0d0)
+            varo(:,iyo) =  varo(:,iyo)/erro(:,iyo)
+            erro(:,iyo) = 1d0/sqrt(erro(:,iyo))
+        elsewhere
+            varo(:,iyo) = mv
+            erro(:,iyo) = mv
+        endwhere
+
+    enddo
+
+
+end subroutine cellerr1d
+
+
+
+subroutine cellerr1dx(vari, yi, varo, yo, mv, errm, errl, erro, yob, nx, nxb, nyi, nyo)
+    ! Error-based weighthed local mooving average interpolation between
+    ! two variables axes in space (y) with interpolation error estimate
+    !
+    ! :Params:
+    !
+    !   - vari: input variable
+    !   - varo: output variable
+    !   - yi: input y axis
+    !   - yo: output y axis
+    !   - mv: missing value (used only for initialisation)
+    !   - errm: input measurement error
+    !   - errl: input lag error per yi units
+    !   - erro: output error
+    !
+
+    implicit none
+
+    ! Extrernal
+    integer, intent(in) :: nx,nyi,nyo,nxb
+    real(kind=8), intent(in) :: vari(nx,nyi), errm(nx,nyi)
+    real(kind=8), intent(in) :: yi(nxb,nyi), yo(nyo), errl(nxb)
+    real(kind=8), intent(in) :: mv
+    real(kind=8), intent(out) :: varo(nx,nyo), erro(nx,nyo)
+    real(kind=8), intent(in), optional :: yob(nyo+1)
+
+    ! Local
+    integer :: iyi,iyo,ib
+    real(kind=8) :: zyob(nyo+1),zyi(nxb,nyi), zyo(nyo), zerrl(nxb)
+    integer :: ix0,ix1
+    logical :: goodi(nxb), berrl(nxb), bvari(nx,nyi)
+
+    ! Masks
+    bvari = abs(vari-mv)<=abs(epsilon(1d0)*mv)
+    berrl = abs(errl-mv)<=abs(epsilon(1d0)*mv)
+
+   ! Coordinates
+    do ib = 1,nxb
+        if(all(bvari(ib,:)))cycle
+        if (yi(ib,nyi)<yi(ib,1)) then
+            zyi = -yi
+        else
+            zyi = yi
+        endif
+       exit
+    enddo
+     if (yo(nyo)<yo(1)) then
+        zyo = -yo
+    else
+        zyo = yo
+    endif
+    if(present(yob).and. .not.all(yob==0d0))then
+        zyob = yob
+    else
+        if(nyo==1)then
+            zyob(1) = min(yo(1), minval(yi))
+            zyob(2) = max(yo(2), maxval(yi))
+        else
+            zyob(2:nyo-1) = (yo(2:nyo)+yo(1:nyo-1))*.5
+            zyob(1)     = yo(1)  +(yo(1)  -yo(2))    *.5
+            zyob(nyo+1) = yo(nyo)+(yo(nyo)-yo(nyo-1))*.5
+        endif
+    endif
+    if (zyob(nyo)<zyob(1)) zyob = -zyob
+
+
+    ! Initialisation
+    varo = 0d0
+    erro = 0d0
+
+    ! Loop on output grid
+    do iyo = 1,nyo
+
+        ! Loop on input grid
+        do iyi = 1, nyi
+
+            ! Valid?
+            goodi(:) = .not. bvari(:,iyi) .and. &
+                & zyi(:, iyi)>=zyob(iyo) .and. zyi(:, iyi)<=zyob(iyo+1)
+            if(.not.any(goodi))cycle
+
+            ! Quadratic lag error
+            where(berrl)
+                zerrl = 0d0
+            elsewhere(errl<0)
+                zerrl = errl**2 * abs(zyi(:, iyi)-zyo(iyo))
+            elsewhere
+                zerrl = errl * abs(zyi(:, iyi)-zyo(iyo))
+            endwhere
+
+            ! Loop on blocks
+            do ib = 1, nx/nxb
+
+                ! Block
+                ix0 = 1+(ib-1)*nxb
+                ix1 = ix0+nxb-1
+                where(goodi(ix0:ix1))
+
+                    varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + &
+                        & vari(ix0:ix1,iyi) / (errm(:, iyi)**2 + zerrl)
+                    erro(ix0:ix1,iyo) = erro(ix0:ix1,iyo) + &
+                        & 1d0 / (errm(:, iyi)**2 + zerrl)
+
+                endwhere
+            enddo
+        enddo
+
+        ! Normalize
+        where(erro(:,iyo)>0d0)
+            varo(:,iyo) =  varo(:,iyo)/erro(:,iyo)
+            erro(:,iyo) = 1d0/sqrt(erro(:,iyo))
+        elsewhere
+            varo(:,iyo) = mv
+            erro(:,iyo) = mv
+        endwhere
+    enddo
+
+
+end subroutine cellerr1dx
+
+
+
+subroutine cellerr1dxx(vari, yi, varo, yo, mv, errm, errl, erro, yob, nx, nxb, nyi, nyo)
+    ! Error-based weighthed local mooving average interpolation between
+    ! two variables axes in space (y) with interpolation error estimate
+    !
+    ! :Params:
+    !
+    !   - vari: input variable
+    !   - varo: output variable
+    !   - yi: input y axis
+    !   - yo: output y axis
+    !   - mv: missing value (used only for initialisation)
+    !   - errm: input measurement error
+    !   - errl: input lag error per yi units
+    !   - erro: output error
+    !
+
+    implicit none
+
+    ! Extrernal
+    integer, intent(in) :: nx,nyi,nyo,nxb
+    real(kind=8), intent(in) :: vari(nx,nyi), errm(nx,nyi)
+    real(kind=8), intent(in) :: yi(nxb,nyi), yo(nxb,nyo), errl(nxb)
+    real(kind=8), intent(in) :: mv
+    real(kind=8), intent(out) :: varo(nx,nyo), erro(nx,nyo)
+    real(kind=8), intent(in), optional :: yob(nxb,nyo+1)
+
+    ! Local
+    integer :: iyi,iyo,ib
+    real(kind=8) :: zyob(nxb,nyo+1),zyi(nxb,nyi), zyo(nxb,nyo), zerrl(nxb)
+    integer :: ix0,ix1
+    logical :: goodi(nxb), berrl(nxb), bvari(nx,nyi)
+
+    ! Masks
+    bvari = abs(vari-mv)<=abs(epsilon(1d0)*mv)
+    berrl = abs(errl-mv)<=abs(epsilon(1d0)*mv)
+
+   ! Coordinates
+    do ib = 1,nxb
+        if(all(bvari(ib,:)))cycle ! FIXME: bad bmask
+        if (yi(ib,nyi)<yi(ib,1)) then
+            zyi = -yi
+        else
+            zyi = yi
+        endif
+         if (yo(ib,nyo)<yo(ib,1)) then
+            zyo = -yo
+        else
+            zyo = yo
+        endif
+       exit
+    enddo
+    if(present(yob).and. .not.all(yob==0d0))then
+        zyob = yob
+    else
+        if(nyo==1)then
+            zyob(:,1) = merge(yo(:,1), yi(:,1), yo(:,1)<yi(:,1))
+            zyob(:,2) = merge(yo(:,1), yi(:,nyi), yo(:,1)>yi(:,nyi))
+        else
+            zyob(:,2:nyo-1) = (yo(:,2:nyo)+yo(:,1:nyo-1))*.5
+            zyob(:,1)     = yo(:,1)  +(yo(:,1)  -yo(:,2))    *.5
+            zyob(:,nyo+1) = yo(:,nyo)+(yo(:,nyo)-yo(:,nyo-1))*.5
+        endif
+    endif
+    if (zyob(1,nyo)<zyob(1,1)) zyob = -zyob
+
+
+    ! Initialisation
+    varo = 0d0
+    erro = 0d0
+
+    ! Loop on output grid
+    do iyo = 1,nyo
+
+        ! Loop on input grid
+        do iyi = 1, nyi
+
+            ! Valid?
+            goodi(:) = .not. bvari(:,iyi) .and. &
+                & zyi(:, iyi)>=zyob(:, iyo) .and. zyi(:, iyi)<=zyob(:, iyo+1)
+            if(.not.any(goodi))cycle
+
+            ! Quadratic lag error
+            where(berrl)
+                zerrl = 0d0
+            elsewhere(errl<0)
+                zerrl = errl**2 * abs(zyi(:, iyi)-zyo(:, iyo))
+            elsewhere
+                zerrl = errl * abs(zyi(:, iyi)-zyo(:, iyo))
+            endwhere
+
+            ! Loop on blocks
+            do ib = 1, nx/nxb
+
+                ! Block
+                ix0 = 1+(ib-1)*nxb
+                ix1 = ix0+nxb-1
+                where(goodi(ix0:ix1))
+
+                    varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + &
+                        & vari(ix0:ix1,iyi) / (errm(:, iyi)**2 + zerrl)
+                    erro(ix0:ix1,iyo) = erro(ix0:ix1,iyo) + &
+                        & 1d0 / (errm(:, iyi)**2 + zerrl)
+
+                endwhere
+            enddo
+        enddo
+
+        ! Normalize
+        where(erro(:,iyo)>0d0)
+            varo(:,iyo) =  varo(:,iyo)/erro(:,iyo)
+            erro(:,iyo) = 1d0/sqrt(erro(:,iyo))
+        elsewhere
+            varo(:,iyo) = mv
+            erro(:,iyo) = mv
+        endwhere
+    enddo
+
+
+end subroutine cellerr1dxx
+
+
 ! =============================================================================
 ! ======================================= 2D ==================================
 ! =============================================================================
@@ -1221,7 +1590,7 @@ subroutine bilin    (vari, xi, yi, varo, xo,  yo, mv, nogeo, nxi, nyi, nxo, nyo,
                     varo(:,iyo,ixo) = merge(mv, varo(:,iyo,ixo), &
                         & bmaski(:,iyi,ixi).or.bmaski(:,iyi,ixi+1).or. &
                         & bmaski(:,iyi+1,ixi).or.bmaski(:,iyi+1,ixi+1))
-                    
+
                     ! Next output x
                     ixo = ixo+1
                 enddo
@@ -1455,7 +1824,7 @@ end subroutine mbilin2d
 
 subroutine nearest2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     ! nearest neighbour interpolation of gridded data to random positions
-    
+
     implicit none
 
     integer,intent(in) :: nxi,nyi,no,nz
@@ -1463,7 +1832,7 @@ subroutine nearest2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     real(kind=8),intent(in) :: zi(nz,nyi,nxi),mv
     real(kind=8),intent(out) :: zo(nz,no)
     real(kind=8) :: dx(nxi)
-    
+
     integer :: io,i,j
 
     zo = mv
@@ -1476,7 +1845,7 @@ subroutine nearest2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
         where(dx>180.)dx=360.-dx
         i = minloc(dx,dim=1)
         j = minloc(abs(yi-yo(io)),dim=1)
-        
+
         zo(:,io) = zi(:,j,i)
     enddo
     !$OMP END PARALLEL DO
@@ -1503,7 +1872,7 @@ subroutine bilin2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     do io = 1, no
         if(xo(io)>=xi(1).and.xo(io)<=xi(nxi).and.&
             & yo(io)>=yi(1).and.yo(io)<=yi(nyi))then
-                
+
             if(xi(nxi)==xo(io))then
                 i = nxi-1
             else
@@ -1514,22 +1883,22 @@ subroutine bilin2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
             else
                 j = minloc(yi,dim=1,mask=yi>yo(io))-1
             endif
-            
+
             a = abs(xo(io)-xi(i))
             if(a>180.)a=360.-180.
-            
+
             a = a/(xi(i+1)-xi(i))
             b = (yo(io)-yi(j))/(yi(j+1)-yi(j))
-            
+
             zo(:, io) = (1-b)*(1-a)*zi(:,j,  i) + &
                 &       (1-b)*a*zi(:,j,  i+1) + &
                 &        b*(1-a)*zi(:,j+1,i) + &
                 &        b*a*zi(:,j+1,i+1)
-                
+
             where(bmask(:,j,i).or.bmask(:,j,i+1).or.bmask(:,j+1,i).or.bmask(:,j+1,i+1))&
                 & zo(:, io)=mv
         endif
-            
+
     enddo
     !$OMP END PARALLEL DO
 end subroutine bilin2dto1d
@@ -1538,7 +1907,7 @@ subroutine dstwgt2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     ! Distance weight interpolation of gridded data to random positions
     !
     ! Distances are computed with the four corners of a cell and are relative
-    ! to the cell sizes. 
+    ! to the cell sizes.
 
     implicit none
 
@@ -1556,7 +1925,7 @@ subroutine dstwgt2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     !$OMP PARALLEL DO PRIVATE(io,i,j,dx0,dx1,dy0,dy1,vv,bb,dd,ww,wsum,i4)
     !$& SHARED(xi,yi,zi,xo,yo,zo,nxi,nyi,no,bmask)
     do io = 1, no
-    
+
         if(xo(io)>=xi(1).and.xo(io)<=xi(nxi).and.&
             & yo(io)>=yi(1).and.yo(io)<=yi(nyi))then
 
@@ -1571,7 +1940,7 @@ subroutine dstwgt2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
             else
                 j = minloc(yi,dim=1,mask=yi>yo(io))-1
             endif
-            
+
             ! Distances
             dx0 = (xo(io)-xi(i))/(xi(i+1)-xi(i))
             dx1 = 1d0-dx0
@@ -1580,7 +1949,7 @@ subroutine dstwgt2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
             dd = (/sqrt(dx0**2+dy0**2),sqrt(dx0**2+dy1**2),&
             &      sqrt(dx1**2+dy0**2),sqrt(dx1**2+dy1**2)/)
             where(dd==0d0)dd=tiny(0d0)
-            
+
             ! Weights
             vv = reshape(zi(:,j:j+1,i:i+1),(/nz,4/))
             bb = reshape(bmask(:,j:j+1,i:i+1),(/nz,4/))
@@ -1590,15 +1959,15 @@ subroutine dstwgt2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
             enddo
             where(bb)ww=0d0
             wsum = merge(1d0, sum(ww,dim=2), all(bb,dim=2))
-                        
+
             ! Interpolation
             zo(:,io) = merge(mv, sum(ww*vv, dim=2)/wsum, all(bb,dim=2))
-            
+
         endif
-            
+
     enddo
     !$OMP END PARALLEL DO
-    
+
 end subroutine dstwgt2dto1d
 
 
@@ -1744,24 +2113,24 @@ subroutine nearest2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
     integer,intent(in) :: nxi,nyi,no,nz
     real(kind=8),intent(in) :: p(no),q(no),zzi(nz,nyi,nxi),mv
     real(kind=8),intent(out) :: zo(nz,no)
-    
+
     integer :: io,i,j
     real(kind=8) :: a,b
-    
+
     zo = mv
 
     !$OMP PARALLEL DO PRIVATE(io,i,j,a,b)
     !$& SHARED(p,q,zzi,zo,nxi,nyi,no)
     do io = 1, no
-    
+
         if(p(io)>0d0 .and. q(io)>0d0)then
-        
-            ! Cell 
+
+            ! Cell
             a = mod(p(io),1d0)
             b = mod(q(io),1d0)
             i = int(p(io)-a)
             j = int(q(io)-b)
-            
+
             ! Interpolation
             if(a>0.5)i = i+1
             if(b>0.5)j = j+1
@@ -1782,9 +2151,9 @@ subroutine nearest2dto1dc(xxi,yyi,zzi,xo,yo,zo,mv,nxi,nyi,no,nz)
     real(kind=8),intent(in) :: xxi(nyi,nxi), yyi(nyi,nxi), xo(no), yo(no)
     real(kind=8),intent(in) :: zzi(nz,nyi,nxi),mv
     real(kind=8),intent(out) :: zo(nz,no)
-    
+
     real(kind=8) :: p(no), q(no)
-    
+
     ! Relative positions
     call curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
 
@@ -1806,10 +2175,10 @@ subroutine bilin2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
     integer :: io,i,j
     real(kind=8) :: a,b
     logical :: bmask(nz,nyi,nxi)
-    
+
     zo = mv
     bmask = abs(zzi-mv)<abs(epsilon(0d0)*1.1*mv)
-    
+
     !$OMP PARALLEL DO PRIVATE(io,i,j,a,b)
     !$& SHARED(p,q,zzi,zo,nxi,nyi,no)
     do io = 1, no
@@ -1822,7 +2191,7 @@ subroutine bilin2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
             i = int(p(io)-a)
             j = int(q(io)-b)
 
-            
+
             ! Interpolation
             zo(:, io) = (1-b)*(1-a)*zzi(:,j,  i) + &
             &       (1-b)*a*zzi(:,j,  i+1) + &
@@ -1832,8 +2201,8 @@ subroutine bilin2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
             ! Mask
             zo(:, io) = merge(mv, zo(:, io), &
                 & any(reshape(bmask(:, j:j+1, i:i+1),(/nz,4/)), dim=2))
-            
-            
+
+
         endif
 
     enddo
@@ -1879,7 +2248,7 @@ subroutine dstwgt2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
 
     zo = mv
     bmask = abs(zzi-mv)<abs(epsilon(0d0)*1.1*mv)
-    
+
     !$OMP PARALLEL DO PRIVATE(io,i,j,a,b,vv,bb,dd,ww,wsum,i4)
     !$& SHARED(p,q,zzi,zo,bmask,nxi,nyi,no)
     do io = 1, no
@@ -1899,17 +2268,17 @@ subroutine dstwgt2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
             dx1 = 1d0-b
             dd = (/sqrt(dx0**2+dy0**2),sqrt(dx0**2+dy1**2),&
             &      sqrt(dx1**2+dy0**2),sqrt(dx1**2+dy1**2)/)
-            
+
             ! Data
             vv = reshape(zzi(:,j:j+1,i:i+1),(/nz,4/))
-            
+
             ! On a point?
             if(any(dd==0d0))then
-            
+
                 zo(:,io) = vv(:, minloc(dd,dim=1))
-            
+
             else
-            
+
                 ! Weights
                 bb = reshape(bmask(:,j:j+1,i:i+1),(/nz,4/))
                 ww = 0d0
@@ -1918,12 +2287,12 @@ subroutine dstwgt2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
                 enddo
                 where(bb)ww=0d0
                 wsum = merge(1d0, sum(ww,dim=2), all(bb,dim=2))
-                            
+
                 ! Interpolation
                 zo(:,io) = merge(mv, sum(ww*vv, dim=2)/wsum, all(bb,dim=2))
-                        
+
             endif
-            
+
         endif
 
     enddo
@@ -1936,7 +2305,7 @@ subroutine dstwgt2dto1dc(xxi,yyi,zzi,xo,yo,zo,mv,nxi,nyi,no,nz)
     ! Distance weight interpolation of gridded data with 2D AXES to random positions
 
     implicit none
-    
+
     integer,intent(in) :: nxi,nyi,no,nz
     real(kind=8),intent(in) :: xxi(nyi,nxi), yyi(nyi,nxi), xo(no), yo(no)
     real(kind=8),intent(in) :: zzi(nz,nyi,nxi),mv
@@ -1946,12 +2315,12 @@ subroutine dstwgt2dto1dc(xxi,yyi,zzi,xo,yo,zo,mv,nxi,nyi,no,nz)
 
     ! Relative positions
     call curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
-    
+
     ! Interpolation
     call dstwgt2dto1dc_reduc(p, q, zzi, zo, mv, nxi, nyi, no, nz)
 
 end subroutine dstwgt2dto1dc
-    
+
 
 ! =============================================================================
 
@@ -2562,7 +2931,7 @@ function plan(xpl,ypl,zpl,x1,y1)
   real*8,intent(in):: xpl(3),ypl(3),zpl(3),x1,y1
   real*8 :: plan
   real*8 p,q,r,s,t,u,a,d,denom,b
-  
+
   !
   !    write(*,*) (xpl(j),j=1,3)
   !    write(*,*) (ypl(j),j=1,3)

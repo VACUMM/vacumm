@@ -3844,7 +3844,10 @@ class Curve(Plot1D):
             self.register_obj(ff, 'fill_between', **kwargs)
         # - error
         if err is not None:
-            ee = self.axes.errorbar(xx.compress(egood), yy.compress(egood), err.compress(egood, axis=-1), fmt=None, **kwerr)
+            kwerr.setdefault('ecolor', ll[0].get_color())
+            kwerr.setdefault('elinewidth', ll[0].get_linewidth())
+            ee = self.axes.errorbar(xx.compress(egood), yy.compress(egood),
+                err.compress(egood, axis=-1), fmt='none', **kwerr)
             self.register_obj(ee, 'error', **kwargs)
         # - filters
         if shadow:
@@ -6902,13 +6905,13 @@ def add_compass(x, y, size=40, facecolor1='k', facecolor2='w', edgecolor='k',
 
 
     return patches, texts
-    
+
 def _asnum_(xy):
     """Get xy as a number
-    
+
     If it is a number or a numpy array, it not converted,
     else it is converted with :func:`numtime`.
-    
+
     xy can also be a list, a list of lists, etc.
     """
     if isinstance(xy, N.ndarray): return xy
@@ -6926,7 +6929,7 @@ def _asnum_(xy):
         out.append(xy)
     if single: return out[0]
     return out
-        
+
 
 def _asnum_(xy):
     """Get xy as a number

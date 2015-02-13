@@ -8,6 +8,7 @@ class TSF(VCTestCase):
         'test_regrid_fortran_interp1d',
         'test_regrid_fortran_interp1dx',
         'test_regrid_fortran_interp1dxx',
+        'test_regrid_fortran_cellerr1d',
         'test_regrid_fortran_bilin',
         'test_regrid_fortran_dstwgt',
         'test_regrid_fortran_nearest2dto1d',

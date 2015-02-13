@@ -4,7 +4,8 @@ Release notes
 In development
 ==============
 
-- Added regrid2dnew with tool and method keywords.
+- Added cellerr method to regrid1d.
+- New regrid2d with tool and method keywords.
 - Added dstwgt method for fortran interpolators from gridded to random points.
 - Plot.add_point() like methods now accept time arguments if applicable.
 - Tuples can be used to specify in time in time creation routines of atime.

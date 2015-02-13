@@ -74,7 +74,8 @@ __all__ = ['fill1d', 'regular', 'regular_fill1d', 'cellave1d', 'spline_interp1d'
     'cellave2d', 'interp2d', 'xy2xy', 'shift1d', 'shift2d',
     'shiftgrid',  'transect', 'CDATRegridder', 'extend1d', 'extend2d',
     'extendgrid', 'regrid2d_method_name', 'fill1d2', 'krig', 'CurvedInterpolator',
-    'regrid1dold', 'regrid2d_tool_name', 'regrid2dnew']
+    'regrid1dold', 'regrid2d_tool_name', 'regrid2dnew', 'regrid1d_method_name',
+    'cellerr1d']
 __all__.sort()
 
 # Fortran functions
@@ -84,6 +85,7 @@ _interp_funcs = ['interp1d', 'interp1dx', 'interp1dxx',
     'nearest2dto1d', 'nearest2dto1dc', 'nearest2dto1dc_reduc',
     'bilin2dto1d', 'bilin2dto1dc', 'bilin2dto1dc_reduc',
     'dstwgt2dto1d', 'dstwgt2dto1dc', 'dstwgt2dto1dc_reduc',
+    'cellerr1d', 'cellerr1dx', 'cellerr1dxx',
     ]
 
 # Load fortran
@@ -110,14 +112,15 @@ _cellave_methods = ['conservative', 'remap', 'cellave', 'conserv']
 _cdat_methods = _cellave_methods+['bilinear', 'patch']
 _regrid2d_methods = ['nearest', 'mixt', 'interp', 'bining']+_griddata_methods+_cdat_methods
 _interp1d_methods = ['nearest', 'linear', 'cubic', 'hermit']
-_regrid1d_methods = _interp1d_methods+_cellave_methods
+_regrid1d_methods = _interp1d_methods+_cellave_methods+['cellerr']
 
 def regrid1d_method_name(method, raiseerr=True):
     """Check the method name and return its generic name"""
     if method is None or method.lower()=='auto': return 'auto'
     method = method.lower()
     if method.startswith('cons'): return 'conserv'
-    if method.startswith('cell') or method.startswith('remap'): return 'cellave'
+    if method.startswith('cella') or method.startswith('remap'): return 'cellave'
+    if method.startswith('celle'): return 'cellerr'
     if 'lin' in method or method=='interp': return 'linear'
 #    if method.startswith('bin'): return 'bining'
     if method.startswith('near'): return 'nearest'
@@ -211,13 +214,15 @@ def regrid1dold(vari, axo, method='auto', axis=None, xmap=None, xmapper=None, ma
 #       conserv = method == 'conservative'
         method  = -1
     elif isinstance(method, basestring):
-        if method in _interp1d_methods:
+        if method=='cellerr':
+            method = 4
+        elif method in _interp1d_methods:
             method = _interp1d_methods.index(method)
         else:
             method = -2 # Wrong method
     else:
         method = int(method)
-    assert method >= -1 and method < 4, 'Wrong method'
+    assert method >= -1 and method < 5, 'Wrong method'
     if method == 2: method = 3 # Hermit is always better
     if xmap is None:
         interp_func = _interp1d_
@@ -491,7 +496,7 @@ def _toright_(ar, iax):
 
 
 def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None,
-    xmap=None, xmapper=None, mask_thres=.5, extrap=0):
+    xmap=None, xmapper=None, mask_thres=.5, extrap=0, erri=None, errl=None):
     """Interpolation along one axis
 
     :Params:
@@ -500,11 +505,14 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
         - **axo**: Output cdms axis or array. It can be of any dimensions.
         - **method**:
 
-            - ``"nearest"``: Nearest neighbor
-            - ``"linear"``: Linear interpolation
-            - ``"cubic"``: Cubic interpolation
-            - ``"cellave"``: Cell averaging
-            - ``"conserv"``: Conservative cel averaging (like ``cellave`` but with integral preserved)
+            - ``"nearest"|0``: Nearest neighbor
+            - ``"linear"|2``: Linear interpolation
+            - ``"cubic"|2``: Cubic interpolation (not used, switched to ``3``)
+            - ``"hermit"|3``: Cubic hermit interpolation
+            - ``"cellerr"|4``: Cell averaging based on errors
+            - ``"cellave"|-1``: Cell averaging
+            - ``"conserv"|-1``: Conservative cel averaging
+              (like ``cellave`` but with integral preserved)
 
         - **axis**, optional: Dimension (int) on which the interpolation is performed.
           If not specified, it is guessed from the
@@ -525,6 +533,13 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
             - ``1`` or ``"max"``, or ``"top"``, or ``"upper"``, or ``"last"``:
               Extrapolate toward last values of the axis.
             - ``2`` or ``"both"``: Extrapolate toward both first and last values.
+
+        - **erri**, optional: Input "measurement" errors with the same shape as input
+          variable.
+        - **errl**, optional: Derivative of lag error with respect to lag.
+          If positive, it based on quadratic errors, else on error itself.
+          Estimate for instance it using the slope of a linear regression.
+          It is usually varying in space and constant in time.
 
     :Examples:
 
@@ -582,10 +597,15 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
     # - get it
     if axi is None: axi = vari.getAxis(axis)
     # - special case for time axis: must have same units !
+    dxi2o = 1.
     if (A.axis_type(axo), order[axis]) == ('t', 't') and \
         hasattr(axi, 'units') and hasattr(axo, 'units') and \
         not are_same_units(axi.units, axo.units):
         axi = ch_units(axi, axo.units, copy=True)
+        if errl is not None:
+            axou = axo.units.split(1)[0] + axi.units.split(1)[1]
+            dxi2o = cdtime.reltime(1, axou)-cdtime.reltime(0, axou)
+            dxi2o /= cdtime.reltime(1, axi.units)-cdtime.reltime(0, axi.units)
     # - numeric version
     axin = axi[:]
 
@@ -653,28 +673,60 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
         method  = -1
     elif isinstance(method, basestring):
         if method == 'interp': method = 'linear'
-        if method in _interp1d_methods:
+        if method=='cellerr':
+            method = 4
+        elif method in _interp1d_methods:
             method = _interp1d_methods.index(method)
         else:
             method = -2 # Wrong method
     else:
         method = int(method)
-    assert method >= -1 and method < 4, 'Wrong method'
+    assert method >= -1 and method < 5, 'Wrong method'
     if method == 2: method = 3 # Hermit is always better
+
+    # Cellerr
+    if method==4:
+
+        # Measurement errors
+        if erri is None:
+            raise VACUMMError('You must provide also erri for the "cellerr" method')
+        if vari.shape!=erri.shape:
+            raise VACUMMError('vari and erro must have the same shape: %s != %s'%
+                (vari.shape, erri.shape))
+        erris, bakmapv = _toright_(N.ma.asarray(erri).filled(missing_value), axis)
+        errm = erris.reshape(-1, erris.shape[-1])
+
+        # Lag errors
+        if errl is None:
+            errl = 0.
+        errl = N.atleast_1d(errl)
+        if N.ma.isMA(errl):
+            errl = errl.filled(missing_value)
+        errl = errl.ravel() * dxi2o
+        if errl.size%nxi:
+            raise VACUMMError('The size of errl (%i) in not a multiple nxi (%i).'%
+                (errl.size, nxi))
+
 
     # Routine and arguments
     if nxi==1 and nxo==1: # 1D->1D
         interp_func = _interp1d_
         remap_func = _remap1d_
+        cellerr_func = _cellerr1d_
     elif nxo==1: # 1D->ND
         interp_func = _interp1dx_
         remap_func = _remap1dx_
+        cellerr_func = _cellerr1dx_
     else: # ND->ND
         interp_func = _interp1dxx_
         remap_func = _remap1dxx_
+        cellerr_func = _cellerr1dxx_
     if method == -1: # Cellave
         regrid_func = remap_func
         kwargs=dict(conserv=conserv,extrap=0)
+    elif method==4:
+        regrid_func = cellerr_func
+        kwargs=dict(errm=errm, errl=errl)
     else: # Interp
         regrid_func = interp_func
         kwargs=dict(method=method,extrap=0)
@@ -682,6 +734,8 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
 
     # Regrid
     varo2d = regrid_func(vari2d, axind, axond, missing_value, **kwargs)
+    if method==4:
+        varo2d, erro2d = varo2d
 
 
     # Extrapolation
@@ -703,11 +757,23 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
     # Reshape back
     varos = varo2d.reshape(varis.shape[:-1]+axond.shape[-1:]) ; del varo2d
     varon = varos.transpose(*bakmapv) ; del varos
+    if method==4:
+        erros = erro2d.reshape(varis.shape[:-1]+axond.shape[-1:]) ; del erro2d
+        erron = erros.transpose(*bakmapv) ; del erros
 
     # Convert to cdms
     varo = MV2.masked_values(varon, missing_value)
     cp_atts(vari, varo, id=True)
     varo.setMissing(missing_value)
+    if method==4:
+        erro = MV2.masked_values(erron, missing_value)
+        cp_atts(vari, erro, id=True)
+        erro.id = erro.id+'_error'
+        if hasattr(erro, 'long_name'):
+            erro.long_name = erro.long_name+' error'
+        else:
+            erro.long_name = 'Error'
+        erro.setMissing(missing_value)
     if A.isaxis(axo):
         axes[axis] = axo
     elif cdms2.isVariable(axo):
@@ -720,17 +786,22 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
             cp_atts(oldaxis, axes[axis])
     varo.setAxisList(axes)
     varo.setGrid(grid)
-    gc.collect()
+    if method==4:
+        erro.setAxisList(axes)
+        erro.setGrid(grid)
+        return varo, erro
     return varo
 
 
 def nearest1d(vari, axo, **kwargs):
     """Interpolation along an axes
 
-    - **vari**: Input cdms array
-    - **axo**: Output cdms axis
-    - *axis*: Axis on wich to operate
-    - Other keywords are passed to :func:`regrid1d`
+    :Params:
+
+        - **vari**: Input cdms array
+        - **axo**: Output cdms axis
+        - **axis**, optional: Axis on wich to operate
+        - Other keywords are passed to :func:`regrid1d`
 
     .. note::
 
@@ -743,10 +814,12 @@ def interp1d(vari, axo, method='linear', **kwargs):
     """Linear or cubic interpolation along an axes
 
 
-    - **vari**: Input cdms array
-    - **axo**: Output cdms axis
-    - *axis*: Axis on wich to operate
-    - Other keywords are passed to :func:`regrid1d`
+    :Params:
+
+        - **vari**: Input cdms array
+        - **axo**: Output cdms axis
+        - **axis**, optional: Axis on wich to operate
+        - Other keywords are passed to :func:`regrid1d`
 
     .. note::
 
@@ -759,10 +832,12 @@ def cubic1d(vari, axo, **kwargs):
     """Cubic interpolation along an axes
 
 
-    - **vari**: Input cdms array
-    - **axo**: Output cdms axis
-    - *axis*: Axis on wich to operate
-    - Other keywords are passed to :func:`regrid1d`
+    :Params:
+
+        - **vari**: Input cdms array
+        - **axo**: Output cdms axis
+        - **axis**, optional: Axis on wich to operate
+        - Other keywords are passed to :func:`regrid1d`
 
     .. note::
 
@@ -794,6 +869,26 @@ def cellave1d(vari, axo, conserv=False, **kwargs):
     return regrid1d(vari, axo, method, **kwargs)
 
 remap1d = cellave1d
+
+def cellerr1d(vari, axo, erri, errl=None, **kwargs):
+    """Linear or cubic interpolation along an axes
+
+
+    :Params:
+
+        - **vari**: Input cdms array
+        - **axo**: Output cdms axis
+        - **erri**: Input measurement errors
+        - **errl**, optional: Input lag error relative to lag
+        - **axis**, optional: Axis on wich to operate
+        - Other keywords are passed to :func:`regrid1d`
+
+    .. note::
+
+        This is an wrapper to :func:`regrid1d` using ``cellerr`` method.
+        See its help for more information.
+    """
+    return regrid1d(vari, axo, method, **kwargs)
 
 def fill1d2(vi,axis=0, k=1,padding=None,clip=False,min_padding=None, method='linear'):
     """Fill missing values of a 1D array using spline interpolation.
@@ -2131,7 +2226,7 @@ def regrid2d_tool_name(tool, raiseerr=True):
         return method
 
 
-def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
+def regrid2dold(vari, ggo, method='auto', mask_thres=.5, ext=False,
     bilinear_masking='dstwgt', ext_masking='poly', cdr=None, getcdr=False, usecdr=None, useoldcdr=True,
     check_mask=True, clipminmax=False, geo=None, **kwargs):
     """Regrid a variable from a regular grid to another
@@ -2398,7 +2493,9 @@ def regrid2d(vari, ggo, method='auto', mask_thres=.5, ext=False,
     return varo
 
 
-def regrid2dnew(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
+
+
+def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
     erode=False,  **kwargs):
     """Regrid a variable from a regular grid to another
 
@@ -2618,6 +2715,9 @@ def regrid2dnew(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
     if getrgdr: return varo, rgdr
     return varo
 
+
+
+regrid2dnew = regrid2d
 
 def _regrid2d_nearest2d_(vari3d, xxi, yyi, xxo, yyo, mv, geo, maskoext):
     """Wrapper to fortran _nearest2d_"""
