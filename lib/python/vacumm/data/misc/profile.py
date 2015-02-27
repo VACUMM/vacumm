@@ -36,6 +36,7 @@
 
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
+__date__ = '2015-02-27'
 __doc__ = '''
 This module provides vertical profiles managers.
 
