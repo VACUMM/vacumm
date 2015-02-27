@@ -1658,6 +1658,7 @@ class ProfilesDataset(OceanDataset):
         if not len(self.dataset):
             self.debug('No %s variable found, dataset is empty', varname)
             return None
+        if select is None: select = {}
         orgselect, (tmp,select) = select, self.get_selector(split=True, **select)
         seltime = select.pop('time', None)
         if seltime: seltime = map(comptime, seltime[:2])
@@ -1786,7 +1787,7 @@ class ProfilesDataset(OceanDataset):
         odep = create_dep(is_iterable(depth) and depth or [depth])
         ovar = interp1d(var, axo=odep, xmap=[0], xmapper=dep) # Required order: ...z
         ovar = cdms2.createVariable(ovar, id=var.id, axes=[var.getAxis(0), odep], attributes=var.attributes.copy())
-        self.logdesc(ovar, odep)
+        self.describe(ovar, odep)
         return lon, lat, ovar
         
     def get_hist(self, tstep, **kwargs):
@@ -1825,7 +1826,7 @@ class ProfilesDataset(OceanDataset):
         if len(var.shape) > 1:
             self.verbose('Averaging layer along depth')
             var = MV2.average(var, axis=1)
-        self.logdesc(var, lat, lon)
+        self.describe(var, lat, lon)
         vmin, vmax = numpy.min(var), numpy.max(var)
         if mp is None:
             mapkw.update(dict(label=self.__class__.__name__, show=False,
@@ -2006,13 +2007,13 @@ class ProfilesDataset(OceanDataset):
                 self.warning('Reversing data and level to go from bottom to surface')
                 v, d = v[::-1], d[::-1]
             d = d.tolist() # tmp fix
-            self.logdesc(d)
+            self.describe(d)
             #l = cdms2.createAxis(range(d.shape[0]), id='level')
             l = cdms2.createAxis(d, id='level')
             l.designateLevel()
             v = cdms2.createVariable(v, id=var.id, axes=[l], attributes=var.attributes.copy())
             d = cdms2.createVariable(d, id=dep.id, axes=[l], attributes=dep.attributes.copy())
-            self.logdesc(v, d)#, l)
+            self.describe((v, d, l))
             curkw = plotkw.copy()
             curkw.setdefault('order', 'zd')
             curkw.setdefault('title', 'Profile %s'%(var.id))

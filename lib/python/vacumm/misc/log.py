@@ -315,7 +315,10 @@ class Logger(logging.getLoggerClass()):
 			if isinstance(console, logging.Handler): self.console_handler = console
 			elif isinstance(console, (list, tuple)): self.console_handler = self.new_stream_handler(*console)
 			elif isinstance(console, dict): self.console_handler = self.new_stream_handler(**console)
-			else: self.console_handler = self.new_stream_handler(colorize=colorize if colorize is not None else self.default_colorize)
+			else: self.console_handler = self.new_stream_handler(
+				colorize=colorize if colorize is not None else self.default_colorize,
+				format=self.default_format['console'],
+				date_format=self.default_date_format['console'])
 			self.add_handler(self.console_handler)
 		
 		# Setup file handler (logfile) ?
@@ -325,7 +328,10 @@ class Logger(logging.getLoggerClass()):
 			if isinstance(logfile, logging.Handler): self.file_handler = logfile
 			elif isinstance(logfile, (list, tuple)): self.file_handler = self.new_rotating_file_handler(*logfile)
 			elif isinstance(logfile, dict): self.file_handler = self.new_rotating_file_handler(**logfile)
-			else: self.file_handler = self.new_rotating_file_handler(logfile if isinstance(logfile, basestring) else None)
+			else: self.file_handler = self.new_rotating_file_handler(
+				logfile if isinstance(logfile, basestring) else None,
+				format=self.default_format['logfile'],
+				date_format=self.default_date_format['logfile'])
 			self.add_handler(self.file_handler)
 		
 		#self.config(name=name, level=level, format=format, date_format=date_format)
