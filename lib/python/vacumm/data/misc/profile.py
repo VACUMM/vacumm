@@ -36,7 +36,6 @@
 
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
-__date__ = '2012-12-18'
 __doc__ = '''
 This module provides vertical profiles managers.
 
@@ -160,7 +159,7 @@ class Profile(Object):
     __properties = ('platform_code', 'datetime', 'latitude', 'longitude', 'datetime_corrupted', 'depth', 'variables', 'parent', 'index', 'filename')
     
     def __init__(self, **kwargs):
-        Object.__init__(self)
+        Object.__init__(self, **kwargs)
         # TODO:
         # - Remove slot mecanism if it does not optimize memory usage
         # - Store depth as axis
@@ -183,13 +182,14 @@ class Profile(Object):
             v = cdms2.createVariable(v, id=n, axes=(self.level,))
             #v = cdms2.createVariable(v, id=n)
             self.variables[n] = v
+        self.__str__ = self.__newstr__
     
-    def __str__(self):
+    # Replace __str__ once all __init__ actions are completed
+    def __newstr__(self):
         return '<%s %s, depth shape: %s, variables: %s'%(
             self.__class__.__name__,
-            ', '.join(('%s: %s'%(a, getattr(self, a)) for a in self.__properties[:5])), # update this on properties changes
+            ', '.join(('%s: %s'%(a, getattr(self, a, None)) for a in self.__properties[:5])), # update this on properties changes
             self.depth.shape, self.variables.keys())
-    __repr__ = __str__
     
     def get_depth_min(self):
         '''Return the minimum depth value.'''
@@ -237,8 +237,8 @@ class AbstractProfiles(Object, list):
     
     # TODO: Add NotImplementedError messages ?
     def __init__(self, *args, **kwargs):
-        Object.__init__(self)
-        list.__init__(self, *args, **kwargs)
+        Object.__init__(self, **kwargs)
+        list.__init__(self, *args)
     
     def __str__(self):
         return '<%s size: %s>'%(self.__class__.__name__, len(self))
@@ -363,6 +363,7 @@ class Profiles(AbstractProfiles):
     :Params:
         - **profiles**: a list of Profile objects or Profiles instance or profiles file string.
         - **spec**: see below
+        - **the spec attributes below can also be passed directly as keyword arguments**
     
     If the spec attribute is provided, it must be an object (usually another Profiles instance) with the following attributes:
         - **variables_map**: the variable mapping, default to :func:`get_variables_map`
@@ -373,6 +374,33 @@ class Profiles(AbstractProfiles):
     :Note:
         - When Profile or Profiles instances are given, their nested Profile objects are referenced, note copied.
     
+    :Examples:
+        >>> import glob
+        >>> import vacumm.misc.axes as A
+        >>> import vacumm.data.misc.profile as P
+        >>> p = P.Profiles(
+                profiles=glob.glob('argo-profiles-*.nc'),
+                logger_level='debug',
+                variables_map={
+                    'time':('TIME',),
+                    'depth':('DEPH',),
+                    'latitude':('LATITUDE',),
+                    'longitude':('LONGITUDE',),
+                    'temperature':('TEMP',),
+                    'salinity':('PSAL',),
+                },
+                variables=('temperature','salinity')
+            )
+        >>> time = p.get_time()
+        >>> print 'time:', A.create_time(time, units=time.units).asComponentTime()
+        >>> print 'depth:', p.describe(p.get_depth(), stats=True)
+        >>> print 'latitude:', p.describe(p.get_latitude(), stats=True)
+        >>> print 'longitude:', p.describe(p.get_longitude(), stats=True)
+        >>> temp = p.get_variable('temperature')
+        >>> print 'temperature:', p.describe(temp, stats=True)
+        >>> psal = p.get_variable('salinity')
+        >>> print 'salinity:', p.describe(psal, stats=True)
+
     .. todo::
         - fix load of single depth profile file
         - check depth quality test
@@ -396,7 +424,7 @@ class Profiles(AbstractProfiles):
     
     default_time_units = 'seconds since 1900-01-01 00:00:00'
     
-    def __init__(self, profiles=[], *args, **kwargs):
+    def __init__(self, profiles=[], **kwargs):
         self.variables_map = self.get_variables_map()
         self.variables = self.get_default_variables()
         self.qualities = self.get_default_qualities()
@@ -425,7 +453,13 @@ class Profiles(AbstractProfiles):
         self.lonrange = kwargs.pop('lonrange', [])
         self.latrange = kwargs.pop('latrange', [])
         self.time_units = kwargs.pop('time_units', self.default_time_units)
-        AbstractProfiles.__init__(self, profiles)
+        AbstractProfiles.__init__(self, profiles, **kwargs)
+        self.verbose('Initialize %s', self.__class__)
+        self.verbose('Requested variables identifiers: %s', self.variables)
+        self.verbose('Valid quality flags: %s', self.qualities)
+        self.verbose('Time range filter: %s', self.timerange)
+        self.verbose('Longitude range filter: %s', self.lonrange)
+        self.verbose('Latitude range filter: %s', self.latrange)
         if datasets:
             self.load(datasets)
     
@@ -755,7 +789,7 @@ class Profiles(AbstractProfiles):
         if isinstance(dataset, (list,tuple)): # replace this by is_iterable
             self.notice('%s loading %s profiles', self.__class__.__name__, len(dataset))
             for d in dataset:
-                p = self.factory(dataset=d, load=False)# safe=True ?
+                p = self.factory(dataset=d, load=False, spec=self, logger_config=self)# safe=True ?
                 p.load(d, **kwargs)
                 self.extend(p)
             return
@@ -935,7 +969,8 @@ class Profiles(AbstractProfiles):
                     latitude=latvar[ipro],
                     longitude=lonvar[ipro],
                     depth=pdepth,
-                    variables=pvars)
+                    variables=pvars,
+                    logger_config=self)
                 
                 self.append(profile)
                 
@@ -1031,7 +1066,7 @@ class Profiles(AbstractProfiles):
             depth.mask[i][0:pdep.shape[0]] = pdep.mask
         depthvar = cdms2.createVariable(depth, id='depth', axes=(self.get_profile_axis(), self.get_level_axis()), attributes = {
             'standard_name':'depth', 'long_name':'Depth', 'axis':'Z',
-            'units':'m', 'positive':'down', 'valid_min':MV2.min(depth), 'valid_max':MV2.max(depth)})
+            'units':'m', 'positive':'down', 'valid_min':MV2.min(depth) if len(depth) else None, 'valid_max':MV2.max(depth) if len(depth) else None})
         return depthvar
     
     def get_variable(self, varname):
@@ -1309,14 +1344,14 @@ class ProfilesDuplicatesFilter(ProfilesFilter):
     In this case, two profiles are duplicates if the timedelta between their datetimes
     is less than **maxtimedelta**.
     '''
-    def __init__(self, maxtimedelta=60*60*12):
+    def __init__(self, maxtimedelta=60*60*12, **kwargs):
         '''
         :Params:
             - **maxtimedelta**: number of seconds or timedelta representing the difference
               between two profiles dates from which they are not considered duplicates.
               This is only used when profiles have their datetime_corrupted flagged to True.
         '''
-        ProfilesFilter.__init__(self)
+        ProfilesFilter.__init__(self, **kwargs)
         if not isinstance(maxtimedelta, datetime.timedelta):
             maxtimedelta = datetime.timedelta(seconds=maxtimedelta)
         self.maxtimedelta = maxtimedelta
@@ -1414,7 +1449,7 @@ class ProfilesMerger(Object):
         try:
             spec = self.spec.copy()
             spec.update(kwargs)
-            profiles = Profiles.factory(dataset=dataset, **spec)
+            profiles = Profiles.factory(dataset=dataset, logger_config=self, **spec)
             profiles.load(dataset)
             self.profiles.extend(profiles)
         except Exception:

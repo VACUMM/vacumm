@@ -336,7 +336,7 @@ class Logger(logging.getLoggerClass()):
 		
 		#self.config(name=name, level=level, format=format, date_format=date_format)
 		self.set_level(level, filter=True)
-		#if config: self.config(config)
+		if config: self.config(config)
 		
 		# Add global handlers: handlers registered for all Logger
 		for hdlr in self.__class__.shared_handlers:

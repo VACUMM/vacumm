@@ -483,7 +483,11 @@ class Object(object):
     @classmethod
     def get_config_spec_file(cls):
         '''Return (and define) the class specification file path'''
-        return '%s.ini'%(os.path.splitext(os.path.realpath(inspect.getfile(cls)))[0])
+        try:
+            cfgfile = '%s.ini'%(os.path.splitext(os.path.realpath(inspect.getfile(cls)))[0])
+        except TypeError: # occure if creating a subclass in interactive python shell
+            cfgfile = None
+        return 
 
     @classmethod
     def get_parent_config_spec(cls):
@@ -807,7 +811,7 @@ class Object(object):
         '''
         # Setup logging
         lkw = kwfilter(kwargs, 'logger', {'name':self.__class__.__name__})
-        if isinstance(lkw.get('config', None), self.__class__):
+        if isinstance(lkw.get('config', None), Object):
             lkw['config'] = lkw['config'].get_logger()
         lkw['name_filters'] = list(lkw.get('name_filters', [])) + [self.__class__.__name__]
         self._logger = Logger(**lkw)
