@@ -44,28 +44,28 @@ from vacumm import VACUMMError, VACUMMWarning, help as vchelp
 from vacumm.config import \
     edit_user_conf_file, print_config, get_config_value, data_sample
 
-# - misc 
+# - misc
 
 from vacumm.misc.misc import \
     lonlab, latlab, deplab, kwfilter, broadcast, ArgList, closeto, dict_merge, \
     dict_check_defaults, cp_atts, dict_filter,  cp_props, numod, set_atts, get_atts, \
     set_lang, geodir, auto_scale
-    
+
 from vacumm.misc.axes import \
     create_lon, create_lat, create_time, create_depth, \
     create_dep, islon, islat, isdep, isaxis, istime
-    
+
 from vacumm.misc.atime import comptime, strftime, strptime, Intervals, IterDates, now, \
     time_split, time_split_nmax, to_utc, tz_to_tz, utc_to_paris, paris_to_utc,  \
     lindates, ch_units, add_margin, round_date, midnight_date, midnight_interval, mpl, tic, toc
 
 
 from vacumm.misc.bases import psinfo, code_base_name, code_file_name, code_dir_name
-    
+
 from vacumm.misc.io import list_forecast_files, netcdf3, netcdf4, ncread_files, ncread_var, \
     ncread_axis, ncget_var, ncget_axis, ncfind_var, ncfind_axis, NcIterBestEstimate,  \
     ncget_fgrid
-    
+
 from vacumm.misc.filters import generic1d, generic2d, shapiro1d, shapiro2d, blackman1d, \
     bartlett1d, kaiser1d, hanning1d, blackman1d, gaussian1d, gaussian2d
 
@@ -78,14 +78,15 @@ from vacumm.misc.config import ConfigManager, cfgargparse
 from vacumm.misc.stats import StatAccum
 
 from vacumm.misc.phys.units import convert_units
-   
+
 # - plot
-   
+
 from vacumm.misc.plot import \
     map2, section2, hov2, curve2, bar2, plot2d, stick2, make_movie, \
     savefigs, add_grid, xhide, yhide, xrotate, yrotate, add_key, taylor, dtaylor, dtarget, \
-    add_shadow, add_glow, add_map_lines, add_map_line, add_map_point, minimap
-    
+    add_shadow, add_glow, add_map_lines, add_map_line, add_map_point, minimap, \
+    add_logo, add_left_label, add_right_label, add_top_label, add_bottom_label
+
 from vacumm.misc.color import plot_cmap, show_cmap, get_cmap, simple_colors, \
     cmap_rs, cmap_srs, cmap_custom, Scalar2RGB, darken, whiten, cmaps_mpl, \
     cmap_gmt, cmaps_registered, cmaps_vacumm, print_cmaps_gmt, plot_cmaps
@@ -97,7 +98,7 @@ from vacumm.misc.grid.misc import \
     meshcells, meshbounds, meshgrid, bounds1d, bounds2d, coord2slice, isregular, \
     isrect, curv2rect, isgrid, get_xy, create_axes2d, gridsel, varsel, xshift, rotate_grid, \
     get_closest, get_closest_depth, makedepthup, get_axis, transect_specs
-    
+
 from vacumm.misc.grid.regridding import \
     regrid1d, regrid2d, interp1d, interp2d, cellave1d, cellave2d, \
     cargen, xy2xy, shift1d, shift2d, extend1d, extend2d, regrid_method, \
@@ -106,11 +107,11 @@ from vacumm.misc.grid.regridding import \
 
 from vacumm.misc.grid.basemap import \
     merc, create_map, get_proj, reset_cache
-    
+
 from vacumm.misc.grid.masking import \
     erode_coast, polygon_mask, GetLakes, get_coast, polygons, polygon_select, zcompress, \
     envelop, get_coastal_indices, grid_envelop
-    
+
 # - data
 
 from vacumm.data import setup_dataset, DS

@@ -15,10 +15,11 @@ class TSF(VCTestCase):
         'test_plot_section_quiver',
         'test_plot_hov_tz',
         'test_plot_streamplot',
-        'test_plot_taylor', 
+        'test_plot_taylor',
+        'test_plot_add_logo',
         ]:
         exec(method_template.format(test_name))
-        
-        
+
+
 if __name__ == '__main__':
     unittest.main()
