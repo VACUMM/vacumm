@@ -14,7 +14,7 @@ count = 2
 suffix = '.backup%d'
 
 try:
-    
+
     F.rollover(afile, count=count, suffix=suffix)
     # nothing done, afile does not exists
     with file(afile, 'w') as f: f.write('0')
@@ -36,8 +36,8 @@ try:
     # afile contains 2
     # afile.backup1 contains 2
     # afile.backup2 contains 1
-    
+
 finally:
     # cleaning
     rmtree(tmpdir)
-
+print 'Empty output'

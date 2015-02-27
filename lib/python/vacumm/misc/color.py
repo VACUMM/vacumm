@@ -584,7 +584,7 @@ def cmap_wjets(wcol=".95", name='vacumm_wjets', **kwargs):
     colors = [RGB(wcol),(0,1,1),(0,1,0),(1,1,0),(1,.5,0),(1,0,0),(1,0,.75)]
     kwargs.setdefault('stretch', 0)
 #   return cmap_linear(colors,name='cmap_wjets',**kwargs)
-    return cmap_smoothed_regular_steps(colors, name=name,**kwargs)
+    return cmap_smoothed_regular_steps(colors, name=name, **kwargs)
 
 def cmap_ajets(wcol="w", name='vacumm_ajets', **kwargs):
     """Jet colormap with smoothed steps and white at center (for anomalies)
@@ -792,7 +792,7 @@ def cmap_wjet(wcol='.95', smoothed=True, name='vacumm_wjet', **kwargs):
     wcol = kwargs.get('first_color', wcol)
     func = cmap_regular_steps if not smoothed else cmap_smoothed_regular_steps
     colors = [wcol, 'b', (0, 1, 1), (0, 1, 0), (1, 1, 0), (1, 0, 0), (1, 0, .74)]
-    return func(colors, **kwargs)
+    return func(colors, name=name, **kwargs)
 
 #    wcol = kwargs.get('first_color', wcol)
 #    colors = [RGB(wcol),(0,1,1),(0,1,0),(1,1,0),(1,.5,0),(1,0,0),(1,0,.75)]

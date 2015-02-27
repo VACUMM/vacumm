@@ -69,7 +69,7 @@ from .basemap import get_proj
 # Python functions
 __all__ = ['fill1d', 'regular', 'regular_fill1d', 'cellave1d', 'spline_interp1d',
     'refine', 'GridData', 'griddata', 'cargen', 'fill2d', 'regrid2d',
-    'regrid1d', 'interp1d', 'nearest1d', 'cubic1d',
+    'regrid1d', 'interp1d', 'nearest1d', 'cubic1d', 'regrid2dold',
     'xy2grid', 'grid2xy', 'fill1d', 'GriddedMerger', 'regrid_method',
     'cellave2d', 'interp2d', 'xy2xy', 'shift1d', 'shift2d',
     'shiftgrid',  'transect', 'CDATRegridder', 'extend1d', 'extend2d',
@@ -2545,15 +2545,15 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
         +==========+========+==========+======+=======+
         | nearest  |   OK   |          |      |       |
         +----------+--------+----------+------+-------+
-        | bilinear +   OK   |          |  OK  |  OK   |
+        | bilinear |   OK   |          |  OK  |  OK   |
         +----------+--------+----------+------+-------+
         |  dstwgt  |   OK   |          |      |       |
         +----------+--------+----------+------+-------+
-        |  patch   +        |          |  OK  |       |
+        |  patch   |        |          |  OK  |       |
         +----------+--------+----------+------+-------+
         | cellave  |        |   RECT   |  OK  |       |
         +----------+--------+----------+------+-------+
-        | conserv  +        |   RECT   |  OK  |       |
+        | conserv  |        |   RECT   |  OK  |       |
         +----------+--------+----------+------+-------+
 
     :Examples:

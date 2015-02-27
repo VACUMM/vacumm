@@ -71,7 +71,7 @@ See :func:`~vacumm.misc.file.rollover`
 .. literalinclude:: ../../../../scripts/tutorials/misc.file.rollover.py
     :language: python
 
-.. program-output:: ../../../scripts/tutorials/misc.file.rollover.py
+.. .program-output:: ../../../scripts/tutorials/misc.file.rollover.py
 
 
 Displaying and analysing file sizes
