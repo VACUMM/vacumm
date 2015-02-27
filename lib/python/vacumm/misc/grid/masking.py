@@ -393,7 +393,7 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
         - **mode**, optional: Way to decide if a grid point is masked. Possible values are:
 
             - ``intersect``, 1, ``area`` (default): Masked if land area fraction is > ``thresholds[0]``.
-              If more than one intersections, leand area fraction must be > ``thresholds[1]``
+              If more than one intersections, land area fraction must be > ``thresholds[1]``
               to prevent masking straits.
             - else: Masked if grid point inside polygon.
 
@@ -587,7 +587,6 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
     # Select ocean only
     if ocean:
         return GetLakes(mask).ocean()
-
     return mask
 
 
@@ -772,8 +771,13 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     else:
         shaper = Polygon
     if clip is not None:
+        clipl = clip # degrees
         kwclip.setdefault('proj', proj)
         clip = create_polygon(clip, **kwclip)
+        del kwclip['proj']
+        kwclip['mode'] = 'verts'
+    else:
+        clipl = None
 
     # Loop on polygon data
     from misc import isgrid, isrect, curv2rect
@@ -792,9 +796,9 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
 
         # Polygon from GMT
         if isinstance(poly, (str, Basemap)):
-            poly = GSHHS_BM(poly)
+#            poly = GSHHS_BM(poly)
 #           gmt_polys.append(poly)
-            out_polys.extend(GSHHS_BM(poly, clip=clip).get_shapes()) # FIXME: proj?
+            out_polys.extend(GSHHS_BM(poly, clip=clipl, proj=proj).get_shapes())
             continue
 
         # Shapes instance

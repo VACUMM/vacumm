@@ -18,24 +18,24 @@ f.close()
 
 # Pression de surface
 slp[:] = generic2d(slp*0.01, 5)
-map2(slp, fill=False, contour=True, show=False,  figsize=(6, 5.5), 
-    title='WRF Bretagne', 
-    fillcontinents=True, zorder=5, projection='merc', right=1, bottom=.07, 
-    lowhighs=True, lowhighs_smooth=9, lowhighs_zorder=5, fillcontinents_color='.95', 
+map2(slp, fill=False, contour=True, show=False,  figsize=(6, 5.5),
+    title='WRF Bretagne',
+    fillcontinents=True, zorder=5, projection='merc', right=1, bottom=.07,
+    lowhighs=True, lowhighs_smooth=9, lowhighs_zorder=5, fillcontinents_color='.95',
     lowhighs_color=(0, .5, 0), contour_colors=[(0, .5, 0)], drawcoastlines_linewidth=.6)
 
 # Pluie
 cmap_rain = cmap_custom([('0.9', 0), ('b', .8), ('r', 1.)])
 rain[:] = MV2.masked_less(rain, 0.1)
-map2(rain, cmap=cmap_rain, vmin=0., 
-    fill='pcolormesh', fillcontinents=False, show=False, 
-    shadow_xoffset=4, shadow_yoffset=-4,shadow_width=4, colorbar_shrink=.7, 
+map2(rain, cmap=cmap_rain, vmin=0.,
+    fill='pcolor', fillcontinents=False, show=False,
+    shadow_xoffset=4, shadow_yoffset=-4,shadow_width=4, colorbar_shrink=.7,
     alpha=.7, shadow=True, shadow_alpha=.3, contour=False, zorder=15)
 
 # Vent
 u[:] = ms2kt(u*5)
 v[:] = ms2kt(v*5)
-m = map2((u[::3, ::3], v[::3, ::3]), fill=False, contour=False, barbs=True, projection='merc', 
-    quiver_sizes=dict(height=.2, spacing=.15), quiver_linewidths=.8, zorder=10, 
-    shadow=True, quiver_alpha=.5, savefigs=__file__, show=False, savefigs_pdf=True, 
+m = map2((u[::3, ::3], v[::3, ::3]), fill=False, contour=False, barbs=True, projection='merc',
+    quiver_sizes=dict(height=.2, spacing=.15), quiver_linewidths=.8, zorder=10,
+    shadow=True, quiver_alpha=.5, savefigs=__file__, show=False, savefigs_pdf=True,
     fillcontinents=False)

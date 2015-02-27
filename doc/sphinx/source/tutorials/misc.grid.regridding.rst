@@ -15,6 +15,7 @@ Regrillage 1D
 	misc.grid.regridding.remap_vs_interp_1d
 	misc.grid.regridding.regrid1dx
 	misc.grid.regridding.conserv1d
+	misc.grid.regridding.cellerr1d
 
 
 

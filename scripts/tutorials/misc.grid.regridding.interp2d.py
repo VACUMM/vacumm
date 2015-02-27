@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-# Variable d'entree
+# Input variables
 import numpy as N, cdms2 as cdms, MV2 as MV
 from vacumm.misc.grid import meshbounds
 xi = N.arange(20.)
@@ -14,7 +14,7 @@ vari.setAxis(-2, cdms.createAxis(yi))
 vari.setAxis(-1, cdms.createAxis(xi))
 vari[3:4, 3:7] = MV.masked
 
-# Grille de sortie
+# Output grid
 xo = cdms.createAxis(N.linspace(-3., 23., 70))
 yo = cdms.createAxis(N.linspace(-3., 13., 40))
 
@@ -22,8 +22,8 @@ yo = cdms.createAxis(N.linspace(-3., 13., 40))
 from vacumm.misc.grid.regridding import interp2d
 # - bilinear
 varob = interp2d(vari, (xo, yo), method='bilinear')
-# - natgrid
-varon = interp2d(vari, (xo, yo), method='nat')
+# - nearest
+varon = interp2d(vari, (xo, yo), method='nearest')
 
 # Plot
 import pylab as P
@@ -43,13 +43,13 @@ P.subplot(312)
 P.pcolor(xob, yob, varob, **vminmax)
 P.axis(lims)
 add_grid((xi, yi), linewidth=.3)
-P.title(u'Bilinéaire')
+P.title('Bilinear')
 # -
 P.subplot(313)
 P.pcolor(xob, yob, varon, **vminmax)
 P.axis(lims)
 add_grid((xi, yi), linewidth=.3)
-P.title(u'Natgrid')
+P.title('Nearest')
 # -
 savefigs(__file__)
 P.close()

@@ -871,7 +871,7 @@ def cellave1d(vari, axo, conserv=False, **kwargs):
 remap1d = cellave1d
 
 def cellerr1d(vari, axo, erri, errl=None, **kwargs):
-    """Linear or cubic interpolation along an axes
+    """Cell averaing with weights based on errors
 
 
     :Params:
@@ -2569,7 +2569,7 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
         method = regrid2d_method_name(regrid_method(vari, ggo))
     valid_methods = ['nearest', 'bilinear', 'cellave', 'conserv', 'dstwgt', 'patch']
     if method not in valid_methods:
-        raise VACUMMError('Wrong regridding method: %s. Please choose one of :'+
+        raise VACUMMError('Wrong regridding method: %s. Please choose one of :'%method+
         ', '.join(valid_methods))
 
     # Check grids
@@ -2609,7 +2609,7 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
         if  (ttype=='r2r' and not curved) or \
             (ttype=='c2r' and curvedi and not curvedo) or \
             (ttype=='r2c' and curvedo and not curvedi) or \
-            (ttype=='c2c' and curved):
+            ttype=='c2c': # Fall back | and curved):
             if tool=='auto':
                 tool = tools[ttype][0] # First available
             elif tool not in tools[ttype]:

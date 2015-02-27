@@ -42,7 +42,7 @@ __all__  = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_ma
 __all__.sort()
 
 import numpy as N
-from mpl_toolkits.basemap import Basemap
+from mpl_toolkits.basemap import Basemap, __version__ as basemap_version
 from mpl_toolkits.basemap.proj import Proj
 from matplotlib import get_configdir
 import os, cPickle, stat
@@ -79,6 +79,7 @@ def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
     >>> m = cached_map(lon_min=-5, lon_max=6, lat_min=40, lat_max=50, projection='lcc', resolution='f')
     >>> m = cached_map(m) # Does only caching of map
     """
+
     # We already have one in live memory
     if isinstance(m, Basemap):
         # Save it
@@ -106,28 +107,38 @@ def cache_map(m, mapdir=None):
     file = _cached_map_file_(m, mapdir=mapdir)
     if file is None: return
     if not os.path.exists(file):
-#       print 'Caching map to '+os.path.basename(file)
+
+        # Dump
         f = open(file, 'wb')
         m.ax = None
         cPickle.dump(m, f)
         f.close()
+
         # Access to all if not in user directory
         if not file.startswith(os.path.expanduser("~")):
             os.chmod(file, stat.S_IROTH+stat.S_IWOTH+stat.S_IWGRP+stat.S_IRGRP+stat.S_IWUSR+stat.S_IRUSR)
 
-def clean_cache(mapdir=None, maxsize=10.*1024*1024):
+        # Clean
+        clean_cache()
+
+
+def clean_cache(mapdir=None, maxsize=None):
     """Clean cache directory by checking its size
 
     :Params:
 
         - **mapdir**, optional: Directory where maps are cached
-        - **maxsize**, optional: Maximal size of directory in bytes
+        - **maxsize**, optional: Maximal size of directory in bytes.
+          Default value from :confopt:`[vacumm.misc.grid.basemap]max_cache_size`
+          configuration value.
     """
     from ...misc.misc import dirsize
     mapdir = get_map_dir(mapdir)
     if mapdir is None:
         mapdir = os.path.join(get_configdir(), 'basemap', 'cached_maps')
     cache_size = dirsize(mapdir)
+    if maxsize is None:
+        maxsize = eval(get_config_value('vacumm.misc.grid.basemap', 'max_cache_size'))
     if cache_size>maxsize:
         files = [os.path.join(mapdir, ff) for ff in os.listdir(mapdir)]
         files.sort(cmp=lambda f1, f2: cmp(os.stat(f1)[8], os.stat(f2)[8]))
@@ -164,7 +175,8 @@ def _cached_map_file_(m=None, mapdir=None, **kwargs):
         res = m.resolution
     srs = m.srs.replace(' ', '')+'+res='+res
     szone = '+%.5f+%.5f+%.5f+%.5f' % (m.llcrnrlon, m.llcrnrlat, m.urcrnrlon, m.urcrnrlat)
-    return os.path.join(mapdir, 'basemap.%s.%s.pyk' % (srs, szone))
+#    bversion = '.'.join(basemap_version.split('.')[:2])
+    return os.path.join(mapdir, 'basemap-%s.%s.%s.pyk' % (basemap_version, srs, szone))
 
 
 def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projection='cyl', resolution='auto',
@@ -315,7 +327,7 @@ class GSHHS_BM(Shapes):
                 clip = [input.xmin, input.ymin, input.xmax, input.ymax]
             input = input._m
 
-        # Get the map
+        # Get the map without projection
         if not isinstance(input, Basemap):
 
             # Base to create the map

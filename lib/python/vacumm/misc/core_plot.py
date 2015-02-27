@@ -1864,10 +1864,11 @@ class Plot(object):
             - **alpha** (applied to legend patch): ``0.5``
         """
         kwargs.setdefault('loc', 'best')
-        kwargs.setdefault('shadow', False)
-        kwargs.setdefault('fancybox', True)
+#        kwargs.setdefault('shadow', False)
+#        kwargs.setdefault('fancybox', True)
         alpha = kwargs.pop('alpha', .5)
         zorder = kwargs.pop('zorder', None)
+#        zorder = kwargs.pop('framealpha', alpha)
         leg = self.axes.legend(*args, **kwargs)
         if leg is not None:
             leg.legendPatch.set_alpha(alpha)

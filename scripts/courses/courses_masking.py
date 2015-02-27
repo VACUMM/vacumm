@@ -16,11 +16,11 @@ from vacumm.misc.grid.masking import polygon_mask, erode_coast, get_coastal_indi
 grid = create_grid((-6., -4., 0.1), (47.5, 49.1, 0.1))  # grille de l'iroise
 resolution = 'h'                                        # resolution gshhs : testez 'i'
 mask = polygon_mask(grid, resolution, thresholds=0.5)   # testez threshold = 0.1
-mvmask = MV2.array(mask) 
+mvmask = MV2.array(mask)
 set_grid(mvmask, grid)
-map2(mvmask, fillcontinents=False, drawcoastlines_color='r', drawcoastlines_zorder=100, 
-    res=resolution, proj='merc', fill='pcolor', drawcoastlines_linewidth=2, 
-    cmap=cmap_rs(['1', '0.6']), contour=False, colorbar=False, 
+map2(mvmask, fillcontinents=False, drawcoastlines_color='r', drawcoastlines_zorder=100,
+    res=resolution, proj='merc', fill='pcolor', drawcoastlines_linewidth=2,
+    cmap=cmap_rs(['1', '0.6']), contour=False, colorbar=False,
     savefig ='courses_masking_0.png', show=True)
 
 
@@ -38,7 +38,7 @@ temp2 = erode_coast(temp, maxiter=3)                # changez maxiter et tracez
 
 # Enveloppe de points
 xy = P.randn(2, 500)*0.5+N.array([-5,48]).reshape(2,-1)
-xe, ye = convex_hull(xy, method='delaunay')         # changez la methode            
+xe, ye = convex_hull(xy, method='delaunay')         # changez la methode
 
 
 # Creer des plolygones

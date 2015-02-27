@@ -4,6 +4,8 @@ Release notes
 In development
 ==============
 
+- Added systematic cleaning to cache_map().
+- Added [vacumm.misc.grid.basemap]max_cache_size config option.
 - Added cellerr method to regrid1d.
 - New regrid2d with tool and method keywords.
 - Added dstwgt method for fortran interpolators from gridded to random points.
