@@ -1,7 +1,7 @@
 .. _tut.misc.variables.bases.axes:
 
-Axes et variables
-=================
+Axes and variables
+==================
 
 .. literalinclude:: ../../../../scripts/tutorials/misc.variables.bases.axes.py
 

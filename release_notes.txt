@@ -4,6 +4,9 @@ Release notes
 In development
 ==============
 
+Version 2.5.1
+=============
+
 - Changed: module level config files renamed to vacumm.cfg.
 - Fixed: access to vacumm_nice_gfdl and vacumm_ssec colormaps.
 - Fixed: Logger and specs for Profile.

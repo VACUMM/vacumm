@@ -58,6 +58,7 @@ help:
 	@echo "    doc                       generate documentations"
 	@echo "    html                      generate html documentation"
 	@echo "    pdf                       generate pdf documentation"
+	@echo "    safedoc                   generate documentations and all their dependencies"
 	@echo "    install                   prepare for local use (build libs, fix permissions)"
 	@echo "    uninstall                 clean local installations"
 	@echo "    arch                      clean all and create source archive in parent directory"
@@ -75,6 +76,13 @@ html:
 
 pdf:
 	cd doc/sphinx && make pdf
+
+safedoc:
+	cd test && make
+	cd scripts/tutorials && make
+	cd scripts/courses && make
+	touch lib/python/vacumm/misc/color.py
+	make doc
 
 lib:
 	python setup.py build_ext --inplace --force
