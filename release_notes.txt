@@ -4,10 +4,18 @@ Release notes
 In development
 ==============
 
+- Changed: module level config files renamed to vacumm.cfg.
+- Fixed: access to vacumm_nice_gfdl and vacumm_ssec colormaps.
+- Fixed: Logger and specs for Profile.
+- Fixed: add_logo.
+- Fixed: removed dependency to pytz, which must now be installed
+  to add time zone support to vacumm.
+
 Version 2.5.0
 ==============
 
-- Added: Plot.add_annotation, gfdl colormap.
+- Added: camp_nice_gfdl colormap.
+- Added: Plot.add_annotation.
 - Added: misc.plot.advanced.add_things tutorial.
 - Fixed: gen_gallery.
 

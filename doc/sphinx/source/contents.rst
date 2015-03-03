@@ -7,6 +7,8 @@
 
     .. docversions::
 
+    Sea also: :ref:`appendix.release`
+
     **Table of content:**
 
 .. toctree::

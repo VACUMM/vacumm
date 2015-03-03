@@ -49,7 +49,7 @@ from cdms2.axis import CdtimeTypes,AbstractAxis,ComptimeType,ReltimeType,FileAxi
 from dateutil.rrule import rrule, MO, TU, WE, TH, FR, SA, SU, YEARLY, \
      MONTHLY, WEEKLY, DAILY, HOURLY, MINUTELY, SECONDLY
 from matplotlib.dates import DateFormatter, num2date, date2num
-from pytz import timezone, all_timezones
+#from pytz import timezone, all_timezones
 
 
 MV = MV2
@@ -1650,7 +1650,11 @@ def has_time_pattern(ss):
 
 def tz_to_tz(mytime, old_tz, new_tz, copy=True):
     """Convert time from one time zone to another one"""
-
+    try:
+        from pytz import timezone
+    except ImportError:
+        raise VACUMMError('You must install pytz package to add time zone support'
+            ' to vacumm')
     if isinstance(old_tz,basestring): old_tz = timezone(old_tz)
     if isinstance(new_tz,basestring): new_tz = timezone(new_tz)
 
@@ -1714,6 +1718,11 @@ def tzname_to_tz(mytzname):
 
         >>> tz = tzname_to_tz('CEST')
     """
+    try:
+        from pytz import all_timezones
+    except ImportError:
+        raise VACUMMError('You must install pytz package to add time zone support'
+            ' to vacumm')
     for name in all_timezones:
         tz = timezone(name)
         if not hasattr(tz, '_tzinfos'): continue

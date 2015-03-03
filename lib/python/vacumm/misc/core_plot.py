@@ -1986,7 +1986,7 @@ class Plot(object):
 
     def add_arrow(self, x, y, udata,vdata,zorder=150,polar=False,degrees=True,shadow=False, glow=False,
          quiverkey=False,xyscaler=None, **kwargs):
-        """Add an arrow to the map using :meth:`matplotlib.pyplot.quiver`
+        """Add an arrow to the map using :func:`matplotlib.pyplot.quiver`
 
         :Params:
 
