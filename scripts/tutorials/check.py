@@ -45,14 +45,22 @@ else:
 files.sort()
 
 # Setup the logger
-from vacumm.misc.io import Logger
-logger = Logger('CHECK',
-    logfile='.'.join([os.path.splitext(__file__)[0], 'log']),
-    cfmt='[%(name)s] %(message)s',
-    ffmt='%(asctime)s: [%(name)s] %(message)s',
-    full_line=True,
-)
-logger.set_loglevel(console=args.loglevel, file='debug')
+import logging
+logfile = '.'.join([os.path.splitext(__file__)[0], 'log'])
+if os.path.exists(logfile):
+    os.remove(logfile)
+logger = logging.getLogger('CHECK')
+file = logging.FileHandler(logfile)
+file.setFormatter(
+    logging.Formatter('%(asctime)s: %(name)s [%(levelname)-8s] %(message)s',
+        '%Y-%m-%d %H:%M'))
+console = logging.StreamHandler()
+console.setFormatter(logging.Formatter('%(name)s [%(levelname)-8s] %(message)s'))
+file.setLevel('DEBUG')
+console.setLevel(args.loglevel.upper())
+logger.setLevel('DEBUG')
+logger.addHandler(file)
+logger.addHandler(console)
 
 # Configuration: arguments to scripts
 from ConfigParser import SafeConfigParser
