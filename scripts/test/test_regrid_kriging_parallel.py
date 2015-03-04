@@ -42,6 +42,5 @@ P.scatter(xo, yo, c=zo if zo.ndim==1 else zo[0], s=40, **kwsc)
 P.title('Interpolated points')
 P.tight_layout()
 savefigs(code_file_name(), verbose=False)
-P.show()
 P.close()
 

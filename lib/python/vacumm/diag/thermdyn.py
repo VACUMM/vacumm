@@ -12,10 +12,12 @@ from vacumm.misc import N_choose, grow_depth, grow_lat
 from vacumm.misc.misc import grow_variables
 
 try:
-    from seawater import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0
+    from seawater import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0, \
+        dpth as sw_dpeth
 except:
     try:
-        from seawater.csiro import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0
+        from seawater.csiro import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0, \
+            depth as sw_depth
     except:
         warn('Failed to import seawater functions')
 
