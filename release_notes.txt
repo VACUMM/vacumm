@@ -4,6 +4,10 @@ Release notes
 In development
 ==============
 
+- Added "make safedoc" target.
+- Fixed: english translations++.
+- Fixed: missing test_plot_add_logo.py.
+
 Version 2.5.1
 =============
 

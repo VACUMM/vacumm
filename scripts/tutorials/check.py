@@ -95,6 +95,7 @@ for script in files:
     if os.path.realpath(script)==os.path.realpath(__file__):
         logger.debug('%s: %s', os.path.basename(script), 'SKIPPED')
         continue
+    logger.debug('Trying %s...'%os.path.basename(script))
     out, err = subprocess.Popen(["python", script] + (get_args(script) or []),
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     script = os.path.basename(script)
@@ -106,12 +107,10 @@ for script in files:
         ibad +=1
     if len(out): logger.debug(' OUT: '+out)
     if len(err): logger.debug(' ERR: '+err)
-logger.set_loglevel(console='debug')
-msg = 'Results (%i checks): '%(igood+ibad)
 gb = []
 if igood:
     gb.append('%i OK'%igood)
 if ibad:
     gb.append('%i FAILED'%ibad)
 msg = 'Results (%i checks): %s'%(igood+ibad, ', '.join(gb))
-logger.debug(msg)
+logger.info(msg)
