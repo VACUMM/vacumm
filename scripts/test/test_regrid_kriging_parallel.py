@@ -1,18 +1,20 @@
-"""Test function :func:`~vacumm.misc.grid.kriging.OrdinaryKriger` in parallel mode"""
- 
-npi = 2000
-npo = 200
-npmax = 500
-nproc = 2
+"""Test function :func:`~vacumm.misc.grid.kriging.OrdinaryKriger` in parallel and multifit modes"""
 
+# Params
+npi = 2000 # number of input points
+npo = 200 # number of output points
+npmax = 500 # max size of clouds
+nproc = 2 # max number of procs
 
-from vcmq import P, savefigs, code_file_name
+# Imports
+from vcmq import P, savefigs, code_file_name, N
 from vacumm.misc.grid.kriging import gridded_gauss3, random_gauss3, random_points, OrdinaryKriger
 from time import time
 
 # Random and gridded input fields
 xg, yg, zzg = gridded_gauss3()
-xi, yi, zi = random_gauss3(npts=npi)
+xi, yi, zi = random_gauss3(np=npi)
+zi = N.vstack((zi, zi)) # simulate several time steps for multifit
 
 # Init kriger
 kriger = OrdinaryKriger(xi, yi, zi, npmax=npmax, nproc=nproc)
@@ -23,7 +25,6 @@ xo, yo = random_points(np=npo)
 # Interpolate
 t0 = time()
 zo = kriger(xo, yo)
-#print '%.2fs'%(time()-t0)
 
 # Plot
 P.figure(figsize=(6, 8))
@@ -33,13 +34,14 @@ kwim = dict(extent=axis, interpolation='bilinear', origin='lower', alpha=.2, **k
 kwsc = dict(lw=0.2, **kw)
 P.subplot(211)
 P.imshow(zzg,  **kwim)
-P.scatter(xi, yi, c=zi, s=20, **kwsc)
+P.scatter(xi, yi, c=zi if zi.ndim==1 else zi[0], s=20, **kwsc)
 P.title('Input points')
 P.subplot(212)
 P.imshow(zzg, **kwim)
-P.scatter(xo, yo, c=zo, s=40, **kwsc)
+P.scatter(xo, yo, c=zo if zo.ndim==1 else zo[0], s=40, **kwsc)
 P.title('Interpolated points')
 P.tight_layout()
 savefigs(code_file_name(), verbose=False)
+P.show()
 P.close()
 
