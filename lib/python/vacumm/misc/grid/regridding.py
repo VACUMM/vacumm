@@ -1369,19 +1369,19 @@ def cargen(xi, yi, zi, ggo, mask=None, geo=None, compress=False, missing_value=N
 
 krigdata = cargen
 
-def krig(xi, yi, zi, ggo, mask=None, geo=None, compress=False, missing_value=None, **kwargs):
-    """Kriging interpolator
+def krig(xi, yi, zi, ggo, mask=None, geo=None, missing_value=None, **kwargs):
+    """Kriging interpolator to a grid
 
     :Params:
 
         - **xi**: Input 1D X positions.
         - **yi**: Input 1D Y positions.
+        - **zi**: Input N-D with last dim as space.
         - **ggo**, optional: Output grid. Can either (xo,yo), a cdms grid or a cdms variable with a grid.
         - **mask**, optional: Mask to apply to output data [default: None]
     """
     # Helper
-    GDH = _GridDataHelper_(xi, yi, ggo, geo=geo, mask=mask, compress=compress)
-    assert not GDH.curv, 'cargen does not work with output curvilinear grids'
+    GDH = _GridDataHelper_(xi, yi, ggo, geo=geo, mask=mask, compress=True)
 
     # Init data
     zi2d, zo3d, mo3d, nex, compress, missing_value = GDH.init(zi, missing_value)
@@ -1389,18 +1389,13 @@ def krig(xi, yi, zi, ggo, mask=None, geo=None, compress=False, missing_value=Non
     xo.shape = -1
     yo.shape = -1
 
-    # Loop on supplementary dims
-    for iex in xrange(nex):
-
-        # Get data and mask
-        get = GDH.get(zi2d, iex, compress)
-        if get is None: continue
+    # Get data and mask
+    get = GDH.get(zi2d, Ellipsis, compress)
+    if get is not None:
         xi, yi, zzi, mmi = get
 
         # Interpolate
-        zo3d[iex] = _krig_(xi, yi, zzi, xo, yo).reshape(zo3d.shape[-2:])
-        if mmi is not None:
-            mo3d[iex] = _krig_(xi, yi, mmi, xo, yo).reshape(zo3d.shape[-2:])
+        zo3d[:] = _krig_(xi, yi, zzi, xo, yo).reshape(zo3d.shape)
 
     # Format output
     return GDH.format(zi, zo3d, mo3d, missing_value, **kwargs)
@@ -1469,6 +1464,8 @@ class _GridDataHelper_(object):
                 mask = ggo.mask
         if mask in [False, None]:
             mask = MA.nomask
+        if mask.ndim>2:
+            mask = mask[(0,)*(mask.ndim-2)]
 
         # - axes
         self.x, self.y = get_xy(ggo, m=False)
@@ -1545,19 +1542,21 @@ class _GridDataHelper_(object):
         if hasattr(zi2d, 'mask') and zi2d[iex].mask is not MA.nomask and zi2d[iex].mask.any():
             if not compress: # No compression => interpolation of mask
                 mmi = zi2d[iex].mask.astype('f')
-                zi2d[iex] = zi2d[iex].filled(1.e20)
+                zi2d[iex] = zi2d[iex].filled(missing_value)
             else:
                 good = good & ~zi2d[iex].mask
+        if good.ndim==2:
+            good = N.reduce.logical_and(good, axis=0)
 
         # All data are bad
         if not good.any(): return None
 
         if not good.all(): # Some are good
-            zzi = zi2d[iex].compress(good)
-            xi = self.xi.compress(good)
-            yi = self.yi.compress(good)
+            zzi = zi2d[iex][..., good]
+            xi = self.xi[good]
+            yi = self.yi[good]
             if mmi is not None:
-                mmi = mmi.compress(good)
+                mmi = mmi[good]
         else: # There are all good
             zzi = zi2d[iex]
             xi = self.xi
@@ -1589,7 +1588,7 @@ class _GridDataHelper_(object):
             zo[mask] = missing_value
         if mo3d is not None and mo is not None:
             zo[mo!=0.] = missing_value
-        missing = closeto(zo, missing_value)
+        missing = N.isclose(zo, missing_value)
         if missing.any() and self.outtype==-1:
             self.outtype = 1
         if self.outtype==-1:
