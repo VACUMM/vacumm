@@ -122,30 +122,55 @@ def variogram_model(mtype, n, s, r=None, nrelmax=0.2):
     raise KrigingError(errmsg)
 
 class VariogramModel(object):
-    def __init__(self, mtype, fpar=None):
+    """Class used when fitting a variogram model to data to better control params"""
+    param_names = list(variogram_model.func_code.co_varnames[1:])
+    param_names.remove('nrelmax')
+    def __init__(self, mtype, **kwargs):
         self.mtype = variogram_model_type(mtype)
-        self.fpar = fpar
-    @staticmethod
-    def fix_params(args, fpar):
-        if hasattr(fpar, '__len__'):
-            args = list(args)
-            fpar = fpar[:len(args)+1]
-            for i, farg in enumerate(fpar):
-                if farg is not None:
-                    args[i] = farg
-        return args
-    def __call__(self, d, *args):
-        args = self.fix_params(args, self.fpar)
-        return variogram_model(self.mtype, *args)(d)
+        if mtype=='linear': # do not optimize r with linear model
+            kwargs['r'] = None
+        self.fixed_params = dict([(p, v) for (p, v) in kwargs.items()
+            if p in self.param_names])
 
-def _get_xyz_(x, y, z, check=True, noextra=True):
+    def get_all_kwargs(self, pp):
+        """Get arguments list to :func:`variogram_model` by merging variable params `p`
+        and :attr:`fixed_params`
+        """
+        pp = list(pp)
+        return dict([(p, (self.fixed_params[p] if p in self.fixed_params else pp.pop(0)))
+            for p in self.param_names])
+
+    def get_var_args(self, **kwargs):
+        """Get variable arguments list from specified params
+
+        .. note:: Result cannot contain ``None``
+        """
+        vargs = [kwargs[p] for p in self.param_names if p not in self.fixed_params]
+        if None in vargs:
+            raise VariogramModelError('Variable arguments cannot contains Nones')
+        return vargs
+
+    def __call__(self, d, *pp):
+        """Call the variogram model"""
+        return self.get_variogram_model(pp)(d)
+
+    def get_variogram_model(self, pp):
+        """Get the variogram model using `pp` variable arguments"""
+        kwargs = self.get_all_kwargs(pp)
+        return variogram_model(self.mtype, **kwargs)
+
+
+class VariogramModelError(KrigingError):
+    pass
+
+def _get_xyz_(x, y, z=None, check=True, noextra=True, getmask=False):
     if not x.ndim==1 and x.shape!=y.shape :
         raise KrigingError('x, y must have the same 1D shape')
-
-    if (noextra or z.ndim==1) and x.shape!=z.shape:
-            raise KrigingError('z must have the same 1D shape as x and y')
-    elif not noextra and z.ndim!=1 and (z.ndim!=2 or x.shape!=z.shape[1:]):
-        raise KrigingError('z must have 2 dims with its last dim of same length as x and y')
+    if z is not None:
+        if (noextra or z.ndim==1) and x.shape!=z.shape:
+                raise KrigingError('z must have the same 1D shape as x and y')
+        elif not noextra and z.ndim!=1 and (z.ndim!=2 or x.shape!=z.shape[1:]):
+            raise KrigingError('z must have 2 dims with its last dim of same length as x and y')
     mask = N.ma.nomask
     if N.ma.isMA(z): mask = N.ma.getmaskarray(z)
     if N.ma.isMA(x): mask |= N.ma.getmaskarray(x)
@@ -162,7 +187,10 @@ def _get_xyz_(x, y, z, check=True, noextra=True):
             pass
         y = y.compress(good)
         z = z.compress(N.resize(good, z.shape))
-    return x, y, z
+    res = x, y, z
+    if getmask:
+        res += mask,
+    return res
 
 def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10):
     """Estimate variogram from data
@@ -249,7 +277,7 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10)
         vb[ib] = v[iib].mean()
     return db, vb
 
-def variogram_fit(x, y, z, mtype, getp=False, geterr=False, fpar=None):
+def variogram_fit(x, y, z, mtype, getp=False, geterr=False, **kwargs):
     """Fit a variogram model to data and return the function
 
     :Params:
@@ -257,36 +285,37 @@ def variogram_fit(x, y, z, mtype, getp=False, geterr=False, fpar=None):
         - **x/y/z**: Position and data.
         - **mtype**: Variogram model type (see :func:`variogram_model_types`).
         - **getp**, optional: Only return model parameters.
+        - Extra keywords are those of :func:`variogram_model`.
+          They can be used to fix some of the parameters.
+
+          >>> variogram_fit(x, y, z, mtype, n=0) # fix the nugget
 
     """
     # Estimated variogram
     d, v = variogram(x, y, z)
 
     # Variogram model
-    vm = VariogramModel(mtype, fpar=fpar)
+    vm = VariogramModel(mtype, **kwargs)
 
     # First guess of paramaters
-    imax = N.argmax(v)
-    p0 = [0., v[imax]]
-    if mtype!='linear':
-        p0.append(d[imax])
+    imax = N.ma.argmax(v)
+    p0 = vm.get_var_args(n=0., s=v[imax], r=d[imax])
 
     # Fitting
     p, e = curve_fit(vm, d, v, p0=p0)
-    res = p if getp else variogram_model(vm.mtype, *p)
+    res = p if getp else vm.get_variogram_model(p)
     if not geterr:
         return res
-    return res,  (variogram_model(vm.mtype, *p)(d)-v).std()
+    return res,  (vm.get_variogram_model(p)(d)-v).std()
 
-def variogram_multifit(xx, yy, zz, mtype=None, getp=False, fpar=None):
+def variogram_multifit(xx, yy, zz, mtype=None, getp=False, **kwargs):
     """Same as :func:`variogram_fit` but with several samples"""
+    vm = VariogramModel(mtype, **kwargs)
     pp = []
     for i, (x, y, z) in enumerate(zip(xx, yy, zz)):
         x, y, z = _get_xyz_(x, y, z, check=False)
         if len(x)==0: continue
-        p = variogram_fit(x, y, z, mtype, getp=True)
-        if fpar is not None:
-            p = VariogramModel.fix_params(p, fpar)
+        p = variogram_fit(x, y, z, mtype, getp=True, **kwargs)
         pp.append(p)
     pp = N.asarray(pp)
     if pp.shape[0]==0:
@@ -294,7 +323,7 @@ def variogram_multifit(xx, yy, zz, mtype=None, getp=False, fpar=None):
     mp = N.median(pp, axis=0)
     if getp:
         return mp
-    return variogram_model(mtype, *mp)
+    return vm.get_variogram_model(mp)
 
 def cloud_split(x, y, npmax=1000, getdist=True, getcent=True):
     """Split data intot cloud of points of max size cmax:
@@ -392,6 +421,11 @@ class OrdinaryCloudKriger(object):
         - **nproc**, optional: Number of processes to use
           to invert matrices. Set it to a number <2 to switch off
           parallelisation.
+        - Extra keywords are  parameters to the :func:`variogram_model` that must not be
+          optimized by :func:`variogram_model`. For instance ``n=0`` fix the
+          nugget to zero.
+          This used only if ``vfg`` is not passed as argument.
+
 
     :Attributes: :attr:`x`, :attr:`y`, :attr:`z`, :attr:`np`,
         :attr:`xc`, :attr:`yc`, :attr:`zc`,  :attr:`npc`,
@@ -422,8 +456,8 @@ class OrdinaryCloudKriger(object):
             List of input data of each cloud.
     """
 
-    def __init__(self, x, y, z, mtype=None, vgf=None, npmax=1000, nproc=None):
-        self.x, self.y, self.z = _get_xyz_(x, y, z, noextra=False)
+    def __init__(self, x, y, z, mtype=None, vgf=None, npmax=1000, nproc=None, **kwargs):
+        self.x, self.y, self.z, self.mask = _get_xyz_(x, y, z, noextra=False, getmask=True)
         self.np = self.x.shape[0]
         self.nt = 0 if self.z.ndim==1 else z.shape[0]
         self.mtype = variogram_model_type(mtype)
@@ -436,6 +470,7 @@ class OrdinaryCloudKriger(object):
         self.nproc = min(nproc, self.ncloud)
         if callable(vgf):
             self.variogram_func = vgf
+        self._kwargs = kwargs
 
     def __len__(self):
         return self.x.shape[0]
@@ -487,21 +522,23 @@ class OrdinaryCloudKriger(object):
             self.npc = [self.np]
             self.cwfunc = [lambda x, y: 1.]
 
-    def plot_clouds(self, **kwargs):
+    def plot_clouds(self, marker='o', **kwargs):
         """Quickly Plot inputs points splitted in clouds"""
         P.figure()
         for x, y in zip(self.xc, self.yc):
-            P.plot(x, y, **kwargs)
+            P.plot(x, y, marker, **kwargs)
         P.show()
 
-    def variogram_fit(self, x=None, y=None, z=None):
+    def variogram_fit(self, x=None, y=None, z=None, **kwargs):
         """Estimate the variogram function by using :func:`variogram_fit`"""
+        kw = self._kwargs.copy()
+        kw.update(kwargs)
         x, y, z = self._get_xyz_(x, y, z)
         if z.ndim==2:
             ne = z.shape[0]
-            self.variogram_func = variogram_multifit([x]*ne, [y]*ne, z, self.mtype)
+            self.variogram_func = variogram_multifit([x]*ne, [y]*ne, z, self.mtype, **kw)
         else:
-            self.variogram_func = variogram_fit(x, y, z, self.mtype)
+            self.variogram_func = variogram_fit(x, y, z, self.mtype, **kw)
         return self.variogram_func
 
 

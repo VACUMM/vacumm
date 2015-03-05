@@ -14,8 +14,8 @@ x, y, z = random_gauss3(np=np)
 # Variogram from data
 d, v = variogram(x, y, z)
 
-# Variogram fit
-vm = variogram_fit(x, y, z, mtype)
+# Variogram fit with null nugget
+vm = variogram_fit(x, y, z, mtype, n=0)
 D = N.linspace(0, d.max())
 V = vm(D)
 

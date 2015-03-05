@@ -87,7 +87,7 @@ to describe the arguments of functions, subroutines and programs.
 .. rst:directive:: .. f:type:: [~][modname][/]typename
 
     This directive describes a derived type in a module.
-    It accepts the special docfield ``:f ...:`
+    It accepts the special docfield `:f ...:`
     to describe the fields of the module.
     
     Example::
