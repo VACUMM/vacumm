@@ -1369,7 +1369,7 @@ def cargen(xi, yi, zi, ggo, mask=None, geo=None, compress=False, missing_value=N
 
 krigdata = cargen
 
-def krig(xi, yi, zi, ggo, mask=None, geo=None, missing_value=None, **kwargs):
+def krig(xi, yi, zi, ggo, mask=True, geo=None, missing_value=None, **kwargs):
     """Kriging interpolator to a grid
 
     :Params:
@@ -1458,11 +1458,11 @@ class _GridDataHelper_(object):
 
         # - mask
         if mask is True:
-            if hasattr(ggo, getMask):
+            if hasattr(ggo, 'getMask'):
                 mask = ggo.getMask()
-            elif hasattr(ggo, mask):
+            elif hasattr(ggo, 'mask'):
                 mask = ggo.mask
-        if mask in [False, None]:
+        if mask is False or mask is None:
             mask = MA.nomask
         if mask.ndim>2:
             mask = mask[(0,)*(mask.ndim-2)]
