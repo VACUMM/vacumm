@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 "Physics"
 # Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #

@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """
 In situ tools
 

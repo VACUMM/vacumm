@@ -44,7 +44,7 @@ extensions = [
         'vacumm.sphinxext.fortran_domain',
         'vacumm.sphinxext.fortran_autodoc',
         'vacumm.sphinxext.overview',
-        'vacumm.sphinxext.docversions',
+#        'vacumm.sphinxext.docversions',
         'gen_gallery',
         'gen_cmaps',
         ]

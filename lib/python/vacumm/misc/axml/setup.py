@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Installation script"""
 # Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #

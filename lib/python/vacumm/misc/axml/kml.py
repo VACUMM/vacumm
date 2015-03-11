@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Interface to KML"""
 
 #from base import *

@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """Utilities imported and slightly adapted from exterbal sources :
 
     - http://matplotlib.sourceforge.net/examples/pylab_examples/demo_agg_filter.html

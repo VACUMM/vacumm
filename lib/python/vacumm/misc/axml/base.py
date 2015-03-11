@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 """XML utilities"""
 # Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #

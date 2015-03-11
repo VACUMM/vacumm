@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 # Copyright or © or Copr. Actimar/IFREMER (2013-2015)
 #
 # This software is a computer program whose purpose is to provide
