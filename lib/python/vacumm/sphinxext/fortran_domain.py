@@ -3,27 +3,24 @@
 A fortran domain for sphinx
 
 """
-# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
-# 
-# raynaud@actimar.fr
-# 
-# 
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -31,13 +28,13 @@ A fortran domain for sphinx
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-# 
+#
 
 import re
 
@@ -80,7 +77,7 @@ def parse_shape(shape):
     if not shape.startswith('('): shape = '('+shape
     if not shape.endswith(')'): shape += ')'
     return shape
-    
+
 def add_shape(node, shape, modname=None, nodefmt=nodes.Text):
     """Format a shape expression for a node"""
     dims = re.split('\s*,\s*', shape.strip('( )'))
@@ -92,7 +89,7 @@ def add_shape(node, shape, modname=None, nodefmt=nodes.Text):
 
 # Doc fields
 
-    
+
 re_name_shape = re.compile('(\w+)(\(.+\))?')
 
 re_fieldname_match = re.compile(r'(?P<type>\b\w+\b)?\s*(?P<name>\b\w+\b)\s*(?P<shape>\(.*\))?\s*(?P<sattrs>\[.+\])?').match
@@ -107,7 +104,7 @@ class FortranField(Field):
                                         modname=modname, typename=typename)
         refnode += innernode(target, target)
         return refnode
-    
+
 
 class FortranCallField(FortranField):
     is_grouped = True
@@ -116,7 +113,7 @@ class FortranCallField(FortranField):
         Field.__init__(self, name, names, label, True, rolename)
 
     def make_field(self, types, domain, items, **kwargs):
-        
+
         fieldname = nodes.field_name('', self.label)
         #par = Field.make_field(self, types, domain, items[0])
         par = nodes.paragraph()
@@ -148,7 +145,7 @@ class FortranCompleteField(FortranField, GroupedField):
     is_typed = 2
 
     def __init__(self, name, names=(), typenames=(), label=None,
-                 rolename=None, typerolename=None, 
+                 rolename=None, typerolename=None,
                  shapenames=None, attrnames=None,
                  prefix=None,
                  strong=True,
@@ -164,17 +161,17 @@ class FortranCompleteField(FortranField, GroupedField):
         else:
             self.namefmt = addnodes.desc_name
 
-    def make_field(self, types, domain, items, shapes=None, attrs=None, 
+    def make_field(self, types, domain, items, shapes=None, attrs=None,
         modname=None, typename=None):
         def handle_item(fieldarg, content):
             par = nodes.paragraph()
             if self.prefix:
                 par += self.namefmt(self.prefix, self.prefix)
-                
-            par += self.make_xref(self.rolename, domain, fieldarg, self.namefmt, 
+
+            par += self.make_xref(self.rolename, domain, fieldarg, self.namefmt,
                         modname=modname, typename=typename)
             #par += self.namefmt(fieldarg, fieldarg)
-            
+
             fieldtype = types.pop(fieldarg, None)
             fieldshape = shapes and shapes.pop(fieldarg, None)
             fieldattrs = attrs and attrs.pop(fieldarg, None)
@@ -188,7 +185,7 @@ class FortranCompleteField(FortranField, GroupedField):
                 if len(fieldtype) == 1 and isinstance(fieldtype[0], nodes.Text):
                     thistypename = fieldtype[0].astext()
                     #typename = u''.join(n.astext() for n in fieldtype)
-                    par += self.make_xref(self.typerolename, domain, thistypename, 
+                    par += self.make_xref(self.typerolename, domain, thistypename,
                         modname=modname, typename=typename)
                 else:
                     par += fieldtype
@@ -214,7 +211,7 @@ class FortranCompleteField(FortranField, GroupedField):
         fieldbody = nodes.field_body('', bodynode)
         return nodes.field('', fieldname, fieldbody)
 
-    
+
 
 class FortranDocFieldTransformer(DocFieldTransformer):
     """
@@ -247,14 +244,14 @@ class FortranDocFieldTransformer(DocFieldTransformer):
 
     def scan_fieldarg(self, fieldname):
         """Extract type, name, shape and attributes from a field name.
-        
+
         :Some possible syntaxes:
-        
+
             - ``p name``
             - ``p type name(shape) [attr1,attr2]``
             - ``p type name``
             - ``p name [attr1, attr2]``
-            
+
         :Returns: ``name, shape, type, list of attributes``.
             if no shape is specified, it is set to ``None``,
         """
@@ -265,7 +262,7 @@ class FortranDocFieldTransformer(DocFieldTransformer):
         attrs = attrs and attrs[1:-1]
         #if attrs:
             #attrs = [a.strip() for a in attrs[1:-1].split(',')]
-        #else: 
+        #else:
             #attrs = []
         return name, shape, ftype, attrs
 
@@ -280,7 +277,7 @@ class FortranDocFieldTransformer(DocFieldTransformer):
         types = {}
         shapes = {}
         attrs = {}
-        
+
         # step 1: traverse all fields and collect field types and content
         for field in node:
 
@@ -469,24 +466,24 @@ class FortranObject(ObjectDescription):
     doc_field_types = [
         FortranCompleteField('parameter', label=l_('Parameters'),
                    names=('p', 'param', 'parameter', 'a', 'arg', 'argument'),
-                   #rolename='var', 
-                   typerolename='type', 
+                   #rolename='var',
+                   typerolename='type',
                    typenames=('paramtype', 'type', 'ptype'),
                    shapenames=('shape', 'pshape'),
                    attrnames=('attrs', 'pattrs', 'attr'),
                    can_collapse=True),
         FortranCompleteField('optional', label=l_('Options'),
                    names=('o', 'optional', 'opt', 'keyword', 'option'),
-                   #rolename='var', 
-                   typerolename='type', 
+                   #rolename='var',
+                   typerolename='type',
                    typenames=('optparamtype', 'otype'),
                    shapenames=('oshape',),
                    attrnames=('oattrs', 'oattr'),
                    can_collapse=True),
         FortranCompleteField('typefield', label=l_('Type fields'),
                    names=('f', 'field', 'typef', 'typefield'),
-                   #rolename='typef', 
-                   typerolename='type', 
+                   #rolename='typef',
+                   typerolename='type',
                    typenames=('fieldtype', 'ftype'),
                    shapenames=('fshape',),
                    attrnames=('fattrs', 'fattr'),
@@ -495,7 +492,7 @@ class FortranObject(ObjectDescription):
                    can_collapse=False),
         FortranCompleteField('return', label=l_('Return'),
                    names=('r', 'return', 'returns'),
-                   typerolename='type', 
+                   typerolename='type',
                    typenames=('returntype', 'rtype'),
                    shapenames=('rshape',),
                    attrnames=('rattrs', 'rattr'),
@@ -511,7 +508,7 @@ class FortranObject(ObjectDescription):
     stopwords = set(('float', 'integer', 'character', 'double', 'long'))
 
     _parens = ''
-    
+
 #    def _parse_type(self, node, ftype):
 #        m = f_type_re.match(ftype)
 #        tnode = nodes.Text(ftype, ftype)
@@ -557,7 +554,7 @@ class FortranObject(ObjectDescription):
             raise ValueError
         ftype, objtype, modname, typename, name, arglist = m.groups()
         if not typename: typename = ""
-            
+
         # determine module, type, shape and attributes
         modname = (modname and modname[:-1]) or self.options.get(
             'module', self.env.temp_data.get('f:module'))
@@ -568,16 +565,16 @@ class FortranObject(ObjectDescription):
         ftype = ftype or self.options.get('type')
         if self.objtype=='typefield' and not typename:
             raise ValueError
-        
+
         #if typename: name = typename+'%'+name
-        
+
         #fullname = name
         #if modname:
         if self.objtype=='program':
             fullname = name
         else:
             fullname = (modname or '_') + f_sep + name
- 
+
         signode['module'] = modname
         signode['type'] = typename
         signode['fullname'] = fullname
@@ -595,25 +592,25 @@ class FortranObject(ObjectDescription):
 
         # Add name
         signode += addnodes.desc_name(name, name)
-        
+
         # In the parenthesis
         if self.needs_arglist(): # call for functions and subroutines
             if arglist: # Calling arguments
-                _pseudo_parse_arglist(signode, arglist)               
-            elif self.needs_arglist():  # for callables, add an empty parameter list       
+                _pseudo_parse_arglist(signode, arglist)
+            elif self.needs_arglist():  # for callables, add an empty parameter list
                 signode += addnodes.desc_parameterlist()
         elif arglist and not shape: # Declare shape instead of arguments (variables)
             shape = arglist
-            
+
         # Add remaining
-        self.add_shape_and_attrs(signode, modname, ftype, shape, attrs)        
-            
+        self.add_shape_and_attrs(signode, modname, ftype, shape, attrs)
+
         return fullname, ftype
 
-        
-        
+
+
     def add_shape_and_attrs(self, signode, modname, ftype, shape, attrs):
-        # add shape 
+        # add shape
         if shape:
             add_shape(signode, shape, modname=modname)
             #signode += nodes.Text(' '+shape)
@@ -629,7 +626,7 @@ class FortranObject(ObjectDescription):
             #tnode = addnodes.desc_type(ftype, ftype)
             #tnode +=
             #signode += addnodes.desc_type(ftype, ftype)
-            #signode += 
+            #signode +=
     #        signode += addnodes.desc_type('', '')
     #        self._parse_type(signode[-1], ftype)
         if attrs:
@@ -682,7 +679,7 @@ class FortranObject(ObjectDescription):
     def after_content(self):
         if self.typename_set:
             self.env.temp_data['f:type'] = None
-            
+
     def get_index_text(self, modname, name):
         add_modules = self.env.config.add_module_names
         if name.startswith('f'+f_sep): name = name[2:]
@@ -715,10 +712,10 @@ class FortranSpecial:
         May return a prefix to put before the object name in the signature.
         """
         return self.objtype+' '
-    
+
 class WithFortranDocFieldTransformer:
     def run(self):
-        """Same as :meth:`sphinx.directives.ObjectDescription` 
+        """Same as :meth:`sphinx.directives.ObjectDescription`
         but using :class:`FortranDocFieldTransformer`"""
         if ':' in self.name:
             self.domain, self.objtype = self.name.split(':', 1)
@@ -797,9 +794,9 @@ class FortranTypeField(FortranObject):
         #if m is None:
             #raise ValueError
         #ftype, objtype, modname, typename, name, arglist = m.groups()
-        #print 'handle_signature', ftype, objtype, modname, typename, name, arglist 
+        #print 'handle_signature', ftype, objtype, modname, typename, name, arglist
         #if not typename: typename = ""
-            
+
         ## determine module and type
         #modname = (modname and modname[:-1]) or self.options.get(
             #'module', self.env.temp_data.get('f:module'))
@@ -809,17 +806,17 @@ class FortranTypeField(FortranObject):
         ##print self.objtype
         #if self.objtype=='typefield' and not typename:
             #raise ValueError
-        
+
         #if typename: name = typename+'%'+name
-        
+
         #fullname = name
         #if modname:
             #fullname = modname + f_sep + name
- 
+
         #signode['module'] = modname
         #signode['type'] = typename
         #signode['fullname'] = fullname
-        
+
         ## Fill node
         #signode += addnodes.desc_name(name, name)
         #shape = self.options.get('shape')
@@ -837,17 +834,17 @@ class FortranTypeField(FortranObject):
             #signode += msgs
 
         #return fullname, ftype
-        
+
     def before_content(self):
         FortranObject.before_content(self)
         lastname = self.names and self.names[-1][1]
         if lastname and not self.env.temp_data.get('f:type'):
             self.env.temp_data['f:type'] = lastname.split(f_sep)[-1]
             self.typename_set = True
-    
+
 class FortranProgram(FortranSpecial, WithFortranDocFieldTransformer, FortranObject):
     pass
-    
+
 class FortranWithSig(FortranSpecial, WithFortranDocFieldTransformer, FortranObject):
     """
     Description of a function of subroutine
@@ -855,13 +852,13 @@ class FortranWithSig(FortranSpecial, WithFortranDocFieldTransformer, FortranObje
     _parens = '()'
     def needs_arglist(self):
         return True
-    
+
     def get_signature_prefix(self, sig):
         """
         May return a prefix to put before the object name in the signature.
         """
         return self.objtype+' '
-        
+
 class FortranField(Directive):
     """
     Directive to describe a change/addition/deprecation in a specific version.
@@ -872,9 +869,9 @@ class FortranField(Directive):
     optional_arguments = 0
     final_argument_whitespace = True
     option_spec = {
-        'type': directives.unchanged, 
-        'shape': parse_shape, 
-        'attrs': directives.unchanged, 
+        'type': directives.unchanged,
+        'shape': parse_shape,
+        'attrs': directives.unchanged,
         }
 
     def run(self):
@@ -993,7 +990,7 @@ class FortranXRefRole(XRefRole):
             target = target[1:]
             refnode['refspecific'] = True
         return title, target
-        
+
 
 
 class FortranModuleIndex(Index):
@@ -1084,7 +1081,7 @@ class FortranDomain(Domain):
     directives = {
         'program': FortranProgram,
         'type':           FortranType,
-        'variable':          FortranObject, 
+        'variable':          FortranObject,
         'function':        FortranWithSig,
         'subroutine':          FortranWithSig,
         'module':          FortranModule,
@@ -1119,9 +1116,9 @@ class FortranDomain(Domain):
         """
         Find a Fortran object for "name", perhaps using the given module and/or
         typename.
-        
+
         :Params:
-        
+
             - **searchorder**, optional: Start using relative search
         """
         # skip parens
@@ -1135,7 +1132,7 @@ class FortranDomain(Domain):
         #modname = modname or '_'
         if '%' in name:
             name, tmp = name.split('%')
-            
+
         objects = self.data['objects']
         newname = None
         matches = []
@@ -1157,7 +1154,7 @@ class FortranDomain(Domain):
             elif  name in objects and \
                objects[name][1] in objtypes:
                 newname = name
-            
+
         else: # :role:`toto`
             # NOTE: searching for exact match, object type is not considered
             if 'f'+f_sep + name in objects:
@@ -1169,7 +1166,7 @@ class FortranDomain(Domain):
                  newname = 'f' + f_sep + '_' + f_sep +name
             elif modname and 'f'+f_sep + modname + f_sep + name in objects:
                 newname = 'f' + f_sep + modname + f_sep +name
-                
+
         # Last chance: fuzzy search
         if newname is None:
             matches = [(oname, objects[oname]) for oname in objects

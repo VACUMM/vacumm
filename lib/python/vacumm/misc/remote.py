@@ -3,27 +3,24 @@
 
 .. warning:: Yoo need `paramiko <http://www.lag.net/paramiko/>`_ to use this module.
 """
-# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010-2011)
-# 
-# raynaud@actimar.fr
-# 
-# 
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -31,10 +28,10 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 
@@ -50,9 +47,9 @@ __all__ = ['SSHBank', 'sshbank', 'WorkFile', 'InputWorkFiles', 'OutputWorkFile']
 
 class SSHBank(object):
     """Interface to handle a bank of SSH/SFTP connections
-    
+
     :Example:
-    
+
         >>> sshbank = SSHBank()
         >>> client = sshbank('camarpor')
         >>> ssh = client('ssh')
@@ -70,11 +67,11 @@ class SSHBank(object):
         self.paramiko = paramiko
         self._bank = {}
     def __call__(self, host):
-    
+
         # Check the bank
         if self._bank.has_key(host):
             return self._bank[host]
-            
+
         # Get host, etc
         hostid = host
         #print 'hostid',hostid
@@ -84,7 +81,7 @@ class SSHBank(object):
         username = pp.username
         port = pp.port if pp.port is not None else 22
         host = pp.hostname
-            
+
         # Connect
         ssh.set_missing_host_key_policy(self.paramiko.AutoAddPolicy())
         ssh.load_system_host_keys()
@@ -93,11 +90,11 @@ class SSHBank(object):
         ftp = ssh.open_sftp()
         self._bank[hostid] = dict(ssh=ssh, ftp=ftp)
         return self._bank[hostid]
-        
+
     def ssh(self, host):
         """Get the SSH agent"""
         return self(host)['ssh']
-        
+
     def ftp(self, host):
         """Get the SFTP agent"""
         return self(host)['ftp']
@@ -114,17 +111,17 @@ class WorkFileException(Exception):
 
 class WorkFile(object):
     """Base class for :class:`InputWorkFiles` and class:`OutputWorkFile`
-    
+
     :Params:
-        
+
         - **logger**:  A :class:`~vacumm.misc.io.Logger` (or subclass) instance
-        - **ssh**: A ssh connexion (for instance created using :class`SSHBank` 
+        - **ssh**: A ssh connexion (for instance created using :class`SSHBank`
           connected to an host).
         - **umask**, optional: Argument to :func:`os.umask`
         - **dmode**, optional: Directory unix mode (see :func:`os.chmod`)
         - **fmode**, optional: File unix mode (see :func:`os.chmod`)
     """
-    def __init__(self, logger, ssh, umask=0, dmode=S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH, 
+    def __init__(self, logger, ssh, umask=0, dmode=S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH,
         fmode=S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH, raise_error=True):
         self._raise_error = raise_error
         self.logger  = logger
@@ -136,7 +133,7 @@ class WorkFile(object):
         if umask is not None: os.umask(umask)
         self.fmode = fmode
         self.dmode = dmode
-            
+
     def error(self, msg, warn=None):
         """Send an ERROR message and exit"""
         if warn is None: warn = not self._raise_error
@@ -147,7 +144,7 @@ class WorkFile(object):
                 self.logger.error(msg)
                 raise WorkFileException(msg)
         else:
-            if not warn: 
+            if not warn:
                 raise WorkFileException(msg)
             else:
                 print msg
@@ -169,21 +166,21 @@ class WorkFile(object):
             self.logger.info(msg)
         else:
             print msg
-    
+
     def remote_exec(self, cmd):
         """Execute a remote command and return result as list of lines
-        
+
         :Example:
-        
+
             >>> files = workfile.remote_exec('ls')
-        
+
         """
         if self.ssh is None:
             self.warning('No remote command in local mode')
         else:
             res = self.ssh.exec_command(cmd)
             return [line[:-1] for line in res[1].readlines()]
-            
+
     def _host2ssh_(self, sshbank):
         if  self.host:
             if sshbank is None:
@@ -193,7 +190,7 @@ class WorkFile(object):
                     raise WorkFileException("Can't import sshbank because paramiko is not found")
             return sshbank(self.host)
         return False
-        
+
     @classmethod
     def expand_path(cls, path, subst=None):
         """Expand '~', environment and other variables in a path
@@ -212,13 +209,13 @@ class WorkFile(object):
             exps.update(subst)
         return os.path.expanduser(path%exps)
 
-        
+
     @classmethod
     def parse_path(cls, path, rootdir=None, subst=None, mode=None):
         """Get the (inputdir, outputdir, path) from path (and rootdir)
-        
+
         :Params:
-        
+
             - **path**: Simple or complex path with remote and local part.
               The generic form is :
               ``"[<prefix>][(<remote_dir>><local_dir>)[<pattern>]"``
@@ -226,23 +223,23 @@ class WorkFile(object):
               It can also take the form of a tuple.
               Remote paths follow specifications from RFC1738:
               http://tools.ietf.org/html/rfc1738.html.
-              
-              .. warning:: 
-              
+
+              .. warning::
+
                   Be careful when using ``<prefix>`` with a remote path.
-                  
+
             - **rootdir**, optional: Optional prefix to prepend to path.
             - **subst**, optional: Dictionary of variables used for string isubstitutions on path.
               All environnement variables (taken from :attr:`os.environ`) are also
               substituted.
-                  
+
         :Example:
-        
+
             >>> obj.parse_path('(sftp://user@host.fr:1022/my/path>/local/path)/to/data.nc', mode='get')
             >>> obj.parse_path(('sftp://user@host.fr:1022/my/path','/local/path','/to/data.nc'), mode='get')
             >>> obj.obj.parse_path('/local/path/data.nc')
             >>> obj.obj.parse_path('/home10(/user1>/user2)/data.nc')
-        
+
         """
         # Root prefix
         if isinstance(path, tuple):
@@ -260,14 +257,14 @@ class WorkFile(object):
             path = path.strip()
         if rootdir is not None:
             path = os.path.join(rootdir.strip(), path)
-            
+
         # Check '>' path separators
         if path.find('>') != -1 and path.rfind('>') != path.find('>'):
             raise WorkFileException('There is more than one ">" in the specified formatted path: '+path)
-            
+
         # Substitutions
         path = cls.expand_path(path, subst=subst)
-        
+
         # Split parts
         parsed = re_workdir_parse(path)
         if not parsed:
@@ -279,7 +276,7 @@ class WorkFile(object):
             #raise WorkFileException('Input path must not contain a ">": %s'%indir)
         #if '>' in outdir:
             #raise WorkFileException('Output path must not contain a ">": %s'%outdir)
-        
+
         # Check input and output dirs
         if mode is None:
             if hasattr(cls, 'get'): mode = 'get'
@@ -295,27 +292,27 @@ re_workdir_parse = re.compile('^(.*)\(([^>]+)>([^>]+)\)(.*)$').findall
 
 class InputWorkFiles(WorkFile):
     """A class to deal with input remote files
-    
-    :Params: 
-    
+
+    :Params:
+
         - *path*: path in the form ``"<prefix>(<remote_dir>><local_dir>)<pattern>"``.
           (see :func:`parse_path`)
-    
+
     :Params:
-    
+
         - *logger*: a :class:`~vacumm.misc.io.Logger` (or subclass) instance
         - *sshbank*: a :class`SSHBank` instance
         - *transfer*: automatically start the transfer after initialization
-        
+
     :Example:
-    
+
     >>> wfile = InputWorkFiles('(caparmor-sftp:/home125>/home200/caparmor)toto*/data/file*.nc')
     >>> wfile.get() # update
     >>> wfile = InputWorkFiles('/home510/toto/toto.nc') # does nothing !
     >>> wfile = InputWorkFiles(('/home15>/home12)toto/toto.nc') # local copy only
     >>> print wfile.local_files()
     >>> print wfile.remote_files()
-    
+
     """
     def __init__(self, path, rootdir=None, logger=None, sshbank=None, transfer=False, subst=None, check=2, sort=None, filter=None, raise_error=True, **kwargs):
         # Parse path
@@ -333,7 +330,7 @@ class InputWorkFiles(WorkFile):
             return
         self.remote_dir, self.local_dir, self.pattern = indir,outdir,path
         self.local_pattern = os.path.join(self.local_dir, self.pattern)
-        
+
         # Extract host and port
         up = urlparse(self.remote_dir)
         if up.hostname is None:
@@ -350,46 +347,46 @@ class InputWorkFiles(WorkFile):
 
         # Get SSH agent from bank
         ssh = self._host2ssh_(sshbank)
-        
+
         # Final init
         WorkFile.__init__(self, logger, ssh, raise_error=raise_error, **kwargs)
-        
+
         # Already start the transfer?
         self.check = check
         if transfer:
             self.get()
-            
+
     def get(self, check=2, ifile=None):
         """Download remote files when needed
-        
+
         :Params: *check*: checks
-            
+
             - ``0``: check nothing => force the transfer
             - ``1``: only check the existence of the local file
             - ``2``: check existence and compare local and remote dates
         """
         if check is None: check = self.check
         if check is None: check = 2
-        
+
         # Direct access
         if self.cpmode==0:
             locfiles = self.local_files(ifile)
             if not locfiles:
                 self.error('No input file found with this pattern: '+self.local_pattern)
             return locfiles
-            
+
         # Copy/transfer
         locfiles = []
         tag = 'Downloading %s:'%self.host if self.cpmode==2 else 'Copying '
         for i, remfile in enumerate(self.remote_files(ifile)):
-            
+
             ## Cache names
             #self.rem2loc[remfile] = locfile
             #self.loc2rem[locfile] = remfile
-        
+
             # Theoretical local file name
             locfile = os.path.join(self.local_dir, remfile[len(self.remote_dir)+1:])
-            
+
             # Check
             nothere = not os.path.exists(locfile)
             if check==1 or (check and nothere):
@@ -406,10 +403,10 @@ class InputWorkFiles(WorkFile):
             else:
                 getit = 1
                 msg = 'force transfer'
-                
+
             # Download
             if getit:
-            
+
                 # Check local dir and file
                 locdir = os.path.dirname(locfile)
                 if not os.path.exists(locdir):
@@ -417,7 +414,7 @@ class InputWorkFiles(WorkFile):
                     self.debug('Create local directory: '+locdir)
                 if os.path.exists(locfile):
                     os.remove(locfile)
-                    
+
                 # Transfer
                 self.debug('%s%s to %s (%s)'%(tag, remfile, locfile, msg))
                 if self.cpmode==1: # local
@@ -426,21 +423,21 @@ class InputWorkFiles(WorkFile):
                     #self.ftp.get(remfile, locfile)
                     subprocess.check_call(['scp', '%s:%s'%(self.host, remfile), locfile],stdout=subprocess.PIPE)
                 os.chmod(locfile, self.fmode)
-                
+
             locfiles.append(locfile)
         if not locfiles:
             self.error('No file found on remote host with current pattern (%s) and filter'%self.remote_pattern)
         return locfiles
-        
+
     def remote_files(self, ifile=None):
         """List of remote files"""
         # List
         if self.cpmode<=1: # local copy
             files = glob.glob(self.remote_pattern)
         else: #remote copy
-            files = [os.path.join(self.remote_dir, remfile) 
+            files = [os.path.join(self.remote_dir, remfile)
                 for remfile in self.remote_exec('ls '+self.remote_pattern)]
-                
+
         # Selection
         if not len(files):
             self.error('No remote files')
@@ -451,7 +448,7 @@ class InputWorkFiles(WorkFile):
                 files.sort(self.sort if self.sort is not True else None)
             if isinstance(ifile, int): return files[ifile]
         return files
-        
+
     def local_files(self, ifile=None, update=None):
         """List of local (working) files"""
         # List
@@ -467,38 +464,38 @@ class InputWorkFiles(WorkFile):
         else: # Direct access
             files = self._local_files
         self._local_files = files
-        
-        
+
+
         # Selection
         if not len(files):
             self.warning('No local files')
         else:
             if isinstance(ifile, int): return files[ifile]
         return files
-        
+
 
 class OutputWorkFile(WorkFile):
     """A class to deal with an output remote file
-    
-    :Params: 
-    
+
+    :Params:
+
         - *path*: path in the form ``"<prefix>(<remote_dir>><local_dir>)<pattern>"``
            (see :func:`parse_path`)
-    
+
     :Params:
-    
+
         - *logger*: a :class:`~vacumm.misc.io.Logger` (or subclass) instance
         - *sshbank*: a :class`SSHBank` instance
-        
+
     :Example:
-    
+
     >>> wfile = OutputWorkFile('(sftp://caparmor-sftp/home125>/home200/caparmor)toto/data/file.png')
     >>> wfile = OutputWorkFile('(/home200/caparmor>sftp://username@my.host.fr:1022/prefix)/toto/data/file.png')
     >>> wfile = OutputWorkFile('/home510/toto/toto.png') # does nothing !
     >>> wfile = OutputWorkFile('(/home15>/home12)toto/toto.png') # local copy only
     >>> pylab.savefig(wfile.local_file)
     >>> wfile.put() # send or copy
-    
+
 """
     def __init__(self, path, rootdir='', logger=None, sshbank=None, subst=None, raise_error=True, **kwargs):
         self._raise_error = raise_error
@@ -514,7 +511,7 @@ class OutputWorkFile(WorkFile):
                 os.makedirs(locdir, self.dmode) # local dir
             return
         self.local_file = os.path.join(locdir, basefile)
-        
+
         # Extract host and port
         up = urlparse(remdir)
         if up.hostname is None:
@@ -525,38 +522,38 @@ class OutputWorkFile(WorkFile):
             self.cpmode = 2
         remdir = up.path
         self.remote_file = os.path.join(remdir, basefile)
-    
+
         # Get SSH agent from bak
         ssh = self._host2ssh_(sshbank)
-        
+
         # Final init
         WorkFile.__init__(self, logger, ssh, raise_error=raise_error, **kwargs)
-        
+
         # Local dir
         locdir = os.path.dirname(os.path.join(locdir,basefile))
         if not os.path.exists(locdir):
             os.makedirs(locdir, self.dmode)
-            
+
 
     def put(self, checkdir=True):
         """Send the file"""
-        if self.cpmode == 0: 
+        if self.cpmode == 0:
             return self.local_file
         if not os.path.exists(self.local_file):
             self.warning('Local file to send not found: '+self.local_file)
             return
-            
+
         # Check remote directory
         if checkdir:
             remdir = os.path.dirname(self.remote_file)
             if self.cpmode==1: # local
                 if not os.path.exists(remdir):
                     os.makedirs(remdir, self.dmode)
-                
+
             else: # remote
                 try: # first, check full path
                     self.ftp.stat(remdir)
-                    
+
                 except: # now check all subdirs
                     remdirs = remdir.split(os.path.sep)
                     for i in xrange(1, len(remdirs)):
@@ -571,7 +568,7 @@ class OutputWorkFile(WorkFile):
                             except:
                                 self.warning('Cannot create remote dir for transfer: %s:%s'%(self.host, thisdir))
                                 return self.local_file
-                        
+
         # Transfer
         if self.cpmode==1: # local
             self.debug('Copying %s to %s'%(self.local_file, self.remote_file))
@@ -602,4 +599,4 @@ class OutputWorkFile(WorkFile):
             except:
                 self.warning("Can't change permission of remote file")
         return self.local_file
-                
+

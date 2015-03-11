@@ -1,5 +1,37 @@
 # -*- coding: utf8 -*-
 """Diagnostic about dynamics"""
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+#
+# This software is a computer program whose purpose is to provide
+# utilities for handling oceanographic and atmospheric data,
+# with the ultimate goal of validating the MARS model from IFREMER.
+#
+# This software is governed by the CeCILL license under French law and
+# abiding by the rules of distribution of free software.  You can  use,
+# modify and/ or redistribute the software under the terms of the CeCILL
+# license as circulated by CEA, CNRS and INRIA at the following URL
+# "http://www.cecill.info".
+#
+# As a counterpart to the access to the source code and  rights to copy,
+# modify and redistribute granted by the license, users are provided only
+# with a limited warranty  and the software's author,  the holder of the
+# economic rights,  and the successive licensors  have only  limited
+# liability.
+#
+# In this respect, the user's attention is drawn to the risks associated
+# with loading,  using,  modifying and/or developing or reproducing the
+# software by the user in light of its specific status of free software,
+# that may mean  that it is complicated to manipulate,  and  that  also
+# therefore means  that it is reserved for developers  and  experienced
+# professionals having in-depth computer knowledge. Users are therefore
+# encouraged to load and test the software's suitability as regards their
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
+# The fact that you are presently reading this means that you have had
+# knowledge of the CeCILL license and that you accept its terms.
+#
 
 import numpy as N, cdms2, MV2
 from vacumm import VACUMMError
@@ -10,37 +42,37 @@ from vacumm.misc.grid.regridding import shiftgrid
 from vacumm.misc.grid import set_grid, get_axis_slices, resol
 from vacumm.misc.filters import generic2d
 
-def barotropic_geostrophic_velocity(ssh, dxy=None, gravity=default_gravity, cyclic=False, 
+def barotropic_geostrophic_velocity(ssh, dxy=None, gravity=default_gravity, cyclic=False,
     format_axes=True, getu=True, getv=True, filter=None):
     """Get barotropic geostropic velocity from SSH on a C-grid
-    
+
     .. note:: ssh is supposed to be at T points,
-        ubt is computed at V points, 
+        ubt is computed at V points,
         and vbt is computed at U points.
-        
+
     .. todo:: Rewrite it using :mod:`vacumm.data.misc.arakawa` and defining
         a limited number of algorithms for different staggering configurations.
-    
+
     :Params:
-    
+
         - **ssh**: Sea surface height.
-        - **dxy**, optional: Horizontal resolutions (m). 
+        - **dxy**, optional: Horizontal resolutions (m).
           Resolution along X and Y are respectively at U and V points.
           Possible forms:
-        
+
             - ``res``: A scalar meaning a constant resolution along X and Y.
             - ``(dx,dy)``: A tuple of resolutions along X and Y.
             - ``None``: Resolution is estimated using
               :func:`~vacumm.misc.grid.misc.resol`.
-        
+
     :Return: ``(ubt,vbt)``
     """
     if not getu and not getv: return
-    
+
     # Init masked
     if getu: ugbt = format_var(ssh*MV2.masked, 'ugbt', format_axes=False)
     if getv: vgbt = format_var(ssh*MV2.masked, 'vgbt', format_axes=False)
-    
+
     # Grid
     tgrid = ssh.getGrid()
     if getu: ugrid = shiftgrid(tgrid, ishift=0.5)
@@ -50,7 +82,7 @@ def barotropic_geostrophic_velocity(ssh, dxy=None, gravity=default_gravity, cycl
         if getu: format_grid(vgrid, 'v')
     if getu: set_grid(ugbt, vgrid)
     if getv: set_grid(vgbt, ugrid)
-    
+
     # Resolutions
     if dxy is None:
         dxt, dyt = resol(ssh, proj=True, mode='local')
@@ -70,8 +102,8 @@ def barotropic_geostrophic_velocity(ssh, dxy=None, gravity=default_gravity, cycl
         if dyv.ndim==1: dyv.shape = -1, 1
         if dyv.shape[0]==ssh.shape[-2]:
             dyv = dyv[:-1]
-            
-            
+
+
     # Get geostrophic factor
     f0 = coriolis_parameter(ssh, gravity=gravity, fromvar=True).asma()
     bad = f0==0.
@@ -87,24 +119,24 @@ def barotropic_geostrophic_velocity(ssh, dxy=None, gravity=default_gravity, cycl
     del sshm
     if getu and cyclic:
         ugbt[..., -1] = ugbt[..., 0]
-        
+
     if not getu: return vgbt
     elif not getv: return ugbt
     return ugbt, vgbt
 
 def coriolis_parameter(lat, gravity=default_gravity, fromvar=False, format_axes=False):
     """Get the coriolis parameters computed at each latitude
-    
+
     :Params:
-    
+
         - **lat**: Latitude or a variable with latitude coordinates.
         - **gravity**, optional: Gravity.
         - **fromvar**, optional: If True, lat is supposed to be a MV2
           array with latitude coordinates.
     """
-    
+
     # Latitude
-    if fromvar: 
+    if fromvar:
         if not cdms2.isVariable(lat):
             raise VACUMMError('lat must a MV2 array because fromvar is True')
         latv = lat*0
@@ -124,40 +156,40 @@ def coriolis_parameter(lat, gravity=default_gravity, fromvar=False, format_axes=
                 latv[:] = N.tile(lat[:].reshape(new_shape), tile_shape)
     else:
         latv = lat if N.isscalar(lat) else lat[:]
-    
+
     # Compute
     f0 = 2*N.ma.sin(N.pi*latv/180.)
     # f0 *= 2*N.pi/(24.*3600.)
-    f0 *= 2*N.pi/(86164.) # 86164 = sidereal day.... 
+    f0 *= 2*N.pi/(86164.) # 86164 = sidereal day....
 
-    
+
     # Format
     if N.isscalar(f0): return f0
     f0 = MV2.asarray(f0)
     if not fromvar and isaxis(lat) and f0.ndim==1:
         f0.setAxis(0, lat)
     return format_var(f0, 'corio', format_axes=format_axes)
-   
+
 
 def kinetic_energy(sshuv, gravity=default_gravity, format_axes=None, dxy=None):
     """Compute kinetic energy in m2.s-2 either from SSH or velocity on C-grid
-    
+
     .. todo:: Rewrite it using :mod:`vacumm.data.misc.arakawa` and defining
         a limited number of algorithms for different staggering configurations.
-    
+
     :Params:
-    
+
         - **sshuv**: SSH or (U,V).
-        
+
             - If SSH, geostrophic velocity is computed at U and V points
               using :func:`barotropic_geostrophic_velocity`.
             - If (U,V), velocities are supposed to be at V and U points.
-            
+
         - **dxy**, optional: Horizontal resolutions (see :func:`barotropic_geostrophic_velocity`).
-            
+
     :Return: KE at T points.
     """
-    
+
     # Init and get velocities
     if cdms2.isVariable(sshuv): # from SSH
         ke = sshuv*MV2.masked
@@ -169,7 +201,7 @@ def kinetic_energy(sshuv, gravity=default_gravity, format_axes=None, dxy=None):
         if format_axes is None: format_axes = True
         gridt = shiftgrid(u.getGrid(), jshift=1)
         set_grid(ke, gridt)
-    
+
     # Sum contributions
     uf = u.filled(0.)
     vf = v.filled(0.)
@@ -177,7 +209,7 @@ def kinetic_energy(sshuv, gravity=default_gravity, format_axes=None, dxy=None):
     ke[..., 1:, :] += uf[..., :-1, :]**2
     ke[..., 1:]    += vf[..., :-1]**2
     ke[..., 1:]    += vf[..., :-1]**2
-    
+
     # Weight and mask
     count = N.zeros(ke.shape, 'i')
     gu = 1-N.ma.getmaskarray(u).astype('i')
@@ -192,10 +224,10 @@ def kinetic_energy(sshuv, gravity=default_gravity, format_axes=None, dxy=None):
     ke[:] /= count
     ke[:] = MV2.masked_where(mask, ke, copy=0)
     del mask, count
-    
+
     # Format
     if format_axes:
         format_grid(gridt, 't')
     return format_var(ke, "ke", format_axes=False)
-    
+
 eddy_kinetic_energy = kinetic_energy

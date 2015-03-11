@@ -2,10 +2,7 @@
 """
 Kriging utilities inspired from the AMBHAS library (http://www.ambhas.com/).
 """
-# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2013)
-#
-# raynaud@actimar.fr
-#
+# Copyright or © or Copr. Actimar/IFREMER (2013-2015)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,

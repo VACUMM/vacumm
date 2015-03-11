@@ -1,27 +1,24 @@
 # -*- coding: utf8 -*-
 """Utilities derived from mpl_toolkits.basemap"""
 
-# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
-# 
-# raynaud@actimar.fr
-# 
-# 
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -29,15 +26,15 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-# 
-__all__  = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_map', 
-'GSHHS_BM', 'merc', 'proj', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj', 
+#
+__all__  = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_map',
+'GSHHS_BM', 'merc', 'proj', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
 'create_map']
 __all__.sort()
 
@@ -65,26 +62,26 @@ def gshhs_autores(lon_min, lon_max, lat_min, lat_max):
     testresol=((lon_max-lon_min)+(lat_max-lat_min))/2.0
     ires = N.array([-1.,1. ,5.,15.,50.]).searchsorted(testresol)-1
     return gshhs_reslist[ires]
-    
+
 # Cached maps
 def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
     """Check if we have a cached map
-    
+
     - *m*: A Basemap instance [Default: None]
     - *mapdir*: Where are stored the cached maps. If ``None``, :func:`matplotlib.get_configdir` is used as a parent directory, which is the matplotlib configuration directory (:file:`~/.matplotlib` undex linux), and :file:`basemap/cached_maps` as the subdirectory.
-    
+
     :Example:
-    
+
     >>> m = cached_map(lon_min=-5, lon_max=6, lat_min=40, lat_max=50, projection='lcc', resolution='f')
     >>> m = cached_map(m) # Does only caching of map
     """
     # We already have one in live memory
-    if isinstance(m, Basemap): 
+    if isinstance(m, Basemap):
         # Save it
         cache_map(m, mapdir=mapdir)
         # Get it
         return m
-    # Guess 
+    # Guess
     file = _cached_map_file_(mapdir=mapdir, **kwargs)
     if file is None: return None
     if verbose: print 'Checking', file, os.path.exists(file)
@@ -116,9 +113,9 @@ def cache_map(m, mapdir=None):
 
 def clean_cache(mapdir=None, maxsize=10.*1024*1024):
     """Clean cache directory by checking its size
-    
+
     :Params:
-    
+
         - **mapdir**, optional: Directory where maps are cached
         - **maxsize**, optional: Maximal size of directory in bytes
     """
@@ -166,18 +163,18 @@ def _cached_map_file_(m=None, mapdir=None, **kwargs):
     return os.path.join(mapdir, 'basemap.%s.%s.pyk' % (srs, szone))
 
 
-def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projection='cyl', resolution='auto', 
-    lon_center=None, lat_center=None, lat_ts=None, zoom=None, ax=None, 
+def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projection='cyl', resolution='auto',
+    lon_center=None, lat_center=None, lat_ts=None, zoom=None, ax=None,
     overlay=False, fullscreen=False, nocache=False, cache_dir=None, **kwargs):
     """Generic creation of a :class:`Basemap` instance with caching
-    
+
     .. todo:: Merge :func:`get_map` with :func:`create_map`
     """
     kwmap = kwfilter(kwargs, 'basemap', defaults={'area_thresh':0.})
     kwmap.update(kwfilter(kwargs, 'map_'))
-    
+
     # Map arguments
-    kwargs.setdefault('area_thresh', 0.) 
+    kwargs.setdefault('area_thresh', 0.)
     kwargs.setdefault('rsphere', rshpere_wgs84) # WGS-84
     if kwargs['rsphere'] in [None, False, True]: del kwargs['rsphere']
     projection = kwargs.pop('proj', projection)
@@ -192,7 +189,7 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projectio
         lat_max = N.clip(lat_center+1, 0, 90)
     if isinstance(zoom, (int, float)):
         lon_min, lat_min, lon_max, lat_max = zoombox([lon_min, lat_min, lon_max, lat_max], zoom)
-    
+
     # Special overlay case
     if overlay:
         projection = 'merc'
@@ -201,7 +198,7 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projectio
         lon_center = 0
     elif projection == None:
         projection = 'cyl'
-                    
+
     # Guess resolution
     res = kwargs.pop('res', resolution)
     if res is True:
@@ -219,7 +216,7 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projectio
         kwargs.setdefault('resolution', res)
     else:
         kwargs['resolution'] = None
-        
+
     # Basemap args
     if isinstance(projection, str) and projection.lower() == 'rgf93' :
         # RGF93
@@ -236,7 +233,7 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projectio
     kwargs.setdefault('urcrnrlon', lon_max)
     kwargs.setdefault('llcrnrlat', N.clip(lat_min, -90, 90))
     kwargs.setdefault('urcrnrlat', N.clip(lat_max, -90, 90))
-    
+
     # Check the cache
     kwcache = kwargs.copy()
     if cache_dir is not None:
@@ -245,13 +242,13 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projectio
         mymap = cached_map(**kwcache)
     else:
         mymap = None
-        
+
     # Create the map object
     if mymap is None:
         mymap = Basemap(ax=ax, **kwargs)
-        
+
         # Cache it?
-        if int(nocache)<=1: 
+        if int(nocache)<=1:
             if cache_dir is not None:
                 kwcache = {'mapdir':cache_dir}
             else:
@@ -265,14 +262,14 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projectio
 
 def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
     """Get a suitable map for converting degrees to meters
-    
+
     :Params:
-    
+
         - **gg**: cdms grid or variable, or (xx,yy).
         - *res*: Resolution [default: None]
         - *proj*: Projection [default: None->'merc']
         - *auto*: If True, get geo specs according to grid. If False, whole earth. If None, auto = res is None [default: False]
-    
+
     .. todo:: Merge with :func:`create_map`
     """
     from vacumm.misc.grid import misc
@@ -295,20 +292,20 @@ def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
         lat_center = 0.
         lon_center = 0.
     return Basemap(lat_ts=lat_center, lat_0=lat_center, lon_0=lon_center,  **kwmap)
-        
+
 class GSHHS_BM(Shapes):
     """Shoreline from USGS using Basemap
-    
+
     Initialized with a valid Basemap instance with resolution not equal to None, or thanks to arguments passed to :func:`vacumm.misc.plot.map()`
-        
+
     - *m*: Basemap instance [default: None]
-    
+
     """
     def __init__(self, input=None, clip=None, sort=True, reverse=True, proj=False, **kwargs):
         # Clipping argument
         if clip is not None:
             clip = polygons([clip])[0]
-            
+
         from_map = not isinstance(input, Shapes)
         if not from_map:
             # Already a Shapes instance
@@ -325,7 +322,7 @@ class GSHHS_BM(Shapes):
                     kwargs['res'] = input
                 elif isinstance(input, dict):
                     kwargs.update(input)
-                    
+
                 # Map extension from clip bounds
                 if clip is not None:
                     bb = clip.boundary
@@ -333,25 +330,25 @@ class GSHHS_BM(Shapes):
                     kwargs.setdefault('lon_max', bb[:, 0].max())
                     kwargs.setdefault('lat_min', bb[:, 1].min())
                     kwargs.setdefault('lat_max', bb[:, 1].max())
-                    
+
                 # Default resolution is 'i' if nothing to estimate it
                 if not kwargs.has_key('res') and not kwargs.has_key('resolution') and \
-                    (   (not kwargs.has_key('lon') and 
-                            (not kwargs.has_key('lon_min') or not kwargs.has_key('lon_max'))) or 
-                        (not kwargs.has_key('lat') and 
+                    (   (not kwargs.has_key('lon') and
+                            (not kwargs.has_key('lon_min') or not kwargs.has_key('lon_max'))) or
+                        (not kwargs.has_key('lat') and
                             (not kwargs.has_key('lat_min') or not kwargs.has_key('lat_max')))):
                     kwargs['res'] = 'i'
-                    
+
                 # Check lats
                 if kwargs.has_key('lat_min'): kwargs['lat_min'] = max(kwargs['lat_min'], -90)
                 if kwargs.has_key('lat_max'): kwargs['lat_max'] = min(kwargs['lat_max'], 90)
-                    
+
                 # Build the map
                 m = create_map(**kwargs)
             polys = m.coastpolygons
             self._m = m
             self._proj = m.projtran
-            
+
         # Convert to GEOS polygons and clip
         self._shapes = []
         for i, pp in enumerate(polys):
@@ -364,7 +361,7 @@ class GSHHS_BM(Shapes):
 #                if callable(self._proj):
 #                    pp = self._proj(pp[0], pp[1])
                 poly = Polygon(N.asarray(pp,'float64').transpose())
-            
+
             # Clip it
             if clip is not None:
                 if poly.intersects(clip):
@@ -386,14 +383,14 @@ class GSHHS_BM(Shapes):
             xmax = -N.inf
             ymin = N.inf
             ymax = -N.inf
-        
+
         # Sort polygons?
         if sort:
             self.sort(reverse=reverse)
-            
+
 def merc(lon=None, lat=None, **kwargs):
     """Mercator map
-    
+
     - Extra keywords are passed to :class:`mpl_toolkits.basemap.Basemap`
     - *lon*: Longitudes to define ``llcrnrlon`` and ``urcrnrlon``
     - *lat*: Latitudes to define  ``lat_ts``, ``llcrnrlat`` and ``urcrnrlat``
@@ -412,26 +409,26 @@ def merc(lon=None, lat=None, **kwargs):
         lat_ts = 0.
     kwargs.setdefault('lat_ts',lat_ts)
     return Basemap(projection='merc', **kwargs)
-    
+
 #proj = merc()
 
 def get_proj(gg=None, **kwargs):
-    """Setup a default projection using x,y coordinates and 
+    """Setup a default projection using x,y coordinates and
     :class:`~mpl_toolkits.basemap.proj.Proj`
-    
+
     Projection is set by default to Mercator and cover the coordinates.
-    
+
     :Params:
-    
+
         - **gg**, optional: Grid or coordinates (see :func:`~vacumm.misc.grid.misc.get_xy`).
           If not provided, lon bounds are set to (-180,180) and lat bounds to (-90,90).
         - Other keywords are passed to :class:`~mpl_toolkits.basemap.proj.Proj`
-        
+
     :Examples:
-    
+
         >>> proj = get_proj(sst.getGrid())
         >>> x, y = proj(lon, lat)
-        
+
         >>> proj = get_proj((lon,lat))
         >>> xx, yy = N.meshgrid(lon,lat)
         >>> xx,yy = proj(xx,yy)
@@ -440,11 +437,11 @@ def get_proj(gg=None, **kwargs):
         x,y = get_xy(gg, num=True)
         xmin, ymin, xmax, ymax = x.min(), y.min(), x.max(), y.max()
     else:
-        xmin, ymin, xmax, ymax = -180, -90, 180, 90 
+        xmin, ymin, xmax, ymax = -180, -90, 180, 90
         y = [0]
     projparams = kwargs.copy()
     dict_check_defaults(projparams, R=rsphere_mean, units='m', proj='merc', lat_ts = N.median(y))
     return Proj(projparams, xmin, ymin, xmax, ymax)
-    
+
 
 from masking import polygons

@@ -1,9 +1,6 @@
 # -*- coding: utf8 -*-
 """Sphinx directive to list other available versions of the current documentation"""
-# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2014)
-#
-# raynaud@actimar.fr
-#
+# Copyright or © or Copr. Actimar/IFREMER (2014-2015)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,

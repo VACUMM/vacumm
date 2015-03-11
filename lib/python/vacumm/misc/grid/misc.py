@@ -6,10 +6,7 @@ It deals with bounds, areas, interpolations...
 
 See: :ref:`user.tut.misc.grid`.
 """
-# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
-#
-# raynaud@actimar.fr
-#
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,

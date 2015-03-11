@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar (2010)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -487,7 +487,7 @@ class Object(object):
             cfgfile = '%s.ini'%(os.path.splitext(os.path.realpath(inspect.getfile(cls)))[0])
         except TypeError: # occure if creating a subclass in interactive python shell
             cfgfile = None
-        return 
+        return
 
     @classmethod
     def get_parent_config_spec(cls):

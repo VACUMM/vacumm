@@ -1,27 +1,24 @@
 # -*- coding: utf8 -*-
 "Unit conversions"
 
-# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
-# 
-# raynaud@actimar.fr
-# 
-# 
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -29,21 +26,21 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-# 
+#
 
 import re
 from constants import *
 import numpy as N
 from unidata import udunits
 
-__all__ = ['kt2ms', 'ms2kt', 'deg2m', 'm2deg', 'ms2bf', 'dms2deg', 'deg2dms', 
-    'mph2ms', 'ms2mph', 'tometric', 'kel2degc', 'degc2kel', 'strfsize', 'strpsize', 
+__all__ = ['kt2ms', 'ms2kt', 'deg2m', 'm2deg', 'ms2bf', 'dms2deg', 'deg2dms',
+    'mph2ms', 'ms2mph', 'tometric', 'kel2degc', 'degc2kel', 'strfsize', 'strpsize',
     'convert_units']
 
 ############################################################
@@ -54,16 +51,16 @@ def kt2ms(nd):
 def ms2kt(ms):
     """Convert m/s to nds"""
     return udunits(ms, 'm/s').to('kt').value
-    
+
 ms2nd = ms2kt
 nd2ms = kt2ms
 
 def mph2ms(mph):
     """Convert from mph to m/s"""
     return 0.44704*mph
-    
+
 def ms2mph(ms):
-    """Convert from m/s to mph"""    
+    """Convert from m/s to mph"""
     return 2.237*ms
 
 ############################################################
@@ -72,11 +69,11 @@ def deg2m(degrees,lat=None):
 
     - **degrees**: Distance in degrees
     - *lat*: optional latitude, defaults to 0.
-    
+
     Return: Distance in meters
-    
+
     .. seealso::
-    
+
         :func:`m2deg`
     """
 
@@ -92,11 +89,11 @@ def m2deg(meters,lat=None):
 
     - **meters**: Distance in meters
     - *lat*: optional latitude, defaults to 0.
-    
+
     Return: Distance in degrees
-    
+
     .. seealso::
-    
+
         :func:`deg2m`
     """
 
@@ -111,9 +108,9 @@ def ms2bf(ms):
     """Convert from m/s to Beauforts (wind)
 
     - **ms**: Wind speed in m/s.
-    
+
     .. seealso::
-    
+
         http://fr.wikipedia.org/wiki/%C3%89chelle_de_Beaufort
     """
     ms *= 3.6 # km/h to m/s
@@ -121,24 +118,24 @@ def ms2bf(ms):
 
 def dms2deg(d,m=0,s=0):
     """Convert from degrees/minutes/seconds to degrees
-    
+
     - **d**: degrees
     - *m*: minutes [default: 0]
     - *s*: seconds [default: 0]
-    
+
     .. seealso::
-    
+
         :func:`deg2dms`
     """
-    return (d < 0. and -1. or 1.) * (abs(d) + (m + s / 60.) /60.) 
+    return (d < 0. and -1. or 1.) * (abs(d) + (m + s / 60.) /60.)
 
 def deg2dms(deg):
     """Convert from degrees to degrees/minutes/seconds
-    
+
     - **deg**: degrees
-    
+
     .. seealso::
-    
+
         :func:`dms2deg`
     """
     n, deg = deg < 0., abs(deg)
@@ -152,9 +149,9 @@ def kel2degc(tk):
     """Convert from degrees Kelvin to degrees Celsius
 
     - **tk**: Temperature in Kelvin.
-    
+
     .. seealso::
-    
+
         http://fr.wikipedia.org/wiki/Kelvin
     """
     #tk = tk - 273.15 # Kelvin to DegC
@@ -164,9 +161,9 @@ def degc2kel(dc):
     """Convert from degrees Celsius to degrees Kelvin
 
     - **dc**: Temperature in degrees Celsius.
-    
+
     .. seealso::
-    
+
         http://fr.wikipedia.org/wiki/Kelvin
     """
     #dc = dc + 273.15 # DegC to Kelvin
@@ -183,7 +180,7 @@ def degc2kel(dc):
 
 def tometric(units, value=1.,  munits=['m',  'm/s']):
     """Try to convert units to metric system using :mod:`~unidata.udunits.udunits`
-    
+
     :Return: a float or ``None`` if conversion failed.
     """
     import unidata
@@ -195,7 +192,7 @@ def tometric(units, value=1.,  munits=['m',  'm/s']):
             return u.to(mu).value
         except:
             pass
-        
+
 def convert_units(value, ufrom, uto):
     """Convert value from ufrom units to uto units using :mod:`~unidata.udunits.udunits`
     """
@@ -218,14 +215,14 @@ sisizeunits = {
 
 def strfsize(size, fmt=None, si=None):
     """Format a size in bytes using the appropriate unit multiplicator (Ko, Mo, Kio, Mio)
-    
+
     :Params:
-        
+
         - **size**: the size in bytes
         - **fmt**: the format to use, will receive the size and the unit as format arguments
                    (None will automatically use "%.3f %s" or "%d %s")
         - **si**: whether to use International System units (10^3, ...) or not (2**10, ...)
-    
+
     :Return: a string
     """
     if fmt is None:
@@ -243,12 +240,12 @@ _strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\
 
 def strpsize(size, si=True):
     """Parse a size in Ko, Mo, Kio, Mio, ...
-    
+
     :Params:
-        
+
         - **size**: the size string
         - **si**: whether to use International System units (10^3, ...) or not (2**10, ...)
-    
+
     :Return: the float number of bytes
     """
     if not isinstance(size, basestring): size = '%s'%(size)
