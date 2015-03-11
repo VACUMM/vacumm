@@ -37,9 +37,9 @@ Satellite tools
 #
 
 import satellite
-import sst
-import nar
-import seviri
+#import sst
+#import nar
+#import seviri
 
 #try:
 #   if pf: print 'code 1'

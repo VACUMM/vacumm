@@ -40,7 +40,7 @@ class Sst(Satellite) :
         import os, cdtime
         Satellite.__init__(self)
 
-    SCRIPT_DIR=os.getcwd()
+        SCRIPT_DIR=os.getcwd()
         self.SCRIPT_DIR = SCRIPT_DIR
 
         #-- retrocompatibilite

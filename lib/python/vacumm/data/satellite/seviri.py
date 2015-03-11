@@ -64,19 +64,19 @@ class Seviri(Sst) :
     #-------------------------------------------------------------
     #------- recuperation des donnees : generalites (site ftp, etc)
         if cfg is None:
-        config = ConfigParser.RawConfigParser()
-        config.read(os.path.join(self.SCRIPT_DIR,'config.cfg'))
+            config = ConfigParser.RawConfigParser()
+            config.read(os.path.join(self.SCRIPT_DIR,'config.cfg'))
 
-    try:
-          if cfg is None:
-          timerange = config.get('Seviri SST', 'timerange')
-          else:
+        try:
+            if cfg is None:
+                timerange = config.get('Seviri SST', 'timerange')
+            else:
               timerange = cfg['Seviri SST']['timerange']
       # timerange = 'midnight' pour donnees a minuit seulement
       # timerange = 'all' pour donnees a minuit seulement
-    except ConfigParser.NoOptionError:
-      print 'No Time Range'
-      timerange = 'all' # Par defaut, lecture de toutes les heures
+        except ConfigParser.NoOptionError:
+            print 'No Time Range'
+            timerange = 'all' # Par defaut, lecture de toutes les heures
 
     if self.ctdeb >= cdtime.comptime(2012,01,01,0,0,0):
       print timerange
@@ -91,14 +91,14 @@ class Seviri(Sst) :
 
           usr = config.get('Seviri SST', 'user')
           pwd = config.get('Seviri SST', 'pwd')
-          else:
-              URL_SEVIRI_DATA = cfg['Seviri SST']['recent_dir']
-              URL_CERSAT = cfg['Seviri SST']['url_cersat_rt']
-              DATA_DIR = cfg['Seviri SST']['data_dir_rt']
-              #URL_SEVIRI_DATA=os.path.join(URL_CERSAT,DATA_DIR)
+      else:
+          URL_SEVIRI_DATA = cfg['Seviri SST']['recent_dir']
+          URL_CERSAT = cfg['Seviri SST']['url_cersat_rt']
+          DATA_DIR = cfg['Seviri SST']['data_dir_rt']
+          #URL_SEVIRI_DATA=os.path.join(URL_CERSAT,DATA_DIR)
 
-              usr = cfg['Seviri SST']['user']
-              pwd = cfg['Seviri SST']['pwd']
+          usr = cfg['Seviri SST']['user']
+          pwd = cfg['Seviri SST']['pwd']
 
       #-- recuperation des donnees par NFS
       #----------------------------------------------------
@@ -113,16 +113,16 @@ class Seviri(Sst) :
         ctest=ctest.add(1,cdtime.Days)
 
     else:
-      print 'Works for data before 2012/03/19. [In this program, method not used for data after 2012/01/01]'
+        print 'Works for data before 2012/03/19. [In this program, method not used for data after 2012/01/01]'
 
-          if cfg is None:
-          COMPRESS_SEVIRI = config.get('Seviri SST', 'compress')
-          URL_CERSAT = config.get('Seviri SST', 'url_cersat')
-          DATA_DIR = config.get('Seviri SST', 'data_dir')
-          else:
-              COMPRESS_SEVIRI = cfg['Seviri SST']['compress']
-              URL_CERSAT = cfg['Seviri SST']['url_cersat']
-              DATA_DIR = cfg['Seviri SST']['data_dir']
+        if cfg is None:
+            COMPRESS_SEVIRI = config.get('Seviri SST', 'compress')
+            URL_CERSAT = config.get('Seviri SST', 'url_cersat')
+            DATA_DIR = config.get('Seviri SST', 'data_dir')
+        else:
+            COMPRESS_SEVIRI = cfg['Seviri SST']['compress']
+            URL_CERSAT = cfg['Seviri SST']['url_cersat']
+            DATA_DIR = cfg['Seviri SST']['data_dir']
 
       URL_SEVIRI_DATA=os.path.join(URL_CERSAT,DATA_DIR)
       EXT_SEVIRI=".nc.%(COMPRESS_SEVIRI)s"%vars()
