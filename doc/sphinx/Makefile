@@ -35,6 +35,7 @@ help:
 	@echo "  changes    to make an overview of all changed/added/deprecated items"
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
+	@echo "  disthtml   to make a tarball of built html documentation"
 
 clean:
 	-rm -rf $(BUILDDIR)/*
@@ -45,6 +46,11 @@ html: $(TUTFIG)
 	#-cd $(BUILDDIR)/html && rm -f VACUMM.epub && cp -f ../epub/VACUMM.epub .
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+
+disthtml:
+	cd $(BUILDDIR) && tar czf vacumm-doc-html.tgz html --transform 's/^html/vacumm-doc/'
+	@echo
+	@echo "Packed html doc in $(BUILDDIR)/vacumm-doc-html.tgz"
 
 dirhtml: 
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml

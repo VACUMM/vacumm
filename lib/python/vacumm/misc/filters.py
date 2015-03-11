@@ -1,27 +1,24 @@
 # -*- coding: utf8 -*-
 """Various 1d and 2D filters"""
 
-# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
-# 
-# raynaud@actimar.fr
-# 
-# 
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -29,14 +26,14 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-# 
-__all__ = ['generic1d', 'shapiro1d', 'gaussian1d', 'hamming1d','generic2d', 'shapiro2d', 'gaussian2d', 'deriv', 'deriv2d', 
+#
+__all__ = ['generic1d', 'shapiro1d', 'gaussian1d', 'hamming1d','generic2d', 'shapiro2d', 'gaussian2d', 'deriv', 'deriv2d',
     'norm_atan','running_average', 'bartlett1d', 'kaiser1d', 'hanning1d', 'blackman1d']
 __all__.sort()
 
@@ -62,40 +59,40 @@ except ImportError: pass
 
 def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
     """Generic 1D filter applied to :mod:`MV2` variables using convolution.
-    
+
     :Params:
-    
+
         - **data**: Atleast 1D :mod:`MV2` variable.
-        - **weights**: integer, 1D weights. 
+        - **weights**: integer, 1D weights.
           They are expected to be symmetric and of odd sizes.
         - **axis**, optional: axis on which to operate
         - **mask**, optional: mode of masking.
           The mask is also filtered, and its value helps
           defining the new mask, depending on this parameter:
-          
+
             - If a float is provided, data are masked if the mask value
               is greater than this parameter.
-            - ``"minimal"``: Equivalent to ``1.``. Data is not masked 
+            - ``"minimal"``: Equivalent to ``1.``. Data is not masked
               if a valid value was used to compute data.
-            - ``"maximal"``: Equivalent to ``0.``. Data is masked 
+            - ``"maximal"``: Equivalent to ``0.``. Data is masked
               if a invalid value was used to compute data.
             - ``"same"``: Mask is the same as input mask.
-            
+
         - **copy**, optional: Copy variable before filtering it.
-        
+
     :Return:
-    
+
         - The filtered :mod:`MV2` variable.
-        
+
     :Example:
-    
+
         >>> generic1d(data, 3.) # running mean using a 3-points block
         >>> generic1d(data, [1.,2.,1], axis=2) # shapiro filter on third axis
-        
+
     :See also: :func:`scipy.signal.convolve2d`
-            
+
     """
-    
+
     # Setup
     # - data
     data = MV2.asarray(data)
@@ -121,7 +118,7 @@ def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
     ww.shape = datan.shape
     if data.mask is not MV2.nomask:
         one2d = N.ones(datan.shape, 'i')
-    
+
     # Cyclic case
     if cyclic:
         mode = 'valid'
@@ -172,7 +169,7 @@ def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
         del ww, one2d, bad
     else:
         datao[:] = datan
-        
+
     if axis!=data.ndim-1:
         init_order = cdms2.order2index(datao.getAxisList(), init_order)
         return datao.reorder(init_order)
@@ -180,14 +177,14 @@ def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
 
 def shapiro1d(data, **kwargs):
     """Shapiro (121) 1D filter
-    
+
     :Params:
-    
+
         - **data**: A :mod:`MV2` variable.
         - Keywords are passed to :func:`generic1d`.
-        
-    :Return: 
-    
+
+    :Return:
+
         - A :mod:`MV2` variable
     """
     weights = N.array([1.,2.,1.],data.dtype.char)
@@ -195,15 +192,15 @@ def shapiro1d(data, **kwargs):
 
 def hamming1d(data, M, **kwargs):
     """Hamming 1D filter
-    
+
     :Params:
-    
+
         - **data**: A :mod:`MV2` variable.
         - **M**: Size of the Hamming window.
         - Keywords are passed to :func:`generic1d`.
-        
-    :Return: 
-    
+
+    :Return:
+
         - A :mod:`MV2` variable
     """
     weights = N.hamming(M).astype(data.dtype.char)
@@ -211,15 +208,15 @@ def hamming1d(data, M, **kwargs):
 
 def hanning1d(data, M, **kwargs):
     """Hanning 1D filter
-    
+
     :Params:
-    
+
         - **data**: A :mod:`MV2` variable.
         - **M**: Size of the Hanning window.
         - Keywords are passed to :func:`generic1d`.
-        
-    :Return: 
-    
+
+    :Return:
+
         - A :mod:`MV2` variable
     """
     weights = N.hanning(M).astype(data.dtype.char)
@@ -227,15 +224,15 @@ def hanning1d(data, M, **kwargs):
 
 def bartlett1d(data, M, **kwargs):
     """Bartlett 1D filter
-    
+
     :Params:
-    
+
         - **data**: A :mod:`MV2` variable.
         - **M**: Size of the Bartlett window.
         - Keywords are passed to :func:`generic1d`.
-        
-    :Return: 
-    
+
+    :Return:
+
         - A :mod:`MV2` variable
     """
     weights = N.bartlett(M).astype(data.dtype.char)
@@ -243,15 +240,15 @@ def bartlett1d(data, M, **kwargs):
 
 def blackman1d(data, M, **kwargs):
     """Blackman 1D filter
-    
+
     :Params:
-    
+
         - **data**: A :mod:`MV2` variable.
         - **M**: Size of the Blackman window.
         - Keywords are passed to :func:`generic1d`.
-        
-    :Return: 
-    
+
+    :Return:
+
         - A :mod:`MV2` variable
     """
     weights = N.blackman(M).astype(data.dtype.char)
@@ -259,16 +256,16 @@ def blackman1d(data, M, **kwargs):
 
 def kaiser1d(data, M, beta, **kwargs):
     """Kaiser 1D filter
-    
+
     :Params:
-    
+
         - **data**: A :mod:`MV2` variable.
         - **M**: Size of the Kaiser window.
         - **beta**: Shape of the window.
         - Keywords are passed to :func:`generic1d`.
-        
-    :Return: 
-    
+
+    :Return:
+
         - A :mod:`MV2` variable
     """
     weights = N.kaiser(M, beta).astype(data.dtype.char)
@@ -276,56 +273,56 @@ def kaiser1d(data, M, beta, **kwargs):
 
 def gaussian1d(data,nxw,**kwargs):
     """Gaussian 1D filter
-    
-    - **data**: Data array 
-    - **nxw**: Size of gaussian weights array along X 
+
+    - **data**: Data array
+    - **nxw**: Size of gaussian weights array along X
     - Other keywords are passed to :func:`generic1d`
     """
     assert nxw % 2 == 1 , 'nxw must be an odd number'
     tc = data.dtype.char
     xx = N.arange(nxw)-nxw/2.
     return generic1d(data, N.exp(-xx**2/nxw**2),**kwargs)
-    
+
 
 
 def generic2d(data, weights, mask='same', copy=True):
     """Generic 2D filter applied to 2D (or more) :mod:`MV2` variables using convolution.
-    
+
     :Params:
-    
+
         - **data**: Atleast 2D :mod:`MV2` variable.
-        - **weights**: integer, 2D weights. 
+        - **weights**: integer, 2D weights.
           They are expected to be symmetric and of odd sizes.
-          If an integer is provided, a ``(weights,weights)`` 
+          If an integer is provided, a ``(weights,weights)``
           array of ones is used.
         - **mask**, optional: mode of masking.
           The mask is also filtered, and its value helps
           defining the new mask, depending on this parameter:
-          
+
             - If a float is provided, data are masked if the mask value
               is greater than this parameter.
-            - ``"minimal"``: Equivalent to ``1.``. Data is not masked 
+            - ``"minimal"``: Equivalent to ``1.``. Data is not masked
               if a valid value was used to compute data.
-            - ``"maximal"``: Equivalent to ``0.``. Data is masked 
+            - ``"maximal"``: Equivalent to ``0.``. Data is masked
               if a invalid value was used to compute data.
             - ``"same"``: Mask is the same as input mask.
-            
+
         - **copy**, optional: Copy variable before filtering it.
-        
+
     :Return:
-    
+
         - The filtered :mod:`MV2` variable.
-        
+
     :Example:
-    
+
         >>> generic2d(data, 3.) # running mean using a 3x3 block
         >>> generic2d(data, N.ones(3,3)) # the same
         >>> generic2d(data, N.ones(3,3), weights, mode='minimal') # crop coasts
-        
+
     :See also: :func:`scipy.signal.convolve2d`
-            
+
     """
-    
+
     # Setup
     data = MV2.asarray(data)
     assert data.ndim>1, 'Input data array must be at least 2D'
@@ -363,7 +360,7 @@ def generic2d(data, weights, mask='same', copy=True):
     datan[:] = N.where(bad, datan, datan/ww)
     ww[bad]==0
 #    del bad
-    
+
     # Set
     if copy:
         datao = data.clone()
@@ -392,7 +389,7 @@ def generic2d(data, weights, mask='same', copy=True):
 
 def generic2d_old(data,weights,fast=False,fill_value=None,min_valid=0):
     """Generic 2D filter
-    
+
     - **data**: 2D variable.
     - **weights**: Weights of the filter as 2D array of odd sizes.
     """
@@ -408,9 +405,9 @@ def generic2d_old(data,weights,fast=False,fill_value=None,min_valid=0):
     dxw = nxw/2
     dyw = nyw/2
     ny,nx = data.shape
-    
+
     data_filt = data.clone()
-    
+
     if data.mask is MV.nomask:
         fast = True
     data_min = data.min()
@@ -445,25 +442,25 @@ def generic2d_old(data,weights,fast=False,fill_value=None,min_valid=0):
             imaxw = max(xxrange)-i+dxw+1
             data_filt[j,i] = mm.average(this_data,
                 weights = weights[jminw:jmaxw,iminw:imaxw])
-    
+
     if fast and data.mask is not MV.masked:
         data_filt[:] = MV.masked_greater(data_filt,data_max)
         data_filt[:] = MV.masked_less(data_filt,data_min)
     if data.mask is not MV.nomask:
         data_filt[:] = MV.masked_where(data.mask, data_filt, copy=0)
     return data_filt
-    
+
 def shapiro2d(data, corners=.5, **kwargs):
     """Shapiro (121) 2D filter
-    
+
     :Params:
-    
+
         - **data**: A :mod:`MV2` variable.
         - **corner**, optional: Value in (4) corners.
         - Keywords are passed to :func:`generic2d`.
-        
-    :Return: 
-    
+
+    :Return:
+
         - A :mod:`MV2` variable
     """
     weights = N.empty((3,3),data.dtype.char)
@@ -472,11 +469,11 @@ def shapiro2d(data, corners=.5, **kwargs):
     weights[:,1] = [1.,2.,1.]
     return generic2d(data, weights, **kwargs)
 
-    
+
 def shapiro2d_old(data,**kwargs):
     """Shapiro (121) 2D filter
-    
-    - **data**: Data array 
+
+    - **data**: Data array
     - Keywords are passed to :func:`generic2d`
     """
 ##  print 'shap2d'
@@ -494,8 +491,8 @@ def shapiro2d_old(data,**kwargs):
 
 def gaussian2d(data,nxw,nyw=None,**kwargs):
     """Gaussian 2D filter
-    
-    - **data**: Data array 
+
+    - **data**: Data array
     - **nxw**: Size of gaussian weights array along X (and Y if nyw not given)
     - *nyw*: Size of gaussian weights array along Y [default: nxw]
     - Other keywords are passed to :func:`generic2d`
@@ -505,16 +502,16 @@ def gaussian2d(data,nxw,nyw=None,**kwargs):
     tc = data.dtype.char
     xx,yy = meshgrid(N.arange(nxw)-nxw/2.,N.arange(nyw)-nxw/2.)
     return generic2d(data,N.exp(-(xx**2/nxw**2+yy**2/nyw**2)),**kwargs)
-    
+
 def deriv(data, axis=0, fast=True, fill_value=None, physical=True, lat=None):
     """Derivative along a given axis
-    
+
     - **data**: Data array (converted to MV array if needed)
-    
+
     - *axis*: Axis on which the derivative is performed [default: 0]
     - *fast*: Filled masked array before derivating, so use Numeric which is faster than MA or MV [*WARNING* default: True]
     - *physical*: Try physical derivative, taking axis units into account [default: True]
-    - *lat*: Latitude for geographical deriviative to convert positions in degrees to meters 
+    - *lat*: Latitude for geographical deriviative to convert positions in degrees to meters
 
     """
 ##  print 'deriv2d'
@@ -529,7 +526,7 @@ def deriv(data, axis=0, fast=True, fill_value=None, physical=True, lat=None):
 
     # cdms or Numeric variable  to work on?
     if data.mask is MV.nomask:
-        fast = True 
+        fast = True
     if fast:
         if fill_value is None:
             data_to_use = data.filled()
@@ -537,14 +534,14 @@ def deriv(data, axis=0, fast=True, fill_value=None, physical=True, lat=None):
             data_to_use = data.filled(fill_value)
     else:
         data_to_use = data
-    
+
     # Derivative
     data_deriv[1:-1] = data_to_use[2:]-data_to_use[:-2]
     data_deriv[0] = data_to_use[1]-data_to_use[0]
     data_deriv[-1] = data_to_use[-2]-data_to_use[-1]
 #   if not fast:
 #       for i in 0,-1: data_deriv[i] = MV.masked
-        
+
     # Physical derivative
     if physical:
         pos = N.resize(data.getAxis(0)[:],data.shape[::-1]).transpose()
@@ -587,7 +584,7 @@ def deriv(data, axis=0, fast=True, fill_value=None, physical=True, lat=None):
     if axis:
         init_order = cdms2.order2index(data_deriv.getAxisList(), init_order)
         data_deriv = data_deriv.reorder(init_order)
-        
+
     # Units
     if units is not None:
         data_units = getattr(data_deriv,'units',None)
@@ -599,12 +596,12 @@ def deriv(data, axis=0, fast=True, fill_value=None, physical=True, lat=None):
                 del data_deriv.units
 
     return data_deriv
-        
+
 def deriv2d(data,direction=None,**kwargs):
     """Derivative in a 2D space
-    
+
     - **data**: 2D variable
-    
+
     - *direction*: If not None, derivative is computed in this direction, else the module is returned [default: None]
     - Other keywords are passed to deriv()
     """
@@ -625,13 +622,13 @@ def deriv2d(data,direction=None,**kwargs):
     elif hasattr(data_deriv,'units'):
         del data_deriv.units
     return data_deriv
-        
+
 
 def norm_atan(var,stretch=1.):
     """Normalize using arctan (arctan(strecth*var/std(var))
-    
+
     - *stretch*: If stretch close to 1, saturates values [default: 1]
-    
+
     Return: Value in [-1,1]
     """
     if cdms2.isVariable(var):
@@ -652,22 +649,22 @@ def norm_atan(var,stretch=1.):
 
 def running_average(x, l, d = 0, w = None, keep_mask = True):
     """Perform a running average on an masked array. Average is linearly reduced near bounds, so that the input and output have the same size.
-    
+
     :Params:
 
         - **x**: Masked array
         - **l**: Window size
-    
+
         - *d*: Dimension over which the average is performed (0)
         - *w*: Weights (1...)
         - *keep_mask*: Apply mask from x to output array
 
     :Example:
-    
+
         >>> running_average(x, l, d = 0, w = None, keep_mask = 1)
-    
+
         Returns Average array (same size as x)
-    
+
     .. warning:: This function deprecated. Please use :func:`generic1d` instead.
     """
 

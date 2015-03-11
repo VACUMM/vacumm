@@ -4,10 +4,7 @@ Generic plots using Matplotlib and taking advantage of CDAT
 
 Tutorial: ":ref:`user.tut.misc.plot`".
 """
-# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
-#
-# raynaud@actimar.fr
-#
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -61,6 +58,7 @@ from matplotlib.dates import DateFormatter, MonthLocator, WeekdayLocator, YearLo
     AutoDateLocator, AutoDateFormatter, MO, DAILY, HOURLY, num2date
 from matplotlib.patches import Wedge,Shadow,Circle, Arc
 from matplotlib.ticker import FormatStrFormatter, Formatter, FixedLocator
+import matplotlib.image as mpimg
 from mpl_toolkits.basemap import Basemap
 
 from .atime import mpl,time,axis_add,compress,SpecialDateFormatter
@@ -1647,29 +1645,47 @@ def get_minor_locator(xy,**kwargs):
     ax = kwargs.get('ax',P.gca())
     return eval("ax.%saxis.get_minor_locator()" % xy)
 
-def add_logo(file='logo_vacumm.gif',axes=None,loc='upper left',scale=None,alpha=1):
-    """Add a logo to the figure
+def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=1):
+    """Add a logo to the background of the figure
 
-    - *file*: File of the image [default: 'logo_vacumm.gif']
-    - *axes*: Axes of the image (overwrites loc and scale keywords).
-    - *loc*: Position of the image (use words in 'lower', 'upper', 'left', 'right', 'center') [default: 'upper left']
-    - *scale*: Scale the image. By default, it is auto scale so that the logo is never greater than 1/4 of the width ir the height of the figure.
-    - *alpha*: Alpha transparency [default: 1]
+    .. warning:: Except when ``loc='lower left', scale=1`` is passed as arguments,
+      the logo is rescaled each time the figure is resized.
+
+    :Params:
+
+        - *file*: File of the image.
+        - *axes*: Axes specs of the image (overwrites loc and scale keywords),
+          passed to meth:`~matplotlib.figure.Figure.add_axes`.
+        - *loc*: Position of the image (use words in 'lower', 'upper', 'left',
+          'right', 'center') .
+        - *scale*: Scale the image. By default, it is auto scale so that the logo is
+          never greater than 1/4 of the width ir the height of the figure.
+        - *alpha*: Alpha transparency.
     """
-    # PIL
+    if not os.path.exists(logofile):
+        raise VACUMMError("Logo file not found: %s"%logofile)
+
+    # Read image
     try:
         import Image
+        logo = Image.open(logofile)
     except ImportError, exc:
-        raise "You need PIL to add a logo to your figure"
-    from matplotlib import rcParams
+        try:
+            logo  = mpimg.read(logofile)
+        except:
+            raise VACUMMError("Can't read your logo file. Please convert it to png format or install PIL.")
 
     # Dimensions and position
+    from matplotlib import rcParams
     dpi = rcParams['figure.dpi']
-#    P.gcf().set_frameon(False)
+    if fig is None:
+        fig = P.gcf()
     if axes:
-        ax = P.gcf().add_axes(axes,aspect=1,frameon=False)
+        ax = fig.add_axes(axes, aspect=1, frameon=False, autoscale_on='off')
+    elif scale==1 and loc=='lower left':
+        ax = None
     else:
-        logo = Image.open(file)
+
         dx = logo.size[0]/(P.gcf().get_figwidth()*dpi)
         dy = logo.size[1]/(P.gcf().get_figheight()*dpi)
         if scale is not None:
@@ -1687,22 +1703,38 @@ def add_logo(file='logo_vacumm.gif',axes=None,loc='upper left',scale=None,alpha=
                 dy *= scale
         if 'upper' in loc:
             y = 1-dy
+            anchor = 'N'
         elif 'lower' in loc:
             y = 0
+            anchor = 'S'
         else:
             y = .5-dy/2
+            anchor = 'C'
         if 'right' in loc:
             x = 1-dx
+            anchor  = anchor + 'E'
         elif 'left' in loc:
             x = 0
+            anchor  = anchor + 'W'
         else:
             x = .5-dx/2
-        ax = P.gcf().add_axes([x,y,dx,dy],aspect=1,frameon=False)
+            anchor  = anchor + 'C'
+        xc = x+dx/2.
+        yc = y+dy/2.
+        if anchor=='CC':
+            anchor = 'C'
+        elif 'C' in anchor:
+            anchor = anchor.replace('C', '')
+        ax = P.gcf().add_axes([x,y,dx,dy], aspect=1, frameon=False, anchor=anchor)
 
     # Plot
-    im = ax.imshow(logo,origin='lower',alpha=alpha)
-    ax.axis('off')
-    ax.set_zorder(-1)
+    if ax is None:
+        im = fig.figimage(logo, origin='upper', alpha=alpha)
+        print 'here'
+    else:
+        im = ax.imshow(logo, origin='upper', alpha=alpha)
+        ax.axis('off')
+        ax.set_zorder(-1)
     return im
 
 

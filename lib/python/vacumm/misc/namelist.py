@@ -1,24 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar (2010)
-# 
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -26,13 +26,13 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-# 
+#
 
 # ==================================================================================================
 
@@ -62,30 +62,30 @@ __doc__ = 'Load / save fortran namelist string / file.'
 
 class Namelist(dict):
     '''Handles the fortran namelist format as below:
-        
+
         .. code-block:: none
-            
+
             ! header comment
-            
+
             &namelist1 b=.true. i=0,f=0.1, s="ab" , ss="abcd" /    ! inline comment
-            
+
             ! standalone comment
             # another "comment"
-            
-            &namelist2 
+
+            &namelist2
             integer=1500, float=1.5e3    ! inline comment
-            str1="A : B" 
+            str1="A : B"
             str2="/path/to/file.txt"
             array(0)=0
             array(1)=1
             /
-        
+
         Empty lines, spaces and comments (from ":", "!" or "#" characters to the end of line) are allowed.
-        
+
         Namelists start tag is the "&" character and end tag is "/", both on their own line or not.
-        
+
         Variables are delimited with space(s) or comma.
-        
+
         Namelists (sections) are stored and made accessible in a dictionnary fashion as this class
         inherit from dict.
             - Keys are the namelists names, values are the variables of the corresponding namelist.
@@ -96,17 +96,17 @@ class Namelist(dict):
             - integer: as int
             - real/scientific: as float
             - array: as dict
-        
+
         .. note:
-            - When loading namelists, previously loaded namelists are overriden, not cleared (use the parent class clear method if needed). 
+            - When loading namelists, previously loaded namelists are overriden, not cleared (use the parent class clear method if needed).
             - Only 1-dimensionnal array like variables are allowed
-        
+
         .. note::
             - **Variables cannot be inserted directly into the Namelist**, you must access/setup the namelist level before (see examples)
               that's because there is no global variable in a namelist file !
-        
+
         :Examples:
-            
+
             >>> n = Namelist()
             >>> # The following is not correct and would results in a ValueError:
             >>> n['myvar'] = 0
@@ -114,7 +114,7 @@ class Namelist(dict):
             >>> # That's the good way to do things:
             >>> n['mynamelist'] = {}
             >>> n['mynamelist']['myvar'] = 0
-            
+
             >>> n = Namelist()
             >>> n['namelist1'] = dict(integer=1, real=1.0, string='hello', array=dict(a=0,b=1))
             >>> print n.save_string()
@@ -125,25 +125,25 @@ class Namelist(dict):
             ...   array(b) = 1
             ...   string = "hello"
             ...   /
-            
+
             >>> n = Namelist.from_file('mynamelist.txt')
-            
-        
+
+
     '''
-    
+
     _maxreadsize = 2 * (2**20) # n * Mio
-    
+
     def __init__(self):
         dict.__init__(self)
-    
+
     def __str__(self):
         return '\n\n'.join('%s:\n%s'%(namelist, '\n'.join(('  %s = %s (%s)'%(k,v,v.__class__.__name__) for k,v in variables.iteritems()))) for namelist, variables in self.iteritems())
-    
+
     def __setitem__(self, key, value):
         if not isinstance(value, dict):
             raise ValueError('Cannot set a global variable in namelist, value must be a dict')
         dict.__setitem__(self, key, value)
-    
+
     @staticmethod
     def remove_comments(s, strip=True):
         '''Internal method for comments filtering.
@@ -155,21 +155,21 @@ class Namelist(dict):
         lines = (re.sub(comment, '', l) for l in s.splitlines())
         if strip: lines = (l.strip() for l in lines if l.strip())
         return '\n'.join(lines)
-    
+
     @classmethod
     def from_file(cls, filepath, *a, **k):
         '''Factory method populating the created namelist with a file.'''
         o = cls(*a, **k)
         o.load_file(filepath)
         return o
-    
+
     @classmethod
     def from_string(cls, string, *a, **k):
         '''Factory method populating the created namelist with a string.'''
         o = cls(*a, **k)
         o.load_string(string)
         return o
-    
+
     def load_string(self, string):
         '''Load namelists from a string.'''
         #print '[start of raw namelist]\n%s\n[end of raw namelist]'%(s)
@@ -237,7 +237,7 @@ class Namelist(dict):
         r = s.getvalue()
         s.close()
         return r
-    
+
     def load_file(self, filepath):
         '''Load namelists from a text file'''
         self._filepath = filepath
@@ -245,19 +245,19 @@ class Namelist(dict):
         fc = fh.read(self._maxreadsize)
         fh.close()
         self.load_string(fc)
-    
+
     def save_file(self, filename, append=False):
         '''Save the (fortran) formatted namelists to a file'''
         fh = file(filename, append and 'a' or 'w')
         fh.write(self.save_string())
         fh.close()
-    
+
 
 # ==================================================================================================
 
 if __name__ == '__main__':
     '''Test this module'''
-    
+
     namelist = '''\
 ! header comment
 
@@ -265,9 +265,9 @@ if __name__ == '__main__':
 
   # standalone &n a="comment" /
 
-&namelist2 
+&namelist2
   integer=1500, float=1.5e3    ! inline comment
-  str1 = "A : B" 
+  str1 = "A : B"
   str2="/path/to/file.txt"
   array(0)=0
   array(1) = 1 /
@@ -276,23 +276,23 @@ if __name__ == '__main__':
   head_fine = './IN/head.quib3'/
 
     '''
-    
+
     namelist = '''\
 ! header comment
 
     &namelist1 b=.true. i=0,f=0.1, s="ab" , ss="abcd" /    ! inline comment
 
-&namelist2 
+&namelist2
   integer=1500, float=1.5e3    ! inline comment
-  str1 = "A:B" 
+  str1 = "A:B"
   str2='./path/to/file.txt'
   array(0)=0
   array(1) = 1 /
 
 '''
-    
+
     if len(sys.argv) == 2 and sys.argv[1] in ('-t', '-test', '--test'):
-        print ' namelist in input '.center(80, '=') 
+        print ' namelist in input '.center(80, '=')
         print namelist
         print
         nf = Namelist.from_string(namelist)
@@ -301,12 +301,12 @@ if __name__ == '__main__':
     else:
         print 'usage: %(prog)s (namelistfile|--test)'%dict(prog=os.path.split(sys.argv[0])[1])
         sys.exit(1)
-    print ' namelist as a descriptive string (__str__ method) '.center(80, '=') 
+    print ' namelist as a descriptive string (__str__ method) '.center(80, '=')
     print nf
     print
     print ' namelist as formated string (save_string method) '.center(80, '=')
     print nf.save_string()
     print
-    
+
 
 

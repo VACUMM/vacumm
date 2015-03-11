@@ -5,27 +5,24 @@ Information about seaports and stations
 StationInfo : A class to retrieve alot of information about seaports and stations.
 MeanSeaLevel : A class dedicated to mean sea level along french coast (more complete than StationInfo).
 """
-# Copyright or © or Copr. vacumm (contributor(s) : Stephane Raynaud) (2011)
-# 
-# raynaud@vacumm.fr
-# 
-# 
+# Copyright or © or Copr. Actimar/IFREMER (2011-2015)
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -33,25 +30,25 @@ MeanSeaLevel : A class dedicated to mean sea level along french coast (more comp
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 
 import os
 #dirname = os.path.dirname(__file__)
 #cfgfiles = dict(
-#    default = os.path.join(dirname, 'config.cfg'), 
-#    site = os.path.join(dirname, 'site.cfg'), 
+#    default = os.path.join(dirname, 'config.cfg'),
+#    site = os.path.join(dirname, 'site.cfg'),
 #)
 #def _get_option_(key,  **kwargs):
 #    f = ConfigParser()
 #    f.read([cfgfiles['default'], cfgfiles['site']])
 #    if f.has_option(__name__, key):
 #        return f.get(__name__, key)
-from vacumm.config import get_config_value 
+from vacumm.config import get_config_value
 
 from _geoslib import Point
 import numpy as N
@@ -134,7 +131,7 @@ class _StationPlot_(object):
             savefigs(savefigs)
         if show:
             P.show()
-            
+
         def show(self, *args, **kwargs):
             """Shortcut to :meth:`plot`"""
             return self.plot(*args, **kwargs)
@@ -144,7 +141,7 @@ class _StationPlot_(object):
 
 class StationInfo(_StationPlot_):
     """Finding information about tidal stations
-    
+
       This class helps finding information on
       ports and tide jauge measurement stations.
       It attempts to search for a station using several
@@ -154,9 +151,9 @@ class StationInfo(_StationPlot_):
       See help on :meth:`search` method.
 
     :Params:
-        
+
         - **nom**: name or regexp to search for.
-        - **regexp**: 
+        - **regexp**:
         - **file**: File in wich to search for info
         - **verbose**: Verbose mode
         - All other keywords are passed to :func:`search` method after initialization.
@@ -164,7 +161,7 @@ class StationInfo(_StationPlot_):
     def __init__(self,nom=None, regexp=True, verbose=True,
                  file=None, *args, **kwargs):
         self.nom = None
-        
+
         # File name
         if file is None:
 #            file = _get_option_('ports_file')
@@ -176,14 +173,14 @@ class StationInfo(_StationPlot_):
                 raise StationInfoError('File of ports not found: '+file)
         else:
             raise StationInfoError('No valid file of ports found')
-        
+
         # Chargement du fichier
         self.set_file(file)
 
         # Send optional argument to search()
         if nom is not None or len(kwargs) or len(args):
             self.find(nom=nom,regexp=regexp,verbose=verbose,*args,**kwargs)
-            
+
 
     def set_file(self,file,**kwargs):
         """ Set the current file and load it """
@@ -193,10 +190,10 @@ class StationInfo(_StationPlot_):
             print 'Fichier de station introuvable : '+file
         self._file = file
         self._load_file(**kwargs)
-           
+
 
     def _load_file(self,**kwargs):
-        
+
         # Open information file
         if kwargs.has_key('verbose'):
             if verbose:
@@ -240,7 +237,7 @@ class StationInfo(_StationPlot_):
             else:
                 self._zones[zone] = description
                 break
-            
+
         # Header line
         line = f.next()
         attributes = line[27:-1].lower().split()
@@ -293,7 +290,7 @@ class StationInfo(_StationPlot_):
         """Return a list of attributes"""
         return self._atts
 
-                
+
     def file(self):
         """ Return the file path where information are stored """
         return self._file
@@ -305,7 +302,7 @@ class StationInfo(_StationPlot_):
 
     def _search(self,nom=None,regexp=True,nmax=5,**kwargs):
         """ Generic search within stations """
-        
+
         stations = []
         if nom is not None:
             # Search within names using regular expression of strict comparisons
@@ -326,7 +323,7 @@ class StationInfo(_StationPlot_):
                         stations.append(station)
                         if len(stations) == nmax:
                             break
-        
+
         else:
             # Search using other specific arguments
             for key,val in kwargs.items():
@@ -340,7 +337,7 @@ class StationInfo(_StationPlot_):
                                station[key].lower() == val.lower():
                             stations.append(station)
                             break
-                        
+
                 elif key == 'position' and len(val) == 2:
                     # Find the closest station
                     import vacumm.misc as M,math,numpy.oldnumeric as Numeric
@@ -383,8 +380,8 @@ class StationInfo(_StationPlot_):
             for station in stations:
                 self._print_one(station)
                 print 'Definition des termes accessible avec definitions()'
-            
-        
+
+
     def find(self,nom=None,regexp=True,verbose=False,*args,**kwargs):
         """Search for a station using several possible criteria and load it.
 
@@ -403,10 +400,10 @@ class StationInfo(_StationPlot_):
                 self._print_one(station)
                 print 'Definition des termes accessible avec definitions()'
             self._set(station)
-                
+
         return Station(station)
 
-    
+
     def _str2deg(self,str):
         sstr = str.split()
         deg = float(sstr[0])
@@ -438,13 +435,13 @@ class StationInfo(_StationPlot_):
                 else:
                     fmt = '%g'
                 self._print_one_arg(att.upper(),fmt % station[att])
-                
+
 
     def _print_one_arg(self,att,val):
         if val is not None:
             print '  '+att.ljust(10)+' : '+val.encode('utf8')
 
-        
+
     def _set(self,station):
         """ Set a station """
         # Internal data
@@ -460,7 +457,7 @@ class StationInfo(_StationPlot_):
             print 'Station actuelle :'
             self._print_one(self.get_dict())
 
-                       
+
     def get_dict(self):
         """ Get the current station as a dictionnary """
         if self.nom is None:
@@ -475,7 +472,7 @@ class StationInfo(_StationPlot_):
             station[att] = getattr(self,att)
         return station
 
-        
+
     def definitions(self):
         """ Print out the definition of all terms """
         print 'Definition des termes :'
@@ -489,14 +486,14 @@ class StationInfo(_StationPlot_):
 
 class Station(dict, _StationPlot_):
     """A station with its info as a result from :class:`StationInfo`
-    
+
     :Example:
-    
+
     >>> from vacumm import StationInfo
     >>> station = StationInfo().find('Brest', nmax=1)
     >>> print station.longitude
     """
-    
+
     def __init__(self, *args, **kwargs):
         dict.__init__(self, *args, **kwargs)
         self._atts = self.keys()
@@ -527,11 +524,11 @@ class Station(dict, _StationPlot_):
 #        return self.__dict__[att]
 #    def __len__(self):
 #        return len(self._data)
-#    
+#
 #
 #class _MeanSeaLevel(_MeanSeaLevelData):
 #    """Retrieve mean sea level at stations
-#    
+#
 #    Information can be retrieved thanks to the following properties:
 #        .data: List of internal data, each element being [name, x, y, z]
 #        .names: List of seaport and station names
@@ -540,17 +537,17 @@ class Station(dict, _StationPlot_):
 #        .xy or coords: array of coordinates (2,n)
 #        .z or .sealevel: mean sea level array (n,)
 #        .xyz or .block: array combining coordinates and sea levels (3,n)
-#        
+#
 #    :Example:
-#    
+#
 #    >>> from vacumm.tide.station_info import MeanSeaLevel
 #    >>> msl = MeanSeaLevel()
-#    >>> for i in xrange(len(msl)): 
+#    >>> for i in xrange(len(msl)):
 #    >>>     print msl.names[i], msl.x[i], msl.y[i]
 #    >>> print len(msl.clip((-4,44.,0,48)))
 #    """
 #    def __init__(self,  file=None):
-#        
+#
 #        data = []
 #        f = open(meansealevel_file)
 #        for line in f:
@@ -561,19 +558,19 @@ class Station(dict, _StationPlot_):
 #        _MeanSeaLevelData.__init__(self, data)
 #    def clip(self, zone=None):
 #        """Get data within specific bounds
-#        
+#
 #        - *zone*: A tuple of (xmin,ymin,xmax,ymax), a Polygon instance or an array to build a polygon (see vacumm.misc.grid.masking.polygons)
 #        """
 #        if zone is None: return self
 #        zone = polygons([zone])[0]
 #        mydata =  [d for d in self._data if Point((d[1], d[2])).within(zone)]
 #        return _MeanSeaLevelData(mydata)
-#    
+#
 class MeanSeaLevelError(Exception):
     pass
 class MeanSeaLevel(XYZBathy):
     """Retrieve mean sea level at stations
-    
+
     Information can be retrieved thanks to the following properties:
         .data: List of internal data, each element being [name, x, y, z]
         .names: List of seaport and station names
@@ -582,17 +579,17 @@ class MeanSeaLevel(XYZBathy):
         .xy or coords: array of coordinates (2,n)
         .z or .sealevel: mean sea level array (n,)
         .xyz or .block: array combining coordinates and sea levels (3,n)
-        
+
     :Example:
-    
+
     >>> from vacumm.tide.station_info import MeanSeaLevel
     >>> msl = MeanSeaLevel()
-    >>> for i in xrange(len(msl)): 
+    >>> for i in xrange(len(msl)):
     >>>     print msl.names[i], msl.x[i], msl.y[i]
     >>> print len(msl.clip((-4,44.,0,48)))
-    
+
     .. seealso::
-    
+
         :class:`~vacumm.misc.io.XYZ`
     """
     def __init__(self, msl=None, names=None, **kwargs):
@@ -621,21 +618,21 @@ class MeanSeaLevel(XYZBathy):
             msl = (xx, yy, zz)
         elif isinstance(msl, MeanSeaLevel): # instance
             names = list(msl.names())
-        
+
         kwargs.setdefault('units', 'm')
         kwargs.setdefault('long_name', 'Mean sea level')
         XYZBathy.__init__(self, msl, **kwargs)
         self._names = names
-    
+
     def get_names(self, mask=True):
         """Get :attr:`names`"""
-        if self._names is None: return 
+        if self._names is None: return
         return self._filter_(self._names, mask)
     names = property(get_names, doc='Get name of valid stations')
-        
+
     def clip(self, zone=None, inverse=False, **kwargs):
         """Geographical selection of part of the data
-        
+
         - **zone**: (xmin,ymin,xmax,ymax) or a complex polygon (see :func:`~vacumm.misc.grid.masking.polygons`).
         - *inverse*: Inverse the selection.
         """
@@ -646,7 +643,7 @@ class MeanSeaLevel(XYZBathy):
         names = [names[i] for i, m in enumerate(mask) if m]
         return MeanSeaLevel(XYZ.clip(self, zone=mask, mask=True).xyz, names=names)
 
-    
-    
+
+
 from vacumm.misc.grid.masking import polygons
 from vacumm.misc.phys.units import deg2m

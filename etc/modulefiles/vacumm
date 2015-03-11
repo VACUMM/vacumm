@@ -16,7 +16,7 @@ conflict vacumm
 #    prereq cdat
 #    prereq ...
 # We need cdat or uv-cdat
-prereq cdat uvcdat uv-cdat
+#prereq cdat uvcdat uv-cdat
 
 # Try to retrieve the real modulefile path in case it or one of its parent directories is a link 
 # (doing this in tcl language is a bit more complicated)

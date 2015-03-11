@@ -1,24 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar (2010)
-# 
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -26,13 +26,13 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-# 
+#
 from __future__ import absolute_import
 if __name__ == '__main__':
     import sys; del sys.path[0]
@@ -123,7 +123,7 @@ or
 .. code-block:: python
 
     r = Report.from_xml_file('report.xml')
-    
+
 To save a xml file from the loaded object above you can do:
 
 .. code-block:: python
@@ -207,7 +207,7 @@ _false = ['n', 'no', 'false', 'off', '0']
 def parse_bool(s):
     '''
     Boolean string parser, accepts:
-        - %s as True 
+        - %s as True
         - %s as False
     '''%(', '.join(_true), ', '.join(_false))
     _s, s = s, str(s).lower().strip()
@@ -225,13 +225,13 @@ _emptyfunc = lambda x: x
 def register(obj, attributes=None, elements=None, entries=None):
     '''
     Populate an object with data
-    
+
     :Params:
         - **obj**: the object to be manipulated
         - **attributes**, optional: dict, used with setattr on obj
         - **elements**, optional: list, used with obj.extend
         - **entries**, optional: dict, used with obj.update
-    
+
     :Return: obj
     '''
     if attributes:
@@ -283,13 +283,13 @@ def xml_element_name(name):
 def create_xml_element(name, attributes=None, childnodes=None, skipNone=True, **kwargs):
     '''
     Create an xml element with given attributes and children
-    
+
     :Params:
         - **name**: the element tag name
         - **attributes**, optional: dict of attributes name:value
         - **childnodes**, optional: list/tuple/dict of ElementTree.Element object
         - **skipNone**, optional: skip attributes which value is None
-    
+
     :Return: a ElementTree.Element object
     '''
     elt = ElementTree.Element(name)
@@ -323,11 +323,11 @@ def splitns(name):
 def findchildren(elt, name):
     '''
     Find children of an element ignoring namespaces
-    
+
     :Params:
         - **elt**: element to search in
         - **name**: searched element tag name
-    
+
     :Return: a generator on ElementTree.Element objects
     '''
     ns, name = splitns(name)
@@ -342,12 +342,12 @@ def findchildren(elt, name):
 def getattribute(elt, name, default=None):
     '''
     Get the attribute value of an element ignoring namespaces
-    
+
     :Params:
         - **elt**: element to search in
         - **name**: searched attribute name
         - **default**, optional: default value when elt has no such attribute
-    
+
     :Return: attribute value or default
     '''
     ns, name = splitns(name)
@@ -363,11 +363,11 @@ def getattribute(elt, name, default=None):
 def hasattribute(elt, name):
     '''
     Check the presence of an element attribute ignoring namespaces
-    
+
     :Params:
         - **elt**: element to search in
         - **name**: searched attribute name
-    
+
     :Return: boolean
     '''
     return getattribute(elt, name, default=None) != None
@@ -378,7 +378,7 @@ __loaded_from_elt__ = '__loaded_from_elt__'
 def load_xml_attributes(elt=None, attributes=None, dst=None, create=False):
     '''
     Deserialize attributes from an element
-    
+
     :Params:
         - **elt**: element to search in
         - **attributes**: specification for attributes deserialization
@@ -390,10 +390,10 @@ def load_xml_attributes(elt=None, attributes=None, dst=None, create=False):
                     - **a dict** {'type':function, 'default':value}
         - **dst**: an object that will be populated with the attributes
         - **create**: whether to create attributes in dst with the default value when they are not in elt
-    
+
     The type must be a callable taking the attribute value as single string argument and returning the converted value
     With no type function, attributes are loaded without modification (as string)
-    
+
     :Return: dict of deserialized attributes
     '''
     if elt is None: elt = ElementTree.Element('')
@@ -434,7 +434,7 @@ def load_xml_attributes(elt=None, attributes=None, dst=None, create=False):
 def load_xml_childnodes(elt=None, childnodes=None, dst=None, create=False):
     '''
     Deserialize children from an element
-    
+
     :Params:
         - **elt**: element to search in
         - **childnodes**: specification for children deserialization
@@ -452,9 +452,9 @@ def load_xml_childnodes(elt=None, childnodes=None, dst=None, create=False):
                     - **key**: which children attribute to use as key when loading with self=True
         - **dst**: an object that will be populated with the children
         - **create**: whether to create attributes in dst with the default value when they are not in elt
-    
+
     The type must be a subclass of XmlConfig which will be used to deserialize the children elements
-    
+
     :Return: a tuple (attributes, elements, entries) of the loaded data
     '''
     if elt is None: elt = ElementTree.Element(dst.__class__.__name__)
@@ -488,7 +488,7 @@ def load_xml_childnodes(elt=None, childnodes=None, dst=None, create=False):
                 else:
                     if dkey: attrs[dname] = Dict(objs)
                     else: attrs[dname] = [c for k,c in objs]
-        elif not dself: 
+        elif not dself:
             if ddef is not _no_default: attrs[dname] = ddef
             elif create:
                 if dcreate:
@@ -510,7 +510,7 @@ def load_xml_childnodes(elt=None, childnodes=None, dst=None, create=False):
 def load_xml_textnodes(elt=None, textnodes=None, dst=None, create=False, xml_element_name=xml_element_name):
     '''
     Deserialize text node children from an element
-    
+
     :Params:
         - **elt**: element to search in
         - **textnodes**: specification for text node children deserialization
@@ -526,11 +526,11 @@ def load_xml_textnodes(elt=None, textnodes=None, dst=None, create=False, xml_ele
                     - **single**: whether we expect a single instance or a list of instance as result in dst (default is False). This may also be an integer specifying the child 0-based index.
         - **dst**: an object that will be populated with the text node children
         - **create**: whether to create attributes in dst with the default value when they are not in elt
-    
+
     The type must be a callable taking the text node value as single string argument and returning the converted value.
-    
+
     With no type function, text nodes are loaded without modification (as string)
-    
+
     :Return: None
     '''
     if elt is None: elt = ElementTree.Element(dst.__class__.__name__)
@@ -569,7 +569,7 @@ class XmlConfigMetaClass(type):
     Metaclass used to pass the xml element from XmlConfig.from_xml_elt to
     XmlConfig.__init__. This allow XmlConfig descendants to use the loaded
     data in their __init__ straight after XmlConfig.__init__ have been called
-    
+
     If your implementation already inherit from a metaclass based class, you may use the code at:
     http://code.activestate.com/recipes/204197-solving-the-metaclass-conflict/
     '''
@@ -584,37 +584,37 @@ class XmlConfigMetaClass(type):
 class XmlConfig(object):
     '''
     Base class for XML serializations/deserializations.
-    
+
     Subclasses can define the following **class attributes** which define the serialization specifications:
         - **xml_tag_name**: The corresponding xml element name (default is the class name formatted by :meth:`xml_element_name`).
         - **xml_attributes**: Attribute specifications, see :func:`load_xml_attributes`
         - **xml_childnodes**: Children elements specifications, see :func:`load_xml_childnodes`
         - **xml_textnodes**: Text children elements specifications, see :func:`load_xml_textnodes`
-    
+
     **These attributes can also be passed as named arguments to the constructor to extend or overwrite
     those declared in the class definition.**
-    
+
     **XML attributes, childnodes and textnodes are stored in this instance (object) attributes.**
-    
+
     '''
     __metaclass__ = XmlConfigMetaClass
-    
+
     xml_tag_name = ''
     xml_attributes = Dict()
     xml_childnodes = Dict()
     xml_textnodes = Dict()
-    
+
     def __init__(self, *args, **kwargs):
         '''
         Can receive extra specification in kwargs with the same keys as the class special attributes
         (xml_tag_name, xml_attributes,xml_childnodes and xml_textnodes)
-        
+
         kwargs can contain the **xml_create_attributes** flag specifying whether to initalize expected
         attributes/childnodes/textnodes with None/empty-list/empty-dict depending on specifications (default is True)
-        
+
         Other parameters in kwargs are used as initialization values when they are known by (present in) the given in specifications
         (the order of processing is then attributes, childnodes, textnodes), the user is then responsible of the types of these initial values.
-        
+
         This class also maintain the currently loaded/saved file if any, see set_current_file and get_current_file
         '''
         log(self, '__init__:\n  args: %s\n  kwargs: %s)', args, kwargs) #####
@@ -675,15 +675,15 @@ class XmlConfig(object):
         if e is not None:
             self.load_xml_elt(e)
             delattr(self, __load_xml_elt__)
-    
+
     # TODO: validate modifications using setattr; more actions needed for nested lists/dicts (for children)
     #def __setattr__(self, k, v):
-    
+
     @classmethod
     def dict(cls, *a, **k):
         '''Wrapper to collections.OrderedDict if available, dict otherwise'''
         return Dict(*a, **k)
-    
+
     @classmethod
     def xml_attributes_specs(cls, attrs, copy=True): # copy=False has odd side effects depending on usages ... !
         '''Fix attrs as used internally'''
@@ -737,15 +737,15 @@ class XmlConfig(object):
             if d.get('type', None) is bool: d['type'] = parse_bool
             textnodes[t] = d
         return textnodes
-    
+
     def set_current_file(self, f):
         '''Set the currently used xml file. This method automatically called when loading/saving xml file'''
         self.xml_current_file = f
-    
+
     def get_current_file(self):
         '''Get the currently used xml file (from last load/save or manual set)'''
         return getattr(self, 'xml_current_file', '')
-    
+
     @classmethod
     def tag_name(cls):
         '''
@@ -754,16 +754,16 @@ class XmlConfig(object):
         '''
         if cls.xml_tag_name: return cls.xml_tag_name
         return cls.xml_element_name((isinstance(cls, type) and cls or cls.__class__).__name__)
-    
+
     @classmethod
     def xml_element_name(cls, *a, **k):
         return xml_element_name(*a, **k)
-    
+
     @classmethod
     def from_xml_doc(cls, d, *a, **k):
         '''Factory method instanciating from xml dom document.'''
         return cls.from_xml_elt(d.getroot() if isinstance(d, ElementTree.ElementTree) else d, *a, **k)
-        
+
     @classmethod
     def from_xml_file(cls, f, *a, **k):
         '''Factory method instanciating from xml file.'''
@@ -771,17 +771,17 @@ class XmlConfig(object):
         o = cls.from_xml_doc(ElementTree.parse(f), *a, **k)
         o.set_current_file(f)
         return o
-    
+
     @classmethod
     def from_xml_str(cls, s, *a, **k):
         '''Factory method instanciating from xml string.'''
         return cls.from_xml_doc(ElementTree.fromstring(s), *a, **k)
-    
+
     @classmethod
     def from_url(cls, url, *a, **k):
         '''Factory method instanciating from xml string returned by url.'''
         return cls.from_xml_str(urllib2.urlopen(url).read(-1), *a, **k)
-    
+
     @classmethod
     def from_xml_elt(cls, e, *a, **k):
         '''Factory method instanciating from xml  element.'''
@@ -796,22 +796,22 @@ class XmlConfig(object):
             raise x.__class__('Failed to create %s from xml element:\n%s\n\n%s'%(
                 cls.__name__, xml, tb))
         return o
-    
+
     def load_xml_doc(self, d, *a, **k):
         '''Load from an ElementTree object'''
         e = d.getroot() if isinstance(d, ElementTree.ElementTree) else d
         self.load_xml_elt(e, *a, **k)
-        
+
     def load_xml_file(self, f, *a, **k):
         '''Load from a file'''
         log(self, 'load_xml_file "%s"', f) #####
         self.load_xml_doc(ElementTree.parse(f), *a, **k)
         self.set_current_file(f)
-    
+
     def load_xml_str(self, s, *a, **k):
         '''Load from a string'''
         self.load_xml_doc(ElementTree.fromstring(s), *a, **k)
-    
+
     def load_xml_elt(self, e, *a, **k):
         '''Load configurations from an xml element.'''
         if not hasattr(self, __load_xml_elt__):
@@ -822,15 +822,15 @@ class XmlConfig(object):
         log(self, 'load_xml_elt done:\n  elt: %s\n  args: %s\n  kwargs: %s\n  vars:%s', e, a, k, vars(self)) #####
         if not hasattr(self, __load_xml_elt__):
             self.post_load_xml(e, *a, **k)
-    
+
     def pre_load_xml(self, *a, **k):
         '''Called before load_xml_elt is executed'''
         pass
-    
+
     def post_load_xml(self, *a, **k):
         '''Called after load_xml_elt is executed'''
         pass
-    
+
     def to_xml_elt(self, **kwargs):
         '''Dump object to an xml element.'''
         dumpnonloaded = kwargs.get('dumpnonloaded', True) # can be overriden in attr spec
@@ -902,11 +902,11 @@ class XmlConfig(object):
             # Exclude empty nodes (no attributes and no child)
             childnodes.extend(c for c in tmpchildnodes if len(c.attrib) or len(c.getchildren()))
         return create_xml_element(self.tag_name(), attributes=attributes, childnodes=childnodes, **kwargs)
-    
+
     def to_xml_doc(self, **kwargs):
         '''Dump object to an ElementTree'''
         return ElementTree.ElementTree(self.to_xml_elt(**kwargs))
-    
+
     def to_xml_stream(self, stream, pretty=True, indent='  ', encoding='UTF-8', **kwargs):
         '''Dump object to a file object like stream.'''
         close = False
@@ -933,21 +933,21 @@ class XmlConfig(object):
         finally:
             if close: stream.close()
         return e
-    
+
     def to_xml_str(self, **kwargs):
         '''Dump object to a xml string.'''
         from StringIO import StringIO
         s = StringIO()
         self.to_xml_stream(s, **kwargs)
         return s.getvalue()
-    
+
     def to_xml_file(self, f, **kwargs):
         '''Dump object to a xml file.'''
         log(self, 'to_xml_file "%s"', f) #####
         e = self.to_xml_stream(f, **kwargs)
         self.set_current_file(f)
         return e
-    
+
     def to_obj(self):#def to_obj(self, obj=None):
         def to_obj(obj):
             if isinstance(obj, XmlConfig):
@@ -990,7 +990,7 @@ class XmlConfig(object):
                 return dict(((k,to_obj(v)) for k,v in obj.iteritems()))
             return obj
         return to_obj(self)
-    
+
     def set_obj(self, obj):
         for k,s in self.xml_attributes.items():
             if k in obj:
@@ -1006,8 +1006,8 @@ class XmlConfig(object):
                 elif s.get('type', None): v = s['type'](v)
                 setattr(self, k, v)
         return obj
-    
-    
+
+
 #    # test method to validate to_obj
 #    def to_obj_to_json(self):
 #        import pprint
@@ -1041,11 +1041,11 @@ class XmlConfig(object):
 #                #return json.JSONEncoder.default(self, obj)
 #                return obj
 #        return JSONEncoder(sort_keys=True, indent=4).encode(self)
-    
+
 
 class XmlConfigList(list, XmlConfig):
     '''Convenient class inheriting list and XmlConfig'''
-    
+
     def __init__(self, *args, **kwargs):
         list.__init__(self, *args)
         XmlConfig.__init__(self, **kwargs)
@@ -1056,7 +1056,7 @@ class XmlConfigDict(Dict, XmlConfig):
     if hasattr(Dict, '__metaclass__'):
         class XmlConfigDictMeta(Dict.__metaclass__, XmlConfig.__metaclass__): pass
         __metaclass__ = XmlConfigDictMeta
-    
+
     def __init__(self, *args, **kwargs):
         Dict.__init__(self, *args)
         XmlConfig.__init__(self, **kwargs)
@@ -1067,7 +1067,7 @@ def _test():
     class SKlass(XmlConfig): pass
     class Klass(XmlConfig):
         def __init__(self):
-            XmlConfig.__init__(self, 
+            XmlConfig.__init__(self,
                 xml_attributes=self.dict([
                     ('name',(None,None)),
                     ('default',(None,'default')),
@@ -1107,5 +1107,5 @@ def _test():
 
 if __name__ == '__main__':
     _test()
-    
+
 

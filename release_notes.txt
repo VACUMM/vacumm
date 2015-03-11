@@ -14,10 +14,30 @@ In development
 - Fixed bugs: list_forecast_files, Plot.add_lon/lat.
 - Fixed: ConfigManager.opt_parse.
 
+Version 2.5.3
+=============
+
+- Added "make safedoc" target.
+- Fixed: english translations++.
+- Fixed: missing test_plot_add_logo.py.
+- Fixed: multifit+multiproc in kriging.
+
+Version 2.5.1
+=============
+
+- Changed: module level config files renamed to vacumm.cfg.
+- Fixed: access to vacumm_nice_gfdl and vacumm_ssec colormaps.
+- Fixed: Logger and specs for Profile.
+- Fixed: add_logo.
+- Fixed: removed dependency to pytz, which must now be installed
+  to add time zone support to vacumm.
+
+>>>>>>> .fusion-droit.r1822
 Version 2.5.0
 ==============
 
-- Added: Plot.add_annotation, gfdl colormap.
+- Added: camp_nice_gfdl colormap.
+- Added: Plot.add_annotation.
 - Added: misc.plot.advanced.add_things tutorial.
 - Fixed: gen_gallery.
 

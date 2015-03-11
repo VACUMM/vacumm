@@ -1,10 +1,6 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-if __name__ == '__main__':
-    import sys; del sys.path[0]
 
-# Copyright or © or Copr. Actimar (2010)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -36,6 +32,10 @@ if __name__ == '__main__':
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+
+from __future__ import absolute_import
+if __name__ == '__main__':
+    import sys; del sys.path[0]
 
 __author__ = 'Stéphane Raynaud, Jonathan Wilkins'
 __email__ = 'raynaud@actimar.fr, wilkins@actimar.fr'

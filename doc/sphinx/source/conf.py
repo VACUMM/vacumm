@@ -44,7 +44,7 @@ extensions = [
         'vacumm.sphinxext.fortran_domain',
         'vacumm.sphinxext.fortran_autodoc',
         'vacumm.sphinxext.overview',
-        'vacumm.sphinxext.docversions',
+#        'vacumm.sphinxext.docversions',
         'gen_gallery',
         'gen_cmaps',
         ]
@@ -65,7 +65,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'VACUMM'
-copyright = u'2010-2013, Actimar/IFREMER'
+copyright = u'2010-2015, Actimar/IFREMER'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

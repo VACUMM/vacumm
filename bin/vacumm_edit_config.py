@@ -3,22 +3,7 @@
 """Edit your user configuration file of VACUMM"""
 print 'This script is deprecated. Please use "vacumm_config.py edit" instead'
 
-# Arguments
-from optparse import OptionParser
-import sys, os, shutil
-parser = OptionParser(#usage="Usage: %prog [options]",
-    description="Edit your user configuration file of VACUMM")
-parser.add_option('-e', '--editor', action='store', dest='editor',
-    help='alternative editor (defaults to environment variable EDITOR or VISUAL)')
-
-# Parse
-(options, args) = parser.parse_args()
-
-# Import
-try:
-    from vacumm.config import edit_user_conf_file
-except ImportError, e:
-    parser.error("Error importing vacumm:\n"+e.message)
-
-# Print
-edit_user_conf_file(editor=options.editor)
+# Backward compatibility
+import sys
+sys.argv = [sys.argv[0].replace('edit_config', 'config'), 'edit']+sys.argv[1:]
+import vacumm_config

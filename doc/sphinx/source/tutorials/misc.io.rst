@@ -1,9 +1,9 @@
 .. _user.tut.misc.io:
 
-Lecture et écriture de fichiers
-===============================
+Inputs/outputs
+==============
 
-Voir le module :mod:`~vacumm.misc.io`.
+See :mod:`~vacumm.misc.io` module.
 
 .. toctree::
 

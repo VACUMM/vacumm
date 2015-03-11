@@ -1,5 +1,36 @@
-#!/usr/bin/env python
 # -*- coding: utf8 -*-
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+#
+# This software is a computer program whose purpose is to provide
+# utilities for handling oceanographic and atmospheric data,
+# with the ultimate goal of validating the MARS model from IFREMER.
+#
+# This software is governed by the CeCILL license under French law and
+# abiding by the rules of distribution of free software.  You can  use,
+# modify and/ or redistribute the software under the terms of the CeCILL
+# license as circulated by CEA, CNRS and INRIA at the following URL
+# "http://www.cecill.info".
+#
+# As a counterpart to the access to the source code and  rights to copy,
+# modify and redistribute granted by the license, users are provided only
+# with a limited warranty  and the software's author,  the holder of the
+# economic rights,  and the successive licensors  have only  limited
+# liability.
+#
+# In this respect, the user's attention is drawn to the risks associated
+# with loading,  using,  modifying and/or developing or reproducing the
+# software by the user in light of its specific status of free software,
+# that may mean  that it is complicated to manipulate,  and  that  also
+# therefore means  that it is reserved for developers  and  experienced
+# professionals having in-depth computer knowledge. Users are therefore
+# encouraged to load and test the software's suitability as regards their
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
+# The fact that you are presently reading this means that you have had
+# knowledge of the CeCILL license and that you accept its terms.
+#
 
 import numpy as N
 from vacumm.misc import kwfilter
@@ -30,7 +61,7 @@ def get_kxky(shape, dx, dy, verbose=False):
 
 def get_spec(var1, var2=None, dx=None, dy=None, verbose=False, fft=False, **kwargs):
     """Get the spectrum of a 2D variable
-    
+
     :Return: specvar,nbwave,dk
     """
     # Get the resolution in meters
@@ -44,8 +75,8 @@ def get_spec(var1, var2=None, dx=None, dy=None, verbose=False, fft=False, **kwar
         dy = dy or ldy
     if N.ma.isMA(var1): var1= var1.filled(0.)
     if N.ma.isMA(var2): var2 = var2.filled(0.)
-        
-    
+
+
     # Part 1 - estimate of the wavenumbers
     [kx,ky,kkx,kky,kk,Lx,Ly] = get_kxky(var1, dx, dy, verbose=verbose)
     if verbose:
@@ -56,7 +87,7 @@ def get_spec(var1, var2=None, dx=None, dy=None, verbose=False, fft=False, **kwar
         print "kky[0:3,1] = ",kky[0:3,1]
         print "kk[0:3,3] = ",kk[0:3,3]
         print "shape",kx.shape,ky.shape,kkx.shape,kky.shape,kk.shape
-    
+
     # Part 2 - estimate of the spectrum
     # - fast fourier transform
     if fft:
@@ -65,7 +96,7 @@ def get_spec(var1, var2=None, dx=None, dy=None, verbose=False, fft=False, **kwar
         hat_phi1=hat_phi1.real.copy()  # useless
     else:
         hat_phi1 = var1
-        
+
     if var2 is not None:
         if fft:
             hat_phi2=N.fft.fft2(var2)
@@ -94,7 +125,7 @@ def get_spec(var1, var2=None, dx=None, dy=None, verbose=False, fft=False, **kwar
     nbwave = k_*1000.0/2.0/N.pi     # from rad/m to km/m
     dk *= 1000.0/2.0/N.pi
     specvar *= 2.0*N.pi/1000.0
-    if verbose: 
+    if verbose:
         if var2 is not None:
             print "\n Normalized co-spectrum : \n",specvar
         else:
@@ -187,15 +218,15 @@ def energy_spectrum(var, dx=None, dy=None, ctime=None, dispfig=False, latmean=No
         ldx, ldy = resol(var, **kwresol)
         dx = dx or ldx
         dy = dy or ldy
-    
+
     if latmean is None:
         if not cdms2.isVariable(var):
             raise Exception('You must provide explicitly latmean')
         latmean = var.getLatitude().getValue().mean()
-    
+
     # Numpy arrays
     sshbox = var.filled(0.) if N.ma.isMA(var) else var
-    
+
     #####################################################
     # estimate of the spatial resolution and the latitude
     #####################################################
@@ -240,14 +271,14 @@ def energy_spectrum(var, dx=None, dy=None, ctime=None, dispfig=False, latmean=No
     # estimate of the rms to further check
     ssh2per_rms = N.sqrt( (ssh2per**2).mean() )
     if verbose: print "rms of the double periodic ssh over the region of interest (from physical field) : %s \n" %ssh2per_rms
-    
+
     ################################
     # wavenumber spectrum of the ssh (double periodic field)
     ################################
 
     # estimate of the spectrum
     ssh2per_spec, ssh2per_k, dk = get_spec(ssh2per, dx=dx, dy=dy, fft='x2k', verbose=verbose)  # sshbox in physical space
-    
+
     # make sure the FFT is correct : we must have the same rms either from physics or from wavenumbers
     ssh2per_rmsk = N.sqrt( (ssh2per_spec*dk).sum() )
     if verbose: print "rms of the ssh over the region of interest (from wave number fields) : %s \n" %ssh2per_rmsk
@@ -300,9 +331,9 @@ def energy_spectrum(var, dx=None, dy=None, ctime=None, dispfig=False, latmean=No
     #if verbose: print "rms difference (wavenumber - physics) : %s \n" %(ssh2per_rmsk-ssh2per_rms)
 
     # figure
-    if dispfig: 
+    if dispfig:
         plot_loglog_kspec(uv2per_cospec, eke_k, savefig='eke2per_spec',
-            title='SPECTRUM OF EKE', subtitle=str(ctime), 
+            title='SPECTRUM OF EKE', subtitle=str(ctime),
             xlabel='Wavenumber (cycles/km)', ylabel='EKE [(m/s)^2/(cycle/km)]')
 
 
@@ -358,7 +389,7 @@ def energy_spectrum(var, dx=None, dy=None, ctime=None, dispfig=False, latmean=No
     tpi[0]=0.
 
     # figure
-    if dispfig: 
+    if dispfig:
         plot_semilogx_kspec(tpi, gg_k[:kmax1], savefig='ssh_spec',
         title='TOTAL ENERGY FLUX', subtitle=str(ctime),
         xlabel='Wavenumber (cycles/km)', ylabel='Sum of EKE from small scales to k [(m/s)^2/(cycle/km)]')

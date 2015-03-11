@@ -1,6 +1,6 @@
 .. _user.tut.misc.misc.strings:
 
-Les chaines de caractères
-=========================
+Strings
+=======
 
 .. literalinclude:: ../../../../scripts/tutorials/misc.misc.strings.py

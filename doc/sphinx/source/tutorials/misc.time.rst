@@ -1,15 +1,15 @@
 .. _user.tut.misc.time:
 
-Les temps
-=========
+Times
+=====
 
-La gestion des données temporelles.
+Management of data with time.
 
 
 .. _user.tut.misc.time.bases:
 
-Les bases
----------
+Bases
+-----
 
 .. toctree::
 
@@ -20,8 +20,8 @@ Les bases
 .. _user.tut.misc.time.vacumm:
 
 
-Outils VACUMM
--------------
+VACUMM time tools
+-----------------
 
 .. toctree::
 

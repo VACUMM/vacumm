@@ -1,18 +1,19 @@
 .. _user.tut.misc.plot:
 
-Les graphiques
-==============
+Graphics
+========
 
 Matplotlib
 ----------
 
-Pour les graphiques de base,
-le meilleur moyen de trouver ce que l'on cherche est d'aller voir
-la `galerie de Matplotlib <http://matplotlib.sourceforge.net/gallery.html>`_.
+Graphics are based only on :mod:`matplotlib` and mod:`basemap`.
+For examples of their usage, please have a look to the 
+`Matplotlib gallery <http://matplotlib.org/gallery.html>`_
+and to `Basemap user's guide <http://matplotlib.org/basemap/users/index.html>`_.
 
 
-Cas simples
------------
+Simples cases
+-------------
 .. toctree::
 
     misc.plot.basic.map2
@@ -23,8 +24,8 @@ Cas simples
     misc.plot.basic.taylor
     misc.plot.basic.target
 
-Cas complexes
--------------
+Advanced usages
+---------------
 .. toctree::
 
     misc.plot.advanced.add_things

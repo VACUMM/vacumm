@@ -15,12 +15,13 @@ UV-CDAT
 
 `UV-CDAT <http://uv-cdat.llnl.gov/>`_ is a meta-package containing:
 
-    - a version of python,
+    - a version of python;
     - standard and specialized python packages
-      (like `numpy <http://docs.scipy.org/doc/numpy/reference>`_ or
-      `scipy <http://docs.scipy.org/doc/scipy/reference>`_),
+      like `numpy <http://docs.scipy.org/doc/numpy/reference>`_,
+      `scipy <http://docs.scipy.org/doc/scipy/reference>`_ and
+      `matplotlib <http://matplotlib.org>`_;
     - python packages made by UV-CDAT providers,
-      and specialized for manipulation and visualization of ocean/atmosphere data,
+      and specialized for manipulation and visualization of ocean/atmosphere data;
     - numerous other libraries and tools.
 
 
@@ -45,32 +46,29 @@ useful  packages that can be install using :program:`pip` or
      - Yes
      - Manipulate advanced configuration files
    * - :pypi:`pytz`
-     - Yes
+     - Only for time zone support
      - Work with time zones
    * - :pypi:`paramiko`
-     - Yes for :mod:`~vacumm.misc.remote`
+     - Only for :mod:`~vacumm.misc.remote`
      - Use SSH2 protocol.
    * - :pypi:`seawater (2.0.1)`
      - Yes for advanced diags.
      - Sea water properties
+   * - :pypi:`xlw`
+     - Only for :func:`~vacumm.misc.misc.xls_style`.
+     - Write excel files (better: :pypi:`xlutils`)
    * - :pypi:`PIL (1.1.7)`
-     - No
+     - Only sometimes for :func:`~vacumm.misc.plot.add_logo`.
      - Manipulate images
-   * - :pypi:`readline (1.1.7)`
-     - No (if install failed with UV-CDAT)
-     - Useful for commandline history
-   * - :pypi:`xlutils (1.5.2)`
-     - No
-     - Manipulate Excel files.
    * - :pypi:`sphinxcontrib-cheeseshop (0.2)`
      - Doc
-     - Extension to :pypi:`sphinx`: Linking to Cheese Shop (Python Package Index) packages.
+     - Extension to :pypi:`sphinx`: Linking to Cheese Shop (Python Package Index) packages
    * - :pypi:`sphinxcontrib-ansi (0.6)`
      - Doc
-     - Extension to :pypi:`sphinx`: Pparse ANSI control sequences.
+     - Extension to :pypi:`sphinx`: Parse ANSI control sequences
    * - :pypi:`sphinxcontrib-programoutput (0.8)`
      - Doc
-     - Extension to :pypi:`sphinx`: Include program output.
+     - Extension to :pypi:`sphinx`: Include program output
 
 
 .. rubric:: Documentation generation
@@ -83,9 +81,14 @@ These utilities are needed to fully compile the documentation.
     sphinx extension :mod:`sphinx.ext.graphviz`.
     See for instance module :mod:`~vacumm.misc.core_plot`.
     The program :program:`dot` may be also needed.
+    You can install both with the :pypi:`pydot` package.
 
 `dvipng <http://savannah.nongnu.org/projects/dvipng>`_
     Used to compile latex formula of the documentation.
+
+`enumitem <https://www.ctan.org/pkg/enumitem>`_
+    This package is needed to compile the PDF version
+    of the documentation.
 
 .. _user.install.prereq.howto:
 
@@ -112,9 +115,7 @@ One way to manage several versions is to use environment modules
 Setup the environment
 ---------------------
 
-Once the installation is done, set environment variables:
-
-.. code-block:: bash
+Once the installation is done, set environment variables (bash)::
 
     $ export PATH=/path/to/uvcdat/bin:$PATH
     $ export LD_LIBRARY_PATH=/path/to/uvcdat/Externals/lib:/path/to/uvcdat/lib:$LD_LIBRARY_PATH
@@ -124,9 +125,7 @@ Once the installation is done, set environment variables:
 Check the installation
 ----------------------
 
-Then check :
-
-.. code-block:: bash
+Then check::
 
     $ python -c "import cdms2"
 

@@ -1,10 +1,10 @@
 .. _user.tut.misc.misc:
 
-Outils variés
--------------
+Misc tools
+----------
 
-Voir le module :mod:`~vacumm.misc.misc`.
+See :mod:`~vacumm.misc.misc` module.
 
 .. toctree::
 
-	misc.misc.strings
+    misc.misc.strings

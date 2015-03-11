@@ -1,9 +1,9 @@
 .. _user.tut.misc.grid:
 
-La gestion des grilles
-======================
+Gridded data
+============
 
-Voir le module :mod:`~vacumm.misc.grid`.
+See :mod:`~vacumm.misc.grid` module.
 
 .. toctree::
 

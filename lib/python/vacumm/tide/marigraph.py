@@ -2,27 +2,24 @@
 """
 Provides a class to perform basic operations on marigraphic sea level data
 """
-# Copyright or © or Copr. vacumm (contributor(s) : Stephane Raynaud) (2011)
-# 
-# raynaud@vacumm.fr
-# 
-# 
+# Copyright or © or Copr. Actimar/IFREMER (2011-2015)
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -30,10 +27,10 @@ Provides a class to perform basic operations on marigraphic sea level data
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 import numpy as N,numpy.ma as MA,cdms2 as cdms,MV2 as MV,cdtime
@@ -58,7 +55,7 @@ for key, val in _docs.items():
     ss = '*'*(1+val.startswith('+'))
     _docs[key] = '- %(ss)s%(key)s%(ss)s: %(val)s' % dict(ss=ss, key=key, val=val)
 _docs['base'] = '\n\t\t\t'.join([_docs[key] for key in 'time_range', 'tide_filter'])
-    
+
 def _fmtdoc_(func):
 #   try:
 #       func.__doc__ = func.__doc__ % _docs
@@ -70,7 +67,7 @@ def _fmtdoc_(func):
 
 class Marigraph(object):
     """A marigraph class that support statistics and plots.
-    
+
     You give as input a 1D cdms sea level variable with a suitable time,
     or a tide.StationInfo() object, or simply a 5-letter shom ID.
     The class will design an object with high and low tides,
@@ -78,13 +75,13 @@ class Marigraph(object):
     You can optionnally specify a time axis on wich the input signal
     is to be interpolated before any processing.
     You can also restrict the time range and perfom a running average.
-    
+
     :Parameters:
-    
+
         All parameters are passed to :meth:`set`
-        
+
             - **data** : It can be either
-            
+
                 - A ``cdms2`` 1D array with a time axis.
                 - A :class:`~vacumm.tide.StationInfo` instance.
                 - The name of a station that can be search for using :class:`~vacumm.tide.StationInfo`.
@@ -94,9 +91,9 @@ class Marigraph(object):
             - *anomaly*: Remove the anomaly of the restricted sample before any processing [default: False]
             - *shom_anomaly*: Same but removed mean is get from observation at correspondind shom station [default: False]
 %s
-    
+
     :Example:
-    
+
     >>> # Get data
     >>> from vacumm.tide import Marigraph
     >>> brest = Marigraph('BREST',range=('2006-03','2006-08'),hourly=True)
@@ -119,7 +116,7 @@ class Marigraph(object):
 
     # Initialization
     # --------------
-    def __init__(self,data, tide_filter='demerliac', 
+    def __init__(self,data, tide_filter='demerliac',
         outside_std=3.5,bad_values=None,verbose=False, mean=None, **kwargs):
 
         # Data synchronisation
@@ -128,9 +125,9 @@ class Marigraph(object):
         """Assign a data object to the marigraph
 
         :Parameters:
-        
+
             - **data** : It can be either
-            
+
                 - A ``cdms2`` 1D array with a time axis.
                 - A :class:`~vacumm.tide.StationInfo` instance.
                 - The name of a station that can be search for using :class:`~vacumm.tide.StationInfo`.
@@ -179,13 +176,13 @@ class Marigraph(object):
             assert cdms.isVariable(data), \
                    'The marigraph data object is not a valid cdms variable'
             data = data.clone()
-            
+
             # Check time axis
             taxis = data.getTime()
             if taxis is None:
                 taxis = data.getAxis(0).designateTime()
             assert hasattr(taxis, 'units'), 'Time axis has no units'
-            
+
             # Must be a vector
             if data.ndim > 1:
                 # Reorder
@@ -195,7 +192,7 @@ class Marigraph(object):
                 tmp = MV2.reshape(data, (N.multiply.reduce(data.shape[:-1]), data.shape[-1]))
                 data  = MV2.average(tmp, axis=0)
                 del temp
-                
+
             # Get some attributes
             for att in ['name','longitude','latitude']:
                 latt = 'station_'+att
@@ -210,14 +207,14 @@ class Marigraph(object):
             else:
                 tmpmean = data.mean()
             data[:] = MV.masked_outside(data,tmpmean-outside_std*std,   tmpmean+outside_std*std)
-                
+
         # Attributes
         self.data['base'] = data
         if not self.data['base'].attributes.has_key('units'):
             self.data['base'].units = 'm'
         if not self.data['base'].attributes.has_key('long_name'):
             self.data['base'].units = 'Sea level'
-            
+
         # Real mean
         if mean is None:
             mean = data.mean()
@@ -226,7 +223,7 @@ class Marigraph(object):
         self.data['anom'][:] -= mean
         self.data['anom'].id += '_anom'
         self.data['anom'].long_name = 'Anomaly of '+self.data['anom'].long_name
-        
+
         self.tide_filter = tide_filter
 
 
@@ -237,7 +234,7 @@ class Marigraph(object):
     def mean(self):
         """Mean sea level"""
         return self._mean
-        
+
     def anomaly(self):
         """Sea level anomaly"""
         return self._data['anom']
@@ -252,7 +249,7 @@ class Marigraph(object):
         self._check_tide_filter_(tide_filter)
 
     def _check_tide_filter_(self, tide_filter=None, **kwargs):
-        
+
         # Do we have something?
         need = self.data['tide'] is None
 
@@ -291,15 +288,15 @@ class Marigraph(object):
         """
         # Check changes
         if self.data['lows'] is not None: return
-            
+
         # Reference
         self._lowhigh_ref = ref
         if ref in ['demerliac', 'godin']:
             if self.tide_filter != ref:
                 ref, tide = getattr(filters, ref)(self.data['base'])
             else:
-                ref = self.data['cotes'] 
-            
+                ref = self.data['cotes']
+
         # Call to extema
         self.data['lows'], self.data['highs'] = filters.extrema(self.data['anom'], ref=ref, **kwargs)
         self.data['zeros'] = filters.zeros(self.data['anom'], ref=ref, **kwargs)
@@ -326,9 +323,9 @@ class Marigraph(object):
           using a demerliac or a godin filer.
 
         %(ref)s
-            
+
         .. seealso:
-        
+
             :meth:`set_tide_filter`, :meth:`cotes`, :mod:`vacumm.tide.filters`
         """
 
@@ -343,9 +340,9 @@ class Marigraph(object):
         """Return the sea level without the tide signal (surcotes and decotes). You must specify the filter before using this method.
 
         %(ref)s
-            
+
         .. seealso:
-        
+
             :meth:`set_tide_filter`, :meth:`tide`, :mod:`vacumm.tide.filters`
         """
         self._check_tide_filter_(**kwargs)
@@ -359,7 +356,7 @@ class Marigraph(object):
         """Low tides
 
         %(ref)s
-            
+
         .. seealso:
             :meth:`high`, :meth:`zeros`, :mod:`vacumm.tide.filters`
         """
@@ -371,7 +368,7 @@ class Marigraph(object):
         """High tides
 
         %(ref)s
-            
+
         .. seealso:
             :meth:`low`, :meth:`zeros`, :mod:`vacumm.tide.filters`
         """
@@ -382,9 +379,9 @@ class Marigraph(object):
     @_fmtdoc_
     def zeros(self, ref='mean',**kwargs):
         """Zeros of sea level anomaly
-        
+
         %(ref)s
-            
+
         .. seealso:
             :meth:`low`, :meth:`high`, :mod:`vacumm.tide.filters`
         """
@@ -442,16 +439,16 @@ class Marigraph(object):
 
 
     #### Plots
-    
+
     def plot(self, var=None, orig=True, tide=True, cotes=True, highs=True, lows=True, zeros=True, legend=True, title=None, savefig=None, savefigs=None, show=True, marker='o', **kwargs):
-        
+
         # Which variable?
         vtypes = 'orig', 'tide', 'highs', 'lows', 'zeros', 'cotes'
         if var is not None:
             assert var in vtypes
             for vt in vtypes:
                 exec "%s = %s"%(vt, vt==var)
-            
+
         # Plot params
         # - specific
         kwplot = {}
@@ -470,13 +467,13 @@ class Marigraph(object):
             tmp.update(kwplot[vt])
             kwplot[vt] = tmp
         anom = not (orig or highs or lows or zeros)
-        
+
         # Original signal
         if orig:
             kwplot['orig'].setdefault('color', '#888888')
             kwplot['orig'].setdefault('zorder', '10')
             curve(self.sea_level(), **kwplot['orig'])
-        
+
         # High tides
         if highs:
             kwplot['highs'].setdefault('color', 'r')
@@ -484,7 +481,7 @@ class Marigraph(object):
             kwplot['highs'].setdefault('markersize', 5)
             kwplot['highs'].setdefault('zorder', '12')
             curve(self.highs(), marker, **kwplot['highs'])
-            
+
         # Low tides
         if lows:
             kwplot['lows'].setdefault('color', 'b')
@@ -492,7 +489,7 @@ class Marigraph(object):
             kwplot['lows'].setdefault('markersize', 5)
             kwplot['lows'].setdefault('zorder', '12')
             curve(self.lows(), marker, **kwplot['lows'])
-            
+
         # Zeros
         if zeros:
             kwplot['zeros'].setdefault('color', 'k')
@@ -500,19 +497,19 @@ class Marigraph(object):
             kwplot['zeros'].setdefault('markersize', 5)
             kwplot['zeros'].setdefault('zorder', '12')
             curve(self.zeros(), marker, **kwplot['zeros'])
-            
+
         # Tidal signal
         if tide:
             kwplot['orig'].setdefault('color', 'k')
             kwplot['orig'].setdefault('zorder', '11')
             curve(self.tide(anom=anom), **kwplot['tide'])
-            
+
         # Surcote/decotes
         if cotes:
             kwplot['cotes'].setdefault('color', 'g')
             kwplot['cotes'].setdefault('zorder', '12')
             curve(self.cotes(anom=anom), **kwplot['cotes'])
-            
+
         # Misc
         if title is None:
             if var is not None:
@@ -527,9 +524,9 @@ class Marigraph(object):
             Savefigs(savefigs,  **kwfilter(kwargs, 'savefigs'))
         if show:
             P.show()
-        
-            
-    
+
+
+
 
 
 

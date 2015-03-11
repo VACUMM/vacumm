@@ -9,27 +9,25 @@ the time units between each coefficients.
 
     :ref:`user.tut.tide.filters`
 """
-# Copyright or © or Copr. vacumm (contributor(s) : Stephane Raynaud) (2011)
-# 
-# raynaud@vacumm.fr
-# 
-# 
+# Copyright or © or Copr. Actimar/IFREMER (2011-2015)
+#
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -37,10 +35,10 @@ the time units between each coefficients.
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 import cdtime, numpy as N,MV2,cdms2,genutil.filters as F
@@ -62,7 +60,7 @@ _filter_doc = """- *units*: Units of coefficient spacings (like 'hours' or cdms2
     - *only_tide*: Only return the tide signal [default: False].
 
     :Returns: cdms2 variables with proper time axis.
-    
+
     - ``fvar``: Filtered version of var (tide signal removed)
     - OR ``fvar,tvar``: Same + tide signal (``get_tide=True``)
     - OR ``tvar``: Only tide signal (``only_tide=True``)
@@ -121,11 +119,11 @@ def generic(var,coefs,units='hours',get_tide=False,only_tide=False,filter_name='
     # Return?
     if only_tide:
         get_tide = True
-        
+
     # Coefficients
     units = unit_type(units)
     sunits = unit_type(units, string_type=True)
-    coefs = coefs.astype('f') 
+    coefs = coefs.astype('f')
     if coefs[-1] != 0.:
         coefs = N.concatenate((coefs,[0.,]))
     ncoefs = (len(coefs)-1)*2+1
@@ -133,7 +131,7 @@ def generic(var,coefs,units='hours',get_tide=False,only_tide=False,filter_name='
     # Input variable
     var = MV2.asarray(var)
     check_axes(var)
-    
+
     # Input time axis
     if axis is None:
         try:
@@ -222,11 +220,11 @@ if generic.__doc__ is not None:
 #########################################################################
 
 def _get_anomaly_(var,ref='mean',mean=None):
-    
+
     # Basic checks
     assert var.ndim==1, 'Input variable must be 1D'
     assert cdms2.isVariable(var) and var.getTime() is not None, 'Input variable must have a proper time axis'
-    
+
     # Get reference
     if ref is None: ref = 'mean'
     nt = len(var)
@@ -250,23 +248,23 @@ def _get_anomaly_(var,ref='mean',mean=None):
 
     # Departure
     vara = var - var_ref
-    
+
     # Deal with mask
     if vara.mask is not MV2.nomask:
         vara = compress(vara)
         if not  isinstance(var_ref, (float, int)):
             var_ref = compress(MV2.masked_where(vara.mask, var_ref, copy=0))
-    
+
     return vara, var_ref
 
 
 def zeros(var, ref='mean',mean=None, getref=True, **kwargs):
     """Get the zeros of a tidal signal
-    
+
     :Returns: A :mod:`cdms2` variable of signs (-1,1) with a time axis
-    
+
     :Usage:
-    
+
     >>> tidal_zeros = zeros(sea_level,ref='demerliac')
     >>> print tidal_zeros[0:1]
     >>> print tidal_zeros[0:1].getTime().asComponentTime()
@@ -277,11 +275,11 @@ def zeros(var, ref='mean',mean=None, getref=True, **kwargs):
     taxis = vara.getTime()
     vara = vara.filled()
     longref = hasattr(varref, '__len__')
-    
+
     # Find indices
     sign = N.sign(vara)
     izeros =  N.arange(len(vara)-1).compress(sign[:-1]!=sign[1:])
-    
+
     # Interpolate
     units = taxis.units
     times = taxis.getValue()
@@ -296,7 +294,7 @@ def zeros(var, ref='mean',mean=None, getref=True, **kwargs):
         if getref and longref:
             dt = times[i0+1]-times[i0]
             ret[i] = var_ref[i0]*vara[i0+1]/dv - var_ref[i0+1]*vara[i0]/dv
-        
+
     # Format
     if not getref:
         ret = MV2.array(sign[izeros], id='zeros')
@@ -307,29 +305,29 @@ def zeros(var, ref='mean',mean=None, getref=True, **kwargs):
     zeros = create_time(zeros, units)
     ret.setAxis(0, zeros)
     return ret
-    
+
 
 def extrema(var,ref='mean',mean=None,getmax=True,getmin=True,getsign=False,getidx=False,spline=True,**kwargs):
     """Find extrema of 1D array using a reference. This is suited for detecting low and high tides.
-    
+
     - **var**: 1D :mod:`cdms2` array of sea level with a time axis.
     - *ref*: Zero reference to compute the sea level anomaly:
-    
+
         - a filter name (``'demerliac'``, ``'godin'``) where the residual as used as the reference (useful only on long time series),
         - ``'mean'``: the reference is the averaged signal,
         - an integer, so that the reference is a running average using a window of length ``ref``,
         - a float that is used as the reference.
-        
+
     - *mean*: If ``ref='mean'``, ``mean`` can be substituted to the real mean value.
     - *spline*: If True, extremes are computed using spline interpolation (precision=minute).
     - *getmin*: Return an array of low tides.
     - *getmax*: Return an array of tides.
     - *getsign*: Return signs of tide.
     - *getidx*: Return array of index of low and high tides
-    
+
     :Returns: ``[lows,][highs,][signs]`` depending on options.
     """
-    
+
     # Get anomaly
     ref = kwargs.pop('reference', ref)
     vara, varref = _get_anomaly_(var, ref=ref,mean=mean)

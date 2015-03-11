@@ -1,10 +1,7 @@
 # -*- coding: utf8 -*-
 """Utilities derived from mpl_toolkits.basemap"""
 
-# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
-#
-# raynaud@actimar.fr
-#
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -342,6 +339,7 @@ class GSHHS_BM(Shapes):
 
                 # Vertices
                 clip = create_polygon(clip, mode='verts')
+
 
                 # Map extension from clip bounds
                 kwmap.setdefault('lon_min', clip[:, 0].min())

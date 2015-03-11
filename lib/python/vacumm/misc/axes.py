@@ -6,27 +6,24 @@
 
     Tutorials: :ref:`user.tut.misc.variables.axes`
 """
-# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
-# 
-# raynaud@actimar.fr
-# 
-# 
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model of IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -34,13 +31,13 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-# 
+#
 import re
 import numpy as N, cdms2, MV2
 cdms = cdms2
@@ -53,11 +50,11 @@ from fnmatch import fnmatch
 from warnings import warn
 from vacumm import VACUMMError
 
-__all__ = ['isaxis', 'islon', 'islat', 'islev', 'isdep', 'istime', 
-    'check_axes', 'is_geo_axis', 'check_axis', 'get_axis_type', 'check_id', 
-    'get_checker', 'is_geo_axis_type', 'axis_type', 
-    'create', 'create_time', 'create_lon', 'create_lat', 'create_dep', 'create_depth', 
-    'guess_timeid', 'get_order', 'set_order', 'order_match', 'merge_orders', 
+__all__ = ['isaxis', 'islon', 'islat', 'islev', 'isdep', 'istime',
+    'check_axes', 'is_geo_axis', 'check_axis', 'get_axis_type', 'check_id',
+    'get_checker', 'is_geo_axis_type', 'axis_type',
+    'create', 'create_time', 'create_lon', 'create_lat', 'create_dep', 'create_depth',
+    'guess_timeid', 'get_order', 'set_order', 'order_match', 'merge_orders',
     'check_order']
 __all__.sort()
 
@@ -66,56 +63,56 @@ def isaxis(axis):
         return True
     return isinstance(axis,(AbstractAxis, FileAxis, TransientAxis2D))
 
-def islon(axis, ids = 'lon', 
-    standard_names = 'longitude', 
-    units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 'degreee', 'degreese'], 
-    long_names = 'longitude', 
-    defaults = dict(units='degrees_east',standard_name='longitude',long_name='Longitude',axis='X'), 
+def islon(axis, ids = 'lon',
+    standard_names = 'longitude',
+    units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 'degreee', 'degreese'],
+    long_names = 'longitude',
+    defaults = dict(units='degrees_east',standard_name='longitude',long_name='Longitude',axis='X'),
     ro=False, checkatts=True):
     """Check if a axis is longitudes"""
     return is_geo_axis_type(axis, 'x', ids=ids, standard_names=standard_names,
         units=units, long_names=long_names, defaults=defaults, ro=ro, checkatts=checkatts)
 
-def islat(axis, 
-    ids='lat', 
-    standard_names='latitude', 
-    units=['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'], 
-    long_names='latitude', 
-    defaults=dict(units='degrees_north',standard_name='latitude',long_name='Latitude',axis='Y'), 
+def islat(axis,
+    ids='lat',
+    standard_names='latitude',
+    units=['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'],
+    long_names='latitude',
+    defaults=dict(units='degrees_north',standard_name='latitude',long_name='Latitude',axis='Y'),
     ro=False, checkatts=True):
     """Check if a axis is latitudes"""
     return is_geo_axis_type(axis, 'y', ids=ids, standard_names=standard_names,
         units=units, long_names=long_names, defaults=defaults, ro=ro, checkatts=checkatts)
 
-def islev(axis, 
-    ids=['dep','lev','plev'], 
-    standard_names=['depth','pressure_level'], 
-    units=['m','meters','hpa'], 
-    long_names=['depth','pressure level','profondeur','pression','sigma','geopotential'], 
+def islev(axis,
+    ids=['dep','lev','plev'],
+    standard_names=['depth','pressure_level'],
+    units=['m','meters','hpa'],
+    long_names=['depth','pressure level','profondeur','pression','sigma','geopotential'],
     defaults=dict(axis='Z',long_name='Levels'), ro=False, checkatts=True):
     """Check if a axis is levels"""
     return is_geo_axis_type(axis, 'z', ids=ids, standard_names=standard_names,
         units=units, long_names=long_names, defaults=defaults, ro=ro, checkatts=checkatts)
 islevel = islev
 
-def isdep(axis, 
-    ids=['dep'], 
-    standard_names=['depth'], 
+def isdep(axis,
+    ids=['dep'],
+    standard_names=['depth'],
     units=['m','meters'],
-    long_names=['depth','profondeur'], 
-    defaults=dict(axis='Z',long_name='Depth'), 
+    long_names=['depth','profondeur'],
+    defaults=dict(axis='Z',long_name='Depth'),
     ro=False, checkatts=True):
     """Check if a axis is depths"""
     return is_geo_axis_type(axis, 'z', ids=ids, standard_names=standard_names,
         units=units, long_names=long_names, defaults=defaults, ro=ro, checkatts=checkatts)
 isdepth = isdep
 
-def istime(axis, 
-    ids=['time','date'], 
-    standard_names = ['time'], 
-    units=None, 
-    long_names=['time','temps','date'], 
-    defaults=dict(axis='T', standard_name='time', long_name='Time'), 
+def istime(axis,
+    ids=['time','date'],
+    standard_names = ['time'],
+    units=None,
+    long_names=['time','temps','date'],
+    defaults=dict(axis='T', standard_name='time', long_name='Time'),
     ro=False, checkatts=True):
     """Check if a axis is time"""
     if units is None:
@@ -123,27 +120,27 @@ def istime(axis,
     myistime = is_geo_axis_type(axis, 't',  ids=ids, standard_names=standard_names,
         units=units, long_names=long_names, defaults=defaults, ro=ro, checkatts=checkatts)
     if myistime and not ro:
-##      if not hasattr(axis,'calendar'): 
+##      if not hasattr(axis,'calendar'):
         try:
             axis.calendar = 'gregorian'
         except:
             pass
     return myistime
-    
+
 def get_checker(name):
     """Get the function that checks if an axis of required type
-    
+
     :Params:
-    
+
         - **name**: Generic name of the axis.
-        
-    :Returns: 
-    
+
+    :Returns:
+
         :func:`islon`, :func:`islat`, :func:`islevel`, :func:`istime`
         or raises :exc:`TypeError`
-    
+
     :Example:
-    
+
         >>> get_checker('x')
         >>> get_checker('lon')(myaxis)
     """
@@ -161,12 +158,12 @@ def get_checker(name):
         return istime
     raise TypeError(errmsg)
 
-def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None, 
+def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None,
     long_names=None, defaults=None, ro=False, checkatts=True):
     """Check if an axis is of a specific type
-    
+
     :Params:
-    
+
         - **axis**: CDAT 1D or 2D axis.
         - **atype**: Axis type as one of 'x', 'y', 'z' or 'z'.
         - **ids**, optional: List od ids to check.
@@ -194,7 +191,7 @@ def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None,
     sis = 'axis.is%s()' % name
     ok = 'axis.designate%s();check_id(axis)' % name
     try:
-        if eval(sis): 
+        if eval(sis):
             if not ro:
                 exec ok
                 check_def_atts(axis, **defaults)
@@ -223,7 +220,7 @@ def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None,
         else:
             if not isinstance(goods, list):
                 goods = [goods,]
-                
+
             for good in goods:
                 val = getattr(axis, att, '').lower().strip()
                 if val != '' and val.startswith(good):
@@ -232,7 +229,7 @@ def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None,
                 continue
         if not ro:
             exec ok
-            try:    
+            try:
                 check_def_atts(axis,**defaults)
             except:
                 pass
@@ -243,13 +240,13 @@ _isgeoaxis_ = is_geo_axis_type # Backward compat
 
 def check_axes(var, **kw):
     """Check the format of all axes of a cdms variable"""
-    if cdms.isVariable(var): 
+    if cdms.isVariable(var):
         for axis in var.getAxisList():
             check_axis(axis, **kw)
 
 def is_geo_axis(axis, **kw):
     """Return True if axis is time, level, lat or lon"""
-    return istime(axis, **kw) or islev(axis, **kw) or islat(axis, **kw) or islon(axis, **kw) 
+    return istime(axis, **kw) or islev(axis, **kw) or islat(axis, **kw) or islon(axis, **kw)
 
 def check_axis(axis, **kw):
     """Check the format an axis"""
@@ -257,15 +254,15 @@ def check_axis(axis, **kw):
 
 def get_axis_type(axis, genname=False, **kw):
     """Return the axis type as a signle letter (CDAT standards): -, t, z, y, or x
-    
+
     :Params:
-    
+
         - **axis**: CDAT axis.
         - **genname**, optional: Return a generic name or None.
         - Other keywords are passed to checking functions (:func:`islon`...).
-    
+
     :Example:
-    
+
         >>> get_axis_type(create_time((5,),'days since 2000'))
         't'
         >>> get_axis_type(axis, genname=True, ro=True, checkatts=False)
@@ -296,18 +293,18 @@ def check_id(axis,**kwargs):
 
 def create(values, atype='-', **atts):
     """Quickly create an axis
-    
+
     :Params:
-    
+
         - **values**: Numerical values.
         - **atype**, optional: axis type within 'x','y','z','t','-' [default: '-']
         - Other keywords are passed as attributes to the axis.
-        
+
     :Example:
-    
+
         >>> lon = create(N.arange(-10., 0, 2), 'x')
         >>> lon = create((-10., 0, 2), 't', id='temps', units='seconds since 2000')
-        >>> 
+        >>>
     """
     if isinstance(values, tuple) and len(values) < 4:
         values = N.arange(*values, **{'dtype':'d'})
@@ -324,21 +321,21 @@ def create(values, atype='-', **atts):
     if axis.axis == '-':
         del axis.axis
     return axis
-    
+
 def create_time(values,units=None,**atts):
     """Create a time axis
-    
+
     :Params:
-    
-        - **values**: Numeric values, or list of date objects 
+
+        - **values**: Numeric values, or list of date objects
           (:class:`~datetime.datetime`, :func:`~cdtime.comptime`, :func:`~cdtime.reltime`).
         - **units**, optional: Time units like 'days since 2000-01-01'.
         - Other keywords are passed as attributes to the axis.
-    
+
     .. note:: Units must be provided explicitly if no date are passed.
-    
+
     :Example:
-    
+
         >>> from vacumm.misc.atime import create_time
         >>> from datetime import datetime
         >>> import cdtime
@@ -380,72 +377,72 @@ def create_time(values,units=None,**atts):
 
 def create_lon(values,**atts):
     """Create a longitude axis
-    
+
     :Params:
-    
+
         - **values**: Numeric values
         - Keywords are passed as attributes to the axis.
-        
+
     :Example:
         >>> create_lon(numpy.arange(-18., -5.))
         >>> create_lon(numpy.arange(-18., -5.),long_name='original_longitude')
-        
-    """ 
+
+    """
     if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
         from grid.misc import create_axes2d
         atts.setdefault('long_name', 'Longitude')
         return create_axes2d(x=values, lonid=atts.pop('id', None), xatts=atts)
     return create(values,'x',**atts)
-    
+
 def create_lat(values,**atts):
     """Create a latitude axis
-    
+
     :Params:
-    
+
         - **values**: Numeric values
         - Keywords are passed as attributes to the axis.
-        
+
     :Example:
         >>> create_lat(numpy.arange(40., 48., 1.5))
         >>> create_lat(numpy.arange(40., 48., 1.5),long_name='strange_latitude')
-    
-    """ 
+
+    """
     if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
         from grid.misc import create_axes2d
         atts.setdefault('long_name', 'Latitude')
         return create_axes2d(y=values, latid=atts.pop('id', None), yatts=atts)
     return create(values,'y',**atts)
-    
+
 def create_dep(values,**atts):
     """Create a depthaxis
-    
+
      :Params:
-    
+
         - **values**: Numeric values
         - Keywords are passed as attributes to the axis.
-    
+
     :Example:
         >>> create_dep(numpy.arange(-1000., -500., 10.))
         >>> create_dep(numpy.arange(-1000., -500., 10.),long_name='deep_depth')
-        
-    """ 
+
+    """
     return create(values,'z',**atts)
 create_depth = create_dep
 
 
 def guess_timeid(ncfile, vnames=None):
     """Guess the id of the time axis in a netcdf file
-    
+
     :Params:
-    
+
         - **ncfile**: Netcdf file name or descriptor.
         - **vnames**, optional: List of variables to look for
           a time axis (defaults to all variables)
-        
-    :Return: The id as a string, or ``None`` if not found. 
-    
+
+    :Return: The id as a string, or ``None`` if not found.
+
     :Example:
-    
+
         >>> tid = guess_timeid('file.nc')
         >>> f = cdms2.open('file.nc')
         >>> tid = guess_timeid(f)
@@ -460,19 +457,19 @@ def guess_timeid(ncfile, vnames=None):
            break
     nfo.close()
     return time.id if time is not None else None
-  
+
 
 def set_order(var, order, replace=False):
     """Restore axis order of cdms variable
-    
+
     :Params:
-    
+
         - **var**: A cdms array.
         - **order**: A cdms order  string(like 'tx')
         - **replace**: Erase existing axis types?
-     
+
     :Example:
-    
+
         >>> set_order(temp, 'tyx')
     """
     current_order = var.getOrder()
@@ -491,35 +488,35 @@ def set_order(var, order, replace=False):
             axis.designateTime()
         elif o=='-' and hasattr(axis, 'axis'):
             del axis.axis
-                
-            
+
+
     return var
-    
+
 def get_order(var):
     """Enhanced version of getOrder() method that handles 2D axes
-    
+
     :Params:
-    
+
         - **var**: axis or cdms variable.
-        
+
     :Output: string containing letters x, y, z, t or -
-    
+
     :Example:
-    
+
         >>> get_order(var)
         "-yx"
     """
     # Already an order
     if isinstance(var, basestring):
         return var.lower()
-    
+
     # Axis
     if isaxis(var):
         order = get_axis_type(var)
         if len(var.shape)==2 and order in 'xy':
             return 'yx'
         return order
-        
+
     # Variable
     if not cdms2.isVariable(var): return '-'*len(var.shape)
     order = var.getOrder()
@@ -539,33 +536,33 @@ def get_order(var):
 
 def order_match(order1, order2, asscore=False, strict=False):
     """Check that to axis orders are compatible
-    
+
     :Params:
-    
+
         - **order1/2**: Order strings containing ``x``, ``y``, ``z``, ``t`` or ``-`` chars.
         - **asscore**, optional: Return the total level of matching, where, for one char:
-        
+
             - 0: no matching,
             - 1: matching with ``-``,
             - 2: letters equal.
-            
+
         - **strict**, optional: Be more strict.
-        
+
             - ``False``: Not strict.
             - ``True`` or ``"both"``: Fail even with ``-``.
             - ``"left"`` or ``"right"``: Designate the reference order, where
               the other one is not allowed to be different, except when the former
               has a ``-``.
-            
+
     :Examples:
-    
+
         >>> order_match('y', 'x')
         False
         >>> order_match('x-', 'xy')
         True
         >>> order_match('x-', 'xy', strict="right")
         False
-        
+
     """
     order1 = get_order(order1)
     order2 = get_order(order2)
@@ -579,7 +576,7 @@ def order_match(order1, order2, asscore=False, strict=False):
         o2 = order2[ic]
         if '-' in o1+o2:
             if o1!=o2 and (
-                strict=="both" or 
+                strict=="both" or
                 (strict=='left' and o1!='-') or
                 (strict=='right' and o2!='-')):
                 return 0 if asscore else False
@@ -591,12 +588,12 @@ def order_match(order1, order2, asscore=False, strict=False):
 
 def merge_orders(order1, order2, raiseerr=True):
     """Merge two axis orders
-    
+
     When two orders doesn't have the same length,
     they are right adjusted.
-    
+
     :Examples:
-    
+
         >>> merge_orders('t-x', 'y-')
         'tyx', 'yx'
         >>> merge_orders('yx', 'tz')
@@ -607,7 +604,7 @@ def merge_orders(order1, order2, raiseerr=True):
     order2 = get_order(order2)
     rev = slice(None, None, 1-2*int(len(order2)<len(order1)))
     order1, order2 = (order1, order2)[rev]
-    
+
     # Inner loop
     ishift = 0
     n1 = len(order1)
@@ -620,9 +617,9 @@ def merge_orders(order1, order2, raiseerr=True):
             i2 = j
             l = n1
             break
-            
+
     else: # Outerloops
-    
+
         for ishift in range(1, min(n1, n2)):
             l = min(n1, n2)-ishift
             if order_match(order1[:l], order2[ishift:ishift+l]):
@@ -637,7 +634,7 @@ def merge_orders(order1, order2, raiseerr=True):
             if raiseerr:
                 raise VACUMMError('orders are incompatible and cannot be safely merged: %s %s'%(order1, order2)[rev])
             return (order1, order2)[rev]
-    
+
     # Merge
     neworder1 = order1[:i1]
     neworder2 = order2[:i2]
@@ -656,42 +653,42 @@ def merge_orders(order1, order2, raiseerr=True):
             return (order1, order2)[rev]
     neworder1 += order1[i1+l:]
     neworder2 += order2[i2+l:]
-    
+
     # Check multiples
     for c in 'xyztd':
-        if neworder1.count(c)>2 or neworder2.count(c)>2: 
+        if neworder1.count(c)>2 or neworder2.count(c)>2:
             warn('Merging of orders (%s and %s) may have not '%(order1, order2) + \
                 'properly worked (multiple axes are of the same type)')
-                
+
     return (neworder1, neworder2)[rev]
-            
-            
-def check_order(var, allowed, vertical=None, copy=False, reorder=False, 
+
+
+def check_order(var, allowed, vertical=None, copy=False, reorder=False,
     extended=None, getorder=False):
-    """Check that the axis order of a variable is matches 
+    """Check that the axis order of a variable is matches
     at least one the specifed valid orders
-    
+
     :Params:
-    
+
         - **var**: MV2 array.
         - **allowed**: A single order string or a list. It should contain one or
           several of these letters:
-          
+
             - ``x``: longitudes,
             - ``y``: latitudes,
             - ``z``: vertical levels,
             - ``t``: time axis,
-            - ``d``: data values (ignored), 
+            - ``d``: data values (ignored),
             - ``-``: any kind of axis.
-            
+
     :Return:
-    
+
         ``var``, or ``var, order, reordered`` if **reorder** is True.
     """
 
     # Check allowed orders
     # - consistency
-    if not isinstance(allowed, (list, tuple)): 
+    if not isinstance(allowed, (list, tuple)):
         allowed = [allowed]
     else:
         allowed = list(allowed)
@@ -728,7 +725,7 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
     # - restrict to vertical or horizontal (1D data only)
     if vertical is not None and len(allowed[0])==2:
         allowed = [oo for oo in allowed if oo[int(vertical)]=='d']
-        
+
     # Data order
     data_cdms_order = get_order(var)
 
@@ -736,25 +733,25 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
     from vacumm.misc.grid.misc import get_axis, var2d
     reordered = False
     for allowed_order in allowed:
-        
+
         # Handle data case
         d = allowed_order.find('d')
         if d!=-1: allowed_order = allowed_order.replace('d', '') # pure axis
-                
+
         # Check cdms order
         allowed_cdms_order = allowed_order.lower() # lower case
         if order_match(data_cdms_order, allowed_cdms_order, strict='right'): break # It is already good
-           
+
         # Try to reorder
         if reorder:
-            
-            try: 
+
+            try:
                 reordered = cdms2.order2index(var.getAxisList(), allowed_cdms_order)
                 new_var = var.reorder(allowed_cdms_order)
                 if allowed_cdms_order[-1]=='x' and len(get_axis(new_var, -1).shape)==2: # 2D axes
                     del var
-                    var = var2d(new_var, 
-                        MV2.transpose(get_axis(new_var, 0)), 
+                    var = var2d(new_var,
+                        MV2.transpose(get_axis(new_var, 0)),
                         MV2.transpose(get_axis(new_var, -1)), copy=0)
                     set_order(new_var, allowed_cdms_order)
                 else:
@@ -762,21 +759,21 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
                     var = new_var
                 data_cdms_order = get_order(var)
                 break # No error so it worked and we leave
-                
-            except: 
+
+            except:
                 continue
-                        
+
     else:
         raise VACUMMError('Wrong type of axes. Possible forms are: %s'%', '.join(allowed))
-      
+
     if not getorder: return var
     if d!=-1:
         data_cdms_order = cdms2.orderparse(data_cdms_order)
-        data_cdms_order.insert(d, 'd')    
+        data_cdms_order.insert(d, 'd')
         data_cdms_order = ''.join(data_cdms_order)
     return var, data_cdms_order, reordered
-           
-            
+
+
 
 
 

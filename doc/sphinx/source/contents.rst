@@ -5,7 +5,7 @@
 
     **Version :** |release|
 
-    .. docversions::
+    Sea also: :ref:`appendix.release`
 
     **Table of content:**
 

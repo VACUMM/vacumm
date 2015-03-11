@@ -1,24 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar (2010)
-# 
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -26,13 +26,13 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-# 
+#
 
 
 __author__ = 'Jonathan Wilkins'
@@ -47,13 +47,13 @@ import sys, traceback, types
 class ExceptionDebugger(object):
     '''
     Usefull for debugging.
-    
+
     Retreive details about exceptions like locals for each frames.
-    
+
     This provides informations about the program state (variables) for each frame
     of the call stack.
     '''
-    
+
     def __init__(self, exit=True, nframe=None):
         self.exit, self.nframe = exit, nframe
 
@@ -61,9 +61,9 @@ class ExceptionDebugger(object):
         '''
         Print the usual traceback information, followed by a (huge!) listing of all the
         local variables in each frame.
-        
+
         **TODO**: use StringIO
-        
+
         '''
         ls = u'-'*80
         info = ''
@@ -85,7 +85,7 @@ class ExceptionDebugger(object):
             while f:
                 stack.append(f)
                 f = f.f_back
-            stack.reverse()    
+            stack.reverse()
             info = u'%s\nException details, locals by frame, innermost last'%(ls)
             if self.nframe is None:
                 self.nframe = len(stack)
@@ -118,14 +118,14 @@ class ExceptionDebugger(object):
         print>>sys.stderr, self.getDetailedExceptionInfo(etype, evalue, tb)
         if self.exit:
             sys.exit(1)
-    
+
     def bindExceptHook(self):
         '''Install this classe's exception traceback feature to sys.excepthook.
         :meth:`getDetailedExceptionInfo` will then be called when an exception
         is not handled by user's code (and then before exiting).
         '''
         sys.excepthook = self.exceptHook
-    
+
 
 # Default exception debbuger
 _excdbg = ExceptionDebugger()
@@ -133,11 +133,11 @@ _excdbg = ExceptionDebugger()
 def bindExceptHook(*a, **k):
     '''See :meth:`ExceptionDebugger.bindExceptHook`'''
     _excdbg.bindExceptHook(*a, **k)
-    
+
 
 def getDetailedExceptionInfo(*a, **k):
     '''See :meth:`ExceptionDebugger.getDetailedExceptionInfo`'''
     return _excdbg.getDetailedExceptionInfo(*a, **k)
-    
+
 
 

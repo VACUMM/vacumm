@@ -1,5 +1,11 @@
 # -*- coding: utf8 -*-
 """Classes for all plots"""
+# Copyright or © or Copr. Actimar/IFREMER (2012-2015)
+#
+# This software is a computer program whose purpose is to provide
+# utilities for handling oceanographic and atmospheric data,
+# with the ultimate goal of validating the MARS model from IFREMER.
+#
 # This software is a computer program whose purpose is to [describe
 # functionalities and technical features of your software].
 #
@@ -28,6 +34,7 @@
 #
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
+
 import os
 import re
 from collections import OrderedDict
@@ -1987,7 +1994,7 @@ class Plot(object):
 
     def add_arrow(self, x, y, udata,vdata,zorder=150,polar=False,degrees=True,shadow=False, glow=False,
          quiverkey=False,xyscaler=None, **kwargs):
-        """Add an arrow to the map using :meth:`matplotlib.pyplot.quiver`
+        """Add an arrow to the map using :func:`matplotlib.pyplot.quiver`
 
         :Params:
 

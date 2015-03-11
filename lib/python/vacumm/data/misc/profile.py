@@ -1,24 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar (2010)
-# 
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+#
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-# 
+#
 # This software is governed by the CeCILL license under French law and
-# abiding by the rules of distribution of free software.  You can  use, 
+# abiding by the rules of distribution of free software.  You can  use,
 # modify and/ or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
-# 
+# "http://www.cecill.info".
+#
 # As a counterpart to the access to the source code and  rights to copy,
 # modify and redistribute granted by the license, users are provided only
 # with a limited warranty  and the software's author,  the holder of the
 # economic rights,  and the successive licensors  have only  limited
-# liability. 
-# 
+# liability.
+#
 # In this respect, the user's attention is drawn to the risks associated
 # with loading,  using,  modifying and/or developing or reproducing the
 # software by the user in light of its specific status of free software,
@@ -26,17 +26,17 @@
 # therefore means  that it is reserved for developers  and  experienced
 # professionals having in-depth computer knowledge. Users are therefore
 # encouraged to load and test the software's suitability as regards their
-# requirements in conditions enabling the security of their systems and/or 
-# data to be ensured and,  more generally, to use and operate it in the 
-# same conditions as regards security. 
-# 
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-# 
+#
 
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
-__date__ = '2012-12-18'
+__date__ = '2015-02-27'
 __doc__ = '''
 This module provides vertical profiles managers.
 
@@ -51,12 +51,12 @@ The main classes are:
 - :class:`AbstractProfiles`: abstract base class used to handle a list of :class:`Profile`,
   it define what Profiles or other subclasses must implement to be used by other classes
   like :class:`ProfilesMerger`.
-- :class:`Profiles`: concrete base class which implements the :class:`AbstractProfiles`: 
+- :class:`Profiles`: concrete base class which implements the :class:`AbstractProfiles`:
   required methods. This class define a :meth:`Profiles.save` method which write a standardized
   NetCDF profiles file. It also define some utility methods like plotting utilities.
 - :class:`ProfilesDuplicatesFilter`: a class used by default by :class:`ProfilesMerger`:
 - :class:`ProfilesMerger`: split Profiles into unique / duplicate Profiles
-- :class:`ProfilesDataset`: 
+- :class:`ProfilesDataset`:
 
 Two classes may be used as a program entry point using their main class method:
 
@@ -79,7 +79,7 @@ Two classes may be used as a program entry point using their main class method:
 # * Some profile time value are invalid (e.g. ['1' '9' '9' '8' '0' '6' '0' '2' '9' '9' '9' '9' '0' '0']
 #   in MANGA_SISMER_PR_CT.nc).
 #   In this case, the time component will be set to 12H
-#   Then when searching for duplicates, the first matching duplicate being in the 
+#   Then when searching for duplicates, the first matching duplicate being in the
 #   time range [T - N hours, T + N hours] will replace the time corrupted profile.
 #   (with T the corrupted profile datetime and N a configurable number of hours)
 # * Operations on masked values throws numpy warnings, this can be ignored with the following instruction
@@ -132,9 +132,11 @@ from vacumm.misc.log import Logger
 from vacumm.misc.misc import kwfilter, is_iterable
 from vacumm.misc.plot import bar2, curve2, map2
 
-try: import seawater.csiro
+try:
+#    import seawater.csiro
+    from vacumm.misc.diags import sw_depth, sw_pres_sw_dens
 except ImportError:
-    warnings.warn('Failed to import seawater.csiro, depth<=>pressure conversions not available')
+    warnings.warn('Failed to import seawater fonctions, depth<=>pressure conversions not available')
 
 # ==============================================================================
 
@@ -144,9 +146,9 @@ class Profile(Object):
     A profile variables container.
     Store variables in a dictionnary with variables identifiers as keys, cdms variables as values.
     Variables must share the same profile properties: platform code, datetime, position and depth.
-    
+
     **NOTE: At present, this loads (copy) all data in memory ..!**
-    
+
     :Required named argmuments:
             - **platform_code**: a string
             - **datetime**: datetime.datetime
@@ -155,12 +157,12 @@ class Profile(Object):
             - **datetime_corrupted**: boolean indicating if the time component is corrupted (arbitrary set)
             - **depth**: cdms variable with shape (level)
             - **variables**: cdms variables dictionnary, variables with shape (level)
-        
+
     '''
     __properties = ('platform_code', 'datetime', 'latitude', 'longitude', 'datetime_corrupted', 'depth', 'variables', 'parent', 'index', 'filename')
-    
+
     def __init__(self, **kwargs):
-        Object.__init__(self)
+        Object.__init__(self, **kwargs)
         # TODO:
         # - Remove slot mecanism if it does not optimize memory usage
         # - Store depth as axis
@@ -183,26 +185,27 @@ class Profile(Object):
             v = cdms2.createVariable(v, id=n, axes=(self.level,))
             #v = cdms2.createVariable(v, id=n)
             self.variables[n] = v
-    
-    def __str__(self):
+        self.__str__ = self.__newstr__
+
+    # Replace __str__ once all __init__ actions are completed
+    def __newstr__(self):
         return '<%s %s, depth shape: %s, variables: %s'%(
             self.__class__.__name__,
-            ', '.join(('%s: %s'%(a, getattr(self, a)) for a in self.__properties[:5])), # update this on properties changes
+            ', '.join(('%s: %s'%(a, getattr(self, a, None)) for a in self.__properties[:5])), # update this on properties changes
             self.depth.shape, self.variables.keys())
-    __repr__ = __str__
-    
+
     def get_depth_min(self):
         '''Return the minimum depth value.'''
         return float(MV2.min(self.depth))
-    
+
     def get_depth_max(self):
         '''Return the maximum depth value.'''
         return float(MV2.max(self.depth))
-    
+
     def get_depth_range(self):
         '''Return the depth range (min,max).'''
         return self.get_depth_min(), get_depth_max()
-    
+
     def plot(self, variables=None, *args, **kwargs):
         '''
         Produce a 1D plot of the profile variable with depth as Y axis.
@@ -220,12 +223,12 @@ class Profile(Object):
             ckwargs.setdefault('title', '%s\n time: %s\nlatitude: %s, longitude: %s'%(var.id, self.datetime, self.latitude, self.longitude))
             ckwargs.update(dict(show=False, figure=i))
             gobjs.append(curve2(var, *args, **ckwargs))
-            
+
             if save: pylab.savefig('profile_%s.png'%(varid))
-            
+
         if kwargs.get('show', True) and gobjs:
             pylab.show()
-    
+
 
 # ==============================================================================
 
@@ -234,16 +237,16 @@ class AbstractProfiles(Object, list):
     '''
     A Profile objects collection.
     '''
-    
+
     # TODO: Add NotImplementedError messages ?
     def __init__(self, *args, **kwargs):
-        Object.__init__(self)
-        list.__init__(self, *args, **kwargs)
-    
+        Object.__init__(self, **kwargs)
+        list.__init__(self, *args)
+
     def __str__(self):
         return '<%s size: %s>'%(self.__class__.__name__, len(self))
     __repr__ = __str__
-    
+
     @classmethod
     def get_type(cls, *a, **k):
         '''Must be defined by implementing subclasses.
@@ -261,12 +264,12 @@ class AbstractProfiles(Object, list):
         '''Must be defined by implementing subclasses.
         Return a boolean indicating if a file can be handled by the concrete subclass.'''
         raise NotImplementedError('')
-    
+
     def get_default_variables(self, *a, **k):
         '''Must be defined by implementing subclasses.
         Return the list of strings indicating the default variables to be processed.'''
         raise NotImplementedError('')
-        
+
     def load_variable(self, *a, **k):
         '''Must be defined by implementing subclasses'''
         raise NotImplementedError('')
@@ -291,17 +294,17 @@ class AbstractProfiles(Object, list):
     def load_pressure(self, *a, **k):
         '''Must be defined by implementing subclasses'''
         raise NotImplementedError('')
-    
+
     @classmethod
     def get_types(cls):
         '''Return a dict of known profiles types as keys, implementing classes as values.
-        
+
         Available profiles types are based on this module AbstractProfiles implementation classes,
         with types determined by the get_type method.
-        
+
         .. todo::
             - add a way to plug external profiles types (from other modules)
-        
+
         '''
         types = {}
         for n,c in globals().items():
@@ -311,18 +314,18 @@ class AbstractProfiles(Object, list):
             except NotImplementedError, e: self.warning('%s: %s', e.__class__.__name__, e)
             except Exception, e: self.warning(e)
         return types
-    
+
     @classmethod
     def factory(cls, *args, **kwargs):
         '''Create a Profiles object from nothing, a profile type, a profile dataset and/or profiles specification.
-        
+
         Examples:
             >>> factory(type='PROFILE_TYPE_ID')
             >>> factory(dataset='/path/to/dataset')
             >>> factory(dataset='/path/to/dataset', type='PROFILE_TYPE')
             >>> factory(dataset='/path/to/dataset', load=True)
             >>> factory(dataset='/path/to/dataset', type='PROFILE_TYPE', load=True)
-        
+
         The dataset argument, if provided, is the dataset to use, either as a uri string, or CdmsFile.
         The type argument, if provided, is the profiles type identifier as returned by get_type.
         The load argument, if provided, indicate to load the provided file path.
@@ -345,39 +348,67 @@ class AbstractProfiles(Object, list):
             else: raise ValueError('Unsupported profiles type: "%s"'%(ptype))
         if pdataset and load: p.load(pdataset)
         return p
-    
+
 
 # ==============================================================================
 
 class Profiles(AbstractProfiles):
     '''
     Implementation of AbstractProfiles.
-    
+
     Define the load, get*, select and save features.
-    
+
     This class contains a variable_map attribute which is a dict with
     variables identifiers strings as keys,  list of variables candidates
     strings as values. See load_variable for this mapping mecanism.
     Subclasses may modify this mapping attribute.
-    
+
     :Params:
         - **profiles**: a list of Profile objects or Profiles instance or profiles file string.
         - **spec**: see below
-    
+        - **the spec attributes below can also be passed directly as keyword arguments**
+
     If the spec attribute is provided, it must be an object (usually another Profiles instance) with the following attributes:
         - **variables_map**: the variable mapping, default to :func:`get_variables_map`
         - **variables**: identifiers of variables to be loaded, default is from :func:`get_default_variables`
         - **qualities**: quality codes filter, default is from :func:`get_default_variables`
         - **time_units**: time unit for internal time axis, default is 'seconds since 1900-01-01 00:00:00'
-    
+
     :Note:
         - When Profile or Profiles instances are given, their nested Profile objects are referenced, note copied.
-    
+
+    :Examples:
+        >>> import glob
+        >>> import vacumm.misc.axes as A
+        >>> import vacumm.data.misc.profile as P
+        >>> p = P.Profiles(
+                profiles=glob.glob('argo-profiles-*.nc'),
+                logger_level='debug',
+                variables_map={
+                    'time':('TIME',),
+                    'depth':('DEPH',),
+                    'latitude':('LATITUDE',),
+                    'longitude':('LONGITUDE',),
+                    'temperature':('TEMP',),
+                    'salinity':('PSAL',),
+                },
+                variables=('temperature','salinity')
+            )
+        >>> time = p.get_time()
+        >>> print 'time:', A.create_time(time, units=time.units).asComponentTime()
+        >>> print 'depth:', p.describe(p.get_depth(), stats=True)
+        >>> print 'latitude:', p.describe(p.get_latitude(), stats=True)
+        >>> print 'longitude:', p.describe(p.get_longitude(), stats=True)
+        >>> temp = p.get_variable('temperature')
+        >>> print 'temperature:', p.describe(temp, stats=True)
+        >>> psal = p.get_variable('salinity')
+        >>> print 'salinity:', p.describe(psal, stats=True)
+
     .. todo::
         - fix load of single depth profile file
         - check depth quality test
     '''
-    
+
     # See docstring above.
     default_variables_map = {
         'platform_code':['platform_code'],
@@ -393,10 +424,10 @@ class Profiles(AbstractProfiles):
         'temperature':['temperature', 'temp'],
         'salinity':['salinity', 'psal'],
     }
-    
+
     default_time_units = 'seconds since 1900-01-01 00:00:00'
-    
-    def __init__(self, profiles=[], *args, **kwargs):
+
+    def __init__(self, profiles=[], **kwargs):
         self.variables_map = self.get_variables_map()
         self.variables = self.get_default_variables()
         self.qualities = self.get_default_qualities()
@@ -404,7 +435,7 @@ class Profiles(AbstractProfiles):
         # Note: A dedicated copy method should exists to copy the contained
         #       Profile objects (and their variables data) then add a kwarg
         #       to apply this here
-        spec = kwargs.pop('spec', isinstance(profiles, Profiles) and profiles or None) 
+        spec = kwargs.pop('spec', isinstance(profiles, Profiles) and profiles or None)
         if spec:
             for a in 'variables_map', 'variables', 'qualities', 'time_units':
                 setattr(self, a, copy.copy(getattr(spec, a)))
@@ -425,10 +456,16 @@ class Profiles(AbstractProfiles):
         self.lonrange = kwargs.pop('lonrange', [])
         self.latrange = kwargs.pop('latrange', [])
         self.time_units = kwargs.pop('time_units', self.default_time_units)
-        AbstractProfiles.__init__(self, profiles)
+        AbstractProfiles.__init__(self, profiles, **kwargs)
+        self.verbose('Initialize %s', self.__class__)
+        self.verbose('Requested variables identifiers: %s', self.variables)
+        self.verbose('Valid quality flags: %s', self.qualities)
+        self.verbose('Time range filter: %s', self.timerange)
+        self.verbose('Longitude range filter: %s', self.lonrange)
+        self.verbose('Latitude range filter: %s', self.latrange)
         if datasets:
             self.load(datasets)
-    
+
     def summary(self):
         '''
         Return a summary string of nested profiles.
@@ -440,60 +477,60 @@ class Profiles(AbstractProfiles):
             self.variables, self.qualities,
             self.get_time_range(), self.get_depth_range(), self.get_lat_range(), self.get_lon_range())
         return info
-    
+
     def get_time_min(self):
         '''Get the minimum date of nested profiles as a datetime object'''
         if len(self): return min(p.datetime for p in self)
-    
+
     def get_time_max(self):
         '''Get the maximum date of nested profiles as a datetime object'''
         if len(self): return max(p.datetime for p in self)
-    
+
     def get_time_range(self):
         '''Get time min and max'''
         return self.get_time_min(), self.get_time_max()
-    
+
     def get_depth_min(self):
         '''Get the minimum depth value'''
         if len(self): return min(p.get_depth_min() for p in self)
-    
+
     def get_depth_max(self):
         '''Get the maxnimum depth value'''
         if len(self): return max(p.get_depth_max() for p in self)
-    
+
     def get_depth_range(self):
         '''Get depth min and max'''
         return self.get_depth_min(), self.get_depth_max()
-    
+
     def get_lat_min(self):
         '''Get the minimum latitude value'''
         if len(self): return min(p.latitude for p in self)
-    
+
     def get_lat_max(self):
         '''Get the maximum latitude value'''
         if len(self): return max(p.latitude for p in self)
-    
+
     def get_lat_range(self):
         '''Get lat min and max'''
         return self.get_lat_min(), self.get_lat_max()
-    
+
     def get_lon_min(self):
         '''Get the minimum longitude value'''
         if len(self): return min(p.longitude for p in self)
-    
+
     def get_lon_max(self):
         '''Get the maximum longitude value'''
         if len(self): return max(p.longitude for p in self)
-    
+
     def get_lon_range(self):
         '''Get lon min and max'''
         return self.get_lon_min(), self.get_lon_max()
-    
+
     @classmethod
     def get_type(cls):
         '''Return the profiles type identifier, used by :func:`get_types`'''
         return ''
-    
+
     @classmethod
     def can_handle_dataset(cls, dataset):
         '''Return True if this class can handle the profiles of the given dataset.
@@ -504,23 +541,23 @@ class Profiles(AbstractProfiles):
         if isinstance(dataset, AbstractProfiles): return dataset.get_type() == t
         uri = isinstance(dataset, cdms2.dataset.CdmsFile) and dataset.id or dataset
         return t and t.lower() in uri.lower()
-    
+
     @classmethod
     def get_variables_map(cls):
         '''Return a copy of variable_map
         '''
         return copy.deepcopy(cls.default_variables_map)
-    
+
     @classmethod
     def get_default_variables(self):
         '''Return the variables identifiers this class should load by default'''
         return ()#'temperature', 'salinity')
-    
+
     @classmethod
     def get_default_qualities(self):
         '''Return the quality code this class would filter by default'''
         return ()#'1', '2')
-    
+
     def sort(self, cmp=None, *args, **kwargs):
         '''
         Sort profiles.
@@ -538,10 +575,10 @@ class Profiles(AbstractProfiles):
                 raise ValueError('Invalid sort method: "%s"'%cmp)
         else:
             AbstractProfiles.sort(self, cmp=cmp, *args, **kwargs)
-    
+
     def load_variable(self, dataset, varid, *args, **kwargs):
         '''Load a variable
-        
+
         :Params:
             - **dataset**: a CdmsFile object
             - **varid**: variable identifier
@@ -577,7 +614,7 @@ class Profiles(AbstractProfiles):
         self.verbose('Could not load %s%s%s: No matching variable using varnames: %s', pfx, varid, sfx, varnames)
         self.debug('variable map: %s', self.variables_map)
         return None
-    
+
     def load_platform_code(self, dataset, *args, **kwargs):
         '''Load and return the platform code variable (using :func:`load_variable`)'''
         v = self.load_variable(dataset, 'platform_code', *args, **kwargs)
@@ -597,14 +634,14 @@ class Profiles(AbstractProfiles):
 
     def load_filename(self,dataset):
         '''Load and return the filename'''
-        filevar=os.path.basename(dataset.id) 
+        filevar=os.path.basename(dataset.id)
         return filevar
-    
+
     def load_time(self, dataset, *args, **kwargs):
         '''Load and return the time variable as an axis (using :func:`load_variable`)
-        
+
         An extra keyword arguments getcflag indicates if the date corrupted flag must also be returned
-        
+
         '''
         kwargs['as_axis'] = True
         timevar = self.load_variable(dataset, 'time', *args, **kwargs)
@@ -627,30 +664,30 @@ class Profiles(AbstractProfiles):
         timevar = ch_units(timevar, self.time_units)
         if kwargs.get('getcflag', False): return timevar, corrflags
         else: return timevar
-    
+
     def load_time_quality(self, dataset, *args, **kwargs):
         '''Load and return the time quality variable (using :func:`load_variable`)'''
         return self.load_variable(dataset, 'time_qc', *args, **kwargs)
-    
+
     def load_longitude(self, dataset, *args, **kwargs):
         '''Load and return the longitude variable (using :func:`load_variable`)'''
         return self.load_variable(dataset, 'longitude', *args, **kwargs)
-    
+
     def load_latitude(self, dataset, *args, **kwargs):
         '''Load and return the latitude variable (using :func:`load_variable`)'''
         return self.load_variable(dataset, 'latitude', *args, **kwargs)
-    
+
     def load_position_quality(self, dataset, *args, **kwargs):
         '''Load and return the position quality variable (using :func:`load_variable`)'''
         return self.load_variable(dataset, 'position_qc', *args, **kwargs)
 
     def load_depth(self, dataset, *args, **kwargs):
         '''Load and return the depth variable (using :func:`load_variable`)
-        
+
         :Params:
             - **tryconv**: if true, try to convert pressure to depth if depth cannot be loaded
             - **frompres**: force pressure to depth conversion
-        
+
         '''
         frompres, tryconv = kwargs.pop('frompres', False), kwargs.pop('tryconv', True)
         if frompres:
@@ -673,7 +710,7 @@ class Profiles(AbstractProfiles):
             self.debug('Pressure: %s', self.describe(pres))
             # Get negative depth values
             # NOTE: pressure in decibar, depth in meters, latitude in decimal degrees [-90,+90]
-            depth = -1. * seawater.csiro.depth(pres[:].swapaxes(0,1), lat[:]).swapaxes(0,1)
+            depth = -1. * sw_depth(pres[:].swapaxes(0,1), lat[:]).swapaxes(0,1)
             # TODO: add explicit named axes
             proax = cdms2.createAxis(xrange(depth.shape[0]), id="profile")
             depax = cdms2.createAxis(xrange(depth.shape[1]), id="depth")
@@ -695,18 +732,18 @@ class Profiles(AbstractProfiles):
             if nmod:
                 self.warning('Depth of %s profiles were converted to negative values', nmod)
         return depth
-    
+
     def load_depth_quality(self, dataset, *args, **kwargs):
         '''Load and return the depth quality variable (using variable_map)'''
         return self.load_variable(dataset, 'depth_qc', *args, **kwargs)
-    
+
     def load_pressure(self, dataset, *args, **kwargs):
         '''Load and return the pressure variable (using :func:`load_variable`)
-        
+
         :Params:
             - **tryconv**: if true, try to convert depth to pressure if depth cannot be loaded
             - **frompres**: force depth to pressure conversion
-            
+
         '''
         fromdepth, tryconv = kwargs.pop('fromdepth', False), kwargs.pop('tryconv', True)
         if fromdepth:
@@ -728,19 +765,19 @@ class Profiles(AbstractProfiles):
             self.debug('Latitude: %s', self.describe(lat))
             self.debug('Depth: %s', self.describe(depth))
             # NOTE: pressure in decibar, depth in meters, latitude in decimal degrees [-90,+90]
-            pres = seawater.csiro.pres(depth[:].swapaxes(0,1), lat[:]).swapaxes(0,1)
+            pres = sw_pres(depth[:].swapaxes(0,1), lat[:]).swapaxes(0,1)
             # TODO: add explicit named axes
             proax = cdms2.createAxis(xrange(depth.shape[0]), id="profile")
             depax = cdms2.createAxis(xrange(depth.shape[1]), id="depth")
             pres = cdms2.createVariable(pres, id='pressure', axes=(proax, depax))
             self.verbose('Computed pressure: %s', self.describe(pres))
         return pres
-    
+
     def load(self, dataset, **kwargs):
         '''Load a dataset.
-        
+
         This loads a dataset or list of datasets and process quality filtering.
-        
+
         :Params:
             - **dataset**: instance or list of instance of string (path) or CdmsFile
             - **variables**: variable identifiers to be loaded, defaults to self.variables
@@ -748,14 +785,14 @@ class Profiles(AbstractProfiles):
             - **timerange**: if present, a time range for accepted profiles, defaults to self.timerange
             - **lonrange**: if present, a longitude range for accepted profiles, defaults to self.lonrange
             - **latrange**: if present, a latitude range for accepted profiles, defaults to self.latrange
-        
+
         :Note: **this load all data into memory !**
-        
+
         '''
         if isinstance(dataset, (list,tuple)): # replace this by is_iterable
             self.notice('%s loading %s profiles', self.__class__.__name__, len(dataset))
             for d in dataset:
-                p = self.factory(dataset=d, load=False)# safe=True ?
+                p = self.factory(dataset=d, load=False, spec=self, logger_config=self)# safe=True ?
                 p.load(d, **kwargs)
                 self.extend(p)
             return
@@ -823,9 +860,9 @@ class Profiles(AbstractProfiles):
             npro = timevar.shape[0]
             for ipro in xrange(npro):
                 self.debug('Processing profile[%s]', ipro)
-                
+
                 ptime = adatetime(cdtime.reltime(timevar[ipro], self.time_units))
-                
+
                 if timerange and not adatetime(timerange[0]) <= ptime <= adatetime(timerange[1]):
                     self.verbose('Excluding profile no %s: longitude %s not in range', ipro, lonvar[ipro])
                     continue
@@ -835,7 +872,7 @@ class Profiles(AbstractProfiles):
                 if latrange and not latrange[0] <= latvar[ipro] <= latrange[1]:
                     self.verbose('Excluding profile no %s: latitude %s not in range', ipro, latvar[ipro])
                     continue
-                
+
                 if not len(qualities) or timeqcvar is None: pass
                 elif MV2.is_masked(timeqcvar[ipro]):
                     self.debug('Could not perform time quality test of profile no %s: quality flag not set', ipro)
@@ -847,7 +884,7 @@ class Profiles(AbstractProfiles):
                         self.verbose('Excluding profile no %s: time quality=%s', ipro, q)
                         timeqcexc += 1
                         continue
-                
+
                 if not len(qualities) or posqcvar is None: pass
                 elif MV2.is_masked(posqcvar[ipro]):
                     self.debug('Could not perform position quality test of profil[%s]: quality flag not set', ipro)
@@ -859,7 +896,7 @@ class Profiles(AbstractProfiles):
                         self.verbose('Excluding profile no %s: position quality=%s', ipro, q)
                         posqcexc += 1
                         continue
-                    
+
                 if deprank == 1: pdepth = depvar
                 else: pdepth = depvar[ipro]
                 if not hasattr(pdepth, 'shape'):
@@ -867,14 +904,14 @@ class Profiles(AbstractProfiles):
                 pvars = {}
                 for varid,var in variables.items():
                     pvars[varid] = var[ipro]
-                
+
                 if timecflag is not None: cftime = timecflag[ipro]
                 else: cftime = False
-                
+
                 if isinstance(platvar, basestring): platcode = platvar
                 elif platvar is not None: platcode = platvar[ipro]
                 else: platcode = ''
-                
+
                 # Determine masked data based on the depth variable
                 # This is done to optimize the memory/disk usage
                 if pdepth.mask.size > 1:
@@ -887,7 +924,7 @@ class Profiles(AbstractProfiles):
                     for varid,var in pvars.items():
                         pvars[varid] = var.take(valid_indices)
                     self.debug('Shape of profile[%s] after depth optimization: %s => %s', ipro, orgshape, pdepth.shape)
-                
+
 ##############################
                 if False: # meth1
 ##############################
@@ -926,7 +963,7 @@ class Profiles(AbstractProfiles):
 ##############################
 # PRES_QC unknown format in /home11/caparmor/mars/VALID/DATA/MANGA/HYDRO_SISMER/MANGA_SISMER_PR_BO.nc
 ##############################
-               
+
                 profile = Profile(
                     parent=dsfile, index=ipro,
                     platform_code=platcode,
@@ -935,12 +972,13 @@ class Profiles(AbstractProfiles):
                     latitude=latvar[ipro],
                     longitude=lonvar[ipro],
                     depth=pdepth,
-                    variables=pvars)
-                
+                    variables=pvars,
+                    logger_config=self)
+
                 self.append(profile)
-                
+
                 #self.debug('Adding profile: %s', profile)
-                
+
             if qualities:
                 if timeqcerr: self.warning('Ignored masked time quality flag of %s profile%s', timeqcerr, ('','s')[timeqcerr>1])
                 if posqcerr: self.warning('Ignored masked position quality flag of %s profile%s', posqcerr, ('','s')[posqcerr>1])
@@ -950,12 +988,12 @@ class Profiles(AbstractProfiles):
                 if depqcexc: self.warning('Excluded depth quality flag of %s depth%s', depqcexc, ('','s')[depqcexc>1])
             n = len(self)
             self.notice('Loaded %s profile%s', n, ('','s')[n>1])
-        
+
         except Exception, e:
             self.exception('Error loading %s', dataset)
         finally:
             if dsfile: dsfile.close()
-    
+
     def get_profile_axis(self):
         '''Return the profile cdms axis of the nested profiles'''
         #indexes = numpy.array(range(len(self)))
@@ -963,7 +1001,7 @@ class Profiles(AbstractProfiles):
         pro = cdms2.createAxis(indexes, id='profile')
         pro.description = 'Index of profile in original file'
         return pro
-    
+
     def get_level_axis(self):
         '''Return the level cdms axis of the nested profiles'''
         npro, ndep = len(self), 0
@@ -974,7 +1012,7 @@ class Profiles(AbstractProfiles):
         depth.long_name = 'Level'
         depth.axis = 'Z'
         return depth
-    
+
     def get_platform_code(self):
         '''Return the platform code cdms variable of the nested profiles, if suitable, None otherwise'''
         platmaxlen = max([len(p.platform_code) for i,p in enumerate(self)])
@@ -993,7 +1031,7 @@ class Profiles(AbstractProfiles):
             filevar = cdms2.createVariable(filearr, id='filename', typecode='c', axes=(self.get_profile_axis(), fileax), attributes = {})
             filevar.description = 'File name of the original file'
             return filevar
-    
+
     def get_time(self):
         '''Return the time cdms variable of the nested profiles'''
         time = cdms2.createVariable(numpy.array([reltime(p.datetime, self.time_units).value for p in self]),
@@ -1001,7 +1039,7 @@ class Profiles(AbstractProfiles):
             'standard_name':'time', 'long_name':'Time', 'axis':'T',
             'units':self.time_units})
         return time
-        
+
     def get_latitude(self):
         '''Return the latitude cdms variable of the nested profiles'''
         lat = cdms2.createVariable(numpy.array([p.latitude for p in self]),
@@ -1009,7 +1047,7 @@ class Profiles(AbstractProfiles):
             'standard_name':'latitude', 'long_name':'Latitude', 'axis':'Y',
             'units':'degree_north', 'valid_min':-90.0, 'valid_max':90.0})
         return lat
-    
+
     def get_longitude(self):
         '''Return the longitude cdms variable of the nested profiles'''
         lon = cdms2.createVariable(numpy.array([p.longitude for p in self]),
@@ -1017,7 +1055,7 @@ class Profiles(AbstractProfiles):
             'standard_name':'longitude', 'long_name':'Longitude', 'axis':'X',
             'units':'degree_east', 'valid_min':-180.0, 'valid_max':180.0})
         return lon
-    
+
     def get_depth(self):
         '''Return the depth cdms variable of the nested profiles'''
         npro, ndep = len(self), 0
@@ -1031,9 +1069,9 @@ class Profiles(AbstractProfiles):
             depth.mask[i][0:pdep.shape[0]] = pdep.mask
         depthvar = cdms2.createVariable(depth, id='depth', axes=(self.get_profile_axis(), self.get_level_axis()), attributes = {
             'standard_name':'depth', 'long_name':'Depth', 'axis':'Z',
-            'units':'m', 'positive':'down', 'valid_min':MV2.min(depth), 'valid_max':MV2.max(depth)})
+            'units':'m', 'positive':'down', 'valid_min':MV2.min(depth) if len(depth) else None, 'valid_max':MV2.max(depth) if len(depth) else None})
         return depthvar
-    
+
     def get_variable(self, varname):
         '''Return the varname (identifier) cdms variable of the nested profiles'''
         npro, ndep = len(self), 0
@@ -1055,7 +1093,7 @@ class Profiles(AbstractProfiles):
             axes=(self.get_profile_axis(), self.get_level_axis()),
             attributes=varattrs.get(varname, {}))
         return var
-    
+
     def save(self, filepath, **kwargs):
         '''
         Save profiles in a netcdf file.
@@ -1111,11 +1149,11 @@ class Profiles(AbstractProfiles):
         finally:
             if dataset: dataset.close()
         return False
-    
+
     def select(self, variables=None, time=None, polys=None, **kwargs):
         '''
         Return a new Profiles instance (profiles are still referenced) of selected profiles.
-        
+
         :Params:
             -**variables**: variables identifiers filtering
             -**time**: time filtering, see :func:`is_time_in_range`
@@ -1151,7 +1189,7 @@ class Profiles(AbstractProfiles):
             profiles.append(pro)
         self.info('Profiles after selection:\n%s', profiles.summary())
         return profiles
-    
+
 
 
 # ==============================================================================
@@ -1168,13 +1206,13 @@ class ProfilesWithDepthFromPres(Profiles):
         self.verbose('A depth from pressure conversion was expected but no pressure was found. Now trying to load depth')
         kwargs['frompres'] = False
         return Profiles.load_depth(self, dataset, *args, **kwargs)
-    
+
 
 class Profiles_PR_BA(ProfilesWithDepthFromPres):
     '''Profils BATHY provenant du GTS'''
     @classmethod
     def get_type(cls): return 'PR_BA'
-    
+
     @classmethod
     def get_variables_map(cls):
         m = Profiles.get_variables_map()
@@ -1184,13 +1222,13 @@ class Profiles_PR_BA(ProfilesWithDepthFromPres):
         # NOTE: this is now the default behavior, see Profiles class
         m['depth'].insert(0, 'DEPH')
         return m
-    
+
 
 class Profiles_PR_BO(ProfilesWithDepthFromPres):
     '''Profils Bouteilles'''
     @classmethod
     def get_type(cls): return 'PR_BO'
-    
+
     @classmethod
     def get_variables_map(cls):
         m = Profiles.get_variables_map()
@@ -1202,13 +1240,13 @@ class Profiles_PR_CT(ProfilesWithDepthFromPres):
     '''Profils CTD'''
     @classmethod
     def get_type(cls): return 'PR_CT'
-    
+
 
 class Profiles_PR_PF(ProfilesWithDepthFromPres):
     '''Profils flotteurs Argo'''
     @classmethod
     def get_type(cls): return 'PR_PF'
-    
+
     @classmethod
     def get_variables_map(cls):
         m = Profiles.get_variables_map()
@@ -1217,13 +1255,13 @@ class Profiles_PR_PF(ProfilesWithDepthFromPres):
         # NOTE: now this is done by subclassing ProfilesWithDepthFromPres
         m['depth'] = []
         return m
-    
+
 
 class Profiles_PR_RE(Profiles):
     '''Profils Recopesca'''
     @classmethod
     def get_type(cls): return 'PR_RE'
-    
+
 
 class Profiles_PR_TE(ProfilesWithDepthFromPres):
     '''Profils TESAC provenant du GTS'''
@@ -1235,7 +1273,7 @@ class Profiles_PR_XB(Profiles):
     @classmethod
     def get_type(cls): return 'PR_XB'
 
-    
+
 class Profiles_Selmed(ProfilesWithDepthFromPres):
     '''Profils utilises pour BOBYCLIM'''
     @classmethod
@@ -1297,30 +1335,30 @@ class ProfilesDuplicatesFilter(ProfilesFilter):
     Split a profiles list into two profiles list:
         - a list of unique profile (filtered)
         - a list of duplicated profiles (rejected)
-    
+
     The duplication criterias are based on the equality of the profile's attributes:
         - platform code
         - latitude and longitude
         - datetime
-   
+
     The profiles datetime must be flagged with a **datetime_corrupted** attribute
     indicating if the time component of the datetime atribute is reliable (False)
     or has been arbitrary set to 12H (True).
     In this case, two profiles are duplicates if the timedelta between their datetimes
     is less than **maxtimedelta**.
     '''
-    def __init__(self, maxtimedelta=60*60*12):
+    def __init__(self, maxtimedelta=60*60*12, **kwargs):
         '''
         :Params:
             - **maxtimedelta**: number of seconds or timedelta representing the difference
               between two profiles dates from which they are not considered duplicates.
               This is only used when profiles have their datetime_corrupted flagged to True.
         '''
-        ProfilesFilter.__init__(self)
+        ProfilesFilter.__init__(self, **kwargs)
         if not isinstance(maxtimedelta, datetime.timedelta):
             maxtimedelta = datetime.timedelta(seconds=maxtimedelta)
         self.maxtimedelta = maxtimedelta
-    
+
     def is_duplicate(self, pro1, pro2):
         '''
         Return a boolean indicating if pro1 and pro2 are considered duplicates.
@@ -1339,7 +1377,7 @@ class ProfilesDuplicatesFilter(ProfilesFilter):
             if pro1.datetime != pro2.datetime: return False
         # Here we are, the two profiles are considered duplicates
         return True
-    
+
     def filter(self, profiles):
         '''
         Filter profiles, split them into two list of filtered (unique) and rejected (duplicates).
@@ -1382,7 +1420,7 @@ class ProfilesDuplicatesFilter(ProfilesFilter):
         if len(filtered_indexes): filtered = numpy.array(profiles).take(filtered_indexes)[:]
         if len(rejected_indexes): rejected = numpy.array(profiles).take(rejected_indexes)[:]
         return Profiles(filtered, spec=profiles), Profiles(rejected, spec=profiles)
-    
+
 
 # ==============================================================================
 
@@ -1396,7 +1434,7 @@ class ProfilesMerger(Object):
         Object.__init__(self, **kwargs)
         self.spec = spec if spec else {}
         self.profiles = Profiles(**self.spec)
-    
+
     def load(self, dataset, **kwargs):
         '''
         Add profile(s) to the internal instance.
@@ -1414,12 +1452,12 @@ class ProfilesMerger(Object):
         try:
             spec = self.spec.copy()
             spec.update(kwargs)
-            profiles = Profiles.factory(dataset=dataset, **spec)
+            profiles = Profiles.factory(dataset=dataset, logger_config=self, **spec)
             profiles.load(dataset)
             self.profiles.extend(profiles)
         except Exception:
             self.exception('Could not process %s', dataset)
-    
+
     def merge(self, filter=None, filter_file=None, reject_file=None, filter_sort=None, reject_sort=None, **kwargs):
         '''
         Merge the profiles applying a filter originally designed to seperate duplicate profiles.
@@ -1459,22 +1497,22 @@ class ProfilesMerger(Object):
             rejected.save(reject_file)
             # self.psinfo()
         return filtered, rejected
-    
+
     @classmethod
     def main(cls, args=None):
         '''
         Entry point of the bin/merge_profiles.py script. See merge_profiles.py --help.
-        
+
         :Params:
             - **args**: passed to config.ConfigManager.opt_parse
-            
+
         .. note::
             - You may pass the "args" argument to override command line arguments
-        
+
         :Examples:
-        
+
             >>> ProfilesMerger.main(args='--cfgfile myconf.cfg --verbose --ProfilesMerger-load-timerange "2010-01-01 2010-03-31"'.split())
-        
+
         '''
         try:
             # Create the command line parser
@@ -1487,7 +1525,7 @@ class ProfilesMerger(Object):
             parser.add_option('--nonumpywarnings', action='store_true', dest='nonumpywarnings', default=False,  help='Hide all numpy warnings')
             # Add logging options
             Logger.add_optparser_options(parser)#, prefix='log')
-            
+
             # Prepare the configuration
             # Specifications config file
             cfgini = '%s.ini'%os.path.splitext(os.path.realpath(__file__))[0]
@@ -1514,7 +1552,7 @@ class ProfilesMerger(Object):
             Logger.apply_class_optparser_options(options)
             # Show the final configuration
             cls.info('Loaded configuration:\n%s', pprint.pformat(cfgo.dict()))
-            
+
             # Operations on masked values throws numpy warnings, this can be ignored with the following instruction
             if options.nonumpywarnings:
                 numpy.seterr(all='ignore')
@@ -1525,24 +1563,24 @@ class ProfilesMerger(Object):
             elif options.compress:
                 cls.notice('Using on NetCDF version 4 writting mode with compression level %s', options.compress)
                 netcdf4(options.compress)
-            
+
             # Get the load section
             loadkw = cfgo[cfgsec].get('load', {})
             # Check that variable are requested (no sense to create a profile without data ?)
             if not loadkw['variables']:
                 cls.warning('No variables were specified')
-            
+
             # Create the merger with the load configuration (variables, qualities, time/lon/lat range, ...)
             merger = cls(spec=loadkw)
-            
+
             # Load profiles specified as command line arguments
             merger.load(args)
-            
+
             # Load profiles from explicit list of config file or command line option
             input_files = cfgo[cfgsec].get('input_files', [])
             if input_files:
                 merger.load(input_files)
-            
+
             # Load profiles with a search specified from config file or command line option
             findkw = cfgo[cfgsec].get('find', {})
             if findkw.get('path', None):
@@ -1559,10 +1597,10 @@ class ProfilesMerger(Object):
                 files = findfunc(**findkw)
                 cls.info('Found %s file%s', len(files), ('','s')[len(files)>1])
                 merger.load(files)
-            
+
             # Now merge the profiles with filters specified in configuration (e.g. duplicates filtering)
             merger.merge(**cfgo[cfgsec]['merge'])
-            
+
             return 0
         except Exception, e:
             cls.exception('Fatal error: %s', e)
@@ -1575,10 +1613,10 @@ class ProfilesMerger(Object):
 class ProfilesDataset(OceanDataset):
     '''
     Class for handling standardized profiles dataset as created by :meth:`Profiles.save`
-    
+
     .. todo::
         - allow to load files with different depth size
-    
+
     '''
     _platcodeid = ('platform_code',)
     _filenameid = ('filename',)
@@ -1586,7 +1624,7 @@ class ProfilesDataset(OceanDataset):
     _latid = ('latitude',)
     _lonid = ('longitude',)
     _depid = ('depth',)
-    
+
     def get_axis(self, axname, select=None):
         # TODO: add dataset.get_axis by id behavior
         # TODO: make this method works with profiles dataset having different levels
@@ -1651,13 +1689,14 @@ class ProfilesDataset(OceanDataset):
             # self.psinfo()
             return ax
         self.warning('No data found for axis: %s, select: %s', axname, orgselect)
-    
+
     def get_variable(self, varname, select=None, squeeze=False):
         # TODO: make this method works with profiles dataset having different levels
         self.debug('Getting variable: %s, select: %s', varname, select)
         if not len(self.dataset):
             self.debug('No %s variable found, dataset is empty', varname)
             return None
+        if select is None: select = {}
         orgselect, (tmp,select) = select, self.get_selector(split=True, **select)
         seltime = select.pop('time', None)
         if seltime: seltime = map(comptime, seltime[:2])
@@ -1724,30 +1763,30 @@ class ProfilesDataset(OceanDataset):
             # self.psinfo()
             return var
         self.warning('No data found for variable: %s, select: %s', varname, orgselect)
-    
+
     def get_platform_code(self, **kwargs):
         return self.get_variable(self._platcodeid, **kwargs)
 
     def get_origin_filename(self, **kwargs):
         return self.get_variable(self._filenameid, **kwargs)
-    
+
     def get_time(self, **kwargs):
         return self.get_variable(self._timeid, **kwargs)
-    
+
     def get_latitude(self, **kwargs):
         return self.get_variable(self._latid, **kwargs)
-    
+
     def get_longitude(self, **kwargs):
         return self.get_variable(self._lonid, **kwargs)
-    
+
     def get_depth(self, **kwargs):
         return self.get_variable(self._depid, **kwargs)
-    
+
     # TODO: check if profile/gridded data can be handled directly in Dataset
     def get_layer(self, varname, depth, select=None):
         '''
         Get layer data for a specified depth.
-        
+
         :Params:
             - **variable**: variable name
             - **depth**: layer depth
@@ -1764,7 +1803,7 @@ class ProfilesDataset(OceanDataset):
         if dep.getOrder() not in ('-z'):
             raise ValueError('Invalid depth order: %s, -z expected'%(dep.getOrder()))
         npro = var.shape[0]
-        
+
         # Exclude entirely masked depth/var coordinates
         goodfct = lambda a: numpy.ma.where(numpy.ma.count(a, axis=1)>0, True, False)
         depgood, vargood = goodfct(dep), goodfct(var)
@@ -1781,18 +1820,18 @@ class ProfilesDataset(OceanDataset):
         igood = numpy.where(good)[0]
         takefct = lambda a: MV2.take(a, igood, axis=0)
         dep, var = takefct(dep), takefct(var)
-        
+
         # Depth interpolation axis
         odep = create_dep(is_iterable(depth) and depth or [depth])
         ovar = interp1d(var, axo=odep, xmap=[0], xmapper=dep) # Required order: ...z
         ovar = cdms2.createVariable(ovar, id=var.id, axes=[var.getAxis(0), odep], attributes=var.attributes.copy())
-        self.logdesc(ovar, odep)
+        self.describe(ovar, odep)
         return lon, lat, ovar
-        
+
     def get_hist(self, tstep, **kwargs):
         '''
         Get histogram data.
-        
+
         :Params:
             - **tstep**: bars time coverage (n,units) (ex: 1,'month')
             - **kwargs**: passed to :func:`get_time`
@@ -1809,11 +1848,11 @@ class ProfilesDataset(OceanDataset):
         hist_time = create_time(hist_time)
         hist = cdms2.createVariable(hist, axes=(hist_time,), id='hist', attributes=dict())
         return hist
-    
+
     def plot_layer(self, varname, depth, *args, **kwargs):
         '''
         Plot a layer for a specified depth.
-        
+
         See :func:`get_layer`
         '''
         mp = kwargs.pop('map', None)
@@ -1825,7 +1864,7 @@ class ProfilesDataset(OceanDataset):
         if len(var.shape) > 1:
             self.verbose('Averaging layer along depth')
             var = MV2.average(var, axis=1)
-        self.logdesc(var, lat, lon)
+        self.describe(var, lat, lon)
         vmin, vmax = numpy.min(var), numpy.max(var)
         if mp is None:
             mapkw.update(dict(label=self.__class__.__name__, show=False,
@@ -1838,14 +1877,14 @@ class ProfilesDataset(OceanDataset):
         # Post plotting
         plotkw.setdefault('title', var.id)
         mp.post_plot(**plotkw)
-    
+
     def plot_hist(self, *args, **kwargs):
         '''
         Produce a histogram plot.
-        
+
         :Keyword arguments:
             - **plot_<keyword>**: are passed to the plot function :func:`~vacumm.misc.plot.bar2`
-        
+
         Other arguments, see :func:`get_hist`
         '''
         plotkw = kwfilter(kwargs, 'plot', defaults=dict(show=False))
@@ -1862,24 +1901,24 @@ class ProfilesDataset(OceanDataset):
         plotkw.setdefault('ylabel', 'number of profiles')
         self.info(self.describe(hist))
         bar2(hist, **plotkw)
-    
+
     def plot_dist(self, polygons=None, drawpro='x', drawpol=True, drawcnt=True, **kwargs):
         '''
         Produce a map of profiles distribution.
-        
+
         The polygons variable determine the plot mode:
             - if None, only profiles positions are drawn
             - otherwise, distribution is represented using colors for each specified polygon
-        
+
         :Params:
             - **polygons**: list of distribution polygon (of type _geoslib.Polygon). Activate colored distribution if not None.
             - **drawpro**: symbol identifier of profiles (profiles not plotted if None)
             - **drawpol**: draw polygons contours if True
             - **drawcnt**: show textual profiles counts if True
-        
+
         :Keyword arguments:
             - **plot_<keyword>**: are passed to the plot function :func:`~vacumm.misc.plot.map2`
-        
+
         '''
         plotkw = kwfilter(kwargs, 'plot', defaults=dict(show=False))
         if not polygons: polygons = tuple()
@@ -1959,19 +1998,19 @@ class ProfilesDataset(OceanDataset):
             cb.set_label('Number of profiles')
         if show:
             pylab.show()
-    
+
     def plot_pro(self, varname, *index, **kwargs):
         '''
         Produce a 1D plot of the profiles with depth as Y axis.
-        
+
         :Params:
             - **varname**: variable name
             - **index**: profile(s) indexe(s) (after optionnal selection)
-        
+
         :Keyword arguments:
             - **select**: selector
             - **plot_<keyword>**: are passed to the plot function :func:`~vacumm.misc.plot.curve2`
-        
+
         '''
         kwargs.setdefault('select', {})
         plotkw = kwfilter(kwargs, 'plot')
@@ -2006,13 +2045,13 @@ class ProfilesDataset(OceanDataset):
                 self.warning('Reversing data and level to go from bottom to surface')
                 v, d = v[::-1], d[::-1]
             d = d.tolist() # tmp fix
-            self.logdesc(d)
+            self.describe(d)
             #l = cdms2.createAxis(range(d.shape[0]), id='level')
             l = cdms2.createAxis(d, id='level')
             l.designateLevel()
             v = cdms2.createVariable(v, id=var.id, axes=[l], attributes=var.attributes.copy())
             d = cdms2.createVariable(d, id=dep.id, axes=[l], attributes=dep.attributes.copy())
-            self.logdesc(v, d)#, l)
+            self.describe((v, d, l))
             curkw = plotkw.copy()
             curkw.setdefault('order', 'zd')
             curkw.setdefault('title', 'Profile %s'%(var.id))
@@ -2022,23 +2061,23 @@ class ProfilesDataset(OceanDataset):
             curves[icur] = curve2(v, **curkw)
         #if show: pylab.show()
         return curves
-    
+
     @classmethod
     def main(cls, *args, **kwargs):
         '''
         Entry point of the bin/profile.py script. See profile.py - -help.
-        
+
         :Params:
             - **args** and **kwargs**: passed to optparse.OptionParser.parse_args
-            
+
         .. note::
             - You may pass the "args" named argument to override command line arguments
-        
+
         .. todo:
             - Use config.ConfigManager instead of optparse.OptionParser
-        
+
         :Examples:
-        
+
             >>> ProfilesDataset.main(args=('myprofiles.nc', '--pro', '0,1,2'))
         '''
         try:
@@ -2057,14 +2096,14 @@ program convertion utility (see --convert option).
 
 Examples:
   This will produce a map with the profiles position for the given variable:
-    %prog profiles.nc -v temperature --dist 
+    %prog profiles.nc -v temperature --dist
   This will produce a map with the profiles distribution for the given variable and set of polygons:
     %prog profiles.nc -v temperature -t 2000,2005 --hist --dist -P data/polygon_manga/polygon_manga.txt
                     ''',
                 usage='%prog [options] [file1] [file2] [...]',
                 version=__date__,
                 formatter=IndentedHelpFormatterWithNL())
-            
+
             parser.add_option('--cfgfile', action='store', dest='cfgfile', default=None, help='Configuration file')
             parser.add_option('--hist', action='store', dest='hist', default=None, metavar='n,units', help='Plot profiles histogram with interval n,units (ex: "1,month" , "2,weeks" , ...)')
             parser.add_option('--dist', action='store_true', dest='dist', default=None, help='Plot profiles distribution (position and, if polygons are specified, the colored count of profiles per polygon)')
@@ -2084,11 +2123,11 @@ Examples:
             parser.add_option('--compress', action='store', dest='compress', default=3,  type=int, help='Set the compression level for NetCDF version 4 (default: %default, range [0,9], only used with --convert)')
             parser.add_option('--nonumpywarnings', action='store_true', dest='nonumpywarnings', default=False,  help='Hide all numpy warnings')
             parser.add_option('--debug', action='store_true', dest='debug', default=False,  help='Debug mode')
-            
+
             #Logger.add_optparser_options(parser)
             options, args = parser.parse_args(*args, **kwargs)
             #Logger.apply_class_optparser_options(options)
-            
+
             # Operations on masked values throws numpy warnings, this can be ignored with the following instruction
             if options.nonumpywarnings:
                 numpy.seterr(all='ignore')
@@ -2141,13 +2180,13 @@ Examples:
                         continue
                     select['polygons'].append(p)
                     cls.debug('Loaded polygon %s with %s coordinates'%(ipoly, len(select['polygons'][-1].boundary)))
-            
+
             plot_kwargs = dict(select=select)
-            
+
             if options.bbox:
                 b = map(float, options.bbox.split(','))
                 plot_kwargs.update(dict(plot_lon_min=b[0], plot_lat_min=b[1], plot_lon_max=b[2], plot_lat_max=b[3]))
-            
+
             if options.convert:
                 if options.netcdf3:
                     cls.notice('Using on NetCDF version 3 writting mode')
@@ -2164,12 +2203,12 @@ Examples:
                 if not options.variables:
                     cls.warning('No variable were specifed')
                 return 0
-            
+
             profiles = cls()
             if options.cfgfile:
                 profiles.load_default_config(options.cfgfile, nested=True)
             profiles.load_dataset(args, append=True)
-            
+
             if options.hist:
                 hist_kwargs = plot_kwargs.copy()
                 pylab.clf()
@@ -2180,7 +2219,7 @@ Examples:
                     cls.notice('Saving %s', output)
                     pylab.savefig(output)
                 if options.show: pylab.show()
-            
+
             if options.dist:
                 dist_kwargs = plot_kwargs.copy()
                 dist_kwargs['drawpro'] = 'x' if not select.get('polygons', None) or options.drawpro else None
@@ -2194,7 +2233,7 @@ Examples:
                     cls.notice('Saving %s', output)
                     pylab.savefig(output)
                 if options.show: pylab.show()
-            
+
             if options.pro:
                 pro_kwargs = plot_kwargs.copy()
                 pro_kwargs['plot_axes_rect'] = [0.1,0.4,0.8,0.5]
@@ -2216,21 +2255,21 @@ Examples:
                         cls.notice('Saving %s', output)
                         pylab.savefig(output)
                     if options.show: pylab.show()
-            
+
             return 0
         except Exception, e:
             cls.exception('Fatal error: %s', e)
             return 1
-    
+
     def get_stratification_data(self, select):
         '''Get stratification data
-        
+
         :Params:
             - **select**: selector
-          
+
         :Return:
             - time, lat, lon, depth, depthimax, deltadepth, temp, sal, dens, densmin, densmax, densmean with shape (profile,)
-        
+
         '''
         prof = self.get_axis('profile', select=select)
         lev = self.get_axis('level', select=select)
@@ -2241,10 +2280,10 @@ Examples:
         temp = self.get_variable('temperature', select=select)
         sal = self.get_variable('salinity', select=select)
         self.verbose('Initial stratification data:\n  %s', '\n  '.join(self.describe(o) for o in (prof,lev,time,lon,lat,depth,temp,sal)))
-        
+
         # Set intial order for masked profiles exclusion
         temp, sal, depth = temp.reorder('-z'), sal.reorder('-z'), depth.reorder('-z')
-        
+
         # Exclude entirely masked depth/temp/sal coordinates
         goodfct = lambda a: numpy.ma.where(numpy.ma.count(a, axis=1)>0, True, False)
         depgood, tempgood, salgood = goodfct(depth), goodfct(temp), goodfct(sal)
@@ -2264,16 +2303,16 @@ Examples:
         prof = takefct(prof)
         time, lat, lon = takefct(time), takefct(lat), takefct(lon)
         depth, temp, sal = takefct(depth), takefct(temp), takefct(sal)
-        
+
         # Restore axes as tz as loaded above
         prof, lev = cdms2.createAxis(prof, id='profile'), cdms2.createAxis(lev, id='level')
         for v in time, lat, lon: v.setAxisList([prof])
         for v in depth, temp, sal: v.setAxisList([prof, lev])
         # Set correct order for calculation
         depth, temp, sal = depth.reorder('z-'), temp.reorder('z-'), sal.reorder('z-')
-        
+
         self.debug('Selected data:\n  %s', '\n  '.join(self.describe(o) for o in (prof,lev,time,lon,lat,depth,temp,sal)))
-        
+
         # Maximum depth indice
         depthimax = MV2.array((~temp.mask).sum(axis=0)-1, id='depthimax')
         # Compute thick for each level
@@ -2289,11 +2328,11 @@ Examples:
         self.debug('ddiff: %s', self.describe(ddiff))
         for ip, k in numpy.ndenumerate(depthimax):
             deltadepth[k, ip[0]] = ddiff[k-1, ip[0]]
-        
+
         # Compute pressure
-        pres = MV2.array(seawater.csiro.pres(depth, numpy.resize(lat, depth.shape)), id='pres')
+        pres = MV2.array(sw_pres(depth, numpy.resize(lat, depth.shape)), id='pres')
         # Compute pressure density
-        dens = MV2.array(seawater.csiro.dens(sal, temp, pres), id='dens')
+        dens = MV2.array(sw_dens(sal, temp, pres), id='dens')
         # Compute pressure density min, max and mean
         densmin = MV2.min(dens, axis=0)
         densmin.id = 'densmin'
@@ -2301,25 +2340,25 @@ Examples:
         densmax.id = 'densmax'
         densmean = MV2.average(dens, axis=0, weights=deltadepth)
         densmean.id = 'densmean'
-        
+
         ret = time, lat, lon, depth, depthimax, deltadepth, temp, sal, dens, densmin, densmax, densmean
         self.verbose('Final stratification data:\n  %s', '\n  '.join(self.describe(o) for o in ret))
         return ret
-    
-    
+
+
     def get_mld(self, select):
         '''Get mixed layer depth
-        
+
         MLD is computed for each selected profiles
-        
+
         :Params:
             - **select**: selector
-          
+
         :Return:
             - mld with shape (profile,)
             - lat with shape (profile,)
             - lon with shape (profile,)
-        
+
         '''
         time, lat, lon, depth, depthimax, deltadepth, temp, sal, dens, densmin, densmax, densmean = self.get_stratification_data(select)
         # Maximum depth (max + thick * 0.5)
@@ -2332,21 +2371,21 @@ Examples:
         mld.long_name = u'Profondeur de la couche de melange'
         self.verbose('MLD:   %s', self.describe(mld))
         return mld, lat, lon
-    
-    
+
+
     def get_ped(self, select):
         '''Get potential energy deficit
-        
+
         PED is computed for each selected profiles
-        
+
         :Params:
             - **select**: selector
-          
+
         :Return:
             - ped with shape (profile,)
             - lat with shape (profile,)
             - lon with shape (profile,)
-        
+
         '''
         time, lat, lon, depth, depthimax, deltadepth, temp, sal, dens, densmin, densmax, densmean = self.get_stratification_data(select)
         from vacumm.misc.phys.constants import g
@@ -2362,19 +2401,19 @@ Examples:
         ped.long_name = u"Potential energy deficit"
         self.verbose('PED:   %s', self.describe(ped))
         return ped, lat, lon
-    
-    
-    
+
+
+
     def plot_mld(self, select, **kwargs):
         '''
         Produce mixed layer depth map.
-        
+
         :Params: see :func:`get_mld`
-        
+
         :Plot params:
             - **map_<keyword>**: are passed to the map plot function :func:`~vacumm.misc.plot.map2` *excepting* those about post plotting described below
             - **plot_[show|close|savefig|savefigs]**: are passed to the post plotting function :func:`~vacumm.misc.core_plot.Plot.post_plot` at end of plotting operations
-        
+
         '''
         mld, lat, lon = self.get_mld(select)
         # Plot
@@ -2399,13 +2438,13 @@ Examples:
 #            ax = fig.add_axes((l,b,w,h))
 #            cb = matplotlib.colorbar.ColorbarBase(ax, cmap=cmap, norm=norm, ticks=levels, alpha=alpha)
 #            cb.set_label('')
-            
+
             mapkw = kwfilter(kwargs, 'map', defaults=dict(
             lon=(min(lon)-0.5,max(lon)+0.5), lat=(min(lat)-0.5,max(lat)+0.5),
             vmin=vmin, vmax=vmax, cmap=c))
             mapkw.update(show=False)
             m = map2(**mapkw)
-            
+
         # Plot profiles scatter points
         scakw = kwfilter(kwargs, 'sca', defaults=dict(s=20, vmin=vmin, vmax=vmax, cmap=m.cmap))
         sc = m.map.scatter(lon, lat, c=mld, **scakw)
@@ -2413,18 +2452,18 @@ Examples:
         plotkw = kwfilter(kwargs, 'plot')
         #plotkw.setdefault('title', '')
         m.post_plot(**plotkw)
-    
-    
+
+
     def plot_ped(self, select, **kwargs):
         '''
         Produce potential energy deficit map.
-        
+
         :Params: see :func:`get_ped`
-        
+
         :Plot params:
             - **map_<keyword>**: are passed to the map plot function :func:`~vacumm.misc.plot.map2` *excepting* those about post plotting described below
             - **plot_[show|close|savefig|savefigs]**: are passed to the post plotting function :func:`~vacumm.misc.core_plot.Plot.post_plot` at end of plotting operations
-        
+
         '''
         ped, lat, lon = self.get_ped(select)
         # Plot
@@ -2449,13 +2488,13 @@ Examples:
 #            ax = fig.add_axes((l,b,w,h))
 #            cb = matplotlib.colorbar.ColorbarBase(ax, cmap=cmap, norm=norm, ticks=levels, alpha=alpha)
 #            cb.set_label('')
-            
+
             mapkw = kwfilter(kwargs, 'map', defaults=dict(
             lon=(min(lon)-0.5,max(lon)+0.5), lat=(min(lat)-0.5,max(lat)+0.5),
             vmin=vmin, vmax=vmax, cmap=c))
             mapkw.update(show=False)
             m = map2(**mapkw)
-            
+
         # Plot profiles scatter points
         scakw = kwfilter(kwargs, 'sca', defaults=dict(s=20, vmin=vmin, vmax=vmax, cmap=m.cmap))
         sc = m.map.scatter(lon, lat, c=ped, **scakw)
@@ -2463,7 +2502,7 @@ Examples:
         plotkw = kwfilter(kwargs, 'plot')
         #plotkw.setdefault('title', '')
         m.post_plot(**plotkw)
-    
+
 
 
 

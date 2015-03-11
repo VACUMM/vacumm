@@ -17,9 +17,10 @@ class TSF(VCTestCase):
         'test_plot_streamplot',
         'test_plot_core_add_things',
         'test_plot_taylor', 
+        'test_plot_add_logo',
         ]:
         exec(method_template.format(test_name))
-        
-        
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,17 +1,17 @@
 .. _user.tut.misc.variables:
 
-Les variables
-=============
+CDAT variables
+==============
 
-Elles sont au coeur de toute l'arborescence des outils pythons de VACUMM.
-Vous pouvez vous référer aux exemples sur site de `CDAT <http://cdat.sf.net>`_, 
-comme par exemple les `base de cdms <http://www2-pcmdi.llnl.gov/software-portal/cdat/quick_reference/cdms>`_.
+They are at the heart of the whole VACUMM library.
+You can have a look to the examples shown on the `CDAT <http://cdat.sf.net>`_ website,
+like for instance the `quick reference <http://www2-pcmdi.llnl.gov/software-portal/cdat/quick_reference/cdms>`_
 
 
 .. _user.tut.misc.variables.bases:
 
-Les notions de bases
---------------------
+Bases
+-----
 
 .. toctree::
 
@@ -22,8 +22,8 @@ Les notions de bases
     
 .. _user.tut.misc.variables.vacumm:
 
-Les outils VACUMM
------------------
+VACUMM tools
+------------
 .. toctree::
 
     misc.variables.axes

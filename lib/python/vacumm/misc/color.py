@@ -7,10 +7,7 @@ List of all available colormaps in matplotlib, including VACUMM colormaps
 .. image:: misc-color-cmaps.png
 
 """
-# Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
-#
-# raynaud@actimar.fr
-#
+# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -1035,7 +1032,7 @@ def cmap_ncview_rainbow(name='vacumm_ncview_rainbow', **kwargs):
     cmap.set_over(colors[-1])
     return cmap
 
-def cmap_nice_gfdl(name='nice_gfdl', **kwargs):
+def cmap_nice_gfdl(name='vacumm_nice_gfdl', **kwargs):
     """ GFDL colormap (http://www.gfdl.noaa.gov/visualization)
 
 
@@ -2827,6 +2824,9 @@ cmap_red_tau_hymex()
 cmap_ncview_rainbow()
 cmap_eke()
 cmap_currents()
+cmap_nice_gfdl()
+cmap_ssec()
+
 for _name in basemap_cm.datad.keys():
 #    sname = _name.lower() if _name.startswith('GMT_') else _name
     _cmap = getattr(basemap_cm, _name)

@@ -1,7 +1,7 @@
 .. _user.tut.misc:
 
-Outils génériques de base
-=========================
+Basic generic tool
+==================
 
 .. toctree::
 
