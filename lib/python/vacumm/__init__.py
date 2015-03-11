@@ -35,7 +35,7 @@
 #
 
 __project__ = 'vacumm'
-__version__ = '2.5.2'
+__version__ = '2.5.3'
 __release__ = '1'
 __date__ = '2015-03-11'
 __author__ = u'Stéphane Raynaud, Jonathan Wilkins, Guillaume Charria'
