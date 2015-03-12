@@ -134,7 +134,7 @@ from vacumm.misc.plot import bar2, curve2, map2
 
 try:
 #    import seawater.csiro
-    from vacumm.misc.diags import sw_depth, sw_pres_sw_dens
+    from vacumm.misc.diags import sw_depth, sw_pres, sw_dens
 except ImportError:
     warnings.warn('Failed to import seawater fonctions, depth<=>pressure conversions not available')
 
