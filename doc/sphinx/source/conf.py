@@ -116,6 +116,8 @@ modindex_common_prefix = ['vacumm.']
 
 trim_footnote_reference_space = True
 
+numfig = True
+
 # -- Options for HTML output ---------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
