@@ -58,7 +58,6 @@ __all__.sort()
 
 MA = N.ma
 MV = MV2
-#import dbflib
 
 
 class ColPrinter(object):

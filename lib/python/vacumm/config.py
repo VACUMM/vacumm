@@ -459,7 +459,6 @@ def get_config_files(section=None, check=False, user=1):
     mod_dirs = []
     if section=='__all__':
         for root, dirs, files in os.walk(lib_dir):
-            print root, dirs
             if '.svn' in dirs:
                 dirs.remove('.svn')
             for d in dirs:
