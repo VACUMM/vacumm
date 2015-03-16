@@ -1645,11 +1645,14 @@ def get_minor_locator(xy,**kwargs):
     ax = kwargs.get('ax',P.gca())
     return eval("ax.%saxis.get_minor_locator()" % xy)
 
-def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=1):
+def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=1,
+    tool=None):
     """Add a logo to the background of the figure
 
     .. warning:: Except when ``loc='lower left', scale=1`` is passed as arguments,
       the logo is rescaled each time the figure is resized.
+
+    .. note:: It is highly suggested to prefer png to other formats for your logo.
 
     :Params:
 
@@ -1661,19 +1664,41 @@ def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=
         - *scale*: Scale the image. By default, it is auto scale so that the logo is
           never greater than 1/4 of the width ir the height of the figure.
         - *alpha*: Alpha transparency.
+        - *tool*: None, 'mpl' (png only) or 'pil'.
     """
     if not os.path.exists(logofile):
         raise VACUMMError("Logo file not found: %s"%logofile)
 
     # Read image
-    try:
-        import Image
-        logo = Image.open(logofile)
-    except ImportError, exc:
+    if tool is None:
+        if logofile.lower().endswith('png'):
+            tool = 'mpl'
+        else:
+            tool = 'pil'
+    else:
+        tool = tool.lower()
+    if tool not in ['mpl', 'pil']:
+        raise VACUMMError('Please choose a valid tool for plotting your logo: '
+            '"mpl" (png only), "pil", or None')
+
+    if tool=='mpl':
         try:
-            logo  = mpimg.read(logofile)
+            logo  = mpimg.imread(logofile)
+            ny, nx = logo.shape[:2]
         except:
-            raise VACUMMError("Can't read your logo file. Please convert it to png format or install PIL.")
+            raise VACUMMError("Can't read your logo file. "
+                "Please convert it to png format or install PIL and use `tool='pil'`")
+    else:
+        try:
+            import PIL.Image as Image
+        except:
+            try:
+                import Image
+            except:
+                raise VACUMMError("Can't import PIL to plot your logo. Convert it to png"
+                    " and use `tool='mpl'` calling add_logo")
+        logo = Image.open(logofile)
+        nx, ny = logo.size
 
     # Dimensions and position
     from matplotlib import rcParams
@@ -1686,8 +1711,9 @@ def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=
         ax = None
     else:
 
-        dx = logo.size[0]/(P.gcf().get_figwidth()*dpi)
-        dy = logo.size[1]/(P.gcf().get_figheight()*dpi)
+
+        dx = nx/(P.gcf().get_figwidth()*dpi)
+        dy = ny/(P.gcf().get_figheight()*dpi)
         if scale is not None:
             dx *= scale
             dy *= scale
