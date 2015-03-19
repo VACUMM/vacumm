@@ -227,6 +227,7 @@ class Plot(object):
         self.data = self.axes = None
         self._kwargs = kwargs
         self._post_plotted = False
+        self._finalize = []
         
         # Load attributes: for current instance
         self.load_attributes(kwargs)
@@ -3210,12 +3211,12 @@ class ScalarMappable:
         keepminmax = self.keepminmax
         
         # Min and max
-        if mode=='anomaly': mode = 'symetric'
-        elif mode=='smart': mode = 'auto'
-        elif mode=='basic': mode = 'normal'
         for key in 'positive', 'negative', 'symetric', 'anomaly':
             if kwargs.has_key(key) and kwargs[key]:
                 mode = key
+        if mode=='anomaly': mode = 'symetric'
+        elif mode=='smart': mode = 'auto'
+        elif mode=='basic': mode = 'normal'
         vmin = self.vmin if self.isset('vmin') else None
         vmax = self.vmax if self.isset('vmax') else None
         if mode == 'auto':
@@ -3235,7 +3236,7 @@ class ScalarMappable:
             vmax = max(N.abs(self.vmin), N.abs(self.vmax))
             vmin = -vmax
         self.levels_mode = mode
-           
+
         # Compute base levels
         levels = auto_scale((self.vmin, self.vmax), vmin=vmin, vmax=vmax, 
             nmax=self.nmax_levels, keepminmax=keepminmax==2)
@@ -3463,6 +3464,16 @@ class ScalarMappable:
             cax = self.fig.add_axes(cax)
         # - plot it
         cb = self.fig.colorbar(sm, ax=self.axes, cax=cax, **kwargs)
+        ## - fit to axes limits
+        #if fit:
+            #axbbox = self.axes.get_position()
+            #caxbbox = cb.ax.get_position()
+            #print 'avant', axbbox, caxbbox
+            #if cb.orientation=='horizontal':
+                #cb.ax.set_position([axbbox.x0, caxbbox.y0, axbbox.width, caxbbox.height])
+            #else:
+                #cb.ax.set_position([caxbbox.x0, axbbox.y0, caxbbox.width, axbbox.height])
+            #print 'apres', cb.ax.get_position()
         # - ticks
         if levels is not None and 'format' not in kwargs:
             labels = cb.set_ticklabels(levels)
@@ -3517,7 +3528,7 @@ class ScalarMappable:
         # Save it
         self.savefig(savefig, **kw['savefig'])
         self.savefigs(savefigs, **kw['savefigs'])
-    
+   
         # Show or close
         if show:
             self.show(**kw['show'])
@@ -5633,7 +5644,95 @@ class Map(Plot2D):
         """Best location on the plot for an object according to land/sea mask"""
         return best_loc_map(self, onland=onland, **kwargs)
         
+ 
+class DualPlot(Plot):
+   
+    def __init__(self, xdata, ydata, **kwargs):
+            Plot._init__((xdata, ydata), **kwargs)
+            
+    def load_data(self, data, **kwargs):
+        """Load (xdata,ydata) and format data, and check rank.
         
+        :Params:
+        
+            - **xdata/ydata**: Cdms2 variables to plot against each other
+            - **order**, optional: See :meth:`_check_order_`
+            - **transpose**, optional: See :meth:`_check_order_`
+            - Keywords are passed to :meth:`_set_axes_` for 
+              axis subtitutions.
+              
+        :Attributes: 
+        
+            The following attributes are defined:
+        
+            .. attribute:: data
+            
+                A 1- to 3-element tuple of :class:`MV2.array` 
+                in a form of similar to **data** above.
+                
+            .. attribute:: x
+            
+                The last axis of the first element of data,
+                or ``None`` if X axis refer to data.
+                
+            .. attribute:: y
+            
+                The first axis of the first element of data,
+                or ``None`` if Y axis refer to data.
+                
+            .. attribute:: mask
+            
+                The data mask.
+                
+        """
+        self.raw_data = data
+        self.data =  None
+        if data is None: 
+            self._check_order_()
+            return
+
+        # Arrows
+        N.seterr(over='ignore')
+        if isinstance(data, list):
+            data = tuple(data)
+        if not isinstance(data, tuple):
+            self.data = [MV2.array(data, copy=1),]
+        elif len(data)!=2:
+            raise PlotError('You must provide no more than 3 arrays as input for '+self.__class__.__name__)
+
+        # Check sizes
+        if self.data[0].size != self.data[0].size: 
+            raise PlotError('Both input dataset must have the same size')
+
+        # Store axes in x and y
+        self._set_axes_(**kwargs)  
+
+        # Homogeneous axis units and long_names
+        self._check_axis_atts_()
+                    
+        # Check order
+        self._check_order_(**kwargs)
+         
+        # Store  mask
+        #self.x = get_axis(self.data[0], -1) if self.order[1]!='d' else None
+        #self.y = get_axis(self.data[0], 0) if self.order[0]!='d' else None
+        #self.x = self.data[0].getAxis(-1) if self.order[1]!='d' else None
+        #self.y = self.data[0].getAxis(0) if self.order[0]!='d' else None
+        self.mask = N.ma.getmaskarray(self.data[0])
+        self.masked = self.mask.all()
+        if self.masked: warn('All your data are masked')
+
+        return self.data
+        
+    def _set_axes_(self, **kwargs):
+        
+        self.x = self.data[0].ravel()
+        self.y = self.data[1].ravel()
+        
+    
+    def _check_order_(self, transpose=False, **kwargs):
+      
+        self.xtype = self.ytype = 'dd'
     
 ############################################################
 ## Utilities
