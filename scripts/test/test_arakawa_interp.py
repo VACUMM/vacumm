@@ -1,7 +1,8 @@
 """Test :meth:`vacumm.data.misc.arakawa.CGrid.interp`"""
 
 from vcmq import MV2, N, create_grid, create_dep, set_grid, map2, \
-    code_file_name, CGrid, minmax, curve2, add_grid
+    code_file_name, minmax, curve2, add_grid
+from vacumm.data.misc.arakawa import CMMBGrid, CMMMGrid, CPPBGrid
 
 # Initial variable
 grid = create_grid(N.arange(-7, 0.), N.arange(43, 50.))
@@ -11,36 +12,48 @@ var['t'] = MV2.reshape(N.arange(grid.size()*len(dep))*1., (len(dep), )+grid.shap
 set_grid(var['t'], grid)
 var['t'].setAxis(0, dep)
 
+# Loop on grids
+result = []
+ifig = 1
+figfile = code_file_name(ext='_%(ifig)s.png')
+for Grid in CMMBGrid, CMMMGrid, CPPBGrid:
 
-# Arakawa manager
-ag = CGrid()
+    # Arakawa manager
+    ag = Grid()
+    grid_type = ag.grid_type[0]+'-'+ag.grid_type[1:]
 
-# Interpolations
-for p in 'u', 'v', 'f', 'w':
-    var[p] = ag.interp(var['t'], 't', p, mode='extrap')
+    # Interpolations
+    for p in 'u', 'v', 'f', 'w', 'uw', 'vw', 'fw':
+        var[p] = ag.interp(var['t'], 't', p, mode='extrap')
 
-# Surface plots
-vmin, vmax = minmax(*[var[p][-1] for p in ['u', 'v', 'f']])
-kw = dict(show=False, res=None, vmin=vmin, vmax=vmax, colorbar=False, grid=False, cmap='jet')
-m = map2(var['t'][-1], fill='pcolor', 
-    title='Interpolations on an Arakawa C grid: T->U/V/F', **kw)
-add_grid(var['t'], linestyle='-')
-kw.update(fill='scatter', contour=False, fill_s=60)
-markers = dict(u='>', v='^', f='D', t='o')
-for p in 't', 'u', 'v', 'f':
-    m = map2(var[p][-1], fill_marker=markers[p], shadow=True, zorder=100, **kw)
-m.savefig(code_file_name(ext='_1.png'))
-m.close()
+    # Surface plots
+    vmin, vmax = minmax(*[var[p][-1] for p in ['u', 'v', 'f']])
+    kw = dict(show=False, res=None, vmin=vmin, vmax=vmax, colorbar=False, grid=False, cmap='jet')
+    m = map2(var['t'][-1], fill='pcolor',
+        title='Interpolations on an Arakawa %(grid_type)s grid: T->U/V/F'%locals(), **kw)
+    add_grid(var['t'], linestyle='-')
+    kw.update(fill='scatter', contour=False, fill_s=60)
+    markers = dict(u='>', v='^', f='D', t='o')
+    for p in 't', 'u', 'v', 'f':
+        m = map2(var[p][-1], fill_marker=markers[p], shadow=True, zorder=100, **kw)
+    m.savefig(figfile%locals())
+    m.close()
+    ifig += 1
 
-# Vertical plot
-curve2(var['t'][:, 0, 0], 'o-b', ymax=0, show=False, 
-    title='Interpolations on an Arakawa C grid: T->W')
-curve2(var['w'][:, 0, 0], '^r', show=False, savefig=code_file_name(ext='_2.png'))
+    # Vertical plot
+    curve2(var['t'][:, 0, 0], 'o-b', ymax=0, show=False,
+        title='Interpolations on an Arakawa %(grid_type)s grid: T->W/UW/VW/FW'%locals())
+    curve2(var['w'][:, 0, 0], '*r', show=False)
+    curve2(var['uw'][:, 0, 0], '>r', show=False)
+    curve2(var['vw'][:, 0, 0], '^r', show=False)
+    curve2(var['fw'][:, 0, 0], 'Dr', show=False, savefig=figfile%locals())
+    m.close()
+    ifig += 1
 
-
-result = [
-    ('assertEqual', [var['t'][0, 0, :2].mean(), var['u'][0, 0, 0]]), 
-    ('assertEqual', [var['t'][0, :2, 0].mean(), var['v'][0, 0, 0]]), 
-    ('assertEqual', [var['t'][0, :2, :2].mean(), var['f'][0, 0, 0]]), 
-    ('assertEqual', [var['t'][:2, 0, 0].mean(), var['w'][0, 0, 0]]), 
-    ]
+    break
+    result.extend([
+        ('assertEqual', [var['t'][0, 0, :2].mean(), var['u'][0, 0, 0]]),
+        ('assertEqual', [var['t'][0, :2, 0].mean(), var['v'][0, 0, 0]]),
+        ('assertEqual', [var['t'][0, :2, :2].mean(), var['f'][0, 0, 0]]),
+        ('assertEqual', [var['t'][:2, 0, 0].mean(), var['w'][0, 0, 0]]),
+        ])

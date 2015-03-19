@@ -37,7 +37,8 @@
 #
 
 import cdms2
-from vacumm.misc.grid.regridding import shift2d, shift1d
+from vacumm.misc.grid.misc import get_axis_slices
+from vacumm.misc.grid.regridding import shift2d, shift1d, extend1d
 
 __all__ = ['locations', 'positions', 'ArakawaGrid', 'CGrid', 'AGrid',
     'ArakawaGridTransfer']
@@ -83,7 +84,7 @@ class _ArakawaInterp_(object):
         dloc = self.delta_loc(p0, p1)
 
         # Interpolate
-        var = shift2d(var, ishift=dloc[0], jshift=dloc[1], copy=True, **kwargs)
+        var = shift2d(var, ishift=dloc[0]/2, jshift=dloc[1]/2, copy=True, **kwargs)
         return var
 
     def _z_interp_(self, var, p0, p1, copy, **kwargs):
@@ -99,12 +100,33 @@ class _ArakawaInterp_(object):
         dloc = self.delta_loc(p0, p1)
 
         # Interpolate
-        var = shift1d(var, shift=dloc[2], axis=axis, copy=True, **kwargs)
+        if abs(dloc[2])==0: return var # (0 -> 0)
+        if not isinstance(dloc[2], complex): # simple half grid point (0 -> 1)
+
+            var = shift1d(var, shift=dloc[2]/2, axis=axis, copy=True, **kwargs)
+
+        elif abs(dloc[2])==1: # half grid point + expansion or contraction (0 <-> 1j)
+
+            if dloc[2].imag<0 : # contraction (1j -> 0)
+
+                var = shift1d(var, shift=0.5, axis=axis, copy=True, **kwargs)
+                var = var[get_axis_slices(var)['firsts']]
+
+            else: # expansion (0 -> 1j)
+
+                var = shift1d(var, shift=0.5, axis=axis, copy=True, **kwargs)
+                var = extend1d(var, ext=(1, 0), axis=axis)
+
+        else: # one full grid point with expansion (-1 <-> 1j)
+
+            var = extend1d(var, ext=dloc[2].imag, axis=axis)
+
         return var
 
     @classmethod
     def is_valid_loc(cls, p):
         """Check if a location is valid"""
+        if p is None: p = 't'
         p = str(p).lower()
         if p=='': return 't'
         if p not in locations:
@@ -193,7 +215,7 @@ class ArakawaGrid(_ArakawaInterp_):
         # Valid locations
         if p0 is None:
             from vacumm.data.cf import get_loc
-            p0 = get_loc(var)
+            p0 = get_loc(var, mode='ext', default='t')
 #            if p0 is None:
 #                raise ArakawaGridError("Can't guess location of variable: "+var.id)
         p0 = self.is_valid_loc(p0)
@@ -221,6 +243,64 @@ class ArakawaGrid(_ArakawaInterp_):
         return var
     loc2loc = interp
 
+    def diff_specs(self, p0, d):
+        """Get the specs to compute difference along direction ``d`` at position ``p0``
+
+        :Return: ``(mode, p0, p1, d)`` where ``mode`` is one of "centered", "left" or "right",
+            (see :func:`~vacumm.misc.grid.regridding.diff1d`) and ``p1`` is the position
+            of the derivative result.
+
+        """
+        # p0
+        if p0 is None:
+            p0 = 't'
+        if cdms2.isVariable(p0):
+            p0 = get_loc(var, mode='ext', default='t')
+        elif p0 not in locations:
+            raise ArakawaGridError('Wrong position for diff. Please choose one of: '+
+                ', '.locations)
+
+        # Direction
+        if isinstance(d, basestr):
+            d = ['x', 'y', 'z'].index(d.lower())
+        if d not in [0, 1, 2]:
+            raise ArakawaGridError('Wrong direction for diff. Please choose one of: '+
+                '0, 1, 2')
+
+        # Specs
+        for p1 in locations:
+            if p1 != p0:
+                dloc = list(self.delta_loc(p0, p1))
+                pdloc = [0, 0, 0]
+                mdloc = [0, 0, 0]
+                pdloc[d] = 1
+                mdloc[d] = -1
+                if dloc == pdloc:
+                    mode = 'right'
+                else:
+                    mode = 'left'
+                break
+        else:
+            mode = 'centered'
+            p1 = p0
+
+        return mode, p0, p1, d
+
+
+    def diff(self, var, d, p0=None, mode=None):
+        """Differentiate var along direction d"""
+
+        # Specs
+        mode, p0, p1, d = self.diff_specs(p0 if p0 is not None else var, d)
+
+        # Compute it
+        if var.ndim<=2 and d==2:
+            raise ArakawaGridError('Cannot differentiate along Z since variable is 2D')
+        var = diff1d(var, axis=-d-1, mode=mode)
+
+        # Set final location
+        set_loc(var, p1)
+
 class AGrid(ArakawaGrid):
     """A Arakawa grid"""
     # Positions relative to T point
@@ -235,20 +315,44 @@ class AGrid(ArakawaGrid):
 
     grid_type = gtype = 'A'
 
-class CGrid(ArakawaGrid):
-    """C Arakawa grid"""
 
-    # Positions relative to T point
-    t = 0, 0, 0
-    u = 1, 0, 0
-    v = 0, 1, 0
-    w = 0, 0, 1
-    f = 1, 1, 0
-    uw = 1, 0, 1
-    vw = 0, 1, 1
-    fw = 1, 1, 1
+for xystag in 'MM', 'PP':
 
-    grid_type = gtype = 'C'
+    su = 1 if xystag[0]=='P' else -1
+    sv = 1 if xystag[1]=='P' else -1
+
+    for zstag in 'MPB':
+        if zstag=='M':
+            sw = -1
+        elif zstag=='P':
+            sw = 1
+        else:
+            sw = 1j
+
+        this_gtype = 'C'+xystag+zstag
+
+        class _Grid_(ArakawaGrid):
+            """%s Arakawa grid"""%this_gtype
+
+            # Positions relative to T point
+            t = 0, 0, 0
+            u = su, 0, 0
+            v = 0, sv, 0
+            w = 0, 0, sw
+            f = su, sv, 0
+            uw = su, 0, sw
+            vw = 0, sv, sw
+            fw = su, sv, sw
+
+            grid_type = gtype = this_gtype
+        grid_name = this_gtype+'Grid'
+        __all__.append(grid_name)
+        print grid_name
+        exec grid_name+' = _Grid_'
+        del _Grid_
+
+CGrid = CMMBGrid
+
 
 
 class ArakawaGridTransfer(_ArakawaInterp_):
@@ -316,7 +420,7 @@ class ArakawaGridTransfer(_ArakawaInterp_):
         # Valid location
         if p0 is None:
             from vacumm.data.cf import get_loc
-            p0 = get_loc(var)
+            p0 = get_loc(var, mode='ext', default='t')
 #            if p0 is None:
 #                raise ArakawaGridError("Can't guess location of variable: "+var.id)
         p0 = self.is_valid_loc(p0)

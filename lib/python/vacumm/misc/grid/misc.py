@@ -2544,7 +2544,7 @@ def get_axis_slices(ndim, axis, **kwargs):
         - "lasts": All but the first.
         - "firstsm1": All but the last two.
         - "lastsp1": All but the first two.
-        - "mid": All but the first and last.
+        - "mid"/"inner": All but the first and last.
 
     :Example:
 
@@ -2579,7 +2579,7 @@ def get_axis_slices(ndim, axis, **kwargs):
     return dict(all=sel, mid=selmid, lasts=sellasts, firsts=selfirsts,
         lastsp1=sellastsp1, firstsm1=selfirstsm1,
         last=sellast, first=selfirst, lastm1=sellastm1, firstp1=selfirstp1,
-        lastm2=sellastm2, firstp2=selfirstp2, **kwargs)
+        lastm2=sellastm2, firstp2=selfirstp2, inner=selmid, **kwargs)
 
 def merge_axis_slices(slices1, slices2):
     """Merge standard tuples of slices stored in dictionaries created with :func:`get_axis_slices`:
