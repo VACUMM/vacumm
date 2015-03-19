@@ -4,6 +4,9 @@ TESTS=test_cdat test_plot test_grid test_regrid test_stats test_diag test_arakaw
 # Verbose version
 TESTSV=$(patsubst %,%/v,$(TESTS))
 
+# Other options
+PYTHONOPTIONS=-W ignore
+
 # Default target
 all: $(TESTS)
 
@@ -13,10 +16,10 @@ verbose: $(TESTV)
 # Run a test
 # - normal mode
 $(TESTS):test_%:
-	-python -m unittest $@
+	-python $(PYTHONOPTIONS) -m unittest $@
 # - verbose mode
 $(TESTV):test_%/v:
-	-python -m unittest -v $(subst /v,,$@)
+	-python $(PYTHONOPTIONS) -m unittest -v $(subst /v,,$@)
 
 # Help
 help:
