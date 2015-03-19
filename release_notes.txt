@@ -4,13 +4,12 @@ Release notes
 In development
 ==============
 
-Version 2.5.3
-=============
-
 - Added "make safedoc" target.
 - Fixed: english translations++.
 - Fixed: missing test_plot_add_logo.py.
 - Fixed: multifit+multiproc in kriging.
+- Fixed: ConfigManager.arg_parse helps.
+- Fixed: station_info import of oldnumeric.
 
 Version 2.5.1
 =============

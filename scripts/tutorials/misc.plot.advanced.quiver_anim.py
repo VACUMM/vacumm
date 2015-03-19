@@ -22,15 +22,15 @@ for it in xrange(nt):
     m=map(h0, show=False, close=False, nofill=True,
         proj='merc', fmt='%i m', m=m, contour_colors='#555555', )
     # Courants
-    map((u[it], v[it]), m=m, nofill=True,  quiverkey_value=1, quiver_scale=10, 
-        quiver_norm=3, contour=False, quiver_linewidth=0.5, quiver_alpha=.9, 
-        quiver_width=7.,  quiver_headwidth=2.5, quiver_headlength=2.5, 
-        quiver_headaxislength =2, show=False, levels=levels, 
-        colorbar_shrink=.7, right=1, quiver_samp=2, 
+    map((u[it], v[it]), m=m, nofill=True,  quiverkey_value=1, quiver_scale=10,
+        quiver_norm=3, contour=False, quiver_linewidth=0.5, quiver_alpha=.9,
+        quiver_width=7.,  quiver_headwidth=2.5, quiver_headlength=2.5,
+        quiver_headaxislength =2, show=False, levels=levels,
+        colorbar_shrink=.7, right=1, quiver_samp=2,
         figsize=(6, 4.5), proj='merc', title='Courants Bretagne sud')
     # Indicateur de progression
-    P.text(.98*m.xmax, .98*m.ymax, '%i / %i'%(it+1, nt), ha='right', va='top', 
-        zorder=200, size=12, family='courrier')
+    P.text(.98*m.xmax, .98*m.ymax, '%i / %i'%(it+1, nt), ha='right', va='top',
+        zorder=200, size=12, family='monospace')
     # Savegardes
     P.savefig('quiver%02i.png'%it)
     if it==0: savefigs(__file__[:-3]+'_png.png')
