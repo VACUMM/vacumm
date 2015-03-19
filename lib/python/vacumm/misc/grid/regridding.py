@@ -73,7 +73,7 @@ __all__ = ['fill1d', 'regular', 'regular_fill1d', 'cellave1d', 'spline_interp1d'
     'cellave2d', 'interp2d', 'xy2xy', 'shift1d', 'shift2d',
     'shiftgrid',  'transect', 'CDATRegridder', 'extend1d', 'extend2d',
     'extendgrid', 'regrid2d_method_name', 'fill1d2', 'krig', 'CurvedInterpolator',
-    'regrid1dnew']
+    'regrid1dnew', 'regrid1d_method_name']
 __all__.sort()
 
 # Fortran functions
@@ -94,7 +94,8 @@ except Exception, e:
     print 'Trying to build it...'
     import subprocess
     cmd = ["make"] # Compilation of all vacumm extensions from the root of sources
-    out = subprocess.Popen(cmd, cwd=os.path.dirname(__file__), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    out = subprocess.Popen(cmd, cwd=os.path.dirname(__file__),
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if out[1]!='':
         raise ImportError("Can't build _interp_ for importation:\n%s"%('\n'.join(out)))
     exec import_interp
@@ -2832,10 +2833,11 @@ def shift1d(var, shift=0, mode=None, axis=-1, copy=True, shiftaxis=True):
     else:
         varo = var
     if shift==0: return varo
-    if shift<0:
-        shift = -0.5
-    else:
-        shift = 0.5
+    shift = N.clip(shift, -1, 1)
+#    if shift<0:
+#        shift = -0.5
+#    else:
+#        shift = 0.5
     if mode is None:
         mode = "extrap" if A.isaxis(var) else "same"
     elif mode=="nearest":
@@ -2845,11 +2847,17 @@ def shift1d(var, shift=0, mode=None, axis=-1, copy=True, shiftaxis=True):
         varf = varo.getValue()
     else:
         varf = varo
-    xo = None
+    xo = grido = None
     if cdms2.isVariable(varo):
         refvar = varo.asma().copy()
         if shiftaxis:
-            xo = shift1d(var.getAxis(axis), shift, mode='extrap')
+            if var.getGrid() is not None:
+                if var.getOrder()[axis] == 'x':
+                    grido = shiftgrid(var, ishift=shift)
+                else:
+                    grido = shiftgrid(var, jshift=shift)
+            else:
+                xo = shift1d(var.getAxis(axis), shift, mode='extrap')
     else:
         refvar = varf.copy()
 
@@ -2858,7 +2866,11 @@ def shift1d(var, shift=0, mode=None, axis=-1, copy=True, shiftaxis=True):
     sn = _shiftslicenames_(shift)
 
     # Inner data
-    varf[ss[sn['target']]] = (refvar[ss['firsts']]+refvar[ss['lasts']])*0.5
+    if abs(shift)<1:
+        varf[ss[sn['target']]] = abs(shift)*refvar[ss['firsts']]
+        varf[ss[sn['target']]] += (1-abs(shift))*refvar[ss['lasts']]
+    else:
+        varf[ss[sn['target']]] = refvar[ss[sn['lasts']]]
 
     # Boundary data
     if mode=='masked':
@@ -2877,6 +2889,8 @@ def shift1d(var, shift=0, mode=None, axis=-1, copy=True, shiftaxis=True):
         varo.assignValue(varf)
     elif xo is not None:
         varo.setAxis(axis, xo)
+    elif grido is not None:
+        set_grid(varo, grido)
 
     return varo
 
@@ -2948,12 +2962,14 @@ def shift2d(vari, ishift=0, jshift=0, mode=None, copy=True):
 
     # Inner Y
     var[:] = 0.
-    var[ssy[sny['firsts']]] += 0.5*(varx[ssy[sny['firsts']]]+varx[ssy[sny['lasts']]])
+    var[ssy[sny['firsts']]] += abs(jshift)*varx[ssy[sny['firsts']]]
+    var[ssy[sny['firsts']]] += (1-abs(jshift))*varx[ssy[sny['lasts']]]
 
     # Top Y
     sstopyfirsts = merge_axis_slice(ssy[sny['last']], ssx[snx['firsts']])
     sstopylasts = merge_axis_slice(ssy[sny['last']], ssx[snx['lasts']])
-    var[sstopyfirsts] = 0.5*(vary[sstopyfirsts]+vary[sstopylasts])
+    var[sstopyfirsts] = abs(jshift)*vary[sstopyfirsts]
+    var[sstopyfirsts] += (1-abs(jshift))*vary[sstopylasts]
 
     # Shift along X and Y
     sslast = merge_axis_slice(ssy[sny['last']], ssx[snx['last']])
@@ -2983,7 +2999,7 @@ def shiftgrid(gg, ishift=0, jshift=0, mode='extrap'):
     """
     xx, yy = get_xy(gg)
 
-    if len(xx.shape)==2:
+    if N.ndim(xx)==2:
         xs = shift2d(xx, ishift=ishift, jshift=jshift, mode=mode)
         ys = shift2d(yy, ishift=ishift, jshift=jshift, mode=mode)
     else:
@@ -2991,7 +3007,19 @@ def shiftgrid(gg, ishift=0, jshift=0, mode='extrap'):
         ys = shift1d(yy, jshift, mode=mode)
 
     if isgrid(gg) or cdms2.isVariable(gg):
-        return create_grid(xs, ys)
+        grids = create_grid(xs, ys)
+        if A.isaxis(xx):
+            xs = grids.getLongitude()
+            cp_atts(xx, xs)
+            if N.ndim(xx)==2:
+                cp_atts(xx.getAxis(0), xs.getAxis(0))
+                cp_atts(xx.getAxis(1), xs.getAxis(1))
+        if A.isaxis(yy):
+            ys = grids.getLatitude()
+            cp_atts(yy, ys)
+            if N.ndim(yy)==2:
+                cp_atts(yy.getAxis(0), ys.getAxis(0))
+                cp_atts(yy.getAxis(1), ys.getAxis(1))
     return xs, ys
 
 def _extend_init_(var, new_shape, mode):
@@ -3205,15 +3233,165 @@ def extendgrid(gg, iext=0, jext=0, mode='extrap'):
     xx, yy = get_xy(gg)
 
     if len(xx.shape)==2:
-        xs = extend2d(xx, iext=iext, jext=jext, mode=mode)
-        ys = extend2d(yy, iext=iext, jext=jext, mode=mode)
+        xe = extend2d(xx, iext=iext, jext=jext, mode=mode)
+        ye = extend2d(yy, iext=iext, jext=jext, mode=mode)
     else:
-        xs = extend1d(xx, iext, mode=mode)
-        ys = extend1d(yy, jext, mode=mode)
+        xe = extend1d(xx, iext, mode=mode)
+        ye = extend1d(yy, jext, mode=mode)
 
     if isgrid(gg) or cdms2.isVariable(gg):
-        return create_grid(xs, ys)
-    return xs, ys
+        gride = create_grid(xe, ye)
+        if isaxis(xx):
+            xs = grids.getLongitude()
+            cp_atts(xx, xe)
+            if N.ndim(xx)==2:
+                cp_atts(xx.getAxis(0), xe.getAxis(0))
+                cp_atts(xx.getAxis(1), xe.getAxis(1))
+        if isaxis(yy):
+            ys = grids.getLatitude()
+            cp_atts(yy, ye)
+            if N.ndim(yy)==2:
+                cp_atts(yy.getAxis(0), ye.getAxis(0))
+                cp_atts(yy.getAxis(1), ye.getAxis(1))
+        return gride
+    return xe, ye
+
+def _diffslicenames_(mode):
+     if mode>0:
+        target = firsts = 'firsts'
+        out = last = 'last'
+        oppos = 'first'
+        neigh1 = 'last'
+        neigh2 = 'lastm1'
+        firsts = 'firsts'
+        lasts = 'lasts'
+     elif mode <0:
+        target = firsts = 'lasts'
+        out = last = 'first'
+        oppos = 'last'
+        neigh1 = 'first'
+        neigh2 = 'firstp1'
+        firsts = 'lasts'
+        lasts = 'firsts'
+     else:
+        target = 'inner'
+
+     return dict(target=target, out=out, oppos=oppos, last=last,
+        neigh1=neigh1, neigh2=neigh2, firsts=firsts, lasts=lasts)
+
+
+def diff1d(var, axis=-1, mode=None, bmode=None, copy=True, shiftaxis=True):
+    """Interpolate data on an axis shifted by an half cell size
+
+    :Params:
+
+        - **var**: array.
+        - **axis**, optional: Axis on which to operate.
+        - **mode**, optional: Difference mode.startswith
+
+            - ``"centered"``: :math:`dx_i = (x_{i+1}-x{i-1})/2`.
+            - ``"left"``:
+            - ``"right"``:
+
+        - **bmode**, optional: Interpolation mode for boundary point outside initial positions.
+
+            - ``None`` or ``"masked"``: Mask outside data.
+            - ``"cyclic"``: Cyclic extrapolation where
+               :math:`dx_0 = (x_{i1}-x_{nx})/2` and :math:`dx_{nx} = (x_{0}-x_{nx-1})/2`
+            - ``"stag"`` (``centered`` only): Staggered difference where
+               :math:`dx_0 = x_{i1}-x_{i0}` and :math:`dx_{nx} = x_{nx}-x_{nx-1}`.
+
+        - **copy**, optional: Always input copy data.
+    """
+
+    # Modes
+    if mode is None:
+        mode = 'centered'
+    valid_modes =  ['left', 'centered', 'right']
+    if isinstance(mode, int):
+        mode = valid_modes[mode+1]
+    else:
+        mode = str(mode).lower()
+    if bmode is None:
+        bmode = "masked"
+
+    # Input data
+    if copy:
+        if hasattr(var, 'clone'):
+            varo = var.clone()
+        else:
+            varo = var.copy()
+    else:
+        varo = var
+
+    ax = len(var.shape)==1 and A.isaxis(var)
+    if ax:
+        varf = varo.getValue()
+    else:
+        varf = varo
+    if cdms2.isVariable(varo):
+        refvar = varo.asma().copy()
+    else:
+        refvar = varf.copy()
+
+    # Get slice specs
+    ss = get_axis_slices(var, axis)
+    sn = _shiftslicenames_(shift)
+    if axis>=0:
+        axis -= len(var.shape)
+
+    # Diff
+    if mode.startswith('c'):
+
+        # Inner
+        varf[ss['inner']] = refvar[ss['firstsm1']]-refvar[ss['lastsm1']]
+        varf[ss['inner']] *= 0.5
+
+        # Boundary data
+        if bmode=='cyclic':
+            varf[ss['first']] = refvar[ss['firstp1']]-refvar[ss['last']]
+            varf[ss['first']] *= 0.5
+            varf[ss['last']] = refvar[ss['first']]-refvar[ss['lastm1']]
+            varf[ss['last']] *= 0.5
+        elif bmode=='stag':
+            varf[ss['first']] = refvar[ss['firstp1']]-refvar[ss['first']]
+            varf[ss['last']] = refvar[ss['lastp1']]-refvar[ss['last']]
+        else: # masked
+            varf[ss['first']] = N.ma.masked
+            varf[ss['last']] = N.ma.masked
+        del refvar
+
+    else:
+
+        # Inner
+        inner = 'lasts' if mode.startswith('l') else 'firsts'
+        varf[ss[inner]] = refvar[ss['lasts']]-refvar[ss['firsts']]
+
+        # Boundary data
+        if bmode=='cyclic':
+            varf[ss['first']] = refvar[ss['first']]-refvar[ss['last']]
+        else: # masked
+            varf[ss['first']] = N.ma.masked
+        del refvar
+
+#    else:
+#        raise VACUMMError('Wrong diff mode. Please use one of: '+', '.join(valid_modes))
+
+
+    # Axes
+    if ax:
+        varo.assignValue(varf)
+    elif cdms2.isVariable(varo) and not mode.startswith('c') and shiftaxis:
+        shift = -1 if mode.startswith('l') else 1
+        if axis >=-2 and varo.getOrder().endswith('yx'):
+            onx = axis==-1
+            varo.setGrid(shiftgrid(var.getGrid(), ishift = 0 if not onx else shift,
+                jshift = 0 if onx else shift))
+        else:
+            varo.setAxis(axis, shiftaxis(var.getAxis(axis), shift))
+
+
+    return varo
 
 
 class CDATRegridder(object):
