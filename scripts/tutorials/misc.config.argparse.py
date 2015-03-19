@@ -4,11 +4,8 @@
 # Init commandline parser
 import sys, os
 from argparse import ArgumentParser
-parser = ArgumentParser(
-    description="Script to plot a 2D netcdf variable", add_help=False) # 
+parser = ArgumentParser(description="Script to plot a 2D netcdf variable")
 parser.add_argument('ncfile', help='input netcdf file')
-parser.add_argument('-h','--help', action='store_true', help='show a reduced help')
-parser.add_argument('--long-help', action='store_true', help='show an extended help')
 
 # Configuration
 from vacumm.misc.config import cfgargparse
