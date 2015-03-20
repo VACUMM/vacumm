@@ -76,8 +76,10 @@ def convert_data_samples(argline, split=True):
         if m:
             arg = eval(arg)
         aargs[i] = arg
-    if split: return aargs
-    return ''.join(aargs)
+    aargs = ''.join(aargs)
+    if split:
+        aargs = aargs.split()
+    return aargs
 def get_args(scriptname, split=True):
     if scriptname.endswith('.py'):
         scriptname = scriptname[:-3]
@@ -96,17 +98,29 @@ for script in files:
         logger.debug('%s: %s', os.path.basename(script), 'SKIPPED')
         continue
     logger.debug('Trying %s...'%os.path.basename(script))
-    out, err = subprocess.Popen(["python", script] + (get_args(script) or []),
-        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     script = os.path.basename(script)
-    if len(err)==0 or 'Traceback'  not in err:
+    cmd = ["python", script] + (get_args(script) or [])
+    logger.debug(' CMD: '+' '.join(cmd))
+    try:
+        out = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         logger.info('%s: %s', script, 'OK')
+        logger.debug(' OUT: '+out)
         igood +=1
-    else:
+    except subprocess.CalledProcessError as e:
         logger.error('%s: %s', script, 'FAILED')
+        logger.debug(' OUT: '+e.output)
         ibad +=1
-    if len(out): logger.debug(' OUT: '+out)
-    if len(err): logger.debug(' ERR: '+err)
+#    out, err = subprocess.Popen(["python", script] + (get_args(script) or []),
+#        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+#    script = os.path.basename(script)
+#    if len(err)==0 or 'Traceback'  not in err:
+#        logger.info('%s: %s', script, 'OK')
+#        igood +=1
+#    else:
+#        logger.error('%s: %s', script, 'FAILED')
+#        ibad +=1
+#    if len(out): logger.debug(' OUT: '+out)
+#    if len(err): logger.debug(' ERR: '+err)
 gb = []
 if igood:
     gb.append('%i OK'%igood)
