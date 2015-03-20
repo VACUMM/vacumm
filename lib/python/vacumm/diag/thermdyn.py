@@ -45,7 +45,7 @@ from vacumm.misc.misc import grow_variables
 
 try:
     from seawater import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0, \
-        dpth as sw_dpeth
+        dpth as sw_depth
 except:
     try:
         from seawater.csiro import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0, \
