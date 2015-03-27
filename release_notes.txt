@@ -1,8 +1,8 @@
 Release notes
 #############
 
-In development
-==============
+Version 2.5.4
+=============
 
 - Added "make safedoc" target.
 - Fixed: english translations++.
