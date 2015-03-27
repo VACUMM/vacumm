@@ -48,10 +48,10 @@ import vacumm.data.cf as cf
 from vacumm.misc.grid import dz2depth as dz2depths
 from vacumm.misc.io import NcFileObj, ncread_axis, ncread_var
 
-re_sn2loc_search = re.compile(r'_at_([uvwtdfr])_location', re.I).search
+RE_SN2LOC_SEARCH = re.compile(r'_at_([uvwtdfr])_location', re.I).search
 
 def standard_name_to_location(standard_name):
-    m = re_sn2loc_search(standard_name)
+    m = RE_SN2LOC_SEARCH(standard_name)
     if m is not None:
         return m.group(1)
 
@@ -102,14 +102,14 @@ class NcSigma(object):
 
     '''
     standard_names = dict(
-        dz = cf.var_specs['dz']['standard_names'],
-        dzu = cf.var_specs['dz_u']['standard_names'],
-        dzv = cf.var_specs['dz_v']['standard_names'],
-        dzw = cf.var_specs['dz_w']['standard_names'],
-        depth = cf.var_specs['bathy']['standard_names'],
-        depthu = cf.var_specs['bathy_u']['standard_names'],
-        depthv = cf.var_specs['bathy_v']['standard_names'],
-        eta = cf.var_specs['ssh']['standard_names'],
+        dz = cf.VAR_SPECS['dz']['standard_names'],
+        dzu = cf.VAR_SPECS['dz_u']['standard_names'],
+        dzv = cf.VAR_SPECS['dz_v']['standard_names'],
+        dzw = cf.VAR_SPECS['dz_w']['standard_names'],
+        depth = cf.VAR_SPECS['bathy']['standard_names'],
+        depthu = cf.VAR_SPECS['bathy_u']['standard_names'],
+        depthv = cf.VAR_SPECS['bathy_v']['standard_names'],
+        eta = cf.VAR_SPECS['ssh']['standard_names'],
 #        dz = "ocean_layer_thickness",
 #        dzu = "ocean_layer_thickness_at_u_location",
 #        dzv = "ocean_layer_thickness_at_v_location",

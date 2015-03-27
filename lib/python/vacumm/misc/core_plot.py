@@ -1282,8 +1282,8 @@ class Plot(object):
             vatts = ['min', 'max', 'minmax', 'maxmin', ('label', 'title'), 'units', ]
             aatts = ['strict', ('fmt', 'format', 'tickfmt', 'tickformat'), ('rotation', 'rotate'),
                 'lim', 'hide', 'ticks', 'ticklabels','locator', 'minor_locator', 'formatter', 'minor_formatter',
-                ('nmax', 'nmax_ticks'), 'scale']
-            defaults = dict()#strict=True)
+                ('nmax', 'nmax_ticks'), 'scale', 'minutes']
+            defaults = dict(minutes=True)#strict=True)
             if props['type']!='d':
                 defaults['strict'] = True
             xykwargs = kwfilter(kwargs, xy, copy=1, short=True)
@@ -1377,23 +1377,31 @@ class Plot(object):
 
             # Ticks values and formats
             if props['type'] in ['x','y','z']: # Lon, lat or dep axis
-                kwscale = dict(vmin=axmin, vmax=axmax)
+                kwscale = dict(vmin=axmin, vmax=axmax, geo=props['minutes'])
+                kwlf = {}
+                lab_val = props['ticks']
                 if props['type'] in ['x','y']:
-                    lab_val = geo_scale(data, nmax=props['nmax'], **kwscale)
+                    if lab_val is None:
+                        lab_val = geo_scale(data, nmax=props['nmax'], **kwscale)
                     if props['type'] == 'x':
                         lab_func = lonlab
                     else:
                         lab_func = latlab
+                    kwlf['decimal'] = not props['minutes']
+                    kwlf['auto_minutes'] = int(min(lab_val))!=int(max(lab_val))
                 else:
-                    lab_val = auto_scale(data, **kwscale)
+                    if lab_val is None:
+                        lab_val = auto_scale(data, **kwscale)
                     lab_func = deplab
+                props['ticks'] = None
                 axis.set_ticks(lab_val)
 #                kwtf = {}
                 if props['fmt'] is not None:
                     axis.set_ticklabels([props['fmt']%l for l in lab_val], **props['ticklabels_kwargs'])
                 else:
 #                    kwtf['fmt'] = props['fmt']
-                    axis.set_ticklabels(lab_func(lab_val), **props['ticklabels_kwargs'])
+                    axis.set_ticklabels(lab_func(lab_val, **kwlf), **props['ticklabels_kwargs'])
+                props['locator'] = None
 
             elif props['type'] == 't' and not nodate: # Time axis
 
@@ -1412,6 +1420,7 @@ class Plot(object):
                 setup_time_axis(axis, rotation=date_rotation,fmt=date_fmt,locator=date_locator,
                     minor_locator=date_minor_locator,nominor=date_nominor,trange=trange,
                     nodual=date_rotation is not None, **kwdate)
+                props['locator'] = None
 
             else: # Other axes
                 if props['fmt'] is not None:
@@ -4599,6 +4608,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             if alpha != 1:
                 pp.set_alpha(alpha)
             self.set_obj('scatter', pp)
+        else:
+            raise PlotError('Wrong fill method')
 
 
         # Register
@@ -5786,8 +5797,12 @@ class Map(Plot2D):
                 if minutes: kwp.setdefault('fmt',MinuteLabel(self.map, zonal=False, tex=False, no_seconds=no_seconds))
                 kwgs = kwfilter(kwp,'gs',
                     defaults={'vmin':self.map.llcrnrlat, 'vmax':self.map.urcrnrlat, 'minutes':minutes})
-                if parallels is None: parallels = geo_scale(**kwgs)
+                if parallels is None:
+                    parallels = geo_scale(**kwgs)
+                self.parallels = parallels
                 self.set_axobj('drawparallels', self.map.drawparallels(parallels,**kwp))
+            else:
+                self.parallels = None
             # - meridians
             if drawmeridians:
                 if self._xyhide_('x', kwargs.get('xhide', False)):
@@ -5796,7 +5811,8 @@ class Map(Plot2D):
 #                kwm.update(kwpm_def)
                 kwm.update(kwfilter(kwargs, 'xticklabels_'))
                 kwm = kwfilter(kwargs,'drawmeridians',defaults=kwm)
-                if minutes: kwm.setdefault('fmt',MinuteLabel(self.map, zonal=True,  tex=False, no_seconds=no_seconds))
+                if minutes:
+                    kwm.setdefault('fmt',MinuteLabel(self.map, zonal=True,  tex=False, no_seconds=no_seconds))
                 kwgs = kwfilter(kwm,'gs',
                     defaults={'vmin':self.map.llcrnrlon, 'vmax':self.map.urcrnrlon, 'minutes':minutes})
                 if meridians is None:
@@ -5804,6 +5820,9 @@ class Map(Plot2D):
                     if (meridians[-1]-meridians[0])>=360.: # to prevent overlaping
                         meridians = meridians[meridians<meridians[0]+360.]
                 lonlabs = self.set_axobj('drawmeridians', self.map.drawmeridians(meridians,**kwm))
+                self.meridians = meridians
+            else:
+                self.meridians = None
 
                 # Remove duplicated labels
                 llfound = []

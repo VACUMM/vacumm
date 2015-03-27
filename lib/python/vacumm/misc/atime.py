@@ -49,20 +49,16 @@ from matplotlib.dates import DateFormatter, num2date, date2num
 #from pytz import timezone, all_timezones
 
 
-MV = MV2
 
+# Attributes
+STR_UNIT_TYPES = ['years','months','days','hours','minutes','seconds']
+RE_SPLIT_DATE = recompile(r'[ Z:T\-]')
+RE_MATCH_TIME_PATTERN = r'[0-2]?\d?\d?\d(-[01]?\d(-[0-3]?\d([ T][0-2]?\d(:[0-6]?\d(:[0-6]?\d(\.\d+)?)?)?)?)?)?'
+RE_MATCH_TIME = recompile(RE_MATCH_TIME_PATTERN+'$', re.I).match
+RE_MATCH_UNITS_PATTERN = r'(%s) since '%'|'.join(STR_UNIT_TYPES)+RE_MATCH_TIME_PATTERN+'[ \w]*'
+RE_MATCH_UNITS = recompile(RE_MATCH_UNITS_PATTERN+'$', re.I).match
 
-
-# Variables
-mpl_time_units = 'days since 0001'
-str_unit_types = ['years','months','days','hours','minutes','seconds']
-re_split_date = recompile(r'[ Z:T\-]')
-re_match_time_pattern = r'[0-2]?\d?\d?\d(-[01]?\d(-[0-3]?\d([ T][0-2]?\d(:[0-6]?\d(:[0-6]?\d(\.\d+)?)?)?)?)?)?'
-re_match_time = recompile(re_match_time_pattern+'$', re.I).match
-re_match_units_pattern = r'(%s) since '%'|'.join(str_unit_types)+re_match_time_pattern+'[ \w]*'
-re_match_units = recompile(re_match_units_pattern+'$', re.I).match
-
-__all__ = ['mpl_time_units','str_unit_types','re_split_date','now', 'add', 'axis_add',
+__all__ = ['STR_UNIT_TYPES','RE_SPLIT_DATE','now', 'add', 'axis_add',
 'mpl', 'are_same_units', 'are_good_units', 'ch_units', 'comptime', 'reltime', 'datetime',
 'is_cdtime', 'is_reltime', 'is_comptime', 'is_datetime', 'check_range', 'is_in_range',
 'num_to_ascii', 'Gaps', 'unit_type', 'get_dt', 'compress', 'plot_dt', 'reduce', 'yearly',
@@ -375,7 +371,7 @@ def are_good_units(units):
 #        return False
 #    for rem in ' UTC.', ' UTC':
 #        units = units.replace(rem, '')
-    return re_match_units(units) is not None
+    return RE_MATCH_UNITS(units) is not None
 
 check_units = are_good_units
 def ch_units(mytimes, newunits, copy=True):
@@ -629,7 +625,7 @@ def datetime(mytimes):
             if len(mytime)==2: mytime += (1, )
             res.append(DT.datetime(*mytime))
             continue
-            
+
         # Others
         ct = comptime(mytime)
         ct_seconds = int(math.floor(ct.second))
@@ -806,7 +802,7 @@ def is_strtime(mytime):
         :func:`is_cdtime()`   :func:`is_time()`
     """
     if not isinstance(mytime, basestring): return False
-    m = re_match_time(mytime)
+    m = RE_MATCH_TIME(mytime)
     if m: return True
     #try:
         #cdtime.s2c(mytime)
@@ -827,7 +823,7 @@ def is_numtime(mytime):
         :func:`is_datetime()` :func:`is_comptime()` :func:`is_reltime()`
         :func:`is_cdtime()`   :func:`is_time()`
     """
-    return isinstance(mytime, (int, float))
+    return isinstance(mytime, (int, float)) or (N.isscalar(mytime) and N.isreal(mytime))
 
 
 
@@ -992,7 +988,7 @@ class Gaps(cdms.tvariable.TransientVariable):
         >>> import vacumm.misc as M
         >>> import MV2
         >>> time = M.axes.create_time([1,2,4,5],units='days since 2000')
-        >>> var = MV.arange
+        >>> var = MV2.arange
 
     """
 
@@ -1015,11 +1011,11 @@ class Gaps(cdms.tvariable.TransientVariable):
         # Time compression according to mask
         if len(var.shape) > 1:
             var = var(order='...t')
-            mask = MV.getmaskarray(var)
+            mask = MV2.getmaskarray(var)
             while mask.ndim > 1:
                 mask = N.logical_and.reduce(mask, axis=0)
         else:
-            mask = MV.getmaskarray(var)
+            mask = MV2.getmaskarray(var)
         del var
         ctime = mytime.asComponentTime()
         self._ctbounds = [ctime[0], ctime[-1]]
@@ -1184,14 +1180,14 @@ def unit_type(units, string_type=False, s=True, raiseerr=True):
     if isinstance(units, basestring):
         units = units.lower()
         if not units.endswith('s'): units += 's'
-    for tt in str_unit_types:
+    for tt in STR_UNIT_TYPES:
         this_cdt_type = eval('cdtime.'+tt.title())
         if units in [tt,this_cdt_type]:
             if string_type:
                 return tt[:len(tt)-1+s]
             else:
                 return this_cdt_type
-    if raiseerr:  raise TypeError('Wrong type of units: "%s". Valid units are: %s'%(units, str_unit_types))
+    if raiseerr:  raise TypeError('Wrong type of units: "%s". Valid units are: %s'%(units, STR_UNIT_TYPES))
 
 
 
@@ -1238,7 +1234,7 @@ def get_dt(axis, units=None):
 
 def compress(data):
     """Compress along time"""
-    data = MV.asarray(data)
+    data = MV2.asarray(data)
 
     # Find time axis
     if data.getTime() is None:
@@ -1258,11 +1254,11 @@ def compress(data):
         ii = N.arange(len(snap.ravel()))
         mask = MA.getmaskarray(snap)
         ii0 = MA.masked_array(ii,mask=mask).compressed()[0]
-        ref = MV.reshape(data,(nt,N.size(snap)))[:,ii0]
+        ref = MV2.reshape(data,(nt,N.size(snap)))[:,ii0]
     slab = N.arange(nt).compress(~MA.getmaskarray(ref)).tolist()
 
     # Select data
-    res = MV.take(data, slab)
+    res = MV2.take(data, slab)
     res.getAxis(0)[:] = tt[slab]
     cp_atts(data,res,id=True)
     cp_atts(tt,res.getAxis(0),id=True)
@@ -1320,7 +1316,7 @@ def reduce_old(data, comp=True, fast=True):
     dt = N.concatenate((dt,[1.]))
     dbb = bb[1:]-bb[:-1]
     dbb = N.concatenate((dbb,[[1.,1.]]))
-    itv = MA.masked_where(MV.equal(dt,0.),MA.arange(nt))
+    itv = MA.masked_where(MV2.equal(dt,0.),MA.arange(nt))
     if bb is not None:
         itv = MA.masked_where(N.logical_and(N.equal(dbb[:,0],0.),
           N.equal(dbb[:,1],0.)),itv)
@@ -1363,7 +1359,7 @@ def reduce_old(data, comp=True, fast=True):
 
     # New variable
     if fast:
-        adata = MV.masked_object(adata,missing_value)
+        adata = MV2.masked_object(adata,missing_value)
     adata.setAxis(0,atime)
     for i in xrange(1,data.rank()):
         adata.setAxis(i,data.getAxis(i))
@@ -1385,7 +1381,7 @@ def yearly(data,**kwargs):
     """
     assert data.getTime() is not None, 'Your data must have a valid time axis'
 
-    hdata = MV.array(data)
+    hdata = MV2.array(data)
     cdutil.setTimeBoundsYearly(hdata)
     new_data = reduce(hdata,**kwargs)
     del hdata
@@ -1403,7 +1399,7 @@ def monthly(data,**kwargs):
     """
     assert data.getTime() is not None, 'Your data must have a valid time axis'
 
-    hdata = MV.array(data)
+    hdata = MV2.array(data)
     cdutil.setTimeBoundsMonthly(hdata)
     new_data = reduce(hdata,**kwargs)
     del hdata
@@ -1497,8 +1493,8 @@ def hourly_exact(data,time_units=None,maxgap=None, ctlims=None):
     sh[0] = nt
     axes = data.getAxisList()
     axes[0] = htaxis
-    hdata = MV.zeros(sh,typecode=data.dtype.char,savespace=1)
-    hdata[:] *= MV.masked
+    hdata = MV2.zeros(sh,typecode=data.dtype.char,savespace=1)
+    hdata[:] *= MV2.masked
     cp_atts(data,hdata,id=True)
     hdata.setAxisList(axes)
     set_grid(hdata,data.getGrid())
@@ -1550,17 +1546,17 @@ def trend(var):
     from grid.misc import set_grid
 
     # Expansion of first axis
-    tt = MV.array(var.getAxis(0).getValue(),typecode=var.dtype.char)
+    tt = MV2.array(var.getAxis(0).getValue(),typecode=var.dtype.char)
     if var.rank() > 1:
         sh = var.shape
-        tt = MV.reshape(MV.repeat(tt,N.multiply.reduce(sh[1:])),sh)
+        tt = MV2.reshape(MV2.repeat(tt,N.multiply.reduce(sh[1:])),sh)
 
     # Coeffs
     coefs = linearregression(var)
 
     # Trend
     sh = var.shape
-    var_trend = MV.masked_array(MV.resize(coefs[0],sh) * tt + MV.resize(coefs[1],sh))
+    var_trend = MV2.masked_array(MV2.resize(coefs[0],sh) * tt + MV2.resize(coefs[1],sh))
     cp_atts(var,var_trend)
     var_trend.id = var.id+'_trend'
     var_trend.name = var_trend.id
@@ -1936,11 +1932,11 @@ def round_date(mydate, round_type, mode='round'):
 
     """
     if not isNumberType(round_type):
-        round_type = str_unit_types.index(unit_type(round_type, string_type=True))
-    stype = str_unit_types[round_type]
+        round_type = STR_UNIT_TYPES.index(unit_type(round_type, string_type=True))
+    stype = STR_UNIT_TYPES[round_type]
     ct = comptime(mydate)
     sdate = str(ct)
-    ct0 = cdtime.comptime(*[int(float(ss)) for ss in re_split_date.split(sdate) if ss != ''][:round_type+1])
+    ct0 = cdtime.comptime(*[int(float(ss)) for ss in RE_SPLIT_DATE.split(sdate) if ss != ''][:round_type+1])
     ct1 = ct0 if ct==ct0 else add(ct0, 1, stype)
     units = 'days since '+sdate
     t = ct.torel(units).value

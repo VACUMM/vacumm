@@ -83,6 +83,11 @@ class Docstring2Params(dict):
         >>> params = dsp.asdict(select=['secondpar', 'thirdpar'], indent=8)
     """
 
+    # Regular expressions
+    RE_SECTION_MATCH = re.compile(r'^:([^:]+):.*').match
+    RE_INDENT_MATCH = re.compile(r"^(\s*)(\S.*)?$").match
+    RE_PARAM = re.compile(r"^(\s+)-\s*\*\*?\s*([^\*]+)\s*\*\*?([^:]*:.*)$")
+
     def __init__(self, obj, select=None, prefix=None, sections = ['param']):
 
         dict.__init__(self)
@@ -102,18 +107,13 @@ class Docstring2Params(dict):
             select = [select]
         if prefix is None: prefix = ''
 
-        # Regular expressions
-        re_section_match = re.compile(r'^:([^:]+):.*').match
-        re_indent_match = re.compile(r"^(\s*)(\S.*)?$").match
-        re_param = re.compile(r"^(\s+)-\s*\*\*?\s*([^\*]+)\s*\*\*?([^:]*:.*)$")
-
         # Loop on lines
         param = 0
         ifc = None
         for iline, line in enumerate(docs):
 
             # Section header
-            m = re_section_match(line)
+            m = self.RE_SECTION_MATCH(line)
             if m:
                 if True in [secname in m.group(1).lower() for secname in sections]: # Params section header
                     param = 1
@@ -125,12 +125,12 @@ class Docstring2Params(dict):
             if not param: continue
 
             # Param declaration
-            mp = re_param.match(line)
+            mp = self.RE_PARAM.match(line)
             if mp:
                 param = mp.group(2)
                 if select is None or param in select:
                     if prefix:
-                        line = re_param.sub(r'\1- **%s\2**\3'%prefix, line)
+                        line = self.RE_PARAM.sub(r'\1- **%s\2**\3'%prefix, line)
                     if not (prefix+param) in self:
                         self[prefix+param] = []
                     self[prefix+param].append(line)
@@ -139,7 +139,7 @@ class Docstring2Params(dict):
 
             # Valid line for a param description continuation
             if not isinstance(param, basestring): continue
-            mi = re_indent_match(line)
+            mi = self.RE_INDENT_MATCH(line)
             ns = len(mi.group(1))
             rem = mi.group(2)
             if rem is None or ns >= ifc:

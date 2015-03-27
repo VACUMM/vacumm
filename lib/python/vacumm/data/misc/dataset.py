@@ -89,15 +89,15 @@ from vacumm.misc.grid.regridding import resol, interp1d, regrid1d, grid2xy, tran
     shift1d, shift2d, extend1d, extend2d, regrid1dold
 from vacumm.misc.misc import is_iterable, kwfilter, squeeze_variable, dict_filter_out,  \
     get_atts, set_atts
-from vacumm.misc.phys.constants import g
+from vacumm.misc.phys.constants import GRAVITY
 from vacumm.misc.plot import map2, curve2, section2, hov2, add_map_lines
 from vacumm.misc.axes import islon, islat, isdep
 from vacumm.data.misc.sigma import NcSigma
-from vacumm.data.misc.arakawa import ArakawaGrid, AGrid, CGrid, locations as arakawa_locations,  \
+from vacumm.data.misc.arakawa import ArakawaGrid, AGrid, CGrid, ARAKAWA_LOCATIONS as arakawa_locations,  \
     set_grid_type, get_grid_type, _cdms2_atts as cdms2_arakawa_atts
-from vacumm.data.cf import var_specs, axis_specs, cf2search, cf2atts, generic_names, \
-    generic_axis_names, generic_var_names, format_axis, format_var, get_loc, no_loc_single, \
-    default_location, change_loc, hidden_cf_atts, change_loc_single
+from vacumm.data.cf import VAR_SPECS, AXIS_SPECS, cf2search, cf2atts, GENERIC_NAMES, \
+    GENERIC_AXIS_NAMES, GENERIC_VAR_NAMES, format_axis, format_var, get_loc, no_loc_single, \
+    DEFAULT_LOCATION, change_loc, HIDDEN_CF_ATTS, change_loc_single
 from vacumm import VACUMMError
 from vacumm.diag.dynamics import barotropic_geostrophic_velocity, kinetic_energy
 from vacumm.diag.thermdyn import mixed_layer_depth, density
@@ -106,7 +106,8 @@ from vacumm.misc.misc import grow_variables
 
 # Kwargs which are pop'ed from intermediate plots
 # (e.g. plot section, then trajectory map, then post plot using these kwargs)
-post_plot_args = ('title', 'show', 'close', 'savefig', 'savefigs')
+POST_PLOT_ARGS = ('title', 'show', 'close', 'savefig', 'savefigs')
+post_plot_args = POST_PLOT_ARGS # compat
 
 _geonames =  {'x':'lon', 'y':'lat', 'z':'level', 't':'time'}
 
@@ -159,7 +160,7 @@ def _get_var_(self, name, mode=None, **kwargs):
         kwargs = kwargs.copy()
         toloc = kwargs.pop('at', None)
         if toloc is None:
-            toloc = get_loc(name, 'name', mode='ext', default=default_location)
+            toloc = get_loc(name, 'name', mode='ext', default=DEFAULT_LOCATION)
         locations = list(arakawa_locations)
         locations.remove(toloc)
         if ploc:
@@ -185,7 +186,7 @@ def getvar_decmets(cls):
     """Generate methods such as :meth:`get_sst` based on the :attr:`auto_generic_var_names`
     attributes that provides a list of generic names of variables
 
-    These generic names must be listed in :mod:`vacumm.data.cf.generic_var_names`.
+    These generic names must be listed in :mod:`vacumm.data.cf.GENERIC_VAR_NAMES`.
     The docstring of the each method is formatted using :func:`getvar_fmtdoc`.
 
     Methods that already exist are not overwritten.
@@ -207,7 +208,7 @@ def getvar_decmets(cls):
         names.append(name)
         for p in arakawa_locations: #'u', 'v', 'w', 'f':
             namep = name+'_'+p
-            if namep in generic_var_names:
+            if namep in GENERIC_VAR_NAMES:
                 names.append(namep)
 
     # Declarations
@@ -271,7 +272,7 @@ def getvar_fmtdoc(func, **kwargs):
 
         - **func**: Method (or function) name that must be in the form ``get_<name>``,
           where ``<name>`` must be a generic var names listed in
-          :attr:`vacumm.data.cf.generic_var_names`.
+          :attr:`vacumm.data.cf.GENERIC_VAR_NAMES`.
         - Extra keywords define extra options in the docstring.
           Keys must correspond to a keyword name, and values correspond to a keyword
           description.
@@ -292,14 +293,14 @@ def getvar_fmtdoc(func, **kwargs):
     func_name = func.__name__
     if not func_name.startswith('get_'): return func
     var_name = func_name[4:]
-    if not var_name in generic_var_names: return func
+    if not var_name in GENERIC_VAR_NAMES: return func
 
 
     # Long name and units
-    long_name = var_specs[var_name]['long_names'][0]
+    long_name = VAR_SPECS[var_name]['long_names'][0]
     long_name = long_name[0].lower()+long_name[1:]
-    if 'units' in var_specs[var_name]:
-        units = " [%s]"%var_specs[var_name]['units'][0]
+    if 'units' in VAR_SPECS[var_name]:
+        units = " [%s]"%VAR_SPECS[var_name]['units'][0]
     else:
         units = ''
 
@@ -636,7 +637,7 @@ class Dataset(Object):
         if varname=='bathy_w':
             pass
         fromobj = None
-        if varname in generic_names:
+        if varname in GENERIC_NAMES:
 
             # Search and atts
             cf_specs = dict(
@@ -645,7 +646,7 @@ class Dataset(Object):
                 )
 
             # Get 'physloc'
-            axvar_specs = (var_specs if varname in generic_var_names else axis_specs)[varname]
+            axvar_specs = (VAR_SPECS if varname in GENERIC_VAR_NAMES else AXIS_SPECS)[varname]
             for prop in ['physloc']:
                 if prop in axvar_specs:
                     cf_specs[prop] = axvar_specs[prop]
@@ -1094,7 +1095,7 @@ class Dataset(Object):
 
         :Params:
           - **varname**: Either a generic variable name listed in
-            :attr:`~vacumm.data.cf.generic_var_names`, a netcdf name with a '+' a prefix,
+            :attr:`~vacumm.data.cf.GENERIC_VAR_NAMES`, a netcdf name with a '+' a prefix,
             a tuple of netcdf variable names
             or dictionnary of specification names with a search argument of
             :func:`~vacumm.misc.io.ncfind_var` (tuple of netcdf names
@@ -1762,16 +1763,16 @@ class Dataset(Object):
         :Params:
 
             - **var**: A CDAT array.
-            - **loc**: A physical location (see :attr:`vacumm.data.misc.arakawa.locations`).
+            - **loc**: A physical location (see :attr:`vacumm.data.misc.arakawa.ARAKAWA_LOCATIONS`).
             - **fromloc**, optional: Originating location. If ``None`` it is guessed
               from its attributes (id, standard_name and long_name), and default
-              to :attr:`~vacumm.data.cf.default_location`).
+              to :attr:`~vacumm.data.cf.DEFAULT_LOCATION`).
             - Extra keywords are passed to
               :meth:`vacumm.data.misc.arakawa.ArakawaGrid.loc2loc`.
 
         """
         # No grid type
-        atts = get_atts(var, extra=hidden_cf_atts+cdms2_arakawa_atts)
+        atts = get_atts(var, extra=HIDDEN_CF_ATTS+cdms2_arakawa_atts)
         if not self.arakawa_grid_type:# or var.getGrid() is None:
             if copy:
                 var = var.clone()
@@ -1782,7 +1783,7 @@ class Dataset(Object):
         if fromloc is None:
             fromloc = get_loc(var, mode='ext')
         if fromloc is None:
-            fromloc = default_location
+            fromloc = DEFAULT_LOCATION
 
         # Interpolate
         var = self.arakawa_grid.interp(var, fromloc, loc, copy=copy, **kwargs)
@@ -1833,7 +1834,7 @@ class Dataset(Object):
                 var = curvsel.finalize(var)
 
             # Format
-            if format and (genname is not None or var.id in generic_var_names):
+            if format and (genname is not None or var.id in GENERIC_VAR_NAMES):
                 format_var(var, genname, **atts)
             elif atts:
                 set_atts(var, **atts)
@@ -1857,7 +1858,7 @@ class Dataset(Object):
                 kwat['copy'] = False
                 var = self.toloc(var, at, **kwat)
 
-        elif format and (genname is not None or var.id in generic_var_names):
+        elif format and (genname is not None or var.id in GENERIC_VAR_NAMES):
             format_axis(var, genname, **atts)
         elif atts:
             set_atts(var, **atts)
@@ -2094,12 +2095,16 @@ class OceanDataset(OceanSurfaceDataset):
                 depth = var.getLevel()
             elif isdep(var):
                 depth = var
+        if depth is None:
+            return var
         isup = self._isdepthup_(depth)
-        if isup: return var
+        if isup:
+            return var
         if isdep(var):
             return makedepthup(var, depth=False, strict=True)
         axis = var.getOrder().find('z')
-        if axis<0: return var
+        if axis<0:
+            return var
         return makedepthup(var, depth=False, axis=axis, strict=True)
 
 
@@ -2266,6 +2271,10 @@ class OceanDataset(OceanSurfaceDataset):
           - ``None``: Try all modes, in the following order.
           - ``"var"``: Read it from a variable.
           - ``"tempsal"``: Estimate from temperature and salinity."""
+    _extra_doc = {'dens_<param>':'Passed to :func:`~vacumm.diag.thermdyn.density',
+        'depth_<param>':'Passed to :meth:`get_depth`',
+        'mode':_mode_doc}
+
     def get_dens(self, mode=None, **kwargs):
         '''Get 4D density'''
 
@@ -2291,8 +2300,35 @@ class OceanDataset(OceanSurfaceDataset):
                 dens = density(temp, sal, depth=depth, format_axes=True, **kwdens)
             if dens is not None or check_mode('tempsal', mode, strict=True):
                 return self.finalize_object(dens, depthup=False, **kwfinal)
-    getvar_fmtdoc(get_dens, mode=_mode_doc)
+    getvar_fmtdoc(get_dens, **_extra_doc)
+    del _extra_doc['depth_<param>']
 
+    def get_ssd(self, mode=None, **kwargs):
+        '''Get sea surface density'''
+
+        fwarn = max(int(kwargs.get('warn', 0))-1, 0)
+        kwvar = kwfilter(kwargs, ['lon','lat','time','level','torect'], warn=fwarn)
+        kwfinal = kwfilter(kwargs, ['squeeze','order','asvar', 'at'], genname='dens')
+        kwdens = kwfilter(kwargs, 'dens_')
+        kwdens['potential'] = True
+
+        # First, try to find a ssd variable
+        if check_mode('var', mode):
+            dens = self.get_variable('ssd', **kwvar)
+            if dens is not None or check_mode('var', mode, strict=True):
+                return self.finalize_object(dens, **kwfinal)
+
+        # Estimate it from temperature and salinity
+        if check_mode('tempsal', mode):
+            sst = self.get_sst(**kwvar)
+            sss = self.get_sss(**kwvar)
+            if sst is not None and sss is not None:
+                ssd = density(sst, sss, format_axes=True, **kwdens)
+            if ssd is not None or check_mode('tempsal', mode, strict=True):
+                return self.finalize_object(ssd, **kwfinal)
+
+    getvar_fmtdoc(get_ssd, **_extra_doc)
+    del _extra_doc, _mode_doc
 
     def get_uvgbt(self, **kwargs):
         """Get zonal and meridional geostrophic velocity from SSH"""
@@ -3000,7 +3036,7 @@ class OceanDataset(OceanSurfaceDataset):
             # Anomalie de densité
             danom = dens-densmean
             # Énergie potentielle disponible
-            ape = danom * g
+            ape = danom * GRAVITY
             ape *= ddepth
             # Deficit
             ped = MV2.average(ape, axis=0, weights=ddepth)
@@ -3040,7 +3076,7 @@ class OceanDataset(OceanSurfaceDataset):
                 axes_rect=[0.75, 0.1, 0.2, 0.3],
                 drawmeridians_size=6, drawparallels_size=6,
                 show = False))
-        for k in post_plot_args: mapkw.pop(k, None) # FIXME: make post_plot available for standalone trajectory plot ?
+        for k in POST_PLOT_ARGS: mapkw.pop(k, None) # FIXME: make post_plot available for standalone trajectory plot ?
         mapkw.update(dict(vertical=True, show=False))
         # The map itself
         mp = map2(**mapkw)
@@ -3066,7 +3102,7 @@ class OceanDataset(OceanSurfaceDataset):
         self.warning('plot_layer is deprecated by plot_hsection')
         mp = kwargs.pop('map', None)
         mapkw = kwfilter(kwargs, 'map', default=dict(label=self.__class__.__name__))
-        for k in post_plot_args: mapkw.pop(k, None)
+        for k in POST_PLOT_ARGS: mapkw.pop(k, None)
         plotkw = kwfilter(kwargs, 'plot')
         var = self.get_layer(*args, **kwargs)
         mapkw.update(show=False)
@@ -3122,7 +3158,7 @@ class OceanDataset(OceanSurfaceDataset):
                 #colorbar_ticks=numpy.arange(vmin, vmax+vstep, vstep),
                 axes_rect=[0.1, 0.1, 0.6, 0.8]))
         mapkw = kwfilter(kwargs, 'map', keep=True, defaults=dict(varname=var.id))
-        for k in post_plot_args: mapkw.pop(k, None)
+        for k in POST_PLOT_ARGS: mapkw.pop(k, None)
         plotkw = kwfilter(kwargs, 'plot')
         # Plot the section
         seckw.update(yaxis=dep, levels_mode='normal', show=False)
@@ -3169,9 +3205,9 @@ class OceanDataset(OceanSurfaceDataset):
                 #vmin=vmin, vmax=vmax, units=var.units,
                 #colorbar_ticks=numpy.arange(vmin, vmax+vstep, vstep),
                 axes_rect=[0.1, 0.1, 0.6, 0.8]))
-        for k in post_plot_args: hovkw.pop(k, None)
+        for k in POST_PLOT_ARGS: hovkw.pop(k, None)
         mapkw = kwfilter(kwargs, 'map', keep=True, defaults=dict(varname=var.id))
-        for k in post_plot_args: mapkw.pop(k, None)
+        for k in POST_PLOT_ARGS: mapkw.pop(k, None)
         plotkw = kwfilter(kwargs, 'plot')
         # Plot the section
         hovkw.update(time_vertical=True, show=False)
@@ -3217,9 +3253,9 @@ class OceanDataset(OceanSurfaceDataset):
                 ylong_name='Time', ylabel='time', #yunits=, #ymin=dmin, ymax=dmax,
                 #vmin=vmin, vmax=vmax, units=var.units,
                 axes_rect=[0.1, 0.1, 0.6, 0.8]))
-        for k in post_plot_args: curkw.pop(k, None)
+        for k in POST_PLOT_ARGS: curkw.pop(k, None)
         mapkw = kwfilter(kwargs, 'map', keep=True, defaults=dict(varname=var.id))
-        for k in post_plot_args: mapkw.pop(k, None)
+        for k in POST_PLOT_ARGS: mapkw.pop(k, None)
         plotkw = kwfilter(kwargs, 'plot')
         # Plot the location curve
         curkw.update(order='td', show=False)
@@ -3264,9 +3300,9 @@ class OceanDataset(OceanSurfaceDataset):
                 ylong_name=var.id, ylabel=var.id, #yunits=var.units, ymin=vmin, ymax=vmax,
                 #vmin=vmin, vmax=vmax, units=var.units,
                 axes_rect=[0.1, 0.1, 0.6, 0.8]))
-        for k in post_plot_args: curkw.pop(k, None)
+        for k in POST_PLOT_ARGS: curkw.pop(k, None)
         mapkw = kwfilter(kwargs, 'map', keep=True, defaults=dict(varname=var.id))
-        for k in post_plot_args: mapkw.pop(k, None)
+        for k in POST_PLOT_ARGS: mapkw.pop(k, None)
         plotkw = kwfilter(kwargs, 'plot')
         # Plot the computed curve
         curkw.update(show=False)#, order='td')
@@ -3297,7 +3333,7 @@ class OceanDataset(OceanSurfaceDataset):
 
         '''
         mapkw = kwfilter(kwargs, 'map')
-        for k in post_plot_args: mapkw.pop(k, None)
+        for k in POST_PLOT_ARGS: mapkw.pop(k, None)
         plotkw = kwfilter(kwargs, 'plot')
         mld = self.get_mixed_layer_depth(select)
         l = auto_scale((mld.min(), mld.max()))
@@ -3321,7 +3357,7 @@ class OceanDataset(OceanSurfaceDataset):
 
         '''
         mapkw = kwfilter(kwargs, 'map')
-        for k in post_plot_args: mapkw.pop(k, None)
+        for k in POST_PLOT_ARGS: mapkw.pop(k, None)
         plotkw = kwfilter(kwargs, 'plot')
         ped = self.get_potential_energy_deficit(select)
         l = auto_scale((ped.min(), ped.max()))

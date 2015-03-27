@@ -1,5 +1,7 @@
+#!/usr/bin/env python
 # -*- coding: utf8 -*-
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+#
+# Copyright or © or Copr. Actimar/IFREMER (2013-2015)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -40,25 +42,25 @@ class Sst(Satellite) :
         import os, cdtime
         Satellite.__init__(self)
 
-        SCRIPT_DIR=os.getcwd()
+	SCRIPT_DIR=os.getcwd()
         self.SCRIPT_DIR = SCRIPT_DIR
 
         #-- retrocompatibilite
         if cfg is None:
             config = ConfigParser.RawConfigParser()
-            config.read(os.path.join(SCRIPT_DIR,'config.cfg'))
+            config.read(os.path.join(SCRIPT_DIR,'config.cfg'))	
             andeb = config.getint('Time Period', 'andeb')
-            anfin = config.getint('Time Period', 'anfin')
+            anfin = config.getint('Time Period', 'anfin')		
             mdeb = config.getint('Time Period', 'mdeb')
             mfin = config.getint('Time Period', 'mfin')
             jdeb = config.getint('Time Period', 'jdeb')
             jfin = config.getint('Time Period', 'jfin')
             hdeb = config.getint('Time Period', 'hdeb')
             hfin = config.getint('Time Period', 'hfin')
-
+            
             self.WORKDIR = config.get('Env', 'workdir')
         else:
-
+            
             andeb = cfg['Time Period']['andeb']
             anfin = cfg['Time Period']['anfin']
             mdeb = cfg['Time Period']['mdeb']
@@ -78,11 +80,11 @@ class Sst(Satellite) :
         self.ctfin=cdtime.comptime(anfin,mfin,jfin,hfin,0,0)
 
 
-        DIR_SST=os.path.join(self.WORKDIR,'SST')    # repertoire de stockage des donnees
+        DIR_SST=os.path.join(self.WORKDIR,'SST')    # repertoire de stockage des donnees     
         if os.path.isdir(DIR_SST)==False:
             os.mkdir(DIR_SST)
         self.WORKDIR=os.path.join(self.WORKDIR,'SST')
-
+            
         self.name="Satellite Sea surface Temperature"
         self.shortname="SST"
         self.units=" "

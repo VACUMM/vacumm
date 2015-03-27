@@ -102,7 +102,7 @@ exclude_trees = []
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-#add_module_names = True
+add_module_names = False
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
@@ -115,6 +115,8 @@ pygments_style = 'sphinx'
 modindex_common_prefix = ['vacumm.']
 
 trim_footnote_reference_space = True
+
+numfig = True
 
 # -- Options for HTML output ---------------------------------------------------
 
@@ -346,9 +348,6 @@ docversions_index_html = 'contents.html'
 
 
 def setup(app):
-    app.add_object_type('confval', 'confval',
-        objname='configuration value',
-        indextemplate='pair: %s; configuration value')
     app.add_object_type('confopt', 'confopt',
         objname='configuration option',
         indextemplate='pair: %s; configuration option')

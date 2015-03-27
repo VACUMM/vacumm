@@ -37,30 +37,33 @@
 import cdms2
 from vacumm.misc.grid.regridding import shift2d, shift1d
 
-__all__ = ['locations', 'positions', 'ArakawaGrid', 'CGrid', 'AGrid',
+__all__ = ['ARAKAWA_LOCATIONS', 'ARAKAWA_POSITIONS', 'ArakawaGrid', 'CGrid', 'AGrid',
     'ArakawaGridTransfer']
 
-#: Strings for naming standard physical locations on grid
-locations = [
+#: Strings for naming standard physical ARAKAWA_LOCATIONS on grid
+ARAKAWA_LOCATIONS = [
     't', # Thermodynamical quantities
     'u', # Zonal momentum quantities
     'v', # Meridional momentum quantities
     'w', # Vertical momentum quantities
     'f', # Vorticity quantities
 ]
+locations = ARAKAWA_LOCATIONS # compat
 
-#: Alias for :attr:`locations`
-positions = locations
+#: Alias for :attr:`ARAKAWA_LOCATIONS`
+ARAKAWA_POSITIONS = ARAKAWA_LOCATIONS
+positions = ARAKAWA_POSITIONS # compat
 
-#: Upper-case version of :attr:`locations`
-Locations = [l.upper() for l in locations]
+#: Upper-case version of :attr:`ARAKAWA_LOCATIONS`
+ARAKAWA_LOCATIONS_UPPER = [l.upper() for l in ARAKAWA_LOCATIONS]
+Locations = ARAKAWA_LOCATIONS_UPPER# compat
 
-# TODO: Add special locations such as uw, vw and fw at the same place?
+# TODO: Add special ARAKAWA_LOCATIONS such as uw, vw and fw at the same place?
 
 
 #: Grid types
-grid_types = ['A', 'C']
-
+ARAKAWA_GRID_TYPES = ['A', 'C']
+grid_types = ARAKAWA_GRID_TYPES # compat
 
 from vacumm import VACUMMError
 class ArakawaGridError(VACUMMError):
@@ -102,9 +105,9 @@ class _ArakawaInterp_(object):
         """Check if a location is valid"""
         p = str(p).lower()
         if p=='': return 't'
-        if p not in locations:
+        if p not in ARAKAWA_LOCATIONS:
             raise ArakawaGridError('Bad location in Arakawa grid: %s. '
-                'Please use one of: %s'%(p, locations))
+                'Please use one of: %s'%(p, ARAKAWA_LOCATIONS))
         return p
 
 class ArakawaGrid(_ArakawaInterp_):
@@ -116,7 +119,7 @@ class ArakawaGrid(_ArakawaInterp_):
 
         :Params:
 
-            - **arg**: An explicit grid type (:attr:`grid_types`), or
+            - **arg**: An explicit grid type (:attr:`ARAKAWA_GRID_TYPES`), or
               an object with a either :attr:`grid_type`, :attr:`arakawa_grid_type` or
               :attr:`grid_type` attribute.
 
@@ -125,7 +128,7 @@ class ArakawaGrid(_ArakawaInterp_):
         """
         if arg in [AGrid, CGrid]: return arg()
         if isinstance(arg, ArakawaGrid): return arg
-        if str(arg).upper() in grid_types:
+        if str(arg).upper() in ARAKAWA_GRID_TYPES:
             gt = arg
         else:
             gt = get_grid_type(arg)
@@ -142,7 +145,7 @@ class ArakawaGrid(_ArakawaInterp_):
 
 
     def are_same_locs(self, p0, p1):
-        """Check if to positions are the same
+        """Check if to ARAKAWA_POSITIONS are the same
 
         :Example:
 
@@ -154,7 +157,7 @@ class ArakawaGrid(_ArakawaInterp_):
         self[p0] == self[p1]
 
     def delta_loc(self, p0, p1):
-        """Difference of relative locations
+        """Difference of relative ARAKAWA_LOCATIONS
 
         :Return: ``dx,dy,dz``
         """
@@ -173,7 +176,7 @@ class ArakawaGrid(_ArakawaInterp_):
         :Params:
 
             - **var**: MV2 array with a grid.
-            - **p0/1**: Valid locations: 0=source, 1=destination.
+            - **p0/1**: Valid ARAKAWA_LOCATIONS: 0=source, 1=destination.
               If p0 is None, it is guessed with :func:`vacumm.data.cf.get_loc`.
             - **mode**, optional: Interpolation mode at boundaries
               (see :func:`~vacumm.misc.grid.regridding.shift2d`).
@@ -185,7 +188,7 @@ class ArakawaGrid(_ArakawaInterp_):
 
             >>> u3d_t = CGrid().interp(u3d_u, 'u', 't', mode='extrap')
         """
-        # Valid locations
+        # Valid ARAKAWA_LOCATIONS
         if p0 is None:
             from vacumm.data.cf import get_loc
             p0 = get_loc(var)
@@ -244,7 +247,7 @@ class ArakawaGridTransfer(_ArakawaInterp_):
     """To interpolate variables from one grid type to another
 
     .. note:: This classes does not interpolate between two grids, it just interpolates
-        between relative positions. For general interpolations, please use
+        between relative ARAKAWA_POSITIONS. For general interpolations, please use
         :func:`~vacumm.grid.regridding.regrid2d`.
 
     :Example:
@@ -265,7 +268,7 @@ class ArakawaGridTransfer(_ArakawaInterp_):
         self.grid1 = ArakawaGrid.factory(grid1)
 
     def delta_loc(self, p0, p1=None):
-        """Difference of relative locations
+        """Difference of relative ARAKAWA_LOCATIONS
 
         :Return: ``dx,dy,dz``
         """
@@ -289,7 +292,7 @@ class ArakawaGridTransfer(_ArakawaInterp_):
         :Params:
 
             - **var**: MV2 array with a grid.
-            - **p0/1**: Valid locations: 0=source, 1=destination.
+            - **p0/1**: Valid ARAKAWA_LOCATIONS: 0=source, 1=destination.
               If p0 is None, it is guessed with :func:`vacumm.data.cf.get_loc`.
               If p1 is None, it defaults to p0.
             - **mode**, optional: Interpolation mode at boundaries

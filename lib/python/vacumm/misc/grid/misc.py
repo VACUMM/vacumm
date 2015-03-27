@@ -2818,10 +2818,10 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
         # From standard_name (using cf)
         if refsn is not None:
             try:
-                from vacumm.data.cf import var_specs
-                if refsn in var_specs['ssh']['standard_names']:
+                from vacumm.data.cf import VAR_SPECS
+                if refsn in VAR_SPECS['ssh']['standard_names']:
                     refloc = 'top'
-                elif True in [(refsn in var_specs[vn]['standard_names'])
+                elif True in [(refsn in VAR_SPECS[vn]['standard_names'])
                     for vn in ['bathy', 'bathy_u', 'bathy_v']]:
                     refloc = 'bottom'
             except:

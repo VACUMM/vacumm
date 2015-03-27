@@ -355,7 +355,8 @@ def geo_scale(*args,**kwargs):
 
         :func:`basic_auto_scale` :func:`auto_scale`
     """
-    return auto_scale(geo=True,*args,**kwargs)
+    kwargs.setdefault('geo', True)
+    return auto_scale(*args, **kwargs)
 
 
 def get_atts(var, id=True, extra=None, **kwargs):

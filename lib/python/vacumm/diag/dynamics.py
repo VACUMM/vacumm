@@ -36,7 +36,7 @@
 import numpy as N, cdms2, MV2
 from vacumm import VACUMMError
 from vacumm.data.cf import format_var, format_grid
-from vacumm.misc.phys.constants import gravity as default_gravity
+from vacumm.misc.phys.constants import GRAVITY as default_gravity
 from vacumm.misc.axes import isaxis
 from vacumm.misc.grid.regridding import shiftgrid
 from vacumm.misc.grid import set_grid, get_axis_slices, resol

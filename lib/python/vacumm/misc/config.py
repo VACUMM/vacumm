@@ -46,8 +46,9 @@ It is based on :mod:`configobj` and :mod:`validate` modules.
 
 import copy, datetime, inspect, os, operator, re, sys, shutil, traceback
 from optparse import OptionParser, OptionGroup, OptionContainer, Option,  OptionValueError, IndentedHelpFormatter, _
-from argparse import ArgumentParser, _ArgumentGroup, HelpFormatter as ArgHelpFormatter, \
-    _HelpAction, Action as AP_Action, SUPPRESS as AP_SUPPRESS
+from argparse import (ArgumentParser, _ArgumentGroup, HelpFormatter as ArgHelpFormatter,
+    _StoreTrueAction as AP_StoreTrueAction,
+    _HelpAction, Action as AP_Action, SUPPRESS as AP_SUPPRESS)
 from warnings import warn
 
 from configobj import ConfigObj, flatten_errors
@@ -661,24 +662,15 @@ class ConfigManager(object):
         elif isinstance(parser, dict):
             parser['add_help'] = False
             parser = ArgumentParser(**parser)
-        else: # remove helps
-            for action in list(parser._actions):
-                if isinstance(action, (_HelpAction, AP_ShortHelpAction)):
-                    parser._actions.remove(action)
-                    for option_string in action.option_strings:
-                        if option_string in parser._option_string_actions:
-                            parser._option_string_actions.pop(option_string)
-            for group in parser._action_groups:
-                for action in list(group._group_actions):
-                    if isinstance(action, (_HelpAction, AP_ShortHelpAction)):
-                        group._group_actions.remove(action)
-            parser.add_help = False
 
         # Add short and long helps
+        old_conflict_handler = parser._optionals.conflict_handler
+        parser._optionals.conflict_handler = 'resolve'
         parser.add_argument('-h','--help', action=AP_ShortHelpAction,
             help='show a reduced help and exit')
         parser.add_argument('--long-help', action=_HelpAction,
             help='show an extended help and exit')
+        parser._optionals.conflict_handler = old_conflict_handler
 
         # Add the cfgfile option (configurable)
         if cfgfileopt:

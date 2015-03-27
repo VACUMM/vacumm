@@ -7,20 +7,22 @@ In development
 - Added systematic cleaning to cache_map().
 - Added [vacumm.misc.grid.basemap]max_cache_size config option.
 - Added cellerr method to regrid1d.
+- Added time arguments support if applicable to Plot.add_point().
 - New regrid2d with tool and method keywords.
 - Added dstwgt method for fortran interpolators from gridded to random points.
-- Plot.add_point() like methods now accept time arguments if applicable.
-- Tuples can be used to specify in time in time creation routines of atime.
+- Added tuple support for time creation routines of atime.
 - Fixed bugs: list_forecast_files, Plot.add_lon/lat.
 - Fixed: ConfigManager.opt_parse.
 
-Version 2.5.3
+Version 2.5.4
 =============
 
 - Added "make safedoc" target.
 - Fixed: english translations++.
 - Fixed: missing test_plot_add_logo.py.
 - Fixed: multifit+multiproc in kriging.
+- Fixed: ConfigManager.arg_parse helps.
+- Fixed: station_info import of oldnumeric.
 
 Version 2.5.1
 =============
@@ -32,7 +34,6 @@ Version 2.5.1
 - Fixed: removed dependency to pytz, which must now be installed
   to add time zone support to vacumm.
 
->>>>>>> .fusion-droit.r1822
 Version 2.5.0
 ==============
 

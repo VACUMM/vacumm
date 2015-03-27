@@ -5,7 +5,7 @@
 """
 
 from vcmq import MV2, cdms2, N
-from vacumm.data.cf import var_specs, format_var, match_var, format_axis, axis_specs, generic_var_names
+from vacumm.data.cf import VAR_SPECS, format_var, match_var, format_axis, AXIS_SPECS, GENERIC_VAR_NAMES
 
 
 # Création d'une variable 1D

@@ -44,7 +44,7 @@ _locale.setlocale(_locale.LC_NUMERIC, 'en_US.UTF-8')
 from vacumm import VACUMMError
 
 #: Specifications of available dataset types
-dataset_specs = dict(
+DATASET_SPECS = dict(
     generic = dict(
         cls = 'vacumm.data.misc.dataset.GenericDataset',
         desc = 'Generic dataset'
@@ -78,9 +78,11 @@ dataset_specs = dict(
         desc = 'CFSR atmospheric model'
    ),
 )
+dataset_specs = DATASET_SPECS # compat
 
 #: List of available dataset types
-dataset_names = dataset_specs.keys()
+DATASET_NAMES = DATASET_SPECS.keys()
+dataset_names = DATASET_NAMES # compat
 
 def DS(ncfile, clsname='generic', *args, **kwargs):
     """Load a specialized :class:`vacumm.data.misc.dataset.Dataset` instance
@@ -115,18 +117,18 @@ def DS(ncfile, clsname='generic', *args, **kwargs):
     """
     if clsname is None:clsname = 'generic'
     clsname = clsname.lower()
-    if clsname in dataset_names:
-        modname, Clsname = _os.path.splitext(dataset_specs[clsname]['cls'])
+    if clsname in DATASET_NAMES:
+        modname, Clsname = _os.path.splitext(DATASET_SPECS[clsname]['cls'])
         Clsname = Clsname[1:]
         mod = __import__(modname, fromlist=[Clsname])
         cls = getattr(mod, Clsname)
     else:
         raise VACUMMError('Wrong name of dataset type: %s. '
-            ' Please choose one of the following: %s'%(clsname, ', '.join(dataset_names)))
+            ' Please choose one of the following: %s'%(clsname, ', '.join(DATASET_NAMES)))
 
     return cls(ncfile, *args, **kwargs)
 
-DS.__doc__ = DS.__doc__%', '.join(dataset_names)
+DS.__doc__ = DS.__doc__%', '.join(DATASET_NAMES)
 
 def setup_dataset(clsname, ncfile=None, *args, **kwargs):
     """Alias for ``DS(ncfile,  clsname, *args, **kwargs)``

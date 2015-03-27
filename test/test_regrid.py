@@ -26,6 +26,7 @@ class TSF(VCTestCase):
         'test_regrid_kriging_variogram',
         'test_regrid_kriging_krig',
         'test_regrid_kriging_parallel',
+        'test_regrid_kriging_regrid',
         ]:
         exec(method_template.format(test_name))
 

@@ -42,22 +42,22 @@ from vacumm.misc import kwfilter, dict_merge
 from vacumm.misc.axes import create as create_axis, isaxis
 from vacumm.misc.grid import create_axes2d
 from vacumm.misc.io import ncmatch_obj
-from misc.arakawa import locations as arakawa_locations
+from misc.arakawa import ARAKAWA_LOCATIONS as arakawa_locations
 
-__all__ = ['var_specs', 'axis_specs',
-    'generic_axis_names', 'generic_var_names', 'generic_names',
+__all__ = ['VAR_SPECS', 'AXIS_SPECS',
+    'GENERIC_AXIS_NAMES', 'GENERIC_VAR_NAMES', 'GENERIC_NAMES',
     'format_var', 'format_axis', 'format_grid', 'match_obj',
     'cf2atts', 'cf2search', 'cp_suffix', 'specs_def_loc', 'get_loc',
     'change_loc', 'change_loc_single', 'dupl_loc_specs', 'no_loc_single',
     'change_loc_specs', 'squeeze_loc_single', 'squeeze_loc', 'get_physloc',
-    'hidden_cf_atts', 'set_loc'
+    'HIDDEN_CF_ATTS', 'set_loc'
 ]
 
-arakawa_suffixes = [('_'+p) for p in arakawa_locations]
-
+ARAKAWA_SUFFIXES = [('_'+p) for p in arakawa_locations]
+arakawa_suffixes = ARAKAWA_SUFFIXES # compat
 
 #: Specifications for variables
-var_specs = OrderedDict(
+VAR_SPECS = OrderedDict(
 
     # Thermodynamics
     temp = dict(
@@ -96,6 +96,12 @@ var_specs = OrderedDict(
         standard_names = 'sea_water_potential_density',
         long_names = 'Sea water potential density',
         units = 'kg m-3',
+    ),
+    ssd = dict(
+        names = ['ssd'],
+        standard_names = 'sea_surface_density',
+        long_names = 'Sea surface density',
+        units = 'PSU',
     ),
 
 
@@ -478,10 +484,10 @@ var_specs = OrderedDict(
 
 
 )
-
+var_specs = VAR_SPECS # compat
 
 #: Specifications for axes
-axis_specs = OrderedDict(
+AXIS_SPECS = OrderedDict(
 
     # Axes
     time = dict(
@@ -580,9 +586,10 @@ axis_specs = OrderedDict(
 
 
 )
+axis_specs = AXIS_SPECS # compat
 
 #: Specifications for grid formating
-grid_specs = {
+GRID_SPECS = {
     't': dict(lon='lon', lat='lat', level='depth_t'),
     'u': dict(lon='lon_u', lat='lat_u', level='depth_t'),
     'v': dict(lon='lon_v', lat='lat_v', level='depth_t'),
@@ -590,7 +597,8 @@ grid_specs = {
     'w': dict(lon='lon', lat='lat', level='depth_w'),
 }
 #TODO: 't' must use lon_t and lat_t
-grid_specs['r'] = grid_specs['t']
+GRID_SPECS['r'] = GRID_SPECS['t']
+grid_specs = GRID_SPECS # compat
 
 _reloc =  OrderedDict(
     [('name',  re.compile('(_([a-z]))?$', re.I).search),
@@ -599,7 +607,8 @@ _reloc =  OrderedDict(
 )
 
 #: Default location of gridded variables
-default_location = 't'
+DEFAULT_LOCATION = 't'
+default_location = DEFAULT_LOCATION # compat
 
 def get_loc(var, stype=None, mode='loc', default=None):
     """Get the location testing name, standard_name or long_name and other attributes
@@ -619,8 +628,8 @@ def get_loc(var, stype=None, mode='loc', default=None):
             - ``"ext"``: Same as ``"loc"`` but searches for the :attr:`position` first
               if case of a CDAT variable,
               then the :attr:`_vacumm_cf_physloc` attributes or the "physloc" specification
-              if ``var`` has an entry in :attr:`var_specs`, else defaults to
-              :attr:`default_location`.
+              if ``var`` has an entry in :attr:`VAR_SPECS`, else defaults to
+              :attr:`DEFAULT_LOCATION`.
             - Else, the matched string.
 
     :Example:
@@ -633,7 +642,7 @@ def get_loc(var, stype=None, mode='loc', default=None):
 
         - ``None`` if no location spec found,
         - if ``mode=="loc"``, one of possible physical
-          :attr:`~vacumm.data.misc.arakawa.locations`,
+          :attr:`~vacumm.data.misc.arakawa.ARAKAWA_LOCATIONS`,
         - else, the complete matching string, like "_at_u_location".
     """
     # What to test
@@ -672,15 +681,15 @@ def get_loc(var, stype=None, mode='loc', default=None):
             # Physloc
             gname = var.id if not hasattr(var, '_vacumm_cf_name') else var._vacumm_cf_name
             gname = no_loc_single(gname, 'name')
-            if gname in var_specs:
+            if gname in VAR_SPECS:
 
                 # From _vacumm_cf_physloc attribute
                 if hasattr(var, '_vacumm_cf_physloc'):
                     return var._vacumm_cf_physloc
 
                 # From specs
-                if var_specs[gname].get('physloc'):
-                    return var_specs[gname]['physloc']
+                if VAR_SPECS[gname].get('physloc'):
+                    return VAR_SPECS[gname]['physloc']
 
         return default
 
@@ -699,11 +708,11 @@ def get_loc(var, stype=None, mode='loc', default=None):
         if mode=='ext':
 
             # From physloc
-            if stype=='name' and var in var_specs and var_specs[var].get('physloc'):
-                return var_specs[var].get('physloc')
+            if stype=='name' and var in VAR_SPECS and VAR_SPECS[var].get('physloc'):
+                return VAR_SPECS[var].get('physloc')
 
 #            # Default location
-#            return default_location
+#            return DEFAULT_LOCATION
     return default
 
 
@@ -797,7 +806,7 @@ def change_loc_specs(loc, names=None, standard_names=None, long_names=None, axes
             laxes = axes[l]
             single = not isinstance(laxes, list)
             if single: laxes = [laxes] # work on lists
-            laxes = [change_loc_single(axis, 'name', loc, squeeze=default_location) for axis in laxes]+laxes # duplicate
+            laxes = [change_loc_single(axis, 'name', loc, squeeze=DEFAULT_LOCATION) for axis in laxes]+laxes # duplicate
             lnewaxes = []
             for axis in laxes: # unique
                 if axis not in lnewaxes:
@@ -909,42 +918,42 @@ def get_physloc(var):
 
     .. note:: The physical location may be different from the current location.
 
-    It defaults to :attr:`default_location`
+    It defaults to :attr:`DEFAULT_LOCATION`
     """
     # Direct
     for att in ['_vacumm_cf_physloc']:
         if hasattr(var, att):
             return getattr(var, att)
 
-    # Entry name in var_specs (string)
+    # Entry name in VAR_SPECS (string)
     if isinstance(var, basestring):
-        if var in var_specs:
-            var = var_specs[var]
+        if var in VAR_SPECS:
+            var = VAR_SPECS[var]
         else:
-            return default_location
+            return DEFAULT_LOCATION
 
     # Dict of specs
     if isinstance(var, dict):
-        return var.get('physloc', default_location)
+        return var.get('physloc', DEFAULT_LOCATION)
 
-    # Using var_specs
+    # Using VAR_SPECS
     if hasattr(var, '_vacumm_cf_name'):
         name = var._vacumm_cf_name
-    elif var.id in var_specs:
+    elif var.id in VAR_SPECS:
         name = var.id
     else:
-        return default_location
-    return var_specs[name].get('physloc', default_location)
+        return DEFAULT_LOCATION
+    return VAR_SPECS[name].get('physloc', DEFAULT_LOCATION)
 
 def squeeze_loc(var):
     """Squeeze out location specification of a variable if the location is
-    physloc or :attr:`default_location`
+    physloc or :attr:`DEFAULT_LOCATION`
 
     :Params:
 
         - **var**: CDAT variable.
-        - **physloc**, optional: ``physloc`` specs given by the entry in :attr:`var_specs`
-          or :attr:`default_location`.
+        - **physloc**, optional: ``physloc`` specs given by the entry in :attr:`VAR_SPECS`
+          or :attr:`DEFAULT_LOCATION`.
 
     :Return: The same variable
     """
@@ -956,10 +965,10 @@ def squeeze_loc(var):
 
 def squeeze_loc_single(name, stype, physloc=None):
     """Squeeze location specs if it matches physical location"""
-    if physloc is None and stype=='name' and name in var_specs:
-        physloc = var_specs[name].get('physloc')
+    if physloc is None and stype=='name' and name in VAR_SPECS:
+        physloc = VAR_SPECS[name].get('physloc')
     if physloc is None:
-        physloc = default_location
+        physloc = DEFAULT_LOCATION
     loc = get_loc(name, stype, mode='loc')
     if loc==physloc:
         name = change_loc_single(name, stype, None)
@@ -979,8 +988,8 @@ def dupl_loc_specs(all_specs, fromname, toloc):
 
     :Example:
 
-        >>> dupl_loc_specs(var_specs, 'corio', 'u') # Create the 'corio_u' entry in var_specs and update 'corio'
-        >>> dupl_loc_specs(var_specs, 'corio_t', 'u') # Create 'corio_u' and 'corio_t'
+        >>> dupl_loc_specs(VAR_SPECS, 'corio', 'u') # Create the 'corio_u' entry in VAR_SPECS and update 'corio'
+        >>> dupl_loc_specs(VAR_SPECS, 'corio_t', 'u') # Create 'corio_u' and 'corio_t'
 
     """
     if not fromname in all_specs:
@@ -1019,7 +1028,7 @@ def dupl_loc_specs(all_specs, fromname, toloc):
             tospecs = dict_merge(tospecs, all_specs[toname], mergelists=True)
 
 #        # Default location -> add its generic version ('_t' -> + '')
-#        if loc==default_location:
+#        if loc==DEFAULT_LOCATION:
 #            genspecs = change_loc_specs(None, **tospecs)
 #            tospecs = dict_merge(tospecs, genspecs, mergelists=True)
 
@@ -1043,7 +1052,7 @@ def dupl_loc_specs(all_specs, fromname, toloc):
     if single: return tonames[0]
     return tonames
 
-#def specs_def_loc(all_specs, names, suffixes=arakawa_suffixes):
+#def specs_def_loc(all_specs, names, suffixes=ARAKAWA_SUFFIXES):
 #    """Make specs of a variable at a special location the specs for default location
 #
 #    :Example:
@@ -1055,10 +1064,10 @@ def dupl_loc_specs(all_specs, fromname, toloc):
 #    for name in names:
 #        m = re.match('.+(%s)$'%'|'.join(suffixes), name)
 #        if m is None: continue
-#        dupl_loc_specs(all_specs, name, '', suffixes=arakawa_suffixes)
+#        dupl_loc_specs(all_specs, name, '', suffixes=ARAKAWA_SUFFIXES)
 
 
-def cp_suffix(idref, id, suffixes=arakawa_suffixes):
+def cp_suffix(idref, id, suffixes=ARAKAWA_SUFFIXES):
     """Copy a suffix if found in an id (name) to another id"""
     if isinstance(suffixes, basestring): suffixes = [suffixes]
     m = re.match('.+(%s)$'%'|'.join(suffixes), idref)
@@ -1072,7 +1081,7 @@ def cp_suffix(idref, id, suffixes=arakawa_suffixes):
 # - Makes sure that axes specs have no 'axes' key
 # - Makes sure that specs key is the first entry of 'names'
 # - Check duplication to other locations ('toto' -> 'toto_u')
-for all_specs in var_specs, axis_specs:
+for all_specs in VAR_SPECS, AXIS_SPECS:
 
     from_atlocs = []
     for name, specs in all_specs.items():
@@ -1097,7 +1106,7 @@ for all_specs in var_specs, axis_specs:
             specs['atlocs'].insert(0, p)
 
         # Geo axes (variables only)
-        if all_specs is var_specs:
+        if all_specs is VAR_SPECS:
             if 'axes' not in specs or not specs['axes']:
                 specs['axes'] = {}
             specs['axes'].setdefault('t', 'time')
@@ -1117,19 +1126,19 @@ for all_specs in var_specs, axis_specs:
             objname = specs['inherit']
             obj_specs = None
             if name==objname: # same name
-                if all_specs is var_specs and objname in axis_specs:
-                    obj_specs = axis_specs
-                elif all_specs is axis_specs and objname in var_specs:
-                    obj_specs = var_specs
-            elif objname in var_specs: # check in var_specs first
-                obj_specs = var_specs
-            elif objname in axis_specs: # then in axis_specs
-                obj_specs = axis_specs
+                if all_specs is VAR_SPECS and objname in AXIS_SPECS:
+                    obj_specs = AXIS_SPECS
+                elif all_specs is AXIS_SPECS and objname in VAR_SPECS:
+                    obj_specs = VAR_SPECS
+            elif objname in VAR_SPECS: # check in VAR_SPECS first
+                obj_specs = VAR_SPECS
+            elif objname in AXIS_SPECS: # then in AXIS_SPECS
+                obj_specs = AXIS_SPECS
             if obj_specs is not None:
                 all_specs[name] = specs = dict_merge(specs, obj_specs[objname])
 
         # No geo axes for axes!
-        if all_specs is axis_specs and 'axes' in specs:
+        if all_specs is AXIS_SPECS and 'axes' in specs:
             del specs['axes']
 
         # Key = first name (id)
@@ -1145,17 +1154,19 @@ for all_specs in var_specs, axis_specs:
 del specs
 
 #: List of generic variable names
-generic_var_names = var_specs.keys()
+GENERIC_VAR_NAMES = VAR_SPECS.keys()
+generic_var_names = GENERIC_VAR_NAMES # compat
 
 #: List of generic axis names
-generic_axis_names = axis_specs.keys()
+GENERIC_AXIS_NAMES = AXIS_SPECS.keys()
+generic_axis_names = GENERIC_AXIS_NAMES # compat
 
 #: List of all generic names (axes and variables)
-generic_names= generic_var_names+generic_axis_names
-
+GENERIC_NAMES= GENERIC_VAR_NAMES + GENERIC_AXIS_NAMES
+generic_names = GENERIC_NAMES # compat
 
 def cf2search(name, mode=None, raiseerr=True, **kwargs):
-    """Extract specs from :attr:`axis_specs` or :attr:`var_specs` to form a search dictionary
+    """Extract specs from :attr:`AXIS_SPECS` or :attr:`VAR_SPECS` to form a search dictionary
 
     :Params:
 
@@ -1179,13 +1190,13 @@ def cf2search(name, mode=None, raiseerr=True, **kwargs):
         {'names':['sst'], 'standard_names':['sea_surface_temperature'], 'units':['degrees_celsius']}
     """
     # Get specs
-    if name in var_specs:
-        specs = var_specs[name]
-    elif name in axis_specs:
-        specs = axis_specs[name]
+    if name in VAR_SPECS:
+        specs = VAR_SPECS[name]
+    elif name in AXIS_SPECS:
+        specs = AXIS_SPECS[name]
     else:
         if raiseerr:
-            raise VACUMMError("Wrong generic name. It should be one of: "+' '.join(generic_axis_names+generic_var_names))
+            raise VACUMMError("Wrong generic name. It should be one of: "+' '.join(GENERIC_AXIS_NAMES+GENERIC_VAR_NAMES))
         else:
             return
 
@@ -1204,17 +1215,17 @@ _attnames_plurals = ['standard_name', 'long_name']
 _attnames_exclude = ['names', 'atlocs', 'inherit', 'axes', 'physloc', 'iaxis', 'jaxis', 'select']
 _attnames_firsts = ['standard_name', 'long_name', 'units', 'axis', 'valid_min', 'valid_max']
 def cf2atts(name, select=None, exclude=None, ordered=True, **extra):
-    """Extract specs from :attr:`axis_specs` or :attr:`var_specs` to form
+    """Extract specs from :attr:`AXIS_SPECS` or :attr:`VAR_SPECS` to form
     a dictionary of attributes (units and long_name)"""
     # Get specs
     if isinstance(name, dict):
         specs = name.copy()
-    elif name in var_specs:
-        specs = var_specs[name]
-    elif name in axis_specs:
-        specs = axis_specs[name]
+    elif name in VAR_SPECS:
+        specs = VAR_SPECS[name]
+    elif name in AXIS_SPECS:
+        specs = AXIS_SPECS[name]
     else:
-        raise VACUMMError("Wrong generic name: %s. It should be one of: "%name+' '.join(generic_axis_names+generic_var_names))
+        raise VACUMMError("Wrong generic name: %s. It should be one of: "%name+' '.join(GENERIC_AXIS_NAMES+GENERIC_VAR_NAMES))
 
     # Which attributes
     atts = OrderedDict() if ordered else {}
@@ -1264,11 +1275,11 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
 
         - **var**: A :mod:`numpy` or :mod:`MV2` variabe.
         - **name**: Generic name of variable. It should be one of
-          those listed by :attr:`generic_var_names`.
+          those listed by :attr:`GENERIC_VAR_NAMES`.
         - **force**, optional: Overwrite attributes in all cases.
         - **format_axes**, optional: Also format axes.
         - **nodef**, optional: Remove location specification when it refers to the
-          default location (:attr:`default_location`).
+          default location (:attr:`DEFAULT_LOCATION`).
         - Other parameters are passed as attributes, except those:
 
             - present in specifications to allow overriding defaults,
@@ -1290,13 +1301,13 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
     var = MV2.asarray(var)
 
     # Check specs
-    if name not in generic_var_names:
-        if var.id in generic_var_names:
+    if name not in GENERIC_VAR_NAMES:
+        if var.id in GENERIC_VAR_NAMES:
             name = var.id
         else:
             raise KeyError("Generic var name not found '%s'. Please choose one of: %s"%(
-                name, ', '.join(generic_var_names)))
-    specs = var_specs[name].copy()
+                name, ', '.join(GENERIC_VAR_NAMES)))
+    specs = VAR_SPECS[name].copy()
     # - merge kwargs and specs
     for key, val in kwargs.items():
         if val is None or key not in specs: continue
@@ -1308,7 +1319,7 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
         del kwargs[key]
     # - remove default location
     if nodef:
-        refloc = specs.get('physloc', default_location)
+        refloc = specs.get('physloc', DEFAULT_LOCATION)
         for stype in 'name', 'long_name', 'standard_name':
             sname = stype+'s'
             if sname not in specs: continue
@@ -1374,10 +1385,10 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True,
 
         - **var**: A :mod:`numpy` or :mod:`MV2` variabe.
         - **name**: Single or list of generic axis names. It should be one of
-          those listed by :attr:`generic_axis_names`.
+          those listed by :attr:`GENERIC_AXIS_NAMES`.
         - **force**, optional: Overwrite attributes in all cases.
         - **nodef**, optional: Remove location specification when it refers to the
-          default location (:attr:`default_location`).
+          default location (:attr:`DEFAULT_LOCATION`).
         - **axes2d_<param>**, optional: <param> is passed to
           :func:`~vacumm.misc.grid.misc.create_axes2d` for 2D axes.
         - **recreate**, optional: Force recreation of axes using either
@@ -1401,10 +1412,10 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True,
                 break
 
     # Check specs
-    if name not in generic_axis_names:
+    if name not in GENERIC_AXIS_NAMES:
         raise KeyError("Generic axis name not found '%s'. Please choose one of: %s"%(
-            name, ', '.join(generic_axis_names)))
-    specs = axis_specs[name]
+            name, ', '.join(GENERIC_AXIS_NAMES)))
+    specs = AXIS_SPECS[name]
     # - merge kwargs and specs
     for key, val in kwargs.items():
         if val is None or key not in specs: continue
@@ -1443,7 +1454,7 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True,
         for stype in 'name', 'long_name', 'standard_name':
             sname = stype+'s'
             if sname not in specs: continue
-            if get_loc(specs[sname], stype)==default_location:
+            if get_loc(specs[sname], stype)==DEFAULT_LOCATION:
                 specs[sname] = [no_loc_single(specs[sname][0], stype)]
     # - id
     if force or axis.id.startswith('variable_') or axis.id.startswith('axis_'):
@@ -1466,7 +1477,7 @@ def format_grid(grid, pt, **kwargs):
     """Format a grid and its axes"""
     if cdms2.isVariable(grid): grid = grid.getGrid()
     if grid is None: return
-    gs = grid_specs[pt]
+    gs = GRID_SPECS[pt]
     lon = grid.getLongitude()
     lat = grid.getLatitude()
     format_axis(lon, gs['lon'])
@@ -1474,7 +1485,8 @@ def format_grid(grid, pt, **kwargs):
 
 
 #: Hidden attributes of variable useful of this module
-hidden_cf_atts = ['_vacumm_cf_name', '_vacumm_cf_physloc', '_vacumm_cf_location']
+HIDDEN_CF_ATTS = ['_vacumm_cf_name', '_vacumm_cf_physloc', '_vacumm_cf_location']
+hidden_cf_atts = HIDDEN_CF_ATTS # compat
 
 def match_obj(obj, name, searchmode=None, **kwargs):
     """Check if a variable or an axis matches generic specifications

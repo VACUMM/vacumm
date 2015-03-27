@@ -115,7 +115,7 @@ import cdms2, cdtime, MV2, numpy, pylab
 from _geoslib import Point, Polygon
 
 
-from vacumm.data.misc.dataset import Dataset, post_plot_args, OceanDataset
+from vacumm.data.misc.dataset import Dataset, POST_PLOT_ARGS, OceanDataset
 from vacumm.misc.atime import create_time, ch_units, comptime, datetime as adatetime
 from vacumm.misc.atime import is_in_range as is_time_in_range, reltime, Intervals, round_date, add as add_date
 from vacumm.misc.axes import create, create_time, create_dep, create_lat, create_lon
@@ -133,8 +133,7 @@ from vacumm.misc.misc import kwfilter, is_iterable
 from vacumm.misc.plot import bar2, curve2, map2
 
 try:
-#    import seawater.csiro
-    from vacumm.misc.diags import sw_depth, sw_pres_sw_dens
+    from vacumm.diag.thermdyn import sw_depth, sw_pres, sw_dens
 except ImportError:
     warnings.warn('Failed to import seawater fonctions, depth<=>pressure conversions not available')
 
@@ -1857,7 +1856,7 @@ class ProfilesDataset(OceanDataset):
         '''
         mp = kwargs.pop('map', None)
         mapkw = kwfilter(kwargs, 'map', default=dict())
-        for k in post_plot_args: mapkw.pop(k, None)
+        for k in POST_PLOT_ARGS: mapkw.pop(k, None)
         plotkw = kwfilter(kwargs, 'plot')
         lon, lat, var = self.get_layer(varname, depth, **kwargs)
         var = self.squeeze_variable(var)

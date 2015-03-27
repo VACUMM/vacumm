@@ -33,13 +33,17 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 #: Volumetric radius of earth (m)
-R = earth_radius = 6371006.
+R = EARTH_RADIUS = 6371006.
+earth_radius = EARTH_RADIUS # compat
 
 #: Gravitational constant (m3 kg-1 s-2)
-G = gravitational_constant = 6.67428e-11
+G = GRAVITATIONAL_CONSTANT = 6.67428e-11
+gravitational_constant = GRAVITATIONAL_CONSTANT # compat
 
 #: Earth mass (kg)
-M = earth_mass = 5.9736e24
+M = EARTH_MASS = 5.9736e24
+earth_mass = EARTH_MASS # compat
 
 #: Gravity (m s-2)
-g = gravity = M*G/R**2
+g = GRAVITY = M*G/R**2
+gravity = GRAVITY # compat

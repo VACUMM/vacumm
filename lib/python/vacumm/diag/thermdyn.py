@@ -45,7 +45,7 @@ from vacumm.misc.misc import grow_variables
 
 try:
     from seawater import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0, \
-        dpth as sw_dpeth
+        dpth as sw_depth
 except:
     try:
         from seawater.csiro import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0, \
@@ -76,7 +76,7 @@ def density(temp, sal, depth=None, lat=None, potential=False,
     """
 
     # Compute
-    if not potential: # In-situ
+    if not potential and depth is not False: # In-situ
 
         # Get depth and latitude
         lat = grow_lat(temp, lat, mode='raise', getvar=False)

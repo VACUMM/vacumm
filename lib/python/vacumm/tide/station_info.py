@@ -72,11 +72,11 @@ class _StationPlot_(object):
             print "Aucune station n'est actuellement definie"
             return None
 
-        from numpy.oldnumeric import array as A
         import pylab as P
         from vacumm.misc.color import bistre
         from vacumm.misc import auto_scale
         from vacumm.plot import map
+        A = N.array
 
         dlon = 2.8
         dlat = 2.
@@ -340,7 +340,7 @@ class StationInfo(_StationPlot_):
 
                 elif key == 'position' and len(val) == 2:
                     # Find the closest station
-                    import vacumm.misc as M,math,numpy.oldnumeric as Numeric
+                    import vacumm.misc as M,math
                     distances = []
                     x0 = deg2m(*val)
                     y0 = deg2m(val[1])
@@ -350,7 +350,7 @@ class StationInfo(_StationPlot_):
                         x = deg2m(station['longitude'], station['latitude'])
                         y = deg2m(station['latitude'])
                         distances.append(math.sqrt((x-x0)**2+(y-y0)**2))
-                    stations.append(self._stations[Numeric.argmin(distances)])
+                    stations.append(self._stations[N.argmin(distances)])
 
                 if len(stations) == nmax:
                     break

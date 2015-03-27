@@ -1328,7 +1328,7 @@ class GridData(object):
         for iex in xrange(nex):
 
             # Get data and mask
-            get = self._GDH.get(zi2d, iex, compress)
+            get = self._GDH.get(zi2d, iex, compress, missing_value)
             if get is None: continue
             xi, yi, zzi, mmi = get
             constant = N.allclose(zzi, zzi[0])
@@ -1454,7 +1454,7 @@ def cargen(xi, yi, zi, ggo, mask=None, geo=None, compress=False, missing_value=N
     for iex in xrange(nex):
 
         # Get data and mask
-        get = GDH.get(zi2d, iex, compress)
+        get = GDH.get(zi2d, iex, compress, missing_value)
         if get is None: continue
         xi, yi, zzi, mmi = get
 
@@ -1489,7 +1489,7 @@ def krig(xi, yi, zi, ggo, mask=True, geo=None, missing_value=None, **kwargs):
     yo.shape = -1
 
     # Get data and mask
-    get = GDH.get(zi2d, Ellipsis, compress)
+    get = GDH.get(zi2d, Ellipsis, compress, missing_value)
     if get is not None:
         xi, yi, zzi, mmi = get
 
@@ -1633,7 +1633,7 @@ class _GridDataHelper_(object):
         del unmasked
         return zi2d, zo3d, mo3d, nex, compress, missing_value
 
-    def get(self, zi2d, iex, compress):
+    def get(self, zi2d, iex, compress, missing_value):
         """Get a slice"""
         # Remove compress values or fill them
         good = self.mi
