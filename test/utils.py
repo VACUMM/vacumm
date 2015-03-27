@@ -41,11 +41,13 @@ class VCTestCase(unittest.TestCase):
                 self.assertTrue(os.path.exists(fn))
             return
 
-        # Function that returns True if succeeded
+        # Function that returns True or None if succeeded
         if callable(key):
             if not isinstance(values, (list,tuple)):
                 values = [values]
-            self.assertTrue(key(*values))
+            res = key(*values)
+            if key.__module__!='numpy.testing.utils':
+                self.assertTrue(res)
             return
 
         # Assertions

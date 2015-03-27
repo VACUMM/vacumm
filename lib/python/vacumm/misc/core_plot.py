@@ -1380,6 +1380,8 @@ class Plot(object):
                 kwscale = dict(vmin=axmin, vmax=axmax, geo=props['minutes'])
                 kwlf = {}
                 lab_val = props['ticks']
+                if hasattr(lab_val, '__len__') and len(lab_val)==0:
+                    lab_val = None
                 if props['type'] in ['x','y']:
                     if lab_val is None:
                         lab_val = geo_scale(data, nmax=props['nmax'], **kwscale)

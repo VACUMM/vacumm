@@ -14,18 +14,18 @@ var.getAxis(0).units = 'months since 2000'
 # Direct
 var2d = var.asma().reshape(nt, -1)
 dstats = dict(
-    tavail = 1.*(~var.mask).sum(axis=0)/var.shape[0], 
-    tmean = var.mean(axis=0), 
-    tstd = var.std(axis=0), 
-    savail = 1.*(~var2d.mask).sum(axis=1)/var2d.shape[1], 
-    smean = var2d.mean(axis=1), 
-    sstd = var2d.std(axis=1), 
+    tavail = 1.*(~var.mask).sum(axis=0)/var.shape[0],
+    tmean = var.mean(axis=0),
+    tstd = var.std(axis=0),
+    savail = 1.*(~var2d.mask).sum(axis=1)/var2d.shape[1],
+    smean = var2d.mean(axis=1),
+    sstd = var2d.std(axis=1),
 )
 
 # Indirect using StatAccum
 sa = StatAccum(
-#    tmean=True, tstd=True, tavail=True, 
-    smean=True)
+    tmean=True, tstd=True, tavail=True,
+    smean=True, sstd=True, savail=True)
 sa += var[:10]
 sa += var[10:]
 istats = sa.get_stats()

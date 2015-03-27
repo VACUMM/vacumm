@@ -8,9 +8,10 @@ In development
 - Added [vacumm.misc.grid.basemap]max_cache_size config option.
 - Added cellerr method to regrid1d.
 - Added time arguments support if applicable to Plot.add_point().
-- New regrid2d with tool and method keywords.
 - Added dstwgt method for fortran interpolators from gridded to random points.
 - Added tuple support for time creation routines of atime.
+- New regrid2d with tool and method keywords.
+- Fixed names of module attributes which are now upper case.
 - Fixed bugs: list_forecast_files, Plot.add_lon/lat.
 - Fixed: ConfigManager.opt_parse.
 
