@@ -4,6 +4,8 @@ Release notes
 In development
 ==============
 
+- Added Plot.add_water_mark.
+- Added units.basic_proj.
 - Added systematic cleaning to cache_map().
 - Added [vacumm.misc.grid.basemap]max_cache_size config option.
 - Added cellerr method to regrid1d.
@@ -11,8 +13,9 @@ In development
 - Added dstwgt method for fortran interpolators from gridded to random points.
 - Added tuple support for time creation routines of atime.
 - New regrid2d with tool and method keywords.
+- Fixed: default params in get_proj.
 - Fixed names of module attributes which are now upper case.
-- Fixed bugs: list_forecast_files, Plot.add_lon/lat.
+- Fixed: list_forecast_files, Plot.add_lon/lat, _interp_.linept.
 - Fixed: ConfigManager.opt_parse.
 
 Version 2.5.4

@@ -788,6 +788,8 @@ class Plot(object):
         # Figure
         if isinstance(figure, Figure):
             self.fig = figure
+        elif figure is True:
+            self.fig = P.figure(**kwfig)
         elif figure is not None:
             self.fig = P.figure(figure, **kwfig)
         else:
@@ -1665,6 +1667,15 @@ class Plot(object):
 
         return obj
     text = add_text # backward compat
+
+    def add_water_mark(self, text, x=.5, y=.5, ha='center', va='center', size=20,
+        color='k', alpha=.7, zorder=0, transform='axes', **kwargs):
+        """Add a background text to the plot
+
+        All arguments are passed to :meth:`add_text`.
+        """
+        return self.add_text(x, y, text, ha=ha, va=va, size=size, color=color,
+            zorder=zorder, transform=transform, **kwargs)
 
     def add_time_label(self, x, y, mytime, fmt="%Y/%m/%d %H:%M", **kwargs):
         """Add a time label
