@@ -1980,8 +1980,8 @@ function linept(x,y,x1,x2,y1,y2)
     real(kind=8) :: dx, dy
     dy = y2-y1
     dx = x2-x1
-    linept(1) = (x*dx**2 + (y-y2)*dy*dx + x2*dy**2)/(dx**2+dy**2)
-    linept(2) = x + (y-linept(1))*dy/dx
+    linept(1) = x1 + (dx**2*(x-x1) + dx*dy*(y-y1))/(dx**2+dy**2)
+    linept(2) = y + (x-linept(1))*dy/dx
 end function linept
 
 !function dstpt2line(x,y,x1,x2,y1,y2)
