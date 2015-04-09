@@ -534,7 +534,9 @@ def get_proj(gg=None, **kwargs):
     ymin = max(ymin, -89.99)
     dict_check_defaults(projparams, R=rsphere_mean, units='m',
         proj=get_config_value('vacumm.misc.grid.basemap', 'proj'),
-        lat_ts = N.median(y) if len(y)>10 else N.mean(y))
+        lat_ts = N.median(y) if len(y)>10 else N.mean(y),
+        lon_0 = N.median(x) if len(x)>10 else N.mean(x))
+    dict_check_defaults(projparams, lat_0=projparams['lat_ts'])
     return Proj(projparams, xmin, ymin, xmax, ymax)
 
 

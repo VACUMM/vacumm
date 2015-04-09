@@ -87,7 +87,11 @@ from vacumm.misc.config import ConfigManager, cfgargparse
 
 from vacumm.misc.stats import StatAccum
 
-from vacumm.misc.phys.units import convert_units
+from vacumm.misc.phys.units import (
+    convert_units, kt2ms, ms2kt, deg2m, m2deg, ms2bf, dms2deg, deg2dms, mph2ms,
+    ms2mph, tometric, kel2degc, degc2kel, basic_proj,
+    )
+
 
 # - plot
 
@@ -101,7 +105,8 @@ from vacumm.misc.plot import (
 from vacumm.misc.color import (
     plot_cmap, show_cmap, get_cmap, simple_colors,
     cmap_rs, cmap_srs, cmap_custom, Scalar2RGB, darken, whiten, cmaps_mpl,
-    cmap_gmt, cmaps_registered, cmaps_vacumm, print_cmaps_gmt, plot_cmaps
+    cmap_gmt, cmaps_registered, cmaps_vacumm, print_cmaps_gmt, plot_cmaps,
+    anamorph_cmap
     )
 
 # - grid

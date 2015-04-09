@@ -41,7 +41,7 @@ from unidata import udunits
 
 __all__ = ['kt2ms', 'ms2kt', 'deg2m', 'm2deg', 'ms2bf', 'dms2deg', 'deg2dms',
     'mph2ms', 'ms2mph', 'tometric', 'kel2degc', 'degc2kel', 'strfsize', 'strpsize',
-    'convert_units']
+    'convert_units', 'basic_proj']
 
 ############################################################
 def kt2ms(nd):
@@ -64,7 +64,7 @@ def ms2mph(ms):
     return 2.237*ms
 
 ############################################################
-def deg2m(degrees,lat=None):
+def deg2m(degrees, lat=None):
     """Convert a distance in degrees to meters
 
     - **degrees**: Distance in degrees
@@ -84,7 +84,7 @@ def deg2m(degrees,lat=None):
 
     return R * N.pi * degrees * N.cos(N.pi*lat/180.)/180.
 
-def m2deg(meters,lat=None):
+def m2deg(meters, lat=None):
     """Convert a distance in meters to degrees
 
     - **meters**: Distance in meters
@@ -103,6 +103,21 @@ def m2deg(meters,lat=None):
         lat = N.array(lat)
 
     return meters / (R * N.pi * N.cos(N.pi*lat/180.)/180.)
+
+def basic_proj(lon, lat, inverse=False):
+    """Convert a position from degrees to meters like a geographic projection
+
+    :Params:
+
+        - **lon**: Longitude in degrees or meters.
+        - **lat**: Latitude in degrees or meters.
+        - **inverse**, optional: Invert the projection from meters to degrees.
+
+    """
+    func = m2deg if inverse else deg2m
+    return func(lon, lat), func(lat)
+
+
 
 def ms2bf(ms):
     """Convert from m/s to Beauforts (wind)

@@ -1756,7 +1756,6 @@ def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=
     # Plot
     if ax is None:
         im = fig.figimage(logo, origin='upper', alpha=alpha)
-        print 'here'
     else:
         im = ax.imshow(logo, origin='upper', alpha=alpha)
         ax.axis('off')
