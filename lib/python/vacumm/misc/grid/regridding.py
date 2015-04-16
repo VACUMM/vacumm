@@ -2559,15 +2559,6 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
         >>> regrid2d(var, grid, method='nat', hor=.2)
     """
 
-    # Method
-    method = regrid2d_method_name(method)
-    if method == 'auto':
-        method = regrid2d_method_name(regrid_method(vari, ggo))
-    valid_methods = ['nearest', 'bilinear', 'cellave', 'conserv', 'dstwgt', 'patch']
-    if method not in valid_methods:
-        raise VACUMMError('Wrong regridding method: %s. Please choose one of :'%method+
-        ', '.join(valid_methods))
-
     # Check grids
     vari = MV.asarray(vari)
     mv = vari.getMissing()
@@ -2596,6 +2587,15 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
 #    if geo is None:
 #        geo = A.islon(loni) or A.islat(lati) or A.islon(lono) or A.islat(lato)
     geo = True
+
+    # Method
+    method = regrid2d_method_name(method)
+    if method == 'auto':
+        method = regrid2d_method_name(regrid_method(vari, ggo))
+    valid_methods = ['nearest', 'bilinear', 'cellave', 'conserv', 'dstwgt', 'patch']
+    if method not in valid_methods:
+        raise VACUMMError('Wrong regridding method: %s. Please choose one of :'%method+
+        ', '.join(valid_methods))
 
     # Tool verification
     tool = regrid2d_tool_name(tool)
@@ -2921,6 +2921,7 @@ def regrid_method(gridi, grido, ratio=.55, iaxi=-1, iaxo=-1):
         reso = (xreso**2+yreso**2)**.5
 
     # Check the ratio
+    print resi,reso
     return 'cellave' if resi <= ratio*reso else 'linear'
 
 
