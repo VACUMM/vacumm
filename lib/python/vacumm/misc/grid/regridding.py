@@ -605,6 +605,8 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
             dxi2o /= cdtime.reltime(1, axi.units)-cdtime.reltime(0, axi.units)
     # - numeric version
     axin = axi[:]
+    if N.ma.isMA(axin):
+        axin = axin.filled(missing_value)
 
     # Subaxes
     nxo = axon.ndim
@@ -2921,7 +2923,6 @@ def regrid_method(gridi, grido, ratio=.55, iaxi=-1, iaxo=-1):
         reso = (xreso**2+yreso**2)**.5
 
     # Check the ratio
-    print resi,reso
     return 'cellave' if resi <= ratio*reso else 'linear'
 
 
