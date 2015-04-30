@@ -53,9 +53,9 @@ from vacumm import VACUMMError
 __all__ = ['isaxis', 'islon', 'islat', 'islev', 'isdep', 'istime',
     'check_axes', 'is_geo_axis', 'check_axis', 'get_axis_type', 'check_id',
     'get_checker', 'is_geo_axis_type', 'axis_type',
-    'create', 'create_time', 'create_lon', 'create_lat', 'create_dep', 'create_depth',
+    'create_time', 'create_lon', 'create_lat', 'create_dep', 'create_depth',
     'guess_timeid', 'get_order', 'set_order', 'order_match', 'merge_orders',
-    'check_order']
+    'check_order',  'create_axis']
 __all__.sort()
 
 def isaxis(axis):
@@ -291,8 +291,8 @@ def check_id(axis,**kwargs):
     if hasattr(axis,'axis') and match('^axis_\d+$',axis.id) is not None or match('^variable_\d+$',axis.id):
         axis.id = aliases[axis.axis]
 
-def create(values, atype='-', **atts):
-    """Quickly create an axis
+def create_axis(values, atype='-', **atts):
+    """Quickly create a :mod:`cdms2` axis
 
     :Params:
 
@@ -302,25 +302,30 @@ def create(values, atype='-', **atts):
 
     :Example:
 
-        >>> lon = create(N.arange(-10., 0, 2), 'x')
-        >>> lon = create((-10., 0, 2), 't', id='temps', units='seconds since 2000')
+        >>> lon = create_axis(N.arange(-10., 0, 2), 'x')
+        >>> lon = create_axis((-10., 0, 2), 't', id='temps', units='seconds since 2000')
         >>>
     """
+    from vacumm.misc import cp_atts
     if isinstance(values, tuple) and len(values) < 4:
         values = N.arange(*values, **{'dtype':'d'})
+    if cdms2.isVariable(values):
+        for item in values.attributes.items():
+            atts.setdefault(*item)
+        values = values.asma()
     if not isaxis(values):
-        axis = cdms.createAxis(values)
-    #elif cdms2.isVariable(values):
-        #axis = values.asma()
+        axis = cdms2.createAxis(values)
     else:
         axis = values
     for att,val in atts.items():
-        setattr(axis,att,val)
+        setattr(axis, att, val)
     axis.axis = atype.upper()
     check_axis(axis)
     if axis.axis == '-':
         del axis.axis
     return axis
+
+create = create_axis
 
 def create_time(values,units=None,**atts):
     """Create a time axis
@@ -373,7 +378,7 @@ def create_time(values,units=None,**atts):
         newvalues = values
     if units is None:
         raise ValueError,'Unable to guess units. You must specify them.'
-    return create(newvalues,'t',units=units,**atts)
+    return create_axis(newvalues,'t',units=units,**atts)
 
 def create_lon(values,**atts):
     """Create a longitude axis
@@ -392,7 +397,7 @@ def create_lon(values,**atts):
         from grid.misc import create_axes2d
         atts.setdefault('long_name', 'Longitude')
         return create_axes2d(x=values, lonid=atts.pop('id', None), xatts=atts)
-    return create(values,'x',**atts)
+    return create_axis(values,'x',**atts)
 
 def create_lat(values,**atts):
     """Create a latitude axis
@@ -411,7 +416,7 @@ def create_lat(values,**atts):
         from grid.misc import create_axes2d
         atts.setdefault('long_name', 'Latitude')
         return create_axes2d(y=values, latid=atts.pop('id', None), yatts=atts)
-    return create(values,'y',**atts)
+    return create_axis(values,'y',**atts)
 
 def create_dep(values,**atts):
     """Create a depthaxis
@@ -426,7 +431,7 @@ def create_dep(values,**atts):
         >>> create_dep(numpy.arange(-1000., -500., 10.),long_name='deep_depth')
 
     """
-    return create(values,'z',**atts)
+    return create_axis(values,'z',**atts)
 create_depth = create_dep
 
 

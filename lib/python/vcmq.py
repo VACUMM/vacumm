@@ -85,7 +85,7 @@ from vacumm.misc.log import Logger
 
 from vacumm.misc.config import ConfigManager, cfgargparse
 
-from vacumm.misc.stats import StatAccum
+from vacumm.misc.stats import StatAccum, qtmax, qtmin, qtminmax
 
 from vacumm.misc.phys.units import (
     convert_units, kt2ms, ms2kt, deg2m, m2deg, ms2bf, dms2deg, deg2dms, mph2ms,
