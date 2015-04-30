@@ -3619,7 +3619,7 @@ class ScalarMappable:
 #            for b in self.get_brothers(notme=False, mefirst=True)
 #                if cb is not None]
 
-    def colorbar(self, cax=None, fit=False, **kwargs):
+    def colorbar(self, cax=None, fit=False, ticklabels_nmax=12, **kwargs):
         """Add a colorbar
 
         The colorbar is drawn only if :meth:`get_scalar_mappable` returns a valid
@@ -3679,7 +3679,14 @@ class ScalarMappable:
             print 'apres', cb.ax.get_position()
         # - ticks
         if levels is not None and 'format' not in kwargs:
+            samp = len(levels)/ticklabels_nmax+1
+            if samp>1:
+                levels = list(levels)
+                for i in xrange(len(levels)):
+                    if i%samp:
+                        levels[i] = ''
             labels = cb.set_ticklabels(levels)
+
             if kwtl:
                 axis = getattr(cb.ax, ('x' if cb.orientation=='horizontal' else 'y')+'axis')
                 P.setp(axis.get_ticklabels(), **kwtl)
