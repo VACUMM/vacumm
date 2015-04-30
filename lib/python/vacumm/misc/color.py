@@ -44,8 +44,8 @@ import os
 import glob
 
 from matplotlib.cm import ScalarMappable
-from matplotlib.colors import Colormap, Normalize, LinearSegmentedColormap, \
-ColorConverter, makeMappingArray
+from matplotlib.colors import (Colormap, Normalize, LinearSegmentedColormap,
+    ColorConverter, makeMappingArray)
 import pylab as P
 from matplotlib.cm import cmap_d
 import numpy as N
@@ -96,7 +96,7 @@ __all__ = ['cmap_custom', 'cmap_bwr', 'cmap_bwre', 'cmap_br', 'cmap_wr', 'cmap_w
     'cmap_previmer', 'cmap_rnb2_hymex','cmap_rainbow_sst_hymex','cmap_dynamic_cmyk_hymex',
     'cmap_white_centered_hymex','cmap_red_tau_hymex', 'cmap_previmer2', 'cmap_ssec',
     'cmap_ncview_rainbow', 'cmap_eke', 'cmap_rb', 'cmap_currents', 'cmaps_registered',
-    'cmap_br2','cmap_nice_gfdl']
+    'cmap_br2','cmap_nice_gfdl', 'anamorph_cmap']
 __all__.sort()
 
 # Color maps
@@ -186,7 +186,7 @@ def _nlev_(n):
     elif n==0: n = 1
     return n, lev
 
-def cmap_rainbow(n=None, name='rainbow', smoothed=True, mode='auto', **kwargs):
+def cmap_rainbow(n=None, name='vacumm_rainbow', smoothed=True, mode='auto', **kwargs):
     """Rainbow colormap
 
     :Params:
@@ -223,7 +223,7 @@ def cmap_rb(*args, **kwargs):
     """Shortcut to :func:`cmap_rainbow`"""
     return cmap_rainbow(*args, **kwargs)
 
-def cmap_magic(n=None, stretch = 0.4, mode='normal', white='.95', name='magic', **kwargs):
+def cmap_magic(n=None, stretch = 0.4, mode='normal', white='.95', name='vacumm_magic', **kwargs):
     """Magic rainbow colormap
 
     Based upon :func:`cmap_rainbow` with specificities:
@@ -609,7 +609,7 @@ def _stretch_(value, stretch):
         return (1+stretch) * value
     return value + stretch * (1-value)
 
-def cmap_smoothed_steps(colors, stretch=None, rstretch=0, lstretch=0, name='cmap_css',
+def cmap_smoothed_steps(colors, stretch=None, rstretch=0, lstretch=0, name='vacumm_css',
     asdict=False, **kwargs):
     """Smoothed steps
 
@@ -2214,16 +2214,20 @@ def get_cmap(cmap=None, **kwargs):
     return cmap
 
 
-def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25),
+def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), fig=None,
     show=True, aspect=.05, title=None, sa=dict(left=.0, right=1, top=1, bottom=.0),
     savefig=None, savefigs=None, close=True, **kwargs):
     """Display a colormap"""
     from vacumm.misc import kwfilter
     cmap = get_cmap(cmap)
     if ax is None:
-        if figsize is not False:
-            P.figure(figsize=figsize)
-        ax = P.gca()
+        if fig is None:
+            fig = P.figure()
+        ax = fig.gca()
+    else:
+        fig = ax.get_figure()
+    if figsize:
+        fig.set_size_inches(figsize, forward=True)
     P.subplots_adjust(**sa)
     ax.set_aspect('auto', anchor='C')
     P.axis("off")
@@ -2792,6 +2796,75 @@ class Scalar2RGB(object):
         if alpha is not None: return res
         if isinstance(res, tuple): return res[:3]
         return res[:,:3]
+
+def anamorph_cmap(cmap, transform, name=None):
+    """Tranform a colormap with anamorphim
+
+    :Params:
+
+        - **cmap**: Colormap.
+        - **transform**: Sorted array of float between 0 and 1.
+        - **name**: name of the colormap
+    """
+    #  Input cmap
+    cmap = P.get_cmap(cmap)
+
+    # Transform
+    transform = N.clip(N.atleast_1d(transform).astype('f'), 0, 1).tolist()
+    if transform[0]!=0:
+        transform = [0.] + transform
+    if transform[-1]!=1:
+        transform.append(1.)
+
+    # First colors
+    segmentdata = {'red':[], 'green':[], 'blue':[]}
+
+    # Input segmentdata
+    input_segmentdata = cmap._segmentdata.copy()
+    if callable(input_segmentdata['red']):
+        for cname, cfunc in input_segmentdata.items():
+            xind = N.linspace(0, 1, cmap.N) ** cmap._gamma
+            lut = N.clip(N.array(cfunc(xind), dtype=N.float), 0, 1)
+            input_segmentdata[cname] = []
+            for i, xi in enumerate(xind):
+                input_segmentdata[cname].append((xi, lut[i], lut[i]))
+
+    # Loop on intervals
+    dxo = 1./(len(transform)-1)
+    for ii, xi0 in enumerate(transform[:-1]):
+        xi1 = transform[ii+1]
+        dxi = xi1-xi0
+        xo0 = ii*dxo
+        xo1 = (ii+1)*dxo
+        for cname, cvals in input_segmentdata.items():
+            for cval in cvals:
+                xi = cval[0]
+                if xi<xi0:
+                    continue
+                if xi>=xi1:
+                    break
+                xo = (xi-xi0)*dxo/dxi+xo0
+                segmentdata[cname].append((xo,)+cval[1:])
+            else:
+                col = cmap(xi1)[['red', 'green', 'blue'].index(cname)]
+                segmentdata[cname].append((xo1, col, col))
+    for cname, cval in input_segmentdata.items():
+        segmentdata[cname].append(cval[-1])
+
+    # Name
+    if name is None:
+        name = cmap.name
+        if name is None:
+            name = 'vacumm'
+        name += '_anamorph'
+
+    # Create it
+    cmapo = LinearSegmentedColormap(name, segmentdata, cmap.N)
+
+    # Register it
+    P.register_cmap(name, cmapo)
+
+    return cmapo
 
 
 # Register colormaps
