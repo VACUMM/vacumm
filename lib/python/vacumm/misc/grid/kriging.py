@@ -221,6 +221,7 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10)
         x = x[::samp]
         y = y[::samp]
         z = z[::samp]
+        npts = x.shape[0]
 
     # Distances
     x0, x1 = N.meshgrid(x, x)
@@ -249,26 +250,24 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10)
     ii = N.argsort(d)
     np = d.shape[0]
     nbin = binned
-    edges = N.linspace(0, np-1, binned+1).astype('i').tolist()
+    edges = N.linspace(0, np-1, nbin+1).astype('i').tolist()
     # - no zero in second bin
-    if x.shape[0]>edges[1]:
-        ii = ii[x.shape[0]-edges[1]:]
+    if npts>edges[1]:
+        ii = ii[npts-edges[1]:] # skip first zeros
         np = ii.shape[0]
-        edges = N.linspace(0, np-1, binned+1).astype('i').tolist()
+        edges = N.linspace(0, np-1, nbin+1).astype('i').tolist()
         nbin0 = 1 # no need to detail zeros!
     # - more details in first bin
     if nbin0 is None: # do we need more details?
-        if edges[1]>2*nbmin:
-            nbin0 = min(edges[1]/nbmin, binned)
-        else:
-            nbin0 = 0
+        NBIN0MAX = 10
+        nbin0 = min(edges[1]/nbmin, NBIN0MAX)
     if nbin0>1: # split first bin
         edges = N.linspace(0., edges[1], nbin0+1).astype('i')[:-1].tolist()+edges[1:]
-        nbin = len(edges)
+        nbin = nbin - 1 + nbin0 # len(edges)-1
     # - rebinning
     db = N.empty(nbin)
     vb = N.empty(nbin)
-    for ib in xrange(nbin-1):
+    for ib in xrange(nbin):
         iib = ii[edges[ib]:edges[ib+1]+1]
         db[ib] = d[iib].mean()
         vb[ib] = v[iib].mean()
