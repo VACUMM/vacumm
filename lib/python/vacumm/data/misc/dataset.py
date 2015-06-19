@@ -2330,24 +2330,78 @@ class OceanDataset(OceanSurfaceDataset):
     getvar_fmtdoc(get_ssd, **_extra_doc)
     del _extra_doc, _mode_doc
 
-    def get_uvgbt(self, **kwargs):
+
+    _mode_doc = """Computing mode
+
+          - ``None``: Try all modes, in the following order.
+          - ``"var"``: Read it from a variable.
+          - ``"ssh"``: Estimate from ssh."""
+
+    @getvar_fmtdoc
+    def get_uvgbt(self, getu=True, getv=True, **kwargs):
         """Get zonal and meridional geostrophic velocity from SSH"""
-        ssh = self.get_ssh(**kwargs)
-        dxu = self.get_dx_u(degrees=False, local=True, **kwargs)
-        dyv = self.get_dy_v(degrees=False, local=True, **kwargs)
-        return barotropic_geostrophic_velocity(ssh, dxy=(dxu, dyv))
+        # Params
+        fwarn = max(int(warn)-1, 0)
+        kwvar = kwfilter(kwargs, ['lon','lat','time','level','torect'], warn=fwarn)
+        kwfinal = kwfilter(kwargs, ['squeeze','order','asvar', 'at'])
+        kwfinalu = kwfinal.copy()
+        kwfinalu['genname'] = 'ugbt'
+        kwfinalv = kwfinal.copy()
+        kwfinalv['genname'] = 'vgbt'
+        kwssh = kwfilter(kwargs, 'ssh_')
+        kwssh.update(kwvar)
+
+        # First, try to find a variable
+        u = v = None
+        if check_mode('var', mode):
+            u = self.get_variable('ugbt', **kwvar)
+            v = self.get_variable('vgbt', **kwvar)
+            if (u is not None and v is not None) or check_mode('var', mode, strict=True):
+                u = self.finalize_object(u, **kwfinalu)
+                v = self.finalize_object(v, **kwfinalv)
+                res = ()
+                if getu:
+                    res += u,
+                if getv:
+                    res += v,
+                return res if len(res)==2 else res[0]
+
+        # Estimate it
+        if check_mode('ssh', mode):
+            ssh = self.get_ssh(**kwargs)
+            dx = self.get_dx_u(degrees=False, local=True, **kwargs)
+            dy = self.get_dy_v(degrees=False, local=True, **kwargs)
+            sshok = None not in [ssh, dx, dy]
+            mstrict = check_mode('ssh', mode, strict=True)
+            if sshok or mstrict:
+                if sshok:
+                    us, vs = barotropic_geostrophic_velocity(ssh, dxy=(dx, dy))
+                u = (u if u is not None and not mstrict else us
+                    ).finalize_object(u, **kwfinalu)
+                v = (v if v is not None and not mstrict else vs
+                    ).finalize_object(v, **kwfinalv)
+                res = ()
+                if getu:
+                    res += u,
+                if getv:
+                    res += v,
+                return res if len(res)==2 else res[0]
+
+        if warn:
+            self.warning("Can't estimate barotropic geostrophic velocities")
 
     @getvar_fmtdoc
     def get_ugbt(self, **kwargs):
         '''Get zonal barotropic geostrophic velocity from SSH'''
         kwargs['getv'] = False
-        return get_uvbt(**kwargs)
+        return self.get_uvgbt(**kwargs)
 
     @getvar_fmtdoc
     def get_vgbt(self, **kwargs):
         '''Get meridional barotropic geostrophic velocity from SSH'''
         kwargs['getu'] = False
-        return get_uvbt(**kwargs)
+        return get_uvgbt(**kwargs)
+
 
     _mode_doc = """Computing mode
 
