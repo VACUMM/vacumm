@@ -53,16 +53,18 @@ from ...misc.misc import kwfilter, dict_check_defaults
 from vacumm.config import get_config_value
 
 #: Earth radius of wgs84 ellipsoid
-rshpere_wgs84 = (6378137.0,6356752.3141)
+RSHPERE_WGS84 = (6378137.0,6356752.3141)
+rshpere_wgs84 = RSHPERE_WGS84
 
 #: GSHHS shorelines letters
-gshhs_reslist = ['f', 'h', 'i', 'l', 'c']
+GSHHS_RESLIST = ['f', 'h', 'i', 'l', 'c']
+gshhs_reslist = GSHHS_RESLIST
 
 def gshhs_autores(lon_min, lon_max, lat_min, lat_max):
     """Guess best resolution from lon/lat bounds"""
     testresol=((lon_max-lon_min)+(lat_max-lat_min))/2.0
     ires = N.array([-1.,1. ,5.,15.,50.]).searchsorted(testresol)-1
-    return gshhs_reslist[ires]
+    return GSHHS_RESLIST[ires]
 
 # Cached maps
 def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
@@ -188,7 +190,7 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projectio
 
     # Map arguments
     kwargs.setdefault('area_thresh', 0.)
-    kwargs.setdefault('rsphere', rshpere_wgs84) # WGS-84
+    kwargs.setdefault('rsphere', RSHPERE_WGS84) # WGS-84
     if kwargs['rsphere'] in [None, False, True]: del kwargs['rsphere']
     projection = kwargs.pop('proj', projection)
     if lon_center is None: lon_center = .5*(lon_min+lon_max)
@@ -222,10 +224,10 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projectio
         if res < 0:
             res= 'auto'
         else:
-            res = gshhs_reslist[4-res]
+            res = GSHHS_RESLIST[4-res]
     if res == 'auto':
         res = gshhs_autores(lon_min, lon_max, lat_min, lat_max)
-    if res in gshhs_reslist:
+    if res in GSHHS_RESLIST:
         kwargs.setdefault('resolution', res)
     else:
         kwargs['resolution'] = None
@@ -233,7 +235,7 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projectio
     # Basemap args
     if isinstance(projection, str) and projection.lower() == 'rgf93' :
         # RGF93
-        kwargs.update(lon_0=3, lat_0=46.5, lat_1=44, lat_2=49, rsphere=rshpere_wgs84, projection='lcc')
+        kwargs.update(lon_0=3, lat_0=46.5, lat_1=44, lat_2=49, rsphere=RSHPERE_WGS84, projection='lcc')
     else:
         # standard
         kwargs.setdefault('lon_0', lon_center)
