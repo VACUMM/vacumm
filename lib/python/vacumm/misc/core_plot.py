@@ -1368,14 +1368,14 @@ class Plot(object):
                         axmin = mpl(axmin)
                     except:
                         raise PlotError("Can't convert axmin to date: %s"%axmin)
-                xylim_func(**{xy+'min':axmin})
+                xylim_func(**{xy+'min':_asnum_(axmin)})
             if axmax is not None and axmax is not False:
                 if props['type'] == 't' and (isinstance(axmax, basestring) or not N.isscalar(axmax)):
                     try:
                         axmax = mpl(axmax)
                     except:
                         raise PlotError("Can't convert axmax to date: %s"%axmin)
-                xylim_func(**{xy+'max':axmax})
+                xylim_func(**{xy+'max':_asnum_(axmax)})
 
             # Ticks values and formats
             if props['type'] in ['x','y','z']: # Lon, lat or dep axis
@@ -1465,9 +1465,9 @@ class Plot(object):
 
             # Now set again min/max
             if axmin is not None and axmax is not False:
-                xylim_func(**{xy+'min':axmin})
+                xylim_func(**{xy+'min':_asnum_(axmin)})
             if axmax is not None and axmax is not False:
-                xylim_func(**{xy+'max':axmax})
+                xylim_func(**{xy+'max':_asnum_(axmax)})
 
             # Properties
             if props['ticklabels_kwargs']:
@@ -6977,30 +6977,6 @@ def _asnum_(xy):
     if single: return out[0]
     return out
 
-
-def _asnum_(xy):
-    """Get xy as a number
-
-    If it is a number or a numpy array, it not converted,
-    else it is converted with :func:`numtime`.
-
-    xy can also be a list, a list of lists, etc.
-    """
-    if isinstance(xy, N.ndarray): return xy
-    single = not isinstance(xy, list)
-    xys = xy if not single else [xy]
-    out = []
-    for xy in xys:
-        if is_numtime(xy):
-            out.append(xy)
-            continue
-        if isinstance(xy, list):
-            out.extend(xy)
-            continue
-        xy = numtime(xy)
-        out.append(xy)
-    if single: return out[0]
-    return out
 
 
 docfiller.scan(Plot, Plot.format_axes, Plot.load_data, Plot._check_order_,
