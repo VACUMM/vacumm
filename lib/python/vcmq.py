@@ -1,7 +1,9 @@
 """Module for quickly loading VACUMM essentials"""
 
 # System
-import os, sys, shutil
+import os
+import sys
+import shutil
 import re
 import glob
 import gc
@@ -16,10 +18,12 @@ import numpy as N
 npy = N
 np = N
 
-
 # CDAT
 
-import MV2, cdms2,  cdtime, cdutil
+import MV2
+import cdms2
+import cdtime
+import cdutil
 from cdutil import averager
 from genutil import minmax
 
@@ -62,7 +66,9 @@ from vacumm.misc.atime import (
     comptime, strftime, strptime, Intervals, IterDates, now,
     time_split, time_split_nmax, to_utc, tz_to_tz, utc_to_paris, paris_to_utc,
     lindates, ch_units, add_margin, round_date, midnight_date, midnight_interval,
-    mpl, tic, toc
+    mpl, tic, toc, pat2freq, pat2glob, has_time_pattern,
+    is_interval, is_time, is_axistime, is_cdtime, is_datetime, is_in_range,
+    is_numtime, is_strtime, itv_intersect, itv_union
     )
 
 
@@ -120,7 +126,7 @@ from vacumm.misc.grid.misc import (
     )
 
 from vacumm.misc.grid.regridding import (
-    regrid1d, regrid2d, interp1d, interp2d, cellave1d, cellave2d,
+    regrid1d, regrid2d, interp1d, interp2d, cellave1d, cellave2d, cellerr1d,
     cargen, xy2xy, shift1d, shift2d, extend1d, extend2d, regrid_method,
     transect, griddata, CDATRegridder, grid2xy,
     nearest1d, shiftgrid, extendgrid, fill1d, fill2d
