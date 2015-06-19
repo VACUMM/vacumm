@@ -2028,6 +2028,61 @@ def check_xy_shape(xx, yy, mesh=None):
         raise ValueError, 'xx and yy must be 1D for meshgrid transform.'
     return N.meshgrid(xx, yy)
 
+def axisop_slicenames(stag):
+    """Get standard slice names of axis operator as dict given the staggering direction
+    """
+    if stag>0:
+        inner = firsts = 'firsts'
+        left = firsts = 'firsts'
+        right = lasts = 'lasts'
+        boundary = out = last = 'last'
+        oppos = 'first'
+        neigh1 = 'last'
+        neigh2 = 'lastm1'
+    else:
+        inner = firsts = 'lasts'
+        left = firsts = 'lasts'
+        right = lasts = 'firsts'
+        boundary = out = last = 'first'
+        oppos = 'last'
+        neigh1 = 'first'
+        neigh2 = 'firstp1'
+    return dict(target=target, out=out, oppos=oppos, last=last,
+        neigh1=neigh1, neigh2=neigh2, firsts=firsts, lasts=lasts)
+
+def genop1d(var, leftwgt, rightwgt, axis, stag=0, bmode=None, copy=True):
+    """Generic two-point operator along an axis"""
+
+    # Inputs
+    if copy:
+        if hasattr(var, 'clone'):
+            varo = var.clone()
+        else:
+            varo = var.copy()
+    else:
+        varo = var
+    bmode = kwargs.get('mode', bmode)
+    if bmode is None:
+        bmode = "linear" if A.isaxis(var) else "same"
+    elif bmode=="nearest":
+        bmode = "same"
+    elif bmode=='extrap':
+        bmode = 'linear'
+
+    # Get slice specs
+    ss = get_axis_slices(vari, axis)
+    if stag:
+        sn = _shiftslicenames_(stag)
+
+    # Inner
+    if stag:
+        varo[ss[sn['inner']]] = varo[ss[sn['left']]] * leftwgt
+        varo[ss[sn['inner']]] += varo[ss[sn['right']]] * rightwgt
+    else:
+        varo[ss['inner']] = varo[ss['left']] * leftwgt
+        varo[ss['inner']] += varo[ss['right']] * rightwgt
+        pass
+
 
 def t2uvgrids(gg, getu=True, getv=True, mask=None):
     """Convert a (C) grid at T-points to a grid at U- and/or V- points
@@ -2596,7 +2651,7 @@ def merge_axis_slices(slices1, slices2):
     slicesm = {}
     null = slice(None)
     for key in slices1:
-        slicesm[key] = _merge_axis_slice_(slices1[key], slices2[key])
+        slicesm[key] = merge_axis_slice(slices1[key], slices2[key])
     return slicesm
 
 def merge_axis_slice(sel1, sel2):
