@@ -35,6 +35,7 @@ Kriging utilities inspired from the AMBHAS library (http://www.ambhas.com/).
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+import gc
 import multiprocessing
 from multiprocessing import Pool,  cpu_count
 
@@ -58,7 +59,8 @@ except:
     dgemm = get_blas_func('gemm')
     def symm(a, b): return dgemm(1., a, b)
     sytri = N.linalg.inv
-import gc
+
+from ...misc.misc import kwfilter
 
 class KrigingError(Exception):
     pass
@@ -189,7 +191,7 @@ def _get_xyz_(x, y, z=None, check=True, noextra=True, getmask=False):
         res += mask,
     return res
 
-def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10):
+def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10, dmax=None):
     """Estimate variogram from data
 
     :Params:
@@ -210,6 +212,7 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10)
           ``min(bins[1]/nbmin, nbin)``.
         - **nbmin**, optional: Minimal number of points
           in a bin.
+        - **dmax**, optional: Max distance to consider.
 
     """
     x, y, z = _get_xyz_(x, y, z)
@@ -239,6 +242,13 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10)
     d = dd[iup]
     v = vv[iup]
     del dd, vv
+
+    # Max distance
+    if dmax:
+        valid = d<=dmax
+        d = d[valid]
+        v = v[valid]
+        del valid
 
     # Direct variogram?
     if binned is None and len(d)>nbindef*nbmin: binned = True
@@ -276,19 +286,26 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10)
 def variogram_fit(x, y, z, mtype, getp=False, geterr=False, **kwargs):
     """Fit a variogram model to data and return the function
 
+    :Example:
+
+        >>> vm, errs = variogram_fit(x, y, z, 'linear', n=0, dmax=30e3, geterr=True)
+
     :Params:
 
         - **x/y/z**: Position and data.
         - **mtype**: Variogram model type (see :func:`variogram_model_types`).
         - **getp**, optional: Only return model parameters.
+        - **variogram_<param>**, optional: ``param`` is passed to :func:`variogram`.
         - Extra keywords are those of :func:`variogram_model`.
           They can be used to fix some of the parameters.
 
           >>> variogram_fit(x, y, z, mtype, n=0) # fix the nugget
 
     """
+    kwv = kwfilter(kwargs, 'variogram_')
+
     # Estimated variogram
-    d, v = variogram(x, y, z)
+    d, v = variogram(x, y, z, **kwv)
 
     # Variogram model
     vm = VariogramModel(mtype, **kwargs)
