@@ -1921,7 +1921,7 @@ subroutine dstwgt2dto1d(xi,yi,zi,xo,yo,zo,mv,nxi,nyi,no,nz)
     logical :: bmask(nz,nyi,nxi),bb(nz,4)
 
     zo = mv
-    bmask = abs(zi-mv)<abs(mv*epsilon(0d0)*1.1)
+    bmask = abs(zi-mv)<abs(mv*epsilon(1d0)*1.1)
     !$OMP PARALLEL DO PRIVATE(io,i,j,dx0,dx1,dy0,dy1,vv,bb,dd,ww,wsum,i4)
     !$& SHARED(xi,yi,zi,xo,yo,zo,nxi,nyi,no,bmask)
     do io = 1, no
@@ -2247,7 +2247,7 @@ subroutine dstwgt2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
     logical :: bmask(nz,nyi,nxi),bb(nz,4)
 
     zo = mv
-    bmask = abs(zzi-mv)<abs(epsilon(0d0)*1.1*mv)
+    bmask = abs(zzi-mv)<abs(epsilon(1d0)*1.1*mv)
 
     !$OMP PARALLEL DO PRIVATE(io,i,j,a,b,vv,bb,dd,ww,wsum,i4)
     !$& SHARED(p,q,zzi,zo,bmask,nxi,nyi,no)

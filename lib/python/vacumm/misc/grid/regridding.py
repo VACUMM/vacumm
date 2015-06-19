@@ -493,7 +493,7 @@ def _toright_(ar, iax):
 
 
 def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None,
-    xmap=None, xmapper=None, mask_thres=.5, extrap=0, erri=None, errl=None):
+    xmap=None, xmapper=None, mask_thres=.5, extrap=0, erri=None, errl=None, geterr=False):
     """Interpolation along one axis
 
     :Params:
@@ -534,9 +534,12 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
         - **erri**, optional: Input "measurement" errors with the same shape as input
           variable.
         - **errl**, optional: Derivative of lag error with respect to lag.
+          Note that the lag must expressed in **days** for time axes.
           If positive, it based on quadratic errors, else on error itself.
           Estimate for instance it using the slope of a linear regression.
           It is usually varying in space and constant in time.
+        - **geterr**, optional: When method is "cellerr", also return the error
+          along with the variable.
 
     :Examples:
 
@@ -756,7 +759,7 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
     # Reshape back
     varos = varo2d.reshape(varis.shape[:-1]+axond.shape[-1:]) ; del varo2d
     varon = varos.transpose(*bakmapv) ; del varos
-    if method==4:
+    if geterr and method==4:
         erros = erro2d.reshape(varis.shape[:-1]+axond.shape[-1:]) ; del erro2d
         erron = erros.transpose(*bakmapv) ; del erros
 
@@ -764,7 +767,7 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
     varo = MV2.masked_values(varon, missing_value)
     cp_atts(vari, varo, id=True)
     varo.setMissing(missing_value)
-    if method==4:
+    if geterr and method==4:
         erro = MV2.masked_values(erron, missing_value)
         cp_atts(vari, erro, id=True)
         erro.id = erro.id+'_error'
@@ -785,7 +788,7 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
             cp_atts(oldaxis, axes[axis])
     varo.setAxisList(axes)
     varo.setGrid(grid)
-    if method==4:
+    if geterr and method==4:
         erro.setAxisList(axes)
         erro.setGrid(grid)
         return varo, erro
@@ -3179,7 +3182,7 @@ def _shiftslicenames_(shift):
         neigh1=neigh1, neigh2=neigh2, firsts=firsts, lasts=lasts)
 
 
-def shift1d(var, shift=0, mode=None, axis=-1, copy=True, shiftaxis=True):
+def shift1d(var, shift=0, bmode=None, axis=-1, copy=True, shiftaxis=True, **kwargs):
     """Interpolate data on an axis shifted by an half cell size
 
     :Params:
@@ -3191,10 +3194,10 @@ def shift1d(var, shift=0, mode=None, axis=-1, copy=True, shiftaxis=True):
             - ``<0``: Shilt toward bottom of the axis.
             - ``>0``: Shilt toward top of the axis.
 
-        - **mode**, optional: Interpolation mode for boundary point outside initial positions.
+        - **bmode**, optional: Boundary mode.
 
             - ``None``: ``"extrap"`` if axis else ``"same"``
-            - ``"extrap"``: Linear extrapolation.
+            - ``"linear"``: Linear extrapolation.
             - ``"same"``: Constant extrapolation.
             - ``"masked"``: Mask outside data.
             - ``"cyclic"``: Cyclic extrapolation.
@@ -3215,10 +3218,13 @@ def shift1d(var, shift=0, mode=None, axis=-1, copy=True, shiftaxis=True):
         shift = -0.5
     else:
         shift = 0.5
-    if mode is None:
-        mode = "extrap" if A.isaxis(var) else "same"
-    elif mode=="nearest":
-        mode = "same"
+    bmode = kwargs.get('mode', bmode)
+    if bmode is None:
+        bmode = "linear" if A.isaxis(var) else "same"
+    elif bmode=="nearest":
+        bmode = "same"
+    elif bmode=='extrap':
+        bmode = 'linear'
     ax = len(var.shape)==1 and A.isaxis(var)
     if ax:
         varf = varo.getValue()
@@ -3228,7 +3234,7 @@ def shift1d(var, shift=0, mode=None, axis=-1, copy=True, shiftaxis=True):
     if cdms2.isVariable(varo):
         refvar = varo.asma().copy()
         if shiftaxis:
-            xo = shift1d(var.getAxis(axis), shift, mode='extrap')
+            xo = shift1d(var.getAxis(axis), shift, bmode='extrap')
     else:
         refvar = varf.copy()
 
@@ -3240,11 +3246,11 @@ def shift1d(var, shift=0, mode=None, axis=-1, copy=True, shiftaxis=True):
     varf[ss[sn['target']]] = (refvar[ss['firsts']]+refvar[ss['lasts']])*0.5
 
     # Boundary data
-    if mode=='masked':
+    if bmode=='masked':
         varf[ss[sn['out']]] = N.ma.masked
-    elif mode=='cyclic':
+    elif bmode=='cyclic':
         varf[ss[sn['out']]] = var[ss[sn['oppos']]]
-    elif mode=="same":
+    elif bmode=="same":
         varf[ss[sn['out']]] = refvar[ss[sn['neigh1']]]
     else:
         varf[ss[sn['out']]] = refvar[ss[sn['neigh1']]]
@@ -3259,7 +3265,7 @@ def shift1d(var, shift=0, mode=None, axis=-1, copy=True, shiftaxis=True):
 
     return varo
 
-def shift2d(vari, ishift=0, jshift=0, mode=None, copy=True):
+def shift2d(vari, ishift=0, jshift=0, bmode=None, copy=True, **kwargs):
     """Interpolate data on an grid shifted by an half cell size in X and Y
 
     X and Y are supposed to be the -1 and -2 axes of var.
@@ -3273,9 +3279,9 @@ def shift2d(vari, ishift=0, jshift=0, mode=None, copy=True):
             - ``<0``: Shilt toward bottom of the axis.
             - ``>0``: Shilt toward top of the axis.
 
-        - **mode**, optional: Interpolation mode for boundary point outside initial positions.
+        - **bmode**, optional: Boundary mode.
 
-            - ``"extrap"``: Linear extrapolation.
+            - ``"linear"``: Linear extrapolation.
             - ``"same"``: Constant extrapolation.
             - ``"masked"``: Mask outside data.
             - ``"cyclic"``: Cyclic extrapolation.
@@ -3296,7 +3302,8 @@ def shift2d(vari, ishift=0, jshift=0, mode=None, copy=True):
     sg = not A.isaxis(var) and cdms2.isVariable(var) and var.getGrid() is not None
     if sg:
         grido = shiftgrid(var.getGrid(), ishift=ishift, jshift=jshift)
-    if mode=='masked' and not N.ma.isMA(var):
+    bmode = kwargs.get('mode', bmode)
+    if bmode=='masked' and not N.ma.isMA(var):
         var = N.ma.asarray(var)
 
 
@@ -3306,8 +3313,8 @@ def shift2d(vari, ishift=0, jshift=0, mode=None, copy=True):
     ssy = get_axis_slices(var, -2)
     sny = _shiftslicenames_(jshift)
 
-    # Shift along X
-    kwxshift = dict(axis=-1, mode=mode, copy=copy or jshift!=0, shiftaxis=not sg)
+    # Shift along X only
+    kwxshift = dict(axis=-1, bmode=bmode, copy=copy or jshift!=0, shiftaxis=not sg)
     if jshift==0 or ishift!=0:
         varx = shift1d(vari, ishift, **kwxshift)
         if jshift==0:
@@ -3315,8 +3322,8 @@ def shift2d(vari, ishift=0, jshift=0, mode=None, copy=True):
                 set_grid(varx, grido)
             return varx
 
-    # Shift along Y
-    kwyshift = dict(axis=-2, mode = mode if mode!='cyclic' else 'extrap',
+    # Shift along Y only
+    kwyshift = dict(axis=-2, bmode = bmode if bmode!='cyclic' else 'extrap',
         copy=copy or ishift!=0, shiftaxis=not sg)
     if ishift==0 or jshift!=0:
         vary = shift1d(vari, jshift, **kwyshift)
@@ -3326,7 +3333,7 @@ def shift2d(vari, ishift=0, jshift=0, mode=None, copy=True):
             return vary
 
     # Inner Y
-    var[:] = 0.
+    var[:] = 0.,
     var[ssy[sny['firsts']]] += 0.5*(varx[ssy[sny['firsts']]]+varx[ssy[sny['lasts']]])
 
     # Top Y
@@ -3352,7 +3359,7 @@ def shift2d(vari, ishift=0, jshift=0, mode=None, copy=True):
     return var
 
 
-def shiftgrid(gg, ishift=0, jshift=0, mode='extrap'):
+def shiftgrid(gg, ishift=0, jshift=0, bmode='linear', **kwargs):
     """Shift a grid of an half cell
 
     :Params:
@@ -3361,13 +3368,13 @@ def shiftgrid(gg, ishift=0, jshift=0, mode='extrap'):
         - **i/jshift**: Fraction cell to shift.
     """
     xx, yy = get_xy(gg)
-
+    bmode = kwargs.get('mode', bmode)
     if len(xx.shape)==2:
-        xs = shift2d(xx, ishift=ishift, jshift=jshift, mode=mode)
-        ys = shift2d(yy, ishift=ishift, jshift=jshift, mode=mode)
+        xs = shift2d(xx, ishift=ishift, jshift=jshift, bmode=bmode)
+        ys = shift2d(yy, ishift=ishift, jshift=jshift, bmode=bmode)
     else:
-        xs = shift1d(xx, ishift, mode=mode)
-        ys = shift1d(yy, jshift, mode=mode)
+        xs = shift1d(xx, ishift, bmode=bmode)
+        ys = shift1d(yy, jshift, bmode=bmode)
 
     if isgrid(gg) or cdms2.isVariable(gg):
         return create_grid(xs, ys)
@@ -3893,7 +3900,7 @@ class CurvedInterpolator(object):
         # Interpolate
         mv = vari.get_fill_value()
         zzi = vari.asma() if cdms2.isVariable(vari) else N.ma.asarray(vari)
-        zzi = zzi.reshape((-1, )+self._shapei).filled()
+        zzi = zzi.reshape((-1, )+self._shapei).filled(mv)
         zo = func(self._p, self._q, zzi, mv).reshape(vari.shape[:-2]+self._shapeo)
         zo = N.ascontiguousarray(zo)
         varo = N.ma.masked_values(zo, mv)
