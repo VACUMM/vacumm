@@ -112,7 +112,7 @@ from vacumm.misc.color import (
     plot_cmap, show_cmap, get_cmap, simple_colors,
     cmap_rs, cmap_srs, cmap_custom, Scalar2RGB, darken, whiten, cmaps_mpl,
     cmap_gmt, cmaps_registered, cmaps_vacumm, print_cmaps_gmt, plot_cmaps,
-    anamorph_cmap
+    anamorph_cmap, discretize_cmap, StepsNorm
     )
 
 # - grid

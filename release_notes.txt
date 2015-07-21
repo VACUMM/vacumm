@@ -4,6 +4,7 @@ Release notes
 In development
 ==============
 
+- Added color.discretize_cmap.
 - Added Plot.add_water_mark.
 - Added units.basic_proj.
 - Added systematic cleaning to cache_map().
@@ -15,7 +16,7 @@ In development
 - New regrid2d with tool and method keywords.
 - Fixed: default params in get_proj.
 - Fixed names of module attributes which are now upper case.
-- Fixed: list_forecast_files, Plot.add_lon/lat, _interp_.linept.
+- Fixed: list_forecast_files, Plot.add_lon/lat, _interp_.linept, Plot2D.fill.
 - Fixed: ConfigManager.opt_parse.
 
 Version 2.5.4
