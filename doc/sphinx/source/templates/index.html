@@ -16,7 +16,7 @@
 
     <p>
         VACUMM provides generic and specialized tools for the validation of ocean models, and more especially
-        the MARS model from IFREMER.
+        the MARS model from <a href="http://www.ifremer.fr">IFREMER</a>.
         The heart of VACUMM is a <a href="{{ pathto('library/index') }}">library</a> written mainly
         in the <a href="http://www.python.org">Python</a> language,
         whose <a href="{{ pathto('library/misc') }}">core</a> can be used for the <b>preprocessing</b> and the
@@ -51,10 +51,29 @@
 
     </ul>
 
+    <h1>Requirements</h1>
+
+    Mandatory:
+    <a href="http://uvcdat.llnl.gov/">UVCDAT</a>,
+    <a href="http://www.voidspace.org.uk/python/configobj.html">configobj</a>.<br>
+
+    Optional:
+    <a href="https://pypi.python.org/pypi/seawater">seawater</a>,
+    <a href="https://pypi.python.org/pypi/PIL">PIL</a>,
+    <a href="http://pytz.sourceforge.net">pytz</a>,
+    <a href="http://www.paramiko.org">paramiko</a>,
+    <a href="https://pypi.python.org/pypi/xlwt">xlwt</a>.
+
     <h1>Download</h1>
 
     To download VACUMM, please go to this
     <a href="{{ pathto('user.install.download') }}">page</a>.
+
+    <h1>Installation</h1>
+
+    <div class="highlight-bash"><div class="highlight"><pre>
+<span class="gp">$</span> python setup.py install
+</pre></div></div>
 
     <h1>Release notes</h1>
 
@@ -79,10 +98,17 @@
     Parts may be in english, in french or in both languages.
     <b>If you want to contribute to the translation, you are welcome!</b>
 
+    <h1>Contact</h1>
+
+    Stephane Raynaud (raynaud (at) actimar.fr),
+    Guillaume Charria (Guillaume.Charria (at) ifremer.fr).<br>
+    See the <a href="{{ pathto('contact') }}">contact page</a>.
+
+
     <h1>CAPARMOR users!</h1>
 
     If you have an access to the CAPARMOR supercomputer at IFREMER,
-    you can quickly try VACUMM from the shel:
+    you can quickly try VACUMM from the shell:
     <div class="highlight-bash"><div class="highlight"><pre>
 <span class="gp">$</span> module purge
 <span class="gp">$</span> module use /home11/caparmor/mars/PYTHON/modulefiles

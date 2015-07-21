@@ -54,7 +54,7 @@ useful  packages that can be install using :program:`pip` or
    * - :pypi:`seawater (2.0.1)`
      - Yes for advanced diags.
      - Sea water properties
-   * - :pypi:`xlw`
+   * - :pypi:`xlwt`
      - Only for :func:`~vacumm.misc.misc.xls_style`.
      - Write excel files (better: :pypi:`xlutils`)
    * - :pypi:`PIL (1.1.7)`

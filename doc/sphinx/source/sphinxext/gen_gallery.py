@@ -40,6 +40,7 @@ toc_template = """\
 
 import os, glob, re, sys, warnings
 import matplotlib.image as image
+from matplotlib import rcParams
 from codecs import open
 
 multiimage_match = re.compile('(.*?)(_\d+)$').match
@@ -161,10 +162,13 @@ def gen_gallery(app, doctree):
         fh.close()
 
     # Inform about thumbnail generation
+    old = rcParams['image.origin']
+    rcParams['image.origin'] = 'upper'
     for key in app.builder.status_iterator(
-        thumbnails.iterkeys(), "generating thumbnails... ",
-        length=len(thumbnails)):
+            thumbnails.iterkeys(), "generating thumbnails... ",
+            length=len(thumbnails)):
         image.thumbnail(key, thumbnails[key], 0.3)
+    rcParams['image.origin'] = old
 
 def setup(app):
     app.add_config_value('gen_gallery_paths', {}, 'html')
