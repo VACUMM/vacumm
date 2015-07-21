@@ -38,7 +38,7 @@ add_key(1)
 P.title('Linear lag error model')
 
 # Interpolation
-sph, speh = regrid1d(sp, taxo, method='cellerr', erri=spe, errl=-a)
+sph, speh = regrid1d(sp, taxo, method='cellerr', erri=spe, errl=-a, geterr=True)
 
 # Time zoom for plot clarity
 tzoom = (ct1.sub(7, cdtime.Hour), ctimesi[-1])

@@ -3,6 +3,7 @@
 nx = ny = 50
 np = 500
 mtype = 'gauss'
+dmax = 2.5
 
 from vcmq import N, P, code_file_name, savefigs
 from vacumm.misc.grid.kriging import gridded_gauss3, random_gauss3, variogram, variogram_fit
@@ -12,10 +13,10 @@ xxg, yyg, zzg = gridded_gauss3(nx=nx, ny=ny)
 x, y, z = random_gauss3(np=np)
 
 # Variogram from data
-d, v = variogram(x, y, z)
+d, v = variogram(x, y, z, dmax=dmax)
 
 # Variogram fit with null nugget
-vm = variogram_fit(x, y, z, mtype, n=0)
+vm = variogram_fit(x, y, z, mtype, n=0, dmax=dmax)
 D = N.linspace(0, d.max())
 V = vm(D)
 
