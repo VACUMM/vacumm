@@ -4570,7 +4570,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             norm = StepsNorm(levels, **kwnorm)
         elif norm is True:
             norm = Normalize(min(levels), max(levels))
-        else:
+        elif not isinstance(norm, Normalize):
             norm = None
 
         # Data
@@ -4941,8 +4941,9 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
 
     def plot_streamplot(self, zorder=None,
         shadow=False, glow=False, streamplot_color=None, streamplot_linewidth=None,
-        streamplot_lwmod=3,
-        streamplot_cmap=None, streamplot_vmin=None, streamplot_vmax=None,
+        streamplot_lwmodmin=.5, streamplot_lwmodmax=3,
+        streamplot_cmap=None, streamplot_norm=None,
+        streamplot_vmin=None, streamplot_vmax=None,
         **kwargs):
         """Plot stream lines with :func:`~matplotlib.pyplot.streamplot`
 
@@ -4961,7 +4962,9 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
                   linewidth of ``streamplot_lwmod``.
                 - Else, passed directly to :func:`~matplotlib.pyplot.streamplot`
 
-            - **streamplot_lwmod**, optional: Max linewidth used when ``streamplot_linewidth`
+            - **streamplot_lwmodmin**, optional: Min linewidth used when ``streamplot_linewidth`
+              is set to ``"modulus"``.
+            - **streamplot_lwmodmax**, optional: Max linewidth used when ``streamplot_linewidth`
               is set to ``"modulus"``.
             - **streamplot_<param>**, optional: ``<param>`` is passed to
               :func:`~matplotlib.pyplot.streamplot`.
@@ -5005,6 +5008,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
 
         # Color
         vmax = streamplot_vmax if streamplot_vmax is not None else self.vmax
+        vmin = streamplot_vmin if streamplot_vmin is not None else self.vmin
         if streamplot_color in [None, 'default']:
             streamplot_color = None
         elif streamplot_color=='modulus':
@@ -5012,17 +5016,20 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             if streamplot_cmap is None:
                 streamplot_cmap = self.get_cmap(**kwcmap)
             kwsp['cmap'] = streamplot_cmap
-            vmin = streamplot_vmin if streamplot_vmin is not None else self.vmin
-            kwsp['norm'] = Normalize(vmin=vmin, vmax=vmax)
+            if streamplot_norm is None:
+                streamplot_norm  = Normalize(vmin=vmin, vmax=vmax)
+            kwsp['norm'] = streamplot_norm
         kwsp['color'] = streamplot_color
 
 
         # Linewidth
         streamplot_linewidth = kwsp.pop('lw', streamplot_linewidth)
+        streamplot_lwmodmax = kwargs.pop('streamplot_lwmod', streamplot_lwmodmax)
         if streamplot_linewidth in [None, 'default']:
             streamplot_linewidth = None
         elif streamplot_linewidth=='modulus':
-            streamplot_linewidth = streamplot_lwmod*mm/vmax
+            streamplot_linewidth = (streamplot_lwmodmin+
+                (streamplot_lwmodmax-streamplot_lwmodmin)*(mm-vmin)/(vmax-vmin))
         kwsp['linewidth'] = streamplot_linewidth
 
         # Lines
