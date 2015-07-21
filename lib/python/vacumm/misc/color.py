@@ -96,7 +96,7 @@ __all__ = ['cmap_custom', 'cmap_bwr', 'cmap_bwre', 'cmap_br', 'cmap_wr', 'cmap_w
     'cmap_previmer', 'cmap_rnb2_hymex','cmap_rainbow_sst_hymex','cmap_dynamic_cmyk_hymex',
     'cmap_white_centered_hymex','cmap_red_tau_hymex', 'cmap_previmer2', 'cmap_ssec',
     'cmap_ncview_rainbow', 'cmap_eke', 'cmap_rb', 'cmap_currents', 'cmaps_registered',
-    'cmap_br2','cmap_nice_gfdl', 'anamorph_cmap']
+    'cmap_br2','cmap_nice_gfdl', 'anamorph_cmap', 'discretize_cmap']
 __all__.sort()
 
 # Color maps
@@ -2685,16 +2685,40 @@ class StepsNorm(Normalize):
             if self.log and N.any(self.levels<=0):
                 raise ValueError("All levels must be greater than 0 when using log scale")
             nlev = len(self.levels)
+
+            if self.log:
+                val = ma.log(val)
+
+            # Inside
             for ilev in xrange(nlev-1):
                 lev0, lev1 = self.levels[ilev:ilev+2]
                 p0, p1 = self.positions[ilev:ilev+2]
                 if self.log:
-                    val = ma.log(val)
                     lev0 = ma.log(lev0)
                     lev1 = ma.log(lev1)
                 mincheck = (val>=lev0) if ilev>0 else True
                 maxcheck = (val<=lev1) if ilev<nlev-2 else True
-                result[:] = ma.where(mincheck&maxcheck, p0+(p1-p0)*(val-lev0)/(lev1-lev0), result)
+                result[:] = ma.where(mincheck&maxcheck,
+                    p0+(p1-p0)*(val-lev0)/(lev1-lev0), result)
+
+            # Above (linear extrapolation)
+            lev0, lev1 = self.levels[-2:]
+            p0, p1 = self.positions[-2:]
+            if self.log:
+                lev0 = ma.log(lev0)
+                lev1 = ma.log(lev1)
+            result[:] = ma.where(val>=lev1, p1 + (p1-p0)*(val-lev1)/(lev1-lev0), result)
+            result[N.isinf(val)] = N.inf
+
+            # Below (linear extrapolation)
+            lev0, lev1 = self.levels[:2]
+            p0, p1 = self.positions[:2]
+            if self.log:
+                lev0 = ma.log(lev0)
+                lev1 = ma.log(lev1)
+            result[:] = ma.where(val<lev0, p0 + (p0-p1)*(val-lev0)/(lev0-lev1), result)
+            result[N.isneginf(val)] = -N.inf
+
         if is_scalar:
             result = result[0]
         return result
@@ -2708,12 +2732,13 @@ class StepsNorm(Normalize):
 #            result = pos*0.
 #            result[pos<0] = self.vmin
 #            result[pos>1] = self.vmax
+
+            # Inside
             nlev = len(self.levels)
             for ilev in xrange(len(self.levels)-1):
                 lev0, lev1 = self.levels[ilev:ilev+2]
                 p0, p1 = self.positions[ilev:ilev+2]
                 if self.log:
-                    val = ma.log10(val)
                     lev0 = ma.log10(lev0)
                     lev1 = ma.log10(lev1)
                 mincheck = (pos>=p0) if ilev else True
@@ -2721,6 +2746,25 @@ class StepsNorm(Normalize):
                 result[:] = N.where(mincheck&maxcheck, lev0+(pos-p0)*(lev1-lev0)/(p1-p0), result)
                 if self.log:
                     result = N.power(result)
+
+            # Above (linear extrapolation)
+            lev0, lev1 = self.levels[-2:]
+            p0, p1 = self.positions[-2:]
+            if self.log:
+                lev0 = ma.log(lev0)
+                lev1 = ma.log(lev1)
+            result[:] = ma.where(pos>=p1, lev1 + (lev1-lev0)*(pos-p1)/(p1-p0), result)
+            result[N.isinf(pos)] = N.inf
+
+            # Below (linear extrapolation)
+            lev0, lev1 = self.levels[:2]
+            p0, p1 = self.positions[:2]
+            if self.log:
+                lev0 = ma.log(lev0)
+                lev1 = ma.log(lev1)
+            result[:] = ma.where(pos<p0, lev0 + (lev0-lev1)*(pos-p0)/(p0-p1), result)
+            result[N.isneginf(pos)] = -N.inf
+
 
         if is_scalar:
             result = result[0]
@@ -2865,6 +2909,44 @@ def anamorph_cmap(cmap, transform, name=None):
     P.register_cmap(name, cmapo)
 
     return cmapo
+
+def discretize_cmap(cmap, bounds, name=None, **kwargs):
+    """Make discret an existing colormap
+
+    :Examples:
+
+        >>> discretize_cmap('jet', [.25, .5, .9]) # two not evenly spaced colors
+        >>> discretize_cmap('jet', 10) # ten evenly colors
+
+    :Params:
+
+        - **cmap**: Colormap.
+        - **bounds**: An array of limits that will normalized.
+          If a scalar, it is converted into an array of 'scalar' values ranging
+          from 0 to 1.
+        - **name**, optional: Name of the colormap.
+        - Other params are passed to :func:`cmap_custom`.
+    """
+    from vcmq import P, cmap_custom, N, plot_cmap
+    old_cmap = P.get_cmap(cmap)
+
+    if N.isscalar(bounds):
+        bounds = N.linspace(0, 1, bounds)
+    else:
+        bounds = N.asarray(bounds)
+        bounds = (bounds-bounds[0])/(bounds[-1]-bounds[0])
+
+    centers = 0.5*(bounds[:-1]+bounds[1:])
+    colors = [old_cmap(c) for c in centers]
+
+    data = []
+    for ic, color in enumerate(colors):
+        data.extend([(color, bounds[ic]), (color, bounds[ic+1])])
+
+    if name is None:
+        name = old_cmap.name+'_discrete'
+    new_cmap = cmap_custom(data, name=name, **kwargs)
+    return new_cmap
 
 
 # Register colormaps
