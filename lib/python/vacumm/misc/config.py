@@ -110,19 +110,28 @@ def _valwraplist_(validator):
         if str(value) == 'None': return None
         default = args[0] if len(args) else kwargs.get('default', ())
         if value == '': value = default
+
         # Handle single value
-        #if not isinstance(value, (list, tuple)): value = (value,)
+        if not isinstance(value, (list, tuple)):
+            value = (value,)
+
         # Do list checks
         n = kwargs.pop('n', None)
-        if n is not None and len(value) != int(n): raise VdtSizeError('Incorrect size: %s, %s values expected'%(len(value), n))
+        if n is not None and len(value) != int(n):
+            raise VdtSizeError('Incorrect size: %s, %s values expected'%(len(value), n))
         nmin = kwargs.pop('nmin', None)
-        if nmin is not None and len(value) < int(nmin): raise VdtSizeError('Incorrect size: %s, at least %s values expected'%(len(value), n))
+        if nmin is not None and len(value) < int(nmin):
+            raise VdtSizeError('Incorrect size: %s, at least %s values expected'%(len(value), nmin))
         nmax = kwargs.pop('nmax', None)
-        if nmax is not None and len(value) > int(nmax): raise VdtSizeError('Incorrect size: %s, at most %s values expected'%(len(value), nmax))
+        if nmax is not None and len(value) > int(nmax):
+            raise VdtSizeError('Incorrect size: %s, at most %s values expected'%(len(value), nmax))
         odd = validate.is_boolean(kwargs.pop('odd', False))
-        if odd and not len(value) % 2: raise VdtSizeError('Incorrect size: %s, odd number of values expected'%(len(value)))
+        if odd and not len(value) % 2:
+            raise VdtSizeError('Incorrect size: %s, odd number of values expected'%(len(value)))
         even = validate.is_boolean(kwargs.pop('even', False))
-        if even and len(value) % 2: raise VdtSizeError('Incorrect size: %s, even number of values expected'%(len(value)))
+        if even and len(value) % 2:
+            raise VdtSizeError('Incorrect size: %s, even number of values expected'%(len(value)))
+
         # TODO?: use numpy to also check min and max ? (applicable on number only...)
         shape = kwargs.pop('shape', None)
         if shape is not None:
@@ -143,33 +152,6 @@ def _valwraplist_(validator):
     list_validator_wrapper.__name__ += '-'+validator.__name__
     return list_validator_wrapper
 
-def _validator_minmax_(value, min=None, max=None, default=(0, 100), type='float'):
-    """Validator of a min,max pair"""
-    if str(value)=='None': return None
-    if isinstance(value, list):
-        value = tuple(value)
-    elif isinstance(value, (str, unicode)):
-        tmp=eval(value)
-        try:
-            value = eval(value)
-        except:
-            raise VdtTypeError(value)
-    if not len(value)==2: raise VdtTypeError(value)
-    out = ()
-    for val in value:
-        if isinstance(val, (str, unicode)):
-            try:
-                val = float(val)
-            except:
-                raise VdtTypeError(value)
-        if min is not None and val<float(min): val = float(min)
-        if max is not None and val>float(max): val = float(max)
-        if type=='int':
-            val = int(val)
-        out += val,
-    if out[0]>out[1]: return out[::-1]
-    return out
-
 def _validator_bbox_(value, default=None):
     '''Parse bbox coordinates with value format: x1,y1,x2,y2'''
     if str(value) == 'None': return None
@@ -180,27 +162,63 @@ def _validator_bbox_(value, default=None):
     if len(c) != 4: raise VdtTypeError(value)
     return map(float, c)
 
-def _validator_figsize_(value, default=(6, 6)):
-    """Validator of a figure size (xsize,ysize)"""
+
+def _validator_numerics_(value, default=None, min=None, max=None, type='float', n=None):
+    """Validator of a tuple of numeric values"""
+    if str(value) == 'None': return None
     if isinstance(value, list):
         value = tuple(value)
-    elif isinstance(value, (str, unicode)):
+    elif isinstance(value, basestring):
         try:
             value = eval(value)
         except:
             raise VdtTypeError(value)
-    if not len(value)==2: raise VdtTypeError(value)
+    if not isinstance(value, tuple):
+        try:
+            value = tuple(value)
+        except:
+            value = value,
+    if n is not None:
+        if isinstance(n, basestring):
+            n = int(n)
+        if len(value)!=n:
+            raise VdtTypeError(value)
     out = ()
+    type = eval(type)
+    if min is not None and isinstance(min, basestring):
+        min = type(min)
+    if max is not None and isinstance(max, basestring):
+        max = type(max)
     for val in value:
-        if isinstance(val, (str, unicode)):
+        if isinstance(val, basestring):
             try:
-                val = float(val)
+                val = type(val)
             except:
+                print 'eval type!!'
                 raise VdtTypeError(value)
-        val = max(0, val)
-        val = min(20, val)
+        if min is not None and val<min:
+            val = type(min)
+        if max is not None and val>max:
+            val = type(max)
         out += val,
     return out
+
+def _validator_minmax_(value, min=None, max=None, default=(0, 100), type='float'):
+    """Validator of a min,max pair"""
+    value = _validator_numerics_(value, min=min, max=max, default=default,
+        type=type, n=2)
+    if value is not None:
+        out = list(value)
+        out.sort()
+        value = tuple(value)
+    return value
+
+def _validator_figsize_(value, default=(6, 6), min=0, max=20):
+    """Validator of a figure size (xsize,ysize)"""
+    return _validator_numerics_(value, default=default, min=min, max=max,
+        type='float', n=2)
+
+
 
 def _validator_interval_(value, default=None):
     """Validator of an interval of coordinates (min, max [,bounds])"""
@@ -295,6 +313,7 @@ _validator_specs_ = {
         # single value
         'date':_validator_cdtime_,
         'minmax':_validator_minmax_,
+        'numerics':_validator_numerics_,
         'figsize':_validator_figsize_,
         'workdir':_validator_workdir_,
         'bbox':_validator_bbox_,
@@ -1442,13 +1461,17 @@ def _shelp_(sec, key, format='%(shelp)s [default: %(default)r]', mode='auto',
     return format%locals()
 
 def _sdefault_(sec, key):
-    """Get default string"""
+    """Get default string or None"""
     default = sec.get(key, None)
     if isinstance(default, (list,tuple)):
         default = ','.join(map(str, default))
     else:
         default = str(default).strip('()')
-    return default.replace('%', '%%')
+    default = default.replace('%', '%%')
+    if default=='None':
+        default = None
+    return default
+
 
 def _parent_list_(sec, names=True):
     parents = []
