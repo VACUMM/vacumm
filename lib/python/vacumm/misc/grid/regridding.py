@@ -2157,14 +2157,14 @@ def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
             xxo, yyo = N.meshgrid(xo[:], yo[:])
 
             # Interpolation
-            varo[:] = _mbilin2d_(xi[:], yi[:], vari.filled(1.e20), xxo.flat, yyo.flat, geo,
-                1.e20, smoothcoast).reshape(varo.shape)
+            varo[:] = _mbilin2d_(vari.filled(1.e20),xi[:], yi[:], xxo.flat, yyo.flat, 
+                1.e20, smoothcoast,len(xi),len(yi),N.size(xxo),geo).reshape(varo.shape)
 
             # Masking
             if vari.mask is not MV.nomask:
                 fmaski = vari.mask.astype('f')
-                fmasko = _mbilin2d_(xi[:], yi[:], fmaski, xxo.flat, yyo.flat, geo,
-                    1.e20, False).reshape(varo.shape)
+                fmasko = _mbilin2d_(fmaski,xi[:], yi[:], xxo.flat, yyo.flat, 
+                    1.e20, False, len(xi),len(yi),N.size(xxo),geo).reshape(varo.shape)
                 varo[:] = MV.masked_where(N.greater(fmasko, .5), varo, copy=0)
             varo[:] = MV.masked_values(varo, 1.e20, copy=0)
 
@@ -2173,6 +2173,7 @@ def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
                 for i in -2, -1:
 #                   varo.setAxis(i, refine(vari.getAxis(i), factor))
                     varo.setAxis(i, (yo, xo)[i])
+                    varo.setGrid(create_grid(xo,yo,fmasko))
 
     return varo
 _cellave_methods = ['conservative', 'remap', 'cellave', 'conserv']
