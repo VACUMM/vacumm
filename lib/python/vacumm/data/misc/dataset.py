@@ -2044,7 +2044,8 @@ class OceanDataset(OceanSurfaceDataset):
             dz = self._get_dz_(loc, *args, **kwargs)
             if dz is not None:
                 return dz
-        if warn: self.warning("Can't get dz at location "+at)
+            else:
+               if warn: self.warning("Can't get dz at location "+loc)
     get_dz = getvar_fmtdoc(get_dz, mode=_mode_doc)
 
     def get_dz_t(self, *args, **kwargs):
@@ -2112,6 +2113,7 @@ class OceanDataset(OceanSurfaceDataset):
         order=None, squeeze=None, asvar=None, torect=True, warn=True, mode=None,
         format=True, **kwargs):
 
+        depth=None
         # Where?
         at_p = _at_(at, squeezet=True, prefix=True)
         atz = _at_(at, prefix=False, focus='ver')
@@ -2194,14 +2196,14 @@ class OceanDataset(OceanSurfaceDataset):
 
             if atz=='t': # at T-location
                 bathy = self.get_bathy(**kwvar)
-                dzw = self.get_dz_w(mode='var', **kwvarnoat)
+                dzw = self.get_dz_w(mode=None, **kwvarnoat)
                 if bathy is not None and dzw is not None:
                     depth = dz2depth(dzw, bathy, refloc="bottom")
 
             elif atz=='w': # at W-location
 
                 ssh = self.get_ssh(**kwvar)
-                dzt = self.get_dz_t(mode='var', **kwvarnoat)
+                dzt = self.get_dz_t(mode=None, **kwvarnoat)
                 if ssh is not None and dzt is not None:
                     depth = dz2depth(dzt, ssh, refloc="top")
 
@@ -2239,7 +2241,8 @@ class OceanDataset(OceanSurfaceDataset):
             depth = self._get_depth_(loc, *args, **kwargs)
             if depth is not None:
                 return depth
-        if warn: self.warning("Can't get depth at location "+at)
+            else:
+                if warn: self.warning("Can't get depth at location "+loc)
         return self._get_depth_('t', *args, **kwargs)
     getvar_fmtdoc(get_depth, mode=_mode_doc)
 
