@@ -15,28 +15,22 @@ Tarballs are available here : https://forge.ifremer.fr/frs/?group_id=93
 .. highlight:: bash
 
 To uncompress a tarball, just use for instance::
-    
+
     $ tar xzf vacumm-2.0-svn1231.tar.gz
 
 
-Subversion
+Repository
 ----------
 
-The development version of the library is available on its subversion repository.
+The development version of the library is available on its
+`GIT <https://git-scm.com>`_ repository::
 
-For normal or anonymous users::
-    
-    $ svn checkout --username anonsvn https://forge.ifremer.fr/svn/vacumm/trunk vacumm
-    
-with password: ``anonsvn``.
- 
- 
-For developpers::
+    $ git clone https://github.com/orgs/ifremer/teams/vacumm-dev/vacumm
 
-    $ svn checkout --username username https://forge.ifremer.fr/svn/vacumm/trunk vacumm
+.. note:: Subversion users can use ``svn export`` instead of ``git clone``.
 
-To update your version, go at the root and type::
 
-    $ svn update
+To get a tag after cloning, use::
 
-To download a tag, use 
+    $ git checkout TAGNAME
+

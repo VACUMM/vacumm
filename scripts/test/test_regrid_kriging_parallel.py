@@ -8,7 +8,8 @@ nproc = 2 # max number of procs
 
 # Imports
 from vcmq import P, savefigs, code_file_name, N
-from vacumm.misc.grid.kriging import gridded_gauss3, random_gauss3, random_points, OrdinaryKriger
+from vacumm.misc.grid.kriging import (gridded_gauss3, random_gauss3,
+    random_points, OrdinaryCloudKriger)
 from time import time
 
 # Random and gridded input fields
@@ -17,7 +18,7 @@ xi, yi, zi = random_gauss3(np=npi)
 zi = N.vstack((zi, zi)) # simulate several time steps for multifit
 
 # Init kriger
-kriger = OrdinaryKriger(xi, yi, zi, npmax=npmax, nproc=nproc)
+kriger = OrdinaryCloudKriger(xi, yi, zi, npmax=npmax, nproc=nproc)
 
 # Output points
 xo, yo = random_points(np=npo)

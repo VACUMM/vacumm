@@ -570,21 +570,24 @@ def rm_html_tags(str):
 
 
 
-_geolab_params = """- **decimal**, optional: Use decimal representation [default: True]
-        - **fmt**, optional: Format for decimal representation [default: '%4.1f']
-        - **no_seconds**, optional: Do not add seconds to degrees representation [default: False]
-        - **tex**, optional: Use Tex degree symbol [default: False]
-        - **no_symbol**, optional: Don't use degree symbol [default: False]
-        - **no_zeros**, optional: Don't insert zeros when integer < 10 [default: False]
-        - **auto**, optional: If True, find the ticks according to the range of values [default: False]
-        - **auto_minutes**, optional: Automatically suppress degrees if value is not exactly a degree (just display minutes and seconds) else display degree [default: False]
-    """
+_geolab_params = """- **decimal**, optional: Use decimal representation
+        - **fmt**, optional: Format for decimal representation
+        - **no_seconds**, optional: Do not add seconds to degrees representation
+        - **tex**, optional: Use Tex degree symbol
+          (depends on ``rcParams['text.usetex']`` by default)
+        - **no_symbol**, optional: Don't use degree symbol
+        - **no_zeros**, optional: Don't insert zeros when integer < 10
+        - **auto**, optional: If True, find the ticks according to the range of values
+        - **auto_minutes**, optional: Automatically suppress degrees if value is not exactly a degree (just display minutes and seconds) else display degree
+        - **bfdeg**, optional: Use bold face for degrees when alone if auto_minutes and
+          ``rcParams['text.usetex']`` are True.
+"""
 
 def deg2str(*args,**kwargs):
     return _geolab(*args,**kwargs)
 
-def _geolab(vals,fmt='%.5g',longitude=True,decimal=True,tex=False,auto_minutes=False,
-            no_seconds=False,no_symbol=False,no_zeros=False,auto=False, **kwargs):
+def _geolab(vals, fmt='%.5g', longitude=True, decimal=True, tex=None, auto_minutes=False,
+            no_seconds=False, no_symbol=False, no_zeros=False, auto=False, bfdeg=False, **kwargs):
     """Return a nice label for longitude or latitude
 
     Inspired from Basemap toolkit of Matplotlib
@@ -610,7 +613,7 @@ def _geolab(vals,fmt='%.5g',longitude=True,decimal=True,tex=False,auto_minutes=F
     if usetex:
         sdeg = r"$^{\circ}$"
         smin = r"$^{'}$"
-        ssec = r"$^{''}$"
+        ssec = r"$^{''}$ "
     else:
         sdeg = u'\N{DEGREE SIGN}'
         smin = u"'"
@@ -624,7 +627,7 @@ def _geolab(vals,fmt='%.5g',longitude=True,decimal=True,tex=False,auto_minutes=F
     gfmt = '%.2g'
     if decimal: auto_minutes = False
 
-    # Loops on values
+    # Values
     if not iterable(vals):
         it = False
         vals = [vals,]
@@ -632,6 +635,15 @@ def _geolab(vals,fmt='%.5g',longitude=True,decimal=True,tex=False,auto_minutes=F
         it = True
     if auto:
         vals = minmax(vals)
+    in_one_degree = int(min(vals))!=int(max(vals))
+    if auto_minutes=='auto' or auto_minutes is None:
+        auto_minutes = not in_one_degree
+
+    # Bold degrees
+    if rcParams['text.usetex'] and (bfdeg=='auto' or bfdeg is None): # not bold if degrees only
+        bfdeg = (N.array(vals)%1).ptp()!=0
+
+    # Loop
     labs = []
     for val in vals:
 
@@ -655,8 +667,10 @@ def _geolab(vals,fmt='%.5g',longitude=True,decimal=True,tex=False,auto_minutes=F
             nodeg = auto_minutes and abs(val%1) > 1.e-4
             if not decimal: # Minutes'(seconds'')
                 fmt = ifmt
-                if usetex and not ifmt.startswith('$'):
-                    ifmt = r'$%s$'%ifmt
+                if bfdeg:
+                    fmt = r'\textbf{%s}'%fmt
+#                if usetex and not ifmt.startswith('$'):
+#                    ifmt = r'$%s$'%ifmt
                 dd,mm,ss = deg_from_dec(val)
                 if no_seconds: # Round seconds to minute
                     mm = int(round(mm+ss/60.))
@@ -687,10 +701,6 @@ def _geolab(vals,fmt='%.5g',longitude=True,decimal=True,tex=False,auto_minutes=F
             else:
                 labstr = labstr % val
             if not nodeg: labstr += sig
-#           if usetex:
-#               labstr = r"%s${^'}" % val
-#           else:
-#               labstr = u'%s'%labstr
             labs.append(labstr)
     if it:
         return labs

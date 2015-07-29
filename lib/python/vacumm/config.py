@@ -34,7 +34,7 @@
 #
 
 
-import os
+import os, sys
 import re
 import glob
 import subprocess,  shlex
@@ -910,7 +910,6 @@ def print_config(section='__all__', system=True, direc=True, config=True, packag
     if extended: base = config = packages = True
     if user:
         if headers: _print_header_('System', nc)
-        import sys
         print 'Python executable: '+sys.executable
         print 'Python version: '+' '.join(sys.version.splitlines())
         print 'Platform: '+sys.platform
@@ -1019,7 +1018,7 @@ def set_config_value(section, option, value=None, quiet=False, cfgfile=None):
     return cfgfile
 
 def check_data_file(section, option, parent_section=None, parent_option=None,
-    quiet=False, suffix=None, avail=False, check_license=True):
+    quiet=None, suffix=None, avail=False, check_license=True):
     """Check the existence of a file whose path is stored in a configuration file
 
     Two cases are treated:
@@ -1087,6 +1086,8 @@ def check_data_file(section, option, parent_section=None, parent_option=None,
         >>> check_data_file('etopo2', 'file', parent_section='vacumm.bathy.bathy',
         ... parent_option='cfgfile_gridded')
     """
+    if quiet is None:
+        quiet = not sys.stdin.isatty()
     # Loop on suffixes
     if isinstance(suffix, (list, tuple)):
         paths = []

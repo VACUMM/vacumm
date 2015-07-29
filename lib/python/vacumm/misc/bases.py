@@ -487,7 +487,7 @@ class Object(object):
             cfgfile = '%s.ini'%(os.path.splitext(os.path.realpath(inspect.getfile(cls)))[0])
         except TypeError: # occure if creating a subclass in interactive python shell
             cfgfile = None
-        return
+        return cfgfile
 
     @classmethod
     def get_parent_config_spec(cls):
