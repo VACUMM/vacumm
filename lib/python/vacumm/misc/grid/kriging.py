@@ -682,9 +682,13 @@ class OrdinaryCloudKriger(object):
             z = N.ascontiguousarray(dgemv(N.asfortranarray(W[:-1].T, 'd'),
                 N.asfortranarray(self.zc[ic], 'd')))
 
+            # Simplest case
+            if not geterr and self.ncloud<2:
+                zo[:] = z.T
+                continue
+
             # Get error
-            if geterr or self.ncloud>1:
-                e = (W[:-1]*B[:-1]).sum(axis=0)
+            e = (W[:-1]*B[:-1]).sum(axis=0)
             del W, B
 
             # Weigthed contribution based on errors
@@ -702,7 +706,6 @@ class OrdinaryCloudKriger(object):
         # Normalization
         if self.ncloud>1:
             zo[:] /= wo
-        del wo
 
         gc.collect()
         if geterr: return zo, eo
