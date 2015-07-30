@@ -655,7 +655,7 @@ class OrdinaryCloudKriger(object):
         zo = N.zeros(so, 'd')
         if geterr:
             eo = N.zeros(npo, 'd')
-        if self.ncloud>1:
+        if self.ncloud>1 or geterr:
             wo = N.zeros(npo, 'd')
 
         # Loop on clouds
