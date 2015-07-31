@@ -47,6 +47,7 @@ from itertools import cycle
 from types import IntType, FloatType, LongType, ComplexType
 
 import numpy as N, MV2, cdms2
+#from matplotlib import rcParams
 from MV2 import nomask
 from cdms2 import createAxis, isVariable
 from genutil import grower
@@ -604,7 +605,6 @@ def _geolab(vals, fmt='%.5g', longitude=True, decimal=True, tex=None, auto_minut
 
     # Use tex strings
     if tex is None:
-        from pylab import rcParams
         usetex = rcParams['text.usetex']
     elif tex:
         usetex = True
@@ -640,7 +640,7 @@ def _geolab(vals, fmt='%.5g', longitude=True, decimal=True, tex=None, auto_minut
         auto_minutes = not in_one_degree
 
     # Bold degrees
-    if rcParams['text.usetex'] and (bfdeg=='auto' or bfdeg is None): # not bold if degrees only
+    if usetex and (bfdeg=='auto' or bfdeg is None): # not bold if degrees only
         bfdeg = (N.array(vals)%1).ptp()!=0
 
     # Loop

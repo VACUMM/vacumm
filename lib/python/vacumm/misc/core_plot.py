@@ -3666,6 +3666,8 @@ class ScalarMappable:
         if isinstance(cax, list):
             cax = self.fig.add_axes(cax)
         # - plot it
+#        print kwargs
+#        xxx
         cb = self.fig.colorbar(sm, ax=self.axes, cax=cax, **kwargs)
         # - fit to axes limits
         if fit:
@@ -5024,7 +5026,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
 
         # Linewidth
         streamplot_linewidth = kwsp.pop('lw', streamplot_linewidth)
-        streamplot_lwmodmax = kwargs.pop('streamplot_lwmod', streamplot_lwmodmax)
+        streamplot_lwmodmax = kwsp.pop('lwmod', streamplot_lwmodmax)
         if streamplot_linewidth in [None, 'default']:
             streamplot_linewidth = None
         elif streamplot_linewidth=='modulus':
@@ -5679,7 +5681,7 @@ class Map(Plot2D):
     def post_plot(self, drawrivers=False, fillcontinents=True, meridional_labels=True, zonal_labels=True,
         drawcoastlines=True, drawmapboundary=True, meridians=None, parallels=None,
         land_color=None, ticklabel_size=None, refine=0, no_seconds=False, fullscreen=False,
-        minutes=True, mapscale=False, compass=False, mscp=False,
+        minutes=True, mapscale=False, compass=False, mscp=False, bfdeg=None,
          **kwargs):
         """Post-processing of the plot
 
@@ -5697,7 +5699,8 @@ class Map(Plot2D):
 
         :Params:
 
-            - **drawrivers**: Draw rivers on the map using method :meth:`~mpl_toolkits.basemap.Basemap.drawrivers`.
+            - **drawrivers**: Draw rivers on the map using method
+              :meth:`~mpl_toolkits.basemap.Basemap.drawrivers`.
             - **drawrivers_<param>**: Pass ``<param>`` to the method.
             - **fillcontinents**: Fill continents with color ``land_color``
               using method :meth:`~mpl_toolkits.basemap.Basemap.fillcontinents`.
@@ -5706,15 +5709,20 @@ class Map(Plot2D):
             - **drawparallels**: Display or hide parallels and associated labels using
               method :meth:`~mpl_toolkits.basemap.Basemap.drawparallels`.
             - **drawparallels_<param>**: Pass ``<param>`` to the method.
+            - **drawparallels_fmt**: Default to :class:`MinuteLabel`.
+            - **drawparallels_gs_<param>**: Passed to :func:`~vacumm.misc.misc.geo_scale`.
             - **parallels**: Parallels to plot.
             - **drawmeridians**: Display or hide medidians and associated labels using
               method :meth:`~mpl_toolkits.basemap.Basemap.drawmeridians`.
             - **drawmeridians_<param>**: Pass ``<param>`` to the method.
+            - **drawmeridians_fmt**: Default to :class:`MinuteLabel`.
+            - **drawmeridians_gs_<param>**: Passed to :func:`~vacumm.misc.misc.geo_scale`.
             - **meridians**: Meridians to plot.
             - **meridional/zonal_labels**: Display or hide meridional/zonal labels.
               ``meridional/zonal_labels=False`` is equivalent to ``y/xhide=True``.
-            - **no_seconds**: Do not display seconds in labels.
-            - **minutes**: Do not use decimal degrees for labels.
+            - **no_seconds**: Do not display seconds in labels (if applicable).
+            - **minutes**: Do not use decimal degrees for labels (if applicable).
+            - **bfdeg**: Degrees are in bold (latex text only, if applicable).
             - **x/y/ticklabels_<param>**: Pass ``<param>`` to
               :meth:`~mpl_toolkits.basemap.Basemap.drawmeridians` and
               :meth:`~mpl_toolkits.basemap.Basemap.drawparallels` to change text properties.
@@ -5821,13 +5829,16 @@ class Map(Plot2D):
 #                kwp.update(kwpm_def)
                 kwp.update(kwfilter(kwargs, 'yticklabels_'))
                 kwp = kwfilter(kwargs,'drawparallels',defaults=kwp)
-                if minutes: kwp.setdefault('fmt',MinuteLabel(self.map, zonal=False, tex=False, no_seconds=no_seconds))
                 kwgs = kwfilter(kwp,'gs',
-                    defaults={'vmin':self.map.llcrnrlat, 'vmax':self.map.urcrnrlat, 'minutes':minutes})
+                    defaults={'vmin':self.map.llcrnrlat, 'vmax':self.map.urcrnrlat,
+                        'minutes':minutes})
                 if parallels is None:
                     parallels = geo_scale(**kwgs)
-                self.parallels = parallels
+                if minutes: kwp.setdefault('fmt',
+                    MinuteLabel(parallels, zonal=False, tex=None,
+                        no_seconds=no_seconds, bfdeg=bfdeg))
                 self.set_axobj('drawparallels', self.map.drawparallels(parallels,**kwp))
+                self.parallels = parallels
             else:
                 self.parallels = None
             # - meridians
@@ -5838,14 +5849,17 @@ class Map(Plot2D):
 #                kwm.update(kwpm_def)
                 kwm.update(kwfilter(kwargs, 'xticklabels_'))
                 kwm = kwfilter(kwargs,'drawmeridians',defaults=kwm)
-                if minutes:
-                    kwm.setdefault('fmt',MinuteLabel(self.map, zonal=True,  tex=False, no_seconds=no_seconds))
                 kwgs = kwfilter(kwm,'gs',
-                    defaults={'vmin':self.map.llcrnrlon, 'vmax':self.map.urcrnrlon, 'minutes':minutes})
+                    defaults={'vmin':self.map.llcrnrlon, 'vmax':self.map.urcrnrlon,
+                        'minutes':minutes})
                 if meridians is None:
                     meridians = geo_scale(**kwgs)
                     if (meridians[-1]-meridians[0])>=360.: # to prevent overlaping
                         meridians = meridians[meridians<meridians[0]+360.]
+                if minutes:
+                    kwm.setdefault('fmt',
+                        MinuteLabel(meridians, zonal=True,  tex=None,
+                            no_seconds=no_seconds, bfdeg=bfdeg))
                 lonlabs = self.set_axobj('drawmeridians', self.map.drawmeridians(meridians,**kwm))
                 self.meridians = meridians
             else:
@@ -6356,16 +6370,28 @@ def add_glow(objs, width=3, zorder=None, color='w', ax=None, alpha=1.):
 
 class MinuteLabel:
     def __init__(self, m, zonal=True, **kwargs):
+        bfdeg = kwargs.pop('bfdeg', None)
+        if not isinstance(m, Basemap) and (bfdeg is None or bfdeg=='auto'):
+            bfdeg = (N.asarray(m)%1).ptp()!=0
         if zonal:
-            self.auto =  int(m.urcrnrlon) != int(m.llcrnrlon)
+            if isinstance(m, Basemap):
+                auto_minutes =  int(m.urcrnrlon) != int(m.llcrnrlon)
+            else:
+                auto_minutes =  int(min(m)) != int(max(m))
             self.func = lonlab
         else:
-            self.auto =  int(m.urcrnrlat) != int(m.llcrnrlat)
+            if isinstance(m, Basemap):
+                auto_minutes =  int(m.urcrnrlat) != int(m.llcrnrlat)
+            else:
+                auto_minutes =  int(min(m)) != int(max(m))
             self.func = latlab
+        kwargs['bfdeg'] = bfdeg
+        kwargs['decimal'] = False
+        kwargs['no_zeros'] = True
+        kwargs['auto_minutes'] = auto_minutes
         self.kwargs = kwargs
     def __call__(self, deg):
-        return self.func(deg,decimal=False,no_zeros=True,
-            auto_minutes=self.auto, **self.kwargs)
+        return self.func(deg, **self.kwargs)
 
 def twinxy(xy, ax=None, fig=None):
     """Create an :func:`~matplotlib.axes.Axes` instance based on existing one(s)*

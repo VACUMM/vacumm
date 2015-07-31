@@ -1662,7 +1662,7 @@ def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=
         - *loc*: Position of the image (use words in 'lower', 'upper', 'left',
           'right', 'center') .
         - *scale*: Scale the image. By default, it is auto scale so that the logo is
-          never greater than 1/4 of the width ir the height of the figure.
+          never greater than 1/4 of the figure width or height.
         - *alpha*: Alpha transparency.
         - *tool*: None, 'mpl' (png only) or 'pil'.
     """
