@@ -6404,8 +6404,6 @@ class MinuteLabel:
         kwargs['auto_minutes'] = auto_minutes
         self.kwargs = kwargs
     def __call__(self, deg):
-        print self.func, self.kwargs['bfdeg']
-        print self.func(deg, **self.kwargs)
         return self.func(deg, **self.kwargs)
 
 def twinxy(xy, ax=None, fig=None):
