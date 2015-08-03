@@ -5860,11 +5860,22 @@ class Map(Plot2D):
                     kwm.setdefault('fmt',
                         MinuteLabel(meridians, zonal=True,  tex=None,
                             no_seconds=no_seconds, bfdeg=bfdeg))
-                lonlabs = self.set_axobj('drawmeridians', self.map.drawmeridians(meridians,**kwm))
                 self.meridians = meridians
             else:
                 self.meridians = None
 
+            # - bfdeg (bold face degrees) homogeneisation
+            if (drawparallels and isinstance(kwp['fmt'], MinuteLabel) and
+                    drawmeridians and isinstance(kwm['fmt'], MinuteLabel) and
+                    bfdeg is None and
+                    kwp['fmt'].kwargs['bfdeg'] or kwm['fmt'].kwargs['bfdeg']):
+                kwp['fmt'].kwargs['bfdeg'] = kwm['fmt'].kwargs['bfdeg'] = True
+            # - draw
+            if drawparallels:
+                self.set_axobj('drawparallels', self.map.drawparallels(parallels,**kwp))
+            if drawmeridians:
+                # Draw
+                lonlabs = self.set_axobj('drawmeridians', self.map.drawmeridians(meridians,**kwm))
                 # Remove duplicated labels
                 llfound = []
                 for ll in lonlabs.keys()[:]:
@@ -5873,6 +5884,8 @@ class Map(Plot2D):
                     for lab in lonlabs[ll][1][1:]:
                         lab.set_visible(False)
                     llfound.append(llm)
+
+
 
         # Map scale and compass
         if mscp:
@@ -6391,6 +6404,8 @@ class MinuteLabel:
         kwargs['auto_minutes'] = auto_minutes
         self.kwargs = kwargs
     def __call__(self, deg):
+        print self.func, self.kwargs['bfdeg']
+        print self.func(deg, **self.kwargs)
         return self.func(deg, **self.kwargs)
 
 def twinxy(xy, ax=None, fig=None):
