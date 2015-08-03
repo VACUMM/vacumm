@@ -5868,7 +5868,7 @@ class Map(Plot2D):
             if (drawparallels and isinstance(kwp['fmt'], MinuteLabel) and
                     drawmeridians and isinstance(kwm['fmt'], MinuteLabel) and
                     bfdeg is None and
-                    kwp['fmt'].kwargs['bfdeg'] or kwm['fmt'].kwargs['bfdeg']):
+                    (kwp['fmt'].kwargs['bfdeg'] or kwm['fmt'].kwargs['bfdeg'])):
                 kwp['fmt'].kwargs['bfdeg'] = kwm['fmt'].kwargs['bfdeg'] = True
             # - draw
             if drawparallels:
