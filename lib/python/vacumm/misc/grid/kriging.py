@@ -294,7 +294,8 @@ def variogram_fit(x, y, z, mtype, getp=False, geterr=False, **kwargs):
 
         - **x/y/z**: Position and data.
         - **mtype**: Variogram model type (see :func:`variogram_model_types`).
-        - **getp**, optional: Only return model parameters.
+        - **getp**, optional: Only return model parameters. Return them as
+          a `class:`dict` if equal to ``2``.
         - **variogram_<param>**, optional: ``param`` is passed to :func:`variogram`.
         - Extra keywords are those of :func:`variogram_model`.
           They can be used to fix some of the parameters.
@@ -316,7 +317,12 @@ def variogram_fit(x, y, z, mtype, getp=False, geterr=False, **kwargs):
 
     # Fitting
     p, e = curve_fit(vm, d, v, p0=p0)
-    res = p if getp else vm.get_variogram_model(p)
+    if int(getp)==2:
+        res = vm.get_all_kwargs(p)
+    elif getp:
+        res = p
+    else:
+        res = vm.get_variogram_model(p)
     if not geterr:
         return res
     return res,  (vm.get_variogram_model(p)(d)-v).std()
@@ -334,6 +340,8 @@ def variogram_multifit(xx, yy, zz, mtype=None, getp=False, **kwargs):
     if pp.shape[0]==0:
         raise KrigingError('All data are masked')
     mp = N.median(pp, axis=0)
+    if int(getp)==2:
+        return vm.get_all_kwargs(mp)
     if getp:
         return mp
     return vm.get_variogram_model(mp)
@@ -688,7 +696,8 @@ class OrdinaryCloudKriger(object):
                 continue
 
             # Get error
-            e = (W[:-1]*B[:-1]).sum(axis=0)
+#            e = (W[:-1]*B[:-1]).sum(axis=0)
+            e = (W*B).sum(axis=0)
             del W, B
 
             # Weigthed contribution based on errors

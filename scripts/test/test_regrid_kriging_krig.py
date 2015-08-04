@@ -13,7 +13,7 @@ xi, yi, zi = random_gauss3(np=npi)
 # Interpolate to random points
 xo, yo = random_points(np=npo)
 zo = krig(xi, yi, zi, xo, yo)
-    
+
 # Plot
 # - source data
 axis = [xg.min(), xg.max(), yg.min(), yg.max()]

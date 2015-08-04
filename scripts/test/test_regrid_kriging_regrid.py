@@ -4,9 +4,6 @@ nxi = 15
 nyi = 10
 r = 3
 
-npi = 500
-npo = 200
-
 from vcmq import P, savefigs, code_file_name, N, auto_scale, add_grid
 from vacumm.misc.grid.kriging import gridded_gauss3, random_gauss3, random_points, krig
 
