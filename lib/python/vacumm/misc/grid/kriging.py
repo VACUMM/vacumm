@@ -38,10 +38,11 @@ Kriging utilities inspired from the AMBHAS library (http://www.ambhas.com/).
 import gc
 import multiprocessing
 from multiprocessing import Pool,  cpu_count
+import warnings
 
 import numpy as N
 import pylab as P
-from scipy.optimize import curve_fit
+#from scipy.optimize import curve_fit
 def get_blas_func(name):
     try:
         import scipy.linalg.blas
@@ -95,19 +96,18 @@ def variogram_model_type(mtype=None):
     raise KrigingError(errmsg)
 
 
-def variogram_model(mtype, n, s, r=None, nrelmax=0.2):
+def variogram_model(mtype, n, s, r, nrelmax=0.2):
     """Get the variogram model function from its name"""
 
     mtype = variogram_model_type(mtype)
 
     n = max(n, 0)
+    n = min(n, nrelmax*s)
+    r = max(r, 0)
+    s = max(s, 0)
 
     if mtype == 'linear':
-        return lambda h: n + h * s # FIXME: h/r?
-
-    n = min(n, nrelmax*s)
-    if r is None:
-        raise KrigingError('Please specifiy the range parameter (r) for the variogram model')
+        return lambda h: n + (s-n) * ((h/r)*int(h<=r) + int(h>r))
 
     if mtype=='exponential':
         return lambda h: n + (s-n) * (1 - N.exp(-3*h/r))
@@ -126,8 +126,6 @@ class VariogramModel(object):
     param_names.remove('nrelmax')
     def __init__(self, mtype, **kwargs):
         self.mtype = variogram_model_type(mtype)
-        if mtype=='linear': # do not optimize r with linear model
-            kwargs['r'] = None
         self.fixed_params = dict([(p, v) for (p, v) in kwargs.items()
             if p in self.param_names])
 
@@ -150,11 +148,11 @@ class VariogramModel(object):
         return vargs
 
     def __call__(self, d, *pp):
-        """Call the variogram model"""
+        """Call the variogram model function"""
         return self.get_variogram_model(pp)(d)
 
     def get_variogram_model(self, pp):
-        """Get the variogram model using `pp` variable arguments"""
+        """Get the variogram model function using `pp` variable arguments"""
         kwargs = self.get_all_kwargs(pp)
         return variogram_model(self.mtype, **kwargs)
 
@@ -316,7 +314,14 @@ def variogram_fit(x, y, z, mtype, getp=False, geterr=False, **kwargs):
     p0 = vm.get_var_args(n=0., s=v[imax], r=d[imax])
 
     # Fitting
-    p, e = curve_fit(vm, d, v, p0=p0)
+#    p, e = curve_fit(vm, d, v, p0=p0) # old way: no constraint
+    from scipy.optimize import minimize
+    func = lambda pp: ((v-vm.get_variogram_model(pp)(d))**2).sum()
+    warnings.filterwarnings('ignore', 'divide by zero encountered in divide')
+    res = minimize(func, p0, bounds=((N.finfo('d').eps, None),)*len(p0))['x']
+    del warnings.filters[0]
+
+    # Output
     if int(getp)==2:
         res = vm.get_all_kwargs(p)
     elif getp:
