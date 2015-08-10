@@ -1692,7 +1692,7 @@ class _GridDataHelper_(object):
             zo[mask] = missing_value
         if mo3d is not None and mo is not None:
             zo[mo!=0.] = missing_value
-        missing = N.isclose(zo, missing_value)
+        missing = closeto(zo, missing_value)
         if missing.any() and self.outtype==-1:
             self.outtype = 1
         if self.outtype==-1:
@@ -2157,13 +2157,13 @@ def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
             xxo, yyo = N.meshgrid(xo[:], yo[:])
 
             # Interpolation
-            varo[:] = _mbilin2d_(vari.filled(1.e20),xi[:], yi[:], xxo.flat, yyo.flat, 
+            varo[:] = _mbilin2d_(vari.filled(1.e20),xi[:], yi[:], xxo.flat, yyo.flat,
                 1.e20, smoothcoast,len(xi),len(yi),N.size(xxo),geo).reshape(varo.shape)
 
             # Masking
             if vari.mask is not MV.nomask:
                 fmaski = vari.mask.astype('f')
-                fmasko = _mbilin2d_(fmaski,xi[:], yi[:], xxo.flat, yyo.flat, 
+                fmasko = _mbilin2d_(fmaski,xi[:], yi[:], xxo.flat, yyo.flat,
                     1.e20, False, len(xi),len(yi),N.size(xxo),geo).reshape(varo.shape)
                 varo[:] = MV.masked_where(N.greater(fmasko, .5), varo, copy=0)
             varo[:] = MV.masked_values(varo, 1.e20, copy=0)
