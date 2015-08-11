@@ -6734,7 +6734,7 @@ def hlitvs(color='.95', axis='x', units='ticks', axes=None, maxticks=10, **kwarg
             locator = getattr(matplotlib.dates, units.title()+'Locator')(**kwloc)
         locator.set_axis(axis)
         ticks = locator()
-    tmin, tmax = axis.get_data_interval()
+    tmin, tmax = axis.get_view_interval()
     if isinstance(ticks, N.ndarray):
         ticks = ticks.tolist()
     else:
