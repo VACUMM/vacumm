@@ -4,6 +4,8 @@ Release notes
 In development
 ==============
 
+- Added support for min+max+hist and restart to StatAccum.
+- Added support for exact and block kriging to OCK.
 - Added sill and range to linear variogram model in kriging.
 - Added constraints to variogram model fit.
 - Added color.discretize_cmap.
