@@ -42,6 +42,12 @@ import warnings
 
 import numpy as N
 import pylab as P
+
+if not hasattr(N, 'isclose'):
+    from vacumm.misc import closeto as isclose
+else:
+    isclose = N.isclose
+
 #from scipy.optimize import curve_fit
 def get_blas_func(name):
     try:
@@ -236,7 +242,8 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10,
     del z0, z1
 
     # Unique
-    iup = N.triu_indices(dd.shape[0])
+    ii = N.indices(dd.shape)
+    iup = ii[1]>ii[0]
     d = dd[iup]
     v = vv[iup]
     del dd, vv
@@ -259,12 +266,6 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10,
     np = d.shape[0]
     nbin = binned
     edges = N.linspace(0, np-1, nbin+1).astype('i').tolist()
-    # - no zero in second bin
-    if npts>edges[1]:
-        ii = ii[npts-edges[1]:] # skip first zeros
-        np = ii.shape[0]
-        edges = N.linspace(0, np-1, nbin+1).astype('i').tolist()
-        nbin0 = 1 # no need to detail zeros!
     # - more details in first bin
     if nbin0 is None: # do we need more details?
         NBIN0MAX = 10
@@ -281,7 +282,7 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10,
         vb[ib] = v[iib].mean()
     return db, vb
 
-def variogram_fit(x, y, z, mtype, getp=False, geterr=False, **kwargs):
+def variogram_fit(x, y, z, mtype, getall=False, getp=False, geterr=False, **kwargs):
     """Fit a variogram model to data and return the function
 
     :Example:
@@ -292,6 +293,15 @@ def variogram_fit(x, y, z, mtype, getp=False, geterr=False, **kwargs):
 
         - **x/y/z**: Position and data.
         - **mtype**: Variogram model type (see :func:`variogram_model_types`).
+        - **getall**: Get verything in a dictionary whose keys are
+
+            - ``"func"``: model function,
+            - ``"err"``: fitting error,
+            - ``"params"``: all parameters has a dictionary,
+            - ``"popt"``: parameters than where optimised,
+            - ``vm"``: :class:`VariogramModel` instance,
+            - ``"mtype"``: variogram model type.
+            -
         - **getp**, optional: Only return model parameters. Return them as
           a `class:`dict` if equal to ``2``.
         - **variogram_<param>**, optional: ``param`` is passed to :func:`variogram`.
@@ -318,10 +328,16 @@ def variogram_fit(x, y, z, mtype, getp=False, geterr=False, **kwargs):
     from scipy.optimize import minimize
     func = lambda pp: ((v-vm.get_variogram_model(pp)(d))**2).sum()
     warnings.filterwarnings('ignore', 'divide by zero encountered in divide')
-    res = minimize(func, p0, bounds=((N.finfo('d').eps, None),)*len(p0))['x']
+    p = minimize(func, p0, bounds=((N.finfo('d').eps, None),)*len(p0))['x']
     del warnings.filters[0]
 
     # Output
+    if getall:
+        return dict(
+            func=vm.get_variogram_model(p),
+            err=(vm.get_variogram_model(p)(d)-v).std(),
+            params = vm.get_all_kwargs(p),
+            popt = p)
     if int(getp)==2:
         res = vm.get_all_kwargs(p)
     elif getp:
@@ -332,7 +348,7 @@ def variogram_fit(x, y, z, mtype, getp=False, geterr=False, **kwargs):
         return res
     return res,  (vm.get_variogram_model(p)(d)-v).std()
 
-def variogram_multifit(xx, yy, zz, mtype=None, getp=False, **kwargs):
+def variogram_multifit(xx, yy, zz, mtype=None, getall=False, getp=False, **kwargs):
     """Same as :func:`variogram_fit` but with several samples"""
     vm = VariogramModel(mtype, **kwargs)
     pp = []
@@ -345,6 +361,12 @@ def variogram_multifit(xx, yy, zz, mtype=None, getp=False, **kwargs):
     if pp.shape[0]==0:
         raise KrigingError('All data are masked')
     mp = N.median(pp, axis=0)
+    if getall:
+        return dict(
+            func=vm.get_variogram_model(mp),
+            err=None,
+            params = vm.get_all_kwargs(mp),
+            popt = mp)
     if int(getp)==2:
         return vm.get_all_kwargs(mp)
     if getp:
@@ -447,6 +469,7 @@ class OrdinaryCloudKriger(object):
         - **nproc**, optional: Number of processes to use
           to invert matrices. Set it to a number <2 to switch off
           parallelisation.
+        - **exact**, optional: If True, variogram is exactly zero when distance is zero.
         - Extra keywords are  parameters to the :func:`variogram_model` that must not be
           optimized by :func:`variogram_model`. For instance ``n=0`` fix the
           nugget to zero.
@@ -482,7 +505,8 @@ class OrdinaryCloudKriger(object):
             List of input data of each cloud.
     """
 
-    def __init__(self, x, y, z, mtype=None, vgf=None, npmax=1000, nproc=None, **kwargs):
+    def __init__(self, x, y, z, mtype=None, vgf=None, npmax=1000, nproc=None, exact=False,
+            **kwargs):
         self.x, self.y, self.z, self.mask = _get_xyz_(x, y, z, noextra=False, getmask=True)
         self.np = self.x.shape[0]
         self.nt = 0 if self.z.ndim==1 else z.shape[0]
@@ -497,6 +521,8 @@ class OrdinaryCloudKriger(object):
         if callable(vgf):
             self.variogram_func = vgf
         self._kwargs = kwargs
+        self.variogram_fitting_results = None
+        self.exact = exact
 
     def __len__(self):
         return self.x.shape[0]
@@ -562,9 +588,11 @@ class OrdinaryCloudKriger(object):
         x, y, z = self._get_xyz_(x, y, z)
         if z.ndim==2:
             ne = z.shape[0]
-            self.variogram_func = variogram_multifit([x]*ne, [y]*ne, z, self.mtype, **kw)
+            res = variogram_multifit([x]*ne, [y]*ne, z, self.mtype, getall=True, **kw)
         else:
-            self.variogram_func = variogram_fit(x, y, z, self.mtype, **kw)
+            res = variogram_fit(x, y, z, self.mtype, getall=True, **kw)
+        self.variogram_func = res['func']
+        self.variogram_fitting_results = res
         return self.variogram_func
 
 
@@ -618,6 +646,9 @@ class OrdinaryCloudKriger(object):
             # Form A
             A = N.empty((self.npc[ic]+1, self.npc[ic]+1))
             A[:-1, :-1] = vgf(dd)
+            if self.exact:
+                N.fill_diagonal(A, 0)
+                A[:-1, :-1][isclose(A[:-1, :-1], 0.)] = 0.
             A[-1] = 1
             A[:, -1] = 1
             A[-1, -1] = 0
@@ -648,7 +679,7 @@ class OrdinaryCloudKriger(object):
     Ainv = property(get_Ainv, set_Ainv, del_Ainv, doc='Invert of A')
 
 
-    def interp(self, xo, yo, geterr=False):
+    def interp(self, xo, yo, geterr=False, blockr=None):
         """Interpolate to positions xo,yo
 
         :Params:
@@ -676,6 +707,7 @@ class OrdinaryCloudKriger(object):
         for ic in xrange(self.ncloud): # TODO: multiproc here?
 
             # Distances to output points
+            # dd = cdist(N.transpose([xi,yi]),N.transpose([xo,yo])) # TODO: test cdist
             xxo, xxi = N.meshgrid(xo, self.xc[ic])
             dd = (xxo-xxi)**2 ; del xxi, xxo
             yyo, yyi = N.meshgrid(yo, self.yc[ic])
@@ -686,7 +718,17 @@ class OrdinaryCloudKriger(object):
             B = N.empty((self.npc[ic]+1, npo))
             B[-1] = 1
             B[:-1] = vgf(dd)
+            if self.exact:
+                B[:-1][isclose(B[:-1], 0.)] = 0.
             del dd
+
+            # Block kriging
+            if blockr:
+                tree = cKDTree(N.transpose([xo, yo]))
+                Bb = B.copy()
+                for i, iineigh in enumerate(tree.query_ball_tree(tree, blockr)):
+                    Bb[:, i] = B[:, iineigh].mean()
+                B = Bb
 
             # Compute weights
             W = N.ascontiguousarray(symm(Ainv[ic], N.asfortranarray(B, 'd')))

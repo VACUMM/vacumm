@@ -4,6 +4,8 @@ Release notes
 In development
 ==============
 
+- Added sill and range to linear variogram model in kriging.
+- Added constraints to variogram model fit.
 - Added color.discretize_cmap.
 - Added Plot.add_water_mark.
 - Added units.basic_proj.
