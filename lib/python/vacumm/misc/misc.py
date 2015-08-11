@@ -1513,9 +1513,11 @@ def MV2_axisConcatenate(axes, id=None, attributes=None, copy=True):
     # Single
     if isaxis(axes):
         if copy: axes = axes.clone()
+        if id is not None: axes.id = id
         return axes
     if len(axes)==1:
         if copy: axes = [axes[0].clone()]
+        if id is not None: axes[0].id = id
         return axes[0]
 
     # Attributes
