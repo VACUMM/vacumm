@@ -37,6 +37,7 @@
 import re
 from constants import *
 import numpy as N
+import MV2
 from unidata import udunits
 
 __all__ = [
