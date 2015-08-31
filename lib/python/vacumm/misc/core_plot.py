@@ -1315,6 +1315,7 @@ class Plot(object):
 
             props['label_kwargs'] = kwfilter(xykwargs, 'label_', copy=1)
             props['label_kwargs'].update(kwfilter(xykwargs, 'title_', copy=1))
+            props['fmt_kwargs'] = kwfilter(xykwargs, 'fmt_', copy=1)
             props['ticklabels_kwargs'] = kwfilter(xykwargs, 'ticklabels_', copy=1)
 
             # Axis scale
@@ -1380,7 +1381,7 @@ class Plot(object):
             # Ticks values and formats
             if props['type'] in ['x','y','z']: # Lon, lat or dep axis
                 kwscale = dict(vmin=axmin, vmax=axmax, geo=props['minutes'])
-                kwlf = {}
+                kwlf = props['fmt_kwargs']
                 lab_val = props['ticks']
                 if hasattr(lab_val, '__len__') and len(lab_val)==0:
                     lab_val = None
@@ -1391,12 +1392,15 @@ class Plot(object):
                         lab_func = lonlab
                     else:
                         lab_func = latlab
-                    kwlf['decimal'] = not props['minutes']
-                    kwlf['auto_minutes'] = int(min(lab_val))!=int(max(lab_val))
+                    kwlf.setdefault('decimal', not props['minutes'])
+                    kwlf.setdefault('auto_minutes', int(min(lab_val))!=int(max(lab_val)))
                 else:
                     if lab_val is None:
                         lab_val = auto_scale(data, **kwscale)
                     lab_func = deplab
+                if callable(props['fmt']):
+                    lab_func = props['fmt']
+                    props['fmt'] = None
                 props['ticks'] = None
                 axis.set_ticks(lab_val)
 #                kwtf = {}
