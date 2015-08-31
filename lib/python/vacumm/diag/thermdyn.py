@@ -235,7 +235,7 @@ def mixed_layer_depth(data, depth=None, lat=None, zaxis=None,
 
     elif mode=='kz':
 
-        mld[:] = -_val2z_(kz, depth, kzmax, zaxis, 1)
+        mld[:] = -_valmin2z_(kz, depth, kzmax, zaxis, 1)
 
     else:
 
