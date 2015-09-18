@@ -1167,7 +1167,8 @@ class Dataset(Object):
         dict_filter_out(kwncr, ['at'], copy=False, mode='start')
         seltime = time_selector(select, ids=self.get_timeid())
         try:
-            var = ncread_files([d.id for d in self.dataset], ncvarid,
+            var = ncread_files(self.dataset,  #[d.id for d in self.dataset],
+                ncvarid,
                 timeid=self.get_timeid(),
     #            time=seltime,
                 select=select, verbose=verbose if verbose is not None else self.is_debug(),
@@ -1209,6 +1210,8 @@ class Dataset(Object):
         if var is None:
             var = self.get_variable(varname, **kwargs)
         return var
+
+    __call__ = get
 
 #    def get_time(self, *args, **kwargs):
 #        return self.get_axis('t', *args, **kwargs)
@@ -2341,7 +2344,7 @@ class OceanDataset(OceanSurfaceDataset):
           - ``"ssh"``: Estimate from ssh."""
 
     @getvar_fmtdoc
-    def get_uvgbt(self, getu=True, getv=True, **kwargs):
+    def get_uvgbt(self, getu=True, getv=True, warn=True, mode=None, **kwargs):
         """Get zonal and meridional geostrophic velocity from SSH"""
         # Params
         fwarn = max(int(warn)-1, 0)
@@ -2403,7 +2406,7 @@ class OceanDataset(OceanSurfaceDataset):
     def get_vgbt(self, **kwargs):
         '''Get meridional barotropic geostrophic velocity from SSH'''
         kwargs['getu'] = False
-        return get_uvgbt(**kwargs)
+        return self.get_uvgbt(**kwargs)
 
 
     _mode_doc = """Computing mode
