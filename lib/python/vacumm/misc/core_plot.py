@@ -650,7 +650,8 @@ class Plot(object):
         if not self.has_data(): return
         # Axis
         if self.x is not None:
-            x = self.x.getValue()
+            x = self.x[:] #.getValue()
+            if cdms2.isVariable(x): x = x.asma()
             if N.ma.isMA(x): x = x.filled(x.max())
             if masked is None:
                 masked = self.xmasked
@@ -693,7 +694,8 @@ class Plot(object):
         if not self.has_data(): return
         # Axis
         if self.y is not None:
-            y = self.y.getValue()
+            y = self.y[:] #.getValue()
+            if cdms2.isVariable(y): y = y.asma()
             if N.ma.isMA(y): y = y.filled(y.max())
             if masked is None:
                 masked = self.ymasked
@@ -4722,6 +4724,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         kw.setdefault('alpha', .5 if self.fill_method.startswith('pcolor') or
             self.fill_method.startswith('imshow') else alpha)
         kwcl.setdefault('alpha', alpha)
+        if linewidths is None and 'linewidth' in kwargs:
+            linewidths = kwargs.pop('linewidth')
         if linewidths is not None:
             kw.setdefault('linewidths', linewidths)
         if zorder is not None:
@@ -4731,7 +4735,9 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         if not 'cmap' in kw:
             cmap = None
         else:
-            cmap = get_cmap(kw.get('cmap', None))
+            cmap = self.get_cmap(kw.get('cmap', None))
+        if colors is None and 'color' in kwargs:
+            colors = kwargs.pop('color')
         colors = kw.get('colors', colors)
         if cmap is not None:
             colors = None
