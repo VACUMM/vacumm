@@ -750,7 +750,7 @@ def change_loc_single(name, stype, loc, squeeze=None):
     :Params:
 
         - **name**: String to change
-        - **stype**: String type: name, stand_name or long_name.
+        - **stype**: String type: name, standard_name or long_name.
         - **loc**: Location as a letter or None.
         - **squeeze**, optional: If specified and equal to ``loc``, location is removed
           instead of being changed.
@@ -1086,6 +1086,7 @@ def cp_suffix(idref, id, suffixes=ARAKAWA_SUFFIXES):
 # - Check inheritance
 # - Makes sure that axes specs have no 'axes' key
 # - Makes sure that specs key is the first entry of 'names'
+# - add standard_name to list of names
 # - Check duplication to other locations ('toto' -> 'toto_u')
 for all_specs in VAR_SPECS, AXIS_SPECS:
 
@@ -1151,6 +1152,12 @@ for all_specs in VAR_SPECS, AXIS_SPECS:
         if name in specs['names']:
             specs['names'].remove(name)
         specs['names'].insert(0, name)
+
+        # Standard_names in names
+        if ('standard_names' in specs and specs['standard_names']):
+            for standard_name in specs['standard_names']:
+                if standard_name not in specs['names']:
+                    specs['names'].append(standard_name)
 
         # Duplicate at other locations
         if 'atlocs' in specs:
