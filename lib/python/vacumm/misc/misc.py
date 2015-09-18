@@ -1743,10 +1743,15 @@ def squeeze_variable(var, spec=True, asmv=False):
     # Squeeze all singletons
     if not cdms2.isVariable(var):
         return var.squeeze()
+    atts = get_atts(var)
+    from vacumm.misc.grid.misc import get_grid
+    grid = get_grid(var)
     if spec is True or spec is None or spec==1:
         var = var(squeeze=1)
         if asmv and not cdms2.isVariable(var):
-            return MV2.asarray(var)
+            var = MV2.asarray(var)
+            set_atts(var, atts)
+            return var
         return var
 
     # Squeeze selection
@@ -1755,10 +1760,14 @@ def squeeze_variable(var, spec=True, asmv=False):
             order = var.getOrder()
             if not axtype in order: continue
             iaxis = order.index(axtype)
-            if len(var.getAxis(iaxis))==1:
-                ss = [':']*var.ndim
-                ss[iaxis] = 0
-                var = var[tuple(ss)]
+            if var.shape[iaxis]==1:
+                axes = var.getAxisList()
+                var = N.ma.take(var, 0, iaxis)
+                set_atts(var, atts)
+                axes.pop(iaxis)
+                var.setAxisList(axes)
+                if grid is not None and axtype not in 'xy':
+                    set_grid(var, grid)
     return var
 
 def grow_variables(var1, var2):
