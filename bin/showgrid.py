@@ -5,32 +5,32 @@
 # Arguments
 from optparse import OptionParser
 import sys, os, shutil
-parser = OptionParser(usage="Usage: %prog [options] ncfile", 
+parser = OptionParser(usage="Usage: %prog [options] ncfile",
     description="Show grid (rectangular or curvilinear) info of a netcdf file.")
 parser.add_option('-v', '--var', action='store', dest='vname',
     help='Name of the variable from which to get grid')
 parser.add_option('-p', '--plot', action='store_true', dest='plot',
-    default=False, 
+    default=False,
     help='Plot the grid on a map [default: %default]')
 parser.add_option('-o', '--out', action='store', dest='out',
     help='Name of an output file where to store the plot')
-parser.add_option('-z', '--zoom', action='store', dest='zoom', type='float', 
+parser.add_option('-z', '--zoom', action='store', dest='zoom', type='float',
     help='Plot zoom [default: %default]', default=.8)
-parser.add_option('-f', '--figsize', action='store', dest='figsize',  
+parser.add_option('-f', '--figsize', action='store', dest='figsize',
     help='Size of figure in inches, like "5,6" or simply "5"')
-parser.add_option('-s', '--shoreline', action='store', dest='shoreline',  default='auto', 
+parser.add_option('-s', '--shoreline', action='store', dest='shoreline',  default='auto',
     help="GSHHS shoreline as one of 'c', 'l', 'i', 'h', 'f' [default: %default]")
-parser.add_option('--xmin', action='store', dest='xmin', type='float',  
+parser.add_option('--xmin', action='store', dest='xmin', type='float',
     help="Min longitude of the map")
-parser.add_option('--xmax', action='store', dest='xmax', type='float',  
+parser.add_option('--xmax', action='store', dest='xmax', type='float',
     help="Max longitude of the map")
-parser.add_option('--ymin', action='store', dest='ymin', type='float',    
+parser.add_option('--ymin', action='store', dest='ymin', type='float',
     help="Min latitude of the map")
-parser.add_option('--ymax', action='store', dest='ymax', type='float',  
+parser.add_option('--ymax', action='store', dest='ymax', type='float',
     help="Max latitude of the map")
-parser.add_option('--proj', action='store', dest='proj', default='merc', 
+parser.add_option('--proj', action='store', dest='proj', default='merc',
     help="Map projection [default: %default]")
- 
+
 # Parse
 (options, args) = parser.parse_args()
 if len(args)==0:
@@ -38,7 +38,7 @@ if len(args)==0:
 
 # Netcdf file
 ncfile = args[0]
-if not os.path.exists(ncfile):
+if not ncfile.startswith('http://') and not os.path.exists(ncfile):
     sys.exit('File not found: '+ncfile)
 try:
    import cdms2
@@ -48,7 +48,7 @@ try:
     f = cdms2.open(ncfile)
 except:
     sys.exit("Can't open "+ncfile)
-    
+
 # Guess grid
 grid = None
 if options.vname is not None: # from specified variable
@@ -78,7 +78,7 @@ try:
     import cdms2
 except:
     sys.exit('Error when loading vacumm')
-    
+
 # Dimension
 gg = (lon, lat)
 lonn, latn = get_xy(gg, num=True)
@@ -103,7 +103,7 @@ print 'Meridional resolution: %g° / %gkm'%(latres, yres)
 
 # Plot
 if options.plot or options.out:
-    
+
     xmin, ymin, xmax, ymax = scalebox(grid, 1/options.zoom)
     for att in 'xmin', 'xmax', 'ymin', 'ymax':
         if getattr(options, att) is not None: exec att+" = %s"%getattr(options, att)
@@ -115,8 +115,8 @@ if options.plot or options.out:
         except:
             options.figsize = None
     if options.proj.lower() == 'none': options.proj = None
-    m = map2(lon=(xmin, xmax), lat=(ymin, ymax), show=False, res=options.shoreline, 
-        title='Grid from '+os.path.basename(ncfile), figsize=options.figsize, 
+    m = map2(lon=(xmin, xmax), lat=(ymin, ymax), show=False, res=options.shoreline,
+        title='Grid from '+os.path.basename(ncfile), figsize=options.figsize,
         proj = options.proj)
     add_grid(grid, m=m, centers=True, borders=True, color='b', markersize=5)
     m.legend(zorder=200, alpha=.7, title='Grid: %ix%i'%grid.shape[::-1])

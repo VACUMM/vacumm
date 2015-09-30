@@ -4,7 +4,7 @@
 # Arguments
 from optparse import OptionParser
 import sys, os, shutil
-parser = OptionParser(usage="Usage: %prog [options] ncfile", 
+parser = OptionParser(usage="Usage: %prog [options] ncfile",
     description="Show time axis dates of a netcdf file.")
 parser.add_option('-t', '--time', action='store', dest='tname',
     help='name of the time axis or variable')
@@ -18,8 +18,8 @@ parser.add_option('-n', '--ncol', action='store', dest='ncol', default=5, type='
     help='number of comlumns for output (default: %default)')
 parser.add_option('-f', '--format', action='store', default='%Y-%m-%d %H:%M:%S', dest='format',
     help='date format (default: %default)')
-   
-    
+
+
 # Parse
 (options, args) = parser.parse_args()
 if len(args)==0:
@@ -27,14 +27,14 @@ if len(args)==0:
 
 # Netcdf file
 ncfile = args[0]
-if not os.path.exists(ncfile):
+if not ncfile.startswith('http://') and not os.path.exists(ncfile):
     sys.exit('File not found: '+ncfile)
 try:
     import cdms2
     f = cdms2.open(ncfile)
 except:
     sys.exit("Can't open "+ncfile)
-    
+
 # Guess time
 taxis = None
 # - from specified axis
@@ -69,7 +69,7 @@ f.close()
 ctimes = taxis.asComponentTime()
 
 # Slice
-if options.tslice is not None: 
+if options.tslice is not None:
     try:
         ss = []
         for s in options.tslice.split(':')[:3]:
@@ -102,7 +102,7 @@ if options.minmax: # min/max only
     else:
         print 'min:', ct2str(min(ctimes))
         print 'max:', ct2str(max(ctimes))
-    
+
 else: # all
     s = 's' if len(ctimes) else ''
     print '%i value%s:'%(len(ctimes), s)

@@ -5,14 +5,14 @@
 # Arguments
 from optparse import OptionParser
 import sys, os, shutil
-parser = OptionParser(usage="Usage: %prog [options] ncfile", 
+parser = OptionParser(usage="Usage: %prog [options] ncfile",
     description="Show the grid (rectangular or curvilinear) resolution of netcdf file.")
 parser.add_option('-v', '--var', action='store', dest='vname',
     help='name of the variable from which to get grid')
 parser.add_option('-m', '--meters', action='store_true', dest='meters',
-    default=False, 
+    default=False,
     help='resolution in meters? [default: False -> degrees]')
-    
+
 # Parse
 (options, args) = parser.parse_args()
 if len(args)==0:
@@ -20,14 +20,14 @@ if len(args)==0:
 
 # Netcdf file
 ncfile = args[0]
-if not os.path.exists(ncfile):
+if not ncfile.startswith('http://') and not os.path.exists(ncfile):
     sys.exit('File not found: '+ncfile)
 try:
     import cdms2
     f = cdms2.open(ncfile)
 except:
     sys.exit("Can't open "+ncfile)
-    
+
 # Guess grid
 grid = None
 if options.vname is not None: # from specified variable
@@ -62,5 +62,5 @@ if options.meters:
     yres /= 1000.
 else:
     units = '°'
-print 'dx=%(xres)g%(units)s, dy=%(yres)g%(units)s'%locals() 
+print 'dx=%(xres)g%(units)s, dy=%(yres)g%(units)s'%locals()
 f.close()
