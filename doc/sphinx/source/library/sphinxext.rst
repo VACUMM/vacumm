@@ -8,6 +8,4 @@
 .. toctree::
 
     sphinxext.overview
-    sphinxext.fortran_domain
-    sphinxext.fortran_autodoc
     

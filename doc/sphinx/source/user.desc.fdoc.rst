@@ -1,8 +1,5 @@
 Document fortran codes with Sphinx
 ==================================
 
-.. toctree::
-
-    user.desc.fdoc.dom
-    user.desc.fdoc.auto
-
+The fortran domain and autodoc extensions to Sphinx are now available
+as a separate package: http://sphinx-fortran.readthedocs.org
