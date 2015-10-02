@@ -37,11 +37,16 @@
 import re
 from constants import *
 import numpy as N
+import MV2
 from unidata import udunits
 
-__all__ = ['kt2ms', 'ms2kt', 'deg2m', 'm2deg', 'ms2bf', 'dms2deg', 'deg2dms',
-    'mph2ms', 'ms2mph', 'tometric', 'kel2degc', 'degc2kel', 'strfsize', 'strpsize',
-    'convert_units', 'basic_proj']
+__all__ = [
+    'kt2ms', 'ms2kt', 'deg2m', 'm2deg', 'ms2bf', 'dms2deg', 'deg2dms',
+    'mph2ms', 'ms2mph', 'tometric', 'kel2degc', 'degc2kel',
+    'convert_units', 'basic_proj', 
+    'rad2deg', 'deg2rad', 'vect2mod', 'vect2dir', 'vect2moddir', 'moddir2vectx', 'moddir2vecty', 'moddir2vectxy',
+    'strfsize', 'strpsize'
+]
 
 ############################################################
 def kt2ms(nd):
@@ -213,6 +218,30 @@ def convert_units(value, ufrom, uto):
     """
     import unidata
     return unidata.udunits(value, ufrom).to(uto).value
+
+def rad2deg(r):
+    return MV2.fmod(180 * r / MV2.pi, 360)
+
+def deg2rad(d):
+    return MV2.pi * MV2.fmod(d, 360) / 180
+
+def vect2mod(u, v):
+    return MV2.sqrt(MV2.power(u, 2) + MV2.power(v, 2))
+
+def vect2dir(u, v):
+    return rad2deg(MV2.arctan2(v, u))
+
+def vect2moddir(u, v):
+    return vect2mod(u, v), vect2dir(u, v)
+
+def moddir2vectx(m, d):
+    return MV2.multiply(m, MV2.cos(deg2rad(d)))
+
+def moddir2vecty(m, d):
+    return MV2.multiply(m, MV2.sin(deg2rad(d)))
+
+def moddir2vectxy(m, d):
+    return moddir2vectx(m, d), moddir2vecty(m, d)
 
 # 1 kilooctet (ko) = 10**3 octets = 1 000 octets
 sizeunits = {
