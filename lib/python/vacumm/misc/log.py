@@ -45,7 +45,7 @@ try:
     from weakref import WeakSet
 except ImportError:
     # separately installed
-    warnings.warn('Cannot import weakref.WeakSet, trying weakrefset.WeakSet')
+    #warnings.warn('Cannot import weakref.WeakSet, trying weakrefset.WeakSet')
     from weakrefset import WeakSet
     # in debugging mode, show which weakrefset module is in use
     if '--debug' in sys.argv:
