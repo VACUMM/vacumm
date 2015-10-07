@@ -2860,6 +2860,61 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
     return depths
 
 
+def axisop_slicenames(stag):
+    """Get standard slice names of axis operator as dict given the staggering direction
+    """
+    if stag>0:
+        inner = firsts = 'firsts'
+        left = firsts = 'firsts'
+        right = lasts = 'lasts'
+        boundary = out = last = 'last'
+        oppos = 'first'
+        neigh1 = 'last'
+        neigh2 = 'lastm1'
+    else:
+        inner = firsts = 'lasts'
+        left = firsts = 'lasts'
+        right = lasts = 'firsts'
+        boundary = out = last = 'first'
+        oppos = 'last'
+        neigh1 = 'first'
+        neigh2 = 'firstp1'
+    return dict(target=target, out=out, oppos=oppos, last=last,
+        neigh1=neigh1, neigh2=neigh2, firsts=firsts, lasts=lasts)
+
+def genop1d(var, leftwgt, rightwgt, axis, stag=0, bmode=None, copy=True):
+    """Generic two-point operator along an axis"""
+
+    # Inputs
+    if copy:
+        if hasattr(var, 'clone'):
+            varo = var.clone()
+        else:
+            varo = var.copy()
+    else:
+        varo = var
+    bmode = kwargs.get('mode', bmode)
+    if bmode is None:
+        bmode = "linear" if A.isaxis(var) else "same"
+    elif bmode=="nearest":
+        bmode = "same"
+    elif bmode=='extrap':
+        bmode = 'linear'
+
+    # Get slice specs
+    ss = get_axis_slices(vari, axis)
+    if stag:
+        sn = _shiftslicenames_(stag)
+
+    # Inner
+    if stag:
+        varo[ss[sn['inner']]] = varo[ss[sn['left']]] * leftwgt
+        varo[ss[sn['inner']]] += varo[ss[sn['right']]] * rightwgt
+    else:
+        varo[ss['inner']] = varo[ss['left']] * leftwgt
+        varo[ss['inner']] += varo[ss['right']] * rightwgt
+        pass
+
 
 
 
