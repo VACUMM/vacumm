@@ -13,16 +13,24 @@ from matplotlib.artist import Artist
 import matplotlib.transforms as mtransforms
 
 def smooth1d(x, window_len):
-    # copied from http://www.scipy.org/Cookbook/SignalSmooth
+    # copied from http://www.scipy.org/Cookbook/SignalSmooth (9,) 9 (24,) (8,)
 
     s=np.r_[2*x[0]-x[window_len:1:-1],x,2*x[-1]-x[-1:-window_len:-1]]
     w = np.hanning(window_len)
     y=np.convolve(w/w.sum(),s,mode='same')
-    return y[window_len-1:-window_len+1]
+#    # FIXME: smooth1d with size equal to window_len (9)
+#    if x.shape!=y[window_len-1:-window_len+1].shape:
+#        print 'x.shape, window_len,  y.shape, y[window_len-1:-window_len+1].shape', x.shape, window_len,  y.shape, y[window_len-1:-window_len+1].shape
+#        print 'np.convolve(w/w.sum(),s,mode="valid").shape', np.convolve(w/w.sum(),s,mode='valid').shape
+#    else:
+#        print 'x.shape, window_len,  y.shape, y[window_len-1:-window_len+1].shape', x.shape, window_len,  y.shape, y[window_len-1:-window_len+1].shape
+##    return y[window_len-1:-window_len+1]
+    return y[window_len-1:window_len-1+x.shape[0]]
 
 def smooth2d(A, sigma=3):
 
     window_len = max(int(sigma), 3)*2+1
+#    if window_len>=x.shape[0]
     A1 = np.array([smooth1d(x, window_len) for x in np.asarray(A)])
     A2 = np.transpose(A1)
     A3 = np.array([smooth1d(x, window_len) for x in A2])
@@ -128,6 +136,33 @@ class GrowFilter(BaseFilter):
         offsetx, offsety = -pad, -pad
 
         return new_im, offsetx, offsety
+
+
+class LightFilter(BaseFilter):
+    "simple gauss filter"
+    def __init__(self, sigma, fraction=0.5, **kwargs):
+        self.gauss_filter = GaussianFilter(sigma, alpha=1)
+        from matplotlib.colors import LightSource
+        self.light_source = LightSource(**kwargs)
+        self.fraction = fraction
+        #hsv_min_val=0.5,hsv_max_val=0.9,
+        #                                hsv_min_sat=0.1,hsv_max_sat=0.1)
+    def get_pad(self, dpi):
+        return self.gauss_filter.get_pad(dpi)
+
+    def process_image(self, padded_src, dpi):
+        t1 = self.gauss_filter.process_image(padded_src, dpi)
+        elevation = t1[:,:,3]
+        rgb = padded_src[:,:,:3]
+
+        rgb2 = self.light_source.shade_rgb(rgb, elevation,
+                                           fraction=self.fraction)
+        print 'process'
+        tgt = np.empty_like(padded_src)
+        tgt[:,:,:3] = rgb2
+        tgt[:,:,3] = padded_src[:,:,3]
+
+        return tgt
 
 
 

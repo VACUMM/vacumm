@@ -5794,6 +5794,10 @@ class Map(Plot2D):
                             pass
                         if self.get_axobj('fillcontinents') is not None and fcsh:
                             add_shadow(self.get_axobj('fillcontinents'), **kwfcsh)
+                        from _ext_plot import LightFilter
+                        print 'adding filter'
+                        add_agg_filter(self.get_axobj('fillcontinents'),  LightFilter(9), zorder=True)
+                        print 'ok'
                     if drawrivers and not self.get_axobj('drawrivers'):
                         self.set_axobj('drawrivers', self.map.drawrivers(**kwfilter(kwargs,'drawrivers')))
 
@@ -6316,7 +6320,7 @@ def add_agg_filter(objs, filter, zorder=None, ax=None):
         - **objs**: :class:`matplotlib.artist.Artist` instances.
         - **filter**: :class:`vacumm.misc._ext_plot.BaseFilter` instance.
         - **zorder**, optional: zorder (else guess from ``objs``).
-        - **axes**, optional: class:`matplotlib.axes.Axes` instance.
+        - **ax**, optional: class:`matplotlib.axes.Axes` instance.
 
     Inspired from http://matplotlib.sourceforge.net/examples/pylab_examples/demo_agg_filter.html .
     """
@@ -6337,13 +6341,16 @@ def add_agg_filter(objs, filter, zorder=None, ax=None):
             t.set_path_effects([Normal()])
 
     # Adjust zorder
-    if zorder is None:
+    if zorder is None or zorder is True:
+        same = zorder is True
         if hasattr(objs, 'get_zorder'):
             zorder = objs.get_zorder()
         else:
             zorder = objs[0].get_zorder()
-        zorder -= 0.1
-    shadows.set_zorder(zorder)
+        if not same:
+            zorder -= 0.1
+    if zorder is not False:
+        shadows.set_zorder(zorder)
 
     return shadows
 
@@ -6358,7 +6365,7 @@ def add_shadow(objs, width=3, xoffset=2, yoffset=-2, alpha=0.5, color='k', zorde
         - **yoffset**, optional: Shadow offset along Y in points.
         - **color**, optional: Color of the shadow.
         - **zorder**, optional: zorder (else guess from ``objs``).
-        - **axes**, optional: class:`matplotlib.axes.Axes` instance.
+        - **ax**, optional: class:`matplotlib.axes.Axes` instance.
 
     Inspired from http://matplotlib.sourceforge.net/examples/pylab_examples/demo_agg_filter.html .
     """
@@ -6378,17 +6385,37 @@ def add_glow(objs, width=3, zorder=None, color='w', ax=None, alpha=1.):
         - **width**, optional: Width of the gaussian filter in points.
         - **color**, optional: Color of the shadow.
         - **zorder**, optional: zorder (else guess from ``objs``).
-        - **axes**, optional: class:`matplotlib.axes.Axes` instance.
+        - **ax**, optional: class:`matplotlib.axes.Axes` instance.
 
     Inspired from http://matplotlib.sourceforge.net/examples/pylab_examples/demo_agg_filter.html .
     """
     if color is not None: color = RGB(color)
     try:
-        white_glows = GrowFilter(width, color=color, alpha=alpha)
+        white_glows = LightFilter(width, alpha=alpha)
         return add_agg_filter(objs, white_glows, zorder=zorder, ax=ax)
     except:
          warn('Cannot add glow effect using agg filters')
 
+def add_lightshading(objs, width=7, zorder=None, ax=None, **kwargs):
+    """Add a light shading effect to objects
+
+    :Params:
+
+        - **objs**: Plotted objects.
+        - **width**, optional: Width of the gaussian filter in points.
+        - **fraction**, optional: Unknown.
+        - **zorder**, optional: zorder (else guess from ``objs``).
+        - **ax**, optional: class:`matplotlib.axes.Axes` instance.
+        - Extra keywords are passed to :class:`matplotlib.colors.LightSource`
+
+    Inspired from http://matplotlib.sourceforge.net/examples/pylab_examples/demo_agg_filter.html .
+    """
+    if zorder is None: zorder = True
+    try:
+        lf = LightFilter(width, fraction=fraction, **kwargs)
+        return add_agg_filter(objs, lf, zorder=zorder, ax=ax)
+    except:
+         warn('Cannot add light shading effect using agg filters')
 
 
 class MinuteLabel:
