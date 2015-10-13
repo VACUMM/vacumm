@@ -5794,10 +5794,6 @@ class Map(Plot2D):
                             pass
                         if self.get_axobj('fillcontinents') is not None and fcsh:
                             add_shadow(self.get_axobj('fillcontinents'), **kwfcsh)
-                        from _ext_plot import LightFilter
-                        print 'adding filter'
-                        add_agg_filter(self.get_axobj('fillcontinents'),  LightFilter(9), zorder=True)
-                        print 'ok'
                     if drawrivers and not self.get_axobj('drawrivers'):
                         self.set_axobj('drawrivers', self.map.drawrivers(**kwfilter(kwargs,'drawrivers')))
 
@@ -5806,7 +5802,7 @@ class Map(Plot2D):
                     from io import Shapes
                     if self.map.res=='s':
                         from vacumm.bathy.shorelines import Histolitt
-                        shoreline = Histolitt(m=self.map)
+                        shoreline = Histolitt(m=self.map, proj=True)
                     else:
                         shoreline = self.map.res
                     if isinstance(shoreline, Shapes):
@@ -5821,7 +5817,7 @@ class Map(Plot2D):
                             else:
                                 kwshoreline['fillcolor'] = kwfillcontinents.pop('color')
                                 kwshoreline.update(kwfillcontinents)
-                            kwshoreline.update(show = False, proj=False)
+                            kwshoreline.update(show = False, axes=self.axes)
                             shoreline.plot(**kwshoreline)
                         except Exception, e:
                             import traceback
@@ -5848,6 +5844,8 @@ class Map(Plot2D):
                         'minutes':minutes})
                 if parallels is None:
                     parallels = geo_scale(**kwgs)
+                parallels = filter(lambda _:
+                    _>= self.map.llcrnrlat and _<= self.map.urcrnrlat, parallels)
                 if minutes: kwp.setdefault('fmt',
                     MinuteLabel(parallels, zonal=False, tex=None,
                         no_seconds=no_seconds, bfdeg=bfdeg))
@@ -5870,6 +5868,9 @@ class Map(Plot2D):
                     meridians = geo_scale(**kwgs)
                     if (meridians[-1]-meridians[0])>=360.: # to prevent overlaping
                         meridians = meridians[meridians<meridians[0]+360.]
+                crnlon = self.map.llcrnrlon,
+                meridians = filter(lambda _:
+                    _>= self.map.llcrnrlon and _<= self.map.urcrnrlon, meridians)
                 if minutes:
                     kwm.setdefault('fmt',
                         MinuteLabel(meridians, zonal=True,  tex=None,
@@ -6391,7 +6392,7 @@ def add_glow(objs, width=3, zorder=None, color='w', ax=None, alpha=1.):
     """
     if color is not None: color = RGB(color)
     try:
-        white_glows = LightFilter(width, alpha=alpha)
+        white_glows = GrowFilter(width, color=color, alpha=alpha)
         return add_agg_filter(objs, white_glows, zorder=zorder, ax=ax)
     except:
          warn('Cannot add glow effect using agg filters')
