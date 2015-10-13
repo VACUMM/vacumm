@@ -2175,17 +2175,19 @@ class Shapes(object):
         elif default_proj is not None:
             self._proj = default_proj
         elif proj is True or isinstance(proj, basestring):
-            self._proj = None
+#            self._proj = None
             self._proj = self._get_proj_(proj)
         else:
             self._proj = False
+        self._m_projsync = None
         if callable(self._m): # same projection as of map?
             if proj is False:
                 self._m_projsync = N.allclose((1, 1), self._m(1, 1))
+            elif self._proj is self._m:
+                self._m_projsync = True
             elif callable(self._proj) and self._proj is not self._m:
                 self._m_projsync = N.allclose(self._proj(1, 1), self._m(1, 1))
-        else:
-            self._m_projsync = None
+
 
         # Clipping zone with projected coordinates
         clip = self._clip_zone_(clip)
