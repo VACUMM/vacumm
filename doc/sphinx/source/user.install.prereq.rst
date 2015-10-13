@@ -51,7 +51,7 @@ useful  packages that can be install using :program:`pip` or
    * - :pypi:`paramiko`
      - Only for :mod:`~vacumm.misc.remote`
      - Use SSH2 protocol.
-   * - :pypi:`seawater (2.0.1)`
+   * - :pypi:`seawater`
      - Yes for advanced diags.
      - Sea water properties
    * - :pypi:`xlwt`
@@ -60,6 +60,9 @@ useful  packages that can be install using :program:`pip` or
    * - :pypi:`PIL (1.1.7)`
      - Only sometimes for :func:`~vacumm.misc.plot.add_logo`.
      - Manipulate images
+   * - :pypi:`sphinx_fortran (1.0)`
+     - Doc
+     - Extension to :pypi:`sphinx`: Documenting fortran codes
    * - :pypi:`sphinxcontrib-cheeseshop (0.2)`
      - Doc
      - Extension to :pypi:`sphinx`: Linking to Cheese Shop (Python Package Index) packages

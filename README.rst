@@ -11,7 +11,7 @@ can be used for the **preprocessing** and the
 **postprocessing** of oceanic and atmospheric data coming from models or observations.
 The library for instance also has specialized modules for managing outputs from
 `models <http://www.ifremer.fr/vacumm/library/data/model.html>`_ and making advanced
-`diagnostics<http://www.ifremer.fr/vacumm/library/diag.html>`_.
+`diagnostics<http://www.ifremer.fr/vacumm/library/diag.html>`_ .
 
 .. code-block:: python
 
@@ -56,16 +56,9 @@ Optional:
 `PIL <https://pypi.python.org/pypi/PIL>`_,
 `pytz <http://pytz.sourceforge.net>`_,
 `paramiko <http://www.paramiko.org>`_,
-`xlwt <https://pypi.python.org/pypi/xlwt>`_.
+`xlwt <https://pypi.python.org/pypi/xlwt>`_,
+`sphinx-fortran <https://pypi.python.org/pypi/sphinx-fortran>`_.
 
-    <a href="http://www.voidspace.org.uk/python/configobj.html">configobj</a>.<br>
-
-    Optional:
-    <a href="https://pypi.python.org/pypi/seawater">seawater</a>,
-    <a href="https://pypi.python.org/pypi/PIL">PIL</a>,
-    <a href="http://pytz.sourceforge.net">pytz</a>,
-    <a href="http://www.paramiko.org">paramiko</a>,
-    <a href="https://pypi.python.org/pypi/xlwt">xlwt</a>.
 
 Download
 --------
@@ -92,7 +85,7 @@ http://www.ifremer.fr/vacumm/appendix.release.html
 Documentation
 -------------
 
-The documentation is available:
+The documentation is available here:
 http://www.ifremer.fr/vacumm
 
 
@@ -103,8 +96,11 @@ VACUMM is under the CeCiLL license,
 which is compatible with well knwon GPL license.
 
 
-Contact
+Support
 -------
+
+You can submit `issues <https://github.com/VACUMM/vacumm/issues>`_
+and `pull requests <https://github.com/VACUMM/vacumm/issues>`_ .
 
 Stephane Raynaud (raynaud (at) actimar.fr),
 Guillaume Charria (Guillaume.Charria (at) ifremer.fr).

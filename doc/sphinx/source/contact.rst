@@ -18,17 +18,17 @@ and send email to  vacumm-users (at) forge.ifremer.fr.
 Submit bugs and requests
 ------------------------
 
-Please use the Mantis interface to submit bugs and requests if you have access to it:
-https://forge.ifremer.fr/mantis/my_view_page.php
-
+You can submit `issues <https://github.com/VACUMM/vacumm/issues>`_
+and `pull requests <https://github.com/VACUMM/vacumm/issues>`_  from
+the project's page in github: https://github.com/VACUMM/vacumm
 
 .. _contact.direct:
 
 Direct contact
 --------------
 
-**IFREMER :**
+**IFREMER:**
         Guillaume Charria (Guillaume.Charria (at) ifremer.fr)
-**Actimar :**
-        Stéphane Raynaud (raynaud (at) actimar.fr)
+**Actimar:**
+        Stéphane Raynaud (raynaud (at) actimar.fr OR stephane.raynaud (at) gmail.com )
 

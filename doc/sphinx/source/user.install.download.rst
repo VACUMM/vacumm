@@ -3,9 +3,6 @@
 Download
 ========
 
-You can download VACUMM on the GForge site of IFREMER :
-https://forge.ifremer.fr/projects/vacumm
-
 
 Tarballs
 --------
@@ -23,7 +20,7 @@ Repository
 ----------
 
 The development version of the library is available on its
-`GIT <https://git-scm.com>`_ repository::
+`GIT <https://git-scm.com>`_ repository (https://github.com/VACUMM/vacumm)::
 
     $ git clone https://github.com/VACUMM/vacumm.git
 
