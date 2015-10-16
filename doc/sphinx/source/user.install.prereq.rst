@@ -138,7 +138,7 @@ Install other packages
 ::
 
     $ pip install configobj PIL paramiko xlutils seawater pytz
-    $ pip install sphinxcontrib-cheeseshop sphinxcontrib-ansi sphinxcontrib-programoutput
+    $ pip install sphinxcontrib-cheeseshop sphinxcontrib-ansi sphinxcontrib-programoutput sphinx-fortran
 
 
 

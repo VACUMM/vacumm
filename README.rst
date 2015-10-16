@@ -11,7 +11,7 @@ can be used for the **preprocessing** and the
 **postprocessing** of oceanic and atmospheric data coming from models or observations.
 The library for instance also has specialized modules for managing outputs from
 `models <http://www.ifremer.fr/vacumm/library/data/model.html>`_ and making advanced
-`diagnostics<http://www.ifremer.fr/vacumm/library/diag.html>`_ .
+`diagnostics <http://www.ifremer.fr/vacumm/library/diag.html>`_.
 
 .. code-block:: python
 
@@ -100,7 +100,8 @@ Support
 -------
 
 You can submit `issues <https://github.com/VACUMM/vacumm/issues>`_
-and `pull requests <https://github.com/VACUMM/vacumm/issues>`_ .
+and `pull requests <https://github.com/VACUMM/vacumm/issues>`_
+from the GitHub site.
 
 Stephane Raynaud (raynaud (at) actimar.fr),
 Guillaume Charria (Guillaume.Charria (at) ifremer.fr).
