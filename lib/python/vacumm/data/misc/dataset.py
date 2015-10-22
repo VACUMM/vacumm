@@ -2377,15 +2377,15 @@ class OceanDataset(OceanSurfaceDataset):
             ssh = self.get_ssh(**kwargs)
             dx = self.get_dx_u(degrees=False, local=True, **kwargs)
             dy = self.get_dy_v(degrees=False, local=True, **kwargs)
-            sshok = [v is not None for v in [ssh, dx, dy]]
+            sshok = [_ is not None for _ in [ssh, dx, dy]]
             mstrict = check_mode('ssh', mode, strict=True)
             if sshok or mstrict:
                 if sshok:
                     us, vs = barotropic_geostrophic_velocity(ssh, dxy=(dx, dy))
-                u = (u if u is not None and not mstrict else us
-                    ).finalize_object(u, **kwfinalu)
-                v = (v if v is not None and not mstrict else vs
-                    ).finalize_object(v, **kwfinalv)
+                u = self.finalize_object(
+                    (u if u is not None and not mstrict else us), **kwfinalu)
+                v = self.finalize_object(
+                    (v if v is not None and not mstrict else vs), **kwfinalv)
                 res = ()
                 if getu:
                     res += u,
