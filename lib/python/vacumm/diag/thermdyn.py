@@ -323,16 +323,16 @@ def _valmin2z_(var, dep, varmax, axis, monosign):
     rvar *= monosign
 
     # Find z index
-    iiz = N.arange(nz-1, dtype='i')
-    iiz = N.ma.resize(iiz, rvar.shape[rvar.ndim-1:0:-1]+(nz-1, )).T
-    iiz = N.ma.masked_where(var>varmax, iiz0, copy=0)
-    iz = iiz.max(axis=0)
+    iiz = N.arange(nz, dtype='i')
+    iiz = N.ma.resize(iiz, rvar.shape[rvar.ndim-1:0:-1]+(nz, )).T
+    iiz = N.ma.masked_where(rvar>varmax, iiz, copy=0)
+    iz0 = iiz.max(axis=0)
     del iiz
     maskz = iz0.mask
-    iz = iz0.filled(0.)
+    iz0 = iz0.filled(0.)
 
     # Values
-    rdepref = N_choose(iz, rdep)
+    rdepref = N_choose(iz0, rdep)
 
     # Masking
     rdepref[maskland] = N.ma.masked
