@@ -4,6 +4,9 @@ Release notes
 In development
 ==============
 
+- Added font weight change for degrees in labels.
+- Added standard_names to names for searching in cf.
+- Added showvar.py to quickly display a netcdf variable.
 - Added support for min+max+hist and restart to StatAccum.
 - Added support for exact and block kriging to OCK.
 - Added sill and range to linear variogram model in kriging.
@@ -18,10 +21,13 @@ In development
 - Added dstwgt method for fortran interpolators from gridded to random points.
 - Added tuple support for time creation routines of atime.
 - New regrid2d with tool and method keywords.
+- Fixed range in hlitvs.
+- Fixed mixed_layer_depth with kz.
 - Fixed: default params in get_proj.
 - Fixed names of module attributes which are now upper case.
 - Fixed: list_forecast_files, Plot.add_lon/lat, _interp_.linept, Plot2D.fill.
 - Fixed: ConfigManager.opt_parse.
+- Removed sphinxfortran extension which is now a standalone vacumm project.
 
 Version 2.5.4
 =============

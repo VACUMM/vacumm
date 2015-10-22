@@ -54,7 +54,8 @@ from vacumm.config import (
 from vacumm.misc.misc import (
     lonlab, latlab, deplab, kwfilter, broadcast, ArgList, closeto, dict_merge,
     dict_check_defaults, cp_atts, dict_filter,  cp_props, numod, set_atts, get_atts,
-    set_lang, geodir, auto_scale
+    set_lang, geodir, auto_scale, MV2_concatenate, MV2_axisConcatenate,
+    zoombox, squeeze_variable, set_lang_fr, scalebox,
     )
 
 from vacumm.misc.axes import (

@@ -1088,9 +1088,10 @@ class Dataset(Object):
         self._ncids[genname] = ncid
 
 
-    def get_variable(self, varname, time=None, lon=None, lat=None, level=None,
-        atts=None, squeeze=False, order=None, asvar=None, torect=True, depthup=None,
-        verbose=None, warn=True, searchmode=None, format=True, at=None, **kwargs):
+    def get_variable(self, varname, time=None, lon=None, lat=None,
+            level=None, atts=None, squeeze=False, order=None, asvar=None,
+            torect=True, depthup=None,verbose=None, warn=True, searchmode=None,
+            format=True, at=None, **kwargs):
         '''Load a variable in a best time serie fashion.
 
         :Params:

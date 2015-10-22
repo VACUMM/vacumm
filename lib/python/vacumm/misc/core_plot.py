@@ -2130,7 +2130,7 @@ class Plot(object):
         return o
 
     def add_point(self, x, y, zorder=150, shadow=False, glow=False,
-        color='r', size=20, xyscaler=None, **kwargs):
+            color='r', size=20, xyscaler=None, **kwargs):
         """Add a point to the map using :meth:`matplotlib.pyplots.plot`
 
         :Params:
@@ -2139,7 +2139,8 @@ class Plot(object):
             - **color**, optional: Line color of the point.
             - **shadow**, optional: Add a droped shadow below the box
               (see :func:`add_shadow`).
-            - **shadow_<param>**, optional: ``<param>`` is passed to :func:`add_shadow`.
+            - **shadow_<param>**, optional: ``<param>`` is passed
+              to :func:`add_shadow`.
             - **glow**, optional: Add a glow effect the box
               (see :func:`add_glow`).
             - **glow_<param>**, optional: ``<param>`` is passed to :func:`add_glow`.
@@ -4669,8 +4670,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
 #                p.set_linewidth(kwfill['linewidth'])
 
 
-    def plot_contour(self, zorder=None, alpha=1, clabel=None, linewidths=None, colors='k', shadow=False, glow=False,
-        **kwargs):
+    def plot_contour(self, zorder=None, alpha=1, clabel=None, linewidths=None,
+            colors='k', shadow=False, glow=False, **kwargs):
         """Plot contour lines
 
         :Params:
