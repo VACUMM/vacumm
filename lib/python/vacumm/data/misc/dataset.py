@@ -2377,7 +2377,7 @@ class OceanDataset(OceanSurfaceDataset):
             ssh = self.get_ssh(**kwargs)
             dx = self.get_dx_u(degrees=False, local=True, **kwargs)
             dy = self.get_dy_v(degrees=False, local=True, **kwargs)
-            sshok = None not in [ssh, dx, dy]
+            sshok = [v is not None for v in [ssh, dx, dy]]
             mstrict = check_mode('ssh', mode, strict=True)
             if sshok or mstrict:
                 if sshok:
