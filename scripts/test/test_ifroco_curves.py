@@ -15,8 +15,9 @@ logofile = "logo2_previmer_cetmef.png"
 copyright = u"© Previmer"
 
 # Imports
-from vacumm.report.ifroco.curves import round_date, P, DS, paris_to_utc, now, os, \
-    cfgget, N, grid2xy, plot_curves, cdtime, utc_to_paris, Day12hFormatter, load_cfg
+from vacumm.report.ifroco.curves import (round_date, P, DS, paris_to_utc, now, os,
+    cfgget, N, grid2xy, plot_curves, cdtime, utc_to_paris, Day12hFormatter,
+    load_cfg)
 from vcmq import data_sample, code_file_name
 
 # Time
@@ -52,11 +53,12 @@ for i in xrange(ptdata.shape[1]):
 
 # Plot
 logofile = os.path.join(os.path.dirname(code_file_name()), logofile)
-x = plot_curves(datas, vmin=vmin, vmax=vmax, units=units, long_name=long_name, 
-    title=long_long_name+u' aux bouées', logos=logofile, copyright=copyright, 
-    date_locator=HourLocator(byhour=[0, 12]), date_formatter=Day12hFormatter('%a %d/%m'), 
+x = plot_curves(datas, vmin=vmin, vmax=vmax, units=units, long_name=long_name,
+    title=long_long_name+u' aux bouées', logos=logofile, copyright=copyright,
+    date_locator=HourLocator(byhour=[0, 12]),
+    date_formatter=Day12hFormatter('%a %d/%m'),
     hlitvs_units='day', savefig=code_file_name(ext='png'),
-#    ylocator=MaxNlocator(integer=True), yminor_locator=MaxNlocator(integer=True, steps=2), 
+#    ylocator=MaxNlocator(integer=True), yminor_locator=MaxNlocator(integer=True, steps=2),
     close=True
     )
 #P.show()

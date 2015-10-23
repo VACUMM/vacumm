@@ -1744,7 +1744,7 @@ def squeeze_variable(var, spec=True, asmv=False):
     if not cdms2.isVariable(var):
         return var.squeeze()
     atts = get_atts(var)
-    from vacumm.misc.grid.misc import get_grid
+    from vacumm.misc.grid.misc import get_grid, set_grid
     grid = get_grid(var)
     if spec is True or spec is None or spec==1:
         var = var(squeeze=1)

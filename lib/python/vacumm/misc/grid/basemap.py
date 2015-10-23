@@ -178,9 +178,10 @@ def _cached_map_file_(m=None, mapdir=None, **kwargs):
     return os.path.join(mapdir, 'basemap-%s.%s.%s.pyk' % (basemap_version, srs, szone))
 
 
-def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projection='cyl', resolution='auto',
-    lon_center=None, lat_center=None, lat_ts=None, zoom=None, ax=None,
-    overlay=False, fullscreen=False, nocache=False, cache_dir=None, **kwargs):
+def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
+        projection='cyl', resolution='auto',
+        lon_center=None, lat_center=None, lat_ts=None, zoom=None, ax=None,
+        overlay=False, fullscreen=False, nocache=False, cache_dir=None, **kwargs):
     """Generic creation of a :class:`Basemap` instance with caching
 
     .. todo:: Merge :func:`get_map` with :func:`create_map`
@@ -203,7 +204,8 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projectio
         lat_min = N.clip(lat_center-1, 0, 90)
         lat_max = N.clip(lat_center+1, 0, 90)
     if isinstance(zoom, (int, float)):
-        lon_min, lat_min, lon_max, lat_max = zoombox([lon_min, lat_min, lon_max, lat_max], zoom)
+        lon_min, lat_min, lon_max, lat_max = zoombox(
+            [lon_min, lat_min, lon_max, lat_max], zoom)
 
     # Special overlay case
     if overlay:
@@ -235,7 +237,8 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90., projectio
     # Basemap args
     if isinstance(projection, str) and projection.lower() == 'rgf93' :
         # RGF93
-        kwargs.update(lon_0=3, lat_0=46.5, lat_1=44, lat_2=49, rsphere=RSHPERE_WGS84, projection='lcc')
+        kwargs.update(lon_0=3, lat_0=46.5, lat_1=44, lat_2=49,
+            rsphere=RSHPERE_WGS84, projection='lcc')
     else:
         # standard
         kwargs.setdefault('lon_0', lon_center)

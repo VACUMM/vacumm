@@ -2029,13 +2029,15 @@ class Shapes(object):
     INPUT_MULTIPOINTS = 8
     INPUT_POLYLINES = 3
     INPUT_POLYGONS = 5
-    def __init__(self, input, m=None, proj=False, inverse=False, clip=True, shapetype=None,
-        min_area=None, sort=True, reverse=True, samp=1):
+    def __init__(self, input, m=None, proj=False, inverse=False, clip=True,
+            shapetype=None, min_area=None, sort=True, reverse=True, samp=1):
 
         # Inits
 #        if isinstance(input, list) and input: input = input[0]
         from_file = isinstance(input, str)
-        default_proj = None
+        if hasattr(m, 'map'): m = m.map
+        default_proj = None if m is None else m
+        self._m = m
 
         if from_file:
 
@@ -2058,17 +2060,12 @@ class Shapes(object):
                 input_type = shp.info()[1]
             self._prefix = input
 #           dbf = dbflib.open(input)
-            if hasattr(m, 'map'): m = m.map
-            self._m = m
-            default_proj = None if m is None else m
             if default_proj and (1, 1) == default_proj(1, 1):
                 default_proj = None
             self._info = []
 
         elif isinstance(input, (list, N.ndarray)): # From coordinates
             in_coords = input
-            self._m = m
-            default_proj = m
             input_type = 5 if not len(in_coords) or in_coords[0].ndim==2 else 1
             self._info = []
 
@@ -2154,6 +2151,7 @@ class Shapes(object):
 
         # Bounds
         if xy.shape[0]>0:
+
             self.xmin = xy[:, 0].min()
             self.xmax = xy[:, 0].max()
             self.ymin = xy[:, 1].min()
@@ -2172,7 +2170,7 @@ class Shapes(object):
         # Projection
         if callable(proj):
             self._proj = proj
-        elif default_proj is not None:
+        elif default_proj is not None and proj is None:
             self._proj = default_proj
         elif proj is True or isinstance(proj, basestring):
 #            self._proj = None
@@ -2206,6 +2204,8 @@ class Shapes(object):
 
             # Projection
             if self._proj:
+                if coord[..., 1].max()<91 and coord[..., 1].min()>-91:
+                    coord[..., 1] = N.clip(coord[..., 1], -89.99, 89.99)
                 coord = N.asarray(self._proj(coord[..., 0], coord[..., 1])).T
 
             # Convert to shape instance
@@ -2226,24 +2226,23 @@ class Shapes(object):
 
 
         # Final bounds
-        if clip is not None and min_area:
-            for shape in shapes:
+        if clip is not None or min_area:
 
-                # Normal coordinates
-                xy = shape.get_xy(proj=None)
-                self.xpmin = min(self.xpmin, xy[..., 0].min())
-                self.xpmax = max(self.xpmax, xy[..., 0].max())
-                self.ypmin = min(self.ypmin, xy[..., 1].min())
-                self.ypmax = max(self.ypmax, xy[..., 1].max())
-                del xy
+            # Normal coordinates
+            xy = self.get_xy(proj=False)
+            self.xmin = min(self.xmin, xy[..., 0].min())
+            self.xmax = max(self.xmax, xy[..., 0].max())
+            self.ymin = min(self.ymin, xy[..., 1].min())
+            self.ymax = max(self.ymax, xy[..., 1].max())
+            del xy
 
-                # Projected coordinates
-                xy = shape.get_xy(proj=False)
-                self.xpmin = min(self.xpmin, xyp[..., 0].min())
-                self.xpmax = max(self.xpmax, xyp[..., 0].max())
-                self.ypmin = min(self.ypmin, xyp[..., 1].min())
-                self.ypmax = max(self.ypmax, xyp[..., 1].max())
-                del xyp
+        # Projected coordinates
+        xyp = self.get_xy(proj=None)
+        self.xpmin = min(self.xpmin, xyp[..., 0].min())
+        self.xpmax = max(self.xpmax, xyp[..., 0].max())
+        self.ypmin = min(self.ypmin, xyp[..., 1].min())
+        self.ypmax = max(self.ypmax, xyp[..., 1].max())
+        del xyp
 
 
         # Finalize
@@ -2393,10 +2392,10 @@ class Shapes(object):
         if proj is None: return
         if proj is True or isinstance(proj, basestring):
 
-            if callable(self._proj): # already projected
+            if hasattr(self, '_proj') and callable(self._proj): # already projected
                 return
 
-            if callable(self._m): # from map
+            if proj is True and callable(self._m): # from map
 
                 return self._m
 
@@ -2404,7 +2403,8 @@ class Shapes(object):
             if self.xmin>self.xmax:
                 gg = None
             else:
-                gg = ([self.xmin,self.xmax],[self.ymin,self.ymax])
+                gg = ([self.xmin,self.xmax],
+                    N.clip([self.ymin,self.ymax], -89.99, 89.99))
             kw = dict(proj=proj) if isinstance(proj, basestring) else {}
             return get_proj(gg, **kw)
 
@@ -2558,8 +2558,8 @@ class Shapes(object):
         return self._m
 
     def plot(self, select=None, ax=None, fill=None, points=False, lines=True,
-        fillcolor=None, color='k', s=None, linewidth=None, m=None, show=True,
-        alpha=1, autoscale=True, title=None, **kwargs):
+            fillcolor=None, color='k', s=None, linewidth=None, m=None, show=True,
+            alpha=1, autoscale=True, title=None, **kwargs):
         """Plot shapes
 
         :Params:
