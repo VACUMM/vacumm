@@ -16,5 +16,5 @@ axis.axis = 'T'
 # Plot
 figfile = code_file_name(ext='png')
 if os.path.exists(figfile): os.remove(figfile)
-curve2(var, savefig=figfile, show=False, close=True)
+curve2(var, savefig=figfile, show=True, close=True)
 

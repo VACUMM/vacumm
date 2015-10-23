@@ -20,7 +20,7 @@ data = ds.get(field)
 # Some config values
 long_name = cfgget('long_name_model', field)
 units = cfgget('units', field)
-levels = N.array(cfgget('levels', field))
+levels = None # N.array(cfgget('levels', field))
 extend = cfgget('cb_extend', field)
 if long_name: data.long_name = long_name
 if units: data.units = units

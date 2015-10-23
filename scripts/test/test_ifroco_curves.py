@@ -57,7 +57,8 @@ x = plot_curves(datas, vmin=vmin, vmax=vmax, units=units, long_name=long_name,
     title=long_long_name+u' aux bouées', logos=logofile, copyright=copyright,
     date_locator=HourLocator(byhour=[0, 12]),
     date_formatter=Day12hFormatter('%a %d/%m'),
-    hlitvs_units='day', savefig=code_file_name(ext='png'),
+    hlitvs_units='day',
+    savefig=code_file_name(ext='png'),
 #    ylocator=MaxNlocator(integer=True), yminor_locator=MaxNlocator(integer=True, steps=2),
     close=True
     )

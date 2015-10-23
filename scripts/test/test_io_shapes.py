@@ -21,7 +21,7 @@ P.savefig(figfile%1);P.close()
 
 # Projection
 S = Shapes(shpfile, proj='merc')
-result.append(('assertGreater', [S[0].area(), 1e37]))
+result.append(('assertGreater', [S[1].area(), 1e12]))
 S.plot(title='Projected', show=False)
 P.savefig(figfile%2);P.close()
 

@@ -5,7 +5,7 @@ from vcmq import MV2, code_file_name, os, code_file_name, curve2, create_lon
 
 # Init
 var = MV2.arange(5.)
-var.units = r'm s^{-1}'
+var.units = r'$m s^{-1}$'
 var.long_name = 'Speed'
 var.setAxis(0, create_lon(var.getAxis(0)))
 

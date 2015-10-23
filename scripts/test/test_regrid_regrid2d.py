@@ -46,7 +46,8 @@ rc('axes', labelsize=7)
 kw = dict(show=False, axes_aspect=1, colorbar=False, grid=False)
 kwg = dict(edges=False, centers=True, markersize=2, alpha=1)
 ip = 1
-plot2d(varri, title='Original rectangular', figsize=(7, 7), subplot=(4,3,ip), **kw);ip+=1
+plot2d(varri, title='Original rectangular', figure=10,
+    figsize=(7, 7), subplot=(4,3,ip), **kw);ip+=1
 plot2d(varci, title='Original curvilinear', subplot=(4,3,ip), **kw);ip+=1
 # - nearest
 varo = regrid2d(varci, gridco, method='nearest', tool='vacumm')
@@ -91,3 +92,4 @@ add_grid(gridci, **kwg)
 P.tight_layout()
 P.savefig(code_file_name(ext='png'))
 rcdefaults()
+P.close()
