@@ -35,9 +35,9 @@
 #
 
 __project__ = 'vacumm'
-__version__ = '2.5.4'
+__version__ = '3.0.0'
 __release__ = '1'
-__date__ = '2015-03-27'
+__date__ = '2015-10-23'
 __author__ = u'Stéphane Raynaud, Jonathan Wilkins, Guillaume Charria'
 __email__ = 'raynaud@actimar.fr, wilkins@actimar.fr, charria@ifremer.fr'
 __copyright__ = 'Copyright (c) 2010-2015 Actimar/IFREMER'
