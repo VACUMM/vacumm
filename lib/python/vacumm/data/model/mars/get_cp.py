@@ -66,10 +66,10 @@ def get_cp(ctdeb, ctfin, dir_f1, cfg=None):
         #construction du nom de fichier
         #filename='PREVIMER_F1-MARS3D-MANGA_'+str(ctest.year)+str(ctest.month)+str(ctest.day)+'T'+hour+'00Z.nc'
         #A changer pour que le chemin d'accès ne soit plus en dur en reutilisable pour Mars Menor. A lire direct dans config.gfg.
-    if cfg['Model Description']['name'] == 'mars_manga':
-        filename=cfg['MARS F1']['fic_prefix']+'%4d%02d%02dT%02d00Z.nc' %(ctest.year,ctest.month,ctest.day,ctest.hour)
-    if cfg['Model Description']['name'] == 'mars_menor':
-        filename=cfg['MARS F2']['fic_prefix']+'%4d%02d%02dT%02d00Z.nc' %(ctest.year,ctest.month,ctest.day,ctest.hour)
+        if cfg['Model Description']['name'] == 'mars_manga':
+            filename=cfg['MARS F1']['fic_prefix']+'%4d%02d%02dT%02d00Z.nc' %(ctest.year,ctest.month,ctest.day,ctest.hour)
+        if cfg['Model Description']['name'] == 'mars_menor':
+            filename=cfg['MARS F2']['fic_prefix']+'%4d%02d%02dT%02d00Z.nc' %(ctest.year,ctest.month,ctest.day,ctest.hour)
         print filename
 
         if os.path.isfile(filename) == False :
@@ -106,7 +106,7 @@ def get_cp_f1(ctdeb, ctfin, dir_f1):
         #construction du nom de fichier
         #filename='PREVIMER_F1-MARS3D-MANGA_'+str(ctest.year)+str(ctest.month)+str(ctest.day)+'T'+hour+'00Z.nc'
         #A changer pour que le chemin d'accès ne soit plus en dur en reutilisable pour Mars Menor. A lire direct dans config.gfg.
-    filename='PREVIMER_F1-MARS3D-MANGA4000_%4d%02d%02dT%02d00Z.nc' %(ctest.year,ctest.month,ctest.day,ctest.hour)
+        filename='PREVIMER_F1-MARS3D-MANGA4000_%4d%02d%02dT%02d00Z.nc' %(ctest.year,ctest.month,ctest.day,ctest.hour)
         print filename
 
         if os.path.isfile(filename) == False :
@@ -139,7 +139,7 @@ def get_cp_f2_v9(ctdeb, ctfin, dir_f2_v9):
         #construction du nom de fichier
         #filename='PREVIMER_F1-MARS3D-MANGA_'+str(ctest.year)+str(ctest.month)+str(ctest.day)+'T'+hour+'00Z.nc'
         #A changer pour que le chemin d'accès ne soit plus en dur en reutilisable pour Mars Menor. A lire direct dans config.gfg.
-    filename='PREVIMER_F2-MARS3D-MENOR1200_%4d%02d%02dT%02d00Z.nc' %(ctest.year,ctest.month,ctest.day,ctest.hour)
+        filename='PREVIMER_F2-MARS3D-MENOR1200_%4d%02d%02dT%02d00Z.nc' %(ctest.year,ctest.month,ctest.day,ctest.hour)
         print filename
 
         if os.path.isfile(filename) == False :
