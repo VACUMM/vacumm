@@ -1,8 +1,8 @@
 Release notes
 #############
 
-In development
-==============
+Version 3.0.0
+=============
 
 - Added font weight change for degrees in labels.
 - Added standard_names to names for searching in cf.

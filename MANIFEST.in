@@ -1,5 +1,5 @@
 include test/Makefile
-include release_notes.txt
+include CHANGES.rst
 include setup.cfg.*
 exclude setup.cfg
 exclude scripts/tutorials/check.log
