@@ -5968,6 +5968,7 @@ def get_axis_scale(axis, type=None):
 class AutoDateLocator2(AutoDateLocator):
     """A clever :class:`matplotlib.dates.AutoDateLocator`"""
     def __init__(self, *args,  **kwargs):
+        noweek = kwargs.pop('noweek', 2)
         try:
             AutoDateLocator.__init__(self, *args, **kwargs)
         except:
@@ -5975,6 +5976,9 @@ class AutoDateLocator2(AutoDateLocator):
             AutoDateLocator.__init__(self, *args, **kwargs)
         self._oldlocator = None
         self._oldlims = None
+        if noweek:
+            self.intervald[DAILY] = [1, 2, 3, 7, 14, 21][:2+int(noweek)]
+            self.minticks = 3
 
     def get_locator(self, *args, **kwargs):
 
@@ -5992,7 +5996,7 @@ class AutoDateLocator2(AutoDateLocator):
         except:
             sampling = locator.base._base
         update = False
-        if self._freq == DAILY and sampling == 7:
+        if self._freq == DAILY and sampling%7 == 0:
             # Fix daily/7 to weekly/monday locator (start on monday)
             locator.rule.set(byweekday=MO)
             locator.rule.set(interval=1)
@@ -6134,12 +6138,13 @@ class DualDateFormatter(DateFormatter):
         """Helper to setup an appropriate formatter associated to a specified locator"""
         # Get best arguments for initializing and return instance
         keys = sorted(AutoDateFormatter2.scaled.keys(), reverse=True)
+        tmin, tmax = locator.axis.get_view_interval()
+        dtmin, dtmax = locator.viewlim_to_dt()
+        locator.get_locator(dtmin, dtmax)
         if hasattr(locator, '_freq'):
             freq = locator._freq
         else:
             freq = locator.rule._freq
-        tmin, tmax = locator.axis.get_view_interval()
-        dtmin, dtmax = locator.viewlim_to_dt()
         trange = tmax-tmin
         if freq == YEARLY :
             kwargs.setdefault('fmt', AutoDateFormatter2.scaled[keys[0]])
@@ -6185,10 +6190,23 @@ class AutoDualDateFormatter(Formatter):
         s = self._formatter(x, pos)
         return s
 
+def _get_split_locator_(locator, kwargs):
+    ls = locator.split('/')
+    lb = locator.split(':')
+    if len(ls)>1 and ls[1].isdigit():
+        kwargs.setdefault('interval', int(ls[1]))
+        locator = ls[0]
+    elif len(lb)>1:
+        locator = lb[0]
+        by = [int(v) for v in lb[1].split(',') if v.isdigit()]
+        if by:
+            kwargs.setdefault('by'+locator.lower(), by)
+    return locator
+
 
 def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
-    locator=None, minor_locator=True, minor_formatter=None, nominor=False,
-    maxticks=None, tz=None, **kwargs):
+        locator=None, minor_locator=True, minor_formatter=None, nominor=False,
+        maxticks=None, tz=None, interval_multiples=False, **kwargs):
     """Setup tick positions and labels of an time axis
 
     :Params:
@@ -6196,7 +6214,8 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
         - **axis**: :class:`~matplotlib.axis.Axis` instance (like ``P.gca().xaxis``)
         - **tz**, optional: Time zone.
         - **auto**, optional: Auto Scaling [default: True]
-        - **rotation**, optional: Rotation angle of tick labels. If None, automatic [default: None]
+        - **rotation**, optional: Rotation angle of tick labels.
+          If None, automatic [default: None]
         - **formatter**, optional: Date format:
 
             - "simple" or 1 or "auto": :class:`AutoDateFormatter2`
@@ -6204,12 +6223,22 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
             - String: :class:`DateFormatter`
             - else a :class:`matplotlib.ticker.Formatter` instance.
 
-        - **locator**, optional: Major locator. Can be within ['year','month','Weekday','day','hour','minute','second'] or be like :class:`matplotlib.dates.MonthLocator`.
+        - **locator**, optional: Major locator. Can be within
+          ['year','month','Weekday','day','hour','minute','second'],
+          be like :class:`matplotlib.dates.MonthLocator`.
+          or have a special value:
+
+            - None or 'auto' or 'vacumm': use the :class:`AutoDateLocator`
+            - 'mpl': use the internal Matplotlib auto date locator.
+
         - **minor_locator**, optional: Minor locator.
         - **nominor**, optional: Do not try to add minor ticks [default: False]
-        - **locator_<keyword>**, optional: <keyword> is passed to locator if locator is a string. If locator = 'month', locator = MonthLocator(locator_<keyword>=<value>).
+        - **locator_<keyword>**, optional: <keyword> is passed to locator if
+          locator is a string. If locator = 'month',
+          locator = MonthLocator(locator_<keyword>=<value>).
         - **minor_locator_<keyword>**, optional: Same with minor_locator.
-        - **maxticks**, optional: Maximal number of major ticks when default auto locator is used.
+        - **maxticks**, optional: Maximal number of major ticks when
+          default auto locator is used.
     """
     if isinstance(axis, int):
         axis = 'xy'[axis]
@@ -6232,37 +6261,39 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
         axes.autoscale_view(**{'scale'+xy:True,'scale'+yx:False})
 
     # Guess locators
-    major_locator = locator
+    major_locator = locator or kwargs.get('major_locator', None)
     if nominor: minor_locator = False
     locs = ['year','month','weekday','day','hour','minute','second']
     locs.extend([(loc+'s') for loc in locs])
     kwmjl = kwfilter(kwargs, 'major_locator', defaults=kwfilter(kwargs, 'locator'))
     kwmnl = kwfilter(kwargs, 'minor_locator')
     # - major
+    if major_locator is None:
+        major_locator = 'auto'
     if isinstance(major_locator, basestring):
-        mls = major_locator.split('/')
-        if len(mls)>1 and mls[1].isdigit():
-            kwmjl.setdefault('interval', int(mls[1]))
-            major_locator = mls[0]
-        if major_locator.lower().startswith('auto'):
-            maxticks = kwargs.get('nmax_ticks', maxticks) # compat
-            kwmjl.setdefault('maxticks', maxticks)
-            major_locator = AutoDateLocator2(**kwmjl)
-        elif major_locator.lower() in locs:
-            major_locator = eval(major_locator.lower().title()+'Locator(**kwmjl)')
+        if major_locator.lower()=='mpl':
+            major_locator = None
+        else:
+            major_locator = _get_split_locator_(major_locator, kwmjl)
+            if (major_locator.lower().startswith('auto') or
+                    major_locator.lower()=='vacumm'):
+                maxticks = kwargs.get('nmax_ticks', maxticks) # compat
+                kwmjl.setdefault('maxticks', maxticks)
+                major_locator = AutoDateLocator2(**kwmjl)
+            elif major_locator.lower() in locs:
+                major_locator = eval(major_locator.lower().title()+'Locator(**kwmjl)')
     if major_locator:
         axis.set_major_locator(major_locator)
     else:
         major_locator = axis.get_major_locator()
     major_locator.set_axis(axis)
+    if hasattr(major_locator, 'interval_multiples'):
+        major_locator.interval_multiples = interval_multiples
     # - minor
     if minor_locator is 1 or minor_locator is True:
         minor_locator = 'auto'
     if isinstance(minor_locator, str):
-        mls = minor_locator.split('/')
-        if len(mls)>1 and mls[1].isdigit():
-            kwmnl.setdefault('interval', int(mls[1]))
-            minor_locator = mls[0]
+        minor_locator = _get_split_locator_(minor_locator, kwmnl)
         if minor_locator.lower() in locs:
             minor_locator = eval(minor_locator.lower().title()+'Locator(**kwmnl)')
         elif minor_locator.lower().startswith('auto'):
@@ -6274,6 +6305,8 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
     else:
         minor_locator = axis.get_minor_locator()
     minor_locator.set_axis(axis)
+    if hasattr(minor_locator, 'interval_multiples'):
+        minor_locator.interval_multiples = True
 
     #print 'minor_locator', minor_locator
     #print 'major_locator', major_locator
