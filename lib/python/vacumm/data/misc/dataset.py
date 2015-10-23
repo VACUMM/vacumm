@@ -2282,10 +2282,11 @@ class OceanDataset(OceanSurfaceDataset):
         'depth_<param>':'Passed to :meth:`get_depth`',
         'mode':_mode_doc}
 
-    def get_dens(self, mode=None, **kwargs):
+    def get_dens(self, mode=None, warn=True, **kwargs):
         '''Get 4D density'''
 
-        fwarn = max(int(kwargs.get('warn', 0))-1, 0)
+
+        fwarn = max(int(warn)-1, 0)
         kwvar = kwfilter(kwargs, ['lon','lat','time','level','torect'], warn=fwarn)
         kwfinal = kwfilter(kwargs, ['squeeze','order','asvar', 'at'], genname='dens')
         kwdens = kwfilter(kwargs, 'dens_')
@@ -2307,13 +2308,17 @@ class OceanDataset(OceanSurfaceDataset):
                 dens = density(temp, sal, depth=depth, format_axes=True, **kwdens)
             if dens is not None or check_mode('tempsal', mode, strict=True):
                 return self.finalize_object(dens, depthup=False, **kwfinal)
+
+        if warn:
+            self.warning('Unable to get density')
+
     getvar_fmtdoc(get_dens, **_extra_doc)
     del _extra_doc['depth_<param>']
 
-    def get_ssd(self, mode=None, **kwargs):
+    def get_ssd(self, mode=None, warn=True, **kwargs):
         '''Get sea surface density'''
 
-        fwarn = max(int(kwargs.get('warn', 0))-1, 0)
+        fwarn = max(int(warn)-1, 0)
         kwvar = kwfilter(kwargs, ['lon','lat','time','level','torect'], warn=fwarn)
         kwfinal = kwfilter(kwargs, ['squeeze','order','asvar', 'at'], genname='dens')
         kwdens = kwfilter(kwargs, 'dens_')
@@ -2333,6 +2338,9 @@ class OceanDataset(OceanSurfaceDataset):
                 ssd = density(sst, sss, format_axes=True, **kwdens)
             if ssd is not None or check_mode('tempsal', mode, strict=True):
                 return self.finalize_object(ssd, **kwfinal)
+
+        if warn:
+            self.warning('Unable to get surface density')
 
     getvar_fmtdoc(get_ssd, **_extra_doc)
     del _extra_doc, _mode_doc
@@ -2972,12 +2980,14 @@ class OceanDataset(OceanSurfaceDataset):
           You can specifiy a list of them: ``['deltadens', 'deltatemp']``
           You can also negate the search with
           a '-' sigme before: ``"-kz"``."""
-    def get_mld(self, mode=None, lat=None, **kwargs):
+    def get_mld(self, mode=None, lat=None, warn=True, **kwargs):
 
         # Params
+        fwarn = max(int(warn)-1, 0)
         kwargs.pop('level', None)
         kwvar = kwfilter(kwargs, ['lon','time','torect'])
         kwvar['lat'] = lat
+        kwvar['warn'] = fwarn
         kwdens = kwfilter(kwargs, 'dens_')
         kwdens.update(kwvar)
         kwdepth = kwfilter(kwargs, 'depth_')
@@ -3000,7 +3010,8 @@ class OceanDataset(OceanSurfaceDataset):
         if check_mode('deltatemp', mode):
             temp = self.get_temp(**kwvar)
             if temp is not None:
-                mld = mixed_layer_depth(temp, depth=depth, mode='deltatemp', format_axes=True, **kwmld)
+                mld = mixed_layer_depth(temp, depth=depth, mode='deltatemp',
+                    format_axes=True, **kwmld)
                 if mld is not None or check_mode('deltatemp', mode, strict=True):
                     return self.finalize_object(mld, depthup=False, **kwfinal)
 
@@ -3010,7 +3021,8 @@ class OceanDataset(OceanSurfaceDataset):
                 if dens is None:
                     dens = self.get_dens(**kwdens)
                 if dens is not None:
-                    mld = mixed_layer_depth(dens, depth=depth, lat=lat, mode=testmode, format_axes=True, **kwmld)
+                    mld = mixed_layer_depth(dens, depth=depth, lat=lat,
+                        mode=testmode, format_axes=True, **kwmld)
                     if mld is not None or check_mode(testmode, mode, strict=True):
                         return self.finalize_object(mld, depthup=False, **kwfinal)
 
@@ -3019,10 +3031,14 @@ class OceanDataset(OceanSurfaceDataset):
 
             kz = self.get_kz(**kwdens)
             if kz is not None:
-                mld = mixed_layer_depth(kz, depth=depth, mode='kz', format_axes=True, **kwmld)
+                mld = mixed_layer_depth(kz, depth=depth, mode='kz',
+                    format_axes=True, **kwmld)
                 if mld is not None or check_mode('twolayers', mode, strict=True):
                     kwfinal['depthup'] = False
                     return self.finalize_object(mld, **kwfinal)
+
+        if warn:
+            self.warning('Unable to get mixed layer depth with mode: %s'%mode)
 
     get_mld = getvar_fmtdoc(get_mld,
         mode=_mode_doc,
@@ -3389,8 +3405,12 @@ class OceanDataset(OceanSurfaceDataset):
         :Params: see :func:`get_mixed_layer_depth`
 
         :Plot params:
-            - **map_<keyword>**: are passed to the map plot function :func:`~vacumm.misc.plot.map2` *excepting* those about post plotting described below
-            - **plot_[show|close|savefig|savefigs]**: are passed to the post plotting function :func:`~vacumm.misc.core_plot.Plot.post_plot` at end of plotting operations
+            - **map_<keyword>**: are passed to the map plot function
+              :func:`~vacumm.misc.plot.map2` *excepting*
+               those about post plotting described below
+            - **plot_[show|close|savefig|savefigs]**: are passed to the post
+              plotting function :func:`~vacumm.misc.core_plot.Plot.post_plot`
+              at end of plotting operations
 
         '''
         mapkw = kwfilter(kwargs, 'map')
