@@ -53,34 +53,34 @@ def get_ftp_f1(ctdeb, ctfin,andeb, SCRIPT_DIR, cfg=None):
       config.read(os.path.join(SCRIPT_DIR,'config.cfg'))
 
       if config.get('Model Description', 'name') == 'mars_manga':
-      dirf1 = config.get('MARS F1', 'url_f1')
-      usr = config.get('MARS F1', 'user')
-      pwd = config.get('MARS F1', 'pwd')
-      fic_prefix = config.get('MARS F1', 'fic_prefix')       #'PREVIMER_F1-MARS3D-MANGA4000_'
-      time_res = float(config.get('MARS F1', 'time_res') )   # pas de temps des sorties en heure
+        dirf1 = config.get('MARS F1', 'url_f1')
+        usr = config.get('MARS F1', 'user')
+        pwd = config.get('MARS F1', 'pwd')
+        fic_prefix = config.get('MARS F1', 'fic_prefix')       #'PREVIMER_F1-MARS3D-MANGA4000_'
+        time_res = float(config.get('MARS F1', 'time_res') )   # pas de temps des sorties en heure
 
       if config.get('Model Description', 'name') == 'mars_menor':
-      dirf1 = config.get('MARS F2', 'url_f2')
-      usr = config.get('MARS F2', 'user')
-      pwd = config.get('MARS F2', 'pwd')
-      fic_prefix = config.get('MARS F2', 'fic_prefix')       #'PREVIMER_F2-MARS3D-MENOR_'
-      time_res = float(config.get('MARS F2', 'time_res') )   # pas de temps des sorties en heure
+        dirf1 = config.get('MARS F2', 'url_f2')
+        usr = config.get('MARS F2', 'user')
+        pwd = config.get('MARS F2', 'pwd')
+        fic_prefix = config.get('MARS F2', 'fic_prefix')       #'PREVIMER_F2-MARS3D-MENOR_'
+        time_res = float(config.get('MARS F2', 'time_res') )   # pas de temps des sorties en heure
 
     else:
 
       if cfg['Model Description']['name'] == 'mars_manga':
-      dirf1 = cfg['MARS F1']['url_f1']
-      usr = cfg['MARS F1']['user']
-      pwd = cfg['MARS F1']['pwd']
-      fic_prefix = cfg['MARS F1']['fic_prefix']       #'PREVIMER_F1-MARS3D-MANGA4000_'
-      time_res = cfg['MARS F1']['time_res']   # pas de temps des sorties en heure
+        dirf1 = cfg['MARS F1']['url_f1']
+        usr = cfg['MARS F1']['user']
+        pwd = cfg['MARS F1']['pwd']
+        fic_prefix = cfg['MARS F1']['fic_prefix']       #'PREVIMER_F1-MARS3D-MANGA4000_'
+        time_res = cfg['MARS F1']['time_res']   # pas de temps des sorties en heure
 
       if cfg['Model Description']['name'] == 'mars_menor':
-      dirf1 = cfg['MARS F2']['url_f2']
-      usr = cfg['MARS F2']['user']
-      pwd = cfg['MARS F2']['pwd']
-      fic_prefix = cfg['MARS F2']['fic_prefix']       #'PREVIMER_F2-MARS3D-MENOR_'
-      time_res = cfg['MARS F2']['time_res']   # pas de temps des sorties en heure
+        dirf1 = cfg['MARS F2']['url_f2']
+        usr = cfg['MARS F2']['user']
+        pwd = cfg['MARS F2']['pwd']
+        fic_prefix = cfg['MARS F2']['fic_prefix']       #'PREVIMER_F2-MARS3D-MENOR_'
+        time_res = cfg['MARS F2']['time_res']   # pas de temps des sorties en heure
 
 
 
