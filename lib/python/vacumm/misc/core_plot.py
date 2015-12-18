@@ -50,10 +50,11 @@ from matplotlib.artist import Artist
 from matplotlib.axes import Subplot, Axes
 from matplotlib.axis import Axis, XAxis, YAxis
 from matplotlib.colors import Colormap, Normalize
-from matplotlib.dates import DateFormatter, MonthLocator, WeekdayLocator, \
-    YearLocator,DayLocator, HourLocator, MinuteLocator, SecondLocator, \
-    MONDAY, WEEKLY, YEARLY, MONTHLY, \
-    AutoDateLocator, AutoDateFormatter, MO, DAILY, HOURLY, num2date, MINUTELY, SECONDLY
+from matplotlib.dates import (DateFormatter, MonthLocator, WeekdayLocator,
+    YearLocator,DayLocator, HourLocator, MinuteLocator, SecondLocator,
+    MONDAY, WEEKLY, YEARLY, MONTHLY,
+    AutoDateLocator, AutoDateFormatter, MO, DAILY, HOURLY, num2date,
+    MINUTELY, SECONDLY)
 from matplotlib.figure import Figure
 from matplotlib.patches import Patch
 from matplotlib.path import Path
@@ -1144,7 +1145,8 @@ class Plot(object):
     def post_plot(self, grid=True, figtext=None, show=True,
         close=False, savefig=None, savefigs=None, title=None,
         fullscreen=False, anchor=None, autoresize=2, finalize=None,
-        key=False, hlitvs=False, legend=False, tight_layout=False, **kwargs):
+        key=False, hlitvs=False, legend=False, tight_layout=False,
+        param_label=None, **kwargs):
         """Finish plotting stuff (plot size, grid, texts, saves, etc)
 
         :Params:
@@ -1153,20 +1155,30 @@ class Plot(object):
             - **grid**: Plot the grid [default: True]
             - **grid_<param>**: <param> is passed to :func:`~matplotlib.pyplot.grid`
             - **hlitvs**: Add highlithing if time axis [default: False]
-            - **figtext**: figtext Add text at a specified position on the figure. Example: figtext=[0,0,'text'] add a 'text' at the lower left corner, or simply figtext='text'.
-            - **figtext_<param>**: <param> is passed to :func:`~matplotlib.pyplot.figtext`
-            - **anchor**: Anchor of the axes (useful when resizing) in ['C', 'SW', 'S', 'SE', 'E', 'NE', 'N', 'NW', 'W'].
+            - **figtext**: figtext Add text at a specified position on the
+              figure. Example: figtext=[0,0,'text'] add a 'text' at the
+              lower left corner, or simply figtext='text'.
+            - **figtext_<param>**: <param> is passed to
+              :func:`~matplotlib.pyplot.figtext`
+            - **anchor**: Anchor of the axes (useful when resizing) in
+              ['C', 'SW', 'S', 'SE', 'E', 'NE', 'N', 'NW', 'W'].
             - **legend**, optional: Draw the legend using :func:`~matplotlib.pyplot.legend`.
             - **legend_<param>**: <param> is passed to :func:`~matplotlib.pyplot.legend`
             - **show**: Display the figure [default: True]
             - **savefig**: Save the figure to this file.
             - **savefig_<param>**: <param> is passed to method :meth:`savefig`
               and finally to the matplotlib function :func:`~matplotlib.pyplot.savefig`.
-            - **savefigs**: Save the figure into multiple formats using :func:`savefigs` and 'savefigs' as the prefix to the files.
+            - **savefigs**: Save the figure into multiple formats using
+              :func:`savefigs` and 'savefigs' as the prefix to the files.
             - **savefigs_<param>**: <param> is passed to :func:`savefigs`
-            - **autoresize**: Auto resize the figure according axes (1 or True), axes+margins (2). If 0 or False, not resized [default: False=2].
-            - **key**: Add a key (like 'a)') to the axes using add_key is different from None [default: None]
+            - **autoresize**: Auto resize the figure according axes (1 or True),
+              axes+margins (2). If 0 or False, not resized [default: False=2].
+            - **key**: Add a key (like 'a)') to the axes using add_key
+              if different from None [default: None]
             - **key_<param>**: <param> is passed to :func:`add_key`
+            - **param_label**: Add a param label to the figure using
+              :meth:`add_param_label` if different from None [default: None]
+            - **param_label_<param>**: <param> is passed to :meth:`add_param_label`
             - **close**: Close the figure at the end [default: False]
             - **title_<param>**: <param> is passed to :func:`~matplotlib.pyplot.title`
             - **logo_<param>**: <param> is passed to :func:`add_logo`
@@ -1180,10 +1192,11 @@ class Plot(object):
         # Filter kewords
         kw = {}
         for kwtype in ['grid', 'title', 'hlitvs', 'hldays', 'dayhl', 'finalize',
-            'figtext', 'key', 'savefig', 'savefigs', 'show', 'legend', 'tight_layout']:
+            'figtext', 'key', 'savefig', 'savefigs', 'show', 'legend',
+            'tight_layout', 'param_label']:
             kw[kwtype] = kwfilter(kwargs, kwtype+'_')
-            if kwtype in self._primary_attributes+self._secondary_attributes+self._special_attributes and \
-                kw[kwtype].has_key(kwtype):
+            if (kwtype in self._primary_attributes+self._secondary_attributes+
+                    self._special_attributes and kw[kwtype].has_key(kwtype)):
                 del kw[kwtype][kwtype]
         kwanim = kwfilter(kwargs, 'anim_', keep=True)
         kw['show'].update(**kwanim)
@@ -1216,6 +1229,10 @@ class Plot(object):
 
         # Key of axes
         self.add_key(key, **kw['key'])
+
+        # Params
+        if param_label:
+            self.add_param_label(param_label, **kw['param_label'])
 
         # Legend
         if legend:
@@ -6005,8 +6022,11 @@ class AutoDateLocator2(AutoDateLocator):
             # Fix hourly locator to start at midnight
             good = [2, 3, 4, 6, 8, 12]
             sampling = good[min(N.searchsorted(good, sampling), len(good)-1)]
-            byhour = range(0, 24, sampling)
-            locator.rule.set(byhour=byhour)
+            for i in xrange(sampling):
+                try:
+                    locator.rule.set(byhour=range(i, 24, sampling))
+                except:
+                    pass
             locator.rule.set(interval=1)
             update = True
         if update:
@@ -6056,7 +6076,8 @@ class DualDateFormatter(DateFormatter):
     .. todo:: DualDateFormatter: verify if dual_fmt is really used
     """
 
-    def __init__(self, level, fmt=None, dual_fmt=None, phase=None, **kwargs):
+    def __init__(self, level, fmt=None, dual_fmt=None, phase=None,
+            locator=None, **kwargs):
         # Which level?
         slevels = ['year', 'month', 'week', 'day', 'hour', 'minute']
         if not isNumberType(level):
@@ -6068,14 +6089,17 @@ class DualDateFormatter(DateFormatter):
             else:
                 level = slevels.index(level)
         self.level = level
+        self.locator = locator
 
         # Autoformat
+        best_phases = None
         if self.level == 0: # Year
             if fmt is None: fmt = '%b'
             if dual_fmt is None: dual_fmt = fmt+'%n%Y'
         elif self.level == 1: # Month
             if fmt is None: fmt = '%e'
             if dual_fmt is None: dual_fmt = fmt+'%n%b %Y'
+            bast_phases = [0,  15]
         elif self.level == 2: # Week
             if fmt is None: fmt = '%a'
             if dual_fmt is None: dual_fmt = fmt+'%n%d/%m/%Y'
@@ -6085,14 +6109,17 @@ class DualDateFormatter(DateFormatter):
             if fmt is None: fmt = '%Hh'
             if dual_fmt is None: dual_fmt = fmt+'%n%d/%m/%Y'
             self.level -=1
+            best_phases = [0, 12]
         elif self.level == 4: # Hour
             if fmt is None: fmt = "%M'"
             if dual_fmt is None: dual_fmt = '%Hh'
             self.level -= 1
+            best_phases = [0, 30]
         elif self.level == 5: # Minute
             if fmt is None: fmt = "%S''"
             if dual_fmt is None: dual_fmt = "%M'"
             self.level -= 1
+            best_phases = [0, 30]
         else:
             if self.level == -2:
                 if fmt is None: fmt = '%Y'
@@ -6110,25 +6137,45 @@ class DualDateFormatter(DateFormatter):
         self.dual_fmt = dual_fmt
         self._reqphase = phase
         if self.level<0: return
-        self._phase = [1, 1, 0, 0, 0]
-        if phase is not None: self._phase[self.level] = phase
+        if callable(phase):
+            self._phase_check = self._phase = phase
+        else:
+            np = 5-self.level-1
+            phases = [1, 1, 0, 0, 0] # m,d,H,M,S
+            if isinstance(phase, int):
+                phases[self.level] = phase
+            phases = tuple(phases)
+            if isinstance(phase, tuple):
+                if len(phase)<np: # tail is missing
+                    phase += tuple(phases[self.level+len(phase):])
+                else: # too much head
+                    phase = phase[-np:]
+            else:
+                phase = phases[self.level:]
+            self._phase = phase
+            self._phase_check_ = lambda dt: (
+                dt.timetuple()[self.level+1:5]+(int(round(dt.second)), ) ==
+                    tuple(self._phase))
+            if locator: # check real case using locator
+                dates = num2date(locator())
+                if not any([self._phase_check_(date) for date in dates]):
+                    self._phase = list(self._phase)
+                    for bp in best_phases or []:
+                        self._phase[0] = bp
+                        if any([self._phase_check_(date) for date in dates]):
+                            break
+                    else: # fall back to the first date phase
+                        self._phase = (dates[0].timetuple()[self.level+1:5]+
+                            (int(round(dates[0].second)), ))
 
 
-    def __call__(self,x, pos=None):
+
+    def __call__(self, x, pos=None):
         dt = num2date(x, self.tz)
 
         # Main label
-#        if pos == 0:
-#            return self.strftime(dt, self.dual_fmt)
-        if self.level>=0:
-            phase = self._reqphase
-            if not isinstance(phase, tuple):
-                phase = tuple(self._phase[self.level:])
-            else:
-                if len(phase)<len(self._phase[self.level:]):
-                    phase += tuple(self._phase[self.level+len(phase):])
-            if dt.timetuple()[self.level+1:5]+(int(round(dt.second)), ) == phase:
-                return self.strftime(dt, self.dual_fmt)
+        if self.level>=0 and self._phase_check_(dt):
+            return self.strftime(dt, self.dual_fmt)
 
         # Intermediate label
         return self.strftime(dt, self.fmt)
@@ -6137,40 +6184,45 @@ class DualDateFormatter(DateFormatter):
     def factory(cls, locator, **kwargs):
         """Helper to setup an appropriate formatter associated to a specified locator"""
         # Get best arguments for initializing and return instance
-        keys = sorted(AutoDateFormatter2.scaled.keys(), reverse=True)
-        tmin, tmax = locator.axis.get_view_interval()
-        dtmin, dtmax = locator.viewlim_to_dt()
-        locator.get_locator(dtmin, dtmax)
-        if hasattr(locator, '_freq'):
-            freq = locator._freq
+        if 'level' in kwargs:
+            level = kwargs.pop('level')
         else:
-            freq = locator.rule._freq
-        trange = tmax-tmin
-        if freq == YEARLY :
-            kwargs.setdefault('fmt', AutoDateFormatter2.scaled[keys[0]])
-            level = -2
-        elif freq == MONTHLY:
-            if trange > 5*365:
+            keys = sorted(AutoDateFormatter2.scaled.keys(), reverse=True)
+            tmin, tmax = locator.axis.get_view_interval()
+            dtmin, dtmax = locator.viewlim_to_dt()
+            if hasattr(locator, 'get_locator'):
+                locator = locator.get_locator(dtmin, dtmax)
+            if hasattr(locator, '_freq'):
+                freq = locator._freq
+            else:
+                freq = locator.rule._freq
+            trange = tmax-tmin
+            if freq == YEARLY :
                 kwargs.setdefault('fmt', AutoDateFormatter2.scaled[keys[0]])
                 level = -2
-            else:
-                level = 'year'
-        elif freq == WEEKLY:
-            level = 'month'
-        elif freq == DAILY:
-            if dtmax.month != dtmin.month:
+            elif freq == MONTHLY:
+                if trange > 5*365:
+                    kwargs.setdefault('fmt', AutoDateFormatter2.scaled[keys[0]])
+                    level = -2
+                else:
+                    level = 'year'
+            elif freq == WEEKLY:
                 level = 'month'
-            else:
-                level = 'week'
-        elif freq == HOURLY:
-            level = 'day'
-        elif freq == MINUTELY:
-            level = 'hour'
-        elif freq == SECONDLY:
-            if trange<1./(24.*60):
-                level = -3
-            else:
-                level = 'minute'
+            elif freq == DAILY:
+                if dtmax.month != dtmin.month:
+                    level = 'month'
+                else:
+                    level = 'week'
+            elif freq == HOURLY:
+                level = 'day'
+            elif freq == MINUTELY:
+                level = 'hour'
+            elif freq == SECONDLY:
+                if trange<1./(24.*60):
+                    level = -3
+                else:
+                    level = 'minute'
+        kwargs['locator'] = locator
         return cls(level, **kwargs)
 
 
@@ -6218,8 +6270,10 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
           If None, automatic [default: None]
         - **formatter**, optional: Date format:
 
+            - 'mpl' or 0 : use the internal Matplotlib auto date locator.
             - "simple" or 1 or "auto": :class:`AutoDateFormatter2`
-            - "dual", 2, None, tuple or dict: :class:`AutoDualDateFormatter2`
+            - "dual", 2, None, tuple or dict: :class:`AutoDualDateFormatter`
+              (default)
             - String: :class:`DateFormatter`
             - else a :class:`matplotlib.ticker.Formatter` instance.
 
@@ -6229,6 +6283,7 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
           or have a special value:
 
             - None or 'auto' or 'vacumm': use the :class:`AutoDateLocator`
+              (default)
             - 'mpl': use the internal Matplotlib auto date locator.
 
         - **minor_locator**, optional: Minor locator.
@@ -6314,8 +6369,10 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
     # Tick format
     # - major
     fmt = formatter or kwargs.get('fmt', None) or kwargs.get('major_formatter', None)
-    if fmt is None: fmt = 'dual'
-    if fmt == 'simple' or fmt == 1 or fmt=="auto":
+    if fmt is None: fmt = 'dual' # default
+    if fmt == 'mpl' or fmt==0: # matplotlib
+        fmt = None
+    elif fmt == 'simple' or fmt == 1 or fmt=="auto":
         fmt = AutoDateFormatter2(major_locator)
     elif fmt == 'dual' or fmt is True or fmt  == 2:
         fmt = AutoDualDateFormatter(major_locator)
