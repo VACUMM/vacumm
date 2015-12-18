@@ -137,6 +137,7 @@ def rainbow(n=None, mode='auto', first=None, last=None, middle=None, stretcher=N
     rbcols = [(0., 0., 1.), (0., 1., 1.), (0., 1., 0.), (1., 1., 0.), (1., 0., 0.)]
     rbfirst = (.5, 0., 1.)
     rblast = (1., 0., .5)
+    rbcyclic = (1., 0, 1.)
 
     # Mode
     if mode is None: mode = 'auto'
@@ -150,6 +151,8 @@ def rainbow(n=None, mode='auto', first=None, last=None, middle=None, stretcher=N
             rbcols =rbcols+[rblast]
         elif mode=='first':
             rbcols = [rbfirst]+rbcols
+        elif mode=='cyclic':
+            rbcols = [rbcyclic]+rbcols+[rbcyclic]
         else:
             rbcols = [rbfirst]+rbcols+[rblast]
 
