@@ -253,9 +253,11 @@ VAR_SPECS = OrderedDict(
     ),
     bathy_u = dict(
         names = ['hx'],
+        standard_names = [],
     ),
     bathy_v = dict(
         names = ['hy'],
+        standard_names = [],
     ),
 
     depth = dict(
