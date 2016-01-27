@@ -1,6 +1,14 @@
 Release notes
 #############
 
+In development
+==============
+
+- Added support for haversine distance to get_distances + krig integration.
+- Added cyclic support to rainbow.
+- Improved date locators and formatters.
+- Fixed some standard names and grid locs in cf.
+
 Version 3.0.0
 =============
 

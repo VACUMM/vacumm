@@ -1492,6 +1492,7 @@ def krig(xi, yi, zi, ggo, mask=True, geo=None, missing_value=None, **kwargs):
     xo, yo = N.meshgrid(GDH.x[:], GDH.y[:])
     xo.shape = -1
     yo.shape = -1
+    distfunc = 'haversine' if GDH.geo else 'simple'
 
     # Get data and mask
     get = GDH.get(zi2d, Ellipsis, compress, missing_value)
@@ -1499,7 +1500,7 @@ def krig(xi, yi, zi, ggo, mask=True, geo=None, missing_value=None, **kwargs):
         xi, yi, zzi, mmi = get
 
         # Interpolate
-        zo3d[:] = _krig_(xi, yi, zzi, xo, yo).reshape(zo3d.shape)
+        zo3d[:] = _krig_(xi, yi, zzi, xo, yo, distfunc=distfunc).reshape(zo3d.shape)
 
     # Format output
     return GDH.format(zi, zo3d, mo3d, missing_value, **kwargs)

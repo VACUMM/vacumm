@@ -78,18 +78,18 @@ __all__.sort()
 def isoslice(var,prop,isoval=0,axis=0,masking=True):
     """
     result = isoslice(variable,property[,isoval=0])
-    
+
     result is a a projection of variable at property == isoval in the first
     nonsingleton dimension.  In the case when there is more than one zero
     crossing, the results are averaged.
-    
+
     EXAMPLE:
     Assume two three dimensional variable, s (salt), z (depth), and
-    u (velicity), all on the same 3D grid.  x and y are the horizontal 
-    positions, with the same horizontal dimensions as z (the 3D depth 
+    u (velicity), all on the same 3D grid.  x and y are the horizontal
+    positions, with the same horizontal dimensions as z (the 3D depth
     field).  Here, assume the vertical dimension, that will be projected,
-    is the first.  
-    
+    is the first.
+
     s_at_m5  = isoslice(s,z,-5);        # s at z == -5
     h_at_s30 = isoslice(z,s,30);       # z at s == 30
     u_at_s30 = isoslice(u,s,30);       # u at s == 30
@@ -205,7 +205,7 @@ def get_resolution(mygrid, lon_range=None,lat_range=None):
     return N.sqrt(ds).mean()
 
 
-def get_distances(xxa, yya, xxb, yyb, geo=False):
+def get_distances(xxa, yya, xxb, yyb, mode=None, pairwise=False, geo=False):
     """Find the distances (in m) between a series of points
 
     :Params:
@@ -214,55 +214,112 @@ def get_distances(xxa, yya, xxb, yyb, geo=False):
         - **yya**: Y //
         - **xxb**: X coordinate of the second series
         - **yyb**: Y //
-        - **geo**, optional: Suppose X is longitude and Y is latitude [default: False]
+        - **mode**, optional: distance computation mode
 
-    :Return: Distances as an (nb,na) array.
+            - ``None``: use ``"harversine"`` if longitude and latitude axes
+              else ``"direct"``
+            - ``"simple"``: simple euclidian distance with no coordinate
+              tranformation
+            - ``"harversine"`` or ``"sphere"``: great circle distance in meters from
+              coordinates in degrees
+            - ``"deg2m"``: euclidian distance with coordinates converted
+              from degrees to meters using :func:`~vacumm.misc.phys.units.deg2m`.
+            - A callable object like a function that directly compute distance
+              from coordinates::
+
+                mode(xxa, yya, xxb, yyb)
+
+        - **pairwise**, optional: The distances between A and B points are
+          computed pairwise. There must have the same number of A and B points.
+
+    :Return: Distances as an ``(nb,na)`` array if pairwise if false,
+        else a ``(na,)`` array.
     """
+    # Mode
+    if not callable(mode):
+        if mode is None:
+            mode = "haversine" if (islon(xxa) or islon(xxb) or
+                islat(yya) or islat(yyb)) else "simple"
+        if geo: # backward compat
+            mode = 'harversine'
+        mode = str(mode).lower()
+        valid_modes = 'simple', 'haversine', 'sphere', 'deg2m'
+        if mode not in valid_modes:
+            raise VACUMMError('Wrong mode ({}). Please choose one of: {}'.format(
+                mode, ', '.join(valid_modes)))
+        if mode=='sphere':
+            mode = 'harversine'
 
-    # Make sur to have iterable elements
-    try:
-        na = len(xxa)
-    except:
-        na = 1
+    # Numerical types
+    Nma = numod(xxa)
+    Nmb = numod(xxb)
+    nma = None if not isinstance(xxa,  N.ndarray) else Nma
+    nmb = None if not isinstance(xxb,  N.ndarray) else Nmb
+    if MV2 is Nma or MV2 is Nmb:
+        Nm = MV2
+    elif N.ma is Nma or N.ma is Nmb:
+        Nm = N.ma
+    else:
+        Nm = N
 
-    xxa = N.array(xxa)
-    yya = N.array(yya)
+    # Make sur to have arrays
+    oldshapea = N.shape(xxa)
+    oldshapeb = N.shape(xxb)
+    if not nma:
+        xxa = N.atleast_1d(xxa)
+        yya = N.atleast_1d(yya)
+    elif cdms2.isVariable(xxa):
+        xxa = xxa.asma()
+        yya = yya.asma()
+    if not nmb:
+        xxb = N.atleast_1d(xxa)
+        yyb = N.atleast_1d(yyb)
+    elif cdms2.isVariable(xxb):
+        xxb = xxb.asma()
+        yyb = yyb.asma()
 
-    try:
-        nb = len(xxb)
-    except:
-        nb = 1
+    # Reshape them
+    xxa = xxa.ravel()
+    yya = yya.ravel()
+    xxb = xxb.ravel()
+    yyb = yyb.ravel()
+    if not pairwise:
+        xxa, xxb = N.meshgrid(xxa, xxb)
+        yya, yyb = N.meshgrid(yya, yyb)
 
-    xxb = N.array(xxb)
-    yyb = N.array(yyb)
+    # Compute it
+    if callable(mode):
+        dist = mode(xxa, yya, xxb, yyb)
+    else:
+        if mode=='deg2m':
+            xxa = units.deg2m(xxa,lat=yya)
+            yya = units.deg2m(yya)
+            xxb = units.deg2m(xxb,lat=yyb)
+            yyb = units.deg2m(yyb)
+        dx = xxa-xxb
+        dy = yya-yyb
+        if mode=='haversine':
+            dx *= N.pi/180
+            dy *= N.pi/180
+            xxa *= N.pi/180
+            yya *= N.pi/180
+            xxb *= N.pi/180
+            yyb *= N.pi/180
+            a = Nm.sin(dy/2)**2 + Nm.cos(yya) * Nm.cos(yyb) * Nm.sin(dx/2)**2
+            dist = constants.EARTH_RADIUS * 2 * Nm.arcsin(Nm.sqrt(a)) ; del a
+        else:
+            dist = Nm.sqrt(dx**2+dy**2)
+        del dx, dy
 
-    # Geographic distances ?
-    try:
-        if xxa.isLongitude() and yya.isLatitude:
-            geo = True
-    except:
-        pass
-    if geo:
-        xxa = units.deg2m(xxa,lat=yya)
-        yya = units.deg2m(yya)
-        xxb = units.deg2m(xxb,lat=yyb)
-        yyb = units.deg2m(yyb)
-
-    # Resize arrays for operations
-    xxa = N.resize(xxa,(nb,na))
-    yya = N.resize(yya,(nb,na))
-    xxb = N.transpose(N.resize(xxb,(na,nb)))
-    yyb = N.transpose(N.resize(yyb,(na,nb)))
-
-    # Do we use masks?
-    op = N
-    for arr in xxa,yya,xxb,yyb:
-        if MA.isMA(arr):
-            op = MA
-            break
-
-    # Distances
-    return op.ravel(op.sqrt((xxb-xxa)**2+(yyb-yya)**2))
+    # Reform
+    if nma or nmb:
+        if pairwise:
+            dist.shape = oldshapea or oldshapeb
+        else:
+            dist.shape = oldshapeb + oldshapea
+    else:
+        dist = float(dist)
+    return dist
 
 
 
@@ -2919,8 +2976,9 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
 ######################################################################
 from ...misc.atime import ch_units,compress
 from ...misc import cp_atts,get_atts,set_atts,intersect, numod
-from ...misc.axes import check_axes, islon, islat, islev, istime, create_lon, create_lat, isaxis, isdep
-from ...misc.phys import units
+from ...misc.axes import (check_axes, islon, islat, islev, istime, create_lon,
+    create_lat, isaxis, isdep)
+from ...misc.phys import units, constants
 from .basemap import get_map, cached_map, cache_map, get_proj
 from .masking import t2uvmasks
 from ...__init__ import VACUMMError, VACUMMWarning

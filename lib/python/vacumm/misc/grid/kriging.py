@@ -48,6 +48,7 @@ if not hasattr(N, 'isclose'):
 else:
     isclose = N.isclose
 
+
 #from scipy.optimize import curve_fit
 def get_blas_func(name):
     try:
@@ -68,6 +69,7 @@ except:
     sytri = N.linalg.inv
 
 from ...misc.misc import kwfilter
+from .misc import get_distances
 
 class KrigingError(Exception):
     pass
@@ -195,7 +197,8 @@ def _get_xyz_(x, y, z=None, check=True, noextra=True, getmask=False):
         res += mask,
     return res
 
-def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10, dmax=None):
+def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
+        nbmin=10, dmax=None,  distfunc='simple'):
     """Estimate variogram from data
 
     :Params:
@@ -217,6 +220,8 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10,
         - **nbmin**, optional: Minimal number of points
           in a bin.
         - **dmax**, optional: Max distance to consider.
+        - **distfunc**: Function to compute distances, or a mode argument to
+          :func:`~vacumm.misc.grid.misc.get_distances`.
 
     """
     x, y, z = _get_xyz_(x, y, z)
@@ -231,10 +236,7 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10,
         npts = x.shape[0]
 
     # Distances
-    x0, x1 = N.meshgrid(x, x)
-    y0, y1 = N.meshgrid(y, y)
-    dd = N.sqrt((x1-x0)**2+(y1-y0)**2)
-    del x0, x1, y0, y1
+    dd = get_distances(x, y, x, y, mode=distfunc)
 
     # Variogram
     z0, z1 = N.meshgrid(z, z)
@@ -282,7 +284,8 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None, nbmin=10,
         vb[ib] = v[iib].mean()
     return db, vb
 
-def variogram_fit(x, y, z, mtype, getall=False, getp=False, geterr=False, **kwargs):
+def variogram_fit(x, y, z, mtype, getall=False, getp=False, geterr=False,
+        distfunc='simple', **kwargs):
     """Fit a variogram model to data and return the function
 
     :Example:
@@ -301,10 +304,12 @@ def variogram_fit(x, y, z, mtype, getall=False, getp=False, geterr=False, **kwar
             - ``"popt"``: parameters than where optimised,
             - ``vm"``: :class:`VariogramModel` instance,
             - ``"mtype"``: variogram model type.
-            -
+
         - **getp**, optional: Only return model parameters. Return them as
           a `class:`dict` if equal to ``2``.
         - **variogram_<param>**, optional: ``param`` is passed to :func:`variogram`.
+        - **distfunc**: Function to compute distances, or a mode argument to
+          :func:`~vacumm.misc.grid.misc.get_distances`.
         - Extra keywords are those of :func:`variogram_model`.
           They can be used to fix some of the parameters.
 
@@ -312,6 +317,7 @@ def variogram_fit(x, y, z, mtype, getall=False, getp=False, geterr=False, **kwar
 
     """
     kwv = kwfilter(kwargs, 'variogram_')
+    kwv.setdefault("distfunc", distfunc)
 
     # Estimated variogram
     d, v = variogram(x, y, z, **kwv)
@@ -470,6 +476,8 @@ class OrdinaryCloudKriger(object):
           to invert matrices. Set it to a number <2 to switch off
           parallelisation.
         - **exact**, optional: If True, variogram is exactly zero when distance is zero.
+        - **distfunc**: Function to compute distances, or a mode argument to
+          :func:`~vacumm.misc.grid.misc.get_distances`.
         - Extra keywords are  parameters to the :func:`variogram_model` that must not be
           optimized by :func:`variogram_model`. For instance ``n=0`` fix the
           nugget to zero.
@@ -505,8 +513,8 @@ class OrdinaryCloudKriger(object):
             List of input data of each cloud.
     """
 
-    def __init__(self, x, y, z, mtype=None, vgf=None, npmax=1000, nproc=None, exact=False,
-            **kwargs):
+    def __init__(self, x, y, z, mtype=None, vgf=None, npmax=1000,
+            nproc=None, exact=False, distfunc='simple', **kwargs):
         self.x, self.y, self.z, self.mask = _get_xyz_(x, y, z, noextra=False, getmask=True)
         self.np = self.x.shape[0]
         self.nt = 0 if self.z.ndim==1 else z.shape[0]
@@ -523,6 +531,7 @@ class OrdinaryCloudKriger(object):
         self._kwargs = kwargs
         self.variogram_fitting_results = None
         self.exact = exact
+        self.distfunc = distfunc
 
     def __len__(self):
         return self.x.shape[0]
@@ -585,6 +594,7 @@ class OrdinaryCloudKriger(object):
         """Estimate the variogram function by using :func:`variogram_fit`"""
         kw = self._kwargs.copy()
         kw.update(kwargs)
+        kw['distfunc'] = self.distfunc
         x, y, z = self._get_xyz_(x, y, z)
         if z.ndim==2:
             ne = z.shape[0]
@@ -634,11 +644,8 @@ class OrdinaryCloudKriger(object):
 
             # Get distance between input points
             if len(self._dd)<ic+1:
-                x0, x1 = N.meshgrid(self.xc[ic], self.xc[ic])
-                y0, y1 = N.meshgrid(self.yc[ic], self.yc[ic])
-                dd = (x1-x0)**2 ; del x0,x1
-                dd += (y1-y0)**2 ; del y0,y1
-                dd = N.sqrt(dd).astype('d')
+                dd = get_distances(self.xc[ic], self.yc[ic],
+                    self.xc[ic], self.yc[ic], mode=self.distfunc)
                 self._dd.append(dd)
             else:
                 dd = self._dd[ic]
@@ -708,11 +715,12 @@ class OrdinaryCloudKriger(object):
 
             # Distances to output points
             # dd = cdist(N.transpose([xi,yi]),N.transpose([xo,yo])) # TODO: test cdist
+            dd = get_distances(xo, yo, self.xc[ic], self.yc[ic], mode=self.distfunc)
             xxo, xxi = N.meshgrid(xo, self.xc[ic])
-            dd = (xxo-xxi)**2 ; del xxi, xxo
+            dd2 = (xxo-xxi)**2 ; del xxi, xxo
             yyo, yyi = N.meshgrid(yo, self.yc[ic])
-            dd += (yyo-yyi)**2 ; del yyi, yyo
-            dd = N.sqrt(dd)
+            dd2 += (yyo-yyi)**2 ; del yyi, yyo
+            dd2 = N.sqrt(dd2)
 
             # Form B
             B = N.empty((self.npc[ic]+1, npo))
