@@ -52,7 +52,7 @@ from genutil import minmax, statistics
 from matplotlib.axes import Subplot
 from matplotlib.cm import ScalarMappable
 from matplotlib.collections import LineCollection
-from matplotlib.colors import ColorConverter,is_color_like,no_norm, Normalize
+from matplotlib.colors import ColorConverter,is_color_like, Normalize
 from matplotlib.dates import DateFormatter, MonthLocator, WeekdayLocator, YearLocator, \
     DayLocator, HourLocator, MinuteLocator, SecondLocator, MONDAY, WEEKLY, YEARLY, MONTHLY, \
     AutoDateLocator, AutoDateFormatter, MO, DAILY, HOURLY, num2date

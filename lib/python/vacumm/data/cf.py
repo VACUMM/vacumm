@@ -249,13 +249,17 @@ VAR_SPECS = OrderedDict(
         standard_names=['model_sea_floor_depth_below_sea_level', 'model_sea_floor_depth_below_geoid', "sea_floor_depth_below_geoid" ],
         long_names = 'Bathymetry',
         units = 'm',
-        atlocs = ['t', 'u', 'v', 'f'],
+        atlocs = 't',
     ),
     bathy_u = dict(
         names = ['hx'],
+        standard_names = [],
+        long_names =['bathymetry at u-location'],
     ),
     bathy_v = dict(
         names = ['hy'],
+        standard_names = [],
+        long_names =['bathymetry at v-location'],
     ),
 
     depth = dict(

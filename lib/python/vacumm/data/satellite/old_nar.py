@@ -71,35 +71,35 @@ class Old_nar(Sst) :
         #-------------------------------------------------------------
         #------- recuperation des donnees : generalites (site ftp, etc)
         if cfg is None:
-      config = ConfigParser.RawConfigParser()
-      config.read(os.path.join(self.SCRIPT_DIR,'config.cfg'))
-      URL_CERSAT = config.get('Old Nar SST', 'url_cersat')
-      #URL_CERSAT='ftp.ifremer.fr/pub/ifremer/cersat'
-      DATA_DIR = config.get('Old Nar SST', 'data_dir')
-      URL_NAR_DATA=os.path.join(URL_CERSAT,DATA_DIR)
-      GRID_DIR = config.get('Old Nar SST', 'grid_dir')
-      URL_NAR_GRID=os.path.join(URL_CERSAT,GRID_DIR)
-      znar=self.ZONE_NAR
-      gridfile="grid_%(znar)s.nc"%vars()
-      COMPRESS_NAR = config.get('Old Nar SST', 'compress')
-      EXT_NAR="00.nc.%(COMPRESS_NAR)s"%vars()
-      HEURE_NAR = config.get('Old Nar SST', 'nar_hours')
-      HEURE_NAR = HEURE_NAR.split(',')
-      NAR_DAYNIGHT = config.get('Old Nar SST', 'nar_daynight')    # NIGHT, DAY ou ALL
-    else:
-      URL_CERSAT = cfg['Old Nar SST']['url_cersat']
-      #URL_CERSAT='ftp.ifremer.fr/pub/ifremer/cersat'
-      DATA_DIR = cfg['Old Nar SST']['data_dir']
-      URL_NAR_DATA=os.path.join(URL_CERSAT,DATA_DIR)
-      GRID_DIR = cfg['Old Nar SST']['grid_dir']
-      URL_NAR_GRID=os.path.join(URL_CERSAT,GRID_DIR)
-      znar=self.ZONE_NAR
-      gridfile="grid_%(znar)s.nc"%vars()
-      COMPRESS_NAR = cfg['Old Nar SST']['compress']
-      EXT_NAR="00.nc.%(COMPRESS_NAR)s"%vars()
-      HEURE_NAR = cfg['Old Nar SST']['nar_hours']
-      HEURE_NAR = HEURE_NAR.split(',')
-      NAR_DAYNIGHT = cfg['Old Nar SST']['nar_daynight']    # NIGHT, DAY ou ALL
+	        config = ConfigParser.RawConfigParser()
+	        config.read(os.path.join(self.SCRIPT_DIR,'config.cfg'))
+	        URL_CERSAT = config.get('Old Nar SST', 'url_cersat')
+	        #URL_CERSAT='ftp.ifremer.fr/pub/ifremer/cersat'
+	        DATA_DIR = config.get('Old Nar SST', 'data_dir')
+	        URL_NAR_DATA=os.path.join(URL_CERSAT,DATA_DIR)
+	        GRID_DIR = config.get('Old Nar SST', 'grid_dir')
+	        URL_NAR_GRID=os.path.join(URL_CERSAT,GRID_DIR)
+	        znar=self.ZONE_NAR
+	        gridfile="grid_%(znar)s.nc"%vars()
+	        COMPRESS_NAR = config.get('Old Nar SST', 'compress')
+	        EXT_NAR="00.nc.%(COMPRESS_NAR)s"%vars()
+	        HEURE_NAR = config.get('Old Nar SST', 'nar_hours')
+	        HEURE_NAR = HEURE_NAR.split(',')
+	        NAR_DAYNIGHT = config.get('Old Nar SST', 'nar_daynight')    # NIGHT, DAY ou ALL
+        else:
+	        URL_CERSAT = cfg['Old Nar SST']['url_cersat']
+	        #URL_CERSAT='ftp.ifremer.fr/pub/ifremer/cersat'
+	        DATA_DIR = cfg['Old Nar SST']['data_dir']
+	        URL_NAR_DATA=os.path.join(URL_CERSAT,DATA_DIR)
+	        GRID_DIR = cfg['Old Nar SST']['grid_dir']
+	        URL_NAR_GRID=os.path.join(URL_CERSAT,GRID_DIR)
+	        znar=self.ZONE_NAR
+	        gridfile="grid_%(znar)s.nc"%vars()
+	        COMPRESS_NAR = cfg['Old Nar SST']['compress']
+	        EXT_NAR="00.nc.%(COMPRESS_NAR)s"%vars()
+	        HEURE_NAR = cfg['Old Nar SST']['nar_hours']
+	        HEURE_NAR = HEURE_NAR.split(',')
+	        NAR_DAYNIGHT = cfg['Old Nar SST']['nar_daynight']    # NIGHT, DAY ou ALL
 
 
 
