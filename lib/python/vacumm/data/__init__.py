@@ -69,6 +69,10 @@ DATASET_SPECS = dict(
         cls = 'vacumm.data.model.hycom.HYCOM',
         desc = 'HYCOM ocean model'
    ),
+    globcurrent = dict(
+        cls = 'vacumm.data.model.globcurrent.GlobCurrent',
+        desc = 'GlobCurrent satellite-derived currents'
+   ),
     swan = dict(
         cls = 'vacumm.data.model.swan.SWAN',
         desc = 'SWAN wave model'
