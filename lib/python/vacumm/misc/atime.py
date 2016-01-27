@@ -2322,7 +2322,7 @@ class IterDates(object):
 
         # Round this range
         if roundto is True:
-            roundto = interval[1]
+            roundto = dt[1]
         self._roundto = roundto
         start_date = self.round(start_date)
         end_date = self.round(end_date)

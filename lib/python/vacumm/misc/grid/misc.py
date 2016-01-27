@@ -2890,11 +2890,11 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
             - ``"top"`` or ``"eta"`` or ``"ssh"``: Sea surface height.
             - ``"bottom"`` or ``"depth"`` or ``"bathy"``: Bottom depth.
             - Else, estimated by checking the standard_name of the
-              variable, by checking if some values are negatives ('top'),
+              variable, if some values are negatives ('top')
               or if maximal value is greater then 15. ('bottom').
 
-        - **refloc**, optional: ``"top"``|``"eta"``,
-          ``"bottom"``|``"depth"``,  or ``None``.
+        - **refloc**, optional: ``"top"`` | ``"eta"``,
+          ``"bottom"`` | ``"depth"``,  or ``None``.
 
     """
 
