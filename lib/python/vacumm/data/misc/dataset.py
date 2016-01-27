@@ -2369,16 +2369,12 @@ class OceanDataset(OceanSurfaceDataset):
         # First, try to find a variable
         u = v = None
         if check_mode('var', mode):
-            u = self.get_variable('ugbt', **kwvar)
-            v = self.get_variable('vgbt', **kwvar)
+            if getu: u = self.get_variable('ugbt', **kwvar)
+            if getv: v = self.get_variable('vgbt', **kwvar)
             if (u is not None and v is not None) or check_mode('var', mode, strict=True):
-                u = self.finalize_object(u, **kwfinalu)
-                v = self.finalize_object(v, **kwfinalv)
                 res = ()
-                if getu:
-                    res += u,
-                if getv:
-                    res += v,
+                if getu: res += self.finalize_object(u, **kwfinalu),
+                if getv: res += self.finalize_object(v, **kwfinalv)
                 return res if len(res)==2 else res[0]
 
         # Estimate it
