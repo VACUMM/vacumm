@@ -69,7 +69,7 @@ from vacumm.misc.atime import (
     lindates, ch_units, add_margin, round_date, midnight_date, midnight_interval,
     mpl, tic, toc, pat2freq, pat2glob, has_time_pattern,
     is_interval, is_time, is_axistime, is_cdtime, is_datetime, is_in_range,
-    is_numtime, is_strtime, itv_intersect, itv_union
+    is_numtime, is_strtime, itv_intersect, itv_union, julday
     )
 
 

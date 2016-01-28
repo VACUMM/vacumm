@@ -69,7 +69,8 @@ __all__ = ['STR_UNIT_TYPES','RE_SPLIT_DATE','now', 'add', 'axis_add',
 'is_strtime', 'time_type', 'is_axistime', 'notz',  'IterDates', 'numtime',  'is_numtime',
 'pat2glob', 'midnight_date', 'midnight_interval','reduce_old', 'daily_bounds',
 'hourly_bounds', 'time_split', 'time_split_nmax', 'add_margin', 'fixcomptime',
-'is_interval', 'has_time_pattern', 'tsel2slice', 'time_selector', 'tic', 'toc']
+'is_interval', 'has_time_pattern', 'tsel2slice', 'time_selector', 'tic', 'toc',
+'julday']
 
 
 
@@ -684,6 +685,39 @@ def numtime(mytime):
     LH = _LH_(dtimes)
     dtimes = LH.get()
     return LH.put([date2num(dt) for dt in dtimes])
+
+def julday(mytime, mode='cnes'):
+    """Convert to a CNES julian days, i.e. days from 1950 (CNES) or 1958 (NASA)
+
+    :Params:
+
+        - **mytime**: Time as string, :class:`~datetime.datetime`,
+          :func:`cdtime.comptime`, :func:`cdtime.reltime`, a number
+          or a: mod:`cdms2` time axis.
+        - **ref**, optional: computation mode
+
+            - ``"cnes"``: days from 1958-01-01
+            - ``"nasa"``: days from 1958-01-01
+
+    .. note::
+
+        If not an :mod:`cdms2` time axis, first argument may be a list.
+        In this case, a list is also returned.
+
+    :Sea also:
+
+        :func:`comptime` :func:`reltime`  :func:`datetime`  :func:`strtime`
+    """
+    if mode is None:
+        mode = 'cnes'
+    else:
+        mode = str(mode)
+        assert mode in ['cnes', 'nasa']
+    tunits = 'days since {}-01-01'.format(1950 if mode=='cnes' else 1958)
+    rtimes = reltime(mytime, units=tunits)
+    LH = _LH_(rtimes)
+    rtimes = LH.get()
+    return LH.put([rt.value for rt in rtimes])
 
 
 def notz(mytime):
