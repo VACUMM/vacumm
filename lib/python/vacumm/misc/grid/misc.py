@@ -241,7 +241,7 @@ def get_distances(xxa, yya, xxb, yyb, mode=None, pairwise=False, geo=False):
             mode = "haversine" if (islon(xxa) or islon(xxb) or
                 islat(yya) or islat(yyb)) else "simple"
         if geo: # backward compat
-            mode = 'harversine'
+            mode = 'haversine'
         mode = str(mode).lower()
         valid_modes = 'simple', 'haversine', 'sphere', 'deg2m'
         if mode not in valid_modes:
