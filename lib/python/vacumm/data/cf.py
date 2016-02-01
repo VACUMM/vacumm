@@ -1318,13 +1318,19 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
     var = MV2.asarray(var)
 
     # Check specs
-    if name not in GENERIC_VAR_NAMES:
-        if var.id in GENERIC_VAR_NAMES:
+    if name not in GENERIC_NAMES:
+        if var.id in GENERIC_NAMES:
             name = var.id
         else:
             raise KeyError("Generic var name not found '%s'. Please choose one of: %s"%(
-                name, ', '.join(GENERIC_VAR_NAMES)))
-    specs = VAR_SPECS[name].copy()
+                name, ', '.join(GENERIC_NAMES)))
+    isaxis = name in GENERIC_AXIS_NAMES
+    if isaxis:
+        specs = AXIS_SPECS[name].copy()
+        if 'axis' in specs:
+            del specs['axis']
+    else:
+        specs = VAR_SPECS[name].copy()
     # - merge kwargs and specs
     for key, val in kwargs.items():
         if val is None or key not in specs: continue
@@ -1344,7 +1350,8 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
                 specs[sname] = [no_loc_single(specs[sname][0], stype)]
         name = specs['names'][0]
     # - id
-    if force or var.id.startswith('variable_'):
+    if (force or var.id.startswith('variable_') or
+            (isaxis and var.id.startswith('axis_'))): # FIXME: use regexp
         var.id = name
     # - attributes
     for att, val in cf2atts(specs, **kwargs).items():
@@ -1373,14 +1380,15 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
                 raise VACUMMError("Cdms order should be of length %s instead of %s"%(var.ndim, len(order)))
 
         # First check
-        axspecs = specs['axes']
-        formatted = []
-        for key, meth in axismeths.items():
-            axis = getattr(var, meth)()
-            if order is not None: order.replace(key, '-')
-            if axis is not None:
-                format_axis(axis, axspecs[key], **kwaxes[key])
-                formatted.append(key)
+        if 'axes' in specs:
+            axspecs = specs['axes']
+            formatted = []
+            for key, meth in axismeths.items():
+                axis = getattr(var, meth)()
+                if order is not None: order.replace(key, '-')
+                if axis is not None:
+                    format_axis(axis, axspecs[key], **kwaxes[key])
+                    formatted.append(key)
 
         # Check remaining simple axes (DOES NOT WORK FOR 2D AXES)
         if order is not None and order!='-'*len(order):
@@ -1448,7 +1456,7 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True,
     kwaxed2d = kwfilter(kwargs, 'axes2d_')
     if not isaxis(axis) or recreate:
         if len(axis.shape)==1:
-            axis = cdms2.create_axis(axis)
+            axis = cdms2.createAxis(axis)
         else:
             xy = specs['axis'].lower()
             kwaxed2d[xy] = axis
