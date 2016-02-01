@@ -314,9 +314,9 @@ def get_distances(xxa, yya, xxb, yyb, mode=None, pairwise=False, geo=False):
     # Reform
     if nma or nmb:
         if pairwise:
-            dist.shape = oldshapea or oldshapeb
+            dist = dist.reshape(oldshapea or oldshapeb)
         else:
-            dist.shape = oldshapeb + oldshapea
+            dist = dist.reshape(oldshapeb + oldshapea)
     else:
         dist = float(dist)
     return dist
