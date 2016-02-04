@@ -196,9 +196,14 @@ try:
     _psutil_process = psutil.Process(os.getpid())
     def psinfo():
         '''Get cpu and memory usage string (require **psutil** module)'''
-        cpu = _psutil_process.get_cpu_percent()
-        mem = _psutil_process.get_memory_percent()
-        rss, vsz  = _psutil_process.get_memory_info()
+        if hasattr(_psutil_process, 'get_cpu_percent'):
+            cpu = _psutil_process.get_cpu_percent()
+            mem = _psutil_process.get_memory_percent()
+            rss, vsz  = _psutil_process.get_memory_info()
+        else:
+            cpu = _psutil_process.cpu_percent()
+            mem = _psutil_process.memory_percent()
+            rss, vsz  = _psutil_process.memory_info()
         ps = '[CPU: %d%%  MEM: %d%%  RSS: %dMo  VSZ: %dMo]'%(cpu, mem, rss / 2**20, vsz / 2**20)
         return ps
 except Exception, e:
