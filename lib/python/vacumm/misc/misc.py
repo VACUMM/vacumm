@@ -70,7 +70,7 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'create_selector', 'selector2str', 'split_selector', 'squeeze_variable', 'dict_copy_items',
     "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
     'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out',
-    'kwfilterout', 'filter_selector', 'isempty']
+    'kwfilterout', 'filter_selector', 'isempty', 'checkdir']
 __all__.sort()
 
 def broadcast(set, n, mode='last', **kwargs):
@@ -1971,5 +1971,25 @@ def numod(*vv):
     return nm
 
 
+def checkdir(path, asfile=None):
+    """Make sure that a directory exists
 
+    :Params:
 
+        - **path**: Directory of file path.
+        - **asfile**, optional: Interpret ``path`` as file name instead of a
+          directory name. When ``None``, it is set to ``True`` if it has a dot
+          (``"."``) inside.
+
+      :Return: The directory name.
+    """
+    if asfile is None:
+        asfile = '.' in path
+    path = os.path.abspath(path)
+    if asfile:
+        path = os.path.dirname(path)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    elif not os.path.isdir(path):
+        raise VACUMMError("Path exists but is not a directory: {}".format(path))
+    return path
