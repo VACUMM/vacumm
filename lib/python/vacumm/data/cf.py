@@ -67,6 +67,12 @@ VAR_SPECS = OrderedDict(
         units =  'degrees_celsius',
 #        axes = {'t':'time', 'x':'lon', 'y':'lat'},
     ),
+    ptemp = dict(
+        names = ['ptemp'],
+        standard_names = ['sea_water_potential_temperature'],
+        long_names = 'Potential temperature',
+        units =  'degrees_celsius',
+    ),
     sal = dict(
         names=['sal', 'psal', 'salinity', 'SAL'],
         standard_names='sea_water_salinity',
@@ -97,11 +103,39 @@ VAR_SPECS = OrderedDict(
         long_names = 'Sea water potential density',
         units = 'kg m-3',
     ),
+    sigmat = dict(
+        names = ['sigmat'],
+        standard_names = 'sea_water_sigma_theta',
+        long_names = 'Sea water sigma-theta',
+        units = 'kg m-3',
+    ),
     ssd = dict(
         names = ['ssd'],
         standard_names = 'sea_surface_density',
         long_names = 'Sea surface density',
         units = 'PSU',
+    ),
+    conduct = dict(
+        standard_names = 'sea_water_electrical_conductivity',
+        long_names = 'Sea water electrial conductivity',
+        units = 'S m-1',
+    ),
+    sndspd = dict(
+        standard_names = 'speed_of_sound_in_sea_water',
+        long_names = 'Speed of sound in water',
+        units = 'm s-1',
+    ),
+    mld = dict(
+        standard_names = 'mixed_layer_depth',
+        long_names = "Mixed layer depth",
+        units = "m",
+        physloc = 't',
+    ),
+    ped = dict(
+        standard_names = 'potential_energy_deficit',
+        long_names = "Potential energy deficit",
+        units = "J m-2",
+        physloc = 't',
     ),
 
 
@@ -224,22 +258,6 @@ VAR_SPECS = OrderedDict(
         standard_names = 'average_ocean_vertical_tracer_diffusivity',
         long_names = "Vertical diffusivity",
         units = "m2 s-1",
-    ),
-
-    # Thermodynamics
-    mld = dict(
-        names = [],
-        standard_names = 'mixed_layer_depth',
-        long_names = "Mixed layer depth",
-        units = "m",
-        physloc = 't',
-    ),
-    ped = dict(
-        names = [],
-        standard_names = 'potential_energy_deficit',
-        long_names = "Potential energy deficit",
-        units = "J m-2",
-        physloc = 't',
     ),
 
 
@@ -1153,9 +1171,12 @@ for all_specs in VAR_SPECS, AXIS_SPECS:
             del specs['axes']
 
         # Key = first name (id)
-        if name in specs['names']:
-            specs['names'].remove(name)
-        specs['names'].insert(0, name)
+        if "names" not in specs:
+            specs['names'] = [name]
+        else:
+            if name in specs['names']:
+                specs['names'].remove(name)
+            specs['names'].insert(0, name)
 
         # Standard_names in names
         if ('standard_names' in specs and specs['standard_names']):
