@@ -287,6 +287,17 @@ def _validator_path_(value, default='', expand=None):
         return os.path.expandvars(os.path.expanduser(value))
     return value
 
+def _validator_timeunits_(value, default='days since 1950-01-01'):
+    """Validator of standard time units"""
+    from .atime import are_valid_units
+    value = str(value)
+    if value=='None' or not value:
+        value = default
+    if not are_valid_units(value):
+        raise VdtTypeError(value)
+    return value
+
+
 def _validator_cdtime_(value, min=None, max=None, default=None):
     """Validator of a date (compatible with :func:`cdtime.s2c`)"""
     import cdtime
@@ -312,6 +323,7 @@ _validator_specs_ = {
         'string':validate.is_string,
         # single value
         'date':_validator_cdtime_,
+        'timeunits':_validator_timeunits_,
         'minmax':_validator_minmax_,
         'numerics':_validator_numerics_,
         'figsize':_validator_figsize_,
