@@ -205,7 +205,7 @@ def get_resolution(mygrid, lon_range=None,lat_range=None):
     return N.sqrt(ds).mean()
 
 
-def get_distances(xxa, yya, xxb, yyb, mode=None, pairwise=False, geo=False):
+def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=False):
     """Find the distances (in m) between a series of points
 
     :Params:
@@ -250,6 +250,10 @@ def get_distances(xxa, yya, xxb, yyb, mode=None, pairwise=False, geo=False):
         if mode=='sphere':
             mode = 'harversine'
 
+    # With what
+    if xxb is None: xxb = xxa
+    if yyb is None: yyb = yya
+
     # Numerical types
     Nma = numod(xxa)
     Nmb = numod(xxb)
@@ -272,7 +276,7 @@ def get_distances(xxa, yya, xxb, yyb, mode=None, pairwise=False, geo=False):
         xxa = xxa.asma()
         yya = yya.asma()
     if not nmb:
-        xxb = N.atleast_1d(xxa)
+        xxb = N.atleast_1d(xxb)
         yyb = N.atleast_1d(yyb)
     elif cdms2.isVariable(xxb):
         xxb = xxb.asma()
