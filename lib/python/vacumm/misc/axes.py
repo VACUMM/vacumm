@@ -307,6 +307,8 @@ def create_axis(values, atype='-', **atts):
         >>>
     """
     from vacumm.misc import cp_atts
+    if N.isscalar(values):
+        values = (values, )
     if isinstance(values, tuple) and len(values) < 4:
         values = N.arange(*values, **{'dtype':'d'})
     if cdms2.isVariable(values):
