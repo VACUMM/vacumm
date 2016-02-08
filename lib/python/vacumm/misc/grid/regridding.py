@@ -586,10 +586,11 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
         # Not found, so 0 without verification now (later)
         if axis == -1 or axis is None: axis = 0
 
-    elif axis == -1:      # Last axis
-        axis = vari.ndim-1
-    elif axis < 0 or axis >= vari.ndim:
-        raise VACUMMError('Wrong "axis" parameter for interpolation')
+    else:
+        if axis<0:
+            axis += vari.ndim
+        if axis < 0 or axis >= vari.ndim:
+            raise VACUMMError('Wrong "axis" parameter for interpolation')
     if axis in [vari.ndim-2, vari.ndim-1]:
         grid = None
 
