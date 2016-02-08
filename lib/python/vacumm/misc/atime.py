@@ -59,7 +59,7 @@ RE_MATCH_UNITS_PATTERN = r'(%s) since '%'|'.join(STR_UNIT_TYPES)+RE_MATCH_TIME_P
 RE_MATCH_UNITS = recompile(RE_MATCH_UNITS_PATTERN+'$', re.I).match
 
 __all__ = ['STR_UNIT_TYPES','RE_SPLIT_DATE','now', 'add', 'axis_add',
-'mpl', 'are_same_units', 'are_good_units', 'ch_units', 'comptime', 'reltime', 'datetime',
+'mpl', 'are_same_units', 'are_valid_units', 'ch_units', 'comptime', 'reltime', 'datetime',
 'is_cdtime', 'is_reltime', 'is_comptime', 'is_datetime', 'check_range', 'is_in_range',
 'num_to_ascii', 'Gaps', 'unit_type', 'get_dt', 'compress', 'plot_dt', 'reduce', 'yearly',
 'monthly', 'hourly', 'daily', 'hourly_exact', 'trend', 'detrend', 'strftime', 'strptime',
@@ -353,7 +353,7 @@ def are_same_units(units1, units2):
     """
     return cdtime.reltime(100,str(units1).lower())==cdtime.reltime(100, str(units2).lower())
 
-def are_good_units(units):
+def are_valid_units(units):
     """Check that units are well formatted
 
     :Example:
@@ -373,8 +373,8 @@ def are_good_units(units):
 #    for rem in ' UTC.', ' UTC':
 #        units = units.replace(rem, '')
     return RE_MATCH_UNITS(units) is not None
-
-check_units = are_good_units
+are_good_units = are_valid_units
+check_units = are_valid_units
 def ch_units(mytimes, newunits, copy=True):
     """Change units of a CDAT time axis or a list (or single element) or cdtime times
 
