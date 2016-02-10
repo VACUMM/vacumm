@@ -4236,16 +4236,17 @@ class Logger(object):
         # Handlers
         handlers = self.logger.handlers
         # - file
-        if logfile is not None and logfile != '' and True not in [(logfile!=l.baseFilename)
-            for l in handlers if isinstance(l, logging.handlers.RotatingFileHandler)]:
-            logdir = os.path.dirname(logfile)
-            if logdir != '' and not os.path.exists(logdir): os.makedirs(logdir)
+        if logfile is not None and logfile != '' and not any(
+                [os.path.samefile(logfile,  l.baseFilename) for l in handlers
+                    if isinstance(l, logging.handlers.RotatingFileHandler)]):
+            checkdir(logfile, asfile=True)
             file =  logging.handlers.RotatingFileHandler(logfile,
                 maxBytes=maxlogsize*1000, backupCount=maxbackup)
             file.setFormatter(logging.Formatter(ffmt, asctime))
             logger.addHandler(file)
         # - console
-        if console and True not in [(l.__class__ is logging.StreamHandler) for l in handlers]:
+        if console and not any([(isinstance(l, logging.StreamHandler) and
+                    not isinstance(l, logging.FileHandler)) for l in handlers]):
             console = logging.StreamHandler()
             if colors:
                 console.setFormatter(ColoredFormatter(cfmt, full_line=full_line))
@@ -4392,7 +4393,7 @@ from .grid.masking import polygons, convex_hull, rsamp, polygon_mask, create_pol
 from .grid.regridding import griddata, xy2xy
 from .grid.basemap import get_proj
 from .misc import is_iterable,  broadcast, kwfilter, set_atts, create_selector, \
-    squeeze_variable
+    squeeze_variable, checkdir
 from .phys.units import deg2m, m2deg
 from .plot import map2, _colorbar_, savefigs as Savefigs, markers as Markers
 
