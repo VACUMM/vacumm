@@ -37,16 +37,16 @@ instead of vacumm.misc.misc.*.
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-from misc import *
+import misc
 import color
-import io
-import plot
 import axes
 import atime
 import stats
 import filters
 import phys
 import grid
+import plot
+import io
 import math
 
 import os as _os, locale as _locale
@@ -55,4 +55,4 @@ try:
     _locale.setlocale(_locale.LC_NUMERIC, 'en_US.UTF-8')
 except:
     pass
-
+#from misc import *
