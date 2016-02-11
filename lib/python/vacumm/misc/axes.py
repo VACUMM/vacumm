@@ -39,16 +39,23 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 import re
-import numpy as N, cdms2, MV2
-cdms = cdms2
-from cdms2.axis import AbstractAxis, FileAxis
-from cdms2.coord import TransientAxis2D
-
 from re import match
 from operator import isSequenceType,isNumberType
 from fnmatch import fnmatch
 from warnings import warn
+
+import numpy as N, cdms2, MV2
+from cdms2.axis import AbstractAxis, FileAxis
+from cdms2.coord import TransientAxis2D
+
 from vacumm import VACUMMError
+import vacum.misc.misc as vcm
+import vacumm.misc.atime as vct
+import vacumm.misc.grid.misc as vcg
+import vacumm.misc.io as vcio
+
+cdms = cdms2
+
 
 __all__ = ['isaxis', 'islon', 'islat', 'islev', 'isdep', 'istime',
     'check_axes', 'is_geo_axis', 'check_axis', 'get_axis_type', 'check_id',
@@ -56,7 +63,7 @@ __all__ = ['isaxis', 'islon', 'islat', 'islev', 'isdep', 'istime',
     'create_time', 'create_lon', 'create_lat', 'create_dep', 'create_depth',
     'guess_timeid', 'get_order', 'set_order', 'order_match', 'merge_orders',
     'check_order',  'create_axis']
-__all__.sort()
+
 
 def isaxis(axis):
     if hasattr(axis, 'isAbstractCoordinate') and axis.isAbstractCoordinate():
@@ -116,7 +123,7 @@ def istime(axis,
     ro=False, checkatts=True):
     """Check if a axis is time"""
     if units is None:
-        from .atime import are_good_units as units
+        units = vct.are_valid_units
     myistime = is_geo_axis_type(axis, 't',  ids=ids, standard_names=standard_names,
         units=units, long_names=long_names, defaults=defaults, ro=ro, checkatts=checkatts)
     if myistime and not ro:
@@ -173,7 +180,6 @@ def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None,
         - **ro**, optional: Read-only mode?
         - **checkatts**, optional: If False, do not check units and long_name attributes.
     """
-    from misc import check_def_atts
     if not isaxis(axis): return False
     if defaults is None: defaults = {}
 
@@ -194,7 +200,7 @@ def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None,
         if eval(sis):
             if not ro:
                 exec ok
-                check_def_atts(axis, **defaults)
+                vcm.check_def_atts(axis, **defaults)
             return True
     except:
         pass
@@ -306,7 +312,6 @@ def create_axis(values, atype='-', **atts):
         >>> lon = create_axis((-10., 0, 2), 't', id='temps', units='seconds since 2000')
         >>>
     """
-    from vacumm.misc import cp_atts
     if N.isscalar(values):
         values = (values, )
     if isinstance(values, tuple) and len(values) < 4:
@@ -351,12 +356,11 @@ def create_time(values,units=None,**atts):
         >>> create_time([datetime(2000,1,1),'2000-2-1'],units='months since 2000')
         >>> create_time([cdtime.reltime(1,'months since 2000'),cdtime.comptime(2000,1)])
     """
-    from atime import are_good_units,comptime,strftime
     for var in values, units:
         if hasattr(var, 'units'):
             units = var.units
             break
-    if units is not None and not are_good_units(units):
+    if units is not None and not vct.are_valid_units(units):
         raise AttributeError('Bad time units: "%s"'%units)
     istuple = isinstance(values, tuple)
     if not istuple or (istuple and len(values)>3):
@@ -372,9 +376,9 @@ def create_time(values,units=None,**atts):
             else:
                 if units is None and hasattr(value, 'units'):
                     units = value.units
-                value = comptime(value)
+                value = vct.comptime(value)
                 if units is None:
-                    units = strftime('minutes since %Y-%m-%d %H:%M:%S',value)
+                    units = vct.strftime('minutes since %Y-%m-%d %H:%M:%S',value)
                 newvalues.append(value.torel(units).value)
     else:
         newvalues = values
@@ -396,9 +400,8 @@ def create_lon(values,**atts):
 
     """
     if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
-        from grid.misc import create_axes2d
         atts.setdefault('long_name', 'Longitude')
-        return create_axes2d(x=values, lonid=atts.pop('id', None), xatts=atts)
+        return vcg.create_axes2d(x=values, lonid=atts.pop('id', None), xatts=atts)
     return create_axis(values,'x',**atts)
 
 def create_lat(values,**atts):
@@ -415,9 +418,8 @@ def create_lat(values,**atts):
 
     """
     if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
-        from grid.misc import create_axes2d
         atts.setdefault('long_name', 'Latitude')
-        return create_axes2d(y=values, latid=atts.pop('id', None), yatts=atts)
+        return vcg.create_axes2d(y=values, latid=atts.pop('id', None), yatts=atts)
     return create_axis(values,'y',**atts)
 
 def create_dep(values,**atts):
@@ -455,8 +457,7 @@ def guess_timeid(ncfile, vnames=None):
         >>> tid = guess_timeid(f)
         >>> f.close()
     """
-    from vacumm.misc.io import NcFileObj
-    nfo = NcFileObj(ncfile)
+    nfo = vcio.NcFileObj(ncfile)
     if vnames is None: vnames = nfo.f.listvariables()
     for vv in vnames:
        time = nfo.f[vv].getTime()
@@ -737,7 +738,6 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
     data_cdms_order = get_order(var)
 
     # Loop on allowed orders
-    from vacumm.misc.grid.misc import get_axis, var2d
     reordered = False
     for allowed_order in allowed:
 
@@ -755,11 +755,11 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
             try:
                 reordered = cdms2.order2index(var.getAxisList(), allowed_cdms_order)
                 new_var = var.reorder(allowed_cdms_order)
-                if allowed_cdms_order[-1]=='x' and len(get_axis(new_var, -1).shape)==2: # 2D axes
+                if allowed_cdms_order[-1]=='x' and len(vcg.get_axis(new_var, -1).shape)==2: # 2D axes
                     del var
-                    var = var2d(new_var,
-                        MV2.transpose(get_axis(new_var, 0)),
-                        MV2.transpose(get_axis(new_var, -1)), copy=0)
+                    var = vcg.var2d(new_var,
+                        MV2.transpose(vcg.get_axis(new_var, 0)),
+                        MV2.transpose(vcg.get_axis(new_var, -1)), copy=0)
                     set_order(new_var, allowed_cdms_order)
                 else:
                     del var

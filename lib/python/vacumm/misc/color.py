@@ -42,18 +42,24 @@ List of all available colormaps in matplotlib, including VACUMM colormaps
 import re
 import os
 import glob
+import colorsys
 
+import numpy as N
 from matplotlib.cm import ScalarMappable
 from matplotlib.colors import (Colormap, Normalize, LinearSegmentedColormap,
     ColorConverter, makeMappingArray)
 import pylab as P
 from matplotlib.cm import cmap_d
-import numpy as N
-ma = N.ma
 import matplotlib.cbook as cbook
 from mpl_toolkits.basemap import cm as basemap_cm
+from genutil import minmax
 
 import vacumm
+import vacumm.misc.misc as vcm
+import vacumm.misc.plot as vcp
+import vacumm.misc.core_plot as vccp
+
+ma = N.ma
 
 # Color definitions
 
@@ -207,8 +213,7 @@ def cmap_rainbow(n=None, name='vacumm_rainbow', smoothed=True, mode='auto', **kw
 
     :Sample: .. image:: misc-color-vacumm_rainbow.png
     """
-    from misc import kwfilter
-    kwrb = kwfilter(kwargs, 'rainbow_')
+    kwrb = vcm.kwfilter(kwargs, 'rainbow_')
     for att in 'first', 'last', 'middle', 'stretcher':
         kwrb[att] = kwargs.pop(att, None)
     n, pos = _nlev_(n)
@@ -258,7 +263,6 @@ def cmap_magic(n=None, stretch = 0.4, mode='normal', white='.95', name='vacumm_m
     #print 'cmap_magic n in',n
     n, pos = _nlev_(n)
     kwargs.setdefault('smoothed', False)
-    from misc import broadcast
     for att in 'positive', 'negative', 'anomaly',  'symetric': # compat
         if kwargs.has_key(att):
             if kwargs[att]:
@@ -269,22 +273,22 @@ def cmap_magic(n=None, stretch = 0.4, mode='normal', white='.95', name='vacumm_m
         kwargs['lstretch'] = -stretch
     elif mode.startswith('pos'):
         kwargs['first'] = white
-        kwargs['lstretch'] = [0]+broadcast(-stretch, n-1)
+        kwargs['lstretch'] = [0]+vcm.broadcast(-stretch, n-1)
         kwargs['rstretch'] = [-stretch]+[0]*(n-1)
     elif mode.startswith('neg'):
         kwargs['last'] = white
         kwargs['lstretch'] = [0]*(n-1)+[-stretch]
-        kwargs['rstretch'] = broadcast(-stretch, n-1)+[0]
+        kwargs['rstretch'] = vcm.broadcast(-stretch, n-1)+[0]
     elif mode.startswith('sym'):
-        keepc = broadcast(None, n)
+        keepc = vcm.broadcast(None, n)
         mid = int(n/2)
         if n%2: # odd
-            kwargs['lstretch'] = [0]*mid+broadcast(-stretch, mid+1)
+            kwargs['lstretch'] = [0]*mid+vcm.broadcast(-stretch, mid+1)
             kwargs['rstretch'] = kwargs['lstretch'][::-1]
             kwargs['middle'] = '.8'
             keepc[mid] = False
         else:
-            kwargs['lstretch'] = [0]*(mid)+[.98]+broadcast(-stretch, mid-1)
+            kwargs['lstretch'] = [0]*(mid)+[.98]+vcm.broadcast(-stretch, mid-1)
             kwargs['rstretch'] = kwargs['lstretch'][::-1]
             keepc[mid:mid+2] = False, False
     #print 'cmap_magic n out',n
@@ -630,10 +634,9 @@ def cmap_smoothed_steps(colors, stretch=None, rstretch=0, lstretch=0, name='vacu
                 lstretch, rstretch = stretch[:2]
             else:
                 lstretch = stretch[0]
-    from misc import broadcast
     ns = len(colors)
-    lstretch = broadcast(lstretch, ns)
-    rstretch = broadcast(rstretch, ns)
+    lstretch = vcm.broadcast(lstretch, ns)
+    rstretch = vcm.broadcast(rstretch, ns)
     rr = [] ; gg = [] ; bb = []
     for i,(col,pos) in enumerate(colors):
         r, g, b = RGB(col)
@@ -725,11 +728,10 @@ def cmap_steps(cols, stretch=None, lstretch=0., rstretch=0., keepc=None, name='c
                 lstretch, rstretch = stretch[:2]
             else:
                 lstretch = stretch[0]
-    from misc import broadcast
     ns = len(cols)
-    lstretch = broadcast(lstretch, ns)
-    rstretch = broadcast(rstretch, ns)
-    keepc = broadcast(keepc, ns)
+    lstretch = vcm.broadcast(lstretch, ns)
+    rstretch = vcm.broadcast(rstretch, ns)
+    keepc = vcm.broadcast(keepc, ns)
     rr = [] ; gg = [] ; bb = []
     pcol, ppos = cols[0]
     pr, pg, pb = RGB(pcol)
@@ -2221,7 +2223,6 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), fig=No
     show=True, aspect=.05, title=None, sa=dict(left=.0, right=1, top=1, bottom=.0),
     savefig=None, savefigs=None, close=True, **kwargs):
     """Display a colormap"""
-    from vacumm.misc import kwfilter
     cmap = get_cmap(cmap)
     if ax is None:
         if fig is None:
@@ -2248,15 +2249,13 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), fig=No
         edgecolor='none', linewidth=0)
     if title is None: title = cmap.name
     if title is not None and title is not False:
-        from core_plot import add_glow
-        add_glow(P.text(ncol/2., 0., title, color='k', ha='center', va='center'), alpha=0.5)
+        vccp.add_glow(P.text(ncol/2., 0., title, color='k', ha='center', va='center'), alpha=0.5)
 
     # Save and show
     if savefig is not None:
-        P.savefig(savefig, **kwfilter(kwargs, 'savefig'))
+        P.savefig(savefig, **vcm.kwfilter(kwargs, 'savefig'))
     if savefigs is not None:
-        from plot import savefigs as Savefigs
-        Savefigs(savefigs, **kwfilter(kwargs, 'savefigs'))
+        vcp.savefigs(savefigs, **vcm.kwfilter(kwargs, 'savefigs'))
     if show:
         P.show()
     if close:
@@ -2267,13 +2266,11 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5, savefi
     aspect=0.05, **kwargs):
     """Display a list of or all colormaps"""
 
-    from vacumm.misc import kwfilter
-    kwsf = kwfilter(kwargs, 'savefig')
-    kwsfs = kwfilter(kwargs, 'savefigs')
+    kwsf = vcm.kwfilter(kwargs, 'savefig')
+    kwsfs = vcm.kwfilter(kwargs, 'savefigs')
     kwargs.pop('nrow', None)
 
     # Default colormap list
-    from vacumm.misc import kwfilter
     if cmaps is None:
         cmaps = cmaps_mpl(names=False)
     elif isinstance(cmaps, str):
@@ -2336,8 +2333,7 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5, savefi
     if savefig is not None:
         P.savefig(savefig, **kwsf)
     if savefigs is not None:
-        from plot import savefigs as Savefigs
-        Savefigs(savefigs, **kwsfs)
+        vcp.savefigs(savefigs, **kwsfs)
     if show: P.show()
 
 def show_cmap(cmap, *args, **kwargs):
@@ -2445,7 +2441,6 @@ def cmap_gmt(name, register=True, **kwargs):
         return P.get_cmap(mname)
 
     # From file
-    import colorsys
     filePath = name
     name = os.path.basename(name[:-4])#.lower()
 
@@ -2824,7 +2819,6 @@ class Scalar2RGB(object):
     def __init__(self, vminmax, cmap=None):
         cmap = get_cmap(cmap)
         self.cmap = cmap
-        from genutil import minmax
         vmin, vmax = minmax(vminmax)
         self.norm = Normalize(vmin, vmax)
         self.sm = ScalarMappable(cmap=self.cmap, norm=self.norm)
@@ -2930,7 +2924,6 @@ def discretize_cmap(cmap, bounds, name=None, **kwargs):
         - **name**, optional: Name of the colormap.
         - Other params are passed to :func:`cmap_custom`.
     """
-    from vcmq import P, cmap_custom, N, plot_cmap
     old_cmap = P.get_cmap(cmap)
 
     if N.isscalar(bounds):
