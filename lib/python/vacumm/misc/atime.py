@@ -37,15 +37,26 @@ Time utilities
 import os
 import re
 import time,datetime as DT
-from operator import isNumberType, gt, ge, lt, le
-from re import split as resplit,match, compile as recompile
+from operator import isNumberType
+from re import compile as recompile
+from warnings import warn
 import math
 
-import numpy as N, MV2, numpy.ma as MA, cdtime, cdms2 as cdms, cdutil, cdms2
-from cdms2.axis import CdtimeTypes,AbstractAxis,ComptimeType,ReltimeType,FileAxis
-from dateutil.rrule import rrule, MO, TU, WE, TH, FR, SA, SU, YEARLY, \
-     MONTHLY, WEEKLY, DAILY, HOURLY, MINUTELY, SECONDLY
+import numpy as N, numpy.ma as MA
 from matplotlib.dates import DateFormatter, num2date, date2num
+from cdms2.axis import CdtimeTypes, ComptimeType,ReltimeType
+import cdms2
+import MV2
+import cdtime
+import cdutil
+
+import vacumm.misc.axes as vca
+import vacumm.misc.grid as vcg
+import vacumm.misc.io as vcio
+import vacumm.misc.misc as vcm
+from vacumm import VACUMMError
+
+
 #from pytz import timezone, all_timezones
 
 
@@ -73,8 +84,6 @@ __all__ = ['STR_UNIT_TYPES','RE_SPLIT_DATE','now', 'add', 'axis_add',
 'julday']
 
 
-
-__all__.sort()
 
 def pat2freq(pattern):
     """Get the maximal frequency ("days", "hours", etc) associated with a date pattern
@@ -221,7 +230,7 @@ def add(mytime, amount, units=None, copy=True):
     """
 
     # Time axis
-    if istime(mytime):
+    if vca.istime(mytime):
         if copy:
             mytime = mytime.clone()
         if units is None:
@@ -298,7 +307,7 @@ def mpl(mytimes, copy=True):
 
     :Example:
 
-        >>> taxis = create_time((0, 10.), 'hours since 2000-01-01')
+        >>> taxis = vca.create_time((0, 10.), 'hours since 2000-01-01')
         >>> maxis = mpl(taxis)
         >>> print maxis[0]
         730120.0
@@ -314,7 +323,7 @@ def mpl(mytimes, copy=True):
         return mytimes
 
     # Time axis
-    if istime(mytimes):
+    if vca.istime(mytimes):
         if copy: mytimes = mytimes.clone()
         mytimes._data_ = mytimes._data_ .astype('d')
         if hasattr(mytimes, 'matplotlib_compatible') and mytimes.matplotlib_compatible:
@@ -405,14 +414,14 @@ def ch_units(mytimes, newunits, copy=True):
 
     # If a variable with time axis
     if cdms.isVariable(mytimes):
-        check_axes(mytimes)
+        vca.check_axes(mytimes)
         torder = mytimes.getOrder().find('t')
         if torder < 0:
             raise TypeError('Variable must have a valid time axis')
         return ch_units(mytimes.getTime(), newunits, copy=False)
 
     # Time axis
-    if istime(mytimes):
+    if vca.istime(mytimes):
         if copy: mytimes = mytimes.clone()
         mytimes._data_ = mytimes._data_ .astype('d')
         mytimes.toRelativeTime(newunits)
@@ -492,9 +501,6 @@ def comptime(mytime):
 
         :func:`reltime()` :func:`datetime()`
     """
-
-    import cdtime,types
-
 
     # Time axis
     if is_axistime(mytime):
@@ -579,7 +585,7 @@ def reltime(mytime, units):
         :func:`comptime` :func:`datetime` :func:`strtime`   :func:`numtime`
     """
     # Time axis
-    if istime(mytime):
+    if vca.istime(mytime):
         if are_same_units(units, mytime.units):
             return mytime
         return mytime.toRelativeTime(mytime)
@@ -607,7 +613,7 @@ def datetime(mytimes):
 
         :func:`comptime` :func:`reltime`   :func:`strtime`    :func:`numtime`
     """
-    if istime(mytimes):
+    if vca.istime(mytimes):
         mytimes = comptime(mytimes)
     LH = _LH_(mytimes)
     mytimes = LH.get()
@@ -821,7 +827,7 @@ def is_axistime(mytime):
         :func:`is_reltime()` :func:`is_cdtime()`   :func:`is_time()`
     """
 
-    return istime(mytime)
+    return vca.istime(mytime)
 
 def is_strtime(mytime):
     """Check if a time is a valid string date
@@ -971,7 +977,6 @@ def ascii_to_num(ss):
     """
     sstr =  ss.split()
 
-    yyyy = 1
     mm = 1
     dd = 1
     hh = 0
@@ -979,7 +984,6 @@ def ascii_to_num(ss):
     ss = 0
     ret = []
 
-    date = ss.split()[0]
     for xx in sstr[0].split('-'):
         ret.append(int(xx))
     if len(ret) < 2:
@@ -1019,9 +1023,9 @@ class Gaps(cdms.tvariable.TransientVariable):
 
     :Example:
 
-        >>> import vacumm.misc as M
+        >>> import vacumm.misc.axes as vca
         >>> import MV2
-        >>> time = M.axes.create_time([1,2,4,5],units='days since 2000')
+        >>> time = vca.create_time([1,2,4,5],units='days since 2000')
         >>> var = MV2.arange
 
     """
@@ -1038,7 +1042,7 @@ class Gaps(cdms.tvariable.TransientVariable):
             time_units =  mytime.units
         except:
             raise RuntimeError, 'Your time axis needs units'
-        kwdt = kwfilter(kwargs, 'dt')
+        kwdt = vcm.kwfilter(kwargs, 'dt')
 
         if dt is None: dt = get_dt(mytime, **kwdt)
 
@@ -1115,8 +1119,7 @@ class Gaps(cdms.tvariable.TransientVariable):
         if not self.ngap:
             print 'No gaps to print'
             return
-        from .io import col_printer
-        cp = io.col_printer([['LENGTH',7,'%i'],['START',22,'%s'],['END',22,'%s']],**kwargs)
+        cp = vcio.col_printer([['LENGTH',7,'%i'],['START',22,'%s'],['END',22,'%s']],**kwargs)
         for igap in xrange(self.ngap):
             cp(self._gaps[igap],self._ctime[igap*2],self._ctime[igap*2+1])
         del cp
@@ -1153,7 +1156,7 @@ class Gaps(cdms.tvariable.TransientVariable):
         P.gca().xaxis_date(None)
         P.gca().autoscale_view()
         P.legend(('Gaps',),numpoints=2,loc=0)
-        xdate(**kwfilter(kwargs,'xdate'))
+        xdate(**vcm.kwfilter(kwargs,'xdate'))
         P.xlim(min(self._times),max(self._times))
         P.ylim(0,1)
         P.yticks([])
@@ -1215,7 +1218,7 @@ def unit_type(units, string_type=False, s=True, raiseerr=True):
         units = units.lower()
         if not units.endswith('s'): units += 's'
     for tt in STR_UNIT_TYPES:
-        this_cdt_type = eval('cdtime.'+tt.title())
+        this_cdt_type = getattr(cdtime, tt.title())
         if units in [tt,this_cdt_type]:
             if string_type:
                 return tt[:len(tt)-1+s]
@@ -1247,7 +1250,7 @@ def get_dt(axis, units=None):
     :See also: :func:`unit_type()`
     """
 
-    assert istime(axis), 'You must specify a valid time axis'
+    assert vca.istime(axis), 'You must specify a valid time axis'
     assert len(axis) > 1, 'your time axis must have at least 2 elements'
     if units is not None:
         units = unit_type(units, True)
@@ -1294,8 +1297,8 @@ def compress(data):
     # Select data
     res = MV2.take(data, slab)
     res.getAxis(0)[:] = tt[slab]
-    cp_atts(data,res,id=True)
-    cp_atts(tt,res.getAxis(0),id=True)
+    vcm.cp_atts(data,res,id=True)
+    vcm.cp_atts(tt,res.getAxis(0),id=True)
     if tt.getBounds() is not None:
         res.getAxis(0).setBounds(tt.getBounds()[slab])
     return res(order=order)
@@ -1344,7 +1347,7 @@ def reduce_old(data, comp=True, fast=True):
     nt = len(tt)
     tv = tt.getValue().astype('d')
     if tt.getBounds() is None:
-        tt.setBounds(G.bounds1d(tt[:]))
+        tt.setBounds(vcg.bounds1d(tt[:]))
     bb = tt.getBounds().astype('d')
     dt = tv[1:]-tv[:-1]
     dt = N.concatenate((dt,[1.]))
@@ -1356,7 +1359,6 @@ def reduce_old(data, comp=True, fast=True):
           N.equal(dbb[:,1],0.)),itv)
     itv = itv.compressed()
     nt = len(itv)
-    gg = data.getGrid()
 
     # Fast algo = use Numeric
     if fast:
@@ -1365,7 +1367,7 @@ def reduce_old(data, comp=True, fast=True):
         AV = N
     else:
         mydata = data
-        AV = MV
+        AV = MV2
     sh = list(data.shape)
     sh[0] = nt
     adata = AV.zeros(sh,typecode=data.dtype.char,savespace=True)
@@ -1388,7 +1390,7 @@ def reduce_old(data, comp=True, fast=True):
 
     # New time axis
     atime = cdms.createAxis(atime,bounds=abounds)
-    cp_atts(tt,atime,id=True)
+    vcm.cp_atts(tt,atime,id=True)
     atime.designateTime(calendar=cdtime.DefaultCalendar)
 
     # New variable
@@ -1400,7 +1402,7 @@ def reduce_old(data, comp=True, fast=True):
     if data.getGrid() is not None:
         set_grid(adata,data.getGrid())
         #adata.setGrid(data.getGrid())
-    cp_atts(data,adata,id=True)
+    vcm.cp_atts(data,adata,id=True)
     del data
     return adata
 
@@ -1495,7 +1497,6 @@ def hourly_exact(data,time_units=None,maxgap=None, ctlims=None):
     assert taxis is not None, 'Your data must have a valid time axis'
     old_order = data.getOrder()
     data = data(order='t...')
-    tbounds = G.bounds1d(taxis)
     if maxgap is not None:
         dt = get_dt(taxis,'hour')
         if dt > maxgap:
@@ -1519,8 +1520,7 @@ def hourly_exact(data,time_units=None,maxgap=None, ctlims=None):
     htaxis.units = hunits
     htaxis.designateTime(calendar=cdtime.DefaultCalendar)
     htvalue = htaxis.getValue()
-    htaxis.setBounds(G.bounds1d(htvalue))
-    cts = htaxis.asComponentTime()
+    htaxis.setBounds(vcg.bounds1d(htvalue))
 
     # Create the new variable
     sh = list(data.shape)
@@ -1529,7 +1529,7 @@ def hourly_exact(data,time_units=None,maxgap=None, ctlims=None):
     axes[0] = htaxis
     hdata = MV2.zeros(sh,typecode=data.dtype.char,savespace=1)
     hdata[:] *= MV2.masked
-    cp_atts(data,hdata,id=True)
+    vcm.cp_atts(data,hdata,id=True)
     hdata.setAxisList(axes)
     set_grid(hdata,data.getGrid())
     #hdata.setGrid(data.getGrid())
@@ -1591,7 +1591,7 @@ def trend(var):
     # Trend
     sh = var.shape
     var_trend = MV2.masked_array(MV2.resize(coefs[0],sh) * tt + MV2.resize(coefs[1],sh))
-    cp_atts(var,var_trend)
+    vcm.cp_atts(var,var_trend)
     var_trend.id = var.id+'_trend'
     var_trend.name = var_trend.id
     if var_trend.attributes.has_key('long_name'):
@@ -1608,7 +1608,7 @@ def detrend(var):
     from grid.misc import set_grid
 
     var_detrend = var - trend(var)
-    cp_atts(var,var_detrend)
+    vcm.cp_atts(var,var_detrend)
     var_detrend.id = 'detrended_'+var.id
     var_detrend.name = var_detrend.id
     if var_detrend.attributes.has_key('long_name'):
@@ -1695,13 +1695,13 @@ def tz_to_tz(mytime, old_tz, new_tz, copy=True):
 
     # Variable
     if cdms.isVariable(mytime):
-        check_axes(mytime)
+        vca.check_axes(mytime)
         axis = mytime.getTime()
         assert axis is not None, 'Your variable must have a valid time axis'
         return tz_to_tz(axis, old_tz, new_tz, copy=copy)
 
     # Time axis case
-    if istime(mytime):
+    if vca.istime(mytime):
         if copy: mytime = mytime.clone()
         ctimes = mytime.asComponentTime()
         for it,ct in enumerate(ctimes):
@@ -1759,7 +1759,7 @@ def tzname_to_tz(mytzname):
         raise VACUMMError('You must install pytz package to add time zone support'
             ' to vacumm')
     for name in all_timezones:
-        tz = timezone(name)
+        tz = timezone(name) #FIXME: timezone
         if not hasattr(tz, '_tzinfos'): continue
         for (utcoffset, daylight, tzname), _ in tz._tzinfos.iteritems():
             if tzname == mytzname:
@@ -1808,7 +1808,7 @@ class SpecialDateFormatter(DateFormatter):
 
         # Which level?
         slevels = ['year', 'month', 'day', 'hour', 'minute']
-        if not isNumberType(level):
+        if not operator.isNumberType(level):
             if level.lower() not in slevels:
                 level = -1
             else:
@@ -1878,11 +1878,11 @@ def interp(vari,outtimes,squeeze=1, **kwargs):
         - all other keywords are passed to :func:`~vacumm.misc.grid.regridding.interp1d`.
     """
     # Convert to time axis
-    if not istime(outtimes):
-        outtimes = create_time(outtimes)
+    if not vca.istime(outtimes):
+        outtimes = vca.create_time(outtimes)
 
     # Call to interp1d
-    varo = G.regridding.interp1d(vari, outtimes, **kwargs)
+    varo = vcg.regridding.interp1d(vari, outtimes, **kwargs)
 
     # Squeeze?
     if squeeze:
@@ -1939,7 +1939,7 @@ def selector(arg0, arg1=None, bounds=None, round=False, utc=True):
     # Interval
     if arg1 is None: # from a date to now
         selection = (comptime(arg0), now(utc))
-    elif isNumberType(arg0): # from now into the past
+    elif operator.isNumberType(arg0): # from now into the past
         nn = now(utc)
         selection = (add(nn,-arg0,arg1), nn)
     else: # between two dates
@@ -1965,7 +1965,7 @@ def round_date(mydate, round_type, mode='round'):
             - Else choose the nearest.
 
     """
-    if not isNumberType(round_type):
+    if not operator.isNumberType(round_type):
         round_type = STR_UNIT_TYPES.index(unit_type(round_type, string_type=True))
     stype = STR_UNIT_TYPES[round_type]
     ct = comptime(mydate)
@@ -2035,7 +2035,7 @@ def daily_bounds(taxis, hstart=0):
         taxis = taxis.getTime()
         if taxis is None:
             raise ValueError('Input variable has no valid time axis')
-    elif not istime(taxis):
+    elif not vca.istime(taxis):
         raise ValueError('Input axis in not a valid time axis')
     bb = N.zeros((len(taxis),2))
     tu = taxis.units
@@ -2061,7 +2061,7 @@ def hourly_bounds(taxis, mstart=0):
         taxis = taxis.getTime()
         if taxis is None:
             raise ValueError('Input variable has no valid time axis')
-    elif not istime(taxis):
+    elif not vca.istime(taxis):
         raise ValueError('Input axis in not a valid time axis')
     bb = N.zeros((len(taxis),2))
     tu = taxis.units
@@ -2081,7 +2081,7 @@ def reduce(vari, geterr=False, **kwargs):
 
     :Params:
 
-        - **vari**: Aray with a valid time axis.
+        - **vari**: Array with a valid time axis.
 
     :Example:
 
@@ -2109,7 +2109,7 @@ def reduce(vari, geterr=False, **kwargs):
     if bb is None:
         dt = N.diff(tt)
         it_lasts = ii[dt!=0.].tolist()
-        tv.append(nti-1)
+        tv.append(nti-1) #FIXME: tv
     else:
         ddt = N.diff(bb, axis=0)
         it_lasts = ii[(ddt[:,0]!=0.)&(ddt[:,1]!=0.)].tolist()
@@ -2118,7 +2118,7 @@ def reduce(vari, geterr=False, **kwargs):
     # Init output
     nto = len(it_lasts)
     varo = MV2.zeros((nto,)+vari.shape[1:], vari.dtype)
-    cp_atts(vari, varo)
+    vcm.cp_atts(vari, varo)
     if vari.getGrid() is not None: set_grid(varo,vari.getGrid())
     #varo.setGrid(vari.getGrid())
     for i,ax in enumerate(vari.getAxisList()[1:]):
@@ -2148,7 +2148,7 @@ def reduce(vari, geterr=False, **kwargs):
         it_first = it_last+1
 
     # Finish
-    dtime = create_time(dtime, taxis.units)
+    dtime = vca.create_time(dtime, taxis.units)
     if bb is not None:
         dtime.setBounds(dbounds)
     varo.setAxis(0, dtime)
@@ -2250,7 +2250,7 @@ class Intervals(object):
         end_date = comptime(time_range[1])
 
         # dt
-        if isNumberType(dt):
+        if operator.isNumberType(dt):
             units = 'seconds since 2000'
             dt = (
                 (end_date.torel(units).value-start_date.torel(units).value)/dt,
@@ -2346,7 +2346,7 @@ class IterDates(object):
         end_date = comptime(time_range[1])
 
         # dt
-        if isNumberType(dt):
+        if operator.isNumberType(dt):
             units = 'seconds since 2000'
             dt = (
                 (end_date.torel(units).value-start_date.torel(units).value)*1./dt,
@@ -2371,7 +2371,7 @@ class IterDates(object):
         self._current_date = None
         oper = 'l' if self._reverse else 'g'
         oper += 't' if self._closed else 'e'
-        self._oper = eval(oper)
+        self._oper = getattr(operator, oper)
 
         # Interval as (value,units)
         self._dt = ([1, -1][reverse]*dt[0], dt[1])
@@ -2443,7 +2443,7 @@ def time_split(what, how, roundit=None):
     if is_time(how): how = [how]
 
     # dt
-    if isNumberType(how) or isinstance(how, basestring) or \
+    if operator.isNumberType(how) or isinstance(how, basestring) or \
         isinstance(how, tuple):
         how = Intervals(tminmax[:2], how, roundto=roundit)
 
@@ -2484,7 +2484,7 @@ def time_split_nmax(what, nmax, roundit=True):
         raise TypeError, "Can't split a single date"
     if len(ctimes) < nmax:
         return ctimes[0], ctimes[-1]
-    taxis = create_time(ctimes)
+    taxis = vca.create_time(ctimes)
     specs = ['year', (3, 'month'), (1, 'month'), (10, 'day'), (1, 'day')]
     for i,how in enumerate(specs):
         itvs = time_split(what, how, roundit=roundit)
@@ -2644,7 +2644,7 @@ def tsel2slice_old(taxis, *args, **kwargs):
         >>> myslice = tsel2slice(taxis, slice(10,12), dict(time=slice(4,5), time=('2000','2002'))
     """
     # Inits
-    if not istime(taxis): raise VACUMMError('taxis must be a valid time axis')
+    if not vca.istime(taxis): raise VACUMMError('taxis must be a valid time axis')
     asind = kwargs.pop('asind', False)
     nonone = kwargs.pop('nonone', False)
     fullslice = slice(*slice(None).indices(len(taxis)))
@@ -2655,7 +2655,7 @@ def tsel2slice_old(taxis, *args, **kwargs):
     for arg in args:
         if arg is None: continue
         if isinstance(arg, cdms2.selectors.Selector):
-            psel, asel = split_selector(arg)
+            psel, asel = vcm.split_selector(arg) #FIXME: split_selector?
             selects.extend(_d2sel_(taxis, asel))
         elif isinstance(arg, dict):
             selects.extend(_d2sel_(taxis,arg))
@@ -2733,7 +2733,6 @@ def time_selector(*args, **kwargs):
     ids = list(ids)+['time']+cdms2.convention.time_aliases
 
     # Build the selector using refinements
-    newargs = []
     selector = cdms2.selectors.Selector()
     for arg in args:
         if arg is None: continue
@@ -2744,7 +2743,7 @@ def time_selector(*args, **kwargs):
     selector.refine(**kwargs)
 
     # Filter
-    filter_selector(selector, ids=ids, copy=False, out=out, keeppos=keeppos)
+    vcm.filter_selector(selector, ids=ids, copy=False, out=out, keeppos=keeppos)
 
     return selector
 
@@ -2773,7 +2772,7 @@ def tsel2slice(taxis, *args, **kwargs):
         >>> myslice = tsel2slice(taxis, slice(10,12), dict(time=slice(4,5), time=('2000','2002'))
     """
     # Inits
-    if not istime(taxis): raise VACUMMError('taxis must be a valid time axis')
+    if not vca.istime(taxis): raise VACUMMError('taxis must be a valid time axis')
     asind = kwargs.pop('asind', False)
     nonone = kwargs.pop('nonone', False)
     fullslice = slice(*slice(None).indices(len(taxis)))
@@ -2855,11 +2854,4 @@ def toc(stime=0.):
         print tc.clock()-stime, " seconds"
 
 
-#####################################################################
-######################################################################
-
-import grid as G
-from .axes import istime,check_axes,check_axis,create_time, isaxis
-from .misc import cp_atts,isnumber,kwfilter,split_selector, filter_selector
-from vacumm import VACUMMError
 

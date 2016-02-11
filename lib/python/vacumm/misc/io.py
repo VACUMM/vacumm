@@ -45,7 +45,15 @@ from _geoslib import Point, LineString, Polygon
 from matplotlib.collections import LineCollection, PolyCollection
 from mpl_toolkits.basemap import Basemap
 
-from ..__init__ import VACUMMError
+from vacumm import VACUMMError
+import vacumm.misc.misc as vcm
+import vacumm.misc.atime as vct
+import vacumm.misc.axes as vca
+import vacumm.misc.color as vcc
+import vacumm.misc.grid.misc as vcg
+import vacumm.misc.grid.regridding as vcgr
+import vacumm.misc.phys.units as vcpu
+import vacumm.misc.plot as vcp
 
 __all__ = ['list_forecast_files', 'NcIterBestEstimate', 'NcIterBestEstimateError', 'NcFileObj',
     'ncfind_var', 'ncfind_axis', 'ncfind_obj', 'ncget_var', 'ncread_var', 'ncread_files', 'ncread_best_estimate',
@@ -54,7 +62,6 @@ __all__ = ['list_forecast_files', 'NcIterBestEstimate', 'NcIterBestEstimateError
     'grib_read_files', 'nccache_get_time', 'grib2nc', 'grib_get_names',
     'Shapes', 'XYZ', 'XYZMerger', 'write_snx', 'ColoredFormatter', 'Logger', 'TermColors'
     ]
-__all__.sort()
 
 MA = N.ma
 MV = MV2
@@ -110,10 +117,11 @@ class ColPrinter(object):
             left = right = '|'
             top = bottom = '-'
         for bb in 'left','right','top','bottom':
-            if eval(bb) is not None:
-                setattr(self,'_'+bb,eval(bb))
+            val = locals()[bb]
+            if val is not None:
+                setattr(self, '_'+bb, val)
             else:
-                setattr(self,'_'+bb,'')
+                setattr(self, '_'+bb, '')
         self._colsep = str(colsep)
         if self._colsep == '':
             self._colsep = ' '
@@ -296,26 +304,26 @@ def list_forecast_files(filepattern, time=None, check=True,
 
 
     # Date pattern
-    elif not nopat and has_time_pattern(filepattern):
+    elif not nopat and vct.has_time_pattern(filepattern):
 
         from atime import pat2freq,IterDates, strftime, is_interval, pat2glob, time_selector
         if isinstance(time, cdms2.selectors.Selector):
-            seltime = time_selector(time, noslice=True)
+            seltime = vct.time_selector(time, noslice=True)
             if seltime.components():
-                _, comps = split_selector(seltime) # FIXME: include positional components
+                _, comps = vcm.split_selector(seltime) # FIXME: include positional components
                 for i, comp in comps:
                     itv = comp.spec
-                    if not is_interval(itv) and is_time(itv):
+                    if not is_interval(itv) and vct.is_time(itv):
                         itv = (itv, itv, 'ccb')
                     if i==0:
                         time = itv
                     else:
-                        time = itv_union(itv, time)
+                        time = vct.itv_union(itv, time)
             else:
                 time = None
 
         if not is_interval(time):
-            if is_time(time):
+            if vct.is_time(time):
                 time = (time, time, 'ccb')
             else:
                 raise ValueError('Your file pattern contains date pattern (like "%Y"), '
@@ -343,18 +351,18 @@ def list_forecast_files(filepattern, time=None, check=True,
                 date0 = date1 = None
                 for i in xrange(len(gfiles)-1):
                     try:
-                        date0 = strptime(gfiles[i], filepattern)
-                        date1 = strptime(gfiles[i+1], filepattern)
+                        date0 = vct.strptime(gfiles[i], filepattern)
+                        date1 = vct.strptime(gfiles[i+1], filepattern)
                     except:
                         continue
                     if date0>=time[0] or date1<=time[1]: break
                 if None not in [date0, date1]:
-                    dt = adatetime(date1)-adatetime(date0)
+                    dt = vct.datetime(date1)-vct.datetime(date0)
                     if dt.seconds!=0:
-                        lmargin = comptime('2000').add(dt.seconds, cdtime.Seconds).torel(
+                        lmargin = vct.comptime('2000').add(dt.seconds, cdtime.Seconds).torel(
                             patfreq[1]+' since 2000').value
                     else:
-                        lmargin = comptime('2000').add(dt.days, cdtime.Days).torel(
+                        lmargin = vct.comptime('2000').add(dt.days, cdtime.Days).torel(
                             patfreq[1]+' since 2000').value
                 else:
                     lmargin = 1
@@ -442,11 +450,13 @@ def ncfind_axis(f, name, ignorecase=True, regexp=False, **kwargs):
     '''
     nfo = NcFileObj(f)
     f = nfo.f
-    res =  ncfind_obj(f, name, ignorecase=ignorecase, regexp=regexp, ids=f.listdimension(), **kwargs)
+    res =  ncfind_obj(f, name, ignorecase=ignorecase, regexp=regexp,
+        ids=f.listdimension(), **kwargs)
     del nfo
     return res
 
-def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None, **kwargs):
+def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None,
+        searchmode=None, **kwargs):
     '''
     Find a variable or an axis in netcdf file using a name, list of names
     or matching attributes such as standard_name, long_name and units.
@@ -551,7 +561,7 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
 
     # Loop on objects
     for key in keys:
-        kwsearch = {key:eval(key)}
+        kwsearch = {key:locals()[key]}
         for name in ids:
             v = f[name]
             if ncmatch_obj(v, name=name, **kwsearch):
@@ -602,7 +612,7 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
         if key=='axis':
             search[key] = val if not isinstance(key, list) else val[0]
             continue
-        if not is_iterable(val): val = [val]
+        if not vacumm.misc.misc.is_iterable(val): val = [val]
         for i, v in enumerate(val): # strings
             if isinstance(val, basestring):
                 val[i] = val[i].strip()
@@ -741,7 +751,7 @@ def ncread_var(f, vname, *args, **kwargs):
     ignorecase = kwargs.pop('ignorecase', True)
     torect = kwargs.pop('torect', True)
     grid = kwargs.pop('grid', None)
-    kwgrid = kwfilter(kwargs, 'grid')
+    kwgrid = vacumm.misc.misc.kwfilter(kwargs, 'grid')
     samp = kwargs.pop('samp', None)
     atts = kwargs.pop('atts', None)
     mode = kwargs.pop('mode', 'raise')
@@ -783,7 +793,7 @@ def _process_var(var, torect, samp, grid, kwgrid, squeeze, atts):
     '''
     # To rectangular grid?
     if torect:
-        curv2rect(var, mode="none")
+        vacumm.misc.grid.curv2rect(var, mode="none")
 
     # Undersample
     if samp is not None:
@@ -800,19 +810,19 @@ def _process_var(var, torect, samp, grid, kwgrid, squeeze, atts):
 
     # Regrid
     if grid is not None:
-        var = regrid2d(var, grid, **kwgrid)
+        var = vcgr.regrid2d(var, grid, **kwgrid)
 
     # Squeeze
     if squeeze:
         for ss in squeeze:
             if ss is False: break
-            var = squeeze_variable(var, ss)
+            var = vacumm.misc.misc.squeeze_variable(var, ss)
             if ss in [True, None]:
                 break
 
     # Attributes
     if atts is not None:
-        set_atts(var, atts)
+        vacumm.misc.misc.set_atts(var, atts)
 
     return var
 
@@ -841,7 +851,7 @@ def ncget_axis(f, checker, ids=None, ro=False, **kwargs):
     f = nfo.f
 
     if isinstance(checker, basestring):
-        checker = get_checker(checker)
+        checker = vca.get_checker(checker)
     elif isinstance(checker, (list, tuple, dict)):
         axid = ncfind_obj(f, checker, ids=ids, **kwargs)
         if axid is None: return
@@ -889,7 +899,7 @@ def ncget_lon(f, ids=None, ro=False):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, islon, ids, ro=ro)
+    return ncget_axis(f, vca.islon, ids, ro=ro)
 
 def ncget_lat(f, ids=None, ro=False):
     """Get latitude axis of a netcdf file
@@ -899,7 +909,7 @@ def ncget_lat(f, ids=None, ro=False):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, islat, ids, ro=ro)
+    return ncget_axis(f, vca.islat, ids, ro=ro)
 
 def ncget_time(f, ids=None, ro=False):
     """Get time axis of a netcdf file
@@ -909,7 +919,7 @@ def ncget_time(f, ids=None, ro=False):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, istime, ids, ro=ro)
+    return ncget_axis(f, vca.istime, ids, ro=ro)
 
 def ncget_level(f, ids=None, ro=False):
     """Get level axis of a netcdf file
@@ -919,7 +929,7 @@ def ncget_level(f, ids=None, ro=False):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, islevel, ids, ro=ro)
+    return ncget_axis(f, vca.islevel, ids, ro=ro)
 
 def ncget_grid(f, ids=None, torect=False):
     """Get a grid of a netcdf file
@@ -944,7 +954,7 @@ def ncget_grid(f, ids=None, torect=False):
             break
     del nfo
     if torect:
-        grid = curv2rect(grid, mode="none")
+        grid = vacumm.misc.grid.curv2rect(grid, mode="none")
     return grid
 
 def ncget_fgrid(f, gg):
@@ -960,7 +970,7 @@ def ncget_fgrid(f, gg):
     :Return: A :class:`FileGrid` instance or ``None``
     """
     if f is None or gg is None: return
-    if isgrid(f): return f
+    if vacumm.misc.grid.isgrid(f): return f
 
     # From a variable
     if cdms2.isVariable(gg):
@@ -1431,9 +1441,9 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
                 this_time_units = f[iterator.timeid].units
                 if time_units is None:
                     time_units = this_time_units
-                elif not are_same_units(this_time_units, time_units):
+                elif not vct.are_same_units(this_time_units, time_units):
                     try:
-                        ch_units(var, time_units)
+                        vct.ch_units(var, time_units)
                     except:
                         continue
 
@@ -1567,7 +1577,7 @@ def grib_read_files(
     verbose('number of matching files: %s'%(len(files)))
     #verbose('- %s'%('\n- '.join(files)))
     if time:
-        time = map(adatetime, time[:2])
+        time = map(vct.datetime, time[:2])
     vardict = dict()
     # Load grib data
     for f in files:
@@ -1613,7 +1623,7 @@ def grib_read_files(
                     del m
                 del ms
     # Transform loaded data into cdms2 variable
-    kwgrid = kwfilter(kwargs, 'grid')
+    kwgrid = vacumm.misc.misc.kwfilter(kwargs, 'grid')
     for n,p in vardict.iteritems():
         if not p:
             vardict[n] = None
@@ -1627,7 +1637,7 @@ def grib_read_files(
             id='_'.join(n.split()), long_name=n,
         )
         var.setAxis(0, time)
-        set_grid(var, create_grid(lon, lat))
+        set_grid(var, vacumm.misc.grid.create_grid(lon, lat))
         vatts = atts=atts[iv] if atts is not None and iv<len(atts) else None
         if select:
             var = var(**select)
@@ -1695,7 +1705,7 @@ class CachedRecord:
         self._time_range = self._get_time_range_(time_range)
 
         _var_names = [sn for sn, ln, un, vr in _var_info]
-        _station_info = [[name, comptime(time_origin)] for name,  time_origin in _buoy_info]
+        _station_info = [[name, vct.comptime(time_origin)] for name,  time_origin in _buoy_info]
 
         self._vars = {}
         self.check_cache()
@@ -1849,10 +1859,10 @@ class CachedRecord:
     def _get_time_range_(self, time_range):
 
         if isinstance(time_range, (list, tuple)): # Directly specified
-            time_range = time_selector(*time_range)
+            time_range = vct.time_selector(*time_range)
 
         elif time_range in  ('full', 'all', True, False): # Everything possible
-            time_range = (self._time_origin, now(True))
+            time_range = (self._time_origin, vct.now(True))
 
         else :#if hasattr(self, '_time_range'): # Default specified time range
             time_range = self._time_range
@@ -2213,7 +2223,7 @@ class Shapes(object):
 
             # Clip
             if clip:
-                shapes = clip_shape(shape, clip)
+                shapes = vacumm.misc.grid.masking.clip_shape(shape, clip)
             else:
                 shapes = [shape]
 
@@ -2273,7 +2283,7 @@ class Shapes(object):
 
             # Normal polygon
             if clip is not True:
-                return create_polygon(clip, proj=self._proj)
+                return vacumm.misc.grid.masking.create_polygon(clip, proj=self._proj)
 
             # Guess from map
             if self._m is not None:
@@ -2406,7 +2416,7 @@ class Shapes(object):
                 gg = ([self.xmin,self.xmax],
                     N.clip([self.ymin,self.ymax], -89.99, 89.99))
             kw = dict(proj=proj) if isinstance(proj, basestring) else {}
-            return get_proj(gg, **kw)
+            return vcgb.get_proj(gg, **kw)
 
         if callable(self._proj): # already projected
 
@@ -2539,17 +2549,16 @@ class Shapes(object):
 
         """
         if not len(self): return 0,0
-        from vacumm.misc.grid.misc import resol
         x, y = self.get_xy(key=0)
         if deg and callable(self._proj): # m->deg
-            dx, dy = resol((x, y), proj=False)
+            dx, dy = vcg.resol((x, y), proj=False)
             x0 = x.mean()
             y0 = y.mean()
             x1, y1 = self._proj(x0+dx, y0+dx, inverse=True)
             return x1-x0, y1-y0
         elif not deg and not callable(self._proj):
-            return resol((x, y), proj=True)
-        return resol((x, y), proj=False)
+            return vcg.resol((x, y), proj=True)
+        return vcg.resol((x, y), proj=False)
 
 
     def get_map(self):
@@ -2606,7 +2615,7 @@ class Shapes(object):
                 from core_plot import Map
                 m = Map.get_current(axes=ax) or True
         if m is True:
-            kwmap = kwfilter(kwargs,'m_')
+            kwmap = vacumm.misc.misc.kwfilter(kwargs,'m_')
             if not len(self):
                 warn('No shape found, thus nothing to plot')
             else:
@@ -2619,7 +2628,7 @@ class Shapes(object):
             kwmap.setdefault('res', None)
             kwmap.setdefault('proj', 'merc')
             kwmap.update(show=False, axes=ax, title=title)
-            m = map2(**kwmap)
+            m = vcp.map2(**kwmap)
             ax = m.axes
         isbm = isinstance(m, Basemap)
 
@@ -2637,7 +2646,7 @@ class Shapes(object):
         oo = []
         if not self.is_type(self.POINTS):
             if (fill is None and self.is_type(self.POLYGONS)) or fill is True: # Polygons
-                if fillcolor is None: fillcolor=land
+                if fillcolor is None: fillcolor=vcc.land
                 for kv in dict(facecolor=fillcolor).items():
                     kwfill.setdefault(*kv)
                 cc = PolyCollection(data, **kwfill)
@@ -3333,9 +3342,9 @@ class XYZ(object):
             xo, yo, tmp = xyo.xyz
         else:
             raise TypeError, 'Wrong input type'
-        kwinterp = kwfilter(kwargs, 'interp_')
+        kwinterp = vacumm.misc.misc.kwfilter(kwargs, 'interp_')
         from grid.regridding import xy2xy
-        zo = xy2xy(self.x, self.y, self.z, xo, yo, **kwinterp)
+        zo = vcgr.xy2xy(self.x, self.y, self.z, xo, yo, **kwinterp)
         if not xyz: return zo
         kwargs.setdefault('units', self.units)
         kwargs.setdefault('long_name', self.long_name)
@@ -3350,7 +3359,7 @@ class XYZ(object):
         - ``"ind"``: indices of points
         - ``"poly"``: :class:`_geoslib.Polygon` instance
         """
-        return convex_hull((self.get_x(mask), self.get_y(mask)), poly=out=='poly')
+        return vacumm.misc.grid.masking.convex_hull((self.get_x(mask), self.get_y(mask)), poly=out=='poly')
 
     def shadows(self):
         """Get the polygons defining the 'shadow' of this dataset.
@@ -3493,12 +3502,12 @@ class XYZ(object):
 
     def _get_res_(self, xres, yres, degres):
         if degres: # need degrees
-            if xres<0: xres = -m2deg(xres, self._ymean)
-            if yres<0: yres = -m2deg(yres)
+            if xres<0: xres = -vcpu.m2deg(xres, self._ymean)
+            if yres<0: yres = -vcpu.m2deg(yres)
             return xres, yres
         else: # need meters
-            if xres>0: xres = deg2m(xres, self._ymean)
-            if yres>0: yres = deg2m(yres)
+            if xres>0: xres = vcpu.deg2m(xres, self._ymean)
+            if yres>0: yres = vcpu.deg2m(yres)
             return xres, yres
 
 
@@ -3507,8 +3516,7 @@ class XYZ(object):
         if proj is None: proj = False
         if not proj: return
         if not callable(proj):
-            from vacumm.misc.grid.basemap import get_proj
-            proj = get_proj((self._x, self._y))
+            proj = vcgb.get_proj((self._x, self._y))
         return proj
 
     def get_grid(self, res=None, xmin=None, xmax=None, ymin=None, ymax=None, relres=.5, degres=False, id='xyz_grid'):
@@ -3565,7 +3573,7 @@ class XYZ(object):
         dy += dy*(yratio%1)/int(yratio)
 
         # Grid
-        grid = create_grid(N.arange(xmin, xmax+dx/2., dx), N.arange(ymin, ymax+dy/2., dy))
+        grid = vacumm.misc.grid.create_grid(N.arange(xmin, xmax+dx/2., dx), N.arange(ymin, ymax+dy/2., dy))
         grid.id = id
         return grid
     grid = property(get_grid, doc="Rectangular grid based on x/y positions and resolution")
@@ -3582,32 +3590,36 @@ class XYZ(object):
 
             - ``None``, ``False`` or ``MV2.nomask``: no masking
             - an array: this mask array is directly applied
-            - a :class:`Shapes` instance (or :class:`~vacumm.bathy.shorelines.ShoreLine`) or a single char GSHHS resolution (and optionally 's' for Histolitt)
+            - a :class:`Shapes` instance (or :class:`~vacumm.bathy.shorelines.ShoreLine`)
+              or a single char GSHHS resolution (and optionally 's' for Histolitt)
             - a callable fonction so that ``mask = thisfunc(mask, **kwmask)``
             - a float: data with this value are masked
 
-        - *mask_<param>*: <param> is passed to :func:`~vacumm.misc.grid.masking.polygon_mask` for evaluation of mask thanks to the polygons.
+        - *mask_<param>*: <param> is passed to :func:`~vacumm.misc.grid.masking.polygon_mask`
+          for evaluation of mask thanks to the polygons.
         - *grid_<param>*: <param> is passed to :func:`grid`.
         - *cgrid*: If ``True``, returns bathy at U- and V-points, else at T-points
-        - Other keyparam are passed to :func:`~vacumm.misc.grid.regridding.griddata` for regridding.
+        - Other keyparam are passed to :func:`~vacumm.misc.grid.regridding.griddata`
+          for regridding.
 
         Return: ``(Zx,Zy)`` OR ``Z`` depending on cgrid.
 
         .. seealso:
 
-            :func:`~vacumm.misc.grid.masking.polygon_mask` :class:`~vacumm.misc.grid.basemap.GSHHS_BM`
+            :func:`~vacumm.misc.grid.masking.polygon_mask`
+            :class:`~vacumm.misc.grid.basemap.GSHHS_BM`
             :class:`Shapes`  :class:`~vacumm.bathy.shorelines.ShoreLine`
         """
         # Grid
-        kwgrid = kwfilter(kwargs, 'grid_')
+        kwgrid = vacumm.misc.misc.kwfilter(kwargs, 'grid_')
         if grid is None:
             grid = self.get_grid(**kwgrid)
 
         # Interpolation
-        kwmask = kwfilter(kwargs, 'mask_')
+        kwmask = vacumm.misc.misc.kwfilter(kwargs, 'mask_')
         kwargs.setdefault('method', 'carg')
         kwargs.setdefault('ext', True)
-        var = griddata(self.x, self.y, self.z, grid, mask=None, cgrid=cgrid, **kwargs)
+        var = vcgr.griddata(self.x, self.y, self.z, grid, mask=None, cgrid=cgrid, **kwargs)
         if not cgrid: var = var,
 
         # Mask from polygons
@@ -3631,7 +3643,7 @@ class XYZ(object):
                 shapes = GSHHS_BM(mask, clip=clip)
 
             # Create mask
-            mask = polygon_mask(grid, shapes.get_shapes(), **kwmask)
+            mask = vacumm.misc.grid.masking.polygon_mask(grid, shapes.get_shapes(), **kwmask)
 
         # Masking
         if mask is not None and mask is not False and mask is not MV2.nomask:
@@ -3668,7 +3680,7 @@ class XYZ(object):
         """
 
         # Interpolate
-        zo = xy2xy(self.x, self.y, self.z, xo, yo, **kwargs)
+        zo = vcgr.xy2xy(self.x, self.y, self.z, xo, yo, **kwargs)
 
 
         # Mask from polygons
@@ -3726,10 +3738,10 @@ class XYZ(object):
         """
 
         # Params
-        kwm = kwfilter(kwargs, 'map')
-        kwhull = kwfilter(kwargs, 'hull')
-        kwcb = kwfilter(kwargs, 'colorbar')
-        kwplot = dict(linewidth=linewidth, cmap=get_cmap(cmap))
+        kwm = vacumm.misc.misc.kwfilter(kwargs, 'map')
+        kwhull = vacumm.misc.misc.kwfilter(kwargs, 'hull')
+        kwcb = vacumm.misc.misc.kwfilter(kwargs, 'colorbar')
+        kwplot = dict(linewidth=linewidth, cmap=vcc.get_cmap(cmap))
         kwplot.update(kwargs)
         pts = None
 
@@ -3754,7 +3766,7 @@ class XYZ(object):
             kwm.setdefault('lon', (xmin, xmax))
             kwm.setdefault('lat', (ymin, ymax))
             kwm['projection'] = 'merc'
-            m = map2(show=False, savefig=None, **kwm)
+            m = vcp.map2(show=False, savefig=None, **kwm)
         if m:
             G = m.map if hasattr(m, 'map') else m
             self._m = G
@@ -3824,11 +3836,11 @@ class XYZ(object):
             if self.units is None:
                 self.units = units
         if colorbar:
-            _colorbar_(pts, units=units, **kwcb)
+            vcp._colorbar_(pts, units=units, **kwcb)
         if savefig:
             P.savefig(savefig)
         elif savefigs:
-            Savefigs(savefigs)
+            vcp.savefigs(savefigs)
         if show:
             P.show()
         return pts
@@ -4382,18 +4394,4 @@ def netcdf4(level=3, deflate=1, shuffle=1):
 ######################################################################
 ######################################################################
 
-from .atime import ch_units, round_date, are_same_units, now, has_time_pattern, \
-    tsel2slice, is_time, time_selector, itv_union, add_margin, strptime, \
-    datetime as adatetime, comptime
-from .axes import get_checker, istime, islon, islat, islevel
-from .color import land, simple_colors, get_cmap
-from .grid import create_grid, get_xy, curv2rect, isgrid
-from .grid.masking import polygons, convex_hull, rsamp, polygon_mask, create_polygon, \
-    clip_shape
-from .grid.regridding import griddata, xy2xy
-from .grid.basemap import get_proj
-from .misc import is_iterable,  broadcast, kwfilter, set_atts, create_selector, \
-    squeeze_variable, checkdir
-from .phys.units import deg2m, m2deg
-from .plot import map2, _colorbar_, savefigs as Savefigs, markers as Markers
 
