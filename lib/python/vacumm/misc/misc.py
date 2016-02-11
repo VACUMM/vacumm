@@ -1,5 +1,4 @@
 # -*- coding: utf8 -*-
-
 """
 Misc tools
 
@@ -44,20 +43,22 @@ Misc tools
 import re,os
 from copy import copy, deepcopy
 from itertools import cycle
-from types import IntType, FloatType, LongType, ComplexType
+from types import IntType, FloatType, LongType, ComplexType, GeneratorType
+import operator
+from warnings import warn
 
 import numpy as N, MV2, cdms2
 from matplotlib import rcParams
 from MV2 import nomask
-from cdms2 import createAxis, isVariable
+from cdms2 import isVariable
 from genutil import grower
 from genutil import minmax
 
-from ..__init__ import VACUMMError
+from vacumm import VACUMMError
 
 
 MV = MV2
-MA=N.ma
+MA = N.ma
 
 __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale',
     'get_atts', 'cp_atts', 'set_atts', 'check_def_atts', 'iterable', 'isnumber',
@@ -147,7 +148,7 @@ class Att(dict):
 
 def Cfg2Att(cfg):
     """Convert a :class:`~configobj.ConfigObj` object to an arborescence of :class:`~vacumm.misc.misc.Att` objects"""
-    from configobj import ConfigObj, Section
+    from configobj import Section
     if isinstance(cfg, Att): return cfg
     assert isinstance(cfg, (Section, dict)), 'You must pass a ConfigObj object'
     a = Att()
@@ -336,7 +337,6 @@ def basic_auto_scale(vmin,vmax,nmax=7,steps=[1,2,2.5,5,10],geo=False,minutes=Fal
             if not N.allclose(N.array(myloc)%1., 0., atol=1.e-4):
                 return myloc
 
-    intv = (vmin, vmax)
     if nmax < 2: nmax = 2
     myloc = MaxNLocator(nmax+1,steps=steps,**kwargs)
     myloc.create_dummy_axis()
@@ -533,7 +533,7 @@ def is_iterable(obj, nostr=True, nogen=True):
     :Return: True/False
     """
 
-    if not nogen and type(obj) == types.GeneratorType: return True
+    if not nogen and type(obj) == GeneratorType: return True
     #try: len(obj)
     #except: return False
     if not (hasattr(obj, '__len__') and callable(obj.__len__)): return False
@@ -624,7 +624,6 @@ def _geolab(vals, fmt='%.5g', longitude=True, decimal=True, tex=None, auto_minut
         ifmt = '%i'
     else:
         ifmt = '%02i'
-    gfmt = '%.2g'
     if decimal: auto_minutes = False
 
     # Values
@@ -1483,9 +1482,10 @@ def closeto(a, b, rtol=1.e-5, atol=1.e-8):
     else:
         b = x==y
         g = ~xinf
-        x = x[~xinf]
-        y = y[~xinf]
-        b[~xinf] = N.less_equal(N.absolute(x-y), atol + rtol * N.absolute(y))
+        x = x[g]
+        y = y[g]
+        b[g] = N.less_equal(N.absolute(x-y), atol + rtol * N.absolute(y))
+        del g
         res = b
     if mask is not N.ma.nomask:
         res &= ~mask
@@ -1930,7 +1930,7 @@ class ArgList(object):
         self.single = not isinstance(argsi, list)
         self.argsi = argsi
     def get(self):
-        return [argsi] if self.single else argsi
+        return [self.argsi] if self.single else self.argsi
     def put(self, argso):
         so = not isinstance(argso, list)
         if (so and self.single) or (not so and not self.single):
