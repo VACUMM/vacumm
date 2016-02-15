@@ -2882,7 +2882,7 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
     return vv
 
 
-def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
+def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge'):
     """Conversion from layer thickness to depths
 
     :Params:
@@ -2899,13 +2899,26 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
 
         - **refloc**, optional: ``"top"`` | ``"eta"``,
           ``"bottom"`` | ``"depth"``,  or ``None``.
+        - **mode**, optional:
+
+            - ``"edge"`` or ``"edge+"``: Compute depths at layer edges (interfaces).
+              Adding a + include the bottom layer, add a vertical level.
+            - ``"middle"``: Compute depths at the middle of layers
 
     """
 
     # Init depths
+    if mode is None: mode = 'edge'
+    mode = str(mode)
+    ext = '+' in mode
+    mode = mode[:3]
+    assert mode in ('edg', 'mid'), ("Invalid mode: Please choose one of: "
+        "edge or middle")
+    ext = ext and mode=='edg'
     withtime = dz.getTime() is not None
     nt = dz.shape[0] if withtime else 1
     nz = dz.shape[int(withtime)]
+    if ext: nz += 1
     shape = (nt, nz) + dz.shape[int(withtime)+1:]
     depths = MV2.zeros(shape, dz.dtype)
     depths.long_name = 'Depths'
@@ -2950,7 +2963,11 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
                 refloc = 'bottom' if ref.max()>15 else 'top'
 
     # Integrate
-    depths[:] = dzm.cumsum(axis=1)
+    depths[:, int(ext):] = dzm.cumsum(axis=1)
+
+    # Middle of layers
+    if mode=='mid':
+        depths[:] -= dzm * 0.5
     del dzm
 
     # Add reference
@@ -2965,7 +2982,12 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
     # Format axes
     if not withtime: depths = depths[0]
     if copyaxes:
-        depths.setAxisList(dz.getAxisList())
+        axes = dz.getAxisList()
+        if ext:
+            iaxis = int(withtime)
+            zaxis = extend1d(dz.getAxis(iaxis), (1, 0), mode='linear')
+            axes[iaxis] = zaxis
+        depths.setAxisList(axes)
         grid = dz.getGrid()
         if grid is not None:
             depths.setGrid(grid)
@@ -2985,4 +3007,5 @@ from ...misc.axes import (check_axes, islon, islat, islev, istime, create_lon,
 from ...misc.phys import units, constants
 from .basemap import get_map, cached_map, cache_map, get_proj
 from .masking import t2uvmasks
+from .regridding import extend1d
 from ...__init__ import VACUMMError, VACUMMWarning
