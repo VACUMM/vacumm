@@ -1877,6 +1877,7 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None):
             - ``'dist'`` or ``'d'``: Distance in km.
 
     """
+
     # Prefer 1D axes
     grid = get_grid(vari)
     grid = curv2rect(grid, mode=False)
@@ -1906,19 +1907,11 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None):
         func = _nearest2dto1d_ if rect else _nearest2dto1dc_
         zo = func(xi, yi, zi, xo, yo, mv)
 
-        if mi is not None: zonear = zo
+    elif method == 'bilinear':
 
-    if method == 'bilinear':
-
-        # Base
         func = _bilin2dto1d_ if rect else _bilin2dto1dc_
         zo = func(xi, yi, zi, xo, yo, mv)
 
-        # Mask
-        if mi is not None:
-            mo = func(xi, yi, mi, xo, yo, mv)
-            zo[:] = N.where(mo!=0., zonear, zo)
-            del mi, mo
 
     elif method.startswith('nat'):
 
@@ -1959,8 +1952,8 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None):
             xom, yom = get_proj((xo, yo))(xo, yo)
             if outaxis is None:
                 outaxis = 'lon' if xom.ptp()>yom.ptp() else 'lat'
-                if (outaxis=='lon' and (N.diff(N.sign(N.diff(xom)))!=0).any() or (N.diff(xom)==0).any()) or \
-                    (outaxis=='lat' and (N.diff(N.sign(N.diff(yom)))!=0).any() or (N.diff(yom)==0).any()):
+                if ((outaxis=='lon' and (N.diff(N.sign(N.diff(xom)))!=0).any() or (N.diff(xom)==0).any()) or 
+                    (outaxis=='lat' and (N.diff(N.sign(N.diff(yom)))!=0).any() or (N.diff(yom)==0).any())):
                     outaxis = 'dist'
         elif isscalar:
             outaxis = None
@@ -1983,7 +1976,8 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None):
         axes.append(outaxis)
     else:
         varo = varo[...,0]
-    varo.setAxisList(axes)
+    if not N.isscalar(varo):
+        varo.setAxisList(axes)
     return varo
 
 
