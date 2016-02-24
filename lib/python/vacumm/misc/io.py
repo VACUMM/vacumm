@@ -38,6 +38,7 @@ import os, gc, glob, logging, re, sys
 from collections import OrderedDict
 from traceback import format_exc
 from warnings import warn
+import warnings
 
 import numpy as N, MV2, cdms2, cdtime
 import pylab as P, operator
@@ -4203,6 +4204,15 @@ class ColoredFormatter(logging.Formatter):
         record.levelname = self.colorize(record.levelname, record.levelname)
         return logging.Formatter.format(self, record)
 
+class _Redirector_(object):
+   def __init__(self, func, prefix=''):
+      self.func = func
+      self.prefix = prefix
+   def write(self, buf):
+      for line in buf.rstrip().splitlines():
+         self.func(self.prefix+line.rstrip())
+
+
 
 class Logger(object):
     """Class for logging facilities when subclassing.
@@ -4221,14 +4231,18 @@ class Logger(object):
         - **level**, optional: Initialize logging level (see :meth:`set_loglevel`).
         - **colors**, optional: Use colors when formatting terminal messages?
         - **full_line**, optional: Colorize full line or just level name?
+        - **redirect_warnings**, optional: Redirect messages issued by :mod:`warnings.warn`.
+        - **redirect_stdout**, optional: Redirect messages issued to sys.stdout.
+        - **redirect_stderr**, optional: Redirect messages issued to sys.stderr.
 
     :See also: :mod:`logging` module
     """
     def __init__(self, name, logfile=None, console=True, maxlogsize=0, maxbackup=0,
-        cfmt='%(name)s [%(levelname)-8s] %(message)s',
-        ffmt='%(asctime)s: %(name)s [%(levelname)-8s] %(message)s',
-        asctime='%Y-%m-%d %H:%M',
-        level='debug', colors=True, full_line=False):
+            cfmt='%(name)s [%(levelname)-8s] %(message)s',
+            ffmt='%(asctime)s: %(name)s [%(levelname)-8s] %(message)s',
+            asctime='%Y-%m-%d %H:%M',
+            level='debug', colors=True, full_line=False,
+            redirect_warnings=False, redirect_stdout=False, redirect_stderr=False):
 
         # Create or get logger
         self.logger = logger = logging.getLogger(name)
@@ -4255,6 +4269,21 @@ class Logger(object):
             logger.addHandler(console)
         self.set_loglevel(level)
 
+        # Redirections
+        if redirect_warnings:
+            warnings.showwarning = self.showwarning
+        if redirect_stdout:
+            if not isinstance(redirect_stdout, str):
+                redirect_stdout = 'debug'
+            sys.stdout = _Redirector_(getattr(self, redirect_stdout),
+                prefix='STDOUT: ')
+        if redirect_stderr:
+            if not isinstance(redirect_stderr, str):
+                redirect_stderr = 'warning'
+            sys.stderr = _Redirector_(getattr(self, redirect_stderr),
+                prefix='STDERR: ')
+        
+
         # Announce
         logger.debug('*** Start log session ***')
 
@@ -4269,6 +4298,15 @@ class Logger(object):
     def warning(self, text, *args, **kwargs):
         """Send a warning message"""
         self.logger.warning(text, *args, **kwargs)
+
+    def showwarning(self, message, category, filename, lineno,
+            file=None):
+        self.warning(
+            'REDIRECTED: %s:%s: %s:%s',
+            filename, lineno,
+            category.__name__, message,
+        )
+
 
     def _log_and_exit_(self, slevel, text, *args, **kwargs):
         """Log a message and exit"""
