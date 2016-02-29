@@ -124,7 +124,7 @@ from vacumm.misc.grid.misc import (
     meshcells, meshbounds, meshgrid, bounds1d, bounds2d, coord2slice, isregular,
     isrect, curv2rect, isgrid, get_xy, create_axes2d, gridsel, varsel, xshift, rotate_grid,
     get_closest, get_closest_depth, makedepthup, get_axis, transect_specs,
-    get_axis_slices, get_distances,
+    get_axis_slices, get_distances, dz2depth,
     )
 
 from vacumm.misc.grid.regridding import (
@@ -141,7 +141,7 @@ from vacumm.misc.grid.basemap import (
 from vacumm.misc.grid.masking import (
     erode_coast, polygon_mask, GetLakes, get_coast, polygons, polygon_select, zcompress,
     envelop, get_coastal_indices, grid_envelop, create_polygon, clip_shape, proj_shape,
-    plot_polygon
+    plot_polygon, merge_masks
     )
 
 # - data
