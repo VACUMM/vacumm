@@ -2971,13 +2971,10 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge'):
     del dzm
 
     # Add reference
-    if refloc == 'top':
+    if refloc == 'top': # zero at top
         for it in xrange(nt):
             depths[it] -= depths[it, -1]
-        depths[:] += ref
-
-    else:
-        depths[:] -= ref
+    depths[:] += ref
 
     # Format axes
     if not withtime: depths = depths[0]
