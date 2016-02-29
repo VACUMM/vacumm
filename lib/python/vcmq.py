@@ -124,7 +124,7 @@ from vacumm.misc.grid.misc import (
     meshcells, meshbounds, meshgrid, bounds1d, bounds2d, coord2slice, isregular,
     isrect, curv2rect, isgrid, get_xy, create_axes2d, gridsel, varsel, xshift, rotate_grid,
     get_closest, get_closest_depth, makedepthup, get_axis, transect_specs,
-    get_axis_slices, get_distances, dz2depth,
+    get_axis_slices, get_distances, dz2depth, meshweights,
     )
 
 from vacumm.misc.grid.regridding import (
