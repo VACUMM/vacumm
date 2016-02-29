@@ -33,16 +33,17 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
-import cdms2, MV2, re
+from warnings import warn
 from collections import OrderedDict
 import string
 
+import cdms2, MV2, re
 from vacumm import VACUMMError
 from vacumm.misc import kwfilter, dict_merge
 from vacumm.misc.axes import create as create_axis, isaxis
 from vacumm.misc.grid import create_axes2d
 from vacumm.misc.io import ncmatch_obj
-from misc.arakawa import ARAKAWA_LOCATIONS as arakawa_locations
+from vacumm.data.misc.arakawa import ARAKAWA_LOCATIONS as arakawa_locations
 
 __all__ = ['VAR_SPECS', 'AXIS_SPECS',
     'GENERIC_AXIS_NAMES', 'GENERIC_VAR_NAMES', 'GENERIC_NAMES',
@@ -193,6 +194,24 @@ VAR_SPECS = OrderedDict(
         atlocs = ['t', 'u', 'v'],
         physloc = 'v',
     ),
+    ubc = dict(
+        names=['ubc', 'u'],
+        standard_names=['baroclinic_sea_water_x_velocity'],
+        long_names = "Sea water baroclinic velocity along X",
+        units = "m s-1",
+        axes = dict(x=['lon_u'], y=['lat_u']),
+        atlocs = ['t', 'u', 'v'],
+        physloc = 'u',
+    ),
+    vbc = dict(
+        names=['vbc', 'v'],
+        standard_names=['baroclinic_sea_water_y_velocity'],
+        long_names = "Sea water baroclinic velocity along Y",
+        units = "m s-1",
+        axes = dict(x=['lon_v'], y=['lat_v']),
+        atlocs = ['t', 'u', 'v'],
+        physloc = 'v',
+    ),
     usurf = dict(
         names = ['usurf'],
         standard_names=['sea_surface_x_velocity'],
@@ -228,6 +247,15 @@ VAR_SPECS = OrderedDict(
         atlocs = ['t', 'u', 'v'],
         physloc = 'v',
         units = "m s-1",
+    ),
+    speed = dict(
+        names = ['speed'],
+        standard_names=['sea_water_speed'],
+        long_names = ["Sea water speed"],
+        units = "m s-1",
+        axes = dict(y=['lat'], x=['lon']),
+        atlocs = ['t', 'u', 'v'],
+        physloc = 't',
     ),
     ke = dict(
         names = ['ke'],
@@ -1305,7 +1333,8 @@ def cf2atts(name, select=None, exclude=None, ordered=True, **extra):
 
 
 # Format a variable
-def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, **kwargs):
+def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
+        mode='warn', **kwargs):
     """Format a MV2 variable according to its generic name
 
 
@@ -1318,6 +1347,7 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
         - **format_axes**, optional: Also format axes.
         - **nodef**, optional: Remove location specification when it refers to the
           default location (:attr:`DEFAULT_LOCATION`).
+        - **mode**: "silent", "warn" or "raise".
         - Other parameters are passed as attributes, except those:
 
             - present in specifications to allow overriding defaults,
@@ -1336,12 +1366,18 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
         kwaxes[k] = kwfilter(kwargs, k+'_')
 
     # Always a MV2 array
-    var = MV2.asarray(var)
+    if not cdms2.isVariable(var):
+        var = MV2.asarray(var)
 
     # Check specs
     if name not in GENERIC_NAMES:
         if var.id in GENERIC_NAMES:
             name = var.id
+        elif mode=='warn':
+            warn("Generic var name not found '%s'."%name)
+            return var
+        elif mode=='silent':
+            return var
         else:
             raise KeyError("Generic var name not found '%s'. Please choose one of: %s"%(
                 name, ', '.join(GENERIC_NAMES)))
