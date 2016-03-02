@@ -3375,7 +3375,8 @@ class ScalarMappable:
     nmax_levels = nmax = property(get_nmax_levels, set_nmax_levels,
         del_nmax_levels, doc="Max number of :attr:`levels` for contours and colorbar ticks.")
 
-    def get_levels(self, mode=None, keepminmax=None, nocache=False, **kwargs):
+    def get_levels(self, mode=None, keepminmax=None, nocache=False,
+            autoscaling='normal', **kwargs):
         """Get :attr:`levels` for contours and colorbar ticks
 
         :Params:
@@ -3465,7 +3466,12 @@ class ScalarMappable:
         self.levels_mode = mode
 
         # Compute base levels
-        levels = auto_scale((self.vmin, self.vmax), vmin=vmin, vmax=vmax,
+        assert autoscaling in ['normal', 'degrees'] or callable(autoscaling), 'Wrong autoscaling parameter'
+        if autoscaling=='normal':
+            autoscaling = auto_scale
+        elif autoscaling=='degrees':
+            autoscaling = geo_scale
+        levels = autoscaling((self.vmin, self.vmax), vmin=vmin, vmax=vmax,
             nmax=self.nmax_levels, keepminmax=keepminmax==2)
 
         # Change min and max
