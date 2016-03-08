@@ -1904,6 +1904,11 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
     isscalar = N.isscalar(xo)
     xo = N.atleast_1d(N.asarray(xo, dtype='d'))
     yo = N.atleast_1d(N.asarray(yo, dtype='d'))
+    if abs(xi[0]-xo[0])>180.:
+        if xi[0]<xo[0]:
+            xi = xi + 360.
+        else:
+            xi = xi - 360.
 
     # Interpolate
     if method == 'nearest' or mi is not None:
