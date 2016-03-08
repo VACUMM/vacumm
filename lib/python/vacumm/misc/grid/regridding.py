@@ -41,27 +41,28 @@ import gc, os, subprocess
 import re
 import warnings
 from collections import OrderedDict
+import tempfile, shutil
+from copy import deepcopy
 
 import numpy as N, cdms2,  MV2,  regrid2
 from cdms2.axis import TransientAxis
-#MA = N.oldnumeric.ma
-MA = N.ma
 import genutil
-import tempfile, os, shutil
-from copy import deepcopy
 from _geoslib import Point, Polygon
-MV=MV2
-cdms=cdms2
+
 from ...__init__ import VACUMMError, VACUMMWarning
 from .kriging import krig as _krig_
-from .misc import axis1d_from_bounds, get_xy, isgrid, t2uvgrids, get_grid, \
-    set_grid, bounds1d, bounds2d, get_axis, \
-    meshgrid, create_grid, resol, meshcells, curv2rect, merge_axis_slice, \
-    get_axis_slices, get_axis, transect_specs, create_axes2d
+from .misc import (axis1d_from_bounds, get_xy, isgrid, t2uvgrids, get_grid, 
+    set_grid, bounds1d, bounds2d, get_axis, 
+    meshgrid, create_grid, resol, meshcells, curv2rect, merge_axis_slice, 
+    get_axis_slices, get_axis, transect_specs, create_axes2d,
+    get_distances)
 from .. import axes as A
 from ...misc.misc import cp_atts, intersect, kwfilter, get_atts, set_atts, closeto
 from ...misc.atime import are_same_units, ch_units
 from .basemap import get_proj
+
+MV=MV2
+cdms=cdms2
 
 # Python functions
 __all__ = ['fill1d', 'regular', 'regular_fill1d', 'cellave1d', 'spline_interp1d',
@@ -919,15 +920,15 @@ def fill1d2(vi,axis=0, k=1,padding=None,clip=False,min_padding=None, method='lin
 
     # Removes missing points
     mask = MV.getmaskarray(vi)
-    cxi = MA.masked_array(xi,mask=mask).compressed()
+    cxi = N.ma.masked_array(xi,mask=mask).compressed()
     cvi = vi.compressed()
-    cii = MA.masked_array(N.arange(len(xi)),mask=mask).compressed()
+    cii = N.ma.masked_array(N.arange(len(xi)),mask=mask).compressed()
     nc = len(cii)
     cjj = N.arange(nc)
 
     # Identify gaps
     gaps = cii[1:]-cii[:-1]
-    igaps = MA.masked_where(gaps == 1,cjj[:-1]).compressed()
+    igaps = N.ma.masked_where(gaps == 1,cjj[:-1]).compressed()
 
     # Output variable to refill
     vo = vi.clone()
@@ -1428,7 +1429,7 @@ class GridData(object):
                         del mmo
                     del zzo
 
-            if hasattr(zi2d, 'mask') and zi2d[iex].mask is not MA.nomask:
+            if hasattr(zi2d, 'mask') and zi2d[iex].mask is not N.ma.nomask:
                 del zzi, xi, yi
         gc.collect()
 
@@ -1569,7 +1570,7 @@ class _GridDataHelper_(object):
             elif hasattr(ggo, 'mask'):
                 mask = ggo.mask
         if mask is False or mask is None:
-            mask = MA.nomask
+            mask = N.ma.nomask
         if mask.ndim>2:
             mask = mask[(0,)*(mask.ndim-2)]
 
@@ -1587,7 +1588,7 @@ class _GridDataHelper_(object):
             self.y = get_axis(ggo, -2)
             self.outtype = 2
         elif outtype == -1:
-            if mask is not MA.nomask:
+            if mask is not N.ma.nomask:
                 self.outtype = 1
             else:
                 self.outtype = -1
@@ -1628,7 +1629,7 @@ class _GridDataHelper_(object):
             except:
                 missing_value = 1.e20
         zo3d = N.zeros(zi2d.shape[:1]+self.gridshape, zi.dtype)+missing_value
-        unmasked = not hasattr(zi2d, 'mask') or zi2d.mask is MA.nomask or not zi2d.mask.any()
+        unmasked = not hasattr(zi2d, 'mask') or zi2d.mask is N.ma.nomask or not zi2d.mask.any()
         if unmasked:
             compress = False
         else:
@@ -1645,7 +1646,7 @@ class _GridDataHelper_(object):
         # Remove compress values or fill them
         good = self.mi
         mmi = None
-        if hasattr(zi2d, 'mask') and zi2d[iex].mask is not MA.nomask and zi2d[iex].mask.any():
+        if hasattr(zi2d, 'mask') and zi2d[iex].mask is not N.ma.nomask and zi2d[iex].mask.any():
             if not compress: # No compression => interpolation of mask
                 mmi = zi2d[iex].mask.astype('f')
                 zi2d[iex] = zi2d[iex].filled(missing_value)
@@ -1686,7 +1687,7 @@ class _GridDataHelper_(object):
 
 
         # Masking
-        if self.mask is not MA.nomask:
+        if self.mask is not N.ma.nomask:
 
             mask = self.mask
             if mask.shape != zo.shape:
@@ -1712,7 +1713,7 @@ class _GridDataHelper_(object):
         if self.outtype == 0: return zo
 
         # Masking
-        zo = MA.masked_values(zo, missing_value, copy=0)
+        zo = N.ma.masked_values(zo, missing_value, copy=0)
         if self.outtype == 1: return zo
 
         # Gridding
@@ -1853,7 +1854,7 @@ def xy2xy(xi, yi, zi, xo, yo, nl=False, proj=True, **kwargs):
 
 
 
-def grid2xy(vari, xo, yo, method='bilinear', outaxis=None):
+def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine'):
     """Interpolate gridded data to ramdom positions
 
     :Params:
@@ -1875,6 +1876,9 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None):
             - ``'lon'`` or ``'x'``: Longitudes.
             - ``'lat'`` or ``'y'``: Latitudes.
             - ``'dist'`` or ``'d'``: Distance in km.
+
+        - **distmode**, optional: Distance computation mode.
+          See :func:`~vacumm.misc.grid.misc.get_distances`.
 
     """
 
@@ -1949,11 +1953,11 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None):
     if outaxis=='auto': outaxis = None
     if outaxis is None or outaxis in ['m', 'pos', 'd', 'dist']:
         if len(xo)>1:
-            xom, yom = get_proj((xo, yo))(xo, yo)
+            #xom, yom = get_proj((xo, yo))(xo, yo)
             if outaxis is None:
-                outaxis = 'lon' if xom.ptp()>yom.ptp() else 'lat'
-                if ((outaxis=='lon' and (N.diff(N.sign(N.diff(xom)))!=0).any() or (N.diff(xom)==0).any()) or 
-                    (outaxis=='lat' and (N.diff(N.sign(N.diff(yom)))!=0).any() or (N.diff(yom)==0).any())):
+                outaxis = 'lon' if N.ptp(xo)>N.ptp(yo) else 'lat'
+                if ((outaxis=='lon' and (N.diff(N.sign(N.diff(xo)))!=0).any() or (N.diff(xo)==0).any()) or
+                    (outaxis=='lat' and (N.diff(N.sign(N.diff(yo)))!=0).any() or (N.diff(yo)==0).any())):
                     outaxis = 'dist'
         elif isscalar:
             outaxis = None
@@ -1964,7 +1968,8 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None):
     elif outaxis in ['y', 'lat']:
         outaxis = A.create_lat(yo)
     elif outaxis in ['m', 'd', 'pos', 'dist']:
-        dist = N.concatenate(([0],N.sqrt(N.diff(xom)**2+N.diff(yom)**2)*0.001)).cumsum()
+        dist = get_distance(xo[0], yo[0], xo, yo, mode=distmode)*0.001
+        #dist = N.concatenate(([0],N.sqrt(N.diff(xom)**2+N.diff(yom)**2)*0.001)).cumsum()
         outaxis = cdms2.createAxis(dist, id='position')
         outaxis.long_name = 'Distance along transect'
         outaxis.units = 'km'
@@ -2058,20 +2063,22 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
         # Init out
         iaxis = var.getOrder().index('t')
         sel = [slice(None)]*var_square.ndim
-        if outaxis is None:
+        if outaxis is None: # time -> (nt=nl,nz)
             sel[-1] = 0
             oaxis = iaxis
-        else:
-            sel[iaxis] = 0
+        else: # space -> (nz,nd=nl)
+            sel[iaxis] = 0 
             oaxis = -1
+        var = var_square[tuple(sel)].clone()
 
-        # Select the diagnonal the ~square matrix
-        var = var_square[tuple(sel)].clone() # (nz,nl)
+        # Select the diagnonal the ~square matrix and fill var
         varsm = var_square.asma()
         ii = N.arange(len(times))
         sel = [slice(None)]*varsm.ndim
         sel[iaxis] = sel[-1] = ii
-        varsm = varsm[tuple(sel)]
+        varsm = varsm[tuple(sel)] # (nd,nz)
+        if oaxis==-1:
+            oaxis = varsm.ndim
         if oaxis!=0:
             varsm = N.rollaxis(varsm, 0, oaxis)
         var[:] = varsm
@@ -2126,7 +2133,7 @@ def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
         #FIXME: considerer les axes 2D en input et output
 
         # Bilinear on pure numeric values
-        if not MA.isMA(vari):
+        if not N.ma.isMA(vari):
             xi = N.arange(vari.shape[-1])
             yi = N.arange(vari.shape[-2])
             xo = N.linspace(0., xi[-1], varo.shape[-1])
