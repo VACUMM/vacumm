@@ -500,7 +500,7 @@ def merc(lon=None, lat=None, **kwargs):
 
 #proj = merc()
 
-def get_proj(gg=None, **kwargs):
+def get_proj(gg=None, proj=None, **kwargs):
     """Setup a default projection using x,y coordinates and
     :class:`~mpl_toolkits.basemap.proj.Proj`
 
@@ -528,6 +528,7 @@ def get_proj(gg=None, **kwargs):
 
         >>> proj = get_proj(R=6000000.)
     """
+    if callable(proj): return proj
     if gg is not None:
         x,y = get_xy(gg, num=True)
         xmin, ymin, xmax, ymax = x.min(), y.min(), x.max(), y.max()
@@ -537,8 +538,10 @@ def get_proj(gg=None, **kwargs):
     projparams = kwargs.copy()
     ymax = min(ymax, 89.99)
     ymin = max(ymin, -89.99)
+    if not isinstance(proj, str):
+        proj = get_config_value('vacumm.misc.grid.basemap', 'proj')
     dict_check_defaults(projparams, R=rsphere_mean, units='m',
-        proj=get_config_value('vacumm.misc.grid.basemap', 'proj'),
+        proj=proj,
         lat_ts = N.median(y) if len(y)>10 else N.mean(y),
         lon_0 = N.median(x) if len(x)>10 else N.mean(x))
     dict_check_defaults(projparams, lat_0=projparams['lat_ts'])
