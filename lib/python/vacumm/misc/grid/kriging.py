@@ -66,7 +66,7 @@ except:
 #    print 'Falling back to builtin functions'
     dgemm = get_blas_func('gemm')
     def symm(a, b): return dgemm(1., a, b)
-    sytri = N.linalg.inv
+    sytri = N.linalg.pinv
 
 from ...misc.misc import kwfilter
 from .misc import get_distances
@@ -135,7 +135,7 @@ class VariogramModel(object):
     def __init__(self, mtype, **kwargs):
         self.mtype = variogram_model_type(mtype)
         self.fixed_params = dict([(p, v) for (p, v) in kwargs.items()
-            if p in self.param_names])
+            if p in self.param_names and v is not None])
 
     def get_all_kwargs(self, pp):
         """Get arguments list to :func:`variogram_model` by merging variable params `p`
@@ -310,8 +310,11 @@ def variogram_fit(x, y, z, mtype, getall=False, getp=False, geterr=False,
         - **variogram_<param>**, optional: ``param`` is passed to :func:`variogram`.
         - **distfunc**: Function to compute distances, or a mode argument to
           :func:`~vacumm.misc.grid.misc.get_distances`.
+
+          .. warning:: use "haversine" if input coordinates are in degrees.
+          
         - Extra keywords are those of :func:`variogram_model`.
-          They can be used to fix some of the parameters.
+          They can be used to freeze some of the parameters.
 
           >>> variogram_fit(x, y, z, mtype, n=0) # fix the nugget
 
@@ -334,7 +337,8 @@ def variogram_fit(x, y, z, mtype, getall=False, getp=False, geterr=False,
     from scipy.optimize import minimize
     func = lambda pp: ((v-vm.get_variogram_model(pp)(d))**2).sum()
     warnings.filterwarnings('ignore', 'divide by zero encountered in divide')
-    p = minimize(func, p0, bounds=((N.finfo('d').eps, None),)*len(p0))['x']
+    p = minimize(func, p0, bounds=[(N.finfo('d').eps, None)]*len(p0),
+        method='L-BFGS-B')['x']
     del warnings.filters[0]
 
     # Output
@@ -434,7 +438,7 @@ def syminv(A):
     :Raise: :exc:`KrigingError`
 
     """
-    res = sytri(N.asfortranarray(A, 'd'))
+    res = sytri(A.astype('d'))
     if isinstance(res, tuple):
         info = res[1]
         if info: raise KrigingError('Error during call to Lapack DSYTRI (info=%i)'%info)
@@ -478,10 +482,10 @@ class OrdinaryCloudKriger(object):
         - **exact**, optional: If True, variogram is exactly zero when distance is zero.
         - **distfunc**: Function to compute distances, or a mode argument to
           :func:`~vacumm.misc.grid.misc.get_distances`.
-        - Extra keywords are  parameters to the :func:`variogram_model` that must not be
-          optimized by :func:`variogram_model`. For instance ``n=0`` fix the
+        - Extra keywords are the parameters to the :func:`variogram_model` that must not be
+          optimized by :func:`variogram_model`. For instance ``n=0`` fixes the
           nugget to zero.
-          This used only if ``vfg`` is not passed as argument.
+          This is used only if ``vfg`` is not passed as an argument.
 
 
     :Attributes: :attr:`x`, :attr:`y`, :attr:`z`, :attr:`np`,
@@ -668,10 +672,12 @@ class OrdinaryCloudKriger(object):
 
         # Multiprocessing inversion
         if self.nproc>1:
-            Ainv = Pool(self.nproc).map(syminv, AA, chunksize=1)
+            pool = Pool(self.nproc)
+            Ainv = pool.map(syminv, AA, chunksize=1)
+            pool.close()
 
         # Fortran arrays
-        Ainv = [N.asfortranarray(ainv, 'd')for ainv in Ainv]
+        Ainv = [N.asfortranarray(ainv, 'd') for ainv in Ainv]
         self.Ainv = Ainv
         return Ainv
 
