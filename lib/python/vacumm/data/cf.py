@@ -98,16 +98,55 @@ VAR_SPECS = OrderedDict(
         long_names = 'Sea water density',
         units = 'kg m-3',
     ),
+    sigmat = dict(
+        names = ['sigmatheta'],
+        standard_names = 'sea_water_sigma_t',
+        long_names = 'Sea water density minus 1000',
+        units = 'kg m-3',
+    ),
+    ndens = dict(
+        names = ['ndens'],
+        standard_names = 'sea_water_neutral_density',
+        long_names = 'Sea water neutral density',
+        units = 'kg m-3',
+    ),
+    sigmatheta = dict(
+        names = ['sigmatheta'],
+        standard_names = 'sea_water_sigma_theta',
+        long_names = 'Sea water potential density minus 1000',
+        units = 'kg m-3',
+    ),
     pdens = dict(
-        names = ['pdens'],
+        names = ['pdens', 'sigma0'],
         standard_names = 'sea_water_potential_density',
         long_names = 'Sea water potential density',
         units = 'kg m-3',
     ),
-    sigmat = dict(
-        names = ['sigmat'],
-        standard_names = 'sea_water_sigma_theta',
-        long_names = 'Sea water sigma-theta',
+    sigma0 = dict(
+        inherit = 'pdens'
+    ),
+    sigma1 = dict(
+        names = ['sigma1'],
+        standard_names = 'sea_water_potential_density',
+        long_names = 'Sea water potential density with ref at 1000 dbar',
+        units = 'kg m-3',
+    ),
+    sigma2 = dict(
+        names = ['sigma2'],
+        standard_names = 'sea_water_potential_density',
+        long_names = 'Sea water potential density with ref at 2000 dbar',
+        units = 'kg m-3',
+    ),
+    sigma3 = dict(
+        names = ['sigma3'],
+        standard_names = 'sea_water_potential_density',
+        long_names = 'Sea water potential density with ref at 3000 dbar',
+        units = 'kg m-3',
+    ),
+    sigma4 = dict(
+        names = ['sigma4'],
+        standard_names = 'sea_water_potential_density',
+        long_names = 'Sea water potential density with ref at 4000 dbar',
         units = 'kg m-3',
     ),
     ssd = dict(
@@ -136,6 +175,24 @@ VAR_SPECS = OrderedDict(
         standard_names = 'potential_energy_deficit',
         long_names = "Potential energy deficit",
         units = "J m-2",
+        physloc = 't',
+    ),
+    ohc = dict(
+        standard_names = 'ocean_heat_content',
+        long_names = 'Ocean heat content',
+        units = 'J',
+        physloc = 't',
+    ),
+    osc = dict(
+        standard_names = 'ocean_salt_content',
+        long_names = 'Ocean salt content',
+        units = 'kg',
+        physloc = 't',
+    ),
+    cp = dict(
+        standard_names = 'specific_heat_capacity',
+        long_names = 'Specific heat capacity',
+        units = 'J K-1',
         physloc = 't',
     ),
 
@@ -383,11 +440,20 @@ VAR_SPECS = OrderedDict(
         atlocs = ['t', 'u', 'v', 'f'],
     ),
 
-    # Cell volumes
-    vol = dict(
-        names = ['vol'],
+    # Cell volume
+    cvol = dict(
+        names = ['cvol'],
         standard_names = 'cell_volume',
         long_names = "Volume of the cell",
+        units = "m3",
+        atlocs = ['t', 'u', 'v', 'w'],
+    ),
+
+    # Standard volume
+    vol = dict(
+        names = ['vol'],
+        standard_names = 'seawater_volume',
+        long_names = "Volume of the sea water",
         units = "m3",
         atlocs = ['t', 'u', 'v', 'w'],
     ),
