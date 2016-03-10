@@ -149,7 +149,7 @@ from vacumm.misc.grid.masking import (
 from vacumm.data import setup_dataset, DS
 
 from vacumm.data.cf import (
-    format_var, format_axis, format_grid, match_var, change_loc,
+    format_var, format_axis, format_grid, match_var, change_loc, match_obj,
     set_loc, get_loc
     )
 
