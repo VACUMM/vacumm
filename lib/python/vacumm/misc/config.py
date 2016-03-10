@@ -169,6 +169,8 @@ def _validator_bbox_(value, default=None):
 
 def _validator_numerics_(value, default=None, min=None, max=None, type='float', n=None):
     """Validator of a tuple of numeric values"""
+    if isinstance(value, basestring):
+        value = value.strip('()[] ')
     if str(value) == 'None': return None
     if isinstance(value, list):
         value = tuple(value)
@@ -226,6 +228,8 @@ def _validator_figsize_(value, default=(6, 6), min=0, max=20):
 
 def _validator_interval_(value, default=None):
     """Validator of an interval of coordinates (min, max [,bounds])"""
+    if isinstance(value, basestring):
+        value = value.strip('()[] ')
     if str(value) == 'None': return None
     if not isinstance(value, basestring):
         if not isinstance(value, list):
