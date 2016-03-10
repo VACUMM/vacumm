@@ -597,7 +597,7 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
     # Format
     search = OrderedDict()
     for key in ('standard_names', 'names', 'long_names', 'units', 'axis'):
-        val = eval(key)
+        val = locals()['key']
         search[key] = val
         if val is None: continue
         if key=='axis':
@@ -608,7 +608,7 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
             if isinstance(val, basestring):
                 val[i] = val[i].strip()
                 if ignorecase:
-                    val[i] = val[i].strip()
+                    val[i] = val[i].lower()
         search[key] = val
 
     # Check standard_name first
@@ -4205,12 +4205,15 @@ class ColoredFormatter(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 class _Redirector_(object):
-   def __init__(self, func, prefix=''):
-      self.func = func
-      self.prefix = prefix
-   def write(self, buf):
-      for line in buf.rstrip().splitlines():
-         self.func(self.prefix+line.rstrip())
+    def __init__(self, func, prefix=''):
+        self.func = func
+        self.prefix = prefix
+    def write(self, buf):
+        for line in buf.rstrip().splitlines():
+            self.func(self.prefix+line.rstrip())
+    def flush(self):
+        pass
+    
 
 
 
