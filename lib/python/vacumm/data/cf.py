@@ -42,7 +42,7 @@ from vacumm.misc import kwfilter, dict_merge
 from vacumm.misc.axes import create as create_axis, isaxis
 from vacumm.misc.grid import create_axes2d
 from vacumm.misc.io import ncmatch_obj
-from misc.arakawa import ARAKAWA_LOCATIONS as arakawa_locations
+from vacumm.data.misc.arakawa import ARAKAWA_LOCATIONS
 
 __all__ = ['VAR_SPECS', 'AXIS_SPECS',
     'GENERIC_AXIS_NAMES', 'GENERIC_VAR_NAMES', 'GENERIC_NAMES',
@@ -53,8 +53,9 @@ __all__ = ['VAR_SPECS', 'AXIS_SPECS',
     'HIDDEN_CF_ATTS', 'set_loc'
 ]
 
-ARAKAWA_SUFFIXES = [('_'+p) for p in arakawa_locations]
+ARAKAWA_SUFFIXES = [('_'+p) for p in ARAKAWA_LOCATIONS]
 arakawa_suffixes = ARAKAWA_SUFFIXES # compat
+arakawa_locations = ARAKAWA_LOCATIONS
 
 #: Specifications for variables
 VAR_SPECS = OrderedDict(
