@@ -464,9 +464,8 @@ class OrdinaryCloudKriger(object):
            using each the inverted matrix of cloud.
         #. Final value is a weighted average of
            the values estimated using each cloud.
-           Weights are estimated using the max
-           of ``1/B`` where ``B`` is output
-           variogram matrix.
+           Weights are inversely proportional to the inverse
+           of the squared error.
 
     :Params:
 
