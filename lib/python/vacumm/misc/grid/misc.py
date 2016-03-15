@@ -218,9 +218,9 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
 
             - ``None``: use ``"harversine"`` if longitude and latitude axes
               else ``"direct"``
-            - ``"simple"``: simple euclidian distance with no coordinate
+            - ``"simple"`` or ``"euclidian"`` or ``"meters"``: simple euclidian distance with no coordinate
               tranformation
-            - ``"harversine"`` or ``"sphere"``: great circle distance in meters from
+            - ``"harversine"`` or ``"sphere"`` or ``"degrees"``: great circle distance in meters from
               coordinates in degrees
             - ``"deg2m"``: euclidian distance with coordinates converted
               from degrees to meters using :func:`~vacumm.misc.phys.units.deg2m`.
@@ -243,12 +243,14 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
         if geo: # backward compat
             mode = 'haversine'
         mode = str(mode).lower()
-        valid_modes = 'simple', 'haversine', 'sphere', 'deg2m'
+        valid_modes = 'simple', 'haversine', 'sphere', 'deg2m', 'degrees', 'euclidian', 'meters'
         if mode not in valid_modes:
             raise VACUMMError('Wrong mode ({}). Please choose one of: {}'.format(
                 mode, ', '.join(valid_modes)))
-        if mode=='sphere':
+        if mode in ['sphere', "degrees"]:
             mode = 'harversine'
+        elif mode in ["meters", "euclidian"]:
+            mode = 'simple'
 
     # With what
     if xxb is None: xxb = xxa
@@ -283,10 +285,10 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
         yyb = yyb.asma()
 
     # Reshape them
-    xxa = xxa.ravel()
-    yya = yya.ravel()
-    xxb = xxb.ravel()
-    yyb = yyb.ravel()
+    xxa = xxa.ravel().astype('d')
+    yya = yya.ravel().astype('d')
+    xxb = xxb.ravel().astype('d')
+    yyb = yyb.ravel().astype('d')
     if not pairwise:
         xxa, xxb = N.meshgrid(xxa, xxb)
         yya, yyb = N.meshgrid(yya, yyb)
@@ -1910,8 +1912,9 @@ def deg2xy(lon, lat, proj=None, inverse=False, mesh=None, **kwargs):
 
         - **lon**: Longitudes in degrees
         - **lat**: Latitude in degrees
-        - **proj**, optional: Basemap object for projection. If False, returns (lon,lat).
-          If None, a new instance using :func:`~vacumm.misc.grid.basemap.get_map` is created.
+        - **proj**, optional: Proj object for projection. If False, returns (lon,lat).
+          If None, a new instance using :func:`~vacumm.misc.grid.basemap.get_proj` is created,
+          where proj is passed as a parameter.
         - **inverse**, optional: Inverse transform (from meters to degrees)
 
     :Example:
@@ -1937,14 +1940,14 @@ def deg2xy(lon, lat, proj=None, inverse=False, mesh=None, **kwargs):
 
     # Need a projection instance
     if not callable(proj):
-        proj = get_proj((lon,lat))
+        proj = get_proj((lon,lat), proj=proj)
 
     # Transform
     return proj(lon, lat, inverse=inverse)
 
 
 def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checklims=True,
-    **kwargs):
+        **kwargs):
     """Get the resolution of an axis or a grid
 
     :Params:
@@ -1966,6 +1969,8 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkli
         - **axis**, optional: Direction on which to compute resolution if a single
           2D axis is passed.
         - **lat**, optional:: Latitude to use for projection of 1D zonal axis.
+        - **proj**, optional:: Geographic projection: True, False, a callable or a
+          projection name. If True, it default to "lcc".
 
     .. warning::
 
@@ -1997,6 +2002,8 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkli
             axy = axy.asma()
 
     # Check chache (for cdms grid and axes)
+    if proj is True:
+        proj = 'lcc'
     if kwargs.get('averaged', False): # compat
         mode = 'averaged'
     if cache and not mode.startswith('loc'):
@@ -3159,13 +3166,10 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge'):
     del dzm
 
     # Add reference
-    if refloc == 'top':
+    if refloc == 'top': # zero at top
         for it in xrange(nt):
             depths[it] -= depths[it, -1]
-        depths[:] += ref
-
-    else:
-        depths[:] -= ref
+    depths[:] += ref
 
     # Format axes
     if not withtime: depths = depths[0]

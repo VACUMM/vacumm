@@ -39,6 +39,7 @@
 #
 #print 'importing masking 0'
 
+from warnings import warn
 import numpy as N
 MA = N.ma
 from cdms2.hgrid import TransientCurveGrid
@@ -55,7 +56,7 @@ __all__ = ['get_coast', 'get_coastal_indices', 'GetLakes', 'polygon_mask', 'mask
     'check_poly_straits','t2uvmasks', 'mask2d', 'grid_envelop', 'convex_hull',
     'uniq', 'rsamp', 'zcompress', 'Lakes', 'erode_coast', 'resol_mask',
     'get_dist_to_coast', 'get_avail_rate', 'grid_envelop_mask', 'create_polygon',
-    'clip_shape', 'proj_shape', 'plot_polygon', 'clip_shapes']
+    'clip_shape', 'proj_shape', 'plot_polygon', 'clip_shapes', 'merge_masks']
 __all__.sort()
 
 def get_coast(mask, land=True, b=True, borders=True, corners=True):
@@ -1759,6 +1760,36 @@ def get_avail_rate(data, num=True, mode='rate'):
 
     return rate
 
+
+def merge_masks(varlist, copy=False, mode='max'):
+    """Merge the mask of a list of variable"""
+    if isinstance(varlist, N.ndarray):
+        if copy:
+            varlist = varlist.copy()
+        return varlist
+    varlist = list(varlist)
+    shape = varlist[0].shape
+    mask = N.ma.getmaskarray(varlist[0])
+    opname = '__or__' if mode=='max' else '__and__'
+    for var in varlist[1:]:
+        assert var.shape==shape, 'All arrays must have the same shape'
+        thismask = N.ma.getmaskarray(var)
+        mask = getattr(mask, opname)(thismask)
+    out = []
+    for var in varlist:
+        if not N.ma.isMA(var) and not copy:
+            warn('Not a masked array, thus cannot apply a mask without copy')
+            out.append(var)
+            continue
+        if copy:
+            if cdms2.isVariable(var):
+                var = var.clone()
+            else:
+                var = N.ma.array(var, copy=True)
+        var[:] = N.ma.masked_where(mask, var, copy=False)
+        out.append(var)
+    return out
+        
 
 
 ######################################################################

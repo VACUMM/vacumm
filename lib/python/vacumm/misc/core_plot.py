@@ -1255,7 +1255,7 @@ class Plot(object):
         if show:
             self.show(**kw['show'])
 
-        elif close:
+        if close:
             self.close()
 
 
@@ -3375,7 +3375,8 @@ class ScalarMappable:
     nmax_levels = nmax = property(get_nmax_levels, set_nmax_levels,
         del_nmax_levels, doc="Max number of :attr:`levels` for contours and colorbar ticks.")
 
-    def get_levels(self, mode=None, keepminmax=None, nocache=False, **kwargs):
+    def get_levels(self, mode=None, keepminmax=None, nocache=False,
+            autoscaling='normal', **kwargs):
         """Get :attr:`levels` for contours and colorbar ticks
 
         :Params:
@@ -3407,6 +3408,13 @@ class ScalarMappable:
             - **nocache**, optional: Once levels are computed, they are stored
               in cache. If ``nocache is True``, first check cache before
               trying to compute levels.
+            - **autoscaling**, optional: Autoscaling mode.
+
+                - ``"normal"``: Use :func:`~vacumm.misc.misc.auto_scale`.
+                - ``"degrees"``: Use :func:`~vacumm.misc.misc.geo_scale`.
+                - `A callable: Use it to auto scale. It should accept
+                  the follwing keywords: vmin, vmax, nmax, keepminmax.
+             
         """
         # Cache
         levels = self.get_obj('levels')
@@ -3465,7 +3473,12 @@ class ScalarMappable:
         self.levels_mode = mode
 
         # Compute base levels
-        levels = auto_scale((self.vmin, self.vmax), vmin=vmin, vmax=vmax,
+        assert autoscaling in ['normal', 'degrees'] or callable(autoscaling), 'Wrong autoscaling parameter'
+        if autoscaling=='normal':
+            autoscaling = auto_scale
+        elif autoscaling=='degrees':
+            autoscaling = geo_scale
+        levels = autoscaling((self.vmin, self.vmax), vmin=vmin, vmax=vmax,
             nmax=self.nmax_levels, keepminmax=keepminmax==2)
 
         # Change min and max
