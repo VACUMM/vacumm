@@ -735,7 +735,7 @@ class Plot(object):
 
             - **fig**, optional: Figure number.
             - **figsize**, optional: Initialize the figure with this size.
-            - **axes**, optional: Use this axes.
+            - **axes**, optional: Use this axes object.
             - **subplot**, optional: Call to :func:`~matplotlib.pyplot.subplot` to create axes.
             - **subplots_adjust**, optional: Dictionary sent to :func:`~matplotlib.pyplot.subplots_adjust`.
               You can also use keyparams 'left', 'right', 'top', 'bottom', 'wspace', 'hspace'!
