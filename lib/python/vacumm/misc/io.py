@@ -515,8 +515,8 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
             if regexp: # Regular expression
                 flags = re.I if ignorecase else 0
                 long_names = [re.compile(ln, flags).search for ln in long_names]
-            elif ignorecase:
-                long_names = __builtins__['map'](str.lower, long_names)
+#            elif ignorecase:
+#                long_names = __builtins__['map'](str.lower, long_names)
 
         # Units
         units = name.get("units", None)
@@ -526,15 +526,15 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
             if regexp: # Regular expression
                 flags = re.I if ignorecase else 0
                 units = [re.compile(u, flags).search for u in units]
-            elif ignorecase:
-                units = __builtins__['map'](str.lower, units)
+#            elif ignorecase:
+#                units = __builtins__['map'](str.lower, units)
 
     else: # Using a list of names
         names = name if is_iterable(name) else [name]
-    if names is not None:
-        names = __builtins__['map'](str.strip, names)
-        if ignorecase:
-            names = __builtins__['map'](str.lower, names)
+#    if names is not None:
+#        names = __builtins__['map'](str.strip, names)
+#        if ignorecase:
+#            names = __builtins__['map'](str.lower, names)
 
     # Search order
     all_keys = ['standard_names', 'names', 'long_names', 'units', 'axis']
@@ -555,7 +555,7 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
         kwsearch = {key:eval(key)}
         for name in ids:
             v = f[name]
-            if ncmatch_obj(v, name=name, **kwsearch):
+            if ncmatch_obj(v, name=name, ignorecase=ignorecase, **kwsearch):
                 break
         else:
             continue
@@ -568,9 +568,30 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
 
     return name
 
+def _isinlist_(name, checks, ignorecase):
+    """checks is a list of either strings or callables"""
+    # Nothing
+    if not name or not checks:
+        return False
+    name = name.strip()
+    if ignorecase:
+        name = name.lower()
+
+    # Callables
+    names = []
+    for check in checks:
+        if callable(check) and check(name):
+            return True
+        names.append(check)
+
+    # Strings
+    names = map(str.strip, names)
+    if ignorecase:
+        names = map(str.lower, names)
+    return name in names
 
 def ncmatch_obj(obj, name=None, standard_names=None, names=None,
-    long_names=None, units=None, axis=None, ignorecase=True, **kwargs):
+        long_names=None, units=None, axis=None, ignorecase=True, **kwargs):
     """Check if an MV2 object (typicaly from a netcdf file) matches names, standard_names, etc
 
 
@@ -597,48 +618,26 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
     # Format
     search = OrderedDict()
     for key in ('standard_names', 'names', 'long_names', 'units', 'axis'):
-        val = locals()['key']
+        val = locals()[key]
         search[key] = val
         if val is None: continue
         if key=='axis':
             search[key] = val if not isinstance(key, list) else val[0]
             continue
         if not is_iterable(val): val = [val]
-        for i, v in enumerate(val): # strings
-            if isinstance(val, basestring):
-                val[i] = val[i].strip()
-                if ignorecase:
-                    val[i] = val[i].lower()
         search[key] = val
 
-    # Check standard_name first
-    if search['standard_names'] is not None and hasattr(obj, "standard_name"):
-        sn = obj.standard_name.strip()
-        if sn and (ignorecase and sn.lower() or sn) in search['standard_names']:
-            return True
-
-    # Check name
-    if name is None: name = getattr(obj, 'id', None)
-    if search['names'] is not None and (ignorecase and name.lower() or name).strip() in search['names']:
-        return True
-
-    # Check axis attribute
-    if search['axis'] is not None and getattr(obj, 'axis', '').upper()==search['axis'] .upper():
-        return True
-
     # Check long_name and units
-    for refs,  att in [(search['long_names'], "long_name"), (search['units'], "units")]:
-        if refs is not None and hasattr(obj, att):
-            for ref in refs:
-                val = getattr(obj, att).strip()
-                if not val: continue
-                if callable(ref): # re.compile(ss).match
-                    if ref(val) is not None: return True
-                elif ref==val:
-                    return True
-            else:
-                continue
-            return True
+    for refs, val in [
+            (search['standard_names'], getattr(obj, "standard_name", None)),
+            (search['names'], name or getattr(obj, 'id', None)),
+            (search['axis'], getattr(obj, "axis",  None)),
+            (search['long_names'], getattr(obj, "long_name", None)),
+            (search['units'], getattr(obj, "units", None))]:
+        if refs is not None and val is not None:
+            if _isinlist_(val, refs, ignorecase):
+                return True
+
     return False
 
 
@@ -1341,7 +1340,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
     if verbose:
         print 'Reading best estimate variable(s): ', ', '.join([str(v) for v in varnames]), '; time:', time
         print 'Using files:'
-        print '\n'.join(ncfiles)
+        print '\n'.join([getattr(fn, 'id', fn) for fn in ncfiles])
 
     # Some inits
     nvar = len(varnames)
@@ -4213,7 +4212,7 @@ class _Redirector_(object):
             self.func(self.prefix+line.rstrip())
     def flush(self):
         pass
-    
+
 
 
 
@@ -4285,7 +4284,7 @@ class Logger(object):
                 redirect_stderr = 'warning'
             sys.stderr = _Redirector_(getattr(self, redirect_stderr),
                 prefix='STDERR: ')
-        
+
 
         # Announce
         logger.debug('*** Start log session ***')
