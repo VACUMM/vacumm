@@ -1973,7 +1973,9 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
     elif outaxis in ['y', 'lat']:
         outaxis = A.create_lat(yo)
     elif outaxis in ['m', 'd', 'pos', 'dist']:
-        dist = get_distance(xo[0], yo[0], xo, yo, mode=distmode)*0.001
+        dist = N.concatenate(([0], get_distances(xo[1:], yo[1:], xo[:-1], yo[:-1],
+            pairwise=True, mode=distmode))).cumsum()*0.001
+        #dist = get_distances(xo[0], yo[0], xo, yo, mode=distmode)*0.001
         #dist = N.concatenate(([0],N.sqrt(N.diff(xom)**2+N.diff(yom)**2)*0.001)).cumsum()
         outaxis = cdms2.createAxis(dist, id='position')
         outaxis.long_name = 'Distance along transect'
@@ -1992,7 +1994,7 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
 
 
 def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
-    getcoords=False, outaxis=None, **kwargs):
+        getcoords=False, outaxis=None, **kwargs):
     """Make a transect in a -YX variable
 
     :Example:
