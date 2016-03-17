@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 """Utilities derived from mpl_toolkits.basemap"""
 
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -220,7 +220,7 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
     res = kwargs.pop('res', resolution)
     if res is True:
         res = 'auto'
-    elif res is False:
+    elif res is False or res=='None':
         res = None
     elif isinstance(res, int):
         if res < 0:
