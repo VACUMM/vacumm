@@ -570,7 +570,7 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
 
 
 def ncmatch_obj(obj, name=None, standard_names=None, names=None,
-    long_names=None, units=None, axis=None, ignorecase=True, **kwargs):
+        long_names=None, units=None, axis=None, ignorecase=True, **kwargs):
     """Check if an MV2 object (typicaly from a netcdf file) matches names, standard_names, etc
 
 
@@ -597,7 +597,7 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
     # Format
     search = OrderedDict()
     for key in ('standard_names', 'names', 'long_names', 'units', 'axis'):
-        val = locals()['key']
+        val = locals()[key]
         search[key] = val
         if val is None: continue
         if key=='axis':
