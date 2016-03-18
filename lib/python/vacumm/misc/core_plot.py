@@ -3414,7 +3414,7 @@ class ScalarMappable:
                 - ``"degrees"``: Use :func:`~vacumm.misc.misc.geo_scale`.
                 - `A callable: Use it to auto scale. It should accept
                   the follwing keywords: vmin, vmax, nmax, keepminmax.
-             
+
         """
         # Cache
         levels = self.get_obj('levels')
@@ -3583,8 +3583,10 @@ class ScalarMappable:
         if cmap == 'mpl': cmap = False
         if cmap is None or cmap=='auto' or cmap is True :
             cmap = get_config_value('vacumm.misc.plot', 'cmap')
-        if cmap=='mg': cmap = 'magic'
-        elif cmap=='rb': cmap = 'rainbow'
+        if cmap=='mg' or 'vacumm_magic':
+            cmap = 'magic'
+        elif cmap=='rb' or 'vacumm_rainbow':
+            cmap = 'rainbow'
         if cmap=='magic' or cmap=='rainbow':
             import color
             mode = getattr(self, 'levels_mode', 'auto')
