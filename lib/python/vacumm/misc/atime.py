@@ -64,10 +64,17 @@ from vacumm import VACUMMError
 # Attributes
 STR_UNIT_TYPES = ['years','months','days','hours','minutes','seconds']
 RE_SPLIT_DATE = recompile(r'[ Z:T\-]')
-RE_MATCH_TIME_PATTERN = r'[0-2]?\d?\d?\d(-[01]?\d(-[0-3]?\d([ T][0-2]?\d(:[0-6]?\d(:[0-6]?\d(\.\d+)?)?)?)?)?)?'
+RE_MATCH_TIME_PATTERN = r'[0-2]?\d?\d?\d(-[01]?\d(-[0-3]?\d([ TZ][0-2]?\d(:[0-6]?\d(:[0-6]?\d(\.\d+)?)?)?)?)?)?'
 RE_MATCH_TIME = recompile(RE_MATCH_TIME_PATTERN+'$', re.I).match
 RE_MATCH_UNITS_PATTERN = r'(%s) since '%'|'.join(STR_UNIT_TYPES)+RE_MATCH_TIME_PATTERN+'[ \w]*'
 RE_MATCH_UNITS = recompile(RE_MATCH_UNITS_PATTERN+'$', re.I).match
+
+#: Time units for CNES julian days
+JULIANDAY_TIME_UNITS_CNES = 'days since 1950-01-01'
+
+#: Time units for NASA julian days
+JULIANDAY_TIME_UNITS_NASA = 'days since 1958-01-01'
+
 
 __all__ = ['STR_UNIT_TYPES','RE_SPLIT_DATE','now', 'add', 'axis_add',
 'mpl', 'are_same_units', 'are_valid_units', 'ch_units', 'comptime', 'reltime', 'datetime',
@@ -83,7 +90,7 @@ __all__ = ['STR_UNIT_TYPES','RE_SPLIT_DATE','now', 'add', 'axis_add',
 'is_interval', 'has_time_pattern', 'tsel2slice', 'time_selector', 'tic', 'toc',
 'julday']
 
-
+__all__.sort()
 
 def pat2freq(pattern):
     """Get the maximal frequency ("days", "hours", etc) associated with a date pattern
@@ -472,7 +479,27 @@ def time_type(mytime, out='string', check=False):
     if check:
         raise TypeError, 'Time of wrong type: %s'%mytime
 
-def comptime(mytime):
+
+def _nummode_(nummode):
+    if nummode is None:
+        nummode = 'mpl'
+    valid_nummodes = ['mpl', 'julday', 'cnes', 'nasa']
+    nummode = str(nummode).lower()
+    if nummode in valid_nummodes:
+        if nummode=='mpl':
+            return nummode
+        if nummode=='julday':
+            nummode = 'cnes'
+        if nummode=='cnes':
+            return JULIANDAY_TIME_UNITS_CNES
+        else:
+            return JULIANDAY_TIME_UNITS_NASA
+    if are_valid_units(nummode):
+        return nummode
+    raise VACUMMError('nummode must be either a valid time units'
+        ' string, or within: '+', '.join(valid_nummodes))
+
+def comptime(mytime, nummode='mpl'):
     """Convert to :func:`cdtime.comptime` format
 
     :Params:
@@ -480,6 +507,12 @@ def comptime(mytime):
         - **mytime**: Time as string, :class:`~datetime.datetime`,
           :func:`cdtime.comptime`, :func:`cdtime.reltime`
           or a: mod:`cdms2` time axis.
+        - **nummod**, optional: Numeric case mode.
+
+            - ``"mpl"``: Converted using :func:`matplotlib.dates.num2date`
+              and :class:`cdtime.comptime`.
+            - ``"julday"``, ``"cnes"``, ``"nasa"``: Considered as juldian days.
+            - Valid time units string: Converted using :class:`cdtime.reldate`.
 
     .. note::
 
@@ -502,6 +535,10 @@ def comptime(mytime):
         :func:`reltime()` :func:`datetime()`
     """
 
+
+    # Numeric mode
+    tunits = _nummode_(nummode)
+
     # Time axis
     if is_axistime(mytime):
         mytime = mytime.asComponentTime()
@@ -520,7 +557,10 @@ def comptime(mytime):
 
         # Float or int
         if is_numtime(mytime):
-            mytime = num2date(mytime)
+            if tunits=='mpl':
+                mytime = num2date(mytime)
+            else:
+                mytime = cdtime.reltime(mytime, tunits).tocomp()
 
         # Datetime
         if is_datetime(mytime):
@@ -560,6 +600,8 @@ def fixcomptime(mytime, decimals=3, copy=False):
     if copy and LH.listtype is list:
         mytimes = list(mytimes)
     for it, ct in enumerate(mytimes):
+        if type(mytime) is not ComptimeType:
+            continue
         if N.round(ct.second, decimals=decimals)==60:
             ct = cdtime.comptime(ct.year, ct.month, ct.day, ct.hour, ct.minute, 0)
             ct = ct.add(1, cdtime.Minute)
@@ -595,7 +637,7 @@ def reltime(mytime, units):
     LH = _LH_(mytime)
     return LH.put([ct.torel(units) for ct in LH.get()])
 
-def datetime(mytimes):
+def datetime(mytimes, nummode='mpl'):
     """Convert to :class:`datetime.datetime` format
 
     :Params:
@@ -613,8 +655,11 @@ def datetime(mytimes):
 
         :func:`comptime` :func:`reltime`   :func:`strtime`    :func:`numtime`
     """
+    # Numeric mode
+    tunits = _nummode_(nummode)
+
     if vca.istime(mytimes):
-        mytimes = comptime(mytimes)
+        mytimes = comptime(mytimes, nummode=tunits)
     LH = _LH_(mytimes)
     mytimes = LH.get()
     res = []
@@ -622,8 +667,11 @@ def datetime(mytimes):
 
         # Numeric
         if is_numtime(mytime):
-            res.append(num2date(mytime))
-            continue
+            if tunits=='mpl':
+                res.append(num2date(mytime))
+                continue
+            else:
+                mytime = cdtime.reltime(mytime, tunits).tocomp()
 
         # Tuple
         if isinstance(mytime, tuple):
@@ -719,7 +767,10 @@ def julday(mytime, mode='cnes'):
     else:
         mode = str(mode)
         assert mode in ['cnes', 'nasa']
-    tunits = 'days since {}-01-01'.format(1950 if mode=='cnes' else 1958)
+    if mode=='cnes':
+        tunits = JULIANDAY_TIME_UNITS_CNES
+    else:
+        tunits = JULIANDAY_TIME_UNITS_NASA
     rtimes = reltime(mytime, units=tunits)
     LH = _LH_(rtimes)
     rtimes = LH.get()

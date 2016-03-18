@@ -735,7 +735,7 @@ class Plot(object):
 
             - **fig**, optional: Figure number.
             - **figsize**, optional: Initialize the figure with this size.
-            - **axes**, optional: Use this axes.
+            - **axes**, optional: Use this axes object.
             - **subplot**, optional: Call to :func:`~matplotlib.pyplot.subplot` to create axes.
             - **subplots_adjust**, optional: Dictionary sent to :func:`~matplotlib.pyplot.subplots_adjust`.
               You can also use keyparams 'left', 'right', 'top', 'bottom', 'wspace', 'hspace'!
@@ -1255,7 +1255,7 @@ class Plot(object):
         if show:
             self.show(**kw['show'])
 
-        elif close:
+        if close:
             self.close()
 
 
@@ -3375,7 +3375,8 @@ class ScalarMappable:
     nmax_levels = nmax = property(get_nmax_levels, set_nmax_levels,
         del_nmax_levels, doc="Max number of :attr:`levels` for contours and colorbar ticks.")
 
-    def get_levels(self, mode=None, keepminmax=None, nocache=False, **kwargs):
+    def get_levels(self, mode=None, keepminmax=None, nocache=False,
+            autoscaling='normal', **kwargs):
         """Get :attr:`levels` for contours and colorbar ticks
 
         :Params:
@@ -3407,6 +3408,13 @@ class ScalarMappable:
             - **nocache**, optional: Once levels are computed, they are stored
               in cache. If ``nocache is True``, first check cache before
               trying to compute levels.
+            - **autoscaling**, optional: Autoscaling mode.
+
+                - ``"normal"``: Use :func:`~vacumm.misc.misc.auto_scale`.
+                - ``"degrees"``: Use :func:`~vacumm.misc.misc.geo_scale`.
+                - `A callable: Use it to auto scale. It should accept
+                  the follwing keywords: vmin, vmax, nmax, keepminmax.
+             
         """
         # Cache
         levels = self.get_obj('levels')
@@ -3465,7 +3473,12 @@ class ScalarMappable:
         self.levels_mode = mode
 
         # Compute base levels
-        levels = auto_scale((self.vmin, self.vmax), vmin=vmin, vmax=vmax,
+        assert autoscaling in ['normal', 'degrees'] or callable(autoscaling), 'Wrong autoscaling parameter'
+        if autoscaling=='normal':
+            autoscaling = auto_scale
+        elif autoscaling=='degrees':
+            autoscaling = geo_scale
+        levels = autoscaling((self.vmin, self.vmax), vmin=vmin, vmax=vmax,
             nmax=self.nmax_levels, keepminmax=keepminmax==2)
 
         # Change min and max
@@ -3812,7 +3825,7 @@ class Curve(Plot1D):
         return Plot.load_data(self, *args, **kwargs)
 
     def plot(self, parg=None, nosingle=False, label=None, err=None, fill_between=False,
-        shadow=False, glow=False, **kwargs):
+            shadow=False, glow=False, **kwargs):
         """Plot of data as a curve
 
         :Params:
@@ -3873,10 +3886,8 @@ class Curve(Plot1D):
         marker_keys = ['markeredgecolor','markeredgesize','markersize','markerfacecolor','marker','zorder','alpha']
         line_keys.extend(marker_keys)
         for key in line_keys:
-            if kwargs.has_key(key):
+            if key in kwargs and kwargs[key] is not None:
                 kwline[key] = kwargs[key]
-#        kwline.setdefault('linestyle', '-')
-        if kwargs.has_key('zorder'): kwline['zorder'] = kwargs['zorder']
         if parg is None:
             parg = []
         elif not isinstance(parg, list):
@@ -4742,6 +4753,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         kw.setdefault('alpha', .5 if self.fill_method.startswith('pcolor') or
             self.fill_method.startswith('imshow') else alpha)
         kwcl.setdefault('alpha', alpha)
+        if 'linewidth' in kw:
+            linewidths = kw.pop('linewidth')
         if linewidths is None and 'linewidth' in kwargs:
             linewidths = kwargs.pop('linewidth')
         if linewidths is not None:
@@ -5249,10 +5262,10 @@ class Map(Plot2D):
 
 
     def pre_plot(self, map=None, projection='cyl', resolution='auto',
-        overlay=False, fullscreen=False, map_update=None,
-        lon_min=None, lon_max=None, lat_min=None, lat_max=None,
-        lon_center=None, lat_center=None, lat_ts=None,
-        nocache=False, cache_dir=None, zoom=None, **kwargs):
+            overlay=False, fullscreen=False, map_update=None,
+            lon_min=None, lon_max=None, lat_min=None, lat_max=None,
+            lon_center=None, lat_center=None, lat_ts=None,
+            nocache=False, cache_dir=None, zoom=None, **kwargs):
         """Plot initialisation.
 
        :Tasks:

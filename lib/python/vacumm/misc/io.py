@@ -38,6 +38,7 @@ import os, gc, glob, logging, re, sys
 from collections import OrderedDict
 from traceback import format_exc
 from warnings import warn
+import warnings
 
 import numpy as N, MV2, cdms2, cdtime
 import pylab as P, operator
@@ -524,8 +525,8 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None,
             if regexp: # Regular expression
                 flags = re.I if ignorecase else 0
                 long_names = [re.compile(ln, flags).search for ln in long_names]
-            elif ignorecase:
-                long_names = __builtins__['map'](str.lower, long_names)
+#            elif ignorecase:
+#                long_names = __builtins__['map'](str.lower, long_names)
 
         # Units
         units = name.get("units", None)
@@ -535,15 +536,15 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None,
             if regexp: # Regular expression
                 flags = re.I if ignorecase else 0
                 units = [re.compile(u, flags).search for u in units]
-            elif ignorecase:
-                units = __builtins__['map'](str.lower, units)
+#            elif ignorecase:
+#                units = __builtins__['map'](str.lower, units)
 
     else: # Using a list of names
         names = name if is_iterable(name) else [name]
-    if names is not None:
-        names = __builtins__['map'](str.strip, names)
-        if ignorecase:
-            names = __builtins__['map'](str.lower, names)
+#    if names is not None:
+#        names = __builtins__['map'](str.strip, names)
+#        if ignorecase:
+#            names = __builtins__['map'](str.lower, names)
 
     # Search order
     all_keys = ['standard_names', 'names', 'long_names', 'units', 'axis']
@@ -564,7 +565,7 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None,
         kwsearch = {key:locals()[key]}
         for name in ids:
             v = f[name]
-            if ncmatch_obj(v, name=name, **kwsearch):
+            if ncmatch_obj(v, name=name, ignorecase=ignorecase, **kwsearch):
                 break
         else:
             continue
@@ -577,9 +578,30 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None,
 
     return name
 
+def _isinlist_(name, checks, ignorecase):
+    """checks is a list of either strings or callables"""
+    # Nothing
+    if not name or not checks:
+        return False
+    name = name.strip()
+    if ignorecase:
+        name = name.lower()
+
+    # Callables
+    names = []
+    for check in checks:
+        if callable(check) and check(name):
+            return True
+        names.append(check)
+
+    # Strings
+    names = map(str.strip, names)
+    if ignorecase:
+        names = map(str.lower, names)
+    return name in names
 
 def ncmatch_obj(obj, name=None, standard_names=None, names=None,
-    long_names=None, units=None, axis=None, ignorecase=True, **kwargs):
+        long_names=None, units=None, axis=None, ignorecase=True, **kwargs):
     """Check if an MV2 object (typicaly from a netcdf file) matches names, standard_names, etc
 
 
@@ -606,48 +628,26 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
     # Format
     search = OrderedDict()
     for key in ('standard_names', 'names', 'long_names', 'units', 'axis'):
-        val = eval(key)
+        val = locals()[key]
         search[key] = val
         if val is None: continue
         if key=='axis':
             search[key] = val if not isinstance(key, list) else val[0]
             continue
-        if not vacumm.misc.misc.is_iterable(val): val = [val]
-        for i, v in enumerate(val): # strings
-            if isinstance(val, basestring):
-                val[i] = val[i].strip()
-                if ignorecase:
-                    val[i] = val[i].strip()
+        if not vcm.is_iterable(val): val = [val]
         search[key] = val
 
-    # Check standard_name first
-    if search['standard_names'] is not None and hasattr(obj, "standard_name"):
-        sn = obj.standard_name.strip()
-        if sn and (ignorecase and sn.lower() or sn) in search['standard_names']:
-            return True
-
-    # Check name
-    if name is None: name = getattr(obj, 'id', None)
-    if search['names'] is not None and (ignorecase and name.lower() or name).strip() in search['names']:
-        return True
-
-    # Check axis attribute
-    if search['axis'] is not None and getattr(obj, 'axis', '').upper()==search['axis'] .upper():
-        return True
-
     # Check long_name and units
-    for refs,  att in [(search['long_names'], "long_name"), (search['units'], "units")]:
-        if refs is not None and hasattr(obj, att):
-            for ref in refs:
-                val = getattr(obj, att).strip()
-                if not val: continue
-                if callable(ref): # re.compile(ss).match
-                    if ref(val) is not None: return True
-                elif ref==val:
-                    return True
-            else:
-                continue
-            return True
+    for refs, val in [
+            (search['standard_names'], getattr(obj, "standard_name", None)),
+            (search['names'], name or getattr(obj, 'id', None)),
+            (search['axis'], getattr(obj, "axis",  None)),
+            (search['long_names'], getattr(obj, "long_name", None)),
+            (search['units'], getattr(obj, "units", None))]:
+        if refs is not None and val is not None:
+            if _isinlist_(val, refs, ignorecase):
+                return True
+
     return False
 
 
@@ -751,7 +751,7 @@ def ncread_var(f, vname, *args, **kwargs):
     ignorecase = kwargs.pop('ignorecase', True)
     torect = kwargs.pop('torect', True)
     grid = kwargs.pop('grid', None)
-    kwgrid = vacumm.misc.misc.kwfilter(kwargs, 'grid')
+    kwgrid = vcm.kwfilter(kwargs, 'grid')
     samp = kwargs.pop('samp', None)
     atts = kwargs.pop('atts', None)
     mode = kwargs.pop('mode', 'raise')
@@ -816,13 +816,13 @@ def _process_var(var, torect, samp, grid, kwgrid, squeeze, atts):
     if squeeze:
         for ss in squeeze:
             if ss is False: break
-            var = vacumm.misc.misc.squeeze_variable(var, ss)
+            var = vcm.squeeze_variable(var, ss)
             if ss in [True, None]:
                 break
 
     # Attributes
     if atts is not None:
-        vacumm.misc.misc.set_atts(var, atts)
+        vcm.set_atts(var, atts)
 
     return var
 
@@ -1350,7 +1350,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
     if verbose:
         print 'Reading best estimate variable(s): ', ', '.join([str(v) for v in varnames]), '; time:', time
         print 'Using files:'
-        print '\n'.join(ncfiles)
+        print '\n'.join([getattr(fn, 'id', fn) for fn in ncfiles])
 
     # Some inits
     nvar = len(varnames)
@@ -1623,7 +1623,7 @@ def grib_read_files(
                     del m
                 del ms
     # Transform loaded data into cdms2 variable
-    kwgrid = vacumm.misc.misc.kwfilter(kwargs, 'grid')
+    kwgrid = vcm.kwfilter(kwargs, 'grid')
     for n,p in vardict.iteritems():
         if not p:
             vardict[n] = None
@@ -2615,7 +2615,7 @@ class Shapes(object):
                 from core_plot import Map
                 m = Map.get_current(axes=ax) or True
         if m is True:
-            kwmap = vacumm.misc.misc.kwfilter(kwargs,'m_')
+            kwmap = vcm.kwfilter(kwargs,'m_')
             if not len(self):
                 warn('No shape found, thus nothing to plot')
             else:
@@ -3342,7 +3342,7 @@ class XYZ(object):
             xo, yo, tmp = xyo.xyz
         else:
             raise TypeError, 'Wrong input type'
-        kwinterp = vacumm.misc.misc.kwfilter(kwargs, 'interp_')
+        kwinterp = vcm.kwfilter(kwargs, 'interp_')
         from grid.regridding import xy2xy
         zo = vcgr.xy2xy(self.x, self.y, self.z, xo, yo, **kwinterp)
         if not xyz: return zo
@@ -3611,12 +3611,12 @@ class XYZ(object):
             :class:`Shapes`  :class:`~vacumm.bathy.shorelines.ShoreLine`
         """
         # Grid
-        kwgrid = vacumm.misc.misc.kwfilter(kwargs, 'grid_')
+        kwgrid = vcm.kwfilter(kwargs, 'grid_')
         if grid is None:
             grid = self.get_grid(**kwgrid)
 
         # Interpolation
-        kwmask = vacumm.misc.misc.kwfilter(kwargs, 'mask_')
+        kwmask = vcm.kwfilter(kwargs, 'mask_')
         kwargs.setdefault('method', 'carg')
         kwargs.setdefault('ext', True)
         var = vcgr.griddata(self.x, self.y, self.z, grid, mask=None, cgrid=cgrid, **kwargs)
@@ -3738,9 +3738,9 @@ class XYZ(object):
         """
 
         # Params
-        kwm = vacumm.misc.misc.kwfilter(kwargs, 'map')
-        kwhull = vacumm.misc.misc.kwfilter(kwargs, 'hull')
-        kwcb = vacumm.misc.misc.kwfilter(kwargs, 'colorbar')
+        kwm = vcm.kwfilter(kwargs, 'map')
+        kwhull = vcm.kwfilter(kwargs, 'hull')
+        kwcb = vcm.kwfilter(kwargs, 'colorbar')
         kwplot = dict(linewidth=linewidth, cmap=vcc.get_cmap(cmap))
         kwplot.update(kwargs)
         pts = None
@@ -4215,6 +4215,18 @@ class ColoredFormatter(logging.Formatter):
         record.levelname = self.colorize(record.levelname, record.levelname)
         return logging.Formatter.format(self, record)
 
+class _Redirector_(object):
+    def __init__(self, func, prefix=''):
+        self.func = func
+        self.prefix = prefix
+    def write(self, buf):
+        for line in buf.rstrip().splitlines():
+            self.func(self.prefix+line.rstrip())
+    def flush(self):
+        pass
+
+
+
 
 class Logger(object):
     """Class for logging facilities when subclassing.
@@ -4233,14 +4245,18 @@ class Logger(object):
         - **level**, optional: Initialize logging level (see :meth:`set_loglevel`).
         - **colors**, optional: Use colors when formatting terminal messages?
         - **full_line**, optional: Colorize full line or just level name?
+        - **redirect_warnings**, optional: Redirect messages issued by :mod:`warnings.warn`.
+        - **redirect_stdout**, optional: Redirect messages issued to sys.stdout.
+        - **redirect_stderr**, optional: Redirect messages issued to sys.stderr.
 
     :See also: :mod:`logging` module
     """
     def __init__(self, name, logfile=None, console=True, maxlogsize=0, maxbackup=0,
-        cfmt='%(name)s [%(levelname)-8s] %(message)s',
-        ffmt='%(asctime)s: %(name)s [%(levelname)-8s] %(message)s',
-        asctime='%Y-%m-%d %H:%M',
-        level='debug', colors=True, full_line=False):
+            cfmt='%(name)s [%(levelname)-8s] %(message)s',
+            ffmt='%(asctime)s: %(name)s [%(levelname)-8s] %(message)s',
+            asctime='%Y-%m-%d %H:%M',
+            level='debug', colors=True, full_line=False,
+            redirect_warnings=False, redirect_stdout=False, redirect_stderr=False):
 
         # Create or get logger
         self.logger = logger = logging.getLogger(name)
@@ -4267,6 +4283,21 @@ class Logger(object):
             logger.addHandler(console)
         self.set_loglevel(level)
 
+        # Redirections
+        if redirect_warnings:
+            warnings.showwarning = self.showwarning
+        if redirect_stdout:
+            if not isinstance(redirect_stdout, str):
+                redirect_stdout = 'debug'
+            sys.stdout = _Redirector_(getattr(self, redirect_stdout),
+                prefix='STDOUT: ')
+        if redirect_stderr:
+            if not isinstance(redirect_stderr, str):
+                redirect_stderr = 'warning'
+            sys.stderr = _Redirector_(getattr(self, redirect_stderr),
+                prefix='STDERR: ')
+
+
         # Announce
         logger.debug('*** Start log session ***')
 
@@ -4281,6 +4312,15 @@ class Logger(object):
     def warning(self, text, *args, **kwargs):
         """Send a warning message"""
         self.logger.warning(text, *args, **kwargs)
+
+    def showwarning(self, message, category, filename, lineno,
+            file=None):
+        self.warning(
+            'REDIRECTED: %s:%s: %s:%s',
+            filename, lineno,
+            category.__name__, message,
+        )
+
 
     def _log_and_exit_(self, slevel, text, *args, **kwargs):
         """Log a message and exit"""

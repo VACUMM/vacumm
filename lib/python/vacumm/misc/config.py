@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -64,7 +64,7 @@ except: numpy = None
 
 __all__ = ['ConfigException', 'ValidationWarning', 'ConfigManager', 'print_short_help',
     'opt2rst', 'cfg2rst', 'cfgargparse', 'cfgoptparse', 'getspec', 'get_secnames',
-    ]
+    'list_options', 'option2rst',  'filter_section']
 
 class ConfigException(Exception):
     pass
@@ -169,6 +169,8 @@ def _validator_bbox_(value, default=None):
 
 def _validator_numerics_(value, default=None, min=None, max=None, type='float', n=None):
     """Validator of a tuple of numeric values"""
+    if isinstance(value, basestring):
+        value = value.strip('()[] ')
     if str(value) == 'None': return None
     if isinstance(value, list):
         value = tuple(value)
@@ -226,6 +228,8 @@ def _validator_figsize_(value, default=(6, 6), min=0, max=20):
 
 def _validator_interval_(value, default=None):
     """Validator of an interval of coordinates (min, max [,bounds])"""
+    if isinstance(value, basestring):
+        value = value.strip('()[] ')
     if str(value) == 'None': return None
     if not isinstance(value, basestring):
         if not isinstance(value, list):
@@ -384,6 +388,7 @@ VALIDATOR_TYPES = _VALIDATOR_SPECS_.keys()
 # Build the mapping suitable for Validator.functions
 _VALIDATOR_FUNCTIONS_ = dict((k, v['func']) for k,v in _VALIDATOR_SPECS_.iteritems() if 'func' in v)
 _validator_functions_ = _VALIDATOR_FUNCTIONS_
+
 class ConfigManager(object):
     """A configuration management class based on a configuration specification file
     and a :class:`validate.Validator`
@@ -398,7 +403,8 @@ class ConfigManager(object):
 
     """
     def __init__(self, cfgspecfile=None, validator=None, interpolation='template',
-        encoding=None, boolean_false=True, splitsecdesc=False):
+            encoding=None, boolean_false=True, splitsecdesc=False, cfgfilter=None,
+            cfgfilter_default=False):
         '''
         :Params:
             - **cfgspecfile**, optional: The specification file to be used with this.
@@ -411,7 +417,8 @@ class ConfigManager(object):
         '''
         # Specifications
         self._encoding = encoding
-        if cfgspecfile is not None and isinstance(cfgspecfile, basestring) and not os.path.exists(cfgspecfile):
+        if (cfgspecfile is not None and isinstance(cfgspecfile, basestring) and
+                not os.path.exists(cfgspecfile) and not hasattr(cfgspecfile,  'read')):
             raise ConfigException('Specification file not found: %s'%cfgspecfile)
         self._configspecfile = cfgspecfile
         if isinstance(cfgspecfile, ConfigObj):
@@ -419,6 +426,12 @@ class ConfigManager(object):
         else:
             self._configspec = ConfigObj(cfgspecfile, list_values=False,
                 interpolation=False, encoding=encoding, raise_errors=True)
+        if isinstance(cfgfilter, dict):
+            filter_section(self._configspec, cfgfilter, cfgfilter_default)
+        else:
+            self._cfgfilter = None
+        self._cfgfilter = cfgfilter
+        self._cfgfilter_default = cfgfilter_default
 
         # Validator
         if isinstance(validator, Validator):
@@ -514,7 +527,7 @@ class ConfigManager(object):
         return cfg
 
     def load(self, cfgfile='config.cfg',
-        validate='fix', geterr=False, patch=None, force=True, **kwpatch):
+        validate='fix', geterr=False, patch=None, force=True, cfgfilter=False, **kwpatch):
         """Get a :class:`~configobj.ConfigObj` instance loaded from a file
 
         :Params:
@@ -561,6 +574,12 @@ class ConfigManager(object):
             if kwpatch: # Patch the patch!
                 patch = self.patch(patch, kwpatch, validate=False)
             self.patch(cfg, patch, validate=False)
+
+        # Filter
+        if self._cfgfilter and cfgfilter:
+            if not isinstance(cfgfilter, dict):
+                cfgfilter = self._cfgfilter
+            filter_section(cfg, cfgfilter, self._cfgfilter_default)
 
         # Validation
         if validate and self._configspec:
@@ -1098,9 +1117,46 @@ class ConfigManager(object):
         """Convert the default configuration to rst declarations with :func:`cfg2rst`"""
         return cfg2rst(self)
 
+def filter_section(sec, cfgfilter, default=False):
+    """Recursively filter a section according to a dict of specifications
+
+    When encountering an option of ``sec``, it removed if its value
+    in ``cfgfilter`` is set to False. When not found, it default to the
+    ``__default__`` key of ``cfgfilter``. And if the ``__default__`` is not
+    found, it defaults to ``False`` (filtered out).
+    When an option is a section and its value in ``cfgfilter`` is a dictionary,
+    this subsection is filtered in the same way with the value as restrictions
+    (``cfgfilter[subsection]``).
+
+    :Params:
+
+        - **sec**: A :class:`configobj.Section` instance.
+        - **cfgfilter**: A dictionary tree with the same structure as ``sec``.
+
+    """
+    # Default behavior
+    default = cfgfilter.get('__default__', default)
+
+    # Exceptions
+    excepts = cfgfilter.get('__excepts__', None)
+    if excepts is not None and not isinstance(excepts, list):
+        excepts = [excepts]
+
+    # First pass on level 0
+    for key in sec:
+        kdefault = default if excepts is None or key not in excepts else not default
+        if not cfgfilter.get(key, kdefault):
+            del sec[key]
+
+    # Filter subsections
+    for subsec in sec.sections:
+        if subsec in cfgfilter:
+            if isinstance(cfgfilter[subsec], dict):
+                filter_section(sec[subsec],  cfgfilter[subsec])
+    return sec
 
 def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
-    exc=[], **kwargs):
+        exc=[], **kwargs):
     """Merge configuration and commandline arguments
 
     :Params:
@@ -1570,6 +1626,45 @@ def get_secnames(cfg):
         cfg = cfg.parent
         secnames.append(cfg.name)
     return secnames[::-1]
+
+def list_options(sec, optlist=None, parents=None, values=False, sections=False):
+    """Get the list of options of section tree
+
+    Each list items has the format ``(sections, optname)`` or
+    ``(sections, optname, optvalue)`` depending on the ``values`` keyword.
+    """
+    if optlist is None: # new list
+        optlist = []
+    if parents is None: # parent sections
+        parents = get_secnames(sec)
+    for key in sec.scalars: # add scalar items
+        option = (parents, key)
+        if values:
+            option += sec[key],
+        optlist.append(option)
+    for subsec in sec.sections: # deep into subsections
+        value = (None, ) if values else ()
+        subparents = parents+[subsec]
+        if isinstance(sections, dict):
+            subsections = sections.get(subsec, False)
+            if subsections is True:
+                optlist.append((subparents, None) + value)
+                continue
+        else:
+            if sections:
+                optlist.append((subparents, None) + value)
+            subsections = sections
+        list_options(sec[subsec], optlist, parents=subparents,
+            values=values, sections=subsections)
+    return optlist
+
+def option2rst(option, optrole='cfgopt',  secrole='cfgsec'):
+    """Format a tuple or ``(parents, optname)`` to a rst inline declaration"""
+    seclist, optname = option[:2]
+    parents = '['+']['.join(seclist)+']'
+    if optname is None:
+        return ':{secrole}:`{parents}`'.format(**locals())
+    return ':{optrole}:`{parents}{optname}`'.format(**locals())
 
 def redent(text, n=1, indent='    '):
     lines = text.split('\n')

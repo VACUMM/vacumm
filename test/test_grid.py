@@ -5,7 +5,7 @@ class TSF(VCTestCase):
 
     for test_name in [
         'test_grid_coord2slice_acad',
-        'test_grid_get_distance',
+        'test_grid_get_distances',
         ]:
         exec(method_template.format(test_name))
 

@@ -2,7 +2,7 @@
 """
 Kriging utilities inspired from the AMBHAS library (http://www.ambhas.com/).
 """
-# Copyright or © or Copr. Actimar/IFREMER (2013-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2013-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -66,7 +66,7 @@ except:
 #    print 'Falling back to builtin functions'
     dgemm = get_blas_func('gemm')
     def symm(a, b): return dgemm(1., a, b)
-    sytri = N.linalg.inv
+    sytri = N.linalg.pinv
 
 from ...misc.misc import kwfilter
 from .misc import get_distances
@@ -75,7 +75,11 @@ class KrigingError(Exception):
     pass
 
 #: Variogram model types
-variogram_model_types = ['linear', 'exponential', 'spherical', 'gaussian']
+VARIOGRAM_MODEL_TYPES = ['linear', 'exponential', 'spherical', 'gaussian']
+VARIOGRAM_MODEL_TYPES = VARIOGRAM_MODEL_TYPES
+
+#: Default variogram model type
+DEFAULT_VARIOGRAM_MODEL_TYPE = 'exponential'
 
 def variogram_model_type(mtype=None):
     """Check the the variogram model type
@@ -83,23 +87,24 @@ def variogram_model_type(mtype=None):
     :Params:
 
         - **mtype**, optional: ``None``, and index or a string matching
-          an element of :data:`variogram_model_types`.
-          If set to ``None``, it defaults to ``"exponential"``.
+          an element of :data:`VARIOGRAM_MODEL_TYPES`.
+          If set to ``None``, it defaults to :data:`DEFAULT_VARIOGRAM_MODEL_TYPE`.
     """
     if mtype is True:
-        return variogram_model_types
+        return VARIOGRAM_MODEL_TYPES
     errmsg = []
-    for i, vtype in enumerate(variogram_model_types):
+    for i, vtype in enumerate(VARIOGRAM_MODEL_TYPES):
         errmsg += '"%s" (=%i)'%(vtype, i)
     errmsg = 'Invalid variogram model type. Please choose one of: '+ ', '.join(errmsg)
-    if mtype is None: mtype = 'exponential'
+    if mtype is None:
+        mtype = DEFAULT_VARIOGRAM_MODEL_TYPE
     if isinstance(mtype, int):
-        if i<0 or i>len(variogram_model_types)-1:
+        if i<0 or i>len(VARIOGRAM_MODEL_TYPES)-1:
             raise KrigingError(errmsg)
-        return variogram_model_types[i]
+        return VARIOGRAM_MODEL_TYPES[i]
     if not isinstance(mtype, basestring):
         raise KrigingError(errmsg)
-    for vtype in variogram_model_types:
+    for vtype in VARIOGRAM_MODEL_TYPES:
         if vtype.startswith(mtype): return vtype
     raise KrigingError(errmsg)
 
@@ -135,7 +140,7 @@ class VariogramModel(object):
     def __init__(self, mtype, **kwargs):
         self.mtype = variogram_model_type(mtype)
         self.fixed_params = dict([(p, v) for (p, v) in kwargs.items()
-            if p in self.param_names])
+            if p in self.param_names and v is not None])
 
     def get_all_kwargs(self, pp):
         """Get arguments list to :func:`variogram_model` by merging variable params `p`
@@ -198,7 +203,7 @@ def _get_xyz_(x, y, z=None, check=True, noextra=True, getmask=False):
     return res
 
 def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
-        nbmin=10, dmax=None,  distfunc='simple'):
+        nbmin=10, distmax=None,  distfunc='simple', errfunc=None):
     """Estimate variogram from data
 
     :Params:
@@ -219,9 +224,12 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
           ``min(bins[1]/nbmin, nbin)``.
         - **nbmin**, optional: Minimal number of points
           in a bin.
-        - **dmax**, optional: Max distance to consider.
+        - **distmax**, optional: Max distance to consider.
         - **distfunc**: Function to compute distances, or a mode argument to
           :func:`~vacumm.misc.grid.misc.get_distances`.
+        - **errfunc**, optional: Callable function to compute "errors" like square
+          root difference between to z values. It take two arguments and
+          defaults to :math:`(z1-z0)^2/2`.
 
     """
     x, y, z = _get_xyz_(x, y, z)
@@ -239,9 +247,9 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
     dd = get_distances(x, y, x, y, mode=distfunc)
 
     # Variogram
-    z0, z1 = N.meshgrid(z, z)
-    vv = 0.5*(z1-z0)**2
-    del z0, z1
+    if errfunc is None:
+        errfunc = lambda a0, a1: 0.5*(a1-a0)**2
+    vv = errfunc(*N.meshgrid(z, z))
 
     # Unique
     ii = N.indices(dd.shape)
@@ -251,8 +259,8 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
     del dd, vv
 
     # Max distance
-    if dmax:
-        valid = d<=dmax
+    if distmax:
+        valid = d<=distmax
         d = d[valid]
         v = v[valid]
         del valid
@@ -284,18 +292,18 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
         vb[ib] = v[iib].mean()
     return db, vb
 
-def variogram_fit(x, y, z, mtype, getall=False, getp=False, geterr=False,
-        distfunc='simple', **kwargs):
+def variogram_fit(x, y, z, mtype=None, getall=False, getp=False, geterr=False,
+        distfunc='simple', errfunc=None, **kwargs):
     """Fit a variogram model to data and return the function
 
     :Example:
 
-        >>> vm, errs = variogram_fit(x, y, z, 'linear', n=0, dmax=30e3, geterr=True)
+        >>> vm, errs = variogram_fit(x, y, z, 'linear', n=0, distmax=30e3, geterr=True)
 
     :Params:
 
         - **x/y/z**: Position and data.
-        - **mtype**: Variogram model type (see :func:`variogram_model_types`).
+        - **mtype**: Variogram model type (see ::`variogram_model_type`).
         - **getall**: Get verything in a dictionary whose keys are
 
             - ``"func"``: model function,
@@ -310,14 +318,21 @@ def variogram_fit(x, y, z, mtype, getall=False, getp=False, geterr=False,
         - **variogram_<param>**, optional: ``param`` is passed to :func:`variogram`.
         - **distfunc**: Function to compute distances, or a mode argument to
           :func:`~vacumm.misc.grid.misc.get_distances`.
+        - **errfunc**, optional: Callable function to compute "errors" like square
+          root difference between to z values. It take two arguments and
+          defaults to :math:`\sqrt(z1^2-z0^2)/2`.
+
+          .. warning:: use "haversine" if input coordinates are in degrees.
+
         - Extra keywords are those of :func:`variogram_model`.
-          They can be used to fix some of the parameters.
+          They can be used to freeze some of the parameters.
 
           >>> variogram_fit(x, y, z, mtype, n=0) # fix the nugget
 
     """
     kwv = kwfilter(kwargs, 'variogram_')
     kwv.setdefault("distfunc", distfunc)
+    kwv.setdefault("errfunc", errfunc)
 
     # Estimated variogram
     d, v = variogram(x, y, z, **kwv)
@@ -334,7 +349,8 @@ def variogram_fit(x, y, z, mtype, getall=False, getp=False, geterr=False,
     from scipy.optimize import minimize
     func = lambda pp: ((v-vm.get_variogram_model(pp)(d))**2).sum()
     warnings.filterwarnings('ignore', 'divide by zero encountered in divide')
-    p = minimize(func, p0, bounds=((N.finfo('d').eps, None),)*len(p0))['x']
+    p = minimize(func, p0, bounds=[(N.finfo('d').eps, None)]*len(p0),
+        method='L-BFGS-B')['x']
     del warnings.filters[0]
 
     # Output
@@ -434,7 +450,7 @@ def syminv(A):
     :Raise: :exc:`KrigingError`
 
     """
-    res = sytri(N.asfortranarray(A, 'd'))
+    res = sytri(A.astype('d'))
     if isinstance(res, tuple):
         info = res[1]
         if info: raise KrigingError('Error during call to Lapack DSYTRI (info=%i)'%info)
@@ -460,15 +476,14 @@ class OrdinaryCloudKriger(object):
            using each the inverted matrix of cloud.
         #. Final value is a weighted average of
            the values estimated using each cloud.
-           Weights are estimated using the max
-           of ``1/B`` where ``B`` is output
-           variogram matrix.
+           Weights are inversely proportional to the inverse
+           of the squared error.
 
     :Params:
 
         - **x/y/z**: Input positions and data (masked array).
         - **mtype**, optional: Variogram model type (defaults to 'exp').
-          See :func:`variogram_model_type` and :func:`variogram_model_types`.
+          See :func:`variogram_model_type` and :func:`variogram_model_type`.
         - **vgf**, optional: Variogram function. If not set,
           it is estimated using :meth:`variogram_fit`.
         - **npmax**, optional: Maxima size of cloud.
@@ -478,10 +493,15 @@ class OrdinaryCloudKriger(object):
         - **exact**, optional: If True, variogram is exactly zero when distance is zero.
         - **distfunc**: Function to compute distances, or a mode argument to
           :func:`~vacumm.misc.grid.misc.get_distances`.
+        - **errfunc**, optional: Callable function to compute "errors" like square
+          root difference between to z values. It take two arguments and
+          defaults to :math:`\sqrt(z1^2-z0^2)/2`.
         - Extra keywords are  parameters to the :func:`variogram_model` that must not be
           optimized by :func:`variogram_model`. For instance ``n=0`` fix the
+        - Extra keywords are the parameters to the :func:`variogram_model` that must not be
+          optimized by :func:`variogram_model`. For instance ``n=0`` fixes the
           nugget to zero.
-          This used only if ``vfg`` is not passed as argument.
+          This is used only if ``vfg`` is not passed as an argument.
 
 
     :Attributes: :attr:`x`, :attr:`y`, :attr:`z`, :attr:`np`,
@@ -514,7 +534,7 @@ class OrdinaryCloudKriger(object):
     """
 
     def __init__(self, x, y, z, mtype=None, vgf=None, npmax=1000,
-            nproc=None, exact=False, distfunc='simple', **kwargs):
+            nproc=None, exact=False, distfunc='simple', errfunc=None, **kwargs):
         self.x, self.y, self.z, self.mask = _get_xyz_(x, y, z, noextra=False, getmask=True)
         self.np = self.x.shape[0]
         self.nt = 0 if self.z.ndim==1 else z.shape[0]
@@ -532,6 +552,7 @@ class OrdinaryCloudKriger(object):
         self.variogram_fitting_results = None
         self.exact = exact
         self.distfunc = distfunc
+        self.errfunc = errfunc
 
     def __len__(self):
         return self.x.shape[0]
@@ -595,6 +616,7 @@ class OrdinaryCloudKriger(object):
         kw = self._kwargs.copy()
         kw.update(kwargs)
         kw['distfunc'] = self.distfunc
+        kw['errfunc'] = self.errfunc
         x, y, z = self._get_xyz_(x, y, z)
         if z.ndim==2:
             ne = z.shape[0]
@@ -668,10 +690,12 @@ class OrdinaryCloudKriger(object):
 
         # Multiprocessing inversion
         if self.nproc>1:
-            Ainv = Pool(self.nproc).map(syminv, AA, chunksize=1)
+            pool = Pool(self.nproc)
+            Ainv = pool.map(syminv, AA, chunksize=1)
+            pool.close()
 
         # Fortran arrays
-        Ainv = [N.asfortranarray(ainv, 'd')for ainv in Ainv]
+        Ainv = [N.asfortranarray(ainv, 'd') for ainv in Ainv]
         self.Ainv = Ainv
         return Ainv
 
@@ -716,11 +740,6 @@ class OrdinaryCloudKriger(object):
             # Distances to output points
             # dd = cdist(N.transpose([xi,yi]),N.transpose([xo,yo])) # TODO: test cdist
             dd = get_distances(xo, yo, self.xc[ic], self.yc[ic], mode=self.distfunc)
-            xxo, xxi = N.meshgrid(xo, self.xc[ic])
-            dd2 = (xxo-xxi)**2 ; del xxi, xxo
-            yyo, yyi = N.meshgrid(yo, self.yc[ic])
-            dd2 += (yyo-yyi)**2 ; del yyi, yyo
-            dd2 = N.sqrt(dd2)
 
             # Form B
             B = N.empty((self.npc[ic]+1, npo))

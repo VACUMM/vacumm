@@ -33,16 +33,17 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
-import cdms2, MV2, re
+from warnings import warn
 from collections import OrderedDict
 import string
 
+import cdms2, MV2, re
 from vacumm import VACUMMError
 from vacumm.misc import kwfilter, dict_merge
 from vacumm.misc.axes import create as create_axis, isaxis
 from vacumm.misc.grid import create_axes2d
 from vacumm.misc.io import ncmatch_obj
-from misc.arakawa import ARAKAWA_LOCATIONS as arakawa_locations
+from vacumm.data.misc.arakawa import ARAKAWA_LOCATIONS
 
 __all__ = ['VAR_SPECS', 'AXIS_SPECS',
     'GENERIC_AXIS_NAMES', 'GENERIC_VAR_NAMES', 'GENERIC_NAMES',
@@ -53,8 +54,9 @@ __all__ = ['VAR_SPECS', 'AXIS_SPECS',
     'HIDDEN_CF_ATTS', 'set_loc'
 ]
 
-ARAKAWA_SUFFIXES = [('_'+p) for p in arakawa_locations]
+ARAKAWA_SUFFIXES = [('_'+p) for p in ARAKAWA_LOCATIONS]
 arakawa_suffixes = ARAKAWA_SUFFIXES # compat
+arakawa_locations = ARAKAWA_LOCATIONS
 
 #: Specifications for variables
 VAR_SPECS = OrderedDict(
@@ -97,16 +99,55 @@ VAR_SPECS = OrderedDict(
         long_names = 'Sea water density',
         units = 'kg m-3',
     ),
+    sigmat = dict(
+        names = ['sigmatheta'],
+        standard_names = 'sea_water_sigma_t',
+        long_names = 'Sea water density minus 1000',
+        units = 'kg m-3',
+    ),
+    ndens = dict(
+        names = ['ndens'],
+        standard_names = 'sea_water_neutral_density',
+        long_names = 'Sea water neutral density',
+        units = 'kg m-3',
+    ),
+    sigmatheta = dict(
+        names = ['sigmatheta'],
+        standard_names = 'sea_water_sigma_theta',
+        long_names = 'Sea water potential density minus 1000',
+        units = 'kg m-3',
+    ),
     pdens = dict(
-        names = ['pdens'],
+        names = ['pdens', 'sigma0'],
         standard_names = 'sea_water_potential_density',
         long_names = 'Sea water potential density',
         units = 'kg m-3',
     ),
-    sigmat = dict(
-        names = ['sigmat'],
-        standard_names = 'sea_water_sigma_theta',
-        long_names = 'Sea water sigma-theta',
+    sigma0 = dict(
+        inherit = 'pdens'
+    ),
+    sigma1 = dict(
+        names = ['sigma1'],
+        standard_names = 'sea_water_potential_density',
+        long_names = 'Sea water potential density with ref at 1000 dbar',
+        units = 'kg m-3',
+    ),
+    sigma2 = dict(
+        names = ['sigma2'],
+        standard_names = 'sea_water_potential_density',
+        long_names = 'Sea water potential density with ref at 2000 dbar',
+        units = 'kg m-3',
+    ),
+    sigma3 = dict(
+        names = ['sigma3'],
+        standard_names = 'sea_water_potential_density',
+        long_names = 'Sea water potential density with ref at 3000 dbar',
+        units = 'kg m-3',
+    ),
+    sigma4 = dict(
+        names = ['sigma4'],
+        standard_names = 'sea_water_potential_density',
+        long_names = 'Sea water potential density with ref at 4000 dbar',
         units = 'kg m-3',
     ),
     ssd = dict(
@@ -135,6 +176,24 @@ VAR_SPECS = OrderedDict(
         standard_names = 'potential_energy_deficit',
         long_names = "Potential energy deficit",
         units = "J m-2",
+        physloc = 't',
+    ),
+    ohc = dict(
+        standard_names = 'ocean_heat_content',
+        long_names = 'Ocean heat content',
+        units = 'J',
+        physloc = 't',
+    ),
+    osc = dict(
+        standard_names = 'ocean_salt_content',
+        long_names = 'Ocean salt content',
+        units = 'kg',
+        physloc = 't',
+    ),
+    cp = dict(
+        standard_names = 'specific_heat_capacity',
+        long_names = 'Specific heat capacity',
+        units = 'J K-1',
         physloc = 't',
     ),
 
@@ -168,6 +227,25 @@ VAR_SPECS = OrderedDict(
         atlocs = ['t', 'u', 'v'],
         physloc = 'v',
     ),
+    u = dict(
+        names=['uz', 'u3d'],
+        standard_names=['sea_water_x_velocity', #'sea_water_x_velocity_at_u_location',
+            'eastward_sea_water_velocity'
+            ],
+        long_names = "Sea water velocity along X",
+        units = "m s-1",
+        atlocs = ['t', 'u', 'v'],
+        physloc = 'u',
+    ),
+    v = dict(
+        names=['vz', 'v3d'],
+        standard_names=['sea_water_y_velocity', #'sea_water_y_velocity_at_v_location',
+            'northward_sea_water_velocity'],
+        long_names = "Sea water velocity along Y",
+        units = "m s-1",
+        atlocs = ['t', 'u', 'v'],
+        physloc = 'v',
+    ),
     w3d = dict(
         names=['wz', 'w3d'],
         standard_names=['sea_water_z_velocity_at_w_location', 'sea_water_z_velocity'],
@@ -188,6 +266,24 @@ VAR_SPECS = OrderedDict(
         names=['vbt', 'v2d', 'v'],
         standard_names=['barotropic_sea_water_y_velocity'],
         long_names = "Sea water barotropic velocity along Y",
+        units = "m s-1",
+        axes = dict(x=['lon_v'], y=['lat_v']),
+        atlocs = ['t', 'u', 'v'],
+        physloc = 'v',
+    ),
+    ubc = dict(
+        names=['ubc', 'u'],
+        standard_names=['baroclinic_sea_water_x_velocity'],
+        long_names = "Sea water baroclinic velocity along X",
+        units = "m s-1",
+        axes = dict(x=['lon_u'], y=['lat_u']),
+        atlocs = ['t', 'u', 'v'],
+        physloc = 'u',
+    ),
+    vbc = dict(
+        names=['vbc', 'v'],
+        standard_names=['baroclinic_sea_water_y_velocity'],
+        long_names = "Sea water baroclinic velocity along Y",
         units = "m s-1",
         axes = dict(x=['lon_v'], y=['lat_v']),
         atlocs = ['t', 'u', 'v'],
@@ -228,6 +324,24 @@ VAR_SPECS = OrderedDict(
         atlocs = ['t', 'u', 'v'],
         physloc = 'v',
         units = "m s-1",
+    ),
+    speed = dict(
+        names = ['speed'],
+        standard_names=['sea_water_speed'],
+        long_names = ["Sea water speed"],
+        units = "m s-1",
+        axes = dict(y=['lat'], x=['lon']),
+        atlocs = ['t', 'u', 'v'],
+        physloc = 't',
+    ),
+    cdir = dict(
+        names = ['cdir'],
+        standard_names=['direction_of_sea_water_velocity'],
+        long_names = ["Direction of sea water velocity"],
+        units = "degrees",
+        axes = dict(y=['lat'], x=['lon']),
+        atlocs = ['t', 'u', 'v'],
+        physloc = 't',
     ),
     ke = dict(
         names = ['ke'],
@@ -325,11 +439,20 @@ VAR_SPECS = OrderedDict(
         atlocs = ['t', 'u', 'v', 'f'],
     ),
 
-    # Cell volumes
-    vol = dict(
-        names = ['vol'],
+    # Cell volume
+    cvol = dict(
+        names = ['cvol'],
         standard_names = 'cell_volume',
         long_names = "Volume of the cell",
+        units = "m3",
+        atlocs = ['t', 'u', 'v', 'w'],
+    ),
+
+    # Standard volume
+    vol = dict(
+        names = ['vol'],
+        standard_names = 'seawater_volume',
+        long_names = "Volume of the sea water",
         units = "m3",
         atlocs = ['t', 'u', 'v', 'w'],
     ),
@@ -396,17 +519,17 @@ VAR_SPECS = OrderedDict(
     wdir = dict(names=[],
         standard_names = ['wind_to_direction', 'wind_from_direction'],
         long_names = "Wind direction",
-        units = "m s-1",
+        units = "degrees",
     ),
     wfdir = dict(names=[],
         standard_names = ['wind_from_direction'],
         long_names = "Wind from direction",
-        units = "m s-1",
+        units = "degrees",
     ),
     wtdir = dict(names=[],
         standard_names = ['wind_to_direction'],
         long_names = "Wind to direction",
-        units = "m s-1",
+        units = "degrees",
     ),
     ua = dict(
         names = [],
@@ -1305,7 +1428,8 @@ def cf2atts(name, select=None, exclude=None, ordered=True, **extra):
 
 
 # Format a variable
-def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, **kwargs):
+def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
+        mode='warn', **kwargs):
     """Format a MV2 variable according to its generic name
 
 
@@ -1318,6 +1442,7 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
         - **format_axes**, optional: Also format axes.
         - **nodef**, optional: Remove location specification when it refers to the
           default location (:attr:`DEFAULT_LOCATION`).
+        - **mode**: "silent", "warn" or "raise".
         - Other parameters are passed as attributes, except those:
 
             - present in specifications to allow overriding defaults,
@@ -1336,12 +1461,18 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
         kwaxes[k] = kwfilter(kwargs, k+'_')
 
     # Always a MV2 array
-    var = MV2.asarray(var)
+    if not cdms2.isVariable(var):
+        var = MV2.asarray(var)
 
     # Check specs
     if name not in GENERIC_NAMES:
         if var.id in GENERIC_NAMES:
             name = var.id
+        elif mode=='warn':
+            warn("Generic var name not found '%s'."%name)
+            return var
+        elif mode=='silent':
+            return var
         else:
             raise KeyError("Generic var name not found '%s'. Please choose one of: %s"%(
                 name, ', '.join(GENERIC_NAMES)))
@@ -1411,19 +1542,19 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True, 
                     format_axis(axis, axspecs[key], **kwaxes[key])
                     formatted.append(key)
 
-        # Check remaining simple axes (DOES NOT WORK FOR 2D AXES)
-        if order is not None and order!='-'*len(order):
-            for key in axismeths.keys():
-                if key in order and key not in formatted:
-                    axis = var.getAxis(order.index(key))
-                    format_axis(axis, axspecs[key], **kwaxes[key])
+            # Check remaining simple axes (DOES NOT WORK FOR 2D AXES)
+            if order is not None and order!='-'*len(order):
+                for key in axismeths.keys():
+                    if key in order and key not in formatted:
+                        axis = var.getAxis(order.index(key))
+                        format_axis(axis, axspecs[key], **kwaxes[key])
 
 
     return var
 
 # Format an axis
 def format_axis(axis, name, force=True, recreate=False, format_subaxes=True,
-    nodef=True, **kwargs):
+        nodef=True, **kwargs):
     """Format a MV2 axis according to its generic name
 
 

@@ -225,9 +225,9 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
 
             - ``None``: use ``"harversine"`` if longitude and latitude axes
               else ``"direct"``
-            - ``"simple"``: simple euclidian distance with no coordinate
+            - ``"simple"`` or ``"euclidian"`` or ``"meters"``: simple euclidian distance with no coordinate
               tranformation
-            - ``"harversine"`` or ``"sphere"``: great circle distance in meters from
+            - ``"harversine"`` or ``"sphere"`` or ``"degrees"``: great circle distance in meters from
               coordinates in degrees
             - ``"deg2m"``: euclidian distance with coordinates converted
               from degrees to meters using :func:`~vacumm.misc.phys.units.deg2m`.
@@ -250,12 +250,14 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
         if geo: # backward compat
             mode = 'haversine'
         mode = str(mode).lower()
-        valid_modes = 'simple', 'haversine', 'sphere', 'deg2m'
+        valid_modes = 'simple', 'haversine', 'sphere', 'deg2m', 'degrees', 'euclidian', 'meters'
         if mode not in valid_modes:
             raise VACUMMError('Wrong mode ({}). Please choose one of: {}'.format(
                 mode, ', '.join(valid_modes)))
-        if mode=='sphere':
+        if mode in ['sphere', "degrees"]:
             mode = 'harversine'
+        elif mode in ["meters", "euclidian"]:
+            mode = 'simple'
 
     # With what
     if xxb is None: xxb = xxa
@@ -290,10 +292,10 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
         yyb = yyb.asma()
 
     # Reshape them
-    xxa = xxa.ravel()
-    yya = yya.ravel()
-    xxb = xxb.ravel()
-    yyb = yyb.ravel()
+    xxa = xxa.ravel().astype('d')
+    yya = yya.ravel().astype('d')
+    xxb = xxb.ravel().astype('d')
+    yyb = yyb.ravel().astype('d')
     if not pairwise:
         xxa, xxb = N.meshgrid(xxa, xxb)
         yya, yyb = N.meshgrid(yya, yyb)
@@ -1917,8 +1919,9 @@ def deg2xy(lon, lat, proj=None, inverse=False, mesh=None, **kwargs):
 
         - **lon**: Longitudes in degrees
         - **lat**: Latitude in degrees
-        - **proj**, optional: Basemap object for projection. If False, returns (lon,lat).
-          If None, a new instance using :func:`~vacumm.misc.grid.basemap.get_map` is created.
+        - **proj**, optional: Proj object for projection. If False, returns (lon,lat).
+          If None, a new instance using :func:`~vacumm.misc.grid.basemap.get_proj` is created,
+          where proj is passed as a parameter.
         - **inverse**, optional: Inverse transform (from meters to degrees)
 
     :Example:
@@ -1944,14 +1947,14 @@ def deg2xy(lon, lat, proj=None, inverse=False, mesh=None, **kwargs):
 
     # Need a projection instance
     if not callable(proj):
-        proj = vcgb.get_proj((lon,lat))
+        proj = vcgb.get_proj((lon,lat), proj=proj)
 
     # Transform
     return proj(lon, lat, inverse=inverse)
 
 
 def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checklims=True,
-    **kwargs):
+        **kwargs):
     """Get the resolution of an axis or a grid
 
     :Params:
@@ -1973,6 +1976,8 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkli
         - **axis**, optional: Direction on which to compute resolution if a single
           2D axis is passed.
         - **lat**, optional:: Latitude to use for projection of 1D zonal axis.
+        - **proj**, optional:: Geographic projection: True, False, a callable or a
+          projection name. If True, it default to "lcc".
 
     .. warning::
 
@@ -2004,6 +2009,8 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkli
             axy = axy.asma()
 
     # Check chache (for cdms grid and axes)
+    if proj is True:
+        proj = 'lcc'
     if kwargs.get('averaged', False): # compat
         mode = 'averaged'
     if cache and not mode.startswith('loc'):
@@ -2120,6 +2127,194 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkli
 
     if len(res) == 1: return res[0]
     return res
+
+
+def _dist2x2d_(xx, yy, **kwdist):
+    return (get_distances(xx[:, :-1], yy[:, :-1], xx[:, 1:], yy[:, 1:],  **kwdist),
+        get_distances(xx[:-1], yy[:-1], x[1:], yy[1:],  **kwdist))
+
+def resol2(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checklims=True,
+    **kwargs):
+    """Get the resolution of an axis or a grid
+
+    :Params:
+
+        - **axy**: It can be either
+
+            - a 1D axis or array
+            - a grid of 1D or 2D axes or tuple of (lon,lat)
+
+        - **mode**, optional:
+
+            - ``"raw"``: Get the local resolution between "grid points".
+            - ``"averaged"``: Return an averaged resolution (do not use if the grid highly anisotropic!!).
+            - ``"local"``: The local resolution is averaged and extrapolated to grid points.
+            - A string: An :mod:`numpy` attribute is used to compute the resolution.
+              For instance ``"median"`` mode implies the use of :func:`numpy.median`.
+            - A callable function: Directly used to compute the resolution.
+
+        - **axis**, optional: Direction on which to compute resolution if a single
+          2D axis is passed.
+        - **lat**, optional:: Latitude to use for projection of 1D zonal axis.
+
+    .. warning::
+
+        If you work on a pair of 2D axes, resolution is computed along
+        grid axes, and NOT along X and Y.
+        In this case, X and Y must have consistent units,
+        and resolution along X and Y are defined by:
+
+        .. math::
+
+            dx_{i,j} = \sqrt{(x_{i+1,j}-x_{i,j})^2+ (y_{i+1,j}-y_{i,j})^2}
+
+            dy_{i,j} = \sqrt{(x_{i,j+1}-x_{i,j})^2+ (y_{i,j+1}-y_{i,j})^2}
+
+    :Examples:
+
+        >>> dx = resol(lon)
+        >>> dx,dy = resol(grid)
+        >>> dx2d = resol(x2d, mode='loc')
+        >>> dx2d, dy2d = resol((x1d, y2d))
+    """
+
+    # Get what to inspect
+    if cdms2.isVariable(axy):
+        if not isaxis(axy):
+            axy = axy.getGrid()
+            assert axy is not None, 'You must pass a variable with a grid'
+        else:
+            axy = axy.asma()
+
+    # Check chache (for cdms grid and axes)
+    if kwargs.get('averaged', False): # compat
+        mode = 'averaged'
+    if cache and not mode.startswith('loc'):
+        suf = 'p' if proj else ''
+        pres = 'res'+'p' if proj else ''
+        if hasattr(axy, '_'+pres):
+            return getattr(axy, '_'+pres)
+        if hasattr(axy, '_x'+pres) and hasattr(axy, '_y'+pres):
+            return getattr(axy, '_x'+pres), getattr(axy, '_y'+pres)
+        if int(cache)>1: return
+
+    # Numerical values
+    if not isgrid(axy) and not isinstance(axy, tuple): # single axis
+
+#        if axy[:].ndim == 2:
+#            raise ValueError, 'Your axis is 2D, so you must pass a grid or a tuple or (lon, lat) instead'
+#        if proj:
+#            if not islon(axy): lat=0.
+#            xy, _ = get_xy((axy, N.ones(axy[:].shape)+lat), num=True, proj=proj,
+#                checklims=checklims)
+#            xy = xy,
+#        else:
+        if isaxis(axy): axy = axy.getValue()
+        xy = axy,
+
+    else: # grid or pair of axes
+
+        xy = get_xy(axy, num=True, proj=False, mesh=True, checklims=checklims)
+#    if checklims:
+#        if axis==xy[0].ndim-1: # longitude
+#            xy = N.ma.masked_outside(xy[0], -720., 720.),
+#        else:
+#            xy = N.ma.clip(xy[0], -90., 90.),
+
+
+
+    # Local distances
+    res = ()
+    distmode = 'haversine' if proj or proj is None else 'simple'
+    kwdist = dict(mode=distmode, pairwise=True)
+    if len(xy)==2 and (xy[0][:].ndim == 2 or xy[1][:].ndim == 2) : # 2x2D
+        xy = meshgrid(*xy)
+#        for i in -1, -2: # resx,resy
+#            res += N.ma.sqrt(N.ma.diff(xy[0], axis=i)**2+N.ma.diff(xy[1], axis=i)**2),
+        res = _dist2x2d_(*xy,  **kwdist)
+
+    else: # Single 1D or 2D
+        if N.ndim(xy[0][:])==2:
+            if axis<0: axis += xy[0].ndim
+            res = N.ma.abs(N.ma.diff(xy[0][:], axis=axis)),
+            #TODO: FINISH RESOL2 HERE
+        else:
+            if distmode=='simple':
+                res = ()
+                for tmp in xy:
+                    res += N.ma.abs(N.diff(tmp[:])),
+            else:
+                xy = meshgrid(*xy)
+                dxx, dyy = _dist2x2d_(*xy,  **kwdist)
+                res = dxx.mean(axis=0), dyy.mean(axis=1)
+                del dxx, dyy
+
+    # Averages
+    if mode.startswith('loc'):
+        if xy[0].ndim==2: # 2D
+            eres = ()
+            if len(xy)==1:
+                kk = [axis]
+            else:
+                kk = [1, 0]
+            for ik, k in enumerate(kk):
+
+                # Init output
+                eshape = list(res[ik].shape)
+                eshape[k] += 1
+                eres += N.ma.resize(res[ik], eshape),
+
+                # Slices specs
+                sl = get_axis_slices(res[ik].shape, k)
+                sle = get_axis_slices(eshape, k)
+
+                # Core
+                eres[ik][sle['mid']] = .5*(res[ik][sl['firsts']]+res[ik][sl['lasts']])
+
+                # Limits
+                eres[ik][sle['first']] = 1.5*res[ik][sl['first']]-0.5*res[ik][sl['firstp1']]
+                eres[ik][sle['last']] = 1.5*res[ik][sl['last']]-0.5*res[ik][sl['lastm1']]
+
+            res = eres
+
+        else: # 1D
+
+            eres = tuple([N.ma.resize(r, (r.shape[0]+1, )) for r in res])
+            for ik in xrange(len(xy)):
+                eres[ik][1:-1] = .5*(res[ik][:-1]+res[ik][1:])
+                eres[ik][0] = 1.5*res[ik][0]-0.5*res[ik][1]
+                eres[ik][-1] = 1.5*res[ik][-1]-0.5*res[ik][-2]
+            res = eres
+
+    elif mode != 'raw':
+
+        if not isinstance(mode, tuple):
+            mode = mode,
+        if len(mode)<len(res):
+            mode *= 2
+        eres = []
+        for ik, dcell in enumerate(res):
+            m = mode[ik]
+            if m.startswith('ave'): m = 'mean'
+            if isinstance(m, str):
+                func = getattr(N, m)
+            else: func = m
+            eres.append(func(dcell))
+        res = tuple(eres)
+
+    # Caching
+    if cache and (isinstance(mode, tuple) or not mode.startswith('loc')):
+        if isgrid(axy):
+            setattr(axy, '_x'+pres, res[0])
+            setattr(axy, '_y'+pres, res[1])
+            setattr(axy, '_mres', mode)
+        elif isaxis(axy):
+            setattr(axy, '_'+pres, res)
+            setattr(axy, '_mres', mode)
+
+    if len(res) == 1: return res[0]
+    return res
+
 
 def check_xy_shape(xx, yy, mesh=None):
     """Check that xx and yy have the same shape
@@ -2888,7 +3083,7 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
     return vv
 
 
-def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
+def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge'):
     """Conversion from layer thickness to depths
 
     :Params:
@@ -2905,13 +3100,26 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
 
         - **refloc**, optional: ``"top"`` | ``"eta"``,
           ``"bottom"`` | ``"depth"``,  or ``None``.
+        - **mode**, optional:
+
+            - ``"edge"`` or ``"edge+"``: Compute depths at layer edges (interfaces).
+              Adding a + include the bottom layer, add a vertical level.
+            - ``"middle"``: Compute depths at the middle of layers
 
     """
 
     # Init depths
+    if mode is None: mode = 'edge'
+    mode = str(mode)
+    ext = '+' in mode
+    mode = mode[:3]
+    assert mode in ('edg', 'mid'), ("Invalid mode: Please choose one of: "
+        "edge or middle")
+    ext = ext and mode=='edg'
     withtime = dz.getTime() is not None
     nt = dz.shape[0] if withtime else 1
     nz = dz.shape[int(withtime)]
+    if ext: nz += 1
     shape = (nt, nz) + dz.shape[int(withtime)+1:]
     depths = MV2.zeros(shape, dz.dtype)
     depths.long_name = 'Depths'
@@ -2956,22 +3164,31 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
                 refloc = 'bottom' if ref.max()>15 else 'top'
 
     # Integrate
-    depths[:] = dzm.cumsum(axis=1)
-    del dzm
+    depths[:, int(ext):] = dzm.cumsum(axis=1)
 
     # Add reference
-    if refloc == 'top':
+    if refloc == 'top': # zero at top
         for it in xrange(nt):
             depths[it] -= depths[it, -1]
-        depths[:] += ref
+    depths[:] += ref
 
-    else:
-        depths[:] -= ref
+    # Middle of layers
+    if mode=='mid':
+        if refloc=='top':
+            depths[:] += dzm * 0.5
+        else:
+            depths[:] -= dzm * 0.5
+    del dzm
 
     # Format axes
     if not withtime: depths = depths[0]
     if copyaxes:
-        depths.setAxisList(dz.getAxisList())
+        axes = dz.getAxisList()
+        if ext:
+            iaxis = int(withtime)
+            zaxis = extend1d(dz.getAxis(iaxis), (1, 0), mode='linear')
+            axes[iaxis] = zaxis
+        depths.setAxisList(axes)
         grid = dz.getGrid()
         if grid is not None:
             depths.setGrid(grid)
@@ -2979,8 +3196,3 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True):#, dzshift=0):
     return depths
 
 
-
-
-
-######################################################################
-######################################################################
