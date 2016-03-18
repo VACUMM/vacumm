@@ -7,7 +7,7 @@ List of all available colormaps in matplotlib, including VACUMM colormaps
 .. image:: misc-color-cmaps.png
 
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -376,7 +376,7 @@ def cmap_br(sep=0.5, name='vacumm_br', **kwargs):
 
     :Sample: .. image:: misc-color-vacumm_br.png
     """
-    return cmap_custom( (('r', 0), ((.5, 0, .5), sep), ('b', 1)), name, **kwargs)
+    return cmap_custom( (('b', 0), ((.5, 0, .5), sep), ('r', 1)), name, **kwargs)
 
 def cmap_br2(sep=0.5, white=.7, name="vacumm_br2", **kwargs):
     """Blue->light blue|light red-> red
@@ -390,9 +390,9 @@ def cmap_br2(sep=0.5, white=.7, name="vacumm_br2", **kwargs):
     """
     bsep = whiten('b', white)
     rsep = whiten('r', white)
-    cdict =   {'red':   ((0,0,0),(sep,bsep[0],rsep[0]), (1,1,1)),
+    cdict =   {'red':   ((0,1,1),(sep,bsep[0],rsep[0]), (1,0,0)),
                'green': ((0,0,0),(sep,bsep[1],rsep[1]), (1,0,0)),
-               'blue':  ((0,1,1),(sep,bsep[2],rsep[2]), (1,0,0)),
+               'blue':  ((0,0,0),(sep,bsep[2],rsep[2]), (1,1,1)),
                }
     return cmap_custom(cdict, name, **kwargs)
 

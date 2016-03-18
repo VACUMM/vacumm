@@ -2,7 +2,7 @@
 """
 Kriging utilities inspired from the AMBHAS library (http://www.ambhas.com/).
 """
-# Copyright or © or Copr. Actimar/IFREMER (2013-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2013-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -75,7 +75,11 @@ class KrigingError(Exception):
     pass
 
 #: Variogram model types
-variogram_model_types = ['linear', 'exponential', 'spherical', 'gaussian']
+VARIOGRAM_MODEL_TYPES = ['linear', 'exponential', 'spherical', 'gaussian']
+VARIOGRAM_MODEL_TYPES = VARIOGRAM_MODEL_TYPES
+
+#: Default variogram model type
+DEFAULT_VARIOGRAM_MODEL_TYPE = 'exponential'
 
 def variogram_model_type(mtype=None):
     """Check the the variogram model type
@@ -83,23 +87,24 @@ def variogram_model_type(mtype=None):
     :Params:
 
         - **mtype**, optional: ``None``, and index or a string matching
-          an element of :data:`variogram_model_types`.
-          If set to ``None``, it defaults to ``"exponential"``.
+          an element of :data:`VARIOGRAM_MODEL_TYPES`.
+          If set to ``None``, it defaults to :data:`DEFAULT_VARIOGRAM_MODEL_TYPE`.
     """
     if mtype is True:
-        return variogram_model_types
+        return VARIOGRAM_MODEL_TYPES
     errmsg = []
-    for i, vtype in enumerate(variogram_model_types):
+    for i, vtype in enumerate(VARIOGRAM_MODEL_TYPES):
         errmsg += '"%s" (=%i)'%(vtype, i)
     errmsg = 'Invalid variogram model type. Please choose one of: '+ ', '.join(errmsg)
-    if mtype is None: mtype = 'exponential'
+    if mtype is None:
+        mtype = DEFAULT_VARIOGRAM_MODEL_TYPE
     if isinstance(mtype, int):
-        if i<0 or i>len(variogram_model_types)-1:
+        if i<0 or i>len(VARIOGRAM_MODEL_TYPES)-1:
             raise KrigingError(errmsg)
-        return variogram_model_types[i]
+        return VARIOGRAM_MODEL_TYPES[i]
     if not isinstance(mtype, basestring):
         raise KrigingError(errmsg)
-    for vtype in variogram_model_types:
+    for vtype in VARIOGRAM_MODEL_TYPES:
         if vtype.startswith(mtype): return vtype
     raise KrigingError(errmsg)
 
@@ -287,7 +292,7 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
         vb[ib] = v[iib].mean()
     return db, vb
 
-def variogram_fit(x, y, z, mtype, getall=False, getp=False, geterr=False,
+def variogram_fit(x, y, z, mtype=None, getall=False, getp=False, geterr=False,
         distfunc='simple', errfunc=None, **kwargs):
     """Fit a variogram model to data and return the function
 
@@ -298,7 +303,7 @@ def variogram_fit(x, y, z, mtype, getall=False, getp=False, geterr=False,
     :Params:
 
         - **x/y/z**: Position and data.
-        - **mtype**: Variogram model type (see :func:`variogram_model_types`).
+        - **mtype**: Variogram model type (see ::`variogram_model_type`).
         - **getall**: Get verything in a dictionary whose keys are
 
             - ``"func"``: model function,
@@ -471,15 +476,14 @@ class OrdinaryCloudKriger(object):
            using each the inverted matrix of cloud.
         #. Final value is a weighted average of
            the values estimated using each cloud.
-           Weights are estimated using the max
-           of ``1/B`` where ``B`` is output
-           variogram matrix.
+           Weights are inversely proportional to the inverse
+           of the squared error.
 
     :Params:
 
         - **x/y/z**: Input positions and data (masked array).
         - **mtype**, optional: Variogram model type (defaults to 'exp').
-          See :func:`variogram_model_type` and :func:`variogram_model_types`.
+          See :func:`variogram_model_type` and :func:`variogram_model_type`.
         - **vgf**, optional: Variogram function. If not set,
           it is estimated using :meth:`variogram_fit`.
         - **npmax**, optional: Maxima size of cloud.

@@ -234,7 +234,6 @@ VAR_SPECS = OrderedDict(
             ],
         long_names = "Sea water velocity along X",
         units = "m s-1",
-        axes = dict(x=['lon_u'], y=['lat_u']),
         atlocs = ['t', 'u', 'v'],
         physloc = 'u',
     ),
@@ -244,7 +243,6 @@ VAR_SPECS = OrderedDict(
             'northward_sea_water_velocity'],
         long_names = "Sea water velocity along Y",
         units = "m s-1",
-        axes = dict(x=['lon_v'], y=['lat_v']),
         atlocs = ['t', 'u', 'v'],
         physloc = 'v',
     ),
@@ -1556,7 +1554,7 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
 
 # Format an axis
 def format_axis(axis, name, force=True, recreate=False, format_subaxes=True,
-    nodef=True, **kwargs):
+        nodef=True, **kwargs):
     """Format a MV2 axis according to its generic name
 
 

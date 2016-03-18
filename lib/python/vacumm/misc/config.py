@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -403,7 +403,8 @@ class ConfigManager(object):
 
     """
     def __init__(self, cfgspecfile=None, validator=None, interpolation='template',
-        encoding=None, boolean_false=True, splitsecdesc=False, cfgfilter=None):
+            encoding=None, boolean_false=True, splitsecdesc=False, cfgfilter=None,
+            cfgfilter_default=False):
         '''
         :Params:
             - **cfgspecfile**, optional: The specification file to be used with this.
@@ -426,10 +427,11 @@ class ConfigManager(object):
             self._configspec = ConfigObj(cfgspecfile, list_values=False,
                 interpolation=False, encoding=encoding, raise_errors=True)
         if isinstance(cfgfilter, dict):
-            filter_section(self._configspec, cfgfilter)
+            filter_section(self._configspec, cfgfilter, cfgfilter_default)
         else:
             self._cfgfilter = None
         self._cfgfilter = cfgfilter
+        self._cfgfilter_default = cfgfilter_default
 
         # Validator
         if isinstance(validator, Validator):
@@ -525,7 +527,7 @@ class ConfigManager(object):
         return cfg
 
     def load(self, cfgfile='config.cfg',
-        validate='fix', geterr=False, patch=None, force=True, **kwpatch):
+        validate='fix', geterr=False, patch=None, force=True, cfgfilter=False, **kwpatch):
         """Get a :class:`~configobj.ConfigObj` instance loaded from a file
 
         :Params:
@@ -574,8 +576,10 @@ class ConfigManager(object):
             self.patch(cfg, patch, validate=False)
 
         # Filter
-        if self._cfgfilter:
-            filter_section(cfg)
+        if self._cfgfilter and cfgfilter:
+            if not isinstance(cfgfilter, dict):
+                cfgfilter = self._cfgfilter
+            filter_section(cfg, cfgfilter, self._cfgfilter_default)
 
         # Validation
         if validate and self._configspec:
@@ -1113,7 +1117,7 @@ class ConfigManager(object):
         """Convert the default configuration to rst declarations with :func:`cfg2rst`"""
         return cfg2rst(self)
 
-def filter_section(sec, cfgfilter):
+def filter_section(sec, cfgfilter, default=False):
     """Recursively filter a section according to a dict of specifications
 
     When encountering an option of ``sec``, it removed if its value
@@ -1131,11 +1135,17 @@ def filter_section(sec, cfgfilter):
 
     """
     # Default behavior
-    default = cfgfilter.get('__default__', False)
+    default = cfgfilter.get('__default__', default)
+
+    # Exceptions
+    excepts = cfgfilter.get('__excepts__', None)
+    if excepts is not None and not isinstance(excepts, list):
+        excepts = [excepts]
 
     # First pass on level 0
-    for key, value in sec.items():
-        if not cfgfilter.get(key, default):
+    for key in sec:
+        kdefault = default if excepts is None or key not in excepts else not default
+        if not cfgfilter.get(key, kdefault):
             del sec[key]
 
     # Filter subsections
@@ -1146,7 +1156,7 @@ def filter_section(sec, cfgfilter):
     return sec
 
 def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
-    exc=[], **kwargs):
+        exc=[], **kwargs):
     """Merge configuration and commandline arguments
 
     :Params:

@@ -3160,16 +3160,19 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge'):
     # Integrate
     depths[:, int(ext):] = dzm.cumsum(axis=1)
 
-    # Middle of layers
-    if mode=='mid':
-        depths[:] -= dzm * 0.5
-    del dzm
-
     # Add reference
     if refloc == 'top': # zero at top
         for it in xrange(nt):
             depths[it] -= depths[it, -1]
     depths[:] += ref
+
+    # Middle of layers
+    if mode=='mid':
+        if refloc=='top':
+            depths[:] += dzm * 0.5
+        else:
+            depths[:] -= dzm * 0.5
+    del dzm
 
     # Format axes
     if not withtime: depths = depths[0]

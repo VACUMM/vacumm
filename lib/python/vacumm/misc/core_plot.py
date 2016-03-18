@@ -3825,7 +3825,7 @@ class Curve(Plot1D):
         return Plot.load_data(self, *args, **kwargs)
 
     def plot(self, parg=None, nosingle=False, label=None, err=None, fill_between=False,
-        shadow=False, glow=False, **kwargs):
+            shadow=False, glow=False, **kwargs):
         """Plot of data as a curve
 
         :Params:
@@ -3886,10 +3886,8 @@ class Curve(Plot1D):
         marker_keys = ['markeredgecolor','markeredgesize','markersize','markerfacecolor','marker','zorder','alpha']
         line_keys.extend(marker_keys)
         for key in line_keys:
-            if kwargs.has_key(key):
+            if key in kwargs and kwargs[key] is not None:
                 kwline[key] = kwargs[key]
-#        kwline.setdefault('linestyle', '-')
-        if kwargs.has_key('zorder'): kwline['zorder'] = kwargs['zorder']
         if parg is None:
             parg = []
         elif not isinstance(parg, list):
@@ -4755,6 +4753,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         kw.setdefault('alpha', .5 if self.fill_method.startswith('pcolor') or
             self.fill_method.startswith('imshow') else alpha)
         kwcl.setdefault('alpha', alpha)
+        if 'linewidth' in kw:
+            linewidths = kw.pop('linewidth')
         if linewidths is None and 'linewidth' in kwargs:
             linewidths = kwargs.pop('linewidth')
         if linewidths is not None:
@@ -5262,10 +5262,10 @@ class Map(Plot2D):
 
 
     def pre_plot(self, map=None, projection='cyl', resolution='auto',
-        overlay=False, fullscreen=False, map_update=None,
-        lon_min=None, lon_max=None, lat_min=None, lat_max=None,
-        lon_center=None, lat_center=None, lat_ts=None,
-        nocache=False, cache_dir=None, zoom=None, **kwargs):
+            overlay=False, fullscreen=False, map_update=None,
+            lon_min=None, lon_max=None, lat_min=None, lat_max=None,
+            lon_center=None, lat_center=None, lat_ts=None,
+            nocache=False, cache_dir=None, zoom=None, **kwargs):
         """Plot initialisation.
 
        :Tasks:
