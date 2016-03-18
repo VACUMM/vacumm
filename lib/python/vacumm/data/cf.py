@@ -1542,12 +1542,12 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
                     format_axis(axis, axspecs[key], **kwaxes[key])
                     formatted.append(key)
 
-        # Check remaining simple axes (DOES NOT WORK FOR 2D AXES)
-        if order is not None and order!='-'*len(order):
-            for key in axismeths.keys():
-                if key in order and key not in formatted:
-                    axis = var.getAxis(order.index(key))
-                    format_axis(axis, axspecs[key], **kwaxes[key])
+            # Check remaining simple axes (DOES NOT WORK FOR 2D AXES)
+            if order is not None and order!='-'*len(order):
+                for key in axismeths.keys():
+                    if key in order and key not in formatted:
+                        axis = var.getAxis(order.index(key))
+                        format_axis(axis, axspecs[key], **kwaxes[key])
 
 
     return var
