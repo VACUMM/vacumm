@@ -198,7 +198,7 @@ def _get_xyz_(x, y, z=None, check=True, noextra=True, getmask=False):
     return res
 
 def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
-        nbmin=10, dmax=None,  distfunc='simple', errfunc=None):
+        nbmin=10, distmax=None,  distfunc='simple', errfunc=None):
     """Estimate variogram from data
 
     :Params:
@@ -219,7 +219,7 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
           ``min(bins[1]/nbmin, nbin)``.
         - **nbmin**, optional: Minimal number of points
           in a bin.
-        - **dmax**, optional: Max distance to consider.
+        - **distmax**, optional: Max distance to consider.
         - **distfunc**: Function to compute distances, or a mode argument to
           :func:`~vacumm.misc.grid.misc.get_distances`.
         - **errfunc**, optional: Callable function to compute "errors" like square
@@ -254,8 +254,8 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
     del dd, vv
 
     # Max distance
-    if dmax:
-        valid = d<=dmax
+    if distmax:
+        valid = d<=distmax
         d = d[valid]
         v = v[valid]
         del valid
@@ -293,7 +293,7 @@ def variogram_fit(x, y, z, mtype, getall=False, getp=False, geterr=False,
 
     :Example:
 
-        >>> vm, errs = variogram_fit(x, y, z, 'linear', n=0, dmax=30e3, geterr=True)
+        >>> vm, errs = variogram_fit(x, y, z, 'linear', n=0, distmax=30e3, geterr=True)
 
     :Params:
 
