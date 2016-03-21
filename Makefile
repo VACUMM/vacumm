@@ -148,7 +148,7 @@ clean-lib:
 	-find lib/python -name '*.py[co]' -delete
 
 clean-build:
-	-rm -rf build MANIFEST MANIFEST.in setup.pyc
+	-rm -rf build MANIFEST setup.pyc
 
 clean-dist:
 	-rm -rf dist
