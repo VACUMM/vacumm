@@ -38,9 +38,14 @@ import os, sys
 import re
 import glob
 import subprocess,  shlex
-import numpy.distutils
-from ConfigParser import SafeConfigParser, ConfigParser
 import StringIO
+from warnings import warn
+
+import numpy.distutils
+
+from configobj import ConfigObj
+from validate import Validator
+
 from vacumm import VACUMMError
 
 def get_lib_dir():
@@ -178,32 +183,6 @@ def get_tut_dir(raiseerr=False):
     """
     return get_scripts_dir('tutorials', raiseerr=raiseerr)
 
-#def get_conf_dir():
-#    """Get directory of secondary configuration files
-#
-#    This directory contains secondary configuration files.
-#    These files are usually referenced in the general configuration file.
-#    It can be at two different places, depending on if the library is
-#    an installed version or developers version.
-#
-#    - If installed : in :file:`vacumm-config` subdirectory in the
-#      installed package directory (see :meth:`get_lib_dir`).
-#    - Else in the :file:`config` subdirectory of the main distribution tree
-#      (see :meth:`get_dist_dir`).
-#    """
-#    # Installed librairy
-#    lib_dir = get_lib_dir()
-#    conf_dir = os.path.join(lib_dir, 'vacumm-config')
-#    if os.path.exists(conf_dir):
-#        return conf_dir
-#
-#    # Distributed library (dev)
-#    dist_dir = get_dist_dir()
-#    if dist_dir is not None:
-#        return os.path.join(dist_dir, 'config')
-#
-#    # Fall back to the use config dir
-#    return get_user_conf_dir()
 
 def get_home_conf_dir():
     """Get the directory which contains the user config dir
@@ -229,34 +208,6 @@ def get_user_conf_dir():
         conf_dir = os.path.join(get_home_conf_dir(), 'vacumm')
     return conf_dir
 
-def get_com_conf_dir():
-    """Get directory of common alternate configuration files
-
-    These files are not included in the distribution.
-    They have a similar role to user config files but they
-    are accessible to all users.
-    This directory can be at two different places, depending on if the library is
-    an installed version or developers version.
-
-    - If installed : in :file:`vacumm-config` subdirectory in the
-      installed package directory (see :meth:`get_lib_dir`).
-    - Else in the :file:`config` subdirectory of the main distribution tree
-      (see :meth:`get_dist_dir`).
-    """
-    # Installed librairy
-    lib_dir = get_lib_dir()
-    conf_dir = os.path.join(lib_dir, 'vacumm-config')
-    if os.path.exists(conf_dir):
-        return conf_dir
-
-    # Distributed library (dev)
-    dist_dir = get_dist_dir()
-    if dist_dir is not None:
-        return os.path.join(dist_dir, 'config')
-
-    # Fall back to the use config dir
-    return get_user_conf_dir()
-
 def get_user_conf_file(fname=None):
     """Get main user configuration file
 
@@ -278,55 +229,22 @@ def get_user_conf_file(fname=None):
     if os.path.isabs(fname): return fname
     return os.path.join(get_user_conf_dir(), fname)
 
-def get_com_conf_file():
-    """Get common user configuration file
 
-
-    Shortcut for::
-
-        os.path.join(get_com_conf_dir(), 'vacumm.cfg')
-
-    :See also: :func:`get_com_conf_dir`, :func:`get_user_conf_file`
-    """
-    return os.path.join(get_user_conf_dir(), 'vacumm.cfg')
-
-def get_dir_dict(modname=None):
+def get_dir_dict():
     """Get the following directory names as a dictionary
 
     - ``lib_dir`` (see :func:`get_lib_dir`)
     - ``data_dir`` (see :func:`get_data_dir`)
     - ``dist_dir`` (see :func:`get_dist_dir`)
     - ``tut_dir`` (see :func:`get_tut_dir`)
-    - ``com_conf_dir`` (see :func:`get_com_conf_dir`)
-    - ``user_conf_dir`` (see :func:`get_user_conf_dir`)
     - ``scripts_dir`` (see :func:`get_scripts_dir`)
-    - ``mod_dir`` (directory of ``modname``)
-
-    :Params:
-
-        - **modname**, optional: Module name.
+    - ``user_conf_dir`` (see :func:`get_user_conf_dir`)
     """
 
-    dd = dict(data_dir=get_data_dir(), lib_dir=get_lib_dir(),
+    return dict(data_dir=get_data_dir(), lib_dir=get_lib_dir(),
         tut_dir=get_tut_dir(), dist_dir=get_dist_dir(),
-        com_conf_dir=get_com_conf_dir(), conf_dir=get_user_conf_dir(),
+        com_conf_dir=get_com_conf_dir(),
         user_conf_dir=get_user_conf_dir(), scripts_dir=get_scripts_dir())
-    if modname is not None:
-        if isinstance(modname, basestring):
-            if os.path.isdir(modname):
-                mod_dir = modname
-                modname = None
-            else:
-                try:
-                    exec 'import %s'+modname
-                    modname = eval(modname)
-                except:
-                    mod_dir = os.path.join(get_lib_dir(), *modname.split('.')[1:-1])
-                    modname = None
-        if modname is not None:
-            mod_dir = os.path.dirname(modname.__file__)
-        dd.update(mod_dir=mod_dir)
-    return dd
 
 def get_dl_dir(suggest=None, filedesc=None, quiet=False):
     """Get the download directory"""
@@ -342,7 +260,7 @@ def get_dl_dir(suggest=None, filedesc=None, quiet=False):
             return suggest
 
     # Already chosen?
-    dl_dir = get_config_value('vacumm', 'dl_dir')
+    dl_dir = VACUMM_CFG['vacumm'].get('dl_dir')
     if dl_dir and os.path.exists(dl_dir): return dl_dir
 
     # Download
@@ -398,491 +316,102 @@ def get_dl_dir(suggest=None, filedesc=None, quiet=False):
             dl_dir = choice
 
     # Remember it
+    VACUMM_CFG['vacumm']['dl_dir'] = dl_dir
     rem = raw_input('Remember this choice? [Y/n] ').strip()
     if not rem.lower().startswith('n'):
-        set_config_value('vacumm', 'dl_dir', dl_dir)
+        save_config_value(VACUMM_CFG['vacumm'], 'dl_dir', dl_dir)
 
     return dl_dir
 
-def get_config_files(section=None, check=False, user=1):
-    """Get the list of configuration files that can be loaded
 
-    It lists all configuration files that should be loaded
-    to search for a configuration value. It first list
-    default configuration files, then add user specific files.
+#: Config specifications file
+VACUMM_CFGSPECS_FILE = os.path.join(os.path.dirname(__file__),  'vacumm.ini')
 
+#: Config specifications
+VACUMM_CFGSPECS = ConfigObj(CFGSPECS_FILE, interpolation=False, list_values=True)
 
-    :Params:
-
-        - **section**, optional: Target section of the configuration files.
-          It is generally a module name.
-          In this case, user and default configuration files
-          located in the where the module is are inserted
-          into the list.
-          It can also be a list of module name.
-          Eventually, if the special value ``"__all__"`` is passed, it searches
-          for all configuration files named :file:`vacumm.cfg`
-          in the whole library tree.
-        - **user**, optional: If ``False`` or ``0``, load only default config.
-          If ``1`` or ``True``, append user configuration files
-          to the list. If ``2``, list only user config files.
-
-
-    :Example:
-
-        Suppose you are in directory :file:`/home/me/myproject`,
-        :func:`get_config_files` is called from module
-        :mod:`vacumm.bathy.shorelines`, and your use VACUMM
-        as a developper, i.e. the library is not installed but used
-        directly in the installation tree whose path is
-        :file:`/home/me/python/vacumm`:
-
-        >>> get_config_files('vacumm.bathy.shorelines')
-
-        The following list is returned :
-
-            #. /home/me/python/vacumm/lib/python/vacumm/bathy/shorelines/vacumm.cfg (defaults)
-            #. /home/me/python/vacumm/lib/python/vacumm/vacumm-config/vacumm.cfg (defaults)
-            #. /home/me/.config/vacumm/vacumm.cfg
-
-        **Content of last files overides content of first files.**
-
-        Other usages:
-
-        >>> get_config_files('__all__', user=False)
-        >>> get_config_files(['toto.tutu', 'tutu.tata'])
-    """
-    # Some directories
-    lib_dir = get_lib_dir()
-    com_conf_dir = get_com_conf_dir()
-    user_conf_dir = get_user_conf_dir()
-    mod_dirs = []
-    if section=='__all__':
-        for root, dirs, files in os.walk(lib_dir):
-            if '.svn' in dirs:
-                dirs.remove('.svn')
-            for d in dirs:
-                if d.startswith('vacumm-') or \
-                        not os.path.exists(os.path.join(root, d, '__init__.py')):
-                    dirs.remove(d)
-            if 'vacumm.cfg' in files:
-                mod_dirs.append(root)
-    elif section:
-        if hasattr(section, '__name__'):
-            section = section.__name__
-        if not isinstance(section, list):
-            section = [section]
-        for sec in section:
-            if sec.startswith('vacumm.') or sec=='vacumm':
-                subnames = sec.split('.')[1:] # skip "vacumm"
-                if len(subnames)>1:
-                    subnames = subnames[:-1] # skip file name
-                mod_dirs.append(os.path.join(lib_dir, *subnames))
-    dist_dir = get_dist_dir()
-
-    # Configuration files to scan (no check)
-    cfgfiles = []
-    if user!=2:
-        if mod_dirs:
-            cfgfiles.extend([os.path.join(mod_dir, 'vacumm.cfg') for mod_dir in mod_dirs])  # module level / default
-    if user:
-        cfgfiles.append(os.path.join(com_conf_dir, 'vacumm.cfg')) # global tree / user
-        cfgfiles.append(os.path.join(user_conf_dir, 'vacumm.cfg')) # global tree / user
-
-    # check existence
-    if check:
-        cfgfiles = [f for f in cfgfiles if os.path.exists(f)]
-    return cfgfiles
-
-def get_config_value(section, option, regexp=False, ispath=False, user=True,
-    expand=True, vars=None, raw=False, umode='auto', cfg=None, getcfg=False,
-    parent_section=None, parent_option=None):
-    """Get the a config value in available VACUMM configuration files
-
-    The list of possible configuration files is provided by :func:`get_config_files`.
-
-    Configuration values can use expanded variables in two ways:
-
-        1. Internal option name are automatically expanded to their value
-           if found in the form ``%(option_name)s``. In addition to internal
-           options, you can provide your own (var_name,value) pairs by
-           passing a dictionary to the ``vars`` keyword.
-           Some external options pointing to directory names are provided
-           automatically (but can be overidden):
-
-            - ``lib_dir`` (see :func:`get_lib_dir`)
-            - ``data_dir`` (see :func:`get_data_dir`)
-            - ``dist_dir`` (see :func:`get_dist_dir`)
-            - ``tut_dir`` (see :func:`get_tut_dir`)
-            - ``user_conf_dir`` or ``conf_dir`` (see :func:`get_user_conf_dir`)
-            - ``scripts_dir`` (see :func:`get_scripts_dir`)
-            - ``mod_dir`` (directory of the module when ``section`` is a module name)
-
-        2. User home ``~`` and environement variable (in the form ``${HOME}``
-           are expanded if keyword ``expand`` is set to ``True``.
-
+def load_cfg(cfgfile=None, merge=True, live=False, validate=True, ):
+    """Load the configuration
 
     :Params:
 
-        - **section**: A section in the config, typically a full module name
-          (see :func:`get_config_files`)
-        - **option**: Option to read in the section.
-        - **regexp**, optional: ``option`` is interpreted a regular expression.
-          If ``True``, it returns a dictionary of (option,value) items found.
-        - **ispath**, optional: if ``True``, value is converted using
-          :func:`numpy.distutils.misc_util.allpath`.
-        - **vars**, optional: Dictionary used to expand variables in the form
-          ``%(var_name)s``.
-        - **user**, optional: Also scan user files. If ``raw`` is True, value
-          with ``conf_dir`` expanded using ``user_conf_dir``, and if differents values
-          are found, they are treated depending on ``mode``.
-        - **umode**, optional: If ``user`` is True, and two possible values are found
-          (one with ``conf_dir``, one with ``user_conf_dir``), they are treated
-          depending on ``umode``:
+        - **cfgfile**, optional: A cfg file. Defaults to the result of
+          :func:`get_user_conf_file`.
+        - **mode**, optional: Loading mode
 
-            - ``"merge"``: Value found using ``user_conf_dir`` has priority
-              over value found using ``conf_dir``.
-            - ``"all"``: A two-element list is returned if elements are different.
-            - Else, if value seems to be a config file (ending with ".ini"
-              or ".cfg"), ``mode="all"`` else ``mode="merge"``.
-        - **cfg**, optional: External :class:`ConfigParser.ConfigParser` instance
-          or an external config file. If not provided, configuration is given
-          by :func:`get_config` (internal configuration).
+            - ``"normal"``: Load and store in :data:`VACUMM_CFG`.
+            - ``"live"``: Load but does not store it. So it must used from
+              the return argument.
 
-    :Returns: If ``regexp`` is `` False``, return the value or None if not found,
-        else return a dictionary.
-
-    :Example:
-
-        >>> path = get_config_value('vacumm.bathy.shorelines', 'shapefile_histolitt')
-        >>> paths = get_config_value('vacumm.bathy.shorelines', 'shapefile_.*', regexp=True)
-        >>> paths = get_config_value('my.module', vars=dict(mydir='/home/me/dir'))
+    :Return: A :class:`configobj.ConfigObj` instance.
     """
-    ispath=False # buggy
 
-    # Load configuration(s)
-    if isinstance(cfg, (basestring, list)):
-        cfgfile = cfg
-        cfg = SafeConfigParser()
-        cfg.read(cfgfile)
-    elif not isinstance(cfg, ConfigParser):
-        cfg = get_config(section=section, user=user, parent_section=parent_section,
-            parent_option=parent_option)
-
-    # Always have a tuple of configurations
-    cfgs = (cfg, ) if not isinstance(cfg, tuple) else cfg
-
-    # Directory names (for expansion)
-    kwget = get_dir_dict(section)
-    kwget['conf_dir'] = '(%s|%s)'%(kwget['com_conf_dir'], kwget['user_conf_dir'])
-    if vars:
-        kwget.update(vars)
-
-    # Get value(s)
-    if not regexp:
-
-        # Collect
-        values = [(cfg.has_option(section, option) and
-                cfg.get(section, option, vars=kwget, raw=raw) or None) for cfg in cfgs]
-
-        # Detect tuple of values
-        values = _opt2tuple_(values)
-
-        # Filter
-        if user:
-            value = _filter_uvalues_(values, umode)
-        else:
-            value = values[0]
-
-    else: # Only options that matches regular expression
-
-        # Collect
-        value = {}
-        for cfg in cfgs:
-            if cfg.has_section(section):
-                re_match = re.compile(option, re.I).match
-                for opt in cfg.options(section):
-                    m = re_match(opt)
-                    if m:
-                        value.setdefault(opt, [])
-                        value[opt].append(cfg.get(section, opt, vars=kwget, raw=raw))
-
-        # Filters
-        for opt, values in value.items():
-
-            # Detect tuple of values
-            values = _opt2tuple_(values)
-
-            if user:
-                value[opt] = _filter_uvalues_(values, umode)
-            else:
-                value[opt] = values[0]
-
-    # Operator on values
-    if value:
-
-        # Operators
-        ops = []
-        # - fix path
-        if ispath:
-            ops.append(numpy.distutils.misc_util.allpath)
-        # - expand user name and environment variables
-        if expand:
-            ops.extend([os.path.expanduser, os.path.expandvars])
-
-        # Apply
-        if ops:
-            value = _ops_on_values_(value, *ops)
-
-    return (value, cfgs) if getcfg else value
-
-def _ops_on_values_(values, *ops):
-    """Apply operators on tuple, list, dict or scalar values"""
-
-    # Dict
-    if isinstance(values, dict):
-        for key, val in values.items():
-            values[key] = _ops_on_values_(values[key], *ops)
-        return values
-
-    # Scalar
-    if not isinstance(values, (tuple, list)):
-        for op in ops:
-            values = op(values)
-        return values
-
-    # Tuple, list
-    return type(values)(_ops_on_values_(v, *ops) for v in values)
-
-def _filter_uvalues_(values, umode):
-    """Filter values depending on umode
-
-    umode is guess if "auto"
-
-    values is a N-element list:
-
-        - first: default value
-        - others: user values
-    """
-    # Auto mode = 'all' if config files as values
-    if umode!='all' and umode!='merge':
-        umode = 'merge'
-        for value in values:
-            if value is not None and _re_cfgfile(value):
-                umode = "all"
-                break
-
-    # Remove Nones
-    values = filter(None, values)
-
-    # Merge values (take last)
-    if umode=="merge":
-        return None if not values else values[-1]
-
-    # Unique
-    vv = []
-    for v in values:
-        if v not in vv:
-            vv.append(v)
-
-    return tuple(vv)
-
-def get_config_sections(cfg=None, parent_section=None, parent_option=None, getcfg=False):
-    """Get sections names
-
-    :Params:
-
-        - **parent_section/option**, optional: Section (module name) and option of
-          the main vacumm configuration that give the path to the target configuration
-          file. If not provided, it uses `cfg` the main vacumm configuration.
-        - **getcfg**, optional: Also return the configurations object.
-    """
-    cfgs = get_config(cfg=cfg, parent_section=parent_section, parent_option=parent_option)
-    if not isinstance(cfgs, tuple): cfgs = cfgs,
-    sections = []
-    for cfg in cfgs:
-        sections.extend(cfg.sections())
-    if getcfg: return sections, cfg
-    return sections
-
-
-def load_configs(cfgfiles):
-    """Read configuration files in merged and separate configuations
-
-    :Params:
-
-        - **cfgfiles**: Configuration files.
-
-            - If a file, simply return the associated :class:`~ConfigParser.SafeConfigParser`
-              instance.
-            - If a list of files, does the same merging all the files.
-            - If a tuple, create a configuration for each of its elements.
-
-    :Example:
-
-        >>> cfg = load_configs('myfile.cfg')
-        >>> cfg = load_configs(['myfile1.cfg', 'myfile2.cfg'])
-        >>> cfg1, cfg2 = load_configs(('vacumm.cfg', ['myfile1.cfg', 'myfile2.cfg']))
-
-    """
-    single = not isinstance(cfgfiles, tuple)
-    if single:
-        cfgfiles = (cfgfiles, )
-    cfgs = ()
-    for cfgfile in cfgfiles:
-        if isinstance(cfgfile, basestring):
-            cfgfile = [cfgfile]
-        cfg = SafeConfigParser()
-        cfg.read(cfgfile)
-        cfgs += cfg,
-    if single: return cfgs[0]
-    return cfgs
-
-
-
-
-def get_config(section=None, user=True, asstring=False, cfg=None,
-    parent_section=None, parent_option=None, split=False):
-    """Get a :class:`ConfigParser.SafeConfigParser` instance of current configuration or as a string
-
-    :Params:
-
-        - **section**, optional: A module or its name, or ``"__all__"``
-          to get a full config (config files in module drectories are also scanned).
-        - **user**, optional: Also scan available user configuration files.
-        - **asstring**, optional: Get it as string.
-        - **parent_section/option**, optional: Section (module name) and option of
-          the main vacumm configuration that give the path to the target configuration
-          file. If not provided, it uses `cfg` the main vacumm configuration.
-
-    :See also: :func:`get_config_files`
-    """
-    # Already there?
-    if not isinstance(cfg, ConfigParser): # No
-
-        # List of files to scan
-        if isinstance(cfg, basestring): # Single file name
-            cfgfiles = [cfg]
-
-        elif isinstance(cfg, (list, tuple)): # A list of files
-            cfgfiles = cfg
-
-        elif parent_section and parent_option: # File name from parent config
-            cfgfiles = get_config_value(parent_section, parent_option, user=user, umode='all')
-            if isinstance(cfgfiles, list):
-                cfgfiles = tuple(cfgfiles)
-
-        else: # General config files
-            cfgfiles = get_config_files(section=section, user=False)
-            if user:
-                cfgfiles = (cfgfiles, get_com_conf_file(), get_user_conf_file())
-
-        # Load configurations
-        cfg = load_configs(cfgfiles)
-
-
-    # Return config
-    if not asstring:
-        return cfg
-
-    # As string
-    if isinstance(cfg, tuple):
-        cfg = merge_configs(cfg)
-    S = StringIO.StringIO()
-    cfg.write(S)
-    s = S.getvalue()
-    S.close()
-    return s
-
-_re_opt2tuple_match = re.compile(r"^(?:\(([^|)]+)\|([^|)]+)(?:\|([^|)]+))?(?:\|([^|)]+))?\))([^)]*)$").match
-def _opt2tuple_(values):
-    """Split "(a|b)c" into ("ab","bc")"""
-    if values is None: return
-    if not isinstance(values, (list, tuple)):
-        values = [values]
-    out = []
-    for value in values:
-        if value is None: continue
-        m = _re_opt2tuple_match(value)
-        if m is not None:
-            g = list(m.groups())
-            vv = filter(None, g[:-1])
-            if g[-1] is not None:
-                for i, v in enumerate(vv):
-                    vv[i] += g[-1]
-            out.extend(vv)
-        else:
-            out.append(value)
-    return tuple(out)
-
-
-_re_cfgfile = re.compile(r'\.(cfg|ini)$').search
-def merge_configs(cfgs, forprint=True, raw=True):
-    """Merge configurations
-
-    Options of the last config overrides options of the other ones,
-    except for config file names (values then end with .ini or .cfg)
-    that are store as a tuple.
-
-    .. warning::
-
-        This makes output config incompatible with
-        :meth:`~ConfigParser.ConfigParser.getint`, etc.
-    """
-    # Init
-    if not isinstance(cfgs, (list, tuple)):
-        cfgs = [cfgs]
-    cfg = SafeConfigParser()
-
-    # Loop on configs
-    kwget = get_dir_dict()
-    kwget['mod_dir'] = '%%(mod_dir)s'
-    pending = {}
-    for cfgi in cfgs:
-#        print '-'*50
-#        S = StringIO.StringIO()
-#        cfgi.write(S)
-#        s = S.getvalue()
-#        S.close()
-#        print s
-
-        if not isinstance(cfgi, SafeConfigParser):
-            cfgfiles = cfgi
-            cfgi = SafeConfigParser()
-            cfgi.read(cfgfiles)
-
-        cfg._defaults.update(cfgi.defaults())
-
-        for section in cfgi.sections():
-
-            if section not in cfg.sections():
-                cfg.add_section(section)
-            pending.setdefault(section, {})
-
-            for option, rvali in cfgi.items(section, raw=raw):
-
-                if option in pending[section]: # already identified as an option of config files
-                    if rvali not in pending[section][option]:
-                        pending[section][option] = tuple(pending[section][option]) + (rvali,)
-                elif _re_cfgfile(cfgi.get(section, option, vars=kwget)):
-                    pending[section][option] = rvali,
-                else:
-                    cfg.set(section, option, rvali)
-
-    # Convert pending options
-    for section, options in pending.items():
-        for option, value in options.items():
-            if forprint:
-                if len(value)==1:
-                    value = value[0]
-                else:
-                    value = '(%s)'%', '.join(value)
-            else:
-                value = '(%s)'%'|'.join(value)
-#            print section, option, value
-            cfg.set(section, option, value)
+    # Load
+    if cfgfile is None:
+        cfgfile = get_user_conf_file()
+    if not isinstance(cfgfile, ConfigObj) and not os.path.exists(str(cfgfile)):
+        cfgfile = ""
+        warn('Invalid cfgfile passed to load_cfg. Skipping.')
+    cfg = ConfigObj(cfgfile, configspec=VACUMM_CFGSPECS, interpolation=ConfigParser)
+
+    # Default section
+    cfg.setdefault('DEFAULT', get_dir_dict())
+
+    # Validate
+    if validate:
+        cfg.validate(Validator())
+
+    # Merge with old config?
+    import vacumm.config
+    if not hasattr(vacumm.config, 'VACUMM_CFG'): # nothing to merge with
+        merge = False
+    if merge:
+        oldcfg = vacumm.config.VACUMM_CFG
+        if live:
+            oldcfg.copy()
+        oldcfg.merge(cfg)
+        cfg = oldcfg
+
+    # Store it?
+    if not live:
+        vacumm.config.VACUMM_CFG = cfg
 
     return cfg
+
+#: Current VACUMM configuration
+VACUMM_CFG = load_cfg()
+
+def _get_parent_sections_(sec):
+    secs = []
+    while sec.parent is not sec:
+        secs.append(sec.name)
+    return secs[::-1]
+
+def save_config_value(sec, option, value):
+    """Save a single config option to the user config file"""
+    # Save the live value
+    sec[option] = value
+
+    # Load and update the user config
+    cfg = load_cfg(live=True, validate=False)
+    sec = cfg
+    for secname in _get_parent_sections_()[:-1]:
+        sec = sec[secname] = {}
+    sec[option] = value
+
+    # Save it
+    cfg.write(get_user_conf_file())
+
+
+def get_cfg_path(sec, option,  expand=True):
+    """Get and interpret a config value as a path"""
+    if not option in sec:
+        return
+    path = sec[option]
+    if expand:
+        for op in (os.path.expanduser, os.path.expandvars):
+            path = op(path)
+    return path
 
 def _print_header_(text, nc):
     print '#'*nc
