@@ -1,5 +1,5 @@
-from vcmq import cdms2, data_sample, N, cdtime, curve2,round_date, create_time, \
-    lindates, regrid1d, add_key
+from vcmq import (cdms2, data_sample, N, cdtime, curve2,round_date, create_time,
+    lindates, regrid1d, add_key,  P)
 from vacumm.misc.grid._interp_ import cellerr1d
 from scipy.stats import linregress
 

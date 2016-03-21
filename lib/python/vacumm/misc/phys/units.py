@@ -38,24 +38,30 @@ import re
 from constants import *
 import numpy as N
 import MV2
-from unidata import udunits
 
 __all__ = [
     'kt2ms', 'ms2kt', 'deg2m', 'm2deg', 'ms2bf', 'dms2deg', 'deg2dms',
     'mph2ms', 'ms2mph', 'tometric', 'kel2degc', 'degc2kel',
-    'convert_units', 'basic_proj', 
+    'convert_units', 'basic_proj', 'uuconvert',
     'rad2deg', 'deg2rad', 'vect2mod', 'vect2dir', 'vect2moddir', 'moddir2vectx', 'moddir2vecty', 'moddir2vectxy',
-    'strfsize', 'strpsize'
+    'strfsize', 'strpsize' 'uuconvert',
 ]
+
+def uuconvert(value, oldunits, newunits):
+    """Change units using unidata units connverter"""
+    from unidata import udunits_wrap
+    s, i = udunits_wrap.convert(oldunits, newunits)
+    return value * s + i
+convert_units = uuconvert
 
 ############################################################
 def kt2ms(nd):
     """Convert nds to m/s"""
-    return udunits(nd, 'kt').to('m/s').value
+    return uuconvert(nd, 'kt', 'm/s')
 
 def ms2kt(ms):
     """Convert m/s to nds"""
-    return udunits(ms, 'm/s').to('kt').value
+    return uuconvert(ms, 'm/s', 'kt')
 
 ms2nd = ms2kt
 nd2ms = kt2ms
@@ -203,21 +209,13 @@ def tometric(units, value=1.,  munits=['m',  'm/s']):
 
     :Return: a float or ``None`` if conversion failed.
     """
-    import unidata
-    u = unidata.udunits(value, units)
     if isinstance(munits, basestring):
         munits = [munits]
     for mu in munits:
         try:
-            return u.to(mu).value
+            return uuconvert(value, units, mu)
         except:
             pass
-
-def convert_units(value, ufrom, uto):
-    """Convert value from ufrom units to uto units using :mod:`~unidata.udunits.udunits`
-    """
-    import unidata
-    return unidata.udunits(value, ufrom).to(uto).value
 
 def rad2deg(r):
     return MV2.fmod(180 * r / MV2.pi, 360)
