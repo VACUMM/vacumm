@@ -50,7 +50,7 @@ from ...misc.io import Shapes
 from misc import get_xy
 from ...misc.phys.constants import R as rsphere_mean
 from ...misc.misc import kwfilter, dict_check_defaults
-from vacumm.config import get_config_value
+from vacumm.config import VACUMM_CFG
 
 #: Earth radius of wgs84 ellipsoid
 RSHPERE_WGS84 = (6378137.0,6356752.3141)
@@ -71,7 +71,11 @@ def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
     """Check if we have a cached map
 
     - *m*: A Basemap instance [Default: None]
-    - *mapdir*: Where are stored the cached maps. If ``None``, :func:`matplotlib.get_configdir` is used as a parent directory, which is the matplotlib configuration directory (:file:`~/.matplotlib` undex linux), and :file:`basemap/cached_maps` as the subdirectory.
+    - *mapdir*: Where are stored the cached maps. If ``None``,
+      :func:`matplotlib.get_configdir` is used as a parent directory,
+      which is the matplotlib configuration directory
+      (:file:`~/.matplotlib` undex linux), and :file:`basemap/cached_maps`
+      as the subdirectory.
 
     :Example:
 
@@ -137,7 +141,7 @@ def clean_cache(mapdir=None, maxsize=None):
         mapdir = os.path.join(get_configdir(), 'basemap', 'cached_maps')
     cache_size = dirsize(mapdir)
     if maxsize is None:
-        maxsize = eval(get_config_value('vacumm.misc.grid.basemap', 'max_cache_size'))
+        maxsize = VACUMM_CFG['vacumm.misc.grid.basemap']['max_cache_size']
     if cache_size>maxsize:
         files = [os.path.join(mapdir, ff) for ff in os.listdir(mapdir)]
         files.sort(cmp=lambda f1, f2: cmp(os.stat(f1)[8], os.stat(f2)[8]))
