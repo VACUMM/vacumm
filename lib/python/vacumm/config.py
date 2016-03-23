@@ -330,18 +330,18 @@ VACUMM_CFGSPECS_FILE = os.path.join(os.path.dirname(__file__),  'vacumm.ini')
 #: Config specifications
 VACUMM_CFGSPECS = ConfigObj(CFGSPECS_FILE, interpolation=False, list_values=True)
 
-def load_cfg(cfgfile=None, merge=True, live=False, validate=True, ):
+def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
     """Load the configuration
 
     :Params:
 
         - **cfgfile**, optional: A cfg file. Defaults to the result of
-          :func:`get_user_conf_file`.
-        - **mode**, optional: Loading mode
-
-            - ``"normal"``: Load and store in :data:`VACUMM_CFG`.
-            - ``"live"``: Load but does not store it. So it must used from
-              the return argument.
+          :func:`get_user_conf_file`. Set it to False to not load
+          the default user config file (:func:`get_user_conf_file`).
+        - **merge**, optional: Merge it with the currently loaded
+          configuration :data:`VACUMM_CFG`.
+        - **live**, optional: Load but does not store it into store in
+            :data:`VACUMM_CFG`. So it must used from the return argument.
 
     :Return: A :class:`configobj.ConfigObj` instance.
     """
@@ -351,7 +351,7 @@ def load_cfg(cfgfile=None, merge=True, live=False, validate=True, ):
         cfgfile = get_user_conf_file()
     if not isinstance(cfgfile, ConfigObj) and not os.path.exists(str(cfgfile)):
         cfgfile = ""
-        warn('Invalid cfgfile passed to load_cfg. Skipping.')
+#        warn('Invalid cfgfile passed to load_cfg. Skipping.')
     cfg = ConfigObj(cfgfile, configspec=VACUMM_CFGSPECS, interpolation=ConfigParser)
 
     # Default section
@@ -361,7 +361,7 @@ def load_cfg(cfgfile=None, merge=True, live=False, validate=True, ):
     if validate:
         cfg.validate(Validator())
 
-    # Merge with old config?
+    # Merge with currently loaded config?
     import vacumm.config
     if not hasattr(vacumm.config, 'VACUMM_CFG'): # nothing to merge with
         merge = False
@@ -403,8 +403,8 @@ def save_config_value(sec, option, value):
     cfg.write(get_user_conf_file())
 
 
-def get_cfg_path(sec, option,  expand=True):
-    """Get and interpret a config value as a path"""
+def get_cfg_path(sec, option, expand=True):
+    """Get and interpret a config value as a path with expansions"""
     if not option in sec:
         return
     path = sec[option]
@@ -419,7 +419,7 @@ def _print_header_(text, nc):
     print '#'*nc
 
 def print_config(section='__all__', system=True, direc=True, config=True, packages=True,
-    extended=False, user=True, headers=True):
+        extended=False, user=True, headers=True):
     """Print current configuration
 
     :Params:
@@ -466,102 +466,27 @@ def print_config(section='__all__', system=True, direc=True, config=True, packag
             print '%s: %s'%(mname.split('.')[-1], v)
 
 
-def get_default_config(section='__all__'):
+def get_default_config():
     """
     Shortcut to::
 
-        get_config(section='__all__', user=False)
+        load_cfg(cfgfile=False, merge=False, live=False)
 
     """
-    return get_config(section=section, user=False)
+    return load_cfg(cfgfile=False, merge=False, live=False)
 
 def write_default_config(cfgfile):
     """Write the defaults config (see :func:`get_default_config`) to a file"""
-    f = open(cfgfile, 'w')
-    get_default_config().write(f)
-    f.close()
+    get_default_config().write(cfgfile)
 
-def set_config_value(section, option, value=None, quiet=False, cfgfile=None):
-    """Create or update user configuration file
 
-    The directory of this file is given by :func:`get_user_conf_dir`
-    and its name is :file:`vacumm.cfg`. Therefore it should be:
-    :file:`~/.config/vacumm/vacumm.cfg`.
-
-    :Params:
-
-        - **section**: A module or its name.
-        - **option**: Option name.
-        - **value**: Value of the option. If ``None``, option is removed.
-        - **cfgfile**, optional: Configuration file. If not provided,
-          internal user configuration file is used
-          (:file:`vacumm.cfg` in user config directory -- given by :func:`get_user_conf_dir`).
-
-    :Example:
-
-        >>> set_config_value('vacumm.bathy.bathy', 'cfgfile_gridded',
-            '%(mod_dir)s/bathy.gridded.cfg') # set
-        >>> import vacumm.bathy.bathy as B
-        >>> set_config_value(B, 'cfgfile_gridded') # remove
-
-    :Output: Path of the configuration file
-
-    """
-    if hasattr(section, '__name__'):
-        section = section.__name__
-
-    # Load or check
-    if cfgfile is None:
-        cfgfile = os.path.join(get_user_conf_dir(), 'vacumm.cfg')
-    if not os.access(cfgfile, os.W_OK):
-        if os.path.exists(cfgfile):
-            raise VACUMMError("Can't write to config file: "+cfgfile)
-        else:
-            udir = os.path.dirname(cfgfile)
-            try:
-                os.makedirs(udir)
-            except:
-                raise VACUMMError("Can't write to config file: "+cfgfile)
-    cfg = SafeConfigParser()
-    cfg.read(cfgfile)
-
-    # Update
-    if value is not None:
-        value = str(value)
-        if not cfg.has_section(section):
-            cfg.add_section(section)
-        cfg.set(section, option, value)
-        if not quiet:
-            print 'Updated user configuration file (%s) with:'%cfgfile
-            print ' [%(section)s]\n  %(option)s=%(value)s'%locals()
-    elif cfg.has_option(section, option):
-        cfg.remove_option(section, option)
-        if not quiet:
-            print 'Removed the following option from user configuration file (%s):'%cfgfile
-            print ' [%(section)s]\n  %(option)s'%locals()
-
-    # Save
-    f = open(cfgfile, 'w')
-    cfg.write(f)
-    f.close()
-    return cfgfile
-
-def check_data_file(section, option, parent_section=None, parent_option=None,
-    quiet=None, suffix=None, avail=False, check_license=True):
+def check_data_file(section,
+        quiet=None, suffix=None, avail=False, check_license=True):
     """Check the existence of a file whose path is stored in a configuration file
 
-    Two cases are treated:
-
-        1. Path value is accessible from the vacumm configuration (:func:`get_config`),
-           using ``section`` (module name) and ``option``.
-        2. Path value is accessible from a secondary configuration file using
-           ``parent_section`` (module name) and ``parent_option``, and the
-           path value of this config file is accessible from the vacumm configuration
-           using ``section`` and ``name``.
-
-    If the file is not found, it may download it using an url whose value is
-    accessible at the same place as the path and with the same option
-    name + '_url'.
+    The path is given by ``section["file"]``.
+    If the file is not found, it may download it using an url
+    given by ``section["url"]``
 
     :Tasks:
 
@@ -583,13 +508,7 @@ def check_data_file(section, option, parent_section=None, parent_option=None,
 
     :Params:
 
-        - **section**: Section where to find the path to data.
-        - **option**: Option to read the path.
-        - **parent_section**, optional: Section of the vacumm configuration
-          where to find the path to the secondary configuration file that has
-          the path stored within.
-        - **parent_option**, optional: Option of the vacumm configuration
-          to read the path to the secondary configuration.
+        - **section**: A section object with "file", "url" and "license" options.
         - **quiet**, optional: Don't ask question about where to download the
           file, don't display any info, don't ask for authorization.
         - **suffix**, optional: A suffix or a list of suffixes to append to
@@ -611,30 +530,27 @@ def check_data_file(section, option, parent_section=None, parent_option=None,
 
     :Examples:
 
-        >>> check_data_file('vacumm.bathy.shorelines', 'shapefile_histolitt', suffix=['.shp', '.dbf'])
-        >>> check_data_file('etopo2', 'file', parent_section='vacumm.bathy.bathy',
-        ... parent_option='cfgfile_gridded')
+        >>> check_data_file(
+            VACUMM_CFG['vacumm.bathy.shorelines']['shapefiles']['histolitt'],
+            suffix=['.shp', '.dbf'])
     """
     if quiet is None:
         quiet = not sys.stdin.isatty()
+
     # Loop on suffixes
     if isinstance(suffix, (list, tuple)):
         paths = []
         for i, suf in enumerate(suffix):
-            paths.append(check_data_file(section, option, parent_section=parent_section,
-                parent_option=parent_option, quiet=quiet, suffix=suf, check_license=i==0))
+            paths.append(check_data_file(section, quiet=quiet, suffix=suf,
+                check_license=i==0))
         return paths
     elif not isinstance(suffix, basestring):
         suffix = ''
 
     # Get local and remote file names
-    path, cfg = get_config_value(section, option, umode='merge', getcfg=True,
-        parent_section=parent_section, parent_option=parent_option)
-    url = get_config_value(section, option+'_url', umode='merge', cfg=cfg)
-    license = get_config_value(section, option+'_license', umode='merge', cfg=cfg)
-    if path is None:
-        raise VACUMMError("Can't determine path of data file. Here are the config specs:\n"
-            "section='%(section)s',  option='%(option)s', parent_section='%(parent_section)s', parent_option='%(parent_option)s'"%locals())
+    path = section['file']
+    url = section['url']
+    license = section['license']
     path += suffix
     if url is not None: url += suffix
 
@@ -654,8 +570,7 @@ def check_data_file(section, option, parent_section=None, parent_option=None,
             if not os.path.exists(guessed):
                 print 'File not found'
             else:
-                _set_config_path_(guessed, section, option, parent_section,
-                    parent_option, parent and cfgpath, suffix)
+                save_config_value(section, 'file', path[:len(path)-len(suffix)])
                 return guessed
 
     # Check url
@@ -695,23 +610,9 @@ def check_data_file(section, option, parent_section=None, parent_option=None,
 
     # Fix configuration
     if path!=dl_path:
-        _set_config_path_(dl_path, section, option, parent_section,
-            parent_option, parent_section and cfgpath, suffix)
+        save_config_value(section, 'file', dl_path[:len(path)-len(suffix)])
     return dl_path
 
-def _set_config_path_(path, section, option, parent_section, parent_option, cfgpath, suffix):
-    """Save path into config"""
-    path = path[:len(path)-len(suffix)]
-    if parent_option and parent_section.startswith('vacumm.'):
-        if isinstance(cfgpath, list): cfgpath = cfgpath[-1]
-        if True: #not os.access(cfgpath,  os.W_OK|os.R_OK): # new config file
-            cfgpath = os.path.join(get_user_conf_dir(),
-                os.path.basename(cfgpath))
-        set_config_value(section, option, path, cfgfile=cfgpath) # save data path
-        set_config_value(parent_section, parent_option, cfgpath) # save config path
-    elif section.startswith('vacumm.'):
-        set_config_value(section, option, path)
-    return path
 
 
 # UTILITIES
