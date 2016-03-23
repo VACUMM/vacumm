@@ -2218,10 +2218,11 @@ def get_cmap(cmap=None, **kwargs):
 
 
 def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), fig=None,
-    show=True, aspect=.05, title=None, sa=dict(left=.0, right=1, top=1, bottom=.0),
-    savefig=None, savefigs=None, close=True, **kwargs):
+        show=True, aspect=.05, title=None, title_loc=(.5, .5),
+        sa=dict(left=.0, right=1, top=1, bottom=.0),
+        savefig=None, savefigs=None, close=True, **kwargs):
     """Display a colormap"""
-    from vacumm.misc import kwfilter
+    from vacumm.misc import kwfilter, dict_check_defaults
     cmap = get_cmap(cmap)
     if ax is None:
         if fig is None:
@@ -2231,40 +2232,44 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), fig=No
         fig = ax.get_figure()
     if figsize:
         fig.set_size_inches(figsize, forward=True)
-    P.subplots_adjust(**sa)
     ax.set_aspect('auto', anchor='C')
-    P.axis("off")
+    ax.axis("off")
     if ncol is None:
         ncol = cmap.N if hasattr(cmap, 'N') else 256.
     x = N.arange(0,ncol,1.)
     dx = x[1]-x[0]
     interp = 'bilinear' if smoothed else "nearest"
-    p = P.imshow(P.outer(N.ones(1),x), aspect=aspect*ncol,
+    p = ax.imshow(N.outer(N.ones(1),x), aspect=aspect*ncol,
         cmap=cmap, origin="lower",
         interpolation=interp, vmin=-.5, vmax=x[-1]+0.5)
-    P.fill([x[0]-dx/2, x[0]-dx/2, x[0]-dx/2-ncol/20.], [-.5, .5, 0], facecolor=p.to_rgba(-1),
-        edgecolor='none', linewidth=0)
-    P.fill([x[-1]+dx/2, x[-1]+dx/2, x[-1]+dx/2+ncol/20.], [-.5, .5, 0], facecolor=p.to_rgba(ncol+2),
-        edgecolor='none', linewidth=0)
+    ax.fill([x[0]-dx/2, x[0]-dx/2, x[0]-dx/2-ncol/20.], [-.5, .5, 0],
+        facecolor=p.to_rgba(-1), edgecolor='none', linewidth=0)
+    ax.fill([x[-1]+dx/2, x[-1]+dx/2, x[-1]+dx/2+ncol/20.], [-.5, .5, 0],
+        facecolor=p.to_rgba(ncol+2), edgecolor='none', linewidth=0)
     if title is None: title = cmap.name
     if title is not None and title is not False:
-        from core_plot import add_glow
-        add_glow(P.text(ncol/2., 0., title, color='k', ha='center', va='center'), alpha=0.5)
+        kwtitle = kwfilter(kwargs, 'title_')
+        dict_check_defaults(kwtitle, alpha=.8, ha='center', va='center',
+            transform=ax.transAxes, size=9, color='k')
+        ax.text(title_loc[0], title_loc[1], title, **kwtitle)
+    if sa:
+        fig.subplots_adjust(**sa)
+
 
     # Save and show
     if savefig is not None:
-        P.savefig(savefig, **kwfilter(kwargs, 'savefig'))
+        fig.savefig(savefig, **kwfilter(kwargs, 'savefig'))
     if savefigs is not None:
         from plot import savefigs as Savefigs
-        Savefigs(savefigs, **kwfilter(kwargs, 'savefigs'))
+        Savefigs(savefigs, fig=fig, **kwfilter(kwargs, 'savefigs'))
     if show:
-        P.show()
+        fig.show()
     if close:
-        P.close()
+        P.close(fig)
 
 
-def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5, savefigs=None,
-    aspect=0.05, **kwargs):
+def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5,
+    savefigs=None, aspect=0.05, fig=None, close=True, **kwargs):
     """Display a list of or all colormaps"""
 
     from vacumm.misc import kwfilter
@@ -2312,33 +2317,44 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5, savefi
     cmaps.sort(cmp=lambda a, b: cmp(a.name, b.name))
 
     # Setup figure
+    if fig is None:
+        fig = P.figure()
     ncol = min(ncmap, ncol)
     nrow = (ncmap-1)/ncol+1
 #    nrow = min(ncmap, nrow)
 #    ncol = (ncmap-1)/nrow+1
+    if N.isscalar(figsize):
+        figwidth = figsize
+        figsize = None
+    else:
+        figwidth = 6.
     if figsize is None:
-        figsize = (5*ncol, nrow*5*aspect*1.1)
+        onecol = figwidth / ncol
+        onerow = figwidth * aspect * .8
+        figheight = onerow * nrow
+        figsize = (figwidth, figheight)
     if figsize is not False:
-        P.figure(figsize=figsize)
+        fig.set_size_inches(figsize, forward=True)
 
     # Loop on colormaps
     ip = N.arange(ncol*nrow).reshape((nrow,ncol)).T.ravel()+1
     for i, cmap in enumerate(cmaps):
-        ax = P.subplot(nrow, ncol, ip[i])
-        plot_cmap(cmap, show=False, ax=P.gca(),
-            sa=dict(bottom=.01, top=.99, left=.01, right=.99),
-            aspect=aspect, close=False,
+        ax = fig.add_subplot(nrow, ncol, ip[i])
+        plot_cmap(cmap, show=False, ax=ax, figsize=False,
+            aspect=aspect, close=False, title_loc=(.5, 2), title_alpha=1,
             **kwargs)
         ax.set_anchor('C')
-    P.subplots_adjust(wspace=0.0, hspace=0, top=0.98, bottom=0.02, left=0.02, right=0.98)
+#    fig.tight_layout(pad=0, h_pad=0, w_pad=0)
+    fig.subplots_adjust(wspace=0.0, hspace=0, top=0.98, bottom=0.02, left=0.02, right=0.98)
 
     # Save and show
     if savefig is not None:
-        P.savefig(savefig, **kwsf)
+        P.savefig(savefig, fig=fig, **kwsf)
     if savefigs is not None:
-        from plot import savefigs as Savefigs
-        Savefigs(savefigs, **kwsfs)
-    if show: P.show()
+        from plot import savefigs as _savefigs
+        _savefigs(savefigs, fig=fig, **kwsfs)
+    if show: fig.show()
+    if close: P.close(fig)
 
 def show_cmap(cmap, *args, **kwargs):
     """Alias for :func:`plot_cmap`"""

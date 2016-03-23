@@ -24,6 +24,7 @@ Testing :mod:`~vacumm.misc.plot` module.
     :glob:
 
     test_plot_*
+    test_color_*
 
 Stats
 -----
@@ -109,7 +110,7 @@ Pure CDAT
     test_cdat_*
 
 
-Other tests
------------
+..    Other tests
+      -----------
 
-    test_*
+        test_*
