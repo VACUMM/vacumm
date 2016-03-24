@@ -229,6 +229,40 @@ def get_user_conf_file(fname=None):
     if os.path.isabs(fname): return fname
     return os.path.join(get_user_conf_dir(), fname)
 
+def get_com_conf_dir():
+    """Get directory of common alternate configuration files
+    These files are not included in the distribution.
+    They have a similar role to user config files but they
+    are accessible to all users.
+    This directory can be at two different places, depending on if the library is
+    an installed version or developers version.
+    - If installed : in :file:`vacumm-config` subdirectory in the
+      installed package directory (see :meth:`get_lib_dir`).
+    - Else in the :file:`config` subdirectory of the main distribution tree
+      (see :meth:`get_dist_dir`).
+    """
+    # Installed librairy
+    lib_dir = get_lib_dir()
+    conf_dir = os.path.join(lib_dir, 'vacumm-config')
+    if os.path.exists(conf_dir):
+        return conf_dir
+
+    # Distributed library (dev)
+    dist_dir = get_dist_dir()
+    if dist_dir is not None:
+        return os.path.join(dist_dir, 'config')
+
+    # Fall back to the use config dir
+    return get_user_conf_dir()
+
+def get_com_conf_file():
+    """Get common user configuration file
+    Shortcut for::
+        os.path.join(get_com_conf_dir(), 'vacumm.cfg')
+    :See also: :func:`get_com_conf_dir`, :func:`get_user_conf_file`
+    """
+    return os.path.join(get_user_conf_dir(), 'vacumm.cfg')
+
 
 def get_dir_dict():
     """Get the following directory names as a dictionary
@@ -239,6 +273,7 @@ def get_dir_dict():
     - ``tut_dir`` (see :func:`get_tut_dir`)
     - ``scripts_dir`` (see :func:`get_scripts_dir`)
     - ``user_conf_dir`` (see :func:`get_user_conf_dir`)
+    - ``com_conf_dir`` (see :func:`get_com_conf_dir`)
     """
 
     return dict(data_dir=get_data_dir(), lib_dir=get_lib_dir(),
@@ -330,6 +365,46 @@ VACUMM_CFGSPECS_FILE = os.path.join(os.path.dirname(__file__),  'vacumm.ini')
 #: Config specifications
 VACUMM_CFGSPECS = ConfigObj(CFGSPECS_FILE, interpolation=False, list_values=True)
 
+
+class VCValidator(Validator):
+
+    def __init__(self, *args, **kwargs):
+
+        self._vc_checkmode = kwargs.pop('checkmode', 'warn')
+        self._vc_warnmsg = kwargs.pop('warnmsg',
+                'Bad configuration value: {value}. '
+                'It must conform the follwing specs: {check}. '
+                'Switching to default value: {default}.')
+        Validator.__init__(self, *args, **kwargs)
+
+    def check(self, check, value, missing=False):
+        """
+        Unlike the original validator, it replaces the value by its default
+        when an error occurs.
+        """
+        fun_name, fun_args, fun_kwargs, default = self._parse_with_caching(check)
+
+        if missing:
+            if default is None:
+                # no information needed here - to be handled by caller
+                raise VdtMissingValue()
+            value = self._handle_none(default)
+
+        if value is None:
+            return None
+
+        if self._vc_checkmode=='normal':
+            return self._check_value(value, fun_name, fun_args, fun_kwargs)
+        try:
+            return self._check_value(value, fun_name, fun_args, fun_kwargs)
+        except:
+            if default is None:
+                raise VdtMissingValue()
+            warn(self._vc_warnmsg.format(**locals()))
+            return self._check_value(default, fun_name, fun_args, fun_kwargs)
+
+
+
 def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
     """Load the configuration
 
@@ -342,14 +417,25 @@ def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
           configuration :data:`VACUMM_CFG`.
         - **live**, optional: Load but does not store it into store in
             :data:`VACUMM_CFG`. So it must used from the return argument.
+        - **validate**, optional: Validate the configuration using
+          :class:`VCValidator`. It checks that options conform specifications
+          and fallbacks to default value when an error is detected or when
+          the option is missing.
 
     :Return: A :class:`configobj.ConfigObj` instance.
     """
 
     # Load
+    if cfgfile=='user' or cfgfile is None:
+        cfgfile = get_user_conf_file()
+    elif cfgfile=='com':
+        cfgfile = get_com_conf_file()
+    elif cfgfile=='default':
+        cfgfile = False
     if cfgfile is None:
         cfgfile = get_user_conf_file()
-    if not isinstance(cfgfile, ConfigObj) and not os.path.exists(str(cfgfile)):
+    if (not isinstance(cfgfile, ConfigObj)  or not isinstance(cfg, str) or
+            not os.path.exists(fgfile)):
         cfgfile = ""
 #        warn('Invalid cfgfile passed to load_cfg. Skipping.')
     cfg = ConfigObj(cfgfile, configspec=VACUMM_CFGSPECS, interpolation=ConfigParser)
@@ -359,7 +445,12 @@ def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
 
     # Validate
     if validate:
-        cfg.validate(Validator())
+        cfg.validate(VCValidator(checkmode='warn',
+            warnmsg='Bad configuration value: {value}. '
+                'It must conform the follwing specs: {check}. '
+                'Switching to default value: {default}. '
+                'Please refer to the documentation to fix your configuration: '
+                'http://wwww.ifremer.fr/vacumm/user.install.config.html'))
 
     # Merge with currently loaded config?
     import vacumm.config
@@ -378,8 +469,9 @@ def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
 
     return cfg
 
-#: Current VACUMM configuration
-VACUMM_CFG = load_cfg()
+#: Current VACUMM configuration (default+common+user)
+VACUMM_CFG = load_cfg('com')
+load_cfg('user')
 
 def _get_parent_sections_(sec):
     secs = []
@@ -388,7 +480,11 @@ def _get_parent_sections_(sec):
     return secs[::-1]
 
 def save_config_value(sec, option, value):
-    """Save a single config option to the user config file"""
+    """Save a single config option to the user config file
+
+    It load the user config file without validation, change the option,
+    and write the config back to the user file.
+    """
     # Save the live value
     sec[option] = value
 
@@ -415,10 +511,10 @@ def get_cfg_path(sec, option, expand=True):
 
 def _print_header_(text, nc):
     print '#'*nc
-    print '##  %s'%text.ljust(nc-4)
+    print '##  {:nc-4}'.format(text)
     print '#'*nc
 
-def print_config(section='__all__', system=True, direc=True, config=True, packages=True,
+def print_config(section=None, system=True, direc=True, config=True, packages=True,
         extended=False, user=True, headers=True):
     """Print current configuration
 
@@ -448,7 +544,10 @@ def print_config(section='__all__', system=True, direc=True, config=True, packag
             print '%s: %s'%dd
     if config:
         if headers: _print_header_('VACUMM configuration', nc)
-        print get_config(section=section, user=user, asstring=True).strip()
+        cfg = VACUMM_CFG
+        if section and section in VACUMM_CFG:
+            cfg = VACUMM_CFG[section]
+        print cfg
     if packages:
         if headers: _print_header_('Versions', nc)
         from __init__ import __version__
@@ -473,7 +572,7 @@ def get_default_config():
         load_cfg(cfgfile=False, merge=False, live=False)
 
     """
-    return load_cfg(cfgfile=False, merge=False, live=False)
+    cfg = load_cfg(cfgfile=get_com_conf_file(), merge=False, live=True)
 
 def write_default_config(cfgfile):
     """Write the defaults config (see :func:`get_default_config`) to a file"""
