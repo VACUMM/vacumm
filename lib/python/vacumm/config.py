@@ -373,11 +373,12 @@ class VCValidator(Validator):
         self._vc_checkmode = kwargs.pop('checkmode', 'warn')
         self._vc_warnmsg = kwargs.pop('warnmsg',
                 'Bad configuration value: {value}. '
+                'Error: "{error}". '
                 'It must conform the follwing specs: {check}. '
                 'Switching to default value: {default}.')
         Validator.__init__(self, *args, **kwargs)
 
-    def check(self, check, value, missing=False):
+    def check(self, check, value, missing=False, warnmsg=None):
         """
         Unlike the original validator, it replaces the value by its default
         when an error occurs.
@@ -397,13 +398,30 @@ class VCValidator(Validator):
             return self._check_value(value, fun_name, fun_args, fun_kwargs)
         try:
             return self._check_value(value, fun_name, fun_args, fun_kwargs)
-        except:
+        except Exception,  e:
             if default is None:
                 raise VdtMissingValue()
-            warn(self._vc_warnmsg.format(**locals()))
+            error = e.message
+            if warnmsg is None:
+                warnmsg = self._vc_warnmsg
+            warn(warnmsg.format(**locals()))
             return self._check_value(default, fun_name, fun_args, fun_kwargs)
 
+#: VCValidator default instance
+VACUMM_VDT = VCValidator(checkmode='warn',
+    warnmsg='Bad configuration value: {value}. '
+        'Error message: "{error}". '
+        'It must conform the follwing specs: {check}. '
+        'Switching to default value: {default}. '
+        'Please refer to the documentation to fix your configuration: '
+        'http://wwww.ifremer.fr/vacumm/user.install.config.html')
 
+#: VCValidator special instance to check individual values
+VACUMM_VDT_LIVE = VCValidator(checkmode='warn',
+    warnmsg='Bad value: {value}. '
+        'Error message: "{error}". '
+        'It must conform the follwing specs: {check}. '
+)
 
 def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
     """Load the configuration
@@ -445,12 +463,7 @@ def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
 
     # Validate
     if validate:
-        cfg.validate(VCValidator(checkmode='warn',
-            warnmsg='Bad configuration value: {value}. '
-                'It must conform the follwing specs: {check}. '
-                'Switching to default value: {default}. '
-                'Please refer to the documentation to fix your configuration: '
-                'http://wwww.ifremer.fr/vacumm/user.install.config.html'))
+        cfg.validate(VACUMM_VDT)
 
     # Merge with currently loaded config?
     import vacumm.config
@@ -498,6 +511,29 @@ def save_config_value(sec, option, value):
     # Save it
     cfg.write(get_user_conf_file())
 
+def get_cfg_checked(sec, option, value=None):
+    """Check a value or get its default value"""
+    # Current section and parent names
+    if isinstance(sec,  str):
+        sec = [sec]
+    if isinstance(sec, list):
+        sections = sec
+        sec = VACUMM_CFG
+        for secname in sections:
+            sec = sec[secname]
+    else:
+        sections = _get_parent_sections_(sec)
+
+    # Default value
+    if value is None:
+        return sec[option]
+
+    # Find the check specs and check!
+    sec = VACUMM_CFGSPECS
+    for secname in sections:
+        sec = sec[secname]
+    check = sec[option]
+    return VACUMM_VDT_LIVE.check(value, check)
 
 def get_cfg_path(sec, option, expand=True):
     """Get and interpret a config value as a path with expansions"""
