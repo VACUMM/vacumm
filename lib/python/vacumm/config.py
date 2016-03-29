@@ -492,6 +492,65 @@ def _get_parent_sections_(sec):
         secs.append(sec.name)
     return secs[::-1]
 
+def _get_sections_(sec):
+    """Get current section and parent names
+
+    :Params:
+
+        - **sec**: A :class:`~configobj.Section` instance or a single section name
+          or a list of section names.
+
+    :Return: ``sec, sections``
+
+        - ``sec``: Current :class:`~configobj.Section`.
+        - ``sections``: Parent section names.
+    """
+    if isinstance(sec,  str):
+        sec = [sec]
+    if isinstance(sec, list):
+        sections = sec
+        sec = VACUMM_CFG
+        for secname in sections:
+            sec = sec[secname]
+    else:
+        sections = _get_parent_sections_(sec)
+    return sec, sections
+
+def get_config_value(sec, option):
+    """Get a config value
+
+    :Params:
+
+        - **sec**: A :class:`~configobj.Section` instance or a single section name
+          or a list of section names.
+        - **option**: Option name.
+
+    :Return: ``value``
+    """
+    sec, sections = _get_sections_(sec)
+    return sec[option]
+
+def set_config_value(sec, option, value):
+    """Set a config value
+
+    .. note:: This function set the value of un optin for current session usage
+        only. If you want this option value to be persistent, please use
+        function :func:`save_config_value`.
+
+    :Params:
+
+        - **sec**: A :class:`~configobj.Section` instance or a single section name
+          or a list of section names.
+        - **option**: Option name.
+        - **value**: Option value.
+
+    :Return: ``value``
+    """
+    sec, sections = _get_sections_(sec)
+    sec[option] = value
+    return value
+
+
 def save_config_value(sec, option, value):
     """Save a single config option to the user config file
 
@@ -511,18 +570,11 @@ def save_config_value(sec, option, value):
     # Save it
     cfg.write(get_user_conf_file())
 
+
 def get_cfg_checked(sec, option, value=None):
     """Check a value or get its default value"""
     # Current section and parent names
-    if isinstance(sec,  str):
-        sec = [sec]
-    if isinstance(sec, list):
-        sections = sec
-        sec = VACUMM_CFG
-        for secname in sections:
-            sec = sec[secname]
-    else:
-        sections = _get_parent_sections_(sec)
+    sec, sections = _get_sections_(sec)
 
     # Default value
     if value is None:

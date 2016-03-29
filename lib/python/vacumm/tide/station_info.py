@@ -5,7 +5,7 @@ Information about seaports and stations
 StationInfo : A class to retrieve alot of information about seaports and stations.
 MeanSeaLevel : A class dedicated to mean sea level along french coast (more complete than StationInfo).
 """
-# Copyright or © or Copr. Actimar/IFREMER (2011-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2011-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -62,11 +62,13 @@ class _StationPlot_(object):
              fontsize=11.,alone=False,color='blue', show=True):
         """Show the current station on a map
 
-        - *lon/lat*: Longitude and latitude plot ranges
-        - *fontsize*: Font size of the station name [default:15.]
-        - *color*: Color of name and symbol [default: 'blue']
-        - *alone*: Do not plot other stations around [default: False]
-        - Other keywords are passed to :func:`~vacumm.misc.plot.map`.
+        :Params:
+
+            - *lon/lat*: Longitude and latitude plot ranges
+            - *fontsize*: Font size of the station name [default:15.]
+            - *color*: Color of name and symbol [default: 'blue']
+            - *alone*: Do not plot other stations around [default: False]
+            - Other keywords are passed to :func:`~vacumm.misc.plot.map`.
         """
         if self.nom is None:
             print "Aucune station n'est actuellement definie"
