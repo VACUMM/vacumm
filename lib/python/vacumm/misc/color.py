@@ -55,9 +55,9 @@ from mpl_toolkits.basemap import cm as basemap_cm
 from genutil import minmax
 
 import vacumm
-import vacumm.misc.misc as vcm
-import vacumm.misc.plot as vcp
-import vacumm.misc.core_plot as vccp
+import misc as vcm
+import plot as vcp
+import core_plot as vccp
 
 ma = N.ma
 

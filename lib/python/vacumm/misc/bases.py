@@ -62,14 +62,14 @@ base class.
 
 import inspect, os, pdb, pprint, sys, types
 
-import configobj
-
-from vacumm.misc.config import ConfigManager
-from vacumm.misc.exception import getDetailedExceptionInfo
-from vacumm.misc.misc import kwfilter, dict_merge
-from vacumm.misc.log import Logger, logger, get_str_levels
 from argparse import ArgumentParser
 from optparse import OptionParser
+import configobj
+
+import config as vcc
+import exception as vce
+import misc as vcm
+import log as vcl
 
 # Test application origin: a python script or an executable (py2exe/cx_freeze)
 isfreezed = os.path.basename(sys.executable) == os.path.basename(sys.argv[0])
@@ -207,7 +207,7 @@ try:
         ps = '[CPU: %d%%  MEM: %d%%  RSS: %dMo  VSZ: %dMo]'%(cpu, mem, rss / 2**20, vsz / 2**20)
         return ps
 except Exception, e:
-    Logger.default.verbose('psinfo disabled: %s', e)
+    vcl.Logger.default.verbose('psinfo disabled: %s', e)
     psinfo = lambda:'Ressources informations not available (no module psutil)'
 
 
@@ -238,7 +238,7 @@ def describe(obj, stats=None, format=pprint.pformat):
             try:
                 if hasattr(obj, 'typecode') and obj.typecode() not in ('c',):
                     mi, ma, av, co = MV2.min(obj), MV2.max(obj), MV2.average(obj), MV2.count(obj)
-            except: logger.exception('Error getting statistics of object %s', type(obj))
+            except: vcl.logger.exception('Error getting statistics of object %s', type(obj))
         if isinstance(obj, AbstractVariable):
             return '%s: %s, shape:(%s), order: %s%s'%(
                 otype, obj.id,
@@ -254,7 +254,7 @@ def describe(obj, stats=None, format=pprint.pformat):
                 otype, sh,
                 stats and ', min: %s, max: %s, avg: %s, count: %s'%(mi, ma, av, co) or '')
     except Exception, e:
-        logger.exception('Error getting description of object %s', type(obj))
+        vcl.logger.exception('Error getting description of object %s', type(obj))
         return '%s (error getting description)'%(type(obj))
 
 
@@ -323,7 +323,7 @@ class Class(type):
         cls._init_class(name, bases, dct)
 
 
-_logging_proxies = list(map(lambda f: (f.lower(),f.lower()), get_str_levels()+['exception']))
+_logging_proxies = list(map(lambda f: (f.lower(),f.lower()), vcl.get_str_levels()+['exception']))
 _logging_proxies += [
     ('get_loglevel', 'get_level_name'),
     ('set_loglevel', 'set_level'),
@@ -431,7 +431,7 @@ class Object(object):
         Class initialization method, called when the class is defined.
         '''
         # Setup class logging
-        cls._class_logger = Logger(name=name, name_filters=[name])
+        cls._class_logger = vcl.Logger(name=name, name_filters=[name])
         add_logging_proxies(cls)
         # Configuration management
         if not hasattr(cls, '__config_managers'):
@@ -504,7 +504,7 @@ class Object(object):
             if cfg is None:
                 cfg = cs
             else:
-                cfg = dict_merge(cfg, cs)
+                cfg = vcm.dict_merge(cfg, cs)
         return cfg
 
 
@@ -537,7 +537,7 @@ class Object(object):
         if cfg is None:
             cfg = pcfg
         elif pcfg is not None:
-            cfg = dict_merge(cfg, pcfg, mergesubdicts=False)
+            cfg = vcm.dict_merge(cfg, pcfg, mergesubdicts=False)
         return cfg
 
 
@@ -563,7 +563,7 @@ class Object(object):
             cfg = cls.get_config_spec()
 
             # NOTE: If no spec / no class section, class use empty spec
-            cfgmgr = ConfigManager(cfg, encoding=encoding)
+            cfgmgr = vcc.ConfigManager(cfg, encoding=encoding)
             cls.__config_managers[cls] = cfgmgr
             if cls._cfg_debug:
                 cls.debug('Loaded config manager of class %s with spec:\n  %s', cls.__name__, '\n  '.join(cfgmgr._configspec.write()))
@@ -633,8 +633,8 @@ class Object(object):
         '''
         if config is None: config = cls.get_default_config(encoding=encoding)
         #cls.get_logger().load_config(config, nested=True)
-        loglvl = logger.get_level_name() #loglvl = cls.get_logger().get_level_name().lower()
-        isdbg = logger.is_debug() #isdbg = loglvl == 'debug'
+        loglvl = vcl.logger.get_level_name() #loglvl = cls.get_logger().get_level_name().lower()
+        isdbg = vcl.logger.is_debug() #isdbg = loglvl == 'debug'
         cls._log_level = loglvl
         cls._cfg_debug = config.get('cfg_debug', isdbg or cls._cfg_debug)
         cls._log_obj_stats = config.get('log_obj_stats', isdbg or cls._log_obj_stats)
@@ -760,7 +760,7 @@ class Object(object):
     @classmethod
     def exception_trace(cls):
         '''Return a huge detailed exception traceback'''
-        return getDetailedExceptionInfo()
+        return vce.getDetailedExceptionInfo()
 
     @classmethod
     def trace(cls, iframe=0, iftty=True):
@@ -801,7 +801,7 @@ class Object(object):
         defaults to this class lowercase name.
         '''
         if filters is None: filters = cls.__name__.lower()
-        return kwfilter(kwargs, filters, *args, **kwa)
+        return vcm.kwfilter(kwargs, filters, *args, **kwa)
 
     # ==========================================================================
     # Initializer
@@ -815,11 +815,11 @@ class Object(object):
 
         '''
         # Setup logging
-        lkw = kwfilter(kwargs, 'logger', {'name':self.__class__.__name__})
+        lkw = vcm.kwfilter(kwargs, 'logger', {'name':self.__class__.__name__})
         if isinstance(lkw.get('config', None), Object):
             lkw['config'] = lkw['config'].get_logger()
         lkw['name_filters'] = list(lkw.get('name_filters', [])) + [self.__class__.__name__]
-        self._logger = Logger(**lkw)
+        self._logger = vcl.Logger(**lkw)
         # Load passed or default configuration
         self.load_config(kwargs.get('config', None),  cfgpatch=kwargs.get('cfgpatch', None))
 

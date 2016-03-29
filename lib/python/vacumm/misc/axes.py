@@ -49,10 +49,10 @@ from cdms2.axis import AbstractAxis, FileAxis
 from cdms2.coord import TransientAxis2D
 
 from vacumm import VACUMMError
-import vacum.misc.misc as vcm
-import vacumm.misc.atime as vct
-import vacumm.misc.grid.misc as vcg
-import vacumm.misc.io as vcio
+import misc as vcm
+import atime as vct
+import grid.misc as vcg
+import io as vcio
 
 cdms = cdms2
 

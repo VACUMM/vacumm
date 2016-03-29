@@ -50,10 +50,10 @@ import MV2
 import cdtime
 import cdutil
 
-import vacumm.misc.axes as vca
-import vacumm.misc.grid as vcg
-import vacumm.misc.io as vcio
-import vacumm.misc.misc as vcm
+import axes as vca
+import grid as vcg
+import io as vcio
+import misc as vcm
 from vacumm import VACUMMError
 
 
