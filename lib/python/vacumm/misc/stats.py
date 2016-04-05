@@ -333,6 +333,7 @@ class StatAccum(object):
             # Init template for output temporal statistics
             if self.tstats:
                 self._ttemplates = ()
+                self._thtemplates = None
                 if self.thist:
                     self._thtemplates = ()
                 selspace = 0 if self.withtime else slice(None)
@@ -687,10 +688,14 @@ class StatAccum(object):
 
 
             # Templates
-            for i, ttpl in enumerate(self._ttemplates):
-                ttpl = ttpl.clone()
-                _add_id_prefix_(ttpl, 'var%i_'%i, exc=self._baxis)
-                f.write(ttpl)
+            ttemplates = [self._ttemplates]
+            if self.hist:
+                templates.append(self._thtemplates)
+            for ttpls in ttemplates:
+                for i, ttpl in enumerate(ttpls):
+                    ttpl = ttpl.clone()
+                    _add_id_prefix_(ttpl, 'var%i_'%i, exc=self._baxis)
+                    f.write(ttpl)
 
         # Attributes
         for ivar, atts in enumerate(self._atts):
@@ -825,6 +830,7 @@ class StatAccum(object):
                 self._thbase = N.zeros((self.nbins, self.ns), 'l')
             # - cdat templates
             self._ttemplates = ()
+            self._thtemplates = None
             if self.thist:
                 self._thtemplates = ()
             for i in xrange(self.nitems):
