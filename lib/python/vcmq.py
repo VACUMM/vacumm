@@ -1,6 +1,7 @@
 """Module for quickly loading VACUMM essentials"""
 
 # System
+
 import os
 import sys
 import shutil
@@ -55,22 +56,36 @@ from vacumm.misc.misc import (
     lonlab, latlab, deplab, kwfilter, broadcast, ArgList, closeto, dict_merge,
     dict_check_defaults, cp_atts, dict_filter,  cp_props, numod, set_atts, get_atts,
     set_lang, geodir, auto_scale, MV2_concatenate, MV2_axisConcatenate,
-    zoombox, squeeze_variable, set_lang_fr, scalebox, checkdir,
+    zoombox, squeeze_variable, set_lang_fr, scalebox, checkdir, create_selector,
+    numod, deg2str, deg_from_dec, dict_filter_out, dict_copy_items, geo_scale,
+    grow_depth, grow_lat, grow_variables, history, intersect, is_iterable,
+    isempty, isnumber, lunique, main_geodir, selector2str, rm_html_tags,
+    tunique, split_selector, xls_style,
     )
 
 from vacumm.misc.axes import (
     create_lon, create_lat, create_time, create_depth,
     create_dep, islon, islat, isdep, isaxis, istime, create_axis,
+    check_axes, check_id, check_order, get_axis_type, get_checker,
+    guess_timeid, is_geo_axis, is_geo_axis_type, merge_orders,
+    order_match, set_order,
     )
 
 from vacumm.misc.atime import (
-    comptime, strftime, strptime, Intervals, IterDates, now,
+    comptime, strftime, strptime, Intervals, IterDates, now, Gaps, DateSorter,
     time_split, time_split_nmax, to_utc, tz_to_tz, utc_to_paris, paris_to_utc,
     lindates, ch_units, add_margin, round_date, midnight_date, midnight_interval,
     mpl, tic, toc, pat2freq, pat2glob, has_time_pattern,
     is_interval, is_time, is_axistime, is_cdtime, is_datetime, is_in_range,
     is_numtime, is_strtime, itv_intersect, itv_union, julday,
-    are_valid_units,
+    are_valid_units, SpecialDateFormatter, check_range,
+    daily, daily_bounds, day_of_the_year, unit_type, toc,
+    hourly, hourly_bounds, hourly_exact, monthly, tsel2slice,
+    reduce, yearly, are_same_units, ascii_to_num, detrend, from_utc,
+    plot_dt,
+    selector as time_selector,
+    datetime as adatetime,
+    add as add_time,
     )
 
 
