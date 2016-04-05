@@ -159,6 +159,12 @@ from vacumm.misc.grid.masking import (
     plot_polygon, merge_masks
     )
 
+from vacumm.misc.grid.kriging import (
+    OrdinaryCloudKriger, variogram, variogram_fit, variogram_model,
+    variogram_model_type, variogram_multifit, cloud_split,
+    KrigingError, VariogramModel, VariogramModelError,
+    )
+
 # - data
 
 from vacumm.data import setup_dataset, DS
