@@ -89,7 +89,12 @@ from vacumm.misc.atime import (
     )
 
 
-from vacumm.misc.bases import psinfo, code_base_name, code_file_name, code_dir_name
+from vacumm.misc.bases import (
+    psinfo, code_base_name, code_file_name, code_dir_name, describe, Class, Object,
+    add_logging_proxies, func_name, get_noconflict_metaclass, get_prog_dir,
+    remove_redundant, skip_redundant, stack_trace, classmaker,
+    classinstancemethod, isfreezed, prog,
+    )
 
 from vacumm.misc.io import (
     list_forecast_files, netcdf3, netcdf4, ncread_files, ncread_var,
@@ -99,7 +104,8 @@ from vacumm.misc.io import (
 
 from vacumm.misc.filters import (
     generic1d, generic2d, shapiro1d, shapiro2d, blackman1d,
-    bartlett1d, kaiser1d, hanning1d, blackman1d, gaussian1d, gaussian2d
+    bartlett1d, kaiser1d, hanning1d, blackman1d, gaussian1d, gaussian2d,
+    deriv, deriv2d,
     )
 
 from vacumm.misc.remote import InputWorkFiles, OutputWorkFile
@@ -114,6 +120,11 @@ from vacumm.misc.phys.units import (
     convert_units, kt2ms, ms2kt, deg2m, m2deg, ms2bf, dms2deg, deg2dms, mph2ms,
     ms2mph, tometric, kel2degc, degc2kel, basic_proj,
     )
+
+from vacumm.misc.file import (
+    mkdirs, mkfdirs, rollover, strfsize, strpsize, walk, xefind, xfind, find, efind,
+    )
+
 
 
 # - plot
