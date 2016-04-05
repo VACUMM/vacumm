@@ -2361,6 +2361,9 @@ subroutine mixt2dx   (vari, xi,  yi,  varo, xo,  yo,  mv, ext,       nxi,nyi,nxo
 end subroutine mixt2dx
 
 SUBROUTINE mixt2d(IDIM,JDIM,XX,YY,FF,MDIM,NDIM,RR,SS,GG)
+
+    implicit none
+    integer :: idim, jdim, mdim, ndim
     real(kind=8), intent(in) :: XX(IDIM),YY(JDIM),RR(MDIM),SS(NDIM),FF(IDIM,JDIM)
     real(kind=8), intent(out) :: GG(MDIM,NDIM)
 !  ROUTINE TO INTERPOLATE FROM THE 2-DIMENSIONAL ARRAY FF DEFINED ON THE
@@ -2386,6 +2389,9 @@ SUBROUTINE mixt2d(IDIM,JDIM,XX,YY,FF,MDIM,NDIM,RR,SS,GG)
 !          DO AREA AVERAGE.
 !
 !
+    real(kind=8) :: s1, s2, dy, s3, s4, dsy, ds, x1, x2, r1, r2, r3, r4, &
+        & dr, drx, FACR, facs, y1, y2, dx
+    integer :: n, m, j, jj, i, ii
       IF(XX(IDIM).LT.RR(1).OR.XX(1).GT.RR(MDIM).OR. &
      &     YY(JDIM).LT.SS(1).OR.YY(1).GT.SS(NDIM)) THEN
          PRINT *,'GRIDS GIVEN TO INTERP_2 DO NOT OVER-LAP  '
