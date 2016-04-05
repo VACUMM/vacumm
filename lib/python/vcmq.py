@@ -55,7 +55,7 @@ from vacumm.misc.misc import (
     lonlab, latlab, deplab, kwfilter, broadcast, ArgList, closeto, dict_merge,
     dict_check_defaults, cp_atts, dict_filter,  cp_props, numod, set_atts, get_atts,
     set_lang, geodir, auto_scale, MV2_concatenate, MV2_axisConcatenate,
-    zoombox, squeeze_variable, set_lang_fr, scalebox, checkdir,
+    zoombox, squeeze_variable, set_lang_fr, scalebox, checkdir, Att,
     )
 
 from vacumm.misc.axes import (
@@ -124,7 +124,7 @@ from vacumm.misc.grid.misc import (
     meshcells, meshbounds, meshgrid, bounds1d, bounds2d, coord2slice, isregular,
     isrect, curv2rect, isgrid, get_xy, create_axes2d, gridsel, varsel, xshift, rotate_grid,
     get_closest, get_closest_depth, makedepthup, get_axis, transect_specs,
-    get_axis_slices, get_distances, dz2depth, meshweights,
+    get_axis_slices, get_distances, dz2depth, meshweights, curv_grid,
     )
 
 from vacumm.misc.grid.regridding import (
