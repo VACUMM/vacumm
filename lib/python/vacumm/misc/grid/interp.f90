@@ -1972,17 +1972,41 @@ end subroutine dstwgt2dto1d
 
 
 
-function linept(x,y,x1,x2,y1,y2)
+subroutine linept(x,y,x1,x2,y1,y2,xc,yc)
     ! Coordinates of line point closest to target point
     implicit none
     real(kind=8),intent(in) :: x,y,x1,x2,y1,y2
-    real(kind=8) :: linept(2)
+    real(kind=8), intent(out) :: xc, yc
     real(kind=8) :: dx, dy
     dy = y2-y1
     dx = x2-x1
-    linept(1) = x1 + (dx**2*(x-x1) + dx*dy*(y-y1))/(dx**2+dy**2)
-    linept(2) = y + (x-linept(1))*dy/dx
-end function linept
+    xc = x1 + (dx**2*(x-x1) + dx*dy*(y-y1))/(dx**2+dy**2)
+    yc = y + (x-xc)*dy/dx
+end subroutine linept
+
+subroutine linepts(xx,yy,x1,x2,y1,y2,xxc,yyc,np)
+    ! Coordinates of line points closest to target points
+    implicit none
+    integer, intent(in) :: np
+    real(kind=8),intent(in) :: xx(np),yy(np),x1,x2,y1,y2
+    real(kind=8), intent(out) :: xxc(np), yyc(np)
+    integer :: i
+    do i=1,np
+        call linept(xx(i),yy(i),x1,x2,y1,y2,xxc(i),yyc(i))
+    enddo
+end subroutine linepts
+
+subroutine lineptss(xx,yy,xx1,xx2,yy1,yy2,xxc,yyc,np)
+    ! Coordinates of lines points closest to target points
+    implicit none
+    integer, intent(in) :: np
+    real(kind=8),intent(in) :: xx(np),yy(np),xx1(np),xx2(np),yy1(np),yy2(np)
+    real(kind=8), intent(out) :: xxc(np), yyc(np)
+    integer :: i
+    do i=1,np
+        call linept(xx(i),yy(i),xx1(np),xx2(np),yy1(np),yy2(np),xxc(i),yyc(i))
+    enddo
+end subroutine lineptss
 
 !function dstpt2line(x,y,x1,x2,y1,y2)
 !    ! Distance from a point to a line
@@ -2051,6 +2075,23 @@ subroutine curv2rect(x1,x2,x3,x4,y1,y2,y3,y4,x,y,p,q)
     endif
 
 end subroutine curv2rect
+
+subroutine curv2rectss(xx1,xx2,xx3,xx4,yy1,yy2,yy3,yy4,xx,yy,pp,qq,np)
+    ! Same as curv2rel but for a definite and same number of quadrangles and points
+    implicit none
+
+    integer, intent(in) :: np
+    real(kind=8), intent(in), dimension(np) :: xx1,xx2,xx3,xx4,yy1,yy2,yy3,yy4,xx,yy
+    real(kind=8), intent(out), dimension(np) :: pp,qq
+    integer :: i
+    !$OMP PARALLEL DO PRIVATE(i)
+    !$& SHARED(xx1,xx2,xx3,xx4,yy1,yy2,yy3,yy4,xx,yy,pp,qq,np)
+    do i=1,np
+        call curv2rect(xx1(i),xx2(i),xx3(i),xx4(i), &
+            & yy1(i),yy2(i),yy3(i),yy4(i),xx(i),yy(i),pp(i),qq(i))
+    enddo
+    !$OMP END PARALLEL DO
+end subroutine curv2rectss
 
 subroutine curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
     ! Convert a series of absolute coordinates to coordinates relative to
@@ -2265,7 +2306,7 @@ subroutine dstwgt2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
             dx0 = a
             dx1 = 1d0-a
             dy0 = b
-            dx1 = 1d0-b
+            dy1 = 1d0-b
             dd = (/sqrt(dx0**2+dy0**2),sqrt(dx0**2+dy1**2),&
             &      sqrt(dx1**2+dy0**2),sqrt(dx1**2+dy1**2)/)
 
