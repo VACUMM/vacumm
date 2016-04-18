@@ -2008,16 +2008,41 @@ subroutine lineptss(xx,yy,xx1,xx2,yy1,yy2,xxc,yyc,np)
     enddo
 end subroutine lineptss
 
-!function dstpt2line(x,y,x1,x2,y1,y2)
-!    ! Distance from a point to a line
-!    real(kind=8),intent(in) :: x,y,x1,x2,y1,y2
-!    real(kind=8) :: xy(2), dstpt2dt
-!    xy = linept(x,y,x1,x2,y1,y2)
-!    dstpt2line = sqrt((xy(1)-x)**2+(xy(2)-y)**2)
-!end function dstpt2line
+subroutine dstpt2line(x,y,x1,x2,y1,y2,d)
+    ! Distance from a point to a line
+    real(kind=8),intent(in) :: x,y,x1,x2,y1,y2
+    real(kind=8), intent(out) :: d
+    real(kind=8) :: xc,yc
+    call linept(x,y,x1,x2,y1,y2,xc,yc)
+    d = sqrt((xc-x)**2+(yc-y)**2)
+end subroutine dstpt2line
+
+subroutine dstpts2line(x,y,x1,x2,y1,y2,d,np)
+    ! Distance from points to a line
+    real(kind=8),intent(in) :: x(np),y(np),x1,x2,y1,y2
+    real(kind=8), intent(out) :: d(np)
+    real(kind=8) :: xc(np),yc(np)
+    call linepts(x,y,x1,x2,y1,y2,xc,yc,np)
+    d = sqrt((xc-x)**2+(yc-y)**2)
+end subroutine dstpts2line
+
+subroutine dstpts2lines(x,y,x1,x2,y1,y2,d,np)
+    ! Distance from points to lines
+    real(kind=8),intent(in),dimension(np) :: x,y,x1,x2,y1,y2
+    real(kind=8), intent(out) :: d(np)
+    real(kind=8) :: xc(np),yc(np)
+    call lineptss(x,y,x1,x2,y1,y2,xc,yc,np)
+    d = sqrt((xc-x)**2+(yc-y)**2)
+end subroutine dstpts2lines
 
 subroutine curv2rect(x1,x2,x3,x4,y1,y2,y3,y4,x,y,p,q)
     ! Coordinate transform from curvilinear to rectangular
+    !
+    ! Cell shape:
+    !
+    !   2 - 3
+    !   |   |
+    !   1 - 4
     !
     !:Source: http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19890018062_1989018062.pdf
 
