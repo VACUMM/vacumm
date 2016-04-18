@@ -43,8 +43,9 @@ __all__ = [
     'kt2ms', 'ms2kt', 'deg2m', 'm2deg', 'ms2bf', 'dms2deg', 'deg2dms',
     'mph2ms', 'ms2mph', 'tometric', 'kel2degc', 'degc2kel',
     'convert_units', 'basic_proj', 'uuconvert',
-    'rad2deg', 'deg2rad', 'vect2mod', 'vect2dir', 'vect2moddir', 'moddir2vectx', 'moddir2vecty', 'moddir2vectxy',
-    'strfsize', 'strpsize' 'uuconvert',
+    'rad2deg', 'deg2rad', 'vect2mod', 'vect2dir', 'vect2moddir',
+    'moddir2vectx', 'moddir2vecty', 'moddir2vectxy',
+    'strfsize', 'strpsize', 'uuconvert',
 ]
 
 def uuconvert(value, oldunits, newunits):
