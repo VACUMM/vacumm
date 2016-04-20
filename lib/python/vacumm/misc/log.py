@@ -324,26 +324,39 @@ class Logger(logging.getLoggerClass()):
         # Setup stream handler (console)?
         self.console_handler = None
         if console:
-            if isinstance(console, logging.Handler): self.console_handler = console
-            elif isinstance(console, (list, tuple)): self.console_handler = self.new_stream_handler(*console)
-            elif isinstance(console, dict): self.console_handler = self.new_stream_handler(**console)
-            else: self.console_handler = self.new_stream_handler(
-                colorize=colorize if colorize is not None else self.default_colorize,
-                format=self.default_format['console'],
-                date_format=self.default_date_format['console'])
+            if isinstance(console, logging.Handler):
+                self.console_handler = console
+            elif isinstance(console, (list, tuple)):
+                self.console_handler = self.new_stream_handler(*console)
+            else:
+                if not isinstance(console, dict):
+                    console = {}
+                console.setdefault('colorize', colorize if colorize is not None else self.default_colorize)
+                console.setdefault('format',  format['console'] if isinstance(format, dict)
+                    and 'console' in format else self.default_format['console'])
+                console.setdefault('date_format',  date_format['console'] if isinstance(format, dict)
+                    and 'console' in date_format else self.default_date_format['console'])
+                self.console_handler = self.new_stream_handler(**console)
             self.add_handler(self.console_handler)
 
         # Setup file handler (logfile) ?
         # This sould be carefully used: 1 file handler = 1 opened file !
         self.file_handler = None
         if logfile:
-            if isinstance(logfile, logging.Handler): self.file_handler = logfile
-            elif isinstance(logfile, (list, tuple)): self.file_handler = self.new_rotating_file_handler(*logfile)
-            elif isinstance(logfile, dict): self.file_handler = self.new_rotating_file_handler(**logfile)
-            else: self.file_handler = self.new_rotating_file_handler(
-                logfile if isinstance(logfile, basestring) else None,
-                format=self.default_format['logfile'],
-                date_format=self.default_date_format['logfile'])
+            if isinstance(logfile, logging.Handler):
+                self.file_handler = logfile
+            elif isinstance(logfile, (list, tuple)):
+                self.file_handler = self.new_rotating_file_handler(*logfile)
+            else:
+                if isinstance(logfile, basestring):
+                    logfile = {'filePath': logfile}
+                if not isinstance(logfile, dict):
+                    logfile = {}
+                logfile.setdefault('format',  format['logfile'] if isinstance(format, dict)
+                    and 'logfile' in format else self.default_format['logfile'])
+                logfile.setdefault('date_format',  date_format['logfile'] if isinstance(format, dict)
+                    and 'logfile' in date_format else self.default_date_format['logfile'])
+                self.file_handler = self.new_rotating_file_handler(**logfile)
             self.add_handler(self.file_handler)
 
         #self.config(name=name, level=level, format=format, date_format=date_format)
@@ -545,8 +558,9 @@ class Logger(logging.getLoggerClass()):
 #       msg = msg.encode('utf-8', 'replace')
 #       return super(self.__class__, self)._log(level, msg, *args, **kwargs)
 
-
-
+    def log(self, level, msg, *args, **kwargs):
+        level = get_int_level(level)
+        return super(self.__class__, self).log(level, msg, *args, **kwargs)
 
     @classmethod
     def set_default_level(cls, level, filter=False):
