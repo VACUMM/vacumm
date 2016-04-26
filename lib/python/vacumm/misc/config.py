@@ -752,7 +752,7 @@ class ConfigManager(object):
                 cfgfileopt = (cfgfileopt,)
             parser.add_argument(*cfgfileopt,
                 dest="cfgfile", help='user configuration file that overrides defauts'
-                    '[default: "%(default)s"]', default=cfgfile)
+                    ' [default: "%(default)s"]', default=cfgfile)
 
         # Default config
         defaults = self.defaults()

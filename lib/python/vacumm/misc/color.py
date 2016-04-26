@@ -2255,7 +2255,6 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), fig=No
     if sa:
         fig.subplots_adjust(**sa)
 
-
     # Save and show
     if savefig is not None:
         fig.savefig(savefig, **kwfilter(kwargs, 'savefig'))
@@ -2263,7 +2262,8 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), fig=No
         from plot import savefigs as Savefigs
         Savefigs(savefigs, fig=fig, **kwfilter(kwargs, 'savefigs'))
     if show:
-        fig.show()
+        #fig.show()
+        P.show()
     if close:
         P.close(fig)
 
