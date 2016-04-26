@@ -53,7 +53,7 @@ def write_helps(app):
         if not err is not None: continue
 
         # Write to file
-        dirname = os.path.dirname(script)
+        dirname = os.path.dirname(rstfile)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
         f = open(rstfile, 'w')
