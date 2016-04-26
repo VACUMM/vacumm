@@ -82,12 +82,12 @@ from vacumm.misc.atime import (
     daily, daily_bounds, day_of_the_year, unit_type, toc,
     hourly, hourly_bounds, hourly_exact, monthly, tsel2slice,
     reduce, yearly, are_same_units, ascii_to_num, detrend, from_utc,
-    plot_dt,
+    plot_dt, strtime,
     selector as time_selector,
     datetime as adatetime,
     add as add_time,
     )
-
+datetime_ = adatetime
 
 from vacumm.misc.bases import (
     psinfo, code_base_name, code_file_name, code_dir_name, describe, Class, Object,
