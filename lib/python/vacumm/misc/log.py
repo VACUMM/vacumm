@@ -597,8 +597,7 @@ class Logger(logging.getLoggerClass()):
 
     def log(self, level, msg, *args, **kwargs):
         level = get_int_level(level)
-        return super().log(level, msg, *args, **kwargs)
-#        return super(self.__class__, self).log(level, msg, *args, **kwargs)
+        return self.__logger_class.log(self, level, msg, *args, **kwargs)
 
     @classmethod
     def set_default_level(cls, level, filter=False):
