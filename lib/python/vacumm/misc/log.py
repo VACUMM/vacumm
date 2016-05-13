@@ -215,8 +215,9 @@ class _Redirector_(object):
         self.func = func
         self.prefix = prefix
     def write(self, buf):
-        for line in buf.rstrip().splitlines():
-            self.func(self.prefix+line.rstrip())
+        self.func(self.prefix+buf.rstrip())
+#        for line in buf.rstrip().splitlines():
+#            self.func(self.prefix+line.rstrip())
     def flush(self):
         pass
 
@@ -371,18 +372,54 @@ class Logger(logging.getLoggerClass()):
         self.instances.add(self)
 
         # Redirections
-        if redirect_warnings:
+        self._redirect_warnings = redirect_warnings
+        self._redirect_stderr = redirect_stderr
+        self._redirect_stdout = redirect_stdout
+        self._redirected_warnings = False
+        self._redirected_stderr = False
+        self._redirected_stdout = False
+        self.start_redirections()
+
+    def start_redirections(self, which='all'):
+        assert which in ['all', 'stdout', 'stderr', 'warnings']
+
+        if self._redirect_warnings and not self._redirected_warnings:
+            self._old_showwarnings = warnings.showwarning
             warnings.showwarning = self.showwarning
-        if redirect_stdout:
-            if not isinstance(redirect_stdout, str):
-                redirect_stdout = 'debug'
-            sys.stdout = _Redirector_(getattr(self, redirect_stdout),
+            self._redirected_warnings = True
+
+        if self._redirect_stdout and not self._redirected_stdout:
+            if not isinstance(self._redirect_stdout, str):
+                self._redirect_stdout = 'debug'
+            self._old_sys_stdout = sys.stdout
+            sys.stdout = _Redirector_(getattr(self, self._redirect_stdout),
                 prefix='STDOUT: ')
-        if redirect_stderr:
-            if not isinstance(redirect_stderr, str):
-                redirect_stderr = 'warning'
-            sys.stderr = _Redirector_(getattr(self, redirect_stderr),
+            self._redirected_stdout = True
+
+        if self._redirect_stderr and not self._redirected_stderr:
+            if not isinstance(self._redirect_stderr, str):
+                self._redirect_stderr = 'warning'
+            self._old_sys_stderr = sys.stderr
+            sys.stderr = _Redirector_(getattr(self, self._redirect_stderr),
                 prefix='STDERR: ')
+            self._redirected_stderr = True
+
+    def stop_redirections(self, which='all'):
+        assert which in ['all', 'stdout', 'stderr', 'warnings']
+
+        if (self._redirect_warnings and which in ['all', 'warnings'] and
+                 self._redirected_warnings):
+            warnings.showwarning = self._old_showwarnings
+            self._redirected_warnings = False
+
+        if (self._redirect_stdout and which in ['all', 'stdout'] and
+                 self._redirected_stdout):
+            sys.stdout = self._old_sys_stdout
+            self._redirected_stdout = False
+        if (self._redirect_stderr and which in ['all', 'stderr'] and
+                 self._redirected_stderr):
+            sys.stderr = self._old_sys_stderr
+            self._redirected_stderr = False
 
     def set_name(self, name):
         self.name = name
@@ -560,7 +597,8 @@ class Logger(logging.getLoggerClass()):
 
     def log(self, level, msg, *args, **kwargs):
         level = get_int_level(level)
-        return super(self.__class__, self).log(level, msg, *args, **kwargs)
+        return super().log(level, msg, *args, **kwargs)
+#        return super(self.__class__, self).log(level, msg, *args, **kwargs)
 
     @classmethod
     def set_default_level(cls, level, filter=False):
