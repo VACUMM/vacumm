@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Installation script"""
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -38,6 +38,7 @@ def configuration(parent_package='',top_path=None):
     config = Configuration('grid', parent_package, top_path)
     config.add_extension('_interp_',  sources=['interp.f90'])
     config.add_data_files('Makefile')
+    config.add_data_files('vacumm.cfg')
     return config
 
 if __name__ == '__main__':
