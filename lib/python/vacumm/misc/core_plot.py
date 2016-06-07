@@ -67,6 +67,9 @@ from matplotlib.transforms import offset_copy
 from mpl_toolkits.basemap import Basemap
 
 from ._ext_plot import DropShadowFilter, FilteredArtistList, GrowFilter
+from .misc import kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts, \
+    auto_scale, zoombox, dict_check_defaults, basic_auto_scale, dict_copy_items, \
+    dict_merge
 from .atime import mpl, comptime, strftime, is_numtime, numtime
 from .axes import check_axes, istime, axis_type, set_order, get_order, merge_orders, \
     check_order, order_match, isaxis
@@ -75,9 +78,7 @@ from .docstrings import docfiller
 from .filters import generic2d
 from .grid import get_axis, meshbounds, meshgrid, var2d
 from .grid.masking import resol_mask
-from .misc import kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts, \
-    auto_scale, zoombox, dict_check_defaults, basic_auto_scale, dict_copy_items, \
-    dict_merge
+from .grid.regridding import shift1d
 from .phys.units import deg2m, tometric, m2deg
 from .remote import OutputWorkFile
 from ..config import get_config_value
@@ -87,7 +88,8 @@ MA = N.ma
 
 
 
-__all__ = ['PlotError','Plot', 'Plot1D', 'Curve', 'Bar', 'Stick', 'Plot2D', 'Map', 'Hov', 'QuiverKey',
+__all__ = ['PlotError','Plot', 'Plot1D', 'Curve', 'Bar', 'Stick',
+    'Plot2D', 'Map', 'Hov', 'QuiverKey',
     'ScalarMappable','AutoDateFormatter2', 'AutoDateLocator2',
     'AutoDateMinorLocator', 'AutoDualDateFormatter', 'DualDateFormatter',
     'MinuteLabel', 'Section', 'twinxy']
@@ -1979,7 +1981,7 @@ class Plot(object):
         :Params:
 
             - **box**: Box limits in the forms ``[xmin,ymin,xmax,ymax]``
-              ``dict(x=(xmin,xmax),y=xmin,xmax)``.
+              ``dict(x=(xmin,xmax),y=(xmin,xmax)``.
             - **color**, optional: Line color of the box.
             - **npts**, optional: Number of points per side
               (useful with special map projections).
@@ -2037,8 +2039,9 @@ class Plot(object):
 
         return o
 
-    def add_arrow(self, x, y, udata,vdata,zorder=150,polar=False,degrees=True,shadow=False, glow=False,
-         quiverkey=False,xyscaler=None, **kwargs):
+    def add_arrow(self, x, y, udata, vdata, zorder=150, polar=False, degrees=True,
+            shadow=False, glow=False, quiverkey=False, xyscaler=None,
+            color=False, **kwargs):
         """Add an arrow to the map using :func:`matplotlib.pyplot.quiver`
 
         :Params:
@@ -2053,8 +2056,9 @@ class Plot(object):
 
         :See also: :func:`matplotlib.pyplot.scatter`
         """
-        udata=N.asarray(udata)
-        vdata=N.asarray(vdata)
+        # Data for arrows
+        udata = MV2.asarray(udata)
+        vdata = MV2.asarray(vdata)
         if polar:
             u, v = udata,vdata
             m = u
@@ -2071,22 +2075,95 @@ class Plot(object):
             udata, vdata = u,v
 
         # Coordinates
-        x = N.asarray(x)
-        y = N.asarray(y)
+        x = _asnum_(x)
+        y = _asnum_(y)
         if xyscaler is None and hasattr(self, 'xyscaler'): xyscaler = self.xyscaler
         if callable(xyscaler):
             x, y = xyscaler(x, y)
+
         # Params
         kwargs.update(zorder=zorder)
         kwqv = kwfilter(kwargs,'quiver')
         kwqvk = kwfilter(kwargs,'quiverkey')
         #dict_copy_items(kwargs, [kwqv],'anim')
-        kwargs=dict_merge(kwargs,kwqv)
+        kwargs = dict_merge(kwargs, kwqv)
+        args = []
+
+        # Color
+        if color is True:
+            color = N.ma.sqrt(u**2+v**2)
+        if isinstance(color, (N.ndarray, list)):
+            args.append(color)
+        elif color is not False and color is not None:
+            kwargs['color'] = color
+
         # Plot
-        o = self.axes.quiver(x, y, udata,vdata,  **kwargs)
+        o = self.axes.quiver(x, y, udata, vdata, *args, **kwargs)
         self.register_obj(o, **kwargs)
-        if quiverkey :
-          self.quiverkey(o,**kwqvk)
+        if quiverkey:
+          self.quiverkey(o, **kwqvk)
+        return o
+
+
+    def quiverkey(self, qv, value, pos=(0.,1.02), text='%(value)g %(units)s',
+            units=None, latex_units=None, **kwargs):
+        """Add a quiver key to the plot
+
+        :Params:
+
+            - **qv**: Results of :func:`~matplotlib.pyplot.quiver`.
+            - **value**: Numeric value for key (used by text).
+            - **pos**, optional: Position of key for arrow .
+            - **text**, optional: Text or format with variables 'value' and 'units'.
+            - **units**, optional: Units for key (used by text).
+            - **latex_units**, optional: Interpret units using latex.
+            - Extra keywords are passed to :func:`~matplotlib.pyplot.quiverkey`.
+        """
+
+        # Value
+        value = get_quiverkey_value(value)
+
+        # Text
+        if units is None:
+            units = self.quiverkey_units
+        elif cdms2.isVariable(units) and  hasattr(units,'units'):
+            units = units.units
+        elif not isinstance(units, basestring):
+            units = ''
+        latex_units = kwargs.pop('tex', None)
+        if latex_units is None: latex_units = self.latex_units
+        if units is None:
+            units = ''
+        if latex_units and not self.is_latex(units):
+            units = '$%s$'%units
+        try:
+            text = text % vars()
+        except:
+            text = '%(value)g' % value
+
+        # Plot
+        pos = kwargs.pop('loc', pos)
+        qvk = self.axes.quiverkey(qv, pos[0], pos[1], value, text, **kwargs)
+        return self.register_obj(qvk, 'quiverkey', **kwargs)
+
+    def get_quiverkey_units(self):
+        """Get :attr:`quiverkey_units`"""
+        units = self.get_obj('quiverkey_units')
+        if units is None and isinstance(self, Plot1D) and self.isset('units'):
+            units = self.units
+        if units is None:
+            units = self.get_units(idata=[-2, -1])
+        return units
+    def set_quiverkey_units(self, value):
+        """Set :attr:`quiverkey_units`"""
+        self.set_axobj('quiverkey_units', value)
+    def del_quiverkey_units(self):
+        """Del :attr:`quiverkey_units`"""
+        self.del_axobj('quiverkey_units')
+    quiverkey_units = property(get_quiverkey_units, set_quiverkey_units,
+        del_quiverkey_units, doc="Units used for quiverkey")
+
+
 
     def add_line(self, extents, zorder=150, shadow=False, glow=False, color='r',
         npts=10, xyscaler=None, **kwargs):
@@ -2180,12 +2257,16 @@ class Plot(object):
         kwgl = kwfilter(kwargs, 'glow')
         dict_copy_items(kwargs, [kwsh, kwgl], 'anim')
         size = kwargs.pop('s', size)
+        if size is not None:
+            kwargs['s'] = size
         color = kwargs.pop('c', color)
+        if color is not None:
+            kwargs['c'] = size
         #kwsh.setdefault('zorder', zorder-0.01)
         #kwgl.setdefault('zorder', zorder-0.01)
 
         # Plot
-        o = self.axes.scatter(x, y, s=size, c=color, **kwargs)
+        o = self.axes.scatter(x, y, **kwargs)
         self.register_obj(o, **kwargs)
 
         # Effects
@@ -2904,7 +2985,9 @@ class Plot(object):
             elif not isinstance(idata, (list, tuple)):
                 idata = [idata]
             for i in idata:
-                if hasattr(self.data[i], att):
+                if i<0:
+                    i = len(self.data)+i
+                if len(self.data)>i and hasattr(self.data[i], att):
                     return getattr(self.data[i], att)
             return
 
@@ -3414,7 +3497,7 @@ class ScalarMappable:
                 - ``"degrees"``: Use :func:`~vacumm.misc.misc.geo_scale`.
                 - `A callable: Use it to auto scale. It should accept
                   the follwing keywords: vmin, vmax, nmax, keepminmax.
-             
+
         """
         # Cache
         levels = self.get_obj('levels')
@@ -4036,8 +4119,10 @@ class Bar(Plot1D):
 
 class QuiverKey:
 
-    def quiverkey(self, qv, pos=(0.,1.02), text='%(value)g %(units)s', value=None, units=None, latex_units=None, **kwargs):
-        """Add a quiver key to the plot using
+    def quiverkey(self, qv, value=None, **kwargs):
+        """Add a quiver key to the plot
+
+        See :meth:`Plot.quiverkey` for arguments.
 
         :Params:
 
@@ -4052,53 +4137,11 @@ class QuiverKey:
         # Value
         if value is None:
             m,u,v = self.get_data()
-            m = N.ma.sqrt(u**2+v**2)
-            v10 = N.ma.log10(m.max()) ; del u,v,m
-            if ((v10+1) % 1) > (N.log10(.5) % 1):
-                v10 = N.ma.ceil(v10)
-            else:
-                v10 = N.ma.floor(v10)
-            value = 10.**v10
+            value = get_quiverkey_value((u, v))
+            del m, u, v
 
-        # Text
-        if units is None:
-            units = self.quiverkey_units
-        elif cdms2.isVariable(units) and  hasattr(units,'units'):
-            units = units.units
-        elif not isinstance(units, basestring):
-            units = ''
-        latex_units = kwargs.pop('tex', None)
-        if latex_units is None: latex_units = self.latex_units
-        if units is None:
-            units = ''
-        if latex_units and not self.is_latex(units):
-            units = '$%s$'%units
-        try:
-            text = text % vars()
-        except:
-            text = '%(value)g' % value
+        return Plot.quiverkey(self, qv, value, **kwargs)
 
-        # Plot
-        pos = kwargs.pop('loc', pos)
-        qvk = self.axes.quiverkey(qv, pos[0], pos[1], value, text, **kwargs)
-        return self.register_obj(qvk, 'quiverkey', **kwargs)
-
-    def get_quiverkey_units(self):
-        """Get :attr:`quiverkey_units`"""
-        units = self.get_obj('quiverkey_units')
-        if units is None and isinstance(self, Plot1D) and self.isset('units'):
-            units = self.units
-        if units is None:
-            units = self.get_units(idata=[-2, -1])
-        return units
-    def set_quiverkey_units(self, value):
-        """Set :attr:`quiverkey_units`"""
-        self.set_axobj('quiverkey_units', value)
-    def del_quiverkey_units(self):
-        """Del :attr:`quiverkey_units`"""
-        self.del_axobj('quiverkey_units')
-    quiverkey_units = property(get_quiverkey_units, set_quiverkey_units,
-        del_quiverkey_units, doc="Units used for quiverkey")
 
 class Stick(ScalarMappable, Curve, QuiverKey):
     """Class for makeing a stick plot (vectors on a line)
@@ -4344,7 +4387,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
     rank = 2
     _plotter = None
 
-    def _set_axes_(self, xaxis=None, yaxis=None, xatts=None, yatts=None, **kwargs):
+    def _set_axes_(self, xaxis=None, yaxis=None, xatts=None, yatts=None,
+            x2d=None, y2d=None, x2db=None, y2db=None, **kwargs):
         """Change axes and their attributes of the variables
 
         The main goal is to deal 2D plots on special grids where the grid
@@ -4355,6 +4399,9 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
 
             - **x/yaxis**, optional: 1D or 2D array or axes to use for axis,
               instead of internal axes of input variables.
+            - **x/y2d**, optional: (ny,nx) array of cell center coordinates.
+            - **x/y2db**, optional: (ny+1,nx+1) array of cell bounds coordinates
+              used in pcolor like plots.
             - **x/yatts**, optional: Dictionnary of alter given ``x/yaxis``.
 
         """
@@ -4400,10 +4447,36 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         xdata = self.get_xdata(masked=False)
         ydata = self.get_ydata(masked=False)
         # - centers
-        self.x2d, self.y2d = meshgrid(xdata, ydata)
+        if x2d is None or y2d is None:
+            self.x2d, self.y2d = meshgrid(xdata, ydata)
+        if x2d is not None:
+            self.x2d = x2d
+        if y2d is not None:
+            self.y2d = y2d
         self.x2dr,self.y2dr = self.x2d, self.y2d # save raw values
         # - bounds
-        self.x2db, self.y2db = meshbounds(xdata, ydata)
+        if x2db is None or y2db is None:
+            self.x2db, self.y2db = meshbounds(xdata, ydata)
+        if x2db is not None:
+            if x2db.ndim==1:
+                self.x2db = N.resize(x2db, (self.x2d.shape[0]+1, x2db.shape[0]))
+            elif x2db.shape[0] == self.x2d.shape[0]:
+                self.x2db = N.zeros((self.x2d.shape[0]+1, self.x2d.shape[1]+1))
+                self.x2db[1:] = shift1d(x2db, 1, axis=0, mode='same')
+                self.x2db[:-1] += shift1d(x2db, -1, axis=0, mode='same')
+                self.x2db[1:-1] *= 0.5
+            else:
+                self.x2db = x2db
+        if y2db is not None:
+            if y2db.ndim==1:
+                self.y2db = N.resize(y2db, (self.y2d.shape[1]+1, y2db.shape[0])).T
+            elif y2db.shape[1] == self.y2d.shape[1]:
+                self.y2db = N.zeros((self.y2d.shape[0]+1, self.y2d.shape[1]+1))
+                self.y2db[:, 1:] = shift1d(y2db, 1, axis=1, mode='same')
+                self.y2db[:, :-1] += shift1d(y2db, -1, axis=1, mode='same')
+                self.y2db[:, 1:-1] *= 0.5
+            else:
+                self.y2db = y2db
         self.x2dbr,self.y2dbr = self.x2db, self.y2db # save raw values
 
     def load_data(self, data, **kwargs):
@@ -4808,11 +4881,11 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             if clglow: self.add_shadow(cl, **kwclgl)
 
     def plot_quiver(self, zorder=None, quiverkey=True, barbs=False,
-        shadow=False, glow=False, quiver_cmap=None,
-        quiver_vmin=None, quiver_vmax=None,
-        quiver_samp=None, quiver_xsamp=None, quiver_ysamp=None, quiver_res=None,
-        quiver_relres=None, quiver_xres=None, quiver_xrelres=None, quiver_yres=None,
-        quiver_yrelres=None, quiver_res_scaler=None, quiver_nauto=None, **kwargs):
+            shadow=False, glow=False, quiver_cmap=None,
+            quiver_vmin=None, quiver_vmax=None,
+            quiver_samp=None, quiver_xsamp=None, quiver_ysamp=None, quiver_res=None,
+            quiver_relres=None, quiver_xres=None, quiver_xrelres=None, quiver_yres=None,
+            quiver_yrelres=None, quiver_res_scaler=None, quiver_nauto=None, **kwargs):
         """Plot arrows
 
         You can undersample arrows using direct undersampling (parameters
@@ -5988,6 +6061,18 @@ def get_axis_scale(axis, type=None):
         units
         #NOT FINISHED
 
+def get_quiverkey_value(data):
+    """Get a decent value for a quiver key"""
+    if isinstance(data, tuple):
+        data = N.ma.sqrt(data[0]**2+data[1]**2)
+    vmax = N.ma.max(data) ; del data
+    v10 = N.ma.log10(vmax)
+    if ((v10+1) % 1) > (N.log10(.5) % 1):
+        v10 = N.ma.ceil(v10)
+    else:
+        v10 = N.ma.floor(v10)
+    return 10.**v10
+
 
 ############################################################
 ## Locators
@@ -6527,7 +6612,7 @@ class MinuteLabel:
     def __init__(self, m, zonal=True, **kwargs):
         bfdeg = kwargs.pop('bfdeg', None)
         if not isinstance(m, Basemap) and (bfdeg is None or bfdeg=='auto'):
-            bfdeg = (N.asarray(m)%1).ptp()!=0
+            bfdeg = False if N.size(m)==0 else (N.asarray(m)%1).ptp()!=0
         if zonal:
             if isinstance(m, Basemap):
                 auto_minutes =  int(m.urcrnrlon) != int(m.llcrnrlon)
