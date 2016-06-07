@@ -69,7 +69,7 @@ from .core_plot import dict_aliases, latlab, add_shadow, get_axis, AutoDualDateF
 from .core_plot import add_glow, add_shadow, add_agg_filter, hlitvs, AutoDateFormatter2,  \
     AutoDateLocator2, AutoDateMinorLocator, AutoDualDateFormatter, add_compass, \
     add_right_label, add_left_label, add_top_label, add_bottom_label
-from .core_plot import add_param_label
+from .core_plot import add_param_label, get_quiverkey_value
 from .docstrings import docfill
 from .grid import regridding
 from .grid.basemap import gshhs_reslist, gshhs_autores, cache_map, cached_map
@@ -93,7 +93,8 @@ __all__ = [ 'traj', 'ellipsis',
     'minimap', 'add_map_point', 'add_map_line', 'add_map_lines', 'add_map_box',  'rshpere_wgs84',
     'add_glow', 'add_shadow', 'add_agg_filter', 'plot2d', 'hlitvs',
     'add_compass', 'add_param_label', 'dtarget', 'add_map_places',
-    'add_right_label', 'add_left_label', 'add_top_label', 'add_bottom_label']
+    'add_right_label', 'add_left_label', 'add_top_label', 'add_bottom_label',
+    'get_quiverkey_value']
 __all__.sort()
 
 
