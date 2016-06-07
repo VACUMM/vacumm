@@ -5205,6 +5205,16 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         else:
             self.plot_streamplot(**kwargs)
 
+    def add_grid(self, **kwargs):
+        """Add the coordinates as a grid with centers and corners
+
+        See :func:`~vacumm.misc.plot.add_grid` for parameters.
+        """
+        from .plot import add_grid
+        kwargs.update(xcorners=self.x2db, ycorners=self.y2db)
+        return self.register_obj(add_grid((self.x2d, self.y2d), **kwargs), 'grid')
+
+
 class Hov(Plot2D):
 
     _order = ['zT', 'Tx', 'yT', 'T-', '-T']
