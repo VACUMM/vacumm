@@ -76,18 +76,20 @@ from vacumm.misc.atime import (
     time_split, time_split_nmax, to_utc, tz_to_tz, utc_to_paris, paris_to_utc,
     lindates, ch_units, add_margin, round_date, midnight_date, midnight_interval,
     mpl, tic, toc, pat2freq, pat2glob, has_time_pattern,
-    is_interval, is_time, is_axistime, is_cdtime, is_datetime, is_in_range,
+    is_interval, is_time, is_axistime, is_cdtime, is_datetime, is_in_time_interval,
     is_numtime, is_strtime, itv_intersect, itv_union, julday,
     are_valid_units, SpecialDateFormatter, check_range,
     daily, daily_bounds, day_of_the_year, unit_type, toc,
     hourly, hourly_bounds, hourly_exact, monthly, tsel2slice,
     reduce, yearly, are_same_units, ascii_to_num, detrend, from_utc,
+    time_selector, selector, filter_time_selector,
     plot_dt, strtime,
-    selector as time_selector,
     datetime as adatetime,
-    add as add_time,
+    add,
     )
 datetime_ = adatetime
+add_time = add
+is_time_interval = is_interval
 
 from vacumm.misc.bases import (
     psinfo, code_base_name, code_file_name, code_dir_name, describe, Class, Object,
@@ -114,7 +116,8 @@ from vacumm.misc.filters import (
 
 from vacumm.misc.remote import InputWorkFiles, OutputWorkFile
 
-from vacumm.misc.log import Logger
+from vacumm.misc.log import (Logger, ColoredStreamHandler, LoggerAdapter,
+    StreamLogWrapper)
 
 from vacumm.misc.config import (ConfigManager, cfgargparse, ConfigException,
     ValidationWarning, cfg2rst, cfgoptparse, filter_section, get_secnames,
@@ -140,6 +143,8 @@ from vacumm.misc.file import (
 
 from vacumm.misc.namelist import Namelist
 
+from vacumm.misc.xml import (XmlConfig, XmlConfigDict, XmlConfigList)
+
 # - plot
 
 from vacumm.misc.plot import (
@@ -149,11 +154,16 @@ from vacumm.misc.plot import (
     add_logo, add_left_label, add_right_label, add_top_label, add_bottom_label,
     ellipsis, get_cls, hldays, rotate_xlabels, rotate_ylabels,
     scale_xlim, scale_ylim, wedge, set_major_locator, set_minor_locator,
-    xdate, ydate,
+    xdate, ydate, get_quiverkey_value,
     )
+curve = curve2
+map = map2
+hov = hov2
+stick = stick2
+section = section2
 
 from vacumm.misc.color import (
-    plot_cmap, show_cmap, get_cmap, simple_colors,
+    plot_cmap, show_cmap, get_cmap, simple_colors, RGB, RGBA,
     cmap_srs, Scalar2RGB, darken, whiten, cmaps_mpl,
     cmap_gmt, cmaps_registered, cmaps_vacumm, print_cmaps_gmt, plot_cmaps,
     anamorph_cmap, discretize_cmap, StepsNorm,
@@ -191,7 +201,8 @@ from vacumm.misc.grid.regridding import (
     )
 
 from vacumm.misc.grid.basemap import (
-    merc, create_map, get_proj, reset_cache
+    merc, create_map, get_proj, reset_cache, gshhs_autores, GSHHS_RESLIST,
+    RSHPERE_WGS84
     )
 
 from vacumm.misc.grid.masking import (
