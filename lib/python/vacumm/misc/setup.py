@@ -42,6 +42,8 @@ def configuration(parent_package='',top_path=None):
 #   config.add_subpackage('easyPypar')
     config.add_data_files('vacumm.cfg')
     config.add_data_files('cpt/*')
+    config.add_extension('_interp_',  sources=['interp.f90'])
+    config.add_data_files('Makefile')
     return config
 
 if __name__ == '__main__':

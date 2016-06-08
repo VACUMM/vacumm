@@ -142,7 +142,7 @@ def clean_cache(mapdir=None, maxsize=None):
         mapdir = os.path.join(get_configdir(), 'basemap', 'cached_maps')
     cache_size = dirsize(mapdir)
     if maxsize is None:
-        maxsize = eval(vacumm.config.get_config_value('vacumm.misc.grid.basemap', 'max_cache_size'))
+        maxsize = eval(vacumm.config.get_config_value('vacumm.misc.basemap', 'max_cache_size'))
     if cache_size>maxsize:
         files = [os.path.join(mapdir, ff) for ff in os.listdir(mapdir)]
         files.sort(cmp=lambda f1, f2: cmp(os.stat(f1)[8], os.stat(f2)[8]))
@@ -544,7 +544,7 @@ def get_proj(gg=None, proj=None, **kwargs):
     ymax = min(ymax, 89.99)
     ymin = max(ymin, -89.99)
     if not isinstance(proj, str):
-        proj = vacumm.config.get_config_value('vacumm.misc.grid.basemap', 'proj')
+        proj = vacumm.config.get_config_value('vacumm.misc.basemap', 'proj')
     vcm.dict_check_defaults(projparams, R=vcpc.R, units='m',
         proj=proj,
         lat_ts = N.median(y) if len(y)>10 else N.mean(y),
