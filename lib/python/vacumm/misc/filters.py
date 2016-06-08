@@ -342,8 +342,6 @@ def generic2d(data, weights, mask='same', copy=True):
     elif datan.ndim == 2:
         datan.shape = (1,) + datan.shape[-2:]
     ww.shape = datan.shape
-    if data.mask is not MV2.nomask:
-        one3d = N.ones(datan.shape)
     one2d = N.ones(datan.shape[-2:])
 
     # Filter
@@ -354,11 +352,13 @@ def generic2d(data, weights, mask='same', copy=True):
             ww[i] = scipy.signal.convolve2d(one2d, weights, **kwf)
         else:
             ww[i] = scipy.signal.convolve2d(ww[i], weights, **kwf)
-            one3d[i] = scipy.signal.convolve2d(one2d, weights, **kwf)
+    if data.mask is not  MV2.nomask:
+        one3d = scipy.signal.convolve2d(one2d, weights, **kwf)
+        one3d = N.resize(one3d, datan.shape)
     bad = ww==0
     ww[bad]=1.
     datan[:] = N.where(bad, datan, datan/ww)
-    ww[bad]==0
+    ww[bad]=0
 #    del bad
 
     # Set
@@ -379,7 +379,7 @@ def generic2d(data, weights, mask='same', copy=True):
                 mask = 0.
             else:
                 mask = float(mask)
-            bad |= (ww/one3d)<(1-mask)
+            bad |= (ww/one3d) < (1-mask)
         datao[:] = N.ma.masked_where(bad, datan, copy=False)
         del ww, one3d
     else:
@@ -489,19 +489,36 @@ def shapiro2d_old(data,**kwargs):
         shap[:, i] = data[:, i]
     return shap
 
-def gaussian2d(data,nxw,nyw=None,**kwargs):
+def gaussian2d(data, nxw, nyw=None, sxw=1/3., syw=1/3., rmax=3., **kwargs):
     """Gaussian 2D filter
 
     - **data**: Data array
     - **nxw**: Size of gaussian weights array along X (and Y if nyw not given)
     - *nyw*: Size of gaussian weights array along Y [default: nxw]
+    - *sxw*: Standard deviation of the gaussian distribution along X.
+      If <1, its size is relative to nxw. If > 1, it is directly expressed in grid
+      steps.
+    - *syw*: Same as sxw for Y direction.
+    - *rmax*: Distance relative to sqrt(sxw**2+syw**2) after with weights are
+      nullified.
     - Other keywords are passed to :func:`generic2d`
     """
     if nyw is None: nyw = nxw
     assert nxw % 2 == 1 and nyw % 2 == 1, 'nxw and nyw must be odd numbers'
-    tc = data.dtype.char
-    xx,yy = meshgrid(N.arange(nxw)-nxw/2.,N.arange(nyw)-nxw/2.)
-    return generic2d(data,N.exp(-(xx**2/nxw**2+yy**2/nyw**2)),**kwargs)
+    assert sxw > 0 and syw > 0,  'sxw and syw must be positive'
+
+    xx,yy = meshgrid(N.arange(nxw)-nxw/2, N.arange(nyw)-nxw/2)
+
+    if sxw < 1:
+        sxw *= nxw/2
+    if syw < 1:
+        syw *= nyw/2
+
+    weights = N.exp(-(xx**2/sxw**2 + yy**2/syw**2))
+
+    weights[weights<N.exp(-rmax**2)] = 0.
+
+    return generic2d(data, weights, **kwargs)
 
 def deriv(data, axis=0, fast=True, fill_value=None, physical=True, lat=None):
     """Derivative along a given axis

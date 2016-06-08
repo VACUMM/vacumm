@@ -305,11 +305,12 @@ def basic_auto_scale(vmin,vmax,nmax=7,steps=[1,2,2.5,5,10],geo=False,minutes=Fal
     from matplotlib.ticker import MaxNLocator
 
     if geo:
+        mn = 1./60
         if (vmax-vmin) > 50.:
             steps = [1,2,3,6, 10]
         elif (vmax-vmin) > 3.:
             steps = [1,2,2.5,3,5,10]
-        elif minutes:
+        elif minutes and vmax//mn != vmin//mn:
 #           # Minimal range
 #           if (vmax-vmin) < 1:
 #               vmax -= .5/60.
@@ -1971,8 +1972,8 @@ def numod(*vv):
     return nm
 
 
-def checkdir(path, asfile=None):
-    """Make sure that a directory exists
+def checkdir(path, asfile=None, chmod=None):
+    """Make sure that a directory exists and has right access
 
     :Params:
 
@@ -1992,4 +1993,6 @@ def checkdir(path, asfile=None):
         os.makedirs(path)
     elif not os.path.isdir(path):
         raise VACUMMError("Path exists but is not a directory: {}".format(path))
+    if chmod is not None:
+        os.chmod(path, chmod)
     return path

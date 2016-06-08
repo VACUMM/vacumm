@@ -2255,7 +2255,6 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), fig=No
     if sa:
         fig.subplots_adjust(**sa)
 
-
     # Save and show
     if savefig is not None:
         fig.savefig(savefig, **kwfilter(kwargs, 'savefig'))
@@ -2263,7 +2262,8 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), fig=No
         from plot import savefigs as Savefigs
         Savefigs(savefigs, fig=fig, **kwfilter(kwargs, 'savefigs'))
     if show:
-        fig.show()
+        #fig.show()
+        P.show()
     if close:
         P.close(fig)
 
@@ -2628,7 +2628,7 @@ class StepsNorm(Normalize):
 
     See tutorial :ref:`user.tut.misc.plot.advanced.stepsnorm`
     """
-    def __init__(self, levels, log=False, **kwargs):
+    def __init__(self, levels, log=False, masked=True, **kwargs):
         levels = N.array(levels)
         Normalize.__init__(self, **kwargs)
         if self.vmin is None:
@@ -2642,6 +2642,7 @@ class StepsNorm(Normalize):
             raise ValueError("minvalue must be less than or equal to maxvalue")
         elif self.log and self.vmin <= 0.:
             raise ValueError("minvalue must be greater than 0 when using log scale")
+        self._masked = masked
 
 
     @staticmethod
@@ -2685,6 +2686,7 @@ class StepsNorm(Normalize):
         val = result.copy()
         self.autoscale_None(result)
         vmin, vmax = self.vmin, self.vmax
+        mask = ma.getmaskarray(val)
 
         # if theses 4 lines are not present, color of the 2D scalar field
         # in map2 is black for the values whose range is over the max value in colorbar
@@ -2698,7 +2700,6 @@ class StepsNorm(Normalize):
             result.fill(0.)
         else:
             if clip:
-                mask = ma.getmask(val)
                 result = ma.array(N.clip(val.filled(vmax), vmin, vmax),
                     mask=mask)
             if self.log and N.any(self.levels<=0):
@@ -2738,12 +2739,16 @@ class StepsNorm(Normalize):
             result[:] = ma.where(val<lev0, p0 + (p0-p1)*(val-lev0)/(lev0-lev1), result)
             result[N.isneginf(val)] = -N.inf
 
+        if self._masked:
+            result[mask] = N.ma.masked
+
         if is_scalar:
             result = result[0]
         return result
 
     def inverse(self, pos):
         result, is_scalar = self.process_value(pos)
+        mask = N.ma.getmaskarray(result)
         pos = result.copy()
         if self.vmin==self.vmax:
             result.fill(0)
@@ -2784,6 +2789,9 @@ class StepsNorm(Normalize):
             result[:] = ma.where(pos<p0, lev0 + (lev0-lev1)*(pos-p0)/(p0-p1), result)
             result[N.isneginf(pos)] = -N.inf
 
+
+        if self._masked:
+            result[mask] = N.ma.masked
 
         if is_scalar:
             result = result[0]

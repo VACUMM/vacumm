@@ -65,19 +65,20 @@ JULIANDAY_TIME_UNITS_CNES = 'days since 1950-01-01'
 JULIANDAY_TIME_UNITS_NASA = 'days since 1958-01-01'
 
 
-__all__ = ['STR_UNIT_TYPES','RE_SPLIT_DATE','now', 'add', 'axis_add',
-'mpl', 'are_same_units', 'are_valid_units', 'ch_units', 'comptime', 'reltime', 'datetime',
-'is_cdtime', 'is_reltime', 'is_comptime', 'is_datetime', 'check_range', 'is_in_range',
-'num_to_ascii', 'Gaps', 'unit_type', 'get_dt', 'compress', 'plot_dt', 'reduce', 'yearly',
-'monthly', 'hourly', 'daily', 'hourly_exact', 'trend', 'detrend', 'strftime', 'strptime',
-'tz_to_tz', 'from_utc', 'to_utc', 'paris_to_utc', 'DateSorter', 'SpecialDateFormatter',
-'interp', 'is_time', 'selector', 'round_date', 'Intervals', 'utc_to_paris', 'ascii_to_num',
-'lindates', 'itv_intersect', 'itv_union','day_of_the_year', 'pat2freq',  'strtime',
-'is_strtime', 'time_type', 'is_axistime', 'notz',  'IterDates', 'numtime',  'is_numtime',
-'pat2glob', 'midnight_date', 'midnight_interval','reduce_old', 'daily_bounds',
-'hourly_bounds', 'time_split', 'time_split_nmax', 'add_margin', 'fixcomptime',
-'is_interval', 'has_time_pattern', 'tsel2slice', 'time_selector', 'tic', 'toc',
-'julday']
+__all__ = ['STR_UNIT_TYPES','RE_SPLIT_DATE','now', 'add', 'axis_add', 'add_time',
+    'mpl', 'are_same_units', 'are_valid_units', 'ch_units', 'comptime', 'reltime', 'datetime',
+    'is_cdtime', 'is_reltime', 'is_comptime', 'is_datetime', 'check_range', 'is_in_time_interval',
+    'num_to_ascii', 'Gaps', 'unit_type', 'get_dt', 'compress', 'plot_dt', 'reduce', 'yearly',
+    'monthly', 'hourly', 'daily', 'hourly_exact', 'trend', 'detrend', 'strftime', 'strptime',
+    'tz_to_tz', 'from_utc', 'to_utc', 'paris_to_utc', 'DateSorter', 'SpecialDateFormatter',
+    'interp', 'is_time', 'round_date', 'Intervals', 'utc_to_paris', 'ascii_to_num',
+    'lindates', 'itv_intersect', 'itv_union','day_of_the_year', 'pat2freq',  'strtime',
+    'is_strtime', 'time_type', 'is_axistime', 'notz',  'IterDates', 'numtime',  'is_numtime',
+    'pat2glob', 'midnight_date', 'midnight_interval','reduce_old', 'daily_bounds',
+    'hourly_bounds', 'time_split', 'time_split_nmax', 'add_margin', 'fixcomptime',
+    'is_interval', 'has_time_pattern', 'tsel2slice', 'tic', 'toc',
+    'filter_time_selector','time_selector', 'selector',
+    'julday']
 
 __all__.sort()
 
@@ -193,7 +194,7 @@ def lindates(first, last, incr, units):
     if last<first: return []
     dates = [first]
     while dates[-1]<last:
-        dates.append(add(dates[-1], incr, units))
+        dates.append(add_time(dates[-1], incr, units))
     if dates[-1]>last: del dates[-1]
     return dates
 
@@ -209,7 +210,7 @@ def now(utc=False):
 
 
 
-def add(mytime, amount, units=None, copy=True):
+def add_time(mytime, amount, units=None, copy=True):
     """Add value to time
 
     :Params:
@@ -221,7 +222,7 @@ def add(mytime, amount, units=None, copy=True):
 
     Example:
 
-        >>> add('2008-02', 3, 'days')
+        >>> add_time('2008-02', 3, 'days')
         '2008-2-4 0:0:0.0'
     """
 
@@ -233,7 +234,7 @@ def add(mytime, amount, units=None, copy=True):
             mytime[:] = mytime[:] + amount
             return mytime
         assert hasattr(mytime,'units'), 'Your time axis must have an "units" attribute'
-        mytime[:] = N.array([add(ct, amount, units).value for ct in mytime.asRelativeTime()])
+        mytime[:] = N.array([add_time(ct, amount, units).value for ct in mytime.asRelativeTime()])
         return mytime
 
     # Handle lists
@@ -280,7 +281,8 @@ def add(mytime, amount, units=None, copy=True):
 
 
 # Obsolete :
-axis_add = add
+add = add_time
+axis_add = add_time
 
 
 
@@ -487,7 +489,7 @@ def _nummode_(nummode):
         return nummode
     raise VACUMMError('nummode must be either a valid time units'
         ' string, or within: '+', '.join(valid_nummodes))
-        
+
 def comptime(mytime, nummode='mpl'):
     """Convert to :func:`cdtime.comptime` format
 
@@ -528,7 +530,7 @@ def comptime(mytime, nummode='mpl'):
 
     # Numeric mode
     tunits = _nummode_(nummode)
-    
+
     # Time axis
     if is_axistime(mytime):
         mytime = mytime.asComponentTime()
@@ -954,7 +956,7 @@ def check_range(this_time,time_range):
 
 
 
-def is_in_range(this_time,time_range):
+def is_in_time_interval(this_time,time_range):
     """Check if a time is in specified closed/open range
 
     :Params:
@@ -974,7 +976,7 @@ def is_in_range(this_time,time_range):
 
     return not check_range(this_time,time_range)
 
-
+is_in_range = is_in_time_interval
 
 def num_to_ascii(yyyy=1,mm=1,dd=1,hh=0,mn=0,ss=0):
     """Convert from [yyyy,mm,dd,hh,mn,ss] or component time  or relative time to 'yyyy-mm-dd hh:mn:ss'
@@ -1973,31 +1975,6 @@ def is_interval(interval):
     return True
 
 
-def selector(arg0, arg1=None, bounds=None, round=False, utc=True):
-    """Time selector formatter that returns start date and end date as component times
-
-    :Example:
-
-        >>> selector('2006','2007') # between two dates
-        >>> selector(comptime(1950)) # from a date to now
-        >>> selector(1,'month','co') # from now into the past
-    """
-
-    # Interval
-    if arg1 is None: # from a date to now
-        selection = (comptime(arg0), now(utc))
-    elif isNumberType(arg0): # from now into the past
-        nn = now(utc)
-        selection = (add(nn,-arg0,arg1), nn)
-    else: # between two dates
-        selection = (comptime(arg0), comptime(arg1))
-
-    # Bounds
-    if isinstance(bounds, basestring):
-        selection += (bounds, )
-
-    return selection
-
 def round_date(mydate, round_type, mode='round'):
     """Round a date to year, month, day, hour, minute or second
 
@@ -2018,7 +1995,7 @@ def round_date(mydate, round_type, mode='round'):
     ct = comptime(mydate)
     sdate = str(ct)
     ct0 = cdtime.comptime(*[int(float(ss)) for ss in RE_SPLIT_DATE.split(sdate) if ss != ''][:round_type+1])
-    ct1 = ct0 if ct==ct0 else add(ct0, 1, stype)
+    ct1 = ct0 if ct==ct0 else add_time(ct0, 1, stype)
     units = 'days since '+sdate
     t = ct.torel(units).value
     if mode not in ['floor', 'ceil']: mode = 'round'
@@ -2261,8 +2238,8 @@ def add_margin(interval, lmargin, rmargin=None):
     margins[0][0] = -margins[0][0]
 
     # Apply
-    return type(interval)([add(interval[0], *margins[0]),
-        add(interval[1], *margins[1])]+[bb]*int(bb is not None))
+    return type(interval)([add_time(interval[0], *margins[0]),
+        add_time(interval[1], *margins[1])]+[bb]*int(bb is not None))
 
 
 class Intervals(object):
@@ -2350,7 +2327,7 @@ class Intervals(object):
             raise StopIteration
 
         # Compute end of interval
-        next_date = self.round(add(self._current_date, *self._dt))
+        next_date = self.round(add_time(self._current_date, *self._dt))
 
         # We just passed the end
         if (self._reverse and next_date < self._last_date) or \
@@ -2384,10 +2361,10 @@ class IterDates(object):
 
         >>> from vacumm.misc.atime import IterDates
         >>> for date in IterDates(('2000','2001'),(1,'month')): print date
-        >>> for date in IterDates(('2000','2001'),12,closed=True): print date
+        >>> for date in IterDates(('2000','2001'),12,closed=False): print date
 
     """
-    def __init__(self, time_range, dt, reverse=False, roundto=None, closed=False):
+    def __init__(self, time_range, dt, reverse=False, roundto=None, closed=True):
         # Global range
         start_date = comptime(time_range[0])
         end_date = comptime(time_range[1])
@@ -2436,7 +2413,7 @@ class IterDates(object):
         if self._current_date is None:
             next_date = self._first_date
         else:
-            next_date = self.round(add(self._current_date, *self._dt))
+            next_date = self.round(add_time(self._current_date, *self._dt))
 
         # Iterator is consumed
         if self._oper(next_date, self._last_date):
@@ -2750,11 +2727,37 @@ def tsel2slice_old(taxis, *args, **kwargs):
     if asind: return i,j,k
     return slice(i,j,k)
 
+def time_selector(arg0, arg1=None, bounds=None, round=False, utc=True):
+    """Time selector formatter that returns start date and end date as component times
 
-def time_selector(*args, **kwargs):
-    """Create a pure time selector with all arguments
+    :Example:
 
-    All components that are not recongnized a time selection are not kept.
+        >>> selector('2006','2007') # between two dates
+        >>> selector(comptime(1950)) # from a date to now
+        >>> selector(1,'month','co') # from now into the past
+    """
+
+    # Interval
+    if arg1 is None: # from a date to now
+        selection = (comptime(arg0), now(utc))
+    elif isNumberType(arg0): # from now into the past
+        nn = now(utc)
+        selection = (add_time(nn, -arg0, arg1), nn)
+    else: # between two dates
+        selection = (comptime(arg0), comptime(arg1))
+
+    # Bounds
+    if isinstance(bounds, basestring):
+        selection += (bounds, )
+
+    return selection
+
+
+
+def filter_time_selector(*args, **kwargs):
+    """Create a pure time selector from all arguments
+
+    All components that are not recognized as a time selection are not kept.
 
     :Params:
 
@@ -2794,6 +2797,8 @@ def time_selector(*args, **kwargs):
     filter_selector(selector, ids=ids, copy=False, out=out, keeppos=keeppos)
 
     return selector
+
+selector = filter_time_selector
 
 def tsel2slice(taxis, *args, **kwargs):
     """Convert time selections on a time axis to a valid slice or None

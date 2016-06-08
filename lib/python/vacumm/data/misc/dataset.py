@@ -1166,7 +1166,7 @@ class Dataset(Object):
         kwncr = kwargs.copy()
         kwncr['torect'] = False
         dict_filter_out(kwncr, ['at'], copy=False, mode='start')
-        seltime = time_selector(select, ids=self.get_timeid())
+        seltime = filter_time_selector(select, ids=self.get_timeid())
         try:
             var = ncread_files(self.dataset,  #[d.id for d in self.dataset],
                 ncvarid,
@@ -2171,7 +2171,7 @@ class OceanDataset(OceanSurfaceDataset):
                     if f!=self.dataset[0]: sigma_converter.update_file(f)
                     sel = create_selector(time=t)
                     if selnotime is None:
-                        selnotime = time_selector(selector, ids=nib.timeid, out=True)
+                        selnotime = filter_time_selector(selector, ids=nib.timeid, out=True)
                     sel.refine(selnotime)
                     self.debug('- dataset: %s: sigma: %s, select: %s',
                         os.path.basename(f.id), sigma_converter.__class__.__name__, sel)

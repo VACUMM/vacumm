@@ -210,6 +210,17 @@ class ColoredStreamHandler(logging.StreamHandler):
 
 class Formatter(logging.Formatter): pass
 
+class _Redirector_(object):
+    def __init__(self, func, prefix=''):
+        self.func = func
+        self.prefix = prefix
+    def write(self, buf):
+        self.func(self.prefix+buf.rstrip())
+#        for line in buf.rstrip().splitlines():
+#            self.func(self.prefix+line.rstrip())
+    def flush(self):
+        pass
+
 class Logger(logging.getLoggerClass()):
     '''Logger based on the standard python logging package.'''
 
@@ -243,7 +254,7 @@ class Logger(logging.getLoggerClass()):
             format=default_format, date_format=default_date_format,
             console=True, colorize=True,
             logfile=None,
-
+            redirect_warnings=False, redirect_stdout=False, redirect_stderr=False,
             name_filters=None,
             config=None):
         '''
@@ -257,9 +268,11 @@ class Logger(logging.getLoggerClass()):
             - **console**: add a stream handler (see below)
             - **colorize**: colorize terminal stream handlers if possible
             - **logfile**: add a rotating file handler (see below)
-
-        - **name_filters**: for named based configuration, see :meth:`filter_name`
-        - **config**: see :meth:`config`
+            - **redirect_warnings**, optional: Redirect messages issued by :mod:`warnings.warn`.
+            - **redirect_stdout**, optional: Redirect messages issued to sys.stdout.
+            - **redirect_stderr**, optional: Redirect messages issued to sys.stderr.
+            - **name_filters**: for named based configuration, see :meth:`filter_name`
+            - **config**: see :meth:`config`
 
         Available log levels: **debug, verbose, info, notice, warning, error, critical**.
 
@@ -312,26 +325,39 @@ class Logger(logging.getLoggerClass()):
         # Setup stream handler (console)?
         self.console_handler = None
         if console:
-            if isinstance(console, logging.Handler): self.console_handler = console
-            elif isinstance(console, (list, tuple)): self.console_handler = self.new_stream_handler(*console)
-            elif isinstance(console, dict): self.console_handler = self.new_stream_handler(**console)
-            else: self.console_handler = self.new_stream_handler(
-                colorize=colorize if colorize is not None else self.default_colorize,
-                format=self.default_format['console'],
-                date_format=self.default_date_format['console'])
+            if isinstance(console, logging.Handler):
+                self.console_handler = console
+            elif isinstance(console, (list, tuple)):
+                self.console_handler = self.new_stream_handler(*console)
+            else:
+                if not isinstance(console, dict):
+                    console = {}
+                console.setdefault('colorize', colorize if colorize is not None else self.default_colorize)
+                console.setdefault('format',  format['console'] if isinstance(format, dict)
+                    and 'console' in format else self.default_format['console'])
+                console.setdefault('date_format',  date_format['console'] if isinstance(format, dict)
+                    and 'console' in date_format else self.default_date_format['console'])
+                self.console_handler = self.new_stream_handler(**console)
             self.add_handler(self.console_handler)
 
         # Setup file handler (logfile) ?
         # This sould be carefully used: 1 file handler = 1 opened file !
         self.file_handler = None
         if logfile:
-            if isinstance(logfile, logging.Handler): self.file_handler = logfile
-            elif isinstance(logfile, (list, tuple)): self.file_handler = self.new_rotating_file_handler(*logfile)
-            elif isinstance(logfile, dict): self.file_handler = self.new_rotating_file_handler(**logfile)
-            else: self.file_handler = self.new_rotating_file_handler(
-                logfile if isinstance(logfile, basestring) else None,
-                format=self.default_format['logfile'],
-                date_format=self.default_date_format['logfile'])
+            if isinstance(logfile, logging.Handler):
+                self.file_handler = logfile
+            elif isinstance(logfile, (list, tuple)):
+                self.file_handler = self.new_rotating_file_handler(*logfile)
+            else:
+                if isinstance(logfile, basestring):
+                    logfile = {'filePath': logfile}
+                if not isinstance(logfile, dict):
+                    logfile = {}
+                logfile.setdefault('format',  format['logfile'] if isinstance(format, dict)
+                    and 'logfile' in format else self.default_format['logfile'])
+                logfile.setdefault('date_format',  date_format['logfile'] if isinstance(format, dict)
+                    and 'logfile' in date_format else self.default_date_format['logfile'])
+                self.file_handler = self.new_rotating_file_handler(**logfile)
             self.add_handler(self.file_handler)
 
         #self.config(name=name, level=level, format=format, date_format=date_format)
@@ -344,6 +370,56 @@ class Logger(logging.getLoggerClass()):
 
         # Store new instance
         self.instances.add(self)
+
+        # Redirections
+        self._redirect_warnings = redirect_warnings
+        self._redirect_stderr = redirect_stderr
+        self._redirect_stdout = redirect_stdout
+        self._redirected_warnings = False
+        self._redirected_stderr = False
+        self._redirected_stdout = False
+        self.start_redirections()
+
+    def start_redirections(self, which='all'):
+        assert which in ['all', 'stdout', 'stderr', 'warnings']
+
+        if self._redirect_warnings and not self._redirected_warnings:
+            self._old_showwarnings = warnings.showwarning
+            warnings.showwarning = self.showwarning
+            self._redirected_warnings = True
+
+        if self._redirect_stdout and not self._redirected_stdout:
+            if not isinstance(self._redirect_stdout, str):
+                self._redirect_stdout = 'debug'
+            self._old_sys_stdout = sys.stdout
+            sys.stdout = _Redirector_(getattr(self, self._redirect_stdout),
+                prefix='STDOUT: ')
+            self._redirected_stdout = True
+
+        if self._redirect_stderr and not self._redirected_stderr:
+            if not isinstance(self._redirect_stderr, str):
+                self._redirect_stderr = 'warning'
+            self._old_sys_stderr = sys.stderr
+            sys.stderr = _Redirector_(getattr(self, self._redirect_stderr),
+                prefix='STDERR: ')
+            self._redirected_stderr = True
+
+    def stop_redirections(self, which='all'):
+        assert which in ['all', 'stdout', 'stderr', 'warnings']
+
+        if (self._redirect_warnings and which in ['all', 'warnings'] and
+                 self._redirected_warnings):
+            warnings.showwarning = self._old_showwarnings
+            self._redirected_warnings = False
+
+        if (self._redirect_stdout and which in ['all', 'stdout'] and
+                 self._redirected_stdout):
+            sys.stdout = self._old_sys_stdout
+            self._redirected_stdout = False
+        if (self._redirect_stderr and which in ['all', 'stderr'] and
+                 self._redirected_stderr):
+            sys.stderr = self._old_sys_stderr
+            self._redirected_stderr = False
 
     def set_name(self, name):
         self.name = name
@@ -378,6 +454,12 @@ class Logger(logging.getLoggerClass()):
             self.__logger_class.setLevel(self, get_int_level(level))
 
     setLevel = set_level # do not delete, redefinition of logging.Logger.setLevel
+
+    def set_level_console(self, level, filter=False):
+        self.set_level({'console':level}, filter=filter)
+
+    def set_level_logfile(self, level, filter=False):
+        self.set_level({'logfile':level}, filter=filter)
 
     def get_level(self):
         return get_int_level(self.level)
@@ -513,8 +595,9 @@ class Logger(logging.getLoggerClass()):
 #       msg = msg.encode('utf-8', 'replace')
 #       return super(self.__class__, self)._log(level, msg, *args, **kwargs)
 
-
-
+    def log(self, level, msg, *args, **kwargs):
+        level = get_int_level(level)
+        return self.__logger_class.log(self, level, msg, *args, **kwargs)
 
     @classmethod
     def set_default_level(cls, level, filter=False):
@@ -669,6 +752,15 @@ class Logger(logging.getLoggerClass()):
         if cfgo.get('format', None): self.set_format(cfgo['format'])
         if cfgo.get('date_format', None): self.set_date_format(cfgo['date_format'])
         if cfgo.get('file', None): self.add_rotating_file_handler(filePath=cfgo['file'])
+
+    def showwarning(self, message, category, filename, lineno,
+            file=None):
+        self.warning(
+            'REDIRECTED: %s:%s: %s:%s',
+            filename, lineno,
+            category.__name__, message,
+        )
+
 
 #   @classmethod
 #   def load_default_config(cls, *args, **kwargs):

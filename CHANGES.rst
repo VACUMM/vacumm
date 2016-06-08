@@ -1,6 +1,22 @@
 Release notes
 #############
 
+Version 3.1.1
+=============
+
+- Added redirection support to log.Logger.
+- Added dstpts2line to interp.
+- Added gen_binhelps extension to sphinx.
+- Fixed format and date_format use in log.Logger.
+- Fixed module members list in units.
+- Fixed dstwgt2dto1dc_reduc.
+- Fixed interp.mix2d for datarmor.
+- Fixed StatAccum hist templates.
+- Fixed gen_cmaps.
+- Fixed plot_cmap and plot_cmaps.
+- Fixed issue with Makefile.
+- Fixed setup with CHANGES.
+
 Version 3.1.0
 =============
 

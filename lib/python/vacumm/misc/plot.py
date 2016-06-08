@@ -69,11 +69,11 @@ from .core_plot import dict_aliases, latlab, add_shadow, get_axis, AutoDualDateF
 from .core_plot import add_glow, add_shadow, add_agg_filter, hlitvs, AutoDateFormatter2,  \
     AutoDateLocator2, AutoDateMinorLocator, AutoDualDateFormatter, add_compass, \
     add_right_label, add_left_label, add_top_label, add_bottom_label
-from .core_plot import add_param_label
+from .core_plot import add_param_label, get_quiverkey_value
 from .docstrings import docfill
 from .grid import regridding
 from .grid.basemap import gshhs_reslist, gshhs_autores, cache_map, cached_map
-from .grid.misc import get_grid
+from .grid.misc import get_xy
 from .misc import is_iterable, broadcast
 from .misc import is_iterable
 from .phys.units import deg2m
@@ -93,7 +93,8 @@ __all__ = [ 'traj', 'ellipsis',
     'minimap', 'add_map_point', 'add_map_line', 'add_map_lines', 'add_map_box',  'rshpere_wgs84',
     'add_glow', 'add_shadow', 'add_agg_filter', 'plot2d', 'hlitvs',
     'add_compass', 'add_param_label', 'dtarget', 'add_map_places',
-    'add_right_label', 'add_left_label', 'add_top_label', 'add_bottom_label']
+    'add_right_label', 'add_left_label', 'add_top_label', 'add_bottom_label',
+    'get_quiverkey_value']
 __all__.sort()
 
 
@@ -1099,35 +1100,40 @@ def _plot_grid_(ax, xx, yy, samp, alpha, zorder, labels, **kwargs):
 
 
 def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None,
-    linewidth=1, alpha=.5, linestyle='solid', zorder=100, marker=',',
-    markersize=4, facecolor=None, edgecolor=None, markerlinewidth=0, label_edges='Cell edges',
-    label_centers='Cell centers', samp=1, ax=None, **kwargs):
+        xcorners=None, ycorners=None,
+        linewidth=1, alpha=.5, linestyle='solid', zorder=100, marker=',',
+        markersize=4, facecolor=None, edgecolor=None, markerlinewidth=0,
+        label_edges='Cell edges', label_centers='Cell centers', samp=1,
+        ax=None, **kwargs):
     """Add a a 1D or 2D grid to a plot
 
-    - **gg**: A cdms grid OR a (lon,lat) tuple of axes OR a cdms variable with a grid
-    - *borders*: Display cell borders
-    - *centers*: Display cell centers. If == 2, connect centers.
-    - *samp*: Undersampling rate
-    - *m*: A basemap instance to plot on
-    - *color*: Default color (or *c*)
-    - *linecolor*: Color of the lines (or *lc*) [defaults to *color*]
-    - *linestyle*: Line style (or *ls*)
-    - *edgecolor*: Edge color of marker (or *ec*) [defaults to *color*]
-    - *facecolor*: Face color of marker (or *fc*) [defaults to *color*]
-    - *marker*: Type of marker
-    - *markersize*: Size of markers (or *s*)
-    - *alpha*: Alpha transparency (or *a*)
-    - *zorder*: Order of the grid in the stack (100 should be above all objects)
+    Params:
+        - **gg**: A cdms grid OR a (lon,lat) tuple of axes OR a cdms variable with a grid
+        - **x/ycorners**: Corners coordinates (ny+1,nx+1)
+        - *borders*: Display cell borders
+        - *centers*: Display cell centers. If == 2, connect centers.
+        - *samp*: Undersampling rate
+        - *m*: A basemap instance to plot on
+        - *color*: Default color (or *c*)
+        - *linecolor*: Color of the lines (or *lc*) [defaults to *color*]
+        - *linestyle*: Line style (or *ls*)
+        - *edgecolor*: Edge color of marker (or *ec*) [defaults to *color*]
+        - *facecolor*: Face color of marker (or *fc*) [defaults to *color*]
+        - *marker*: Type of marker
+        - *markersize*: Size of markers (or *s*)
+        - *alpha*: Alpha transparency (or *a*)
+        - *zorder*: Order of the grid in the stack (100 should be above all objects)
     """
     # Axes
-    gg = get_grid(gg)
-    xx = get_axis(gg, 1)[:]
-    yy = get_axis(gg, 0)[:]
+    xx, yy = get_xy(gg, mesh=True, num=True)
 
     # Edges
     edges = kwargs.pop('borders', edges)
     if edges:
-        xx2d, yy2d = meshbounds(xx, yy)
+        if xcorners is None or ycorners is None:
+            xx2d_, yy2d_ = meshbounds(xx, yy)
+        xx2d = xcorners if xcorners is not None else xx2d_
+        yy2d = ycorners if ycorners is not None else yy2d_
     if centers:
         xx, yy = meshgrid(xx, yy)
 

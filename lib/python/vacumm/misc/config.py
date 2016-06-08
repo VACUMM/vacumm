@@ -253,6 +253,17 @@ def _validator_interval_(value, default=None):
         out += m.group(1),
     return out
 
+def _validator_cmap_(value, default=None):
+    """Validator for colormaps"""
+    if str(value) == 'None': return None
+    if isinstance(value, basestring) and value.startswith('['):
+        value = eval(value)
+    if isinstance(value, list):
+        from .color import cmap_custom
+        return cmap_custom(value)
+    from .color import get_cmap
+    return get_cmap(value)
+
 class VdtDateTimeError(ValidateError):
     pass
 
@@ -330,6 +341,23 @@ def _validator_eval_(value, default=None):
     return value
 
 
+def _validator_color_(value, default='k', alpha=False):
+    if str(value) == 'None': return None
+    if alpha:
+        from .color import RGBA as CC
+    else:
+        from .color import RGB as CC
+    try:
+        return CC(value)
+    except:
+        if isinstance(value, str):
+            try:
+                return CC(eval(value))
+            except:
+                raise VdtTypeError(value)
+
+    raise VdtTypeError(value)
+
 # Define additionnal specifications
 # Value should be dict for internal use of this module (iterable, opttype, ...)
 # If value is not a dict, it is supposed to be the validator function
@@ -352,6 +380,8 @@ _VALIDATOR_SPECS_ = {
         'directory':_validator_path_,
         'interval':_validator_interval_,
         'eval':_validator_eval_,
+        'cmap':_validator_cmap_,
+        'color':_validator_color_,
         # lists validators for these scalars will be automatically generated
 }
 
@@ -671,7 +701,7 @@ class ConfigManager(object):
             self, parser=None, exc=[], parse=True, args=None,
             getparser=False, getargs=False, cfgfile='config.cfg',
             patch=None, cfgfileopt='--cfgfile', cfgfilepatch='before',
-            nested=None):
+            nested=None, extraopts=None):
         """Options (:mod:`argparse`) and config mixer.
 
             1. Creates command-line options from config defaults
@@ -718,6 +748,8 @@ class ConfigManager(object):
                 - Any False like value: the config file would not be used
             - **nested**: Name of a section whose defines the configuration.
               It must be used when the configuration in nested in more general configuration.
+            - **extraopts**: Extra options to declare in the form
+              ``[(args1, kwargs1), ((args2, kwargs2), ...]``
 
         :Return:
             - the :class:`OptionParser` if parse is False
@@ -741,6 +773,20 @@ class ConfigManager(object):
             help='show an extended help and exit')
         parser._optionals.conflict_handler = old_conflict_handler
 
+        # Add extra options first
+        if extraopts:
+            for eopt in extraopts:
+                if len(eopt)==1:
+                    if not isinstance(eopt, dict):
+                        eargs = eopt
+                        ekwargs = {}
+                    else:
+                        eargs = []
+                        ekwargs = eopt
+                else:
+                    eargs, ekwargs = eopt
+            parser.add_argument(*eargs, **ekwargs)
+
         # Add the cfgfile option (configurable)
         if cfgfileopt:
             if isinstance(cfgfileopt, basestring):
@@ -752,7 +798,7 @@ class ConfigManager(object):
                 cfgfileopt = (cfgfileopt,)
             parser.add_argument(*cfgfileopt,
                 dest="cfgfile", help='user configuration file that overrides defauts'
-                    '[default: "%(default)s"]', default=cfgfile)
+                    ' [default: "%(default)s"]', default=cfgfile)
 
         # Default config
         defaults = self.defaults()
@@ -1156,7 +1202,7 @@ def filter_section(sec, cfgfilter, default=False):
     return sec
 
 def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
-        exc=[], **kwargs):
+        exc=[], extraopts=None, **kwargs):
     """Merge configuration and commandline arguments
 
     :Params:
@@ -1186,7 +1232,8 @@ def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
         Technically it combines :class:`ConfigManager` and :meth:`ConfigManager.arg_parse`
     """
     return ConfigManager(cfgspecfile, **kwargs).arg_parse(
-        parser, cfgfileopt=cfgfileopt, exc=exc, cfgfile=cfgfile, getargs=True)
+        parser, cfgfileopt=cfgfileopt, exc=exc, cfgfile=cfgfile, getargs=True,
+        extraopts=extraopts)
 
 def cfgoptparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
     exc=[], **kwargs):
