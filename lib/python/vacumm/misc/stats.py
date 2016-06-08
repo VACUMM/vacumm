@@ -33,7 +33,6 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-
 import os
 
 import numpy as N,numpy.ma as MA,MV2
@@ -42,12 +41,10 @@ import cdtime
 from genutil.salstat import betai,_gammaln
 from genutil.statistics import percentiles
 
-from vacumm import VACUMMError
-from vacumm.misc.axes import isaxis, create_time
-from vacumm.misc.grid import get_grid, set_grid
-from vacumm.misc import MV2_axisConcatenate, set_atts, cp_atts
-from vacumm.misc.io import netcdf4
-from vacumm.misc.atime import comptime
+import vacumm
+import vacumm.misc.grid as vcg
+import vacumm.misc.atime as vct
+import vacumm.misc.io as vcio
 
 __all__ = ['corr_proba', 'ensrank', 'qtmin', 'qtmax', 'qtminmax',
     'StatAccum', 'StatAccumError']
@@ -208,7 +205,7 @@ def qtmax(var, qt=95.):
     return vmax
 
 
-class StatAccumError(VACUMMError):
+class StatAccumError(vacumm.VACUMMError):
     pass
 
 class StatAccum(object):
@@ -561,7 +558,7 @@ class StatAccum(object):
     def _template_t2ht_(self, tpl):
         htpl = MV2.resize(tpl.astype('l'), (self.nbins,)+tpl.shape)
         htpl.setAxisList([self._baxis]+tpl.getAxisList())
-        set_grid(htpl, get_grid(tpl))
+        vcg.set_grid(htpl, vcg.get_grid(tpl))
         return htpl
 
     def _asarray_(self, a):
@@ -601,7 +598,7 @@ class StatAccum(object):
         """Dump the current instance to a netcdf file"""
 
         # File
-        netcdf4()
+        vcio.netcdf4()
         if restart_file is None:
             restart_file = self.restart_file
         if restart_file is None:
@@ -647,7 +644,7 @@ class StatAccum(object):
             if self.withtime:
                 taxes = ()
                 for i, tt in enumerate(self._stimes):
-                    taxis = MV2_axisConcatenate(tt)
+                    taxis = vacumm.misc.MV2_axisConcatenate(tt)
                     taxis.stataccum_oldid = taxis.id
                     taxis.id = 't'+str(i)
                     taxes += taxis,
@@ -695,7 +692,7 @@ class StatAccum(object):
         # Attributes
         for ivar, atts in enumerate(self._atts):
             var = MV2.zeros(1)
-            set_atts(var, atts)
+            vacumm.misc.set_atts(var, atts)
             var.id = 'var%i_atts'%ivar
             var.stataccum_id = atts['id']
             var.getAxis(0).id = 'var_att_axis'
@@ -734,9 +731,9 @@ class StatAccum(object):
         if hasattr(self, 'iterindex') and f.iterindex<=self.iterindex:
             return -1
         if nowtime is not None:
-            self.lasttime = comptime(nowtime)
+            self.lasttime = vct.comptime(nowtime)
         if (hasattr(self, 'lasttime') and f.withtime>0 and self.lasttime
-                and comptime(f.lasttime)<=comptime(self.lasttime)):
+                and vct.comptime(f.lasttime)<=vct.comptime(self.lasttime)):
             return -1
         # - what was initially asked and some more
         for sname in self.all_stats + ('sum', 'sqr', 'prod', 'stats'):
@@ -783,8 +780,8 @@ class StatAccum(object):
                     tvalues = self._aslist_(taxis[:])
                     oldid = taxis.stataccum_oldid
                     for tvals in tvalues:
-                        tx = create_time(tvals, taxis.units, id=oldid)
-                        cp_atts(taxis, tx, id=False, exclude=[oldid])
+                        tx = vacumm.misc.axes.create_time(tvals, taxis.units, id=oldid)
+                        vacumm.misc.cp_atts(taxis, tx, id=False, exclude=[oldid])
                         self._stimes[i].append(tx)
 
             # Count
@@ -1044,7 +1041,7 @@ class StatAccum(object):
             if templates is not None:
 
                 # From axis (sstats)
-                if isaxis(templates[i]):
+                if vacumm.misc.axes.isaxis(templates[i]):
 #                    if hvar and not ist:
 #                        v = N.ma.transpose(v) # time first, not bins
                     var = MV2.asarray(v)
@@ -1218,7 +1215,7 @@ class StatAccum(object):
 
         # Time axes
         stimes = None if self._stimes is None else \
-            [MV2_axisConcatenate(stime) for stime in self._stimes]
+            [vacumm.misc.MV2_axisConcatenate(stime) for stime in self._stimes]
 
         # Format and cache
         kwargs.update(templates=stimes, htemplates=self._baxis, attributes=self._atts)

@@ -38,10 +38,8 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 #print 'importing masking 0'
-
 from warnings import warn
 import numpy as N
-MA = N.ma
 from cdms2.hgrid import TransientCurveGrid
 from cdms2.grid import AbstractGrid
 import cdms2, MV2
@@ -49,14 +47,31 @@ from mpl_toolkits.basemap import Basemap
 from _geoslib import Point, Polygon, LineString
 import gc
 from genutil import minmax
-cdms = cdms2
 
-__all__ = ['get_coast', 'get_coastal_indices', 'GetLakes', 'polygon_mask', 'masked_polygon',
-    'polygons', 'd2m', 'polygon_select', 'envelop', 'check_poly_islands',
-    'check_poly_straits','t2uvmasks', 'mask2d', 'grid_envelop', 'convex_hull',
-    'uniq', 'rsamp', 'zcompress', 'Lakes', 'erode_coast', 'resol_mask',
-    'get_dist_to_coast', 'get_avail_rate', 'grid_envelop_mask', 'create_polygon',
-    'clip_shape', 'proj_shape', 'plot_polygon', 'clip_shapes', 'merge_masks']
+import misc as vcg
+
+import sys;print 'masking', 'vacumm.misc.misc' in sys.modules,  'vacumm.misc' in sys.modules
+print sys.modules['vacumm.misc.misc']
+print vcg
+#vcm = __import__('vacumm.misc.misc')
+from importlib import import_module
+vcm = import_module('vacumm.misc.misc')
+#import vacumm.misc.misc as vcm
+
+from .misc import nduniq
+
+from .axes import islon, islat
+
+from .poly import convex_hull, envelop, create_polygons, polygons
+
+uniq = nduniq # backward compat
+
+__all__ = ['get_coast', 'get_coastal_indices', 'Lakes', 'polygon_mask', 'masked_polygon',
+    'polygon_select', 'check_poly_islands',
+    'check_poly_straits','t2uvmasks', 'grid_envelop',
+    'rsamp', 'zcompress', 'Lakes', 'erode_coast', 'resol_mask',
+    'get_dist_to_coast', 'get_avail_rate', 'grid_envelop_mask',
+    'merge_masks', 'maskndto2d']
 __all__.sort()
 
 def get_coast(mask, land=True, b=True, borders=True, corners=True):
@@ -122,7 +137,7 @@ def get_coastal_indices(mask, coast=None, asiijj=False, **kwargs):
         - *boundary*: If True, consider outside boundary as land [default: True]
         - *asiijj*: Get results as II,JJ instead of [(j0,i0),(j1,i1)...]
     """
-    if mask is MA.nomask: return []
+    if mask is N.ma.nomask: return []
     if coast is None:
         coast = get_coast(mask, **kwargs)
     iy,ix = N.indices(mask.shape)
@@ -154,10 +169,10 @@ def get_dist_to_coast(grid, mask=None, proj=True):
     """
     if mask is None and N.ma.isMA(grid):
         mask = grid
-    xx, yy = M.get_xy(grid, proj=proj, mesh=True, num=True)
+    xx, yy = vcg.get_xy(grid, proj=proj, mesh=True, num=True)
     if mask is None:
         from basemap import gshhs_autores, merc
-        x, y = M.get_xy(grid, proj=False, num=True, mesh=False)
+        x, y = vcg.get_xy(grid, proj=False, num=True, mesh=False)
         res = gshhs_autores(x.min(), x.max(), y.min(), y.max())
         mask = polygon_mask(grid, res)
     elif N.ma.isMA(mask):
@@ -182,7 +197,7 @@ def get_dist_to_coast(grid, mask=None, proj=True):
         mindists.id = 'coastdist'
         mindists.long_name = 'Distance to coast'
         mindists.units = 'm'
-        M.set_grid(mindists, M.get_grid(grid))
+        vcg.set_grid(mindists, vcg.get_grid(grid))
     return mindists
 
 
@@ -409,11 +424,11 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
     """
 
     # Get proper numeric axes
-    gg = M.get_grid(gg)
+    gg = vcg.get_grid(gg)
     if proj is not False:
         proj = get_proj(gg)
-    curved = M.isgrid(gg, curv=True) or proj
-    xx, yy = M.get_xy(gg, mesh=True, num=True, proj=proj)
+    curved = vcg.isgrid(gg, curv=True) or proj
+    xx, yy = vcg.get_xy(gg, mesh=True, num=True, proj=proj)
 
     # Thresholds
     if not isinstance(thresholds, (list, tuple)):
@@ -430,8 +445,8 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
     else:
         mask = N.zeros(xx.shape, dtype='?')
 
-    xxb = M.bounds2d(xx)
-    yyb = M.bounds2d(yy)
+    xxb = vcg.bounds2d(xx)
+    yyb = vcg.bounds2d(yy)
     if bmode:
 #        yyb[yyb>90.] = 89.99
 #        yyb[yyb<-90.] = -89.99
@@ -451,7 +466,7 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
         xmax = xx[0, -1]+dx/10.
         ymax = yy[-1, 0]+dy/10.
     if curved:
-        xxc, yyc = M.meshcells(xx, yy)
+        xxc, yyc = vcg.meshcells(xx, yy)
         dxx = N.diff(xxc, axis=1)
         dxy = N.diff(xxc, axis=0)
         dyx = N.diff(yyc, axis=1)
@@ -463,13 +478,18 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
         premask = N.asarray(premask, 'i')
 
     # Get instances of Polygons
-    polys = polygons(polys, clip=clip, shapetype=2, proj=proj, clip_proj=False)
+    kwpoly = dict(clip=clip, proj=proj, shapetype=2, clip_proj=False)
+    if isinstance(polys, str):
+        from vacumm.bathy.shorelines import get_shoreline
+        polys = get_shoreline(polys, **kwplots).get_shapes()
+    else:
+        polys = polygons(polys, **kwplots)
 
     # Loop on grid points
     skipped = 0
     for j in xrange(xx.shape[0]):
 
-        # Get polygons of the curent row
+        # Get polygons of the current row
         ypolys = []
         if curved:
             # base
@@ -619,233 +639,7 @@ def masked_ocean(vv, polys=None, **kwargs):
     pass
 
 
-def proj_shape(shape, proj):
-    """Project a Point, a Polygon or a LineString shape using a geographical projection
 
-    :Params:
-
-        - **shape**: A Point, Polygon, or a LineString instance with coordinates in degrees.
-        - **proj**: A projection function of instance.
-          See :func:`~vacumm.misc.grid.basemap.get_proj`.
-
-    :Return: A similar instance with its coordinates converted to meters
-    """
-    if not callable(proj): return shape
-
-    # Point
-    if isinstance(shape, Point):
-        return Point(*proj(shape.boundary))
-
-    # LineString and Polygon
-    return shape.__class__(proj(*shape.boundary.T).T)
-
-def clip_shape(shape, clip=None):
-    """Clip a :class:`Point`, a :class:`Polygon` or a :class:`LineString`
-    shape using clipping polygon
-
-    :Params:
-
-        - **shape**: A valid :class:`Point`, a :class:`Polygon` or a
-          :class:`LineString` instance.
-        - **clip**, optional: A clipping polygon.
-
-    :Return: A possible empty list of intersection shapes.
-    """
-    if clip is None: return [shape]
-    clip = create_polygon(clip)
-    shapes = []
-    if shape.within(clip):
-        return [shape]
-    if shape.intersects(clip):
-        try:
-            return shape.intersection(clip)
-        except:
-            pass
-    return shapes
-
-def clip_shapes(shapes, clip=None):
-    """Same as :func:`clip_shape` but applied to a list of shapes"""
-    clip = create_polygon(clip)
-    shapes = []
-    for shape in shapes:
-        shapes.extend(clip_shape(shape, clip))
-    return shapes
-
-def create_polygon(data, proj=False, mode='poly'):
-    """Create a simple :class:`Polygon` instance using data
-
-    :Param:
-
-        - **data**: Can be either a ``(N,2)`` or ``(2,N)`` array,
-          a ``(xmin,ymin,xmax,ymax)`` list, tuple or array, or a Polygon.
-        - **proj**, optional: Geographical projection function.
-        - **mode**, optional: Output mode. ``"line"`` = :class:`LineString`,
-          ``"verts"`` = numpy vertices, else :class:`Polygon`.
-
-    """
-    if isinstance(data, Polygon):
-        if callable(proj):
-            data = data.boundary
-        else:
-            return data
-
-    # Convert to numeric
-    data = N.asarray(data, 'float64')
-
-    # xmin,ymin,xmax,ymax form
-    if data.ndim == 1:
-        assert len(data) == 4, '1D form must have 4 elements (xmin,ymin,xmax,ymax), not %i'%len(poly)
-        xmin,ymin,xmax,ymax = data
-        data =  N.asarray([[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]])
-
-    # Check order
-    if data.shape[0] == 2:
-        data = data.T
-
-    # Projection
-    if callable(proj):
-        xdata, ydata = proj(*data.T)
-        data = N.asarray([xdata, ydata]).T
-
-    # Create Polygon or LineString
-    mode = str(mode)
-    if mode.startswith('v'): return data
-    shaper = LineString if mode.startswith('l') else Polygon
-    return shaper(data)
-
-def plot_polygon(poly, ax=None, **kwargs):
-    """Simply plot a polygon on the current plot using :func:`matplotlib.pyplot.plot`
-
-    :Params:
-
-        - **poly**: A valid :class:`Polygon` instance.
-        - Extra keyword are passed to plot function.
-
-    """
-    xx = poly.boundary[:, 0]
-    yy = poly.boundary[:, 1]
-    xx = N.concatenate((xx, xx[:1]))
-    yy = N.concatenate((yy, yy[:1]))
-    if ax is None:
-        from matplotlib.pyplot import gca
-        ax = gca()
-    return ax.plot(xx, yy, **kwargs)
-
-
-def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
-    """Return a list of Polygon instances
-
-    :Params:
-
-        - **polys**: A tuple or list of polygon proxies (see examples).
-        - **shapetype**: 1 = Polygons, 2=Polylines(=LineStrings) [default: 2]
-        - **proj**: Geographical projection to convert positions. No projection
-          by default.
-        - **clip**, optional: Clip all polygons with this one.
-
-    :Example:
-
-        >>> import numpy as N
-        >>> X = [0,1,1,0]
-        >>> Y = N.array([0,0,1,1])
-        >>> polygons( [(X,Y)]] )                                # from like grid bounds
-        >>> polygons( [zip(X,Y), [X,Y], N.array([X,Y])] )       # cloud
-        >>> polygons( [polygons(([X,Y],), polygons(([X,Y],)])   # from polygins
-        >>> polygons( [[min(X),min(Y),max(X),max(Y)],] )        # from bounds
-    """
-
-    # Input
-    if isinstance(polys, (Basemap, str, Polygon, N.ndarray, Shapes, AbstractGrid, tuple)):
-        polys = [polys]
-
-    if kwargs.has_key('m'): proj = kwargs['m']
-    kwclip = kwfilter(kwargs, 'clip_')
-
-    # Numeric or geos polygons
-    out_polys = []
-#    gmt_polys = []
-    if shapetype == 1:
-        shaper = LineString
-    else:
-        shaper = Polygon
-    if clip is not None:
-        clipl = clip # degrees
-        kwclip.setdefault('proj', proj)
-        clip = create_polygon(clip, **kwclip)
-        del kwclip['proj']
-        kwclip['mode'] = 'verts'
-    else:
-        clipl = None
-
-    # Loop on polygon data
-    from misc import isgrid, isrect, curv2rect
-    for poly in polys:
-
-        # Grid (cdms var, grid or tuple of axes) -> get envelop
-        if cdms2.isVariable(poly) or isgrid(poly) or \
-            (isinstance(poly, tuple) and len(poly)==2 and islon(poly[1]) and islat(poly[0])):
-            grid = M.get_grid(poly)
-            if grid is None: continue
-            poly = grid_envelop(grid)
-
-        # It's already a polygon
-        if isinstance(poly, Polygon):
-            pp = [poly]
-
-        # Polygon from GMT
-        if isinstance(poly, (str, Basemap)):
-#            poly = GSHHS_BM(poly)
-#           gmt_polys.append(poly)
-            out_polys.extend(GSHHS_BM(poly, clip=clipl, proj=proj).get_shapes())
-            continue
-
-        # Shapes instance
-        if isinstance(poly, Shapes):
-
-            # Good polygon?
-            if poly.get_type() == 0 or poly.get_type() != shapetype:
-                continue
-
-#            # Clip
-#            poly.clip(clip)
-
-            # Append to list
-            out_polys.extend(poly.get_shapes())
-#            continue
-
-        # Make sure to have a polygon with the right projection
-        poly = create_polygon(poly, proj=proj,
-            mode='line' if shaper is LineString else 'poly')
-
-        # Clip
-        if clip is not None:
-            out_polys.extend(clip_shape(poly, clip))
-        else:
-            out_polys.append(poly)
-
-#   # Treat GMT polygons
-#   from ...misc.plot import map as Map
-#   for poly in gmt_polys:
-#       if isinstance(poly, Basemap) and poly.resolution is not None:
-#           # We already have all the numeric polygons
-#           gmt_m = poly
-#       elif isinstance(poly, str):
-#           # We must deduce polygons from gmt resolution
-#           print 'getting gmt map for mask'
-#           assert poly[0] in ['f', 'h', 'i', 'l', 'c'], \
-#               "Resolution must be one of ['f', 'h', 'i', 'l', 'c'],  not "+poly[0]
-#           # What kind of map?
-#           if m is not None:
-#               proj = m.projection
-#           else:
-#               proj = 'cyl'
-#           # Ok, get it
-#           gmt_m = Map(lon=lon, lat=lat, maponly=True, res=poly[0], projection=proj)
-#       else:
-#           continue
-#       out_polys.extend([Polygon(N.array(p).transpose()) for p in gmt_m.coastpolygons])
-
-    return out_polys
 
 
 def _trans_(trans, xx, yy):
@@ -872,7 +666,7 @@ def _trans_(trans, xx, yy):
 #   return d2m(xx, yy)
 
 def d2m(x, y):
-    return deg2m(x, y), deg2m(y)
+    return vcu.deg2m(x, y), vcu.deg2m(y)
 
 def polygon_select(xx, yy, polys, zz=None, mask=False):
     """Select unstructered points that are inside polygons
@@ -939,138 +733,8 @@ def polygon_select(xx, yy, polys, zz=None, mask=False):
     return ret
 
 
-def convex_hull(xy, poly=False, method='delaunay'):
-    """Get the envelop of cloud of points
-
-    :Params:
-
-        - **xy**: (x,y) or array of size (2,nxy) (see :func:`~vacumm.misc.grid.misc.get_xy`).
-        - *poly*:
-
-            - ``True``: Return as Polygon instance.
-            - ``False``: Return two 1D arrays ``xpts,ypts``
-
-            - *method*:
-
-                - ``"angles"``: Recursive scan of angles between points.
-                - ``"delaunay"``: Use Delaunlay triangulation.
-
-    """
-
-    # Points
-    xx, yy = M.get_xy(xy, proj=False)
-    xx = N.asarray(xx)
-    yy = N.asarray(yy)
-    if xx.ndim>1:
-        xx = xx.ravel()
-        yy = yy.ravel()
-
-    # Various methods
-    if method.startswith('delau'):
-
-        # Delaunay
-        from matplotlib.delaunay import Triangulation
-        xy = uniq(N.asarray([xx, yy]).transpose())
-        hull = Triangulation(xy[:, 0], xy[:, 1]).hull
-        xe = xy[:, 0][hull]
-        ye = xy[:, 1][hull]
-
-    elif method == 'quarters':
-
-        np = len(xx)
-
-        # Most south point
-        ip = N.argmin(yy)
-        xe = [xx[ip]]
-        ye = [yy[ip]]
-
-        # SW
-        while True:
-            good = xx>xe[-1]
-            if not good.any(): break
-            ip = N.argmin(yy[good])
-            xe.append(xx[ip])
-            ye.append(yy[ip])
-
-        # NW
-        while True:
-            good = yyx>ye[-1]
-            if not good.any(): break
-            ip = N.argmax(xx[good])
-            xe.append(xx[ip])
-            ye.append(yy[ip])
-
-        pass
-        #TODO: finish convex_hull with quaters
-
-    elif method=='angles':
-
-        # Angles
-        np = len(xx)
-        xx0 = N.resize(xx, (np, np))
-        xx1 = N.resize(xx, (np, np)).transpose()
-        dx = xx1-xx0 ; del xx0, xx1
-        yy0 = N.resize(yy, (np, np))
-        yy1 = N.resize(yy, (np, np)).transpose()
-        dy = yy1-yy0 ; del yy0, yy1
-        angles = N.arctan2(dx, dy) ; del dx, dy
-        idx = N.arange(np)
-        angles[idx, idx] = 10.
-
-        # Most south point
-        ip0 = ip = N.argmin(yy)
-        xe = [xx[ip]]
-        ye = [yy[ip]]
-
-        # Recursive search
-        ic = 0
-        while True:
-            ip = N.argmin(angles[ip])
-            if ip == ip0: break
-            xe.append(xx[ip])
-            ye.append(yy[ip])
-            ic += 1
-            if ic > np: break
-        xe = N.asarray(xe)
-        ye = N.asarray(ye)
-
-    else:
-        raise NotImplementedError
-
-    # Polygon or positions?
-    if poly:
-        return polygons([(xe, ye)], m=False)[0]
-    return xe, ye
 
 
-def uniq(data):
-    """Remove duplicates in data
-
-    :Example:
-
-    >>> import numpy as N
-    >>> a = N.arange(20.).reshape((10,2))
-    >>> a[5] = a[1]
-    >>> b = uniq(a)
-    """
-    if data.ndim>2:
-        wdata = data.reshape((data.shape[0], data.size/data.shape[0]))
-    else:
-        wdata = data
-    keep = N.ones(len(data), '?')
-    for i, d in enumerate(data):
-        if not keep[i]: continue
-        bad = data == d
-        if data.ndim>1:
-            bad = bad.all(axis=-1)
-        bad[i] = False
-        keep = keep & ~bad
-    return data[keep]
-
-
-def envelop(*args, **kwargs):
-    """Shortcut to :func:`convex_hull`"""
-    return convex_hull(*args, **kwargs)
 
 def grid_envelop(gg, centers=False, poly=True):
     """Return a polygon that encloses a grid
@@ -1087,17 +751,17 @@ def grid_envelop(gg, centers=False, poly=True):
         - ``False``: Return two 1D arrays ``xpts,ypts``
     """
     # Axes
-    x, y = M.get_xy(gg, num=True)
+    x, y = vcg.get_xy(gg, num=True)
 
     # Rectangular grids
-    gg = M.curv2rect(gg,mode=False)
-    if M.isgrid(gg, curv=False):
+    gg = vcg.curv2rect(gg,mode=False)
+    if vcg.isgrid(gg, curv=False):
         if centers:
             x0 = x.min() ;  x1 = x.max()
             y0 = y.min() ;  y1 = y.max()
         else:
-            xb = M.bounds1d(x)
-            yb = M.bounds1d(y)
+            xb = vcg.bounds1d(x)
+            yb = vcg.bounds1d(y)
             x0 = xb.min() ;  x1 = xb.max()
             y0 = yb.min() ;  y1 = yb.max()
         if poly:
@@ -1105,8 +769,8 @@ def grid_envelop(gg, centers=False, poly=True):
         return N.array([x0, x1]), N.array([y0, y1])
 
     # Get the 2D axes
-    xx, yy = M.meshgrid(x, y)
-    xxb, yyb = M.meshbounds(x, y)
+    xx, yy = vcg.meshgrid(x, y)
+    xxb, yyb = vcg.meshbounds(x, y)
     if centers:
         xxref, yyref = xx, yy
     else:
@@ -1173,12 +837,12 @@ def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
         A mask on output grid, where True means "outside bounds of input grid".
     """
 
-    if M.isgrid(ggi, curv=False): # Rectangular
-        x, y = M.get_xy(ggi)
-        xb = M.bounds1d(x)
-        yb = M.bounds1d(y)
-        ggo = M.get_grid(ggo)
-        xxo, yyo = M.meshgrid(*M.get_xy(ggo))
+    if vcg.isgrid(ggi, curv=False): # Rectangular
+        x, y = vcg.get_xy(ggi)
+        xb = vcg.bounds1d(x)
+        yb = vcg.bounds1d(y)
+        ggo = vcg.get_grid(ggo)
+        xxo, yyo = vcg.meshgrid(*vcg.get_xy(ggo))
         return (xxo<=xb.min())|(xxo>=xb.max())|(yyo<=yb.min())|(yyo>=yb.max())
 
     elif poly: # Using a polygon
@@ -1190,11 +854,11 @@ def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
 
     else: # Using regridding
         from regridding import regrid2d
-        xxb, yyb = M.meshbounds(*M.meshbounds(*M.get_xy(ggi)))
+        xxb, yyb = vcg.meshbounds(*vcg.meshbounds(*vcg.get_xy(ggi)))
         vari = MV2.asarray(xxb*0.)
         vari[[0, -1]] = 1.
         vari[:, [0, -1]] = 1.
-        M.set_grid(vari, M.curv_grid(xxb, yyb))
+        vcg.set_grid(vari, vcg.curv_grid(xxb, yyb))
         varo = regrid2d(vari, ggo, method='nearest', ext=True).filled(1.)
         return varo.astype('?')
 
@@ -1209,6 +873,7 @@ def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
     - *offset*: Islands whose area is > 1-offset and < 1+offset % of the mean cell area are checked [default: .95]
     - *dcell*: dx and dy relative extension from the center of the cell in resolution units.
 
+    .. todo:: remove check_poly_islands?
     """
 
     # Get mask and axes
@@ -1217,9 +882,9 @@ def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
             xx, yy, mask = mask
         else:
             gg, mask = mask
-            xx, yy = M.get_xy(gg)
+            xx, yy = vcg.get_xy(gg)
     else:
-        xx, yy = M.get_xy(mask)
+        xx, yy = vcg.get_xy(mask)
 
     # Resolution
     dx = N.diff(xx).mean()
@@ -1242,7 +907,7 @@ def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
         imin, imax, k = xx.mapInterval((xcisland-dx*dcell*1.1, xcisland+dx*dcell*1.1))
         jmin, jmax, k = xx.mapInterval((ycisland-dy*dcell*1.1, ycisland+dy*dcell*1.1))
         amask = mask[jmin:jmax, imin:imax]
-        xxb, yyb = _trans_(trans, bounds2d(amask.getAxis(-1)),  bounds2d(amask.getAxis(-2)))
+        xxb, yyb = bounds2d(amask.getAxis(-1)),  bounds2d(amask.getAxis(-2))
 
         # Get intersection areas
         areas = N.zeros(amask.shape, 'f')
@@ -1275,9 +940,9 @@ def check_poly_straits(mask, polys, dcell=2, threshold=.75):
             xx, yy, mask = mask
         else:
             gg, mask = mask
-            xx, yy = M.get_xy(gg)
+            xx, yy = vcg.get_xy(gg)
     else:
-        xx, yy = M.get_xy(mask)
+        xx, yy = vcg.get_xy(mask)
 
     # Get cell bounds
     xxb, yyb = bounds2d(xx),  bounds2d(yy)
@@ -1312,13 +977,18 @@ def check_poly_straits(mask, polys, dcell=2, threshold=.75):
 
 
 def t2uvmasks(tmask, getu=True, getv=True):
-    """Compoute masks at U and V points from a mask at T points on a C grid (True is land)
+    """Compute masks at U and V points from a mask at T points on a C grid (True is land)
 
-    - **tmask**: A 2D mask.
-    - *getu*: Get the mask at U-points
-    - *getv*: Get the mask at V-points
+    :Params:
+        - **tmask**: A 2D mask.
+        - *getu*: Get the mask at U-points
+        - *getv*: Get the mask at V-points
 
-    Return umask,vmask OR umask OR vmask depending on getu and getv.
+    :Return: umask,vmask OR umask OR vmask depending on getu and getv.
+
+
+    .. todo:: TODO: t2uvmasks must mabe made generic and probably transfered
+        to arakawa module
     """
     if not getu and not getv: return
     if getu:
@@ -1330,7 +1000,7 @@ def t2uvmasks(tmask, getu=True, getv=True):
     if not getu: return vmask
     return umask, vmask
 
-def mask2d(mask, method='and'):
+def maskndto2d(mask, method='and'):
     """Convert a 3(or more)-D mask to 2D by performing compression on first axes
 
     .. note::
@@ -1354,6 +1024,7 @@ def mask2d(mask, method='and'):
         mask = func.reduce(mask)
     return mask.astype(dtype)
 
+mask2d = maskndto2d # backward compat
 
 def _old_rsamp_(x, y, r, z=None, rmean=.7, proj=False, getmask=False):
     """Undersample data points using a radius of proximity
@@ -1384,7 +1055,7 @@ def _old_rsamp_(x, y, r, z=None, rmean=.7, proj=False, getmask=False):
 
     # Projection
     if proj is True:
-        proj = get_proj((x,y))
+        proj = vcgb.get_proj((x,y))
     if callable(proj):
         x, y = proj(x, y)
 
@@ -1438,7 +1109,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
 
     # Projection
     if proj is True:
-        proj = get_proj((x,y))
+        proj = vcgb.get_proj((x,y))
     if callable(proj):
         x, y = proj(x, y)
 
@@ -1543,7 +1214,7 @@ def zcompress(z, *xy, **kwargs):
                 newvar = var[good]
             else:
                 newvar = cdms2.createVariable(var.asma()[good])
-                cp_atts(var, newvar, id=True)
+                vacumm.misc.misc.cp_atts(var, newvar, id=True)
             # Numpify
             if npf and hasattr(var, 'filled'):
                 ret += newvar.filled(),
@@ -1616,11 +1287,11 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
 
 
     # Get numeric axes
-    xx, yy = M.get_xy(grid, num=True, mesh=True, m=False)
+    xx, yy = vcg.get_xy(grid, num=True, mesh=True, m=False)
 
     # Scaler
     if scaler is None:
-        scaler = get_proj((xx, yy))
+        scaler = vcgb.get_proj((xx, yy))
     if callable(scaler):
         xxs, yys = scaler(xx, yy)
     else:
@@ -1650,10 +1321,10 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
                 ymode = 'min'
             elif yrelres < 0:
                 ymode = 'max'
-        xr = M.resol(xx, axis=1, mode=xmode) if xres is None else xres
-        yr = M.resol(yy, axis=0, mode=ymode) if yres is None else yres
+        xr = vcg.resol(xx, axis=1, mode=xmode) if xres is None else xres
+        yr = vcg.resol(yy, axis=0, mode=ymode) if yres is None else yres
         if N.abs(N.log10(xres/yres))<2: # similar coordinates
-            xr, yr = M.resol(xxs, yys, mode=(xmode, ymode))
+            xr, yr = vcg.resol(xxs, yys, mode=(xmode, ymode))
             if xres is None: xres = -xr
             if yres is None: yres = -yr
         else:
@@ -1666,7 +1337,7 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
         x2d = xx if xres > 0 else xxs
         y2d = yy if yres > 0 else yys
     if xres is not None or yres is not None:
-        xbres, ybres = M.resol((x2d, y2d), mode='raw')
+        xbres, ybres = vcg.resol((x2d, y2d), mode='raw')
     if xres=='auto' or yres=='auto':
         xcres = N.ma.cumsum(xbres, axis=1)
         ycres = N.ma.cumsum(ybres, axis=0)
@@ -1749,7 +1420,7 @@ def get_avail_rate(data, num=True, mode='rate'):
     if not num and cdms2.isVariable(data):
         rate = MV2.array(rate, copy=0)
         if data.getGrid() is not None:
-            M.set_grid(rate, data.getGrid())
+            vcg.set_grid(rate, data.getGrid())
         if mode=="rate":
             rate.long_name = 'Availability rate'
         elif mode=='pct':
@@ -1789,14 +1460,8 @@ def merge_masks(varlist, copy=False, mode='max'):
         var[:] = N.ma.masked_where(mask, var, copy=False)
         out.append(var)
     return out
-        
+
 
 
 ######################################################################
 ######################################################################
-import misc as M
-from ...misc.axes import islon, islat
-from ...misc.phys.units import deg2m
-from ...misc.io import Shapes
-from .basemap import GSHHS_BM, get_proj
-from ...misc.misc import cp_atts, kwfilter

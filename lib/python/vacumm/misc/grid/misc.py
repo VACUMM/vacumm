@@ -53,12 +53,12 @@ from mpl_toolkits.basemap import Basemap
 from _geoslib import Point
 
 
-from vacumm import VACUMMError, VACUMMWarning
+import vacumm
+from . import basemap as vcgb
+import masking as vcgm
 import vacumm.misc.misc as vcm
 import vacumm.misc.phys.constants as vcpc
 import vacumm.misc.phys.units as vcpu
-import vacumm.misc.grid.basemap as vcgb
-import vacumm.misc.grid.masking as vcgm
 import vacumm.misc.axes as vca
 import vacumm.misc.io as vcio
 
@@ -252,7 +252,7 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
         mode = str(mode).lower()
         valid_modes = 'simple', 'haversine', 'sphere', 'deg2m', 'degrees', 'euclidian', 'meters'
         if mode not in valid_modes:
-            raise VACUMMError('Wrong mode ({}). Please choose one of: {}'.format(
+            raise vacumm.VACUMMError('Wrong mode ({}). Please choose one of: {}'.format(
                 mode, ', '.join(valid_modes)))
         if mode in ['sphere', "degrees"]:
             mode = 'harversine'
@@ -336,7 +336,7 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
 
 
 
-def get_closest(xx, yy, xp, yp, proj=True, mask=None,  gridded=True, **kwargs):
+def get_closest(xx, yy, xp, yp, distmode=None, mask=None, gridded=True, **kwargs):
     """Find the closest unmasked point on a grid and return indices
 
     :Params:
@@ -356,14 +356,13 @@ def get_closest(xx, yy, xp, yp, proj=True, mask=None,  gridded=True, **kwargs):
         - ``(i,j)`` 2-element tuple of indices along y and x for gridded data,
         - OR ``i`` if not gridded.
     """
-
     # Longitude/Latitude grid?
+    proj = kwargs.pop('proj', None)
     proj = kwargs.pop('geo', proj)
-    try:
-        if xx.isLongitude() and yy.isLatitude():
-            proj = True
-    except:
-        pass
+    if proj:
+        distmode = True
+    elif distmode is None:
+        distmode = 'haversine' if vca.islon(xx) or vca.islat(yy) else 'direct'
 
     # Gridded
     xx = N.asarray(xx[:])
@@ -374,18 +373,13 @@ def get_closest(xx, yy, xp, yp, proj=True, mask=None,  gridded=True, **kwargs):
         xx = xx.ravel()
         yy = yy.ravel()
 
-    # Geo grid distances
-    if proj:
-        if not callable(proj):
-            proj = vcgb.get_proj((xx,yy))
-        xx,yy = proj(xx,yy)
-        xp,yp = proj(xp,yp)
-
     # Compute the distance to all grid points
     if mask is not None:
         xx = MA.array(xx, mask=mask, copy=False)
         yy = MA.array(yy, mask=mask, copy=False)
-    dd = (xx - xp)**2 + (yy - yp)**2
+
+    # Distances
+    dd = get_distances(xp, yp, xx, yy, mode=distmode)
 
     # Find the smallest distance
     imin = N.ma.argmin(dd)
@@ -718,12 +712,12 @@ def meshcells(x, y=None):
     else:
         return bounds2mesh(bounds2d(x))
 
-def meshweights(x, y=None, proj=None, axis=-1):
+def meshweights(x, y=None, distmode='haversine', axis=-1, proj=None):
     """Return a 1D or 2D array corresponding the cell weights
 
     :Params:
 
-        - **x**: 1D or nD array
+        - **x**: 1D or 2D array
         - **y**: 1D or 2D array
         - **proj**, optional: Geographic projection before computing weights
           (for 2D case only with both x and y)
@@ -758,50 +752,26 @@ def meshweights(x, y=None, proj=None, axis=-1):
         del dd
         return dx
 
-#        # 2D
-#        if x.ndim==2:
-#            if axis<0: axis = 2-axis
-#            dx = x.copy()
-#            dd = N.diff(x, axis=axis)
-#            if axis==0:
-#                dx[1:-1] = .5*(dd[:-1]+dd[1:])
-#                dx[0] = dd[0]
-#                dx[-1] = dd[-1]
-#            else:
-#                dx[:, 1:-1] = .5*(dd[:, :-1]+dd[:, 1:])
-#                dx[:, 0] = dd[:, 0]
-#                dx[:, -1] = dd[:, -1]
-#            del dd
-#            return dx
-#
-#        # 1D
-#        return N.diff(meshcells(x))
 
     # With y
     if not  isinstance(y, N.ndarray):
         y = N.asarray(y)
-    # - 2D
-    if x.ndim==2:
-        if proj is True:
-            proj = vcgb.get_proj((x, y))
-        xxb, yyb = meshcells(x, y)
-        if proj:
-            xxb, yyb = proj(xxb, yyb)
-        M = vcm.numod(x)
-        dxx = M.diff(xxb, axis=1)
-        dxy = M.diff(xxb, axis=0)
-        dyx = M.diff(yyb, axis=1)
-        dyy = M.diff(yyb, axis=0)
-        dx = M.sqrt(dxx**2+dyx**2)
-        del dxx, dyx
-        dx = 0.5*(dx[:-1]+dx[1:])
-        dy = M.sqrt(dxy**2+dyy**2)
-        del dxy, dyy
-        dy = 0.5*(dy[:, :-1]+dy[:, 1:])
-        return dx*dy
-    # - 1D
-    return meshweights(x, axis=axis), meshweights(y, axis=axis)
-#    return N.diff(meshcells(x)), N.diff(meshcells(y))
+
+    # 1D
+    if x.ndim==1:
+        return meshweights(x, axis=axis), meshweights(y, axis=axis)
+
+    # 2D
+    if distmode is None:
+        distmode = 'haversine' if vca.islon(x) or vca.islat(y) else 'direct'
+    xxb, yyb = meshcells(x, y)
+    dx = get_distances(xxb[:, :-1], yyb[:, :-1], xxb[:, 1:], yyb[:, 1:],
+        distmode=distmode, pairwise=True)
+    dx = 0.5*(dx[1:]+dx[:-1])
+    dy = get_distances(xxb[:-1, :], yyb[:-1, :], xxb[1:, :], yyb[1:, :],
+        distmode=distmode, pairwise=True)
+    dy = 0.5*(dy[:, 1:]+dy[:, :-1])
+    return dx*dy
 
 
 def cells2grid(xxb,yyb):
@@ -893,7 +863,7 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
     else:
         mode = str(mode).lower()
         if mode[:1] not in 'ias':
-            raise VACUMMError('Wrong mode: %s. Choose one of: slice, indices, array'%mode)
+            raise vacumm.VACUMMError('Wrong mode: %s. Choose one of: slice, indices, array'%mode)
     if mode[0]=='a':
         assubmask = True
 
@@ -992,7 +962,7 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
 
     # - selector
     if not vca.isaxis(gg):
-        raise VACUMMError("If gg is not a grid or an tuple, it must be an axis")
+        raise vacumm.VACUMMError("If gg is not a grid or an tuple, it must be an axis")
     axis = int(gg.isLongitude())
     sel, osel = (lat, lon)[::1-2*axis]
     if axis:
@@ -1238,11 +1208,11 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
     if hasx:
         xn = N.asarray(x[:])
         if xn.ndim==1 and y is None:
-            raise VACUMMError("Can't create 2D from a single 1D X axis")
+            raise vacumm.VACUMMError("Can't create 2D from a single 1D X axis")
     if hasy:
         yn = N.asarray(y[:])
         if yn.ndim==1 and x is None:
-            raise VACUMMError("Can't create 2D from a single 1D Y axis")
+            raise vacumm.VACUMMError("Can't create 2D from a single 1D Y axis")
     if hasx and hasy:
         xx, yy = meshgrid(xn, yn)
     else:
@@ -1251,7 +1221,7 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
     if hasx: del xn
     if hasy: del yn
 #    if hasx and hasy and xx.shape != yy.shape:
-#        raise VACUMMError('Incomptible shape between 2D X and Y coordinates: %s != %s'%(xx.shape, yy.shape))
+#        raise vacumm.VACUMMError('Incomptible shape between 2D X and Y coordinates: %s != %s'%(xx.shape, yy.shape))
 #    if bounds:
 #        if hasx: xx = meshbounds(xx)
 #        if hasy: yy = meshbounds(yy)
@@ -1403,12 +1373,12 @@ def get_grid(gg, geo=True, intercept=False, strict=False):
         if vca.isaxis(xx):
             if getattr(xx, 'axis', 'x').upper()!='X':
                 if not intercept: return
-                raise VACUMMError("Can't make a grid with %s axis as longitude"%xx.axis)
+                raise vacumm.VACUMMError("Can't make a grid with %s axis as longitude"%xx.axis)
             xx.designateLongitude()
         if vca.isaxis(yy):
             if getattr(yy, 'axis', 'y').upper()!='Y':
                 if not intercept: return
-                raise VACUMMError("Can't make a grid with %s axis as latitude"%yy.axis)
+                raise vacumm.VACUMMError("Can't make a grid with %s axis as latitude"%yy.axis)
             yy.designateLatitude()
 
         # Create grid
@@ -1426,7 +1396,7 @@ def get_grid(gg, geo=True, intercept=False, strict=False):
             return cdms.createGenericGrid(yy[:].ravel(), xx[:].ravel())
 
     if intercept:
-        raise VACUMMError('No way to guess the grid')
+        raise vacumm.VACUMMError('No way to guess the grid')
 
 def set_grid(var, gg, axes=True, intercept=False):
     """Set a grid to a variable
@@ -1645,13 +1615,13 @@ def gridsel(gg, lon=None, lat=None):
 #        if len(gg.shape)==2 and (
 #            (lon is not None and not isinstance(lon, slice)) or
 #            (lat is not None and not isinstance(lat, slice))):
-#            raise VACUMMError("Can't apply geographical selection to a lonely 2D axis")
+#            raise vacumm.VACUMMError("Can't apply geographical selection to a lonely 2D axis")
         if vca.islon(gg, ro=True):
             outtype = 'lon'
         elif vca.islat(gg, ro=True):
             outtype = 'lat'
         else:
-            raise VACUMMError("Axis must be longitude or latitude")
+            raise vacumm.VACUMMError("Axis must be longitude or latitude")
     else:
         raise TypeError('Please provide a grid,  a tuple of axes or an axis')
 
@@ -1701,12 +1671,12 @@ def gridsel(gg, lon=None, lat=None):
         elif outtype=='lon' and isinstance(lon, tuple):
             ijk = gg.mapIntervalExt(lon)
             if ijk is None:
-                raise VACUMMError('Empty selection on axis: '+str(lon))
+                raise vacumm.VACUMMError('Empty selection on axis: '+str(lon))
             lon = slice(*ijk)
         elif outtype=='lat' and isinstance(lat, tuple):
             ijk = gg.mapIntervaExt(lat)
             if ijk is None:
-                raise VACUMMError('Empty selection on axis: '+str(lon))
+                raise vacumm.VACUMMError('Empty selection on axis: '+str(lon))
             lat = slice(*ijk)
 
         # Selection using slices
@@ -1947,7 +1917,8 @@ def deg2xy(lon, lat, proj=None, inverse=False, mesh=None, **kwargs):
 
     # Need a projection instance
     if not callable(proj):
-        proj = vcgb.get_proj((lon,lat), proj=proj)
+        from basemap import get_proj
+        proj = et_proj((lon,lat), proj=proj)
 
     # Transform
     return proj(lon, lat, inverse=inverse)
@@ -2613,9 +2584,10 @@ def curv2rect(gg, mode="warn", tol=1.e-2, f=None):
       - **mode**, optional: what ot do when it does not seems to be rectangular
 
             - ``"warn"``: simply show a warning,
-            - ``"raise"``: raise a :class:`VACUMMError`,
+            - ``"raise"``: raise a :class:`vacumm.VACUMMError`,
             - ``"none"`` or ``False``: don't do it.
             - else just convert it at your own risks.
+
         - **tol**, optional: Tolerance (passed to :func:`isrect`).
         - **f**, optional: File object or name (passed to :func:`isrect`).
 
@@ -2643,10 +2615,10 @@ def curv2rect(gg, mode="warn", tol=1.e-2, f=None):
     if gg is None: return
     if not isrect(gg, tol=tol, f=f):
         if mode=="warn":
-            warn("Grid seems not trully rectangular. Not converted.", VACUMMWarning)
+            warn("Grid seems not trully rectangular. Not converted.", vacumm.VACUMMWarning)
             return gg
         elif mode=="raise":
-            raise VACUMMError('Cannot convert to rectangular grid')
+            raise vacumm.VACUMMError('Cannot convert to rectangular grid')
         if mode is False or mode=="none":
             return gg
 
@@ -2740,8 +2712,9 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=F
     """
 
     # Bounds and resolution
-    dx, dy = resol(gg, proj='merc')
-    m = vcgb.get_map(gg, resol=None, proj='merc')
+    xx, yy = get_xy(xx, yy)
+    dx, dy = resol((xx, yy), proj='merc')
+    m = vcgb.get_map((xx, yy), resol=None, proj='merc')
     x0, y0 = m(lon0, lat0)
     x1, y1 = m(lon1, lat1)
     Dx = N.abs(x1-x0)

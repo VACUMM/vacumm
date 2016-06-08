@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Classes for all plots"""
-# Copyright or © or Copr. Actimar/IFREMER (2012-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2012-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -34,7 +34,6 @@
 #
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-
 import os
 import re
 from collections import OrderedDict
@@ -66,25 +65,21 @@ from matplotlib.ticker import FormatStrFormatter, Formatter, Locator, \
 from matplotlib.transforms import offset_copy
 from mpl_toolkits.basemap import Basemap
 
-from ._ext_plot import DropShadowFilter, FilteredArtistList, GrowFilter
-from .atime import mpl, comptime, strftime, is_numtime, numtime
-from .axes import check_axes, istime, axis_type, set_order, get_order, merge_orders, \
-    check_order, order_match, isaxis
-from .color import get_cmap, cmap_magic, cmap_rainbow, RGB, land, whiten, darken, RGBA
+from vacumm import VACUMMError
+from vacumm.config import get_config_value
+from .misc import (kwfilter, dict_check_defaults, dict_copy_items, cp_atts,
+    basic_auto_scale, geo_scale)
+from ._ext_plot import (FilteredArtistList, DropShadowFilter, GrowFilter,
+    LightFilter)
 from .docstrings import docfiller
-from .filters import generic2d
-from .grid import get_axis, meshbounds, meshgrid, var2d
-from .grid.masking import resol_mask
-from .misc import kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts, \
-    auto_scale, zoombox, dict_check_defaults, basic_auto_scale, dict_copy_items, \
-    dict_merge
-from .phys.units import deg2m, tometric, m2deg
+from .units import deg2m, tometric
 from .remote import OutputWorkFile
-from ..config import get_config_value
-
-
-MA = N.ma
-
+from .color import get_cmap, darken, whiten
+from .grid import meshbounds, get_axis, meshgrid
+from .filters import generic2d
+from .basemap import create_map
+from .axes import set_order, isaxis, axis_type
+from .atime import is_numtime, numtime
 
 
 __all__ = ['PlotError','Plot', 'Plot1D', 'Curve', 'Bar', 'Stick', 'Plot2D', 'Map', 'Hov', 'QuiverKey',
@@ -92,7 +87,7 @@ __all__ = ['PlotError','Plot', 'Plot1D', 'Curve', 'Bar', 'Stick', 'Plot2D', 'Map
     'AutoDateMinorLocator', 'AutoDualDateFormatter', 'DualDateFormatter',
     'MinuteLabel', 'Section', 'twinxy']
 
-class PlotError(Exception):
+class PlotError(VACUMMError):
     pass
 
 class Plot(object):
@@ -2306,7 +2301,7 @@ class Plot(object):
         if figfile is None: return
 
         # Remote output file
-        rem = figfile if isinstance(figfile, OutputWorkFile) else False
+        rem = figfile if isinstance(figfile, vcr.OutputWorkFile) else False
         if rem: figfile = figfile.local_file
 
         # Extension
@@ -3319,7 +3314,7 @@ class ScalarMappable:
           It sets the attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.nmax_levels`.
         - **nmax**, optional: Same as **nmax_levels**.
           It sets the attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.keepminmax`.
-        - **cmap**, optional: Colormap name (see :func:`vacumm.misc.color.get_cmap`).
+        - **cmap**, optional: Colormap name (see :func:`vcc.get_cmap`).
           If not specified, it is taken from
           config section ``[vacumm.misc.plot]`` and config option ``cmap``, as a string
           that defaults to ``magic``.
@@ -3414,7 +3409,7 @@ class ScalarMappable:
                 - ``"degrees"``: Use :func:`~vacumm.misc.misc.geo_scale`.
                 - `A callable: Use it to auto scale. It should accept
                   the follwing keywords: vmin, vmax, nmax, keepminmax.
-             
+
         """
         # Cache
         levels = self.get_obj('levels')
@@ -3569,7 +3564,7 @@ class ScalarMappable:
 
         :Params:
 
-            - **cmap**, optional: Colormap name (see :func:`vacumm.misc.color.get_cmap`).
+            - **cmap**, optional: Colormap name (see :func:`vcc.get_cmap`).
               It defaults to ``"magic"``.
             - **nocache**, optional: Once cmap is computed, it is stored
               in cache. If ``nocache is True``, first check cache before
@@ -3596,13 +3591,13 @@ class ScalarMappable:
             cmap = getattr(color, 'cmap_'+cmap)(self.levels, **kwargs)
 
         elif not isinstance(cmap, Colormap):
-            cmap = get_cmap(cmap, **kwargs)
+            cmap = vcc.get_cmap(cmap, **kwargs)
         if tint is None: tint = 0
         tint = N.clip(tint, -1, 1)
         if tint<0:
-            cmap = darken(cmap, -tint)
+            cmap = vcc.darken(cmap, -tint)
         elif tint>0:
-            cmap = whiten(cmap, tint)
+            cmap = vcc.whiten(cmap, tint)
         self._cmap = cmap
         return cmap
     def set_cmap(self, cmap):
@@ -4371,18 +4366,18 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
                 for i, axis in enumerate([yaxis, xaxis]):
                     c = getattr(axis, 'axis', '-').lower()
                     if order[i]=='-' and c!='-': order[i] = c
-                set_order(self.data[ivar], order)
+                vca.set_order(self.data[ivar], order)
                 self.data[ivar]._nogridorder = True
         xax = get_axis(self.data[0], 1, strict=True, geo=False)
         if xaxis is None:
             xaxis = xax
-        elif not isaxis(xaxis):
+        elif not vca.isaxis(xaxis):
             xaxis = MV2.array(xaxis, copy=0)
             cp_atts(xax, xaxis, overwrite=False)
         yax = get_axis(self.data[0], 0, strict=True, geo=False)
         if yaxis is None:
             yaxis = yax
-        elif not isaxis(yaxis):
+        elif not vca.isaxis(yaxis):
             yaxis = MV2.array(yaxis, copy=0)
             cp_atts(yax, yaxis, overwrite=False)
 
@@ -5355,7 +5350,7 @@ class Map(Plot2D):
             if lat_min is None: lat_min = self.lat.min()
             if lat_max is None: lat_max = self.lat.max()
             projection = kwargs.pop('proj', projection)
-            from vacumm.misc.grid.basemap import create_map
+            from basemap import create_map
             resolution = kwargs.pop('res', resolution)
 
             self.map = create_map(lon_min, lon_max, lat_min, lat_max, projection=projection,
@@ -5981,7 +5976,7 @@ def get_axis_scale(axis, type=None):
     :Return: A scalar which defaults to ``1.``
     """
     if type is None:
-        type = axis_type(axis).lower()
+        type = vca.axis_type(axis).lower()
     units = getattr(axis, 'units', '')
     if type=='-' or not units: return 1.
     if type in ['x', 'y']:
@@ -6423,7 +6418,7 @@ def add_agg_filter(objs, filter, zorder=None, ax=None):
     :Params:
 
         - **objs**: :class:`matplotlib.artist.Artist` instances.
-        - **filter**: :class:`vacumm.misc._ext_plot.BaseFilter` instance.
+        - **filter**: :class:`BaseFilter` instance.
         - **zorder**, optional: zorder (else guess from ``objs``).
         - **ax**, optional: class:`matplotlib.axes.Axes` instance.
 
@@ -6885,7 +6880,7 @@ def hlitvs(color='.95', axis='x', units='ticks', axes=None, maxticks=10, **kwarg
     if tmax!=ticks[-1]: ticks.append(tmax)
 
     # Patch
-    alpha = RGBA(color)[-1]
+    alpha = vcc.RGBA(color)[-1]
     kwargs.setdefault('zorder', 0)
     kwargs.update(facecolor=color)
     kwargs.setdefault('linewidth', 0)

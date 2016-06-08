@@ -33,24 +33,29 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-__all__  = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_map',
-'GSHHS_BM', 'merc', 'proj', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
-'create_map']
-__all__.sort()
+import os, cPickle, stat
 
 import numpy as N
 from mpl_toolkits.basemap import Basemap, __version__ as basemap_version
 from mpl_toolkits.basemap.proj import Proj
 from matplotlib import get_configdir
-import os, cPickle, stat
 from _geoslib import Polygon
-#FIXME:imports
 from genutil import minmax
-from ...misc.io import Shapes
-from misc import get_xy
-from ...misc.phys.constants import R as rsphere_mean
-from ...misc.misc import kwfilter, dict_check_defaults
-from vacumm.config import get_config_value
+
+import vacumm.config
+import misc as vcg
+from .poly import create_polygon
+import vacumm.misc.misc as vcm
+import vacumm.misc.phys.constants as vcpc
+import vacumm.misc.io as vcio
+
+__all__  = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_map',
+'GSHHS_BM', 'merc', 'proj', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
+'create_map']
+__all__.sort()
+
+
+
 
 #: Earth radius of wgs84 ellipsoid
 RSHPERE_WGS84 = (6378137.0,6356752.3141)
@@ -137,7 +142,7 @@ def clean_cache(mapdir=None, maxsize=None):
         mapdir = os.path.join(get_configdir(), 'basemap', 'cached_maps')
     cache_size = dirsize(mapdir)
     if maxsize is None:
-        maxsize = eval(get_config_value('vacumm.misc.grid.basemap', 'max_cache_size'))
+        maxsize = eval(vacumm.config.get_config_value('vacumm.misc.grid.basemap', 'max_cache_size'))
     if cache_size>maxsize:
         files = [os.path.join(mapdir, ff) for ff in os.listdir(mapdir)]
         files.sort(cmp=lambda f1, f2: cmp(os.stat(f1)[8], os.stat(f2)[8]))
@@ -186,8 +191,8 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
 
     .. todo:: Merge :func:`get_map` with :func:`create_map`
     """
-    kwmap = kwfilter(kwargs, 'basemap', defaults={'area_thresh':0.})
-    kwmap.update(kwfilter(kwargs, 'map_'))
+    kwmap = vcm.kwfilter(kwargs, 'basemap', defaults={'area_thresh':0.})
+    kwmap.update(vcm.kwfilter(kwargs, 'map_'))
 
     # Map arguments
     kwargs.setdefault('area_thresh', 0.)
@@ -299,7 +304,7 @@ def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
     if gg is None: auto = False
     kwmap = dict(resolution=res, projection=proj)
     if auto:
-        xx, yy = misc.get_xy(gg, proj=False)
+        xx, yy = vcg.get_xy(gg, proj=False)
         lat_center = yy.mean()
         lon_center = xx.mean()
         kwmap.update(
@@ -312,7 +317,7 @@ def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
         lon_center = 0.
     return Basemap(lat_ts=lat_center, lat_0=lat_center, lon_0=lon_center,  **kwmap)
 
-class GSHHS_BM(Shapes):
+class GSHHS_BM(vcio.Shapes):
     """Shoreline from USGS using Basemap
 
     Initialized with a valid Basemap instance with resolution not equal to None,
@@ -324,7 +329,7 @@ class GSHHS_BM(Shapes):
     def __init__(self, input=None, clip=None, sort=True, reverse=True, proj=False, **kwargs):
 
         # From another Shapes instance
-        if isinstance(input, Shapes):
+        if isinstance(input, vcio.Shapes):
             if clip is None: # m is not None and
                 clip = [input.xmin, input.ymin, input.xmax, input.ymax]
             input = input._m
@@ -384,8 +389,8 @@ class GSHHS_BM(Shapes):
             all_verts.append(N.asarray(verts).T)
 
         # Final initialization
-        Shapes.__init__(self, all_verts, m=m, clip=clip, sort=sort, proj=proj,
-            shapetype=Shapes.POLYGON, **kwargs)
+        vcio.Shapes.__init__(self, all_verts, m=m, clip=clip, sort=sort, proj=proj,
+            shapetype=vcio.Shapes.POLYGON, **kwargs)
 
 
 #    def __init__(self, input=None, clip=None, sort=True, reverse=True, proj=False, **kwargs):
@@ -530,7 +535,7 @@ def get_proj(gg=None, proj=None, **kwargs):
     """
     if callable(proj): return proj
     if gg is not None:
-        x,y = get_xy(gg, num=True)
+        x,y = vcg.get_xy(gg, num=True)
         xmin, ymin, xmax, ymax = x.min(), y.min(), x.max(), y.max()
     else:
         xmin, ymin, xmax, ymax = -180, -90, 180, 90
@@ -539,13 +544,12 @@ def get_proj(gg=None, proj=None, **kwargs):
     ymax = min(ymax, 89.99)
     ymin = max(ymin, -89.99)
     if not isinstance(proj, str):
-        proj = get_config_value('vacumm.misc.grid.basemap', 'proj')
-    dict_check_defaults(projparams, R=rsphere_mean, units='m',
+        proj = vacumm.config.get_config_value('vacumm.misc.grid.basemap', 'proj')
+    vcm.dict_check_defaults(projparams, R=vcpc.R, units='m',
         proj=proj,
         lat_ts = N.median(y) if len(y)>10 else N.mean(y),
         lon_0 = N.median(x) if len(x)>10 else N.mean(x))
-    dict_check_defaults(projparams, lat_0=projparams['lat_ts'])
+    vcm.dict_check_defaults(projparams, lat_0=projparams['lat_ts'])
     return Proj(projparams, xmin, ymin, xmax, ymax)
 
 
-from masking import polygons, create_polygon, proj_shape, clip_shape

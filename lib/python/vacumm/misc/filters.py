@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 """Various 1d and 2D filters"""
 
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -33,29 +33,34 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-__all__ = ['generic1d', 'shapiro1d', 'gaussian1d', 'hamming1d','generic2d', 'shapiro2d', 'gaussian2d', 'deriv', 'deriv2d',
-    'norm_atan','running_average', 'bartlett1d', 'kaiser1d', 'hanning1d', 'blackman1d']
-__all__.sort()
+import warnings
 
 import numpy as N,MV2, cdms2
 from genutil.filters import *
-MA = N.ma
-MV = MV2
-cdms = cdms2
 import scipy.signal
 from scipy.signal import convolve2d
-
-from misc import cp_atts
-from phys.units import deg2m
 from pylab import meshgrid
-from axes import islon,islat
-import warnings
+
+from .units import deg2m
+from .axes import islon, islat
+
+__all__ = ['generic1d', 'shapiro1d', 'gaussian1d', 'hamming1d','generic2d',
+    'shapiro2d', 'gaussian2d', 'deriv', 'deriv2d',
+    'norm_atan','running_average',
+    'bartlett1d', 'kaiser1d', 'hanning1d', 'blackman1d']
+__all__.sort()
+
+
+
 
 try:
     from numpy import ComplexWarning
     warnings.filterwarnings('ignore', 'Casting complex values', ComplexWarning)
 except ImportError: pass
 
+MA = N.ma
+MV = MV2
+cdms = cdms2
 
 def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
     """Generic 1D filter applied to :mod:`MV2` variables using convolution.

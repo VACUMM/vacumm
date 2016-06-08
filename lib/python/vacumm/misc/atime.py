@@ -2,7 +2,7 @@
 """
 Time utilities
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -50,15 +50,9 @@ import MV2
 import cdtime
 import cdutil
 
-import axes as vca
-import grid as vcg
-import io as vcio
-import misc as vcm
 from vacumm import VACUMMError
-
-
-#from pytz import timezone, all_timezones
-
+from .misc import cp_atts, filter_selectors, kwfilter, split_selector
+from .axes import istime, check_axes, create_time
 
 
 # Attributes
@@ -237,7 +231,7 @@ def add(mytime, amount, units=None, copy=True):
     """
 
     # Time axis
-    if vca.istime(mytime):
+    if istime(mytime):
         if copy:
             mytime = mytime.clone()
         if units is None:
@@ -314,7 +308,7 @@ def mpl(mytimes, copy=True):
 
     :Example:
 
-        >>> taxis = vca.create_time((0, 10.), 'hours since 2000-01-01')
+        >>> taxis = create_time((0, 10.), 'hours since 2000-01-01')
         >>> maxis = mpl(taxis)
         >>> print maxis[0]
         730120.0
@@ -330,7 +324,7 @@ def mpl(mytimes, copy=True):
         return mytimes
 
     # Time axis
-    if vca.istime(mytimes):
+    if istime(mytimes):
         if copy: mytimes = mytimes.clone()
         mytimes._data_ = mytimes._data_ .astype('d')
         if hasattr(mytimes, 'matplotlib_compatible') and mytimes.matplotlib_compatible:
@@ -421,14 +415,14 @@ def ch_units(mytimes, newunits, copy=True):
 
     # If a variable with time axis
     if cdms.isVariable(mytimes):
-        vca.check_axes(mytimes)
+        check_axes(mytimes)
         torder = mytimes.getOrder().find('t')
         if torder < 0:
             raise TypeError('Variable must have a valid time axis')
         return ch_units(mytimes.getTime(), newunits, copy=False)
 
     # Time axis
-    if vca.istime(mytimes):
+    if istime(mytimes):
         if copy: mytimes = mytimes.clone()
         mytimes._data_ = mytimes._data_ .astype('d')
         mytimes.toRelativeTime(newunits)
@@ -496,7 +490,7 @@ def _nummode_(nummode):
             return JULIANDAY_TIME_UNITS_NASA
     if are_valid_units(nummode):
         return nummode
-    raise VACUMMError('nummode must be either a valid time units'
+    raise vacumm.VACUMMError('nummode must be either a valid time units'
         ' string, or within: '+', '.join(valid_nummodes))
 
 def comptime(mytime, nummode='mpl'):
@@ -627,7 +621,7 @@ def reltime(mytime, units):
         :func:`comptime` :func:`datetime` :func:`strtime`   :func:`numtime`
     """
     # Time axis
-    if vca.istime(mytime):
+    if istime(mytime):
         if are_same_units(units, mytime.units):
             return mytime
         return mytime.toRelativeTime(mytime)
@@ -658,7 +652,7 @@ def datetime(mytimes, nummode='mpl'):
     # Numeric mode
     tunits = _nummode_(nummode)
 
-    if vca.istime(mytimes):
+    if istime(mytimes):
         mytimes = comptime(mytimes, nummode=tunits)
     LH = _LH_(mytimes)
     mytimes = LH.get()
@@ -878,7 +872,7 @@ def is_axistime(mytime):
         :func:`is_reltime()` :func:`is_cdtime()`   :func:`is_time()`
     """
 
-    return vca.istime(mytime)
+    return istime(mytime)
 
 def is_strtime(mytime):
     """Check if a time is a valid string date
@@ -1076,7 +1070,7 @@ class Gaps(cdms.tvariable.TransientVariable):
 
         >>> import vacumm.misc.axes as vca
         >>> import MV2
-        >>> time = vca.create_time([1,2,4,5],units='days since 2000')
+        >>> time = create_time([1,2,4,5],units='days since 2000')
         >>> var = MV2.arange
 
     """
@@ -1093,7 +1087,7 @@ class Gaps(cdms.tvariable.TransientVariable):
             time_units =  mytime.units
         except:
             raise RuntimeError, 'Your time axis needs units'
-        kwdt = vcm.kwfilter(kwargs, 'dt')
+        kwdt = kwfilter(kwargs, 'dt')
 
         if dt is None: dt = get_dt(mytime, **kwdt)
 
@@ -1170,6 +1164,7 @@ class Gaps(cdms.tvariable.TransientVariable):
         if not self.ngap:
             print 'No gaps to print'
             return
+        from .io import col_printer
         cp = vcio.col_printer([['LENGTH',7,'%i'],['START',22,'%s'],['END',22,'%s']],**kwargs)
         for igap in xrange(self.ngap):
             cp(self._gaps[igap],self._ctime[igap*2],self._ctime[igap*2+1])
@@ -1207,7 +1202,7 @@ class Gaps(cdms.tvariable.TransientVariable):
         P.gca().xaxis_date(None)
         P.gca().autoscale_view()
         P.legend(('Gaps',),numpoints=2,loc=0)
-        xdate(**vcm.kwfilter(kwargs,'xdate'))
+        xdate(**kwfilter(kwargs,'xdate'))
         P.xlim(min(self._times),max(self._times))
         P.ylim(0,1)
         P.yticks([])
@@ -1301,7 +1296,7 @@ def get_dt(axis, units=None):
     :See also: :func:`unit_type()`
     """
 
-    assert vca.istime(axis), 'You must specify a valid time axis'
+    assert istime(axis), 'You must specify a valid time axis'
     assert len(axis) > 1, 'your time axis must have at least 2 elements'
     if units is not None:
         units = unit_type(units, True)
@@ -1348,8 +1343,8 @@ def compress(data):
     # Select data
     res = MV2.take(data, slab)
     res.getAxis(0)[:] = tt[slab]
-    vcm.cp_atts(data,res,id=True)
-    vcm.cp_atts(tt,res.getAxis(0),id=True)
+    cp_atts(data,res,id=True)
+    cp_atts(tt,res.getAxis(0),id=True)
     if tt.getBounds() is not None:
         res.getAxis(0).setBounds(tt.getBounds()[slab])
     return res(order=order)
@@ -1398,7 +1393,7 @@ def reduce_old(data, comp=True, fast=True):
     nt = len(tt)
     tv = tt.getValue().astype('d')
     if tt.getBounds() is None:
-        tt.setBounds(vcg.bounds1d(tt[:]))
+        tt.setBounds(bounds1d(tt[:]))
     bb = tt.getBounds().astype('d')
     dt = tv[1:]-tv[:-1]
     dt = N.concatenate((dt,[1.]))
@@ -1441,7 +1436,7 @@ def reduce_old(data, comp=True, fast=True):
 
     # New time axis
     atime = cdms.createAxis(atime,bounds=abounds)
-    vcm.cp_atts(tt,atime,id=True)
+    cp_atts(tt,atime,id=True)
     atime.designateTime(calendar=cdtime.DefaultCalendar)
 
     # New variable
@@ -1453,7 +1448,7 @@ def reduce_old(data, comp=True, fast=True):
     if data.getGrid() is not None:
         set_grid(adata,data.getGrid())
         #adata.setGrid(data.getGrid())
-    vcm.cp_atts(data,adata,id=True)
+    cp_atts(data,adata,id=True)
     del data
     return adata
 
@@ -1571,7 +1566,7 @@ def hourly_exact(data,time_units=None,maxgap=None, ctlims=None):
     htaxis.units = hunits
     htaxis.designateTime(calendar=cdtime.DefaultCalendar)
     htvalue = htaxis.getValue()
-    htaxis.setBounds(vcg.bounds1d(htvalue))
+    htaxis.setBounds(bounds1d(htvalue))
 
     # Create the new variable
     sh = list(data.shape)
@@ -1580,7 +1575,7 @@ def hourly_exact(data,time_units=None,maxgap=None, ctlims=None):
     axes[0] = htaxis
     hdata = MV2.zeros(sh,typecode=data.dtype.char,savespace=1)
     hdata[:] *= MV2.masked
-    vcm.cp_atts(data,hdata,id=True)
+    cp_atts(data,hdata,id=True)
     hdata.setAxisList(axes)
     set_grid(hdata,data.getGrid())
     #hdata.setGrid(data.getGrid())
@@ -1642,7 +1637,7 @@ def trend(var):
     # Trend
     sh = var.shape
     var_trend = MV2.masked_array(MV2.resize(coefs[0],sh) * tt + MV2.resize(coefs[1],sh))
-    vcm.cp_atts(var,var_trend)
+    cp_atts(var,var_trend)
     var_trend.id = var.id+'_trend'
     var_trend.name = var_trend.id
     if var_trend.attributes.has_key('long_name'):
@@ -1659,7 +1654,7 @@ def detrend(var):
     from grid.misc import set_grid
 
     var_detrend = var - trend(var)
-    vcm.cp_atts(var,var_detrend)
+    cp_atts(var,var_detrend)
     var_detrend.id = 'detrended_'+var.id
     var_detrend.name = var_detrend.id
     if var_detrend.attributes.has_key('long_name'):
@@ -1739,20 +1734,20 @@ def tz_to_tz(mytime, old_tz, new_tz, copy=True):
     try:
         from pytz import timezone
     except ImportError:
-        raise VACUMMError('You must install pytz package to add time zone support'
+        raise vacumm.VACUMMError('You must install pytz package to add time zone support'
             ' to vacumm')
     if isinstance(old_tz,basestring): old_tz = timezone(old_tz)
     if isinstance(new_tz,basestring): new_tz = timezone(new_tz)
 
     # Variable
     if cdms.isVariable(mytime):
-        vca.check_axes(mytime)
+        check_axes(mytime)
         axis = mytime.getTime()
         assert axis is not None, 'Your variable must have a valid time axis'
         return tz_to_tz(axis, old_tz, new_tz, copy=copy)
 
     # Time axis case
-    if vca.istime(mytime):
+    if istime(mytime):
         if copy: mytime = mytime.clone()
         ctimes = mytime.asComponentTime()
         for it,ct in enumerate(ctimes):
@@ -1807,7 +1802,7 @@ def tzname_to_tz(mytzname):
     try:
         from pytz import all_timezones
     except ImportError:
-        raise VACUMMError('You must install pytz package to add time zone support'
+        raise vacumm.VACUMMError('You must install pytz package to add time zone support'
             ' to vacumm')
     for name in all_timezones:
         tz = timezone(name) #FIXME: timezone
@@ -1918,22 +1913,26 @@ class SpecialDateFormatter(DateFormatter):
 
 
 
-def interp(vari,outtimes,squeeze=1, **kwargs):
+def interp(vari, outtimes, squeeze=1, **kwargs):
     """Linear interpolation in time
+
+    This is a simple call to :func:`~vacumm.misc.regridding.interp1d`.
 
     :Params:
 
-        - **vari****: A cdms variable with a time axis
+        - **vari****: A cdms variable with a time axis or an argument to
+          :func:`~vacumm.misc.axes.create_time` like a list of dates.
         - **outtimes**: A time axis, or a list (or single element) of date strings, comptime, reltime, datetime times.
         - *squeeze*: Remove uneeded output dimensions [default: 1]
         - all other keywords are passed to :func:`~vacumm.misc.grid.regridding.interp1d`.
     """
     # Convert to time axis
-    if not vca.istime(outtimes):
-        outtimes = vca.create_time(outtimes)
+    if not istime(outtimes):
+        outtimes = create_time(outtimes)
 
     # Call to interp1d
-    varo = vcg.regridding.interp1d(vari, outtimes, **kwargs)
+    from .regridding import interp1d
+    varo = interp1d(vari, outtimes, **kwargs)
 
     # Squeeze?
     if squeeze:
@@ -2086,7 +2085,7 @@ def daily_bounds(taxis, hstart=0):
         taxis = taxis.getTime()
         if taxis is None:
             raise ValueError('Input variable has no valid time axis')
-    elif not vca.istime(taxis):
+    elif not istime(taxis):
         raise ValueError('Input axis in not a valid time axis')
     bb = N.zeros((len(taxis),2))
     tu = taxis.units
@@ -2112,7 +2111,7 @@ def hourly_bounds(taxis, mstart=0):
         taxis = taxis.getTime()
         if taxis is None:
             raise ValueError('Input variable has no valid time axis')
-    elif not vca.istime(taxis):
+    elif not istime(taxis):
         raise ValueError('Input axis in not a valid time axis')
     bb = N.zeros((len(taxis),2))
     tu = taxis.units
@@ -2169,7 +2168,7 @@ def reduce(vari, geterr=False, **kwargs):
     # Init output
     nto = len(it_lasts)
     varo = MV2.zeros((nto,)+vari.shape[1:], vari.dtype)
-    vcm.cp_atts(vari, varo)
+    cp_atts(vari, varo)
     if vari.getGrid() is not None: set_grid(varo,vari.getGrid())
     #varo.setGrid(vari.getGrid())
     for i,ax in enumerate(vari.getAxisList()[1:]):
@@ -2199,7 +2198,7 @@ def reduce(vari, geterr=False, **kwargs):
         it_first = it_last+1
 
     # Finish
-    dtime = vca.create_time(dtime, taxis.units)
+    dtime = create_time(dtime, taxis.units)
     if bb is not None:
         dtime.setBounds(dbounds)
     varo.setAxis(0, dtime)
@@ -2236,7 +2235,7 @@ def add_margin(interval, lmargin, rmargin=None):
     """
     # Interval
     if not is_interval(interval):
-        raise VACUMMError('Wrong time interval')
+        raise vacumm.VACUMMError('Wrong time interval')
     bb = interval[2] if len(interval)>2 else None
 
     # Format margin
@@ -2258,7 +2257,7 @@ def add_margin(interval, lmargin, rmargin=None):
                     newmargin = (dt/margin, 'seconds')
             elif not isinstance(margin, (tuple, list)) and len(margin)<2 and \
                 (not isinstance(margin[0], (int, float) or not isinstance(margin[1], basestring))):
-                raise VACUMMError('Wrong time margin')
+                raise vacumm.VACUMMError('Wrong time margin')
             else:
                 newmargin = margin
         margins[i] = list(newmargin)
@@ -2296,7 +2295,7 @@ class Intervals(object):
 
         # Global range
         if not is_interval(time_range):
-            raise VACUMMError('Wrong time interval')
+            raise vacumm.VACUMMError('Wrong time interval')
         start_date = comptime(time_range[0])
         end_date = comptime(time_range[1])
 
@@ -2535,7 +2534,7 @@ def time_split_nmax(what, nmax, roundit=True):
         raise TypeError, "Can't split a single date"
     if len(ctimes) < nmax:
         return ctimes[0], ctimes[-1]
-    taxis = vca.create_time(ctimes)
+    taxis = create_time(ctimes)
     specs = ['year', (3, 'month'), (1, 'month'), (10, 'day'), (1, 'day')]
     for i,how in enumerate(specs):
         itvs = time_split(what, how, roundit=roundit)
@@ -2695,7 +2694,7 @@ def tsel2slice_old(taxis, *args, **kwargs):
         >>> myslice = tsel2slice(taxis, slice(10,12), dict(time=slice(4,5), time=('2000','2002'))
     """
     # Inits
-    if not vca.istime(taxis): raise VACUMMError('taxis must be a valid time axis')
+    if not istime(taxis): raise vacumm.VACUMMError('taxis must be a valid time axis')
     asind = kwargs.pop('asind', False)
     nonone = kwargs.pop('nonone', False)
     fullslice = slice(*slice(None).indices(len(taxis)))
@@ -2706,7 +2705,7 @@ def tsel2slice_old(taxis, *args, **kwargs):
     for arg in args:
         if arg is None: continue
         if isinstance(arg, cdms2.selectors.Selector):
-            psel, asel = vcm.split_selector(arg) #FIXME: split_selector?
+            psel, asel = split_selector(arg) #FIXME: split_selector?
             selects.extend(_d2sel_(taxis, asel))
         elif isinstance(arg, dict):
             selects.extend(_d2sel_(taxis,arg))
@@ -2794,7 +2793,7 @@ def time_selector(*args, **kwargs):
     selector.refine(**kwargs)
 
     # Filter
-    vcm.filter_selector(selector, ids=ids, copy=False, out=out, keeppos=keeppos)
+    filter_selector(selector, ids=ids, copy=False, out=out, keeppos=keeppos)
 
     return selector
 
@@ -2823,7 +2822,7 @@ def tsel2slice(taxis, *args, **kwargs):
         >>> myslice = tsel2slice(taxis, slice(10,12), dict(time=slice(4,5), time=('2000','2002'))
     """
     # Inits
-    if not vca.istime(taxis): raise VACUMMError('taxis must be a valid time axis')
+    if not istime(taxis): raise vacumm.VACUMMError('taxis must be a valid time axis')
     asind = kwargs.pop('asind', False)
     nonone = kwargs.pop('nonone', False)
     fullslice = slice(*slice(None).indices(len(taxis)))

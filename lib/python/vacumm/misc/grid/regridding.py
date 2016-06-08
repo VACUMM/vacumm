@@ -50,12 +50,12 @@ import genutil
 from _geoslib import Point, Polygon
 
 from vacumm import VACUMMError, VACUMMWarning
+import vacumm.misc.misc
 import vacumm.misc.grid.kriging
-import vacumm.misc.grid.misc
-from vacumm.misc import axes as A
-from vacumm.misc.misc import cp_atts, intersect, kwfilter, get_atts, set_atts, closeto
-from vacumm.misc.atime import are_same_units, ch_units
-from vacumm.misc.grid.basemap import get_proj
+import vacumm.misc.grid.misc as vcg
+import vacumm.misc.axes as vca
+import vacumm.misc.atime as vct
+import vacumm.misc.grid.basemap as vcgb
 
 #MA = N.oldnumeric.ma
 MA = N.ma
@@ -171,7 +171,7 @@ def regrid1dold(vari, axo, method='auto', axis=None, xmap=None, xmapper=None, ma
 
     # Input specs
     assert cdms.isVariable(vari), 'Works only with cdms variables'
-    A.check_axes(vari)
+    vca.check_axes(vari)
     order = vari.getOrder()
     axes = vari.getAxisList()
     grid = vari.getGrid()
@@ -181,14 +181,14 @@ def regrid1dold(vari, axo, method='auto', axis=None, xmap=None, xmapper=None, ma
     missing_value = vari.getMissing()
 
     # On which axis?
-    if not A.isaxis(axo):
+    if not vca.isaxis(axo):
         axo = N.asarray(axo)
         if axo.ndim == 2:
             axo = cdms.createAxis(axo)
-#   if A.isaxis(axo): A.check_axis(axo)
+#   if vca.isaxis(axo): vca.check_axis(axo)
     if axis is None:# Guess it
-        if A.isaxis(axo): # From axis type
-            axis = order.find(A.axis_type(axo))
+        if vca.isaxis(axo): # From axis type
+            axis = order.find(vca.axis_type(axo))
         else:             # From axis length
             try: axis = list(vari.shape).index(axo.shape[0])
             except ValueError: axis = -1
@@ -298,10 +298,10 @@ def regrid1dold(vari, axo, method='auto', axis=None, xmap=None, xmapper=None, ma
         axi = axes[axis]
 
         # Special case for time axis: must have same units !
-        if (A.axis_type(axo), order[axis]) == ('t', 't') and \
-            hasattr(axi, 'units') and hasattr(axo, 'units') and \
-            not are_same_units(axi.units, axo.units):
-            axi = ch_units(axi, axo.units, copy=True)
+        if ((vca.axis_type(axo), order[axis]) == ('t', 't') and
+                hasattr(axi, 'units') and hasattr(axo, 'units') and
+                not vct.are_same_units(axi.units, axo.units)):
+            axi = vct.ch_units(axi, axo.units, copy=True)
 
     else: # Extended case
 
@@ -421,7 +421,7 @@ def _getiax_(vari, ax, axis):
 
     # A unique axis type
     if cdms2.isVariable(ax):
-        l = A.axis_type(vari.getAxis(axis))
+        l = vca.axis_type(vari.getAxis(axis))
         if l!='-' and l in ax.getOrder():
             iax = ax.getOrder().index(l)
 
@@ -558,7 +558,7 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
     if xmap is not None or xmapper is not None:
         warnings.warn('xmap and xmapper keywords of regrid1d are deprecated. '
             'Please use axi/axo and iaxi/iaxo keywords instead.', VACUMMWarning)
-    A.check_axes(vari)
+    vca.check_axes(vari)
     order = vari.getOrder()
     axes = vari.getAxisList()
     grid = vari.getGrid()
@@ -574,8 +574,8 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
     # Working data axis
     if axis is None:# Guess it
 
-        if A.isaxis(axo): # From axis type
-            axis = order.find(A.axis_type(axo))
+        if vca.isaxis(axo): # From axis type
+            axis = order.find(vca.axis_type(axo))
 
         elif axon.ndim==1:  # From axis length
             axis = _subshape_(vari, axo)
@@ -598,10 +598,10 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
     if axi is None: axi = vari.getAxis(axis)
     # - special case for time axis: must have same units !
     dxi2o = 1.
-    if (A.axis_type(axo), order[axis]) == ('t', 't') and \
-        hasattr(axi, 'units') and hasattr(axo, 'units') and \
-        not are_same_units(axi.units, axo.units):
-        axi = ch_units(axi, axo.units, copy=True)
+    if ((vca.axis_type(axo), order[axis]) == ('t', 't') and
+            hasattr(axi, 'units') and hasattr(axo, 'units') and
+            not vct.are_same_units(axi.units, axo.units)):
+        axi = vct.ch_units(axi, axo.units, copy=True)
         if errl is not None:
             axou = axo.units.split(1)[0] + axi.units.split(1)[1]
             dxi2o = cdtime.reltime(1, axou)-cdtime.reltime(0, axou)
@@ -776,7 +776,7 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
         else:
             erro.long_name = 'Error'
         erro.setMissing(missing_value)
-    if A.isaxis(axo):
+    if vca.isaxis(axo):
         axes[axis] = axo
     elif cdms2.isVariable(axo):
         axes[axis] = axo.getAxis(iaxo_bak)
@@ -1029,7 +1029,7 @@ def fill1d(vari, axis=0, method='linear', maxgap=0):
 
         # Compressed axis
         caxis = cdms2.createAxis(iaxis[keep])
-        cp_atts(iaxis, caxis)
+        vacumm.misc.misc.cp_atts(iaxis, caxis)
 
         # Compressed variable
         vari2dm[:] = vari2d[iy].asma()
@@ -1085,8 +1085,8 @@ def fill2d(var, xx=None, yy=None, mask=None, copy=True, **kwargs):
     assert var.ndim >= 2, 'Input var must be at least 2D'
 
     # Get Axes
-    xo = vacumm.misc.grid.misc.get_axis(var, -1)
-    yo = vacumm.misc.grid.misc.get_axis(var, -2)
+    xo = vcg.get_axis(var, -1)
+    yo = vcg.get_axis(var, -2)
     if xx is None: xx = xo.getValue()
     if yy is None: yy = yo.getValue()
     if xx.ndim != 2 or yy.ndim !=2:
@@ -1578,9 +1578,9 @@ class _GridDataHelper_(object):
             if self.x[:].ndim == 2 or self.y[:].ndim == 2:
                 self.x, self.y = axes2d(self.x, self.y)
             else:
-                self.x = A.create_lon(self.x)
-                self.y = A.create_lat(self.y)
-        if A.isaxis(self.x) or A.isaxis(self.y): # Real axes
+                self.x = vca.create_lon(self.x)
+                self.y = vca.create_lat(self.y)
+        if vca.isaxis(self.x) or vca.isaxis(self.y): # Real axes
             ggo = get_grid(ggo)
             self.x = get_axis(ggo, -1)
             self.y = get_axis(ggo, -2)
@@ -1596,7 +1596,7 @@ class _GridDataHelper_(object):
         # - grid object
         if isgrid(ggo):
             self.grid = ggo
-        elif A.islon(self.x) and A.islat(self.y):
+        elif vca.islon(self.x) and vca.islat(self.y):
             self.grid = create_grid(self.x, self.y, mask=mask)
             self.geo = True
         else:
@@ -1755,7 +1755,7 @@ def xy2xy(xi, yi, zi, xo, yo, nl=False, proj=True, **kwargs):
     proj = kwargs.pop('geo', proj)
     if proj:
         if not callable(proj):
-            proj = get_proj((xi,yi))
+            proj = vcgb.get_proj((xi,yi))
         xi, yi = proj(xi, yi)
         xo, yo = proj(xo, yo)
 
@@ -1845,7 +1845,7 @@ def xy2xy(xi, yi, zi, xo, yo, nl=False, proj=True, **kwargs):
 
     # cdms
     zo = MV2.asarray(zo)
-    set_atts(zo, atts)
+    vacumm.misc.misc.set_atts(zo, atts)
     for i, ax in axes[:-1]:
         zo.setAxis(i, ax)
     return zo
@@ -1881,12 +1881,12 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
     """
 
     # Prefer 1D axes
-    grid = vacumm.misc.grid.misc.get_grid(vari)
-    grid = vacumm.misc.grid.misc.curv2rect(grid, mode=False)
+    grid = vcg.get_grid(vari)
+    grid = vcg.curv2rect(grid, mode=False)
 
     # Format
     # - input
-    xi, yi = vacumm.misc.grid.misc.get_xy(grid, num=True)
+    xi, yi = vcg.get_xy(grid, num=True)
     rect = xi.ndim==1
     mv = vari.getMissing()
     if mv is None:
@@ -1952,11 +1952,11 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
     # Output
     zo.shape = vari.shape[:-2]+(zo.shape[-1], )
     varo = MV2.masked_values(zo, mv, copy=0)
-    cp_atts(vari, varo, id=True)
+    vacumm.misc.misc.cp_atts(vari, varo, id=True)
     if outaxis=='auto': outaxis = None
     if outaxis is None or outaxis in ['m', 'pos', 'd', 'dist']:
         if len(xo)>1:
-            #xom, yom = get_proj((xo, yo))(xo, yo)
+            #xom, yom = vcgb.get_proj((xo, yo))(xo, yo)
             if outaxis is None:
                 outaxis = 'lon' if N.ptp(xo)>N.ptp(yo) else 'lat'
                 if ((outaxis=='lon' and (N.diff(N.sign(N.diff(xo)))!=0).any() or (N.diff(xo)==0).any()) or
@@ -1967,9 +1967,9 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
         else:
             outaxis = 'lon'
     if outaxis in ['x', 'lon']:
-        outaxis = A.create_lon(xo)
+        outaxis = vca.create_lon(xo)
     elif outaxis in ['y', 'lat']:
-        outaxis = A.create_lat(yo)
+        outaxis = vca.create_lat(yo)
     elif outaxis in ['m', 'd', 'pos', 'dist']:
         dist = N.concatenate(([0], get_distances(xo[1:], yo[1:], xo[:-1], yo[:-1],
             pairwise=True, mode=distmode))).cumsum()*0.001
@@ -1978,7 +1978,7 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
         outaxis = cdms2.createAxis(dist, id='position')
         outaxis.long_name = 'Distance along transect'
         outaxis.units = 'km'
-    if outaxis is not None and not A.isaxis(outaxis):
+    if outaxis is not None and not vca.isaxis(outaxis):
         outaxis = cdms2.createAxis(outaxis, id='position')
         outaxis.long_name = 'Position along transect'
     axes = vari.getAxisList()[:-2]
@@ -2032,7 +2032,7 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
     if isinstance(lons, tuple): # Find coordinates
         lon0, lon1 = lons
         lat0, lat1 = lats
-        lons, lats = vacumm.misc.grid.misc.transect_specs(var, lon0, lat0, lon1, lat1, subsamp=subsamp)
+        lons, lats = vcg.transect_specs(var, lon0, lat0, lon1, lat1, subsamp=subsamp)
         single = False
     elif times is None and cdms2.isVariable(lons) and lons.getTime() is not None:
         times = lons.getTime()
@@ -2056,8 +2056,8 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
         if ko: outaxis = var.getAxis(-1)
 
         # Time axis
-        if not A.istime(times):
-            times = A.create_time(times)
+        if not vca.istime(times):
+            times = vca.create_time(times)
 
         # Interpolate
         if len(times)!=len(lons):
@@ -2119,11 +2119,11 @@ def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
     varo = op.zeros(sho, vari[:].dtype)
     if isinstance(vari, TransientAxis):
         varo = cdms.createAxis(varo.astype('d'))
-        cp_atts(vari, varo, id=True)
+        vacumm.misc.misc.cp_atts(vari, varo, id=True)
         geo = False
     elif cdms.isVariable(vari):
         varo = cdms.createVariable(varo)
-        cp_atts(vari, varo, id=True)
+        vacumm.misc.misc.cp_atts(vari, varo, id=True)
     else:
         geo = False
 
@@ -2181,7 +2181,7 @@ def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
                 for i in -2, -1:
 #                   varo.setAxis(i, refine(vari.getAxis(i), factor))
                     varo.setAxis(i, (yo, xo)[i])
-                    varo.setGrid(vacumm.misc.grid.misc.create_grid(xo,yo,fmasko))
+                    varo.setGrid(vcg.create_grid(xo,yo,fmasko))
 
     return varo
 _cellave_methods = ['conservative', 'remap', 'cellave', 'conserv']
@@ -2333,7 +2333,7 @@ def regrid2dold(vari, ggo, method='auto', mask_thres=.5, ext=False,
     curvedio = curvedi and curvedo
     xxi, xxo, yyi, yyo = None, None, None, None
     if geo is None:
-        geo = A.islon(loni) or A.islat(lati) or A.islon(lono) or A.islat(lato)
+        geo = vca.islon(loni) or vca.islat(lati) or vca.islon(lono) or vca.islat(lato)
 
     # Bounds
     if method in _cellave_methods+['nearest']:
@@ -2366,7 +2366,7 @@ def regrid2dold(vari, ggo, method='auto', mask_thres=.5, ext=False,
     # 3D variable?
     if vari.ndim != 3:
         vari3d = MV.resize(vari, (nzi, nyi, nxi))
-        vacumm.misc.grid.misc.set_grid(vari3d, ggi)
+        vcg.set_grid(vari3d, ggi)
 #        vari3d.getAxis(0).designateLevel() # hack against cdat bug
         maski3d = N.resize(maski, vari3d.shape)
     else:
@@ -2428,7 +2428,7 @@ def regrid2dold(vari, ggo, method='auto', mask_thres=.5, ext=False,
             if esmfcons:
                 check_mask = True
                 vari3d = MV2.where(maski3d, 0., vari3d)
-                vacumm.misc.grid.misc.set_grid(vari3d, ggi)
+                vcg.set_grid(vari3d, ggi)
             tool = None
 
         # Regridder
@@ -2493,11 +2493,11 @@ def regrid2dold(vari, ggo, method='auto', mask_thres=.5, ext=False,
     varo[N.isnan(varo)] = mv
     varo = MV2.masked_values(varo, mv, copy=0)
 #   if not isgrid(ggo, curv=True):
-    vacumm.misc.grid.misc.set_grid(varo, ggo)
+    vcg.set_grid(varo, ggo)
     if vari.ndim>2:
         for iaxis in range(vari.ndim-2):
             varo.setAxis(iaxis, vari.getAxis(iaxis))
-    cp_atts(vari, varo, id=True)
+    vacumm.misc.misc.cp_atts(vari, varo, id=True)
 
     if getcdr: return varo, cdr
     return varo
@@ -2599,7 +2599,7 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
     curvedio = curvedi and curvedo
     xxi, xxo, yyi, yyo = None, None, None, None
 #    if geo is None:
-#        geo = A.islon(loni) or A.islat(lati) or A.islon(lono) or A.islat(lato)
+#        geo = vca.islon(loni) or vca.islat(lati) or vca.islon(lono) or vca.islat(lato)
     geo = True
 
     # Method
@@ -2888,7 +2888,7 @@ def interp2d(vari, ggo, method="interp", **kwargs):
     return regrid2d(vari, ggo, method=method, **kwargs)
 
 def _isaxis_(var):
-    if A.isaxis(var): return True
+    if vca.isaxis(var): return True
     if isinstance(var, tuple): return False
     if isgrid(var): return False
     return True
@@ -3229,12 +3229,12 @@ def shift1d(var, shift=0, bmode=None, axis=-1, copy=True, shiftaxis=True, **kwar
         shift = 0.5
     bmode = kwargs.get('mode', bmode)
     if bmode is None:
-        bmode = "linear" if A.isaxis(var) else "same"
+        bmode = "linear" if vca.isaxis(var) else "same"
     elif bmode=="nearest":
         bmode = "same"
     elif bmode=='extrap':
         bmode = 'linear'
-    ax = len(var.shape)==1 and A.isaxis(var)
+    ax = len(var.shape)==1 and vca.isaxis(var)
     if ax:
         varf = varo.getValue()
     else:
@@ -3248,7 +3248,7 @@ def shift1d(var, shift=0, bmode=None, axis=-1, copy=True, shiftaxis=True, **kwar
         refvar = varf.copy()
 
     # Get slice specs
-    ss = vacumm.misc.grid.misc.get_axis_slices(var, axis)
+    ss = vcg.get_axis_slices(var, axis)
     sn = _shiftslicenames_(shift)
 
     # Inner data
@@ -3308,7 +3308,7 @@ def shift2d(vari, ishift=0, jshift=0, bmode=None, copy=True, **kwargs):
     if ishift==0 and jshift==0: return var
     ny, nx = var.shape[-2:]
     ne = N.multiply.reduce(var.shape)/(nx*ny)
-    sg = not A.isaxis(var) and cdms2.isVariable(var) and var.getGrid() is not None
+    sg = not vca.isaxis(var) and cdms2.isVariable(var) and var.getGrid() is not None
     if sg:
         grido = shiftgrid(var.getGrid(), ishift=ishift, jshift=jshift)
     bmode = kwargs.get('mode', bmode)
@@ -3317,9 +3317,9 @@ def shift2d(vari, ishift=0, jshift=0, bmode=None, copy=True, **kwargs):
 
 
     # Slices
-    ssx = vacumm.misc.grid.misc.get_axis_slices(var, -1)
+    ssx = vcg.get_axis_slices(var, -1)
     snx = _shiftslicenames_(ishift)
-    ssy = vacumm.misc.grid.misc.get_axis_slices(var, -2)
+    ssy = vcg.get_axis_slices(var, -2)
     sny = _shiftslicenames_(jshift)
 
     # Shift along X only
@@ -3328,7 +3328,7 @@ def shift2d(vari, ishift=0, jshift=0, bmode=None, copy=True, **kwargs):
         varx = shift1d(vari, ishift, **kwxshift)
         if jshift==0:
             if sg:
-                vacumm.misc.grid.misc.set_grid(varx, grido)
+                vcg.set_grid(varx, grido)
             return varx
 
     # Shift along Y only
@@ -3338,7 +3338,7 @@ def shift2d(vari, ishift=0, jshift=0, bmode=None, copy=True, **kwargs):
         vary = shift1d(vari, jshift, **kwyshift)
         if ishift==0:
             if sg:
-                vacumm.misc.grid.misc.set_grid(vary, grido)
+                vcg.set_grid(vary, grido)
             return vary
 
     # Inner Y
@@ -3346,13 +3346,13 @@ def shift2d(vari, ishift=0, jshift=0, bmode=None, copy=True, **kwargs):
     var[ssy[sny['firsts']]] += 0.5*(varx[ssy[sny['firsts']]]+varx[ssy[sny['lasts']]])
 
     # Top Y
-    sstopyfirsts = vacumm.misc.grid.misc.merge_axis_slice(ssy[sny['last']], ssx[snx['firsts']])
-    sstopylasts = vacumm.misc.grid.misc.merge_axis_slice(ssy[sny['last']], ssx[snx['lasts']])
+    sstopyfirsts = vcg.merge_axis_slice(ssy[sny['last']], ssx[snx['firsts']])
+    sstopylasts = vcg.merge_axis_slice(ssy[sny['last']], ssx[snx['lasts']])
     var[sstopyfirsts] = 0.5*(vary[sstopyfirsts]+vary[sstopylasts])
 
     # Shift along X and Y
-    sslast = vacumm.misc.grid.misc.merge_axis_slice(ssy[sny['last']], ssx[snx['last']])
-    sslastxy = vacumm.misc.grid.misc.get_axis_slices(var.ndim-1, -1)
+    sslast = vcg.merge_axis_slice(ssy[sny['last']], ssx[snx['last']])
+    sslastxy = vcg.get_axis_slices(var.ndim-1, -1)
     sslastx = sslastxy[snx['last']]
     sslasty = sslastxy[sny['last']]
     varlastx = shift1d(varx[ssx[snx['last']]], ishift, **kwxshift) #; del varx
@@ -3363,7 +3363,7 @@ def shift2d(vari, ishift=0, jshift=0, bmode=None, copy=True, **kwargs):
 
     # Grid for MV2 arrays
     if sg:
-        vacumm.misc.grid.misc.set_grid(var, grido)
+        vcg.set_grid(var, grido)
 
     return var
 
@@ -3376,7 +3376,7 @@ def shiftgrid(gg, ishift=0, jshift=0, bmode='linear', **kwargs):
         - **gg**: cdms2 grid.
         - **i/jshift**: Fraction cell to shift.
     """
-    xx, yy = vacumm.misc.grid.misc.get_xy(gg)
+    xx, yy = vcg.get_xy(gg)
     bmode = kwargs.get('mode', bmode)
     if len(xx.shape)==2:
         xs = shift2d(xx, ishift=ishift, jshift=jshift, bmode=bmode)
@@ -3385,14 +3385,14 @@ def shiftgrid(gg, ishift=0, jshift=0, bmode='linear', **kwargs):
         xs = shift1d(xx, ishift, bmode=bmode)
         ys = shift1d(yy, jshift, bmode=bmode)
 
-    if vacumm.misc.grid.misc.isgrid(gg) or cdms2.isVariable(gg):
-        return vacumm.misc.grid.misc.create_grid(xs, ys)
+    if vcg.isgrid(gg) or cdms2.isVariable(gg):
+        return vcg.create_grid(xs, ys)
     return xs, ys
 
 def _extend_init_(var, new_shape, mode):
     """Some inits for extend1d and extend2d"""
     # In and out data
-    if A.isaxis(var):
+    if vca.isaxis(var):
         datatype = 'axis'
         varm = var.getValue()
         if len(var.shape)==1:
@@ -3414,7 +3414,7 @@ def _extend_init_(var, new_shape, mode):
 
     # Extrapolation mode
     if mode is None:
-        mode = "extrap" if A.isaxis(var) else "same"
+        mode = "extrap" if vca.isaxis(var) else "same"
     elif mode=="nearest":
         mode = "same"
     elif mode=='linear': mode = 'extrap'
@@ -3457,7 +3457,7 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
     varm, varf, datatype, mode = _extend_init_(var, varo_shape, mode)
 
     # Get slice specs
-    ss = vacumm.misc.grid.misc.get_axis_slices(var, axis, extinner=slice(ext[0], no-ext[1]),
+    ss = vcg.get_axis_slices(var, axis, extinner=slice(ext[0], no-ext[1]),
         extleft=slice(0, ext[0]), extright=slice(no-ext[1], None))
 
     # Unchanged data
@@ -3494,20 +3494,20 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
     if not num:
         if datatype=='axis1d':
 
-            varo = A.create(varf)
-            cp_atts(var, varo)
+            varo = vca.create_axis(varf)
+            vacumm.misc.misc.cp_atts(var, varo)
 
         elif datatype=='axis2d':
 
-            varo = vacumm.misc.grid.misc.create_axes2d(varf)
-            cp_atts(var, varo)
+            varo = vcg.create_axes2d(varf)
+            vacumm.misc.misc.cp_atts(var, varo)
             for iaxis in 0, 1:
-                cp_atts(var.getAxis(iaxis), varo.getAxis(iaxis))
+                vacumm.misc.misc.cp_atts(var.getAxis(iaxis), varo.getAxis(iaxis))
 
         elif datatype=='mv':
 
             varo = MV2.asarray(varf)
-            cp_atts(var, varo)
+            vacumm.misc.misc.cp_atts(var, varo)
             gridi = var.getGrid()
             for iaxis in xrange(varo.ndim):
                 axi = var.getAxis(iaxis)
@@ -3515,15 +3515,15 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
                     varo.setAxis(iaxis, axi)
                 elif gridi is None:
                     axo = extend1d(axi, ext, mode='extrap')
-                    cp_atts(axi, axo)
+                    vacumm.misc.misc.cp_atts(axi, axo)
             if gridi is not None:
                 if axis>=var.ndim-2:
                     iext = ext if axis==var.ndim-1 else 0
                     jext = ext if axis==var.ndim-2 else 0
                     grido = extendgrid(gridi, iext=iext, jext=jext)
-                    vacumm.misc.grid.misc.set_grid(varo, extendgrid(gridi, iext=iext, jext=jext))
+                    vcg.set_grid(varo, extendgrid(gridi, iext=iext, jext=jext))
                 else:
-                    vacumm.misc.grid.misc.set_grid(varo, gridi)
+                    vcg.set_grid(varo, gridi)
         else:
             varo = varf
     else:
@@ -3597,7 +3597,7 @@ def extendgrid(gg, iext=0, jext=0, mode='extrap'):
             - ``"masked"``: Masked.
 
     """
-    xx, yy = vacumm.misc.grid.misc.get_xy(gg)
+    xx, yy = vcg.get_xy(gg)
 
     if len(xx.shape)==2:
         xs = extend2d(xx, iext=iext, jext=jext, mode=mode)
@@ -3606,8 +3606,8 @@ def extendgrid(gg, iext=0, jext=0, mode='extrap'):
         xs = extend1d(xx, iext, mode=mode)
         ys = extend1d(yy, jext, mode=mode)
 
-    if vacumm.misc.grid.misc.isgrid(gg) or cdms2.isVariable(gg):
-        return vacumm.misc.grid.misc.create_grid(xs, ys)
+    if vcg.isgrid(gg) or cdms2.isVariable(gg):
+        return vcg.create_grid(xs, ys)
     return xs, ys
 
 
@@ -3835,7 +3835,7 @@ class CDATRegridder(object):
             varo[:] = MV2.masked_where((goodo<0.9999), varo, copy=0) ; del goodo
 
         # Finalize
-        cp_atts(vari, varo)
+        vacumm.misc.misc.cp_atts(vari, varo)
         return varo
 
     __call__ = regrid
@@ -3864,15 +3864,15 @@ class CurvedInterpolator(object):
     def __init__(self, fromgrid, topts, g2g=False):
 
         # Input coordinates
-        xxi, yyi = vacumm.misc.grid.misc.get_xy(fromgrid, mesh=True, num=True)
+        xxi, yyi = vcg.get_xy(fromgrid, mesh=True, num=True)
         self._shapei = xxi.shape
 
         # Output coordinates
         if cdms2.isVariable(topts): topts = topts.getGrid()
         if g2g:
-            topts = vacumm.misc.grid.misc.get_grid(topts)
-        if vacumm.misc.grid.misc.isgrid(topts):
-            xxo, yyo = vacumm.misc.grid.misc.meshgrid(topts.getLongitude(), topts.getLatitude())
+            topts = vcg.get_grid(topts)
+        if vcg.isgrid(topts):
+            xxo, yyo = vcg.meshgrid(topts.getLongitude(), topts.getLatitude())
             xo = xxo.ravel()
             yo = yyo.ravel()
             self._grido = topts
@@ -3917,11 +3917,11 @@ class CurvedInterpolator(object):
         # Finalize the cdms variable
         if cdms2.isVariable(vari):
             varo = MV2.asarray(varo)
-            cp_atts(vari, varo)
+            vacumm.misc.misc.cp_atts(vari, varo)
             for i, ax in enumerate(vari.getAxisList()[:-2]):
                 varo.setAxis(i, ax)
             if self._grido:
-                vacumm.misc.grid.misc.set_grid(varo, self._grido)
+                vcg.set_grid(varo, self._grido)
 
         return varo
 

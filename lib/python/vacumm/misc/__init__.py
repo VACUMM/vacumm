@@ -5,7 +5,7 @@ Misc tools
 Misc submodule can be used with vacumm.misc.*
 instead of vacumm.misc.misc.*.
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -37,17 +37,23 @@ instead of vacumm.misc.misc.*.
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+import sys
+print  [m for m in sys.modules if m.startswith('vacumm.misc.misc')]
 import misc
+print  [m for m in sys.modules if m.startswith('vacumm.misc.misc')]
+#xxx
+import phys
+import math
 import color
+
 import axes
+xxx
 import atime
 import stats
 import filters
-import phys
 import grid
 import plot
 import io
-import math
 
 import os as _os, locale as _locale
 _os.environ['LC_NUMERIC'] = 'en_US.UTF-8'

@@ -54,7 +54,8 @@ from cdms2 import isVariable
 from genutil import grower
 from genutil import minmax
 
-from vacumm import VACUMMError
+#from vacumm import VACUMMError
+import vacumm
 
 
 MV = MV2
@@ -147,7 +148,9 @@ class Att(dict):
         self[att] = val
 
 def Cfg2Att(cfg):
-    """Convert a :class:`~configobj.ConfigObj` object to an arborescence of :class:`~vacumm.misc.misc.Att` objects"""
+    """Convert a :class:`~configobj.ConfigObj` object to an arborescence of
+    :class:`~vacumm.misc.misc.Att` objects
+    """
     from configobj import Section
     if isinstance(cfg, Att): return cfg
     assert isinstance(cfg, (Section, dict)), 'You must pass a ConfigObj object'
@@ -1321,7 +1324,7 @@ def geodir(direction, from_north=True, inverse=False):
         l = direction.strip().replace('-', '').lower()
         ll = [lb.lower() for lb in labels]
         if l not in ll:
-            raise VACUMMError("Wrong geographic direction: %s. Please use one of %s"%(
+            raise vacumm.VACUMMError("Wrong geographic direction: %s. Please use one of %s"%(
                 direction, ' '.join(labels)))
         d = (N.arange(nlab)*dtheta)[ll.index(l)]
         if from_north:
@@ -1780,7 +1783,7 @@ def grow_variables(var1, var2):
     from grid.misc import set_grid
     order1, order2 = merge_orders(var1, var2)
     if '-' in order1+order2:
-        raise VACUMMError("All axes must have a known type (xyzt) to grow variables")
+        raise vacumm.VACUMMError("All axes must have a known type (xyzt) to grow variables")
     var1 = MV2.asarray(var1)
     var2 = MV2.asarray(var2)
     set_order(var1, order1)
@@ -1991,5 +1994,34 @@ def checkdir(path, asfile=None):
     if not os.path.exists(path):
         os.makedirs(path)
     elif not os.path.isdir(path):
-        raise VACUMMError("Path exists but is not a directory: {}".format(path))
+        raise vacumm.VACUMMError("Path exists but is not a directory: {}".format(path))
     return path
+
+def nduniq(data, axis=0):
+    """Remove duplicates in a numpy array along a given axis
+
+    :Example:
+
+    >>> import numpy as N
+    >>> a = N.arange(20.).reshape((10,2))
+    >>> a[5] = a[1]
+    >>> b = uniq(a)
+    """
+    nd = N.ndim(data)
+    if axis<0:
+        axis = nd + axis
+    n = data.shape[axis]
+    if nd>2:
+        wdata = N.rollaxis(data, 0).reshape(n, -1)
+    else:
+        wdata = data
+    keep = N.ones(0, '?')
+    for i, d in enumerate(wdata):
+        if not keep[i]: continue
+        bad = wdata == d
+        if nd>1:
+            bad = bad.all(axis=-1)
+        bad[i] = False
+        keep = keep & ~bad
+    del wdata
+    return N.compress(data, keep, axis=axis)

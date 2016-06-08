@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 """Mathematical tools"""
 
-# Copyright or © or Copr. Actimar/IFREMER (2013-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2013-20165)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,

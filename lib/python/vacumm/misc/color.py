@@ -55,9 +55,7 @@ from mpl_toolkits.basemap import cm as basemap_cm
 from genutil import minmax
 
 import vacumm
-import misc as vcm
-import plot as vcp
-import core_plot as vccp
+from .misc import kwfilter, broadcast
 
 ma = N.ma
 
@@ -213,7 +211,7 @@ def cmap_rainbow(n=None, name='vacumm_rainbow', smoothed=True, mode='auto', **kw
 
     :Sample: .. image:: misc-color-vacumm_rainbow.png
     """
-    kwrb = vcm.kwfilter(kwargs, 'rainbow_')
+    kwrb = kwfilter(kwargs, 'rainbow_')
     for att in 'first', 'last', 'middle', 'stretcher':
         kwrb[att] = kwargs.pop(att, None)
     n, pos = _nlev_(n)
@@ -273,22 +271,22 @@ def cmap_magic(n=None, stretch = 0.4, mode='normal', white='.95', name='vacumm_m
         kwargs['lstretch'] = -stretch
     elif mode.startswith('pos'):
         kwargs['first'] = white
-        kwargs['lstretch'] = [0]+vcm.broadcast(-stretch, n-1)
+        kwargs['lstretch'] = [0]+broadcast(-stretch, n-1)
         kwargs['rstretch'] = [-stretch]+[0]*(n-1)
     elif mode.startswith('neg'):
         kwargs['last'] = white
         kwargs['lstretch'] = [0]*(n-1)+[-stretch]
-        kwargs['rstretch'] = vcm.broadcast(-stretch, n-1)+[0]
+        kwargs['rstretch'] = broadcast(-stretch, n-1)+[0]
     elif mode.startswith('sym'):
-        keepc = vcm.broadcast(None, n)
+        keepc = broadcast(None, n)
         mid = int(n/2)
         if n%2: # odd
-            kwargs['lstretch'] = [0]*mid+vcm.broadcast(-stretch, mid+1)
+            kwargs['lstretch'] = [0]*mid+broadcast(-stretch, mid+1)
             kwargs['rstretch'] = kwargs['lstretch'][::-1]
             kwargs['middle'] = '.8'
             keepc[mid] = False
         else:
-            kwargs['lstretch'] = [0]*(mid)+[.98]+vcm.broadcast(-stretch, mid-1)
+            kwargs['lstretch'] = [0]*(mid)+[.98]+broadcast(-stretch, mid-1)
             kwargs['rstretch'] = kwargs['lstretch'][::-1]
             keepc[mid:mid+2] = False, False
     #print 'cmap_magic n out',n
@@ -635,8 +633,8 @@ def cmap_smoothed_steps(colors, stretch=None, rstretch=0, lstretch=0, name='vacu
             else:
                 lstretch = stretch[0]
     ns = len(colors)
-    lstretch = vcm.broadcast(lstretch, ns)
-    rstretch = vcm.broadcast(rstretch, ns)
+    lstretch = broadcast(lstretch, ns)
+    rstretch = broadcast(rstretch, ns)
     rr = [] ; gg = [] ; bb = []
     for i,(col,pos) in enumerate(colors):
         r, g, b = RGB(col)
@@ -729,9 +727,9 @@ def cmap_steps(cols, stretch=None, lstretch=0., rstretch=0., keepc=None, name='c
             else:
                 lstretch = stretch[0]
     ns = len(cols)
-    lstretch = vcm.broadcast(lstretch, ns)
-    rstretch = vcm.broadcast(rstretch, ns)
-    keepc = vcm.broadcast(keepc, ns)
+    lstretch = broadcast(lstretch, ns)
+    rstretch = broadcast(rstretch, ns)
+    keepc = broadcast(keepc, ns)
     rr = [] ; gg = [] ; bb = []
     pcol, ppos = cols[0]
     pr, pg, pb = RGB(pcol)
@@ -2249,13 +2247,15 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), fig=No
         edgecolor='none', linewidth=0)
     if title is None: title = cmap.name
     if title is not None and title is not False:
-        vccp.add_glow(P.text(ncol/2., 0., title, color='k', ha='center', va='center'), alpha=0.5)
+        from vacumm.misc.core_plot import add_glow
+        add_glow(P.text(ncol/2., 0., title, color='k', ha='center', va='center'), alpha=0.5)
 
     # Save and show
     if savefig is not None:
-        P.savefig(savefig, **vcm.kwfilter(kwargs, 'savefig'))
+        P.savefig(savefig, **kwfilter(kwargs, 'savefig'))
     if savefigs is not None:
-        vcp.savefigs(savefigs, **vcm.kwfilter(kwargs, 'savefigs'))
+        from vacumm.misc.plot import savefigs
+        savefigs(savefigs, **kwfilter(kwargs, 'savefigs'))
     if show:
         P.show()
     if close:
@@ -2266,8 +2266,8 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5, savefi
     aspect=0.05, **kwargs):
     """Display a list of or all colormaps"""
 
-    kwsf = vcm.kwfilter(kwargs, 'savefig')
-    kwsfs = vcm.kwfilter(kwargs, 'savefigs')
+    kwsf = kwfilter(kwargs, 'savefig')
+    kwsfs = kwfilter(kwargs, 'savefigs')
     kwargs.pop('nrow', None)
 
     # Default colormap list
@@ -2333,7 +2333,8 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5, savefi
     if savefig is not None:
         P.savefig(savefig, **kwsf)
     if savefigs is not None:
-        vcp.savefigs(savefigs, **kwsfs)
+        from vacumm.misc.plot import savefigs
+        savefigs(savefigs, **kwsfs)
     if show: P.show()
 
 def show_cmap(cmap, *args, **kwargs):

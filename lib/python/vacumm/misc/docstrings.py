@@ -3,7 +3,7 @@
 
 .. warning:: This module requires python 2.7+ to work.
 """
-# Copyright or © or Copr. Actimar/IFREMER (2012-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2012-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,

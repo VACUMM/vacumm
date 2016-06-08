@@ -6,7 +6,7 @@
 
     Tutorials: :ref:`user.tut.misc.variables.axes`
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -49,10 +49,7 @@ from cdms2.axis import AbstractAxis, FileAxis
 from cdms2.coord import TransientAxis2D
 
 from vacumm import VACUMMError
-import misc as vcm
-import atime as vct
-import grid.misc as vcg
-import io as vcio
+from .grid import create_axes2d, get_axis, var2d
 
 cdms = cdms2
 
@@ -123,7 +120,7 @@ def istime(axis,
     ro=False, checkatts=True):
     """Check if a axis is time"""
     if units is None:
-        units = vct.are_valid_units
+        from .atime import are_valid_units as units
     myistime = is_geo_axis_type(axis, 't',  ids=ids, standard_names=standard_names,
         units=units, long_names=long_names, defaults=defaults, ro=ro, checkatts=checkatts)
     if myistime and not ro:
@@ -196,11 +193,12 @@ def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None,
     if getattr(axis, 'axis', '-').lower() not in ['-', atype]: return False
     sis = 'axis.is%s()' % name
     ok = 'axis.designate%s();check_id(axis)' % name
+    from .misc import check_def_atts
+    check_def_atts(axis, **defaults)
     try:
         if eval(sis):
             if not ro:
                 exec ok
-                vcm.check_def_atts(axis, **defaults)
             return True
     except:
         pass
@@ -356,11 +354,12 @@ def create_time(values,units=None,**atts):
         >>> create_time([datetime(2000,1,1),'2000-2-1'],units='months since 2000')
         >>> create_time([cdtime.reltime(1,'months since 2000'),cdtime.comptime(2000,1)])
     """
+    from .axes import are_valid_units, comptime, strftime
     for var in values, units:
         if hasattr(var, 'units'):
             units = var.units
             break
-    if units is not None and not vct.are_valid_units(units):
+    if units is not None and not are_valid_units(units):
         raise AttributeError('Bad time units: "%s"'%units)
     istuple = isinstance(values, tuple)
     if not istuple or (istuple and len(values)>3):
@@ -376,9 +375,9 @@ def create_time(values,units=None,**atts):
             else:
                 if units is None and hasattr(value, 'units'):
                     units = value.units
-                value = vct.comptime(value)
+                value = comptime(value)
                 if units is None:
-                    units = vct.strftime('minutes since %Y-%m-%d %H:%M:%S',value)
+                    units = strftime('minutes since %Y-%m-%d %H:%M:%S',value)
                 newvalues.append(value.torel(units).value)
     else:
         newvalues = values
@@ -457,7 +456,8 @@ def guess_timeid(ncfile, vnames=None):
         >>> tid = guess_timeid(f)
         >>> f.close()
     """
-    nfo = vcio.NcFileObj(ncfile)
+    from .io import NcFileObj
+    nfo = NcFileObj(ncfile)
     if vnames is None: vnames = nfo.f.listvariables()
     for vv in vnames:
        time = nfo.f[vv].getTime()
