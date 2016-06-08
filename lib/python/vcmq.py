@@ -126,14 +126,14 @@ from vacumm.misc.config import (ConfigManager, cfgargparse, ConfigException,
 from vacumm.misc.stats import (StatAccum, qtmax, qtmin, qtminmax, ensrank,
     corr_proba, StatAccumError)
 
-from vacumm.misc.phys.units import (
+from vacumm.misc.units import (
     convert_units, kt2ms, ms2kt, deg2m, m2deg, ms2bf, dms2deg, deg2dms, mph2ms,
     ms2mph, tometric, kel2degc, degc2kel, basic_proj, rad2deg, uuconvert,
     vect2dir, vect2mod, vect2moddir, moddir2vectx, moddir2vecty, moddir2vectxy,
     strfsize, strpsize, basic_proj,
     )
 
-from vacumm.misc.phys.constants import (
+from vacumm.misc.constants import (
     EARTH_RADIUS, R, G, GRAVITATIONAL_CONSTANT, M, EARTH_MASS, g, GRAVITY,
     )
 
@@ -179,9 +179,15 @@ from vacumm.misc.color import (
 
     )
 
-# - grid
+# - spatial
 
-from vacumm.misc.grid.misc import (
+from vacumm.misc.poly import (
+    create_polygon, clip_shape, polygons, convex_hull,
+    get_geos_type, is_linestring, is_point, is_polygon, clap_shapes,
+    plot_polygon, proj_shapes, sort_shapes)
+envelop = convex_hull
+
+from vacumm.misc.grid import (
     get_grid, set_grid, create_grid, create_grid2d, resol, monotonic, isdepthup, depth2dz,
     meshcells, meshbounds, meshgrid, bounds1d, bounds2d, coord2slice, isregular,
     isrect, curv2rect, isgrid, get_xy, create_axes2d, gridsel, varsel, xshift, rotate_grid,
@@ -193,29 +199,32 @@ from vacumm.misc.grid.misc import (
     xshift,
     )
 
-from vacumm.misc.grid.regridding import (
+from vacumm.misc.regridding import (
     regrid1d, regrid2d, interp1d, interp2d, cellave1d, cellave2d, cellerr1d,
     cargen, xy2xy, shift1d, shift2d, extend1d, extend2d, regrid_method,
-    transect, griddata, CDATRegridder, grid2xy, cubic1d,
+    transect, griddata, CDATRegridder, grid2xy, cubic1d, krig,
     nearest1d, shiftgrid, extendgrid, fill1d, fill2d
     )
 
-from vacumm.misc.grid.basemap import (
+from vacumm.misc.basemap import (
     merc, create_map, get_proj, reset_cache, gshhs_autores, GSHHS_RESLIST,
     RSHPERE_WGS84
     )
 
-from vacumm.misc.grid.masking import (
-    erode_coast, polygon_mask, GetLakes, get_coast, polygons, polygon_select, zcompress,
-    envelop, get_coastal_indices, grid_envelop, create_polygon, clip_shape, proj_shape,
-    plot_polygon, merge_masks
+from vacumm.misc.masking import (
+    erode_coast, polygon_mask, GetLakes, get_coast, polygon_select, zcompress,
+    envelop, get_coastal_indices, grid_envelop, merge_masks
     )
 
-from vacumm.misc.grid.kriging import (
+from vacumm.misc.kriging import (
     OrdinaryCloudKriger, variogram, variogram_fit, variogram_model,
     variogram_model_type, variogram_multifit, cloud_split,
     KrigingError, VariogramModel, VariogramModelError,
+    krig as krign,
     )
+
+from vacumm.misc.sdata import GSHHSBM, Shapes, GriddedMerger, XYZ, XYZMerger
+GSHHS_BM = GSHHSBM
 
 # - data
 

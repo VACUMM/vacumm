@@ -475,7 +475,7 @@ def get_proj(gg=None, proj=None, **kwargs):
     ymax = min(ymax, 89.99)
     ymin = max(ymin, -89.99)
     if not isinstance(proj, str):
-        proj = vacumm.config.get_config_value('vacumm.misc.basemap', 'proj')
+        proj = VACUMM_CFG['vacumm.misc.basemap']['proj']
     dict_check_defaults(projparams, R=EARTH_RADIUS, units='m',
         proj=proj,
         lat_ts = N.median(y) if len(y)>10 else N.mean(y),
