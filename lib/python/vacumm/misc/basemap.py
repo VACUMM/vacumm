@@ -43,7 +43,7 @@ from _geoslib import Polygon
 from genutil import minmax
 
 from vacumm.config import get_config_value
-from .misc import kwfilter, dict_check_default
+from .misc import kwfilter, dict_check_defaults
 from .constants import EARTH_RADIUS
 from .grid import get_xy
 from .poly import create_polygon

@@ -61,16 +61,15 @@ from matplotlib.ticker import FormatStrFormatter, Formatter, FixedLocator
 import matplotlib.image as mpimg
 from mpl_toolkits.basemap import Basemap
 
-import vacumm
-import vacumm.misc.misc as vcm
-import vacumm.misc.phys.units as vcu
-import vacumm.misc.docstrings as vcd
-
-import vacumm.misc.atime as vct
-import vacumm.misc.axes as vca
-import vacumm.misc.color as vcc
-import vacumm.misc.grid.misc as vcg
-import vacumm.misc.core_plot as vccp
+from vacumm import VACUMMError
+from .units import m2deg
+from .docstrings import docfill
+from .misc import kwfilter, broadcast, auto_scale, is_iterable
+from .color import get_cmap, Scalar2RGB, simple_colors
+from .axes import istime, check_axes
+from .atime import mpl
+from .grid import get_grid, get_axis, meshbounds, meshgrid, var2d
+from .core_plot import Curve, Bar, Stick, Hov, Map, Section, Plot2D
 
 
 __all__ = [ 'traj', 'ellipsis',
@@ -523,7 +522,7 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
 
     # Check options
     labels = vcm.broadcast(labels, np, fillvalue=None)
-    cmap = vcc.get_cmap(cmap)
+    cmap = get_cmap(cmap)
     if colors is None:
         colors =  kwargs.pop('color', 'k')
     if not isinstance(colors, N.ndarray):
@@ -533,7 +532,7 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
     if isinstance(colors, N.ndarray):
         colors = N.resize(colors, (np,))
         if not scatter:
-            colors = vcc.Scalar2RGB(colors, cmap)(colors)
+            colors = Scalar2RGB(colors, cmap)(colors)
     for i in xrange(np):
         if colors[i] is None:
             colors[i] = 'k'
@@ -905,8 +904,8 @@ def ellipsis(xpos,ypos,eAXIS,eaxis=None,rotation=0,
         yy[ip] = xxx * N.sin(rotation) + yyy * N.cos(rotation)
         # Cylindrical map: meters to degrees
         if ismap and iscyl:
-            xx[ip] = vcu.m2deg(xx[ip],ypos)
-            yy[ip] = vcu.m2deg(yy[ip])
+            xx[ip] = m2deg(xx[ip],ypos)
+            yy[ip] = m2deg(yy[ip])
 
     # Add position
     if ismap: xpos,ypos = gobj(xpos,ypos)
@@ -921,8 +920,8 @@ def ellipsis(xpos,ypos,eAXIS,eaxis=None,rotation=0,
             xaxis = N.array([-1,1]) * N.cos(rotation+ap) * ea/2
             yaxis = N.array([-1,1]) * N.sin(rotation+ap) * ea/2
             if ismap and iscyl:
-                xaxis = vcu.m2deg(xaxis,ypos)
-                yaxis = vcu.m2deg(yaxis)
+                xaxis = m2deg(xaxis,ypos)
+                yaxis = m2deg(yaxis)
             gobj.plot(xaxis+xpos,yaxis+ypos,**kwaxes)
 
     # Plot command
@@ -966,8 +965,8 @@ def ellipsis(xpos,ypos,eAXIS,eaxis=None,rotation=0,
                 xshaft[ia*2] = xshaft[1] + slen * N.cos(aa+rotation)
                 yshaft[ia*2] = yshaft[1] + slen * N.sin(aa+rotation)
             if ismap and iscyl:
-                xshaft = vcu.m2deg(xshaft,ypos)
-                yshaft = vcu.m2deg(yshaft)
+                xshaft = m2deg(xshaft,ypos)
+                yshaft = m2deg(yshaft)
             kws = kwargs.copy()
             kws['label'] = None
             gobj.plot(xshaft+xpos,yshaft+ypos,**kws)
@@ -990,8 +989,8 @@ def ellipsis(xpos,ypos,eAXIS,eaxis=None,rotation=0,
             key_x *= -1
             key_y *= -1
         if ismap and iscyl:
-            key_x = vcu.m2deg(key_x, ypos)
-            key_y = vcu.m2deg(key_y)
+            key_x = m2deg(key_x, ypos)
+            key_y = m2deg(key_y)
         key_x += xpos
         key_y += ypos
         key_rotation = rotation
@@ -1112,16 +1111,16 @@ def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None,
     - *zorder*: Order of the grid in the stack (100 should be above all objects)
     """
     # Axes
-    gg = vcg.get_grid(gg)
-    xx = vcg.get_axis(gg, 1)[:]
-    yy = vcg.get_axis(gg, 0)[:]
+    gg = get_grid(gg)
+    xx = get_axis(gg, 1)[:]
+    yy = get_axis(gg, 0)[:]
 
     # Edges
     edges = kwargs.pop('borders', edges)
     if edges:
-        xx2d, yy2d = vcg.meshbounds(xx, yy)
+        xx2d, yy2d = meshbounds(xx, yy)
     if centers:
-        xx, yy = vcg.meshgrid(xx, yy)
+        xx, yy = meshgrid(xx, yy)
 
     # Geographic map
 #    if m is None and gobjs('m'): m = gobjs('m')[-1]
@@ -1621,7 +1620,7 @@ def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=
         - *tool*: None, 'mpl' (png only) or 'pil'.
     """
     if not os.path.exists(logofile):
-        raise vacumm.VACUMMError("Logo file not found: %s"%logofile)
+        raise VACUMMError("Logo file not found: %s"%logofile)
 
     # Read image
     if tool is None:
@@ -1632,7 +1631,7 @@ def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=
     else:
         tool = tool.lower()
     if tool not in ['mpl', 'pil']:
-        raise vacumm.VACUMMError('Please choose a valid tool for plotting your logo: '
+        raise VACUMMError('Please choose a valid tool for plotting your logo: '
             '"mpl" (png only), "pil", or None')
 
     if tool=='mpl':
@@ -1640,7 +1639,7 @@ def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=
             logo  = mpimg.imread(logofile)
             ny, nx = logo.shape[:2]
         except:
-            raise vacumm.VACUMMError("Can't read your logo file. "
+            raise VACUMMError("Can't read your logo file. "
                 "Please convert it to png format or install PIL and use `tool='pil'`")
     else:
         try:
@@ -1649,7 +1648,7 @@ def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=
             try:
                 import Image
             except:
-                raise vacumm.VACUMMError("Can't import PIL to plot your logo. Convert it to png"
+                raise VACUMMError("Can't import PIL to plot your logo. Convert it to png"
                     " and use `tool='mpl'` calling add_logo")
         logo = Image.open(logofile)
         nx, ny = logo.size
@@ -2101,7 +2100,7 @@ def make_movie(fig_pattern, outfile, delay=1, clean=False, verbose=False, window
     return outfile
 
 
-def get_cls(n, colors=vcc.simple_colors, linestyles=linestyles):
+def get_cls(n, colors=simple_colors, linestyles=linestyles):
     """Get a list of string argument for :func:`~matplotlib.pyplot.plot` to specify the color and the linestyle
 
     - **n**: Length of the list
@@ -2204,7 +2203,7 @@ def _check_var_(var,rank,order=None,xaxis=None,yaxis=None,tadd=None,tadd_copy=Tr
         elif xaxis is not None or yaxis is not None:
             if not clone:
                 var = var.clone() ; clone = True
-            var = vcg.var2d(var,xaxis,yaxis,xatts=xatts,yatts=yatts)
+            var = var2d(var,xaxis,yaxis,xatts=xatts,yatts=yatts)
         vars[ivar] = var
 
     # Set to local time
@@ -2863,7 +2862,7 @@ _fill_doc_(xdate, ydate, taylor, dtaylor)
 
 
 
-@vcd.vcd.docfill
+@docfill
 def curve2(*args, **kwargs):
     """curve2(data, axis=None, title=None, savefig=None, show=True, **kwargs)
 
@@ -2965,7 +2964,7 @@ def curve2(*args, **kwargs):
         args = args[0:1]+args[2:]
     return vccp.Curve(*args, **kwargs)
 
-@vcd.vcd.docfill
+@docfill
 def bar2(*args, **kwargs):
     """bar2(data, width=1.,lag=0, align='center', offset=None, title=None, savefig=None, show=True, **kwargs)
 
@@ -3056,7 +3055,7 @@ def bar2(*args, **kwargs):
     kwargs.setdefault('post_plot', True)
     return vccp.Bar(*args, **kwargs)
 
-@vcd.docfill
+@docfill
 def stick2(*args, **kwargs):
     """stick2(udata, vdata, polar=False, degrees=True, mod=False, pos=None, width=None, scale=None, color='k', line=True, levels=None, cmap=None, shadow=False, **kwargs)
 
@@ -3168,7 +3167,7 @@ def stick2(*args, **kwargs):
     return vccp.Stick(*args, **kwargs)
 
 
-@vcd.docfill
+@docfill
 def hov2(*args, **kwargs):
     """hov2(data, order=None, contour=True, fill='pcolor', levels=None, colorbar=True, title=None, xaxis=None, yaxis=None, **kwargs)
 
@@ -3291,7 +3290,7 @@ def hov2(*args, **kwargs):
     kwargs.setdefault('post_plot', True)
     return vccp.Hov(*args, **kwargs)
 
-@vcd.docfill
+@docfill
 def map2(*args, **kwargs):
     """map2(data=None, proj='cyl', res='auto', lon=None, lat=None, contour=True, fill='pcolor', levels=None, colorbar=True, xaxis=None, yaxis=None, title=None, savefig=None, show=True, **kwargs)
 
@@ -3457,7 +3456,7 @@ def map2(*args, **kwargs):
         args=[None]
     return vccp.Map(*args, **kwargs)
 
-@vcd.docfill
+@docfill
 def section2(*args, **kwargs):
     """section2(data, contour=True, fill='pcolor', levels=None, colorbar=True, title=None, xaxis=None, yaxis=None, **kwargs)
 
@@ -3582,7 +3581,7 @@ def section2(*args, **kwargs):
     kwargs.setdefault('post_plot', True)
     return vccp.Section(*args, **kwargs)
 
-@vcd.docfill
+@docfill
 def plot2d(*args, **kwargs):
     """plot2d(data, contour=True, fill='pcolor', levels=None, colorbar=True, xaxis=None, yaxis=None, title=None, savefig=None, show=True, **kwargs)
 

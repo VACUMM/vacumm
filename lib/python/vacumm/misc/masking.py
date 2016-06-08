@@ -52,8 +52,9 @@ from .misc import nduniq
 from .axes import islon, islat
 from .grid import (get_xy, set_grid, isgrid, bounds2d, meshcells, curv2rect,
     meshbounds, bounds1d, get_grid, resol)
-from .poly import convex_hull, envelop, create_polygons, polygons
 
+from .poly import convex_hull, create_polygon, polygons # compat
+envelop = convex_hull
 
 uniq = nduniq # backward compat
 

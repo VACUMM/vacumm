@@ -1,6 +1,6 @@
 
 all: 
-	cd ../../../../.. && make lib
+	cd ../../../.. && make lib
 #all: $(patsubst %.f90,_%_.so,$(wildcard *.f90))
 
 _%_.so: %.f90

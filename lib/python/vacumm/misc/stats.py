@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 """Statistical tools"""
 
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -42,9 +42,8 @@ from genutil.salstat import betai,_gammaln
 from genutil.statistics import percentiles
 
 import vacumm
-import vacumm.misc.grid as vcg
-import vacumm.misc.atime as vct
-import vacumm.misc.io as vcio
+from .atime import comptime
+from .grid import get_grid, set_grid
 
 __all__ = ['corr_proba', 'ensrank', 'qtmin', 'qtmax', 'qtminmax',
     'StatAccum', 'StatAccumError']
@@ -598,7 +597,8 @@ class StatAccum(object):
         """Dump the current instance to a netcdf file"""
 
         # File
-        vcio.netcdf4()
+        from .io import netcdf4
+        netcdf4()
         if restart_file is None:
             restart_file = self.restart_file
         if restart_file is None:
@@ -731,9 +731,9 @@ class StatAccum(object):
         if hasattr(self, 'iterindex') and f.iterindex<=self.iterindex:
             return -1
         if nowtime is not None:
-            self.lasttime = vct.comptime(nowtime)
+            self.lasttime = comptime(nowtime)
         if (hasattr(self, 'lasttime') and f.withtime>0 and self.lasttime
-                and vct.comptime(f.lasttime)<=vct.comptime(self.lasttime)):
+                and comptime(f.lasttime)<=comptime(self.lasttime)):
             return -1
         # - what was initially asked and some more
         for sname in self.all_stats + ('sum', 'sqr', 'prod', 'stats'):

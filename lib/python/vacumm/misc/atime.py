@@ -51,7 +51,7 @@ import cdtime
 import cdutil
 
 from vacumm import VACUMMError
-from .misc import cp_atts, filter_selectors, kwfilter, split_selector
+from .misc import cp_atts, filter_selector, kwfilter, split_selector
 from .axes import istime, check_axes, create_time
 
 
@@ -414,7 +414,7 @@ def ch_units(mytimes, newunits, copy=True):
     """
 
     # If a variable with time axis
-    if cdms.isVariable(mytimes):
+    if cdms2.isVariable(mytimes):
         check_axes(mytimes)
         torder = mytimes.getOrder().find('t')
         if torder < 0:
@@ -1047,7 +1047,7 @@ def ascii_to_num(ss):
 
 
 
-class Gaps(cdms.tvariable.TransientVariable):
+class Gaps(cdms2.tvariable.TransientVariable):
     """Find time gaps in a variable
 
     A gap is defined as a missing time step or data.
@@ -1078,7 +1078,7 @@ class Gaps(cdms.tvariable.TransientVariable):
     def __init__(self, var, tolerance=0.1, verbose=True, dt=None, **kwargs):
 
         # Check that we have a valid time axis
-        if not cdms.isVariable(var):
+        if not cdms2.isVariable(var):
             raise TypeError,'Your variable is not a cdms variable'
         mytime = var.getTime()
         if mytime is None:
@@ -1133,7 +1133,7 @@ class Gaps(cdms.tvariable.TransientVariable):
 
 
         # Time axis of gaps
-        gapstime = cdms.createAxis(gapstime)
+        gapstime = cdms2.createAxis(gapstime)
         gapstime.id = 'time'
         gapstime.long_name = 'Time'
         gapstime.units = mytime.units
@@ -1143,7 +1143,7 @@ class Gaps(cdms.tvariable.TransientVariable):
         self._ctime = gapstime.asComponentTime()
 
         # Create cdms variable
-        cdms.tvariable.TransientVariable.__init__(self, gaps, axes=(gapstime,), id='gaps')
+        cdms2.tvariable.TransientVariable.__init__(self, gaps, axes=(gapstime,), id='gaps')
         self.name = self.id
         self.long_name = 'Time gaps'
         self.setAxis(0,gapstime)
@@ -1231,7 +1231,7 @@ class Gaps(cdms.tvariable.TransientVariable):
             - **file**: Netcdf file name
         """
         if file.split('.')[-1] in ['nc','cdf']:
-            f = cdms.open(file,'w')
+            f = cdms2.open(file,'w')
             f.write(self)
             f.close()
         else:
@@ -1355,7 +1355,7 @@ def plot_dt(file, time_axis=None, nice=False):
     from pylab import plot_date,show,plot,ylim
     if time_axis is None:
         time_axis = 'time'
-    f = cdms.open(file)
+    f = cdms2.open(file)
     tt = f.getAxis(time_axis).clone()
     tt[:] = tt[:].astype('d')
     f.close()
@@ -1435,7 +1435,7 @@ def reduce_old(data, comp=True, fast=True):
         it_first = it_last+1
 
     # New time axis
-    atime = cdms.createAxis(atime,bounds=abounds)
+    atime = cdms2.createAxis(atime,bounds=abounds)
     cp_atts(tt,atime,id=True)
     atime.designateTime(calendar=cdtime.DefaultCalendar)
 
@@ -1560,7 +1560,7 @@ def hourly_exact(data,time_units=None,maxgap=None, ctlims=None):
         hctlim0 = cdtime.comptime(ctlims[0].year,ctlims[0].month,ctlims[0].day,ctlims[0].hour).add(1,cdtime.Hour)
     hunits = 'hours since '+str(hctlim0)
     nt = int(ctlims[1].torel(hunits).value-ctlims[0].torel(hunits).value)
-    htaxis = cdms.createAxis(N.arange(nt,typecode='d'))
+    htaxis = cdms2.createAxis(N.arange(nt,typecode='d'))
     htaxis.id = 'time'
     htaxis.long_name = 'Time'
     htaxis.units = hunits
@@ -1740,7 +1740,7 @@ def tz_to_tz(mytime, old_tz, new_tz, copy=True):
     if isinstance(new_tz,basestring): new_tz = timezone(new_tz)
 
     # Variable
-    if cdms.isVariable(mytime):
+    if cdms2.isVariable(mytime):
         check_axes(mytime)
         axis = mytime.getTime()
         assert axis is not None, 'Your variable must have a valid time axis'
