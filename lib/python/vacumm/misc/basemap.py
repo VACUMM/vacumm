@@ -148,11 +148,7 @@ def clean_cache(mapdir=None, maxsize=None):
         mapdir = os.path.join(get_configdir(), 'basemap', 'cached_maps')
     cache_size = dirsize(mapdir)
     if maxsize is None:
-<<<<<<< HEAD:lib/python/vacumm/misc/basemap.py
-        maxsize = eval(vacumm.config.get_config_value('vacumm.misc.basemap', 'max_cache_size'))
-=======
         maxsize = VACUMM_CFG['vacumm.misc.grid.basemap']['max_cache_size']
->>>>>>> newconfig:lib/python/vacumm/misc/grid/basemap.py
     if cache_size>maxsize:
         files = [os.path.join(mapdir, ff) for ff in os.listdir(mapdir)]
         files.sort(cmp=lambda f1, f2: cmp(os.stat(f1)[8], os.stat(f2)[8]))

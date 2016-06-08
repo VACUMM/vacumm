@@ -66,7 +66,7 @@ from matplotlib.transforms import offset_copy
 from mpl_toolkits.basemap import Basemap
 
 from vacumm import VACUMMError
-from vacumm.config import get_config_value
+from vacumm.config import VACUMM_CFG, VACUMM_CFGSPECS, VACUMM_VDT, get_cfg_checked
 from .misc import (kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts,
     auto_scale, zoombox, dict_check_defaults, basic_auto_scale, dict_copy_items,
     dict_merge)
@@ -85,19 +85,10 @@ from .basemap import create_map
 from .regridding import shift1d
 from .masking import resol_mask
 from .filters import generic2d
-<<<<<<< HEAD
-=======
-from .grid import get_axis, meshbounds, meshgrid, var2d
-from .grid.masking import resol_mask
-from .grid.regridding import shift1d
-from .phys.units import deg2m, tometric, m2deg
-from .remote import OutputWorkFile
-from vacumm.config import VACUMM_CFG, VACUMM_CFGSPECS, VACUMM_VDT, get_cfg_checked
 
 
 MA = N.ma
 
->>>>>>> newconfig
 
 
 __all__ = ['PlotError','Plot', 'Plot1D', 'Curve', 'Bar', 'Stick',
