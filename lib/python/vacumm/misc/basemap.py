@@ -42,7 +42,7 @@ from matplotlib import get_configdir
 from _geoslib import Polygon
 from genutil import minmax
 
-from vacumm.config import get_config_value
+from vacumm.config import VACUMM_CFG
 from .misc import kwfilter, dict_check_defaults
 from .constants import EARTH_RADIUS
 from .grid import get_xy
@@ -148,7 +148,11 @@ def clean_cache(mapdir=None, maxsize=None):
         mapdir = os.path.join(get_configdir(), 'basemap', 'cached_maps')
     cache_size = dirsize(mapdir)
     if maxsize is None:
+<<<<<<< HEAD:lib/python/vacumm/misc/basemap.py
         maxsize = eval(vacumm.config.get_config_value('vacumm.misc.basemap', 'max_cache_size'))
+=======
+        maxsize = VACUMM_CFG['vacumm.misc.grid.basemap']['max_cache_size']
+>>>>>>> newconfig:lib/python/vacumm/misc/grid/basemap.py
     if cache_size>maxsize:
         files = [os.path.join(mapdir, ff) for ff in os.listdir(mapdir)]
         files.sort(cmp=lambda f1, f2: cmp(os.stat(f1)[8], os.stat(f2)[8]))

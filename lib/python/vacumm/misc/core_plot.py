@@ -85,6 +85,19 @@ from .basemap import create_map
 from .regridding import shift1d
 from .masking import resol_mask
 from .filters import generic2d
+<<<<<<< HEAD
+=======
+from .grid import get_axis, meshbounds, meshgrid, var2d
+from .grid.masking import resol_mask
+from .grid.regridding import shift1d
+from .phys.units import deg2m, tometric, m2deg
+from .remote import OutputWorkFile
+from vacumm.config import VACUMM_CFG, VACUMM_CFGSPECS, VACUMM_VDT, get_cfg_checked
+
+
+MA = N.ma
+
+>>>>>>> newconfig
 
 
 __all__ = ['PlotError','Plot', 'Plot1D', 'Curve', 'Bar', 'Stick',
@@ -3447,9 +3460,11 @@ class ScalarMappable:
         """Get :attr:`nmax_levels`"""
         nmax = self.get_obj('nmax_levels')
         if nmax is not None: return nmax
-        return int(get_config_value('vacumm.misc.plot', 'nmax_levels'))
+        return VACUMM_CFG['vacumm.misc.plot']['nmax_levels']
     def set_nmax_levels(self, value):
         """Set :attr:`nmax_levels`"""
+        if value is not None:
+            value = get_cfg_checked('vacumm.misc.plot', 'nmax_levels', value)
         self.set_obj('nmax_levels', value)
     def del_nmax_levels(self):
         """Del :attr:`nmax_levels`"""
@@ -3513,15 +3528,12 @@ class ScalarMappable:
         if isinstance(levels, str):
             mode = levels
         if mode is not None:
+            mode = get_cfg_checked('vacumm.misc.plot', 'levels_mode',  value)
             self.levels_mode = mode
         else:
             mode = self.levels_mode
         if mode is None:
-            mode = get_config_value('vacumm.misc.plot', 'levels_mode').lower()
-            if mode not in ['auto', 'smart', 'normal', 'basic', 'positive', 'negative', 'symetric', 'anomaly']:
-                oldmode = mode
-                mode = get_config_value('vacumm.misc.plot', 'levels_mode', user=False)
-                warn('Bad value for config value [vacumm.misc.plot] levels_mode: %s. Switched to default: %s'%(oldmode, mode))
+            mode = VACUMM_CFG['vacumm.misc.plot']['levels_mode']
         if not self.has_data(): return
         if keepminmax is not None:
             self.keepminmax = keepminmax
@@ -3585,16 +3597,14 @@ class ScalarMappable:
 
     def get_keepminmax(self):
         """Get :attr:`keepminmax`"""
-        keepminmax = self.get_obj('keepminmax')
+        value = self.get_obj('keepminmax')
         if keepminmax is None:
-            keepminmax = get_config_value('vacumm.misc.plot', 'keepminmax')
-        try:
-            keepminmax = int(keepminmax)
-        except:
-            raise PlotError('Error with keepminmax: %s'%keepminmax)
+            keepminmax = VACUMM_CFG['vacumm.misc.plot']['keepminmax']
         return keepminmax
     def set_keepminmax(self, value):
         """Set :attr:`keepminmax`"""
+        if value is not None:
+            value = get_cfg_checked('vacumm.misc.plot', 'keepminmax', value)
         self.set_obj('keepminmax', value)
     def del_keepminmax(self):
         """Del :attr:`keepminmax`"""
@@ -3605,12 +3615,14 @@ class ScalarMappable:
     def get_levels_mode(self):
         """Get :attr:`levels_mode`"""
         levels_mode = self.get_obj('levels_mode')
-        if levels_mode is None:
-            levels_mode = get_config_value('vacumm.misc.plot', 'levels_mode')
+        if levels_mode is not None:
+            levels_mode = VACUMM_CFG['vacumm.misc.plot']['levels_mode']
         levels_mode = str(levels_mode)
         return levels_mode
     def set_levels_mode(self, value):
         """Set :attr:`levels_mode`"""
+        if value is None:
+            value = get_cfg_checked('vacumm.misc.plot', 'levels_mode', value)
         self.set_obj('levels_mode', value)
     def del_levels_mode(self):
         """Del :attr:`levels_mode`"""
@@ -3664,9 +3676,11 @@ class ScalarMappable:
             cmap = self._cmap
         if cmap == 'mpl': cmap = False
         if cmap is None or cmap=='auto' or cmap is True :
-            cmap = get_config_value('vacumm.misc.plot', 'cmap')
-        if cmap=='mg': cmap = 'magic'
-        elif cmap=='rb': cmap = 'rainbow'
+            cmap = VACUMM_CFG['vacumm.misc.plot']['cmap']
+        if cmap=='mg' or 'vacumm_magic':
+            cmap = 'magic'
+        elif cmap=='rb' or 'vacumm_rainbow':
+            cmap = 'rainbow'
         if cmap=='magic' or cmap=='rainbow':
             import color
             mode = getattr(self, 'levels_mode', 'auto')
@@ -4564,7 +4578,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
     @staticmethod
     def _fill_method_(fill='pcolor', pcolor=None, nofill=None, **kwargs):
         if fill is None:
-            fill = get_config_value('vacumm.misc.plot', 'fill')
+            fill = VACUMM_CFG['vacumm.misc.plot']['fill']
             if fill is not None:
                 if fill.isdigit():
                     fill = int(fill)
@@ -4801,10 +4815,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         # Keywords
 
         if clabel is None:
-            try:
-                clabel = eval(get_config_value('vacumm.misc.plot', 'clabel'))
-            except:
-                clabel = eval(get_config_value('vacumm.misc.plot', 'clabel', user=False))
+            clabel = VACUMM_CFG['vacumm.misc.plot']['clabel']
 
         kw = kwfilter(kwargs, 'contour', defaults=dict(levels=self.levels))
         kwcl = kwfilter(kwargs, 'clabel')
