@@ -308,9 +308,9 @@ def list_forecast_files(filepattern, time=None, check=True,
     # Date pattern
     elif not nopat and has_time_pattern(filepattern):
 
-        from atime import pat2freq,IterDates, strftime, is_interval, pat2glob, time_selector
+        from atime import pat2freq,IterDates, strftime, is_interval, pat2glob, filter_time_selector
         if isinstance(time, cdms2.selectors.Selector):
-            seltime = time_selector(time, noslice=True)
+            seltime = filter_time_selector(time, noslice=True)
             if seltime.components():
                 _, comps = split_selector(seltime) # FIXME: include positional components
                 for i, comp in comps:
@@ -2103,6 +2103,7 @@ class CachedRecord:
     def _get_time_range_(self, time_range):
 
         if isinstance(time_range, (list, tuple)): # Directly specified
+            from .atime import time_selector
             time_range = time_selector(*time_range)
 
         elif time_range in  ('full', 'all', True, False): # Everything possible
@@ -2547,9 +2548,5 @@ def netcdf4(level=3, deflate=1, shuffle=1):
     cdms2.setNetcdfDeflateFlag(deflate)
     cdms2.setNetcdfShuffleFlag(shuffle)
     cdms2.setNetcdfDeflateLevelFlag(level)
-
-
-######################################################################
-######################################################################
 
 

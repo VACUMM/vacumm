@@ -48,6 +48,7 @@ extensions = [
 #        'vacumm.sphinxext.docversions',
         'gen_gallery',
         'gen_cmaps',
+        'gen_binhelps',
         ]
 import vacumm
 vacumm.docfiller_verbose = True
@@ -276,40 +277,40 @@ inheritance_node_attrs = dict(shape='ellipse', fontsize=10, height=.6,
 inheritance_edge_attrs = dict(penwidth=1)
 
 
-# Help of scripts
-# TODO: Create an extension for generating these rst help files
-if callfromsphinx:
-    scripts = ['*.py']
-    binrstdir = os.path.abspath('bin')
-    if not os.path.isdir(binrstdir):
-        os.makedirs(binrstdir)
-    import glob
-    from vacumm.misc.config import opt2rst
-    for ss in scripts:
-        for script in glob.glob(os.path.abspath(os.path.join('../../../bin', ss))):
-
-            # Output rst file
-            rstfile = os.path.join(binrstdir,
-                '%s.help.txt'%os.path.basename(script[:-3]))
-
-            # Checks before processing
-            if (os.path.exists(rstfile) and
-                os.stat(script).st_mtime < os.stat(rstfile).st_mtime):
-                continue
-
-            # Generate help
-            try:
-                std,err = subprocess.Popen([script, "-h"], stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE).communicate()
-            except:
-                continue
-            std = std.decode('utf-8', 'replace')
-            err = err.decode('utf-8', 'replace')
-            if not err is not None: continue
-            f = open(rstfile, 'w')
-            f.write(opt2rst(std))
-            f.close()
-            print 'Saved', rstfile
+## Help of scripts
+## TODO: Create an extension for generating these rst help files
+#if callfromsphinx:
+#    scripts = ['*.py']
+#    binrstdir = os.path.abspath('bin')
+#    if not os.path.isdir(binrstdir):
+#        os.makedirs(binrstdir)
+#    import glob
+#    from vacumm.misc.config import opt2rst
+#    for ss in scripts:
+#        for script in glob.glob(os.path.abspath(os.path.join('../../../bin', ss))):
+#
+#            # Output rst file
+#            rstfile = os.path.join(binrstdir,
+#                '%s.help.txt'%os.path.basename(script[:-3]))
+#
+#            # Checks before processing
+#            if (os.path.exists(rstfile) and
+#                os.stat(script).st_mtime < os.stat(rstfile).st_mtime):
+#                continue
+#
+#            # Generate help
+#            try:
+#                std,err = subprocess.Popen([script, "-h"], stdout=subprocess.PIPE,
+#                    stderr=subprocess.PIPE).communicate()
+#            except:
+#                continue
+#            std = std.decode('utf-8', 'replace')
+#            err = err.decode('utf-8', 'replace')
+#            if not err is not None: continue
+#            f = open(rstfile, 'w')
+#            f.write(opt2rst(std))
+#            f.close()
+#            print 'Saved', rstfile
 
 
 # Gallery

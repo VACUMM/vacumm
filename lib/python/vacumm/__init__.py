@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -35,9 +35,9 @@
 #
 
 __project__ = 'vacumm'
-__version__ = '3.0.0'
+__version__ = '3.1.1'
 __release__ = '1'
-__date__ = '2015-10-23'
+__date__ = '2015-04-26'
 __author__ = u'Stéphane Raynaud, Jonathan Wilkins, Guillaume Charria'
 __email__ = 'raynaud@actimar.fr, wilkins@actimar.fr, charria@ifremer.fr'
 __copyright__ = 'Copyright (c) 2010-2015 Actimar/IFREMER'
@@ -51,6 +51,7 @@ Content:
     - misc: generic library
     - data: data management
     - diag: advanced diagnostics
+    - tide: tidal tools
     - sphinxext: extensions to sphinx doc generator
     - bathy: bathymetric tools
     - data: library to read observations and modelled fields

@@ -49,8 +49,8 @@ from .grid import get_xy
 from .poly import create_polygon
 
 __all__  = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_map',
-'merc', 'proj', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
-'create_map']
+    'merc', 'proj', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
+    'create_map', 'RSHPERE_WGS84', 'GSHHS_RESLIST']
 __all__.sort()
 
 
@@ -62,10 +62,15 @@ rshpere_wgs84 = RSHPERE_WGS84
 GSHHS_RESLIST = ['f', 'h', 'i', 'l', 'c']
 gshhs_reslist = GSHHS_RESLIST
 
-def gshhs_autores(lon_min, lon_max, lat_min, lat_max):
+def gshhs_autores(lon_min, lon_max, lat_min, lat_max, asindex=False, shift=None):
     """Guess best resolution from lon/lat bounds"""
     testresol=((lon_max-lon_min)+(lat_max-lat_min))/2.0
     ires = N.array([-1.,1. ,5.,15.,50.]).searchsorted(testresol)-1
+    if isinstance(shift, int):
+        ires += shift
+        ires = N.clip(ires, 0, len(GSHHS_RESLIST)-1)
+    if asindex:
+        return ires
     return GSHHS_RESLIST[ires]
 
 # Cached maps
@@ -73,7 +78,11 @@ def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
     """Check if we have a cached map
 
     - *m*: A Basemap instance [Default: None]
-    - *mapdir*: Where are stored the cached maps. If ``None``, :func:`matplotlib.get_configdir` is used as a parent directory, which is the matplotlib configuration directory (:file:`~/.matplotlib` undex linux), and :file:`basemap/cached_maps` as the subdirectory.
+    - *mapdir*: Where are stored the cached maps. If ``None``,
+      :func:`matplotlib.get_configdir` is used as a parent directory,
+      which is the matplotlib configuration directory
+      (:file:`~/.matplotlib` undex linux), and
+      :file:`basemap/cached_maps` as the subdirectory.
 
     :Example:
 

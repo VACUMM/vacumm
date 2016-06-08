@@ -8,7 +8,7 @@ Misc tools
     >>> from vacumm.misc import auto_scale
 
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -54,8 +54,7 @@ from cdms2 import isVariable
 from genutil import grower
 from genutil import minmax
 
-#from vacumm import VACUMMError
-import vacumm
+from vacumm import VACUMMError
 
 
 MV = MV2
@@ -309,11 +308,12 @@ def basic_auto_scale(vmin,vmax,nmax=7,steps=[1,2,2.5,5,10],geo=False,minutes=Fal
     from matplotlib.ticker import MaxNLocator
 
     if geo:
+        mn = 1./60
         if (vmax-vmin) > 50.:
             steps = [1,2,3,6, 10]
         elif (vmax-vmin) > 3.:
             steps = [1,2,2.5,3,5,10]
-        elif minutes:
+        elif minutes and vmax//mn != vmin//mn:
 #           # Minimal range
 #           if (vmax-vmin) < 1:
 #               vmax -= .5/60.
@@ -1324,7 +1324,7 @@ def geodir(direction, from_north=True, inverse=False):
         l = direction.strip().replace('-', '').lower()
         ll = [lb.lower() for lb in labels]
         if l not in ll:
-            raise vacumm.VACUMMError("Wrong geographic direction: %s. Please use one of %s"%(
+            raise VACUMMError("Wrong geographic direction: %s. Please use one of %s"%(
                 direction, ' '.join(labels)))
         d = (N.arange(nlab)*dtheta)[ll.index(l)]
         if from_north:
@@ -1783,7 +1783,7 @@ def grow_variables(var1, var2):
     from grid.misc import set_grid
     order1, order2 = merge_orders(var1, var2)
     if '-' in order1+order2:
-        raise vacumm.VACUMMError("All axes must have a known type (xyzt) to grow variables")
+        raise VACUMMError("All axes must have a known type (xyzt) to grow variables")
     var1 = MV2.asarray(var1)
     var2 = MV2.asarray(var2)
     set_order(var1, order1)
@@ -1819,7 +1819,7 @@ def grow_depth(var, depth=None, mode=None, default=0., getvar=True):
 
             - ``None``: Nothing happens
             - ``"warn"``: A warning with :func:`~warnings.warn`.
-            - ``"raise"``: Raise a :exc:`~vacumm.VACUMMError` exception.
+            - ``"raise"``: Raise a :exc:`~VACUMMError` exception.
 
     :Return: ``var, depth`` where ``depth`` may be a scalar equal to ``default``
     """
@@ -1857,7 +1857,7 @@ def grow_lat(var, lat=None, mode=None, default=None, getvar=True):
 
             - ``None``: Nothing happens
             - ``"warn"``: A warning with :func:`~warnings.warn`.
-            - ``"raise"``: Raise a :exc:`~vacumm.VACUMMError` exception.
+            - ``"raise"``: Raise a :exc:`~VACUMMError` exception.
 
     :Return: ``var, lat where lat may be ``None``
     """
@@ -1974,8 +1974,8 @@ def numod(*vv):
     return nm
 
 
-def checkdir(path, asfile=None):
-    """Make sure that a directory exists
+def checkdir(path, asfile=None, chmod=None):
+    """Make sure that a directory exists and has right access
 
     :Params:
 
@@ -1994,7 +1994,9 @@ def checkdir(path, asfile=None):
     if not os.path.exists(path):
         os.makedirs(path)
     elif not os.path.isdir(path):
-        raise vacumm.VACUMMError("Path exists but is not a directory: {}".format(path))
+        raise VACUMMError("Path exists but is not a directory: {}".format(path))
+    if chmod is not None:
+        os.chmod(path, chmod)
     return path
 
 def nduniq(data, axis=0):

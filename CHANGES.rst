@@ -1,12 +1,55 @@
 Release notes
 #############
 
-In development
-==============
+Version 3.1.1
+=============
 
+- Added redirection support to log.Logger.
+- Added dstpts2line to interp.
+- Added gen_binhelps extension to sphinx.
+- Fixed format and date_format use in log.Logger.
+- Fixed module members list in units.
+- Fixed dstwgt2dto1dc_reduc.
+- Fixed interp.mix2d for datarmor.
+- Fixed StatAccum hist templates.
+- Fixed gen_cmaps.
+- Fixed plot_cmap and plot_cmaps.
+- Fixed issue with Makefile.
+- Fixed setup with CHANGES.
+
+Version 3.1.0
+=============
+
+- Added support for mtype=None to variogram_fit.
+- Added support for res="None" to create_map.
+- Added errfunc support to kriging.
+- Added cfgfilter to cfgmanager.
+- Added proj param to basemap.get_proj.
+- Added closing after showing in core_plot.
+- Added autoscaling mode to ScalarMappable.get_levels with normal and degrees.
+- Added merge_masks to merge masks of several variables.
+- Added u, v, ubc, vb, speed, cdir, sigma*, *dens and renamed vol to cvol in cf.
+- Added support for redirecting warnings, stdout and sterr to io.Logger
+- Added mode support to dz2depth with edge, edge+ and middle.
+- Added checkdir to make sure dir exists.
+- Added julday converter.
 - Added support for haversine distance to get_distances + krig integration.
 - Added cyclic support to rainbow.
+- Changed grid2xy to use get_distances.
+- Renamed dmax to distmax in kriging.
+- Improved support of julian days in atime.
 - Improved date locators and formatters.
+- Fixed cmap_br*.
+- Fixed ignorecase in ncmatch_obj.
+- Fixed some proj problems in misc.grid.
+- Fixed inversions in kriging.
+- Fixed validation of list in config.
+- Fixed 360 deg problem for grid2xy.
+- Fixed transect with 4D data
+- Fixed scalar handling and masking in grid2xy
+- Fixed format_var with variables with no axes specs.
+- Fixed roundto in IterDates.
+- Fixed no_norm issue.
 - Fixed some standard names and grid locs in cf.
 
 Version 3.0.0

@@ -28,23 +28,27 @@ def gen_cmaps(app, rstfile):
     from matplotlib import rc, rcdefaults
     outdir = os.path.join(app.builder.srcdir, os.path.dirname(rstfile))
     for cmap_name in app.builder.status_iterator(
-        cmaps.iterkeys(), "generating colormaps... ",
-        length=len(cmaps)):
+            cmaps.iterkeys(), "generating colormaps... ",
+            length=len(cmaps),
+            stringify_func=lambda x: os.path.basename(x),
+        ):
         cmap, savefigs = cmaps[cmap_name]
         try:
             if not isinstance(cmap, basestring):
                 cmap = getattr(vacumm.misc.color, cmap[0])(**cmap[1])
             savefigs = os.path.join(outdir, savefigs)
-            vacumm.misc.color.plot_cmap(cmap, savefigs=savefigs, show=False, title=cmap_name,
-                savefigs_verbose=False)
+            vacumm.misc.color.plot_cmap(cmap, savefigs=savefigs,
+                show=False, title=cmap_name, savefigs_verbose=False)
         except:
             pass
 
     # Overview figure
     app.builder.info(bold("generating overview of colormaps..."), nonl=True)
     rc('font', size=8)
-    vacumm.misc.color.plot_cmaps(savefigs=os.path.join(outdir, app.config.gen_cmaps_prefix+'cmaps'),
-        show=False, figsize=(6, 10), savefigs_verbose=False, aspect=0.08, ncol=3)
+    vacumm.misc.color.plot_cmaps(
+        savefigs=os.path.join(outdir, app.config.gen_cmaps_prefix+'cmaps'),
+        show=False, figsize=6, savefigs_verbose=False, aspect=0.08, ncol=4,
+        close=True)
     rcdefaults()
     app.builder.info('done')
 

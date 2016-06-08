@@ -25,8 +25,6 @@ cgrido = rotate_grid(hs.getGrid(), -30)
 
 print 'Regrillage'
 from vacumm.misc.grid.regridding import regrid2d
-print ' - par natgrid'
-hs_nat = regrid2d(hs, cgrido, 'nat')
 print ' - par SCRIP/conservative'
 hs_scripcons = regrid2d(hs, cgrido, 'conservative')
 print ' - par SCRIP/bilineaire'
@@ -37,16 +35,15 @@ print 'Plots'
 from matplotlib import rcParams ; rcParams['font.size'] = 10
 import pylab as P
 from vacumm.misc.plot import map2, savefigs, xhide, yhide, add_grid
-P.figure(figsize=(6.5, 5))
+P.figure(figsize=(4, 7))
 P.subplots_adjust(hspace=.28, bottom=.07, left=.08, right=.98)
-kwplot = dict(show=False, colorbar=False, vmin=hs.min(), vmax=hs.max(), 
-    drawparallels_size=8, drawmeridians_size=8, drawmeridians_rotation=45.)
-m = map2(hs, title='Original', subplot=221, xhide=1,**kwplot)
+kwplot = dict(show=False, colorbar=False, vmin=hs.min(), vmax=hs.max(),
+    drawparallels_size=8, drawmeridians_size=8, drawmeridians_rotation=45.,
+    xhide='auto',  yhide='auto')
+m = map2(hs, title='Original', subplot=311, **kwplot)
 add_grid(cgrido, lw=.7, alpha=.3)
-map2(hs_nat, title='Natgrid', subplot=222, xhide=1,yhide=1,m=m, **kwplot)
+map2(hs_scripcons, title='SCRIP : remapping', subplot=312, m=m, **kwplot)
 add_grid(cgridi, lw=.7, alpha=.3)
-map2(hs_scripcons, title='SCRIP : remapping', subplot=223, m=m, **kwplot)
-add_grid(cgridi, lw=.7, alpha=.3)
-map2(hs_scripbilin, title=u'SCRIP : bilinéaire',subplot=224,yhide=1,m=m, **kwplot)
+map2(hs_scripbilin, title=u'SCRIP : bilinéaire', subplot=313, m=m, **kwplot)
 add_grid(cgridi, lw=.7, alpha=.3)
 savefigs(__file__)
