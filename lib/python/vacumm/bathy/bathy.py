@@ -40,8 +40,6 @@ import numpy as N
 MV = MV2
 cdms = cdms2
 
-from vacumm.misc.axml.base import Base as XMLBase, def_setget
-from vacumm.misc.io import XYZ, XYZMerger
 
 from string import Template
 from ConfigParser import ConfigParser, SafeConfigParser
@@ -52,6 +50,8 @@ from warnings import warn
 import pickle
 
 from vacumm.config import check_data_file, get_config_sections, get_config_value
+from vacumm.misc.shapes import XYZ, XYZMerger
+
 
 __all__ = ['print_bathy_list', 'Bathy', 'plot_bathy', 'fmt_bathy',  'bathy_list',
     'XYZBathy', 'XYZBathyBankClient', 'XYZBathyBank', 'XYZBathyMerger', 'GriddedBathy',

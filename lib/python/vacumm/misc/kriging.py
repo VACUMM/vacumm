@@ -42,11 +42,11 @@ import warnings
 import numpy as N
 import pylab as P
 
-import vacumm.misc.misc as vcm
-import vacumm.misc.grid.misc as vcg
+from .misc import kwfilter
+from .grid import get_distances
 
 if not hasattr(N, 'isclose'):
-    isclose = vcm.closeto
+    isclose = closeto
 else:
     isclose = N.isclose
 
@@ -62,13 +62,9 @@ def get_blas_func(name):
     return func
 blas_dgemv = get_blas_func('gemv')
 def dgemv(a, x): return blas_dgemv(1., a, x)
-try:
-    from _blaslapack import symm, sytri
-except:
-#    print 'Falling back to builtin functions'
-    dgemm = get_blas_func('gemm')
-    def symm(a, b): return dgemm(1., a, b)
-    sytri = N.linalg.pinv
+dgemm = get_blas_func('gemm')
+def symm(a, b): return dgemm(1., a, b)
+sytri = N.linalg.pinv
 
 
 class KrigingError(Exception):
@@ -244,7 +240,7 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
         npts = x.shape[0]
 
     # Distances
-    dd = vcg.get_distances(x, y, x, y, mode=distfunc)
+    dd = get_distances(x, y, x, y, mode=distfunc)
 
     # Variogram
     if errfunc is None:
@@ -330,7 +326,7 @@ def variogram_fit(x, y, z, mtype=None, getall=False, getp=False, geterr=False,
           >>> variogram_fit(x, y, z, mtype, n=0) # fix the nugget
 
     """
-    kwv = vcm.kwfilte(kwargs, 'variogram_')
+    kwv = kwfilter(kwargs, 'variogram_')
     kwv.setdefault("distfunc", distfunc)
     kwv.setdefault("errfunc", errfunc)
 
@@ -666,7 +662,7 @@ class OrdinaryCloudKriger(object):
 
             # Get distance between input points
             if len(self._dd)<ic+1:
-                dd = vcg.get_distances(self.xc[ic], self.yc[ic],
+                dd = get_distances(self.xc[ic], self.yc[ic],
                     self.xc[ic], self.yc[ic], mode=self.distfunc)
                 self._dd.append(dd)
             else:
@@ -739,7 +735,7 @@ class OrdinaryCloudKriger(object):
 
             # Distances to output points
             # dd = cdist(N.transpose([xi,yi]),N.transpose([xo,yo])) # TODO: test cdist
-            dd = vcg.get_distances(xo, yo, self.xc[ic], self.yc[ic], mode=self.distfunc)
+            dd = get_distances(xo, yo, self.xc[ic], self.yc[ic], mode=self.distfunc)
 
             # Form B
             B = N.empty((self.npc[ic]+1, npo))

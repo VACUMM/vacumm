@@ -47,20 +47,22 @@ from matplotlib.collections import LineCollection, PolyCollection
 from mpl_toolkits.basemap import Basemap
 
 from vacumm import VACUMMError
-from . import misc as vcm
-from . import units as vcpu
-from . import atime as vct
+from .misc import split_selector, kwfilter, squeeze_variable, is_iterable
+from .poly import create_polygon, clip_shape
+from .atime import (has_time_pattern, time_selector, is_interval, is_time,
+    strptime, comptime, are_same_units, ch_units, now, datetime)
+
 from . import axes as vca
 from . import color as vcc
 #from . import grid as vcg
-from . import poly as vcpl
 
 __all__ = ['list_forecast_files', 'NcIterBestEstimate', 'NcIterBestEstimateError', 'NcFileObj',
     'ncfind_var', 'ncfind_axis', 'ncfind_obj', 'ncget_var', 'ncread_var', 'ncread_files', 'ncread_best_estimate',
     'ncget_grid', 'ncget_time','ncget_lon','ncget_lat','ncget_level', 'ncmatch_obj',
     'ncget_axis', 'netcdf3', 'netcdf4', 'ncread_axis', 'ncread_obj', 'ncget_fgrid',
     'grib_read_files', 'nccache_get_time', 'grib2nc', 'grib_get_names',
-    'Shapes', 'XYZ', 'XYZMerger', 'write_snx', 'ColoredFormatter', 'Logger', 'TermColors'
+    'write_snx', 'ColoredFormatter', 'Logger',
+    'TermColors', 'read_shapefile',
     ]
 
 MA = N.ma
@@ -304,26 +306,26 @@ def list_forecast_files(filepattern, time=None, check=True,
 
 
     # Date pattern
-    elif not nopat and vct.has_time_pattern(filepattern):
+    elif not nopat and has_time_pattern(filepattern):
 
         from atime import pat2freq,IterDates, strftime, is_interval, pat2glob, time_selector
         if isinstance(time, cdms2.selectors.Selector):
-            seltime = vct.time_selector(time, noslice=True)
+            seltime = time_selector(time, noslice=True)
             if seltime.components():
-                _, comps = vcm.split_selector(seltime) # FIXME: include positional components
+                _, comps = split_selector(seltime) # FIXME: include positional components
                 for i, comp in comps:
                     itv = comp.spec
-                    if not is_interval(itv) and vct.is_time(itv):
+                    if not is_interval(itv) and is_time(itv):
                         itv = (itv, itv, 'ccb')
                     if i==0:
                         time = itv
                     else:
-                        time = vct.itv_union(itv, time)
+                        time = itv_union(itv, time)
             else:
                 time = None
 
         if not is_interval(time):
-            if vct.is_time(time):
+            if is_time(time):
                 time = (time, time, 'ccb')
             else:
                 raise ValueError('Your file pattern contains date pattern (like "%Y"), '
@@ -351,18 +353,18 @@ def list_forecast_files(filepattern, time=None, check=True,
                 date0 = date1 = None
                 for i in xrange(len(gfiles)-1):
                     try:
-                        date0 = vct.strptime(gfiles[i], filepattern)
-                        date1 = vct.strptime(gfiles[i+1], filepattern)
+                        date0 = strptime(gfiles[i], filepattern)
+                        date1 = strptime(gfiles[i+1], filepattern)
                     except:
                         continue
                     if date0>=time[0] or date1<=time[1]: break
                 if None not in [date0, date1]:
-                    dt = vct.datetime(date1)-vct.datetime(date0)
+                    dt = datetime(date1)-datetime(date0)
                     if dt.seconds!=0:
-                        lmargin = vct.comptime('2000').add(dt.seconds, cdtime.Seconds).torel(
+                        lmargin = comptime('2000').add(dt.seconds, cdtime.Seconds).torel(
                             patfreq[1]+' since 2000').value
                     else:
-                        lmargin = vct.comptime('2000').add(dt.days, cdtime.Days).torel(
+                        lmargin = comptime('2000').add(dt.days, cdtime.Days).torel(
                             patfreq[1]+' since 2000').value
                 else:
                     lmargin = 1
@@ -633,7 +635,7 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
         if key=='axis':
             search[key] = val if not isinstance(key, list) else val[0]
             continue
-        if not vcm.is_iterable(val): val = [val]
+        if not is_iterable(val): val = [val]
         search[key] = val
 
     # Check long_name and units
@@ -750,7 +752,7 @@ def ncread_var(f, vname, *args, **kwargs):
     ignorecase = kwargs.pop('ignorecase', True)
     torect = kwargs.pop('torect', True)
     grid = kwargs.pop('grid', None)
-    kwgrid = vcm.kwfilter(kwargs, 'grid')
+    kwgrid = kwfilter(kwargs, 'grid')
     samp = kwargs.pop('samp', None)
     atts = kwargs.pop('atts', None)
     mode = kwargs.pop('mode', 'raise')
@@ -816,13 +818,13 @@ def _process_var(var, torect, samp, grid, kwgrid, squeeze, atts):
     if squeeze:
         for ss in squeeze:
             if ss is False: break
-            var = vcm.squeeze_variable(var, ss)
+            var = squeeze_variable(var, ss)
             if ss in [True, None]:
                 break
 
     # Attributes
     if atts is not None:
-        vcm.set_atts(var, atts)
+        set_atts(var, atts)
 
     return var
 
@@ -1441,9 +1443,9 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
                 this_time_units = f[iterator.timeid].units
                 if time_units is None:
                     time_units = this_time_units
-                elif not vct.are_same_units(this_time_units, time_units):
+                elif not are_same_units(this_time_units, time_units):
                     try:
-                        vct.ch_units(var, time_units)
+                        ch_units(var, time_units)
                     except:
                         continue
 
@@ -1577,7 +1579,7 @@ def grib_read_files(
     verbose('number of matching files: %s'%(len(files)))
     #verbose('- %s'%('\n- '.join(files)))
     if time:
-        time = map(vct.datetime, time[:2])
+        time = map(datetime, time[:2])
     vardict = dict()
     # Load grib data
     for f in files:
@@ -1623,7 +1625,7 @@ def grib_read_files(
                     del m
                 del ms
     # Transform loaded data into cdms2 variable
-    kwgrid = vcm.kwfilter(kwargs, 'grid')
+    kwgrid = kwfilter(kwargs, 'grid')
     for n,p in vardict.iteritems():
         if not p:
             vardict[n] = None
@@ -1837,7 +1839,7 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
 
 
     # Clipping zone with projected coordinates
-    clip = vcpl.create_polygon(clip, proj=clip_proj)
+    clip = create_polygon(clip, proj=clip_proj)
 
     # Convert to shapes
     shaper = [Point, LineString, Polygon][stype]
@@ -1862,7 +1864,7 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
 
         # Clip
         if clip:
-            shapes = vcpl.clip_shape(shape, clip)
+            shapes = clip_shape(shape, clip)
         else:
             shapes = [shape]
 
@@ -1910,7 +1912,7 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
         return all_shapes
     return dict(shapes=all_shapes, shaper=shaper, proj=proj, m=m, xmin=xmin,
         ymin=ymin, xmax=xmax, ymax=ymax, xpmin=xpmin, xpmax=xpmax, ypmin=ypmin,
-        ypmax=ypmax, clip=clip, sorted=sorted)
+        ypmax=ypmax, clip=clip, sorted=sorted, m_projsync=m_projsync)
 
 class CachedRecord:
     """Abstract class for managing cached records
@@ -1947,7 +1949,7 @@ class CachedRecord:
         self._time_range = self._get_time_range_(time_range)
 
         _var_names = [sn for sn, ln, un, vr in _var_info]
-        _station_info = [[name, vct.comptime(time_origin)] for name,  time_origin in _buoy_info]
+        _station_info = [[name, comptime(time_origin)] for name,  time_origin in _buoy_info]
 
         self._vars = {}
         self.check_cache()
@@ -2101,10 +2103,10 @@ class CachedRecord:
     def _get_time_range_(self, time_range):
 
         if isinstance(time_range, (list, tuple)): # Directly specified
-            time_range = vct.time_selector(*time_range)
+            time_range = time_selector(*time_range)
 
         elif time_range in  ('full', 'all', True, False): # Everything possible
-            time_range = (self._time_origin, vct.now(True))
+            time_range = (self._time_origin, now(True))
 
         else :#if hasattr(self, '_time_range'): # Default specified time range
             time_range = self._time_range

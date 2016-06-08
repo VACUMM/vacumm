@@ -49,7 +49,6 @@ from cdms2.axis import AbstractAxis, FileAxis
 from cdms2.coord import TransientAxis2D
 
 from vacumm import VACUMMError
-from .grid import create_axes2d, get_axis, var2d
 
 cdms = cdms2
 
@@ -400,7 +399,8 @@ def create_lon(values,**atts):
     """
     if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
         atts.setdefault('long_name', 'Longitude')
-        return vcg.create_axes2d(x=values, lonid=atts.pop('id', None), xatts=atts)
+        from .grid import create_axes2d
+        return reate_axes2d(x=values, lonid=atts.pop('id', None), xatts=atts)
     return create_axis(values,'x',**atts)
 
 def create_lat(values,**atts):
@@ -418,7 +418,8 @@ def create_lat(values,**atts):
     """
     if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
         atts.setdefault('long_name', 'Latitude')
-        return vcg.create_axes2d(y=values, latid=atts.pop('id', None), yatts=atts)
+        from .grid import create_axes2d
+        return create_axes2d(y=values, latid=atts.pop('id', None), yatts=atts)
     return create_axis(values,'y',**atts)
 
 def create_dep(values,**atts):
@@ -751,15 +752,15 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
 
         # Try to reorder
         if reorder:
-
+            from .grid import get_axis, var2d
             try:
                 reordered = cdms2.order2index(var.getAxisList(), allowed_cdms_order)
                 new_var = var.reorder(allowed_cdms_order)
-                if allowed_cdms_order[-1]=='x' and len(vcg.get_axis(new_var, -1).shape)==2: # 2D axes
+                if allowed_cdms_order[-1]=='x' and len(get_axis(new_var, -1).shape)==2: # 2D axes
                     del var
-                    var = vcg.var2d(new_var,
-                        MV2.transpose(vcg.get_axis(new_var, 0)),
-                        MV2.transpose(vcg.get_axis(new_var, -1)), copy=0)
+                    var = var2d(new_var,
+                        MV2.transpose(get_axis(new_var, 0)),
+                        MV2.transpose(get_axis(new_var, -1)), copy=0)
                     set_order(new_var, allowed_cdms_order)
                 else:
                     del var

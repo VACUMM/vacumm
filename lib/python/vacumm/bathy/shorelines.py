@@ -35,19 +35,18 @@
 
 import os
 
-_shoreline_list = ['Histolitt', 'EUROSION', 'GSHHS_SF', 'GSHHS','GSHHS_BM']
+_shoreline_list = ['Histolitt', 'EUROSION', 'GSHHS_SF', 'GSHHS','GSHHSBM']
 __all__ = _shoreline_list+['ShoreLine', 'get_best', 'get_shoreline', 'list_shorelines', 'get_bestres']
 
-from ConfigParser import ConfigParser
-
-from vacumm.misc.io import Shapes
-from vacumm.misc.grid import get_xy
-from vacumm.misc.grid.basemap import GSHHS_BM, gshhs_reslist, gshhs_autores
-from vacumm import config
 import numpy as N
 
+from vacumm import config, VACUMMError
+from vacumm.misc.grid import get_xy
+from vacumm.misc.basemap import gshhs_reslist, gshhs_autores
+from vacumm.misc.sdata import Shapes, GSHHSBM
 
-class VACUMMShorelineError(Exception):
+
+class VACUMMShorelineError(VACUMMError):
     pass
 
 def _shorelines_list_(name=None):
@@ -204,7 +203,7 @@ class GSHHS_SF(ShoreLine):
     _factor = 1.
     _name = 'gshhs'
 
-class GSHHS(_CoastalBathy_, _PolyShapes_, GSHHS_BM):
+class GSHHS(_CoastalBathy_, _PolyShapes_, GSHHSBM):
     _factor = 1.
 
 def get_bestres(gg):

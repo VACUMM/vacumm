@@ -53,20 +53,18 @@ from mpl_toolkits.basemap import Basemap
 from _geoslib import Point
 
 
-import vacumm
-from . import basemap as vcgb
-import masking as vcgm
-import vacumm.misc.misc as vcm
-import vacumm.misc.phys.constants as vcpc
-import vacumm.misc.phys.units as vcpu
-import vacumm.misc.axes as vca
-import vacumm.misc.io as vcio
+from vacumm import VACUMMError
+from .misc import numod, get_atts, cp_atts, intersect, set_atts
+from .constants import EARTH_RADIUS
+from .units import deg2m
+from .axes import islat, islon, isaxis, create_lon, create_lat
+
 
 cdms = cdms2
 MV = MV2
 isseq = operator.isSequenceType
 isnum = operator.isNumberType
-isdic= ismap = operator.isMappingType
+isdic = ismap = operator.isMappingType
 
 __all__ = ['isoslice','isgrid', 'get_resolution', 'get_distances', 'get_closest', 'get_closest_depth', 'get_geo_area',
     'bounds2d', 'bounds1d', 'get_axis', 'get_grid', 'get_grid_axes', "gridsel",
@@ -200,8 +198,8 @@ def get_resolution(mygrid, lon_range=None,lat_range=None):
         lat = lat.ravel()
 
     # Compute areas
-    xx = vcpu.deg2m(lon,lat=lat)
-    yy = vcpu.deg2m(lat)
+    xx = deg2m(lon,lat=lat)
+    yy = deg2m(lat)
     dx = xx[1:]-xx[:-1]
     dy = yy[1:]-yy[:-1]
     ds = dx*dy
@@ -245,14 +243,14 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
     # Mode
     if not callable(mode):
         if mode is None:
-            mode = "haversine" if (vca.islon(xxa) or vca.islon(xxb) or
-                vca.islat(yya) or vca.islat(yyb)) else "simple"
+            mode = "haversine" if (islon(xxa) or islon(xxb) or
+                islat(yya) or islat(yyb)) else "simple"
         if geo: # backward compat
             mode = 'haversine'
         mode = str(mode).lower()
         valid_modes = 'simple', 'haversine', 'sphere', 'deg2m', 'degrees', 'euclidian', 'meters'
         if mode not in valid_modes:
-            raise vacumm.VACUMMError('Wrong mode ({}). Please choose one of: {}'.format(
+            raise VACUMMError('Wrong mode ({}). Please choose one of: {}'.format(
                 mode, ', '.join(valid_modes)))
         if mode in ['sphere', "degrees"]:
             mode = 'harversine'
@@ -264,8 +262,8 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
     if yyb is None: yyb = yya
 
     # Numerical types
-    Nma = vcm.numod(xxa)
-    Nmb = vcm.numod(xxb)
+    Nma = numod(xxa)
+    Nmb = numod(xxb)
     nma = None if not isinstance(xxa,  N.ndarray) else Nma
     nmb = None if not isinstance(xxb,  N.ndarray) else Nmb
     if MV2 is Nma or MV2 is Nmb:
@@ -305,10 +303,10 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
         dist = mode(xxa, yya, xxb, yyb)
     else:
         if mode=='deg2m':
-            xxa = vcpu.deg2m(xxa,lat=yya)
-            yya = vcpu.deg2m(yya)
-            xxb = vcpu.deg2m(xxb,lat=yyb)
-            yyb = vcpu.deg2m(yyb)
+            xxa = deg2m(xxa,lat=yya)
+            yya = deg2m(yya)
+            xxb = deg2m(xxb,lat=yyb)
+            yyb = deg2m(yyb)
         dx = xxa-xxb
         dy = yya-yyb
         if mode=='haversine':
@@ -319,7 +317,7 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
             xxb *= N.pi/180
             yyb *= N.pi/180
             a = Nm.sin(dy/2)**2 + Nm.cos(yya) * Nm.cos(yyb) * Nm.sin(dx/2)**2
-            dist = vcpc.EARTH_RADIUS * 2 * Nm.arcsin(Nm.sqrt(a)) ; del a
+            dist = EARTH_RADIUS * 2 * Nm.arcsin(Nm.sqrt(a)) ; del a
         else:
             dist = Nm.sqrt(dx**2+dy**2)
         del dx, dy
@@ -362,7 +360,7 @@ def get_closest(xx, yy, xp, yp, distmode=None, mask=None, gridded=True, **kwargs
     if proj:
         distmode = True
     elif distmode is None:
-        distmode = 'haversine' if vca.islon(xx) or vca.islat(yy) else 'direct'
+        distmode = 'haversine' if islon(xx) or islat(yy) else 'direct'
 
     # Gridded
     xx = N.asarray(xx[:])
@@ -434,8 +432,8 @@ def get_geo_area(grid,mask=None):
     latBounds, lonBounds  = grid.getBounds()
     lat = grid.getLatitude()
 
-    latWeights = vcpu.deg2m(latBounds[:,1] - latBounds[:,0],lat=lat)
-    lonWeights = vcpu.deg2m(lonBounds[:,1] - lonBounds[:,0])
+    latWeights = deg2m(latBounds[:,1] - latBounds[:,0],lat=lat)
+    lonWeights = deg2m(lonBounds[:,1] - lonBounds[:,0])
 
     area = N.outerproduct(latWeights,lonWeights)
 
@@ -459,7 +457,7 @@ def isregular(axis, tol=.05, iaxis=None, dx=None):
         >>> isregular(lon1d, dx=2., tol=.01)
         >>> isregular(lon2d, iaxis=1)
     """
-    cdaxis = vca.isaxis(axis)
+    cdaxis = isaxis(axis)
     if cdaxis:
         xx = axis.getValue()
     else:
@@ -468,7 +466,7 @@ def isregular(axis, tol=.05, iaxis=None, dx=None):
         if xx.ndim == 1 or not cdaxis:
             iaxis = 0
         else:
-            iaxis = int(vca.islon(axis))
+            iaxis = int(islon(axis))
     thisdx = N.diff(xx, axis=iaxis)
     dxx = N.abs(N.diff(thisdx, axis=iaxis))
     if dx is None:
@@ -493,7 +491,7 @@ def bounds1d(xx):
     except:
         if not isinstance(xx, N.ndarray):
             xx = N.asarray(xx[:],'d')
-    M = vcm.numod(xx)
+    M = numod(xx)
 
     if len(xx)>1:
         leftPoint = M.array([1.5*xx[0]-0.5*xx[1]])
@@ -540,7 +538,7 @@ def bounds2d(*xyaxes):
         assert xy.ndim == 2, 'You must pass 2d arrays as argument'
         ny,nx = xy.shape
 
-        M = vcm.numod(xy)
+        M = numod(xy)
 
         bounds = M.zeros((ny,nx,4),'d')
 
@@ -603,8 +601,8 @@ def meshgrid(x,y,copy=1):
 
     # Be sure to have numpy arrays and make a copy
     x = _cdat2num_(x)
-    Mx = vcm.numod(x)
-    My = vcm.numod(y)
+    Mx = numod(x)
+    My = numod(y)
     if N.ma.isMA(x):
         if copy: x = x.copy()
         xmask = N.ma.getmaskarray(x)
@@ -660,7 +658,7 @@ def bounds2mesh(xb,yb=None):
     for xyb in xb, yb:
         if not isinstance(xyb, N.ndarray):
             xyb = N.asarray(xyb)
-        M = vcm.numod(xyb)
+        M = numod(xyb)
 
         # 1D
         if xyb.ndim==2:
@@ -739,7 +737,7 @@ def meshweights(x, y=None, distmode='haversine', axis=-1, proj=None):
 
         if axis<0: axis += x.ndim
         dx = x.copy()
-        M = vcm.numod(x)
+        M = numod(x)
         dd = M.diff(x, axis=axis)
         sl = [slice(None)]*x.ndim
         def ss(*sss):
@@ -763,7 +761,7 @@ def meshweights(x, y=None, distmode='haversine', axis=-1, proj=None):
 
     # 2D
     if distmode is None:
-        distmode = 'haversine' if vca.islon(x) or vca.islat(y) else 'direct'
+        distmode = 'haversine' if islon(x) or islat(y) else 'direct'
     xxb, yyb = meshcells(x, y)
     dx = get_distances(xxb[:, :-1], yyb[:, :-1], xxb[:, 1:], yyb[:, 1:],
         distmode=distmode, pairwise=True)
@@ -784,7 +782,7 @@ def cells2grid(xxb,yyb):
 
     :Returns: ``xx(ny,nx),yy(ny,nx)``
     """
-    M = vcm.numod(xxb)
+    M = numod(xxb)
     xxyy = [M.zeros((nx+1,ny+1),dtype=xxb.dtype), M.zeros((nx+1,ny+1), dtype=yyb.dtype)]
     bb = (xxb,yyb)
     ij2ic = M.reshape([0,1,3,2],(2,2))
@@ -863,7 +861,7 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
     else:
         mode = str(mode).lower()
         if mode[:1] not in 'ias':
-            raise vacumm.VACUMMError('Wrong mode: %s. Choose one of: slice, indices, array'%mode)
+            raise VACUMMError('Wrong mode: %s. Choose one of: slice, indices, array'%mode)
     if mode[0]=='a':
         assubmask = True
 
@@ -883,7 +881,7 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
         lat = (lat, lat, 'cob')
 
     # CDMS variable
-    if cdms2.isVariable(gg) and not vca.isaxis(gg):
+    if cdms2.isVariable(gg) and not isaxis(gg):
 
         gg = get_grid(gg)
 
@@ -897,7 +895,7 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
         if len(xx.shape)==2:
 
             # As axes
-            if not vca.isaxis(xx) or not vca.isaxis(yy):
+            if not isaxis(xx) or not isaxis(yy):
                 xx, yy = create_axes2d(xx, yy)
 
             # Get indices
@@ -930,8 +928,8 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
         # 1D
 
         # - as axes
-        if not vca.isaxis(xx): xx = vca.create_lon(xx)
-        if not vca.isaxis(yy): yy = vca.create_lon(yy)
+        if not isaxis(xx): xx = create_lon(xx)
+        if not isaxis(yy): yy = create_lon(yy)
 
         # - indices
         cmode = mode if mode[0]!='a' else 'slice'
@@ -961,8 +959,8 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
     # Single Axis
 
     # - selector
-    if not vca.isaxis(gg):
-        raise vacumm.VACUMMError("If gg is not a grid or an tuple, it must be an axis")
+    if not isaxis(gg):
+        raise VACUMMError("If gg is not a grid or an tuple, it must be an axis")
     axis = int(gg.isLongitude())
     sel, osel = (lat, lon)[::1-2*axis]
     if axis:
@@ -1208,11 +1206,11 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
     if hasx:
         xn = N.asarray(x[:])
         if xn.ndim==1 and y is None:
-            raise vacumm.VACUMMError("Can't create 2D from a single 1D X axis")
+            raise VACUMMError("Can't create 2D from a single 1D X axis")
     if hasy:
         yn = N.asarray(y[:])
         if yn.ndim==1 and x is None:
-            raise vacumm.VACUMMError("Can't create 2D from a single 1D Y axis")
+            raise VACUMMError("Can't create 2D from a single 1D Y axis")
     if hasx and hasy:
         xx, yy = meshgrid(xn, yn)
     else:
@@ -1221,7 +1219,7 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
     if hasx: del xn
     if hasy: del yn
 #    if hasx and hasy and xx.shape != yy.shape:
-#        raise vacumm.VACUMMError('Incomptible shape between 2D X and Y coordinates: %s != %s'%(xx.shape, yy.shape))
+#        raise VACUMMError('Incomptible shape between 2D X and Y coordinates: %s != %s'%(xx.shape, yy.shape))
 #    if bounds:
 #        if hasx: xx = meshbounds(xx)
 #        if hasy: yy = meshbounds(yy)
@@ -1266,24 +1264,24 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
     # Format
     if hasx:
         xaxis2d.id = lonid or 'lon'
-#        xaxis2d = vca.create_lon(xaxis2d, id=lonid or 'lon')
+#        xaxis2d = create_lon(xaxis2d, id=lonid or 'lon')
         xaxis2d.getAxis(1).designateLongitude()
         xaxis2d.getAxis(0).designateLatitude()
         if hasattr(xaxis2d, 'axis'): del xaxis2d.axis
         if xatts is not None:
-            xa = vcm.get_atts(x)
+            xa = get_atts(x)
             xa.update(xatts)
-            vcm.set_atts(xaxis2d, xatts)
+            set_atts(xaxis2d, xatts)
     if hasy:
         yaxis2d.id = latid or 'lat'
-#        yaxis2d = vca.create_lat(yaxis2d, id=latid or 'lat')
+#        yaxis2d = create_lat(yaxis2d, id=latid or 'lat')
         yaxis2d.getAxis(1).designateLongitude()
         yaxis2d.getAxis(0).designateLatitude()
         if hasattr(yaxis2d, 'axis'): del yaxis2d.axis
         if yatts is not None:
-            ya = vcm.get_atts(y)
+            ya = get_atts(y)
             ya.update(yatts)
-            vcm.set_atts(yaxis2d, yatts)
+            set_atts(yaxis2d, yatts)
 
     # Output
     if not hasx and not hasy: return
@@ -1370,15 +1368,15 @@ def get_grid(gg, geo=True, intercept=False, strict=False):
         xx, yy = gg
 
         # Check axis is compatible
-        if vca.isaxis(xx):
+        if isaxis(xx):
             if getattr(xx, 'axis', 'x').upper()!='X':
                 if not intercept: return
-                raise vacumm.VACUMMError("Can't make a grid with %s axis as longitude"%xx.axis)
+                raise VACUMMError("Can't make a grid with %s axis as longitude"%xx.axis)
             xx.designateLongitude()
-        if vca.isaxis(yy):
+        if isaxis(yy):
             if getattr(yy, 'axis', 'y').upper()!='Y':
                 if not intercept: return
-                raise vacumm.VACUMMError("Can't make a grid with %s axis as latitude"%yy.axis)
+                raise VACUMMError("Can't make a grid with %s axis as latitude"%yy.axis)
             yy.designateLatitude()
 
         # Create grid
@@ -1396,7 +1394,7 @@ def get_grid(gg, geo=True, intercept=False, strict=False):
             return cdms.createGenericGrid(yy[:].ravel(), xx[:].ravel())
 
     if intercept:
-        raise vacumm.VACUMMError('No way to guess the grid')
+        raise VACUMMError('No way to guess the grid')
 
 def set_grid(var, gg, axes=True, intercept=False):
     """Set a grid to a variable
@@ -1559,10 +1557,10 @@ def create_grid(lon, lat, mask=None, lonatts={}, latatts={}, curv=None, **kwargs
 
     if not curv: # Rectangular
         # Get axes
-        if not vca.islon(lon):
-            lon = vca.create_lon(lon, **lonatts)
-        if not vca.islat(lat):
-            lat = vca.create_lat(lat, **latatts)
+        if not islon(lon):
+            lon = create_lon(lon, **lonatts)
+        if not islat(lat):
+            lat = create_lat(lat, **latatts)
         # Create grid
         return cdms2.createRectGrid(lat, lon, mask=mask, **kwargs)
 
@@ -1611,17 +1609,17 @@ def gridsel(gg, lon=None, lat=None):
         gg = get_grid(gg)
     elif isgrid(gg): # grid
         outtype = 'grid'
-    elif vca.isaxis(gg): # axis
+    elif isaxis(gg): # axis
 #        if len(gg.shape)==2 and (
 #            (lon is not None and not isinstance(lon, slice)) or
 #            (lat is not None and not isinstance(lat, slice))):
-#            raise vacumm.VACUMMError("Can't apply geographical selection to a lonely 2D axis")
-        if vca.islon(gg, ro=True):
+#            raise VACUMMError("Can't apply geographical selection to a lonely 2D axis")
+        if islon(gg, ro=True):
             outtype = 'lon'
-        elif vca.islat(gg, ro=True):
+        elif islat(gg, ro=True):
             outtype = 'lat'
         else:
-            raise vacumm.VACUMMError("Axis must be longitude or latitude")
+            raise VACUMMError("Axis must be longitude or latitude")
     else:
         raise TypeError('Please provide a grid,  a tuple of axes or an axis')
 
@@ -1659,7 +1657,7 @@ def gridsel(gg, lon=None, lat=None):
 #
 #        # Selection using coordinates
 #        if lon is not None or lat is not None:
-#            mask,select = gg.vcm.intersect([lon, lat, None])
+#            mask,select = gg.intersect([lon, lat, None])
 #            gg = gg.subSlice(**select)
 #            gg.setMask(mask)
 
@@ -1671,12 +1669,12 @@ def gridsel(gg, lon=None, lat=None):
         elif outtype=='lon' and isinstance(lon, tuple):
             ijk = gg.mapIntervalExt(lon)
             if ijk is None:
-                raise vacumm.VACUMMError('Empty selection on axis: '+str(lon))
+                raise VACUMMError('Empty selection on axis: '+str(lon))
             lon = slice(*ijk)
         elif outtype=='lat' and isinstance(lat, tuple):
             ijk = gg.mapIntervaExt(lat)
             if ijk is None:
-                raise vacumm.VACUMMError('Empty selection on axis: '+str(lon))
+                raise VACUMMError('Empty selection on axis: '+str(lon))
             lat = slice(*ijk)
 
         # Selection using slices
@@ -1845,13 +1843,13 @@ def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
     # Check limits of 2D axes
     if checklims:
         if xxn[:].ndim==2:
-            if vca.isaxis(xx):
+            if isaxis(xx):
                 xx = xx.clone()
                 xx[:] = N.ma.masked_outside(xx[:], -720., 720., copy=False)
             else:
                 xx = N.ma.masked_outside(xx[:], -720., 720., copy=False)
         if yyn[:].ndim==2:
-            if vca.isaxis(yy):
+            if isaxis(yy):
                 yy = yy.clone()
                 yy[:] = N.ma.clip(yy[:], -720., 720.)
             else:
@@ -1859,7 +1857,7 @@ def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
 
     # Convert to meters?
     proj = kwargs.pop('m', proj)
-    if proj is None:# and vca.islon(xx) and vca.islat(yy):
+    if proj is None:# and islon(xx) and islat(yy):
         proj = True
     if proj is not False:
         xx, yy = deg2xy(xx, yy, proj=proj, mesh=mesh, **kwargs)
@@ -1973,7 +1971,7 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkli
 
     # Get what to inspect
     if cdms2.isVariable(axy):
-        if not vca.isaxis(axy):
+        if not isaxis(axy):
             axy = axy.getGrid()
             assert axy is not None, 'You must pass a variable with a grid'
         else:
@@ -1999,12 +1997,12 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkli
 #        if axy[:].ndim == 2:
 #            raise ValueError, 'Your axis is 2D, so you must pass a grid or a tuple or (lon, lat) instead'
         if proj:
-            if not vca.islon(axy): lat=0.
+            if not islon(axy): lat=0.
             xy, _ = get_xy((axy, N.ones(axy[:].shape)+lat), num=True, proj=proj,
                 checklims=checklims)
             xy = xy,
         else:
-            if vca.isaxis(axy): axy = axy.getValue()
+            if isaxis(axy): axy = axy.getValue()
             xy = axy,
 
     else: # grid or pair of axes
@@ -2092,7 +2090,7 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkli
             setattr(axy, '_x'+pres, res[0])
             setattr(axy, '_y'+pres, res[1])
             setattr(axy, '_mres', mode)
-        elif vca.isaxis(axy):
+        elif isaxis(axy):
             setattr(axy, '_'+pres, res)
             setattr(axy, '_mres', mode)
 
@@ -2340,9 +2338,11 @@ def t2uvgrids(gg, getu=True, getv=True, mask=None):
         mask = gg.getMask()
     if mask is False: mask is None
     xx, yy = get_xy(gg)
-    if not vca.islon(xx): xx = vca.create_lon(xx)
-    if not vca.islat(yy): yy = vca.create_lon(yy)
+    if not islon(xx): xx = create_lon(xx)
+    if not islat(yy): yy = create_lon(yy)
     # U-points
+    if mask is not None:
+        from .masking import t2uvmasks
     if getu:
         xu = xx.clone()
         xu[:-1] = .5*(xx[:-1]+xx[1:])
@@ -2351,7 +2351,7 @@ def t2uvgrids(gg, getu=True, getv=True, mask=None):
         yu = yy.clone()
         gu = cdms.createRectGrid(yu, xu)
         if mask is not None:
-            gu.setMask(vcgm.t2uvmasks(umask, getv=False))
+            gu.setMask(t2uvmasks(umask, getv=False))
         if not getv: return gu
     # V-points
     yv = yy.clone()
@@ -2361,7 +2361,7 @@ def t2uvgrids(gg, getu=True, getv=True, mask=None):
     xv = xx.clone()
     gv = cdms.createRectGrid(yv, xv)
     if mask is not None:
-        gv.setMask(vcgm.t2uvmasks(vmask, getu=False))
+        gv.setMask(t2uvmasks(vmask, getu=False))
     if not getu: return gv
     return gu, gv
 
@@ -2484,7 +2484,7 @@ def xextend(vari, n, mode=None):
     varo = MV2.zeros(vari.shape[:-1]+(nxo, ), dtype=vari.dtype)
     varo[:] = MV2.masked
     varo[..., nleft:nleft+nxi] = vari
-    vcm.cp_atts(vari, varo)
+    cp_atts(vari, varo)
     axes = vari.getAxisList()
 
     # Extend
@@ -2510,7 +2510,7 @@ def xextend(vari, n, mode=None):
 
     # Insert axes
     xo = cdms2.createAxis(N.concatenate((xleft, xi[:], xright)).astype(xi[:].dtype))
-    vcm.cp_atts(xi, xo)
+    cp_atts(xi, xo)
     axes[-1] = xo
     varo.setAxisList(axes)
     return varo
@@ -2584,7 +2584,7 @@ def curv2rect(gg, mode="warn", tol=1.e-2, f=None):
       - **mode**, optional: what ot do when it does not seems to be rectangular
 
             - ``"warn"``: simply show a warning,
-            - ``"raise"``: raise a :class:`vacumm.VACUMMError`,
+            - ``"raise"``: raise a :class:`VACUMMError`,
             - ``"none"`` or ``False``: don't do it.
             - else just convert it at your own risks.
 
@@ -2618,7 +2618,7 @@ def curv2rect(gg, mode="warn", tol=1.e-2, f=None):
             warn("Grid seems not trully rectangular. Not converted.", vacumm.VACUMMWarning)
             return gg
         elif mode=="raise":
-            raise vacumm.VACUMMError('Cannot convert to rectangular grid')
+            raise VACUMMError('Cannot convert to rectangular grid')
         if mode is False or mode=="none":
             return gg
 
@@ -2627,8 +2627,8 @@ def curv2rect(gg, mode="warn", tol=1.e-2, f=None):
     x = xx.mean(axis=0)
     y = yy.mean(axis=1)
     grido =  create_grid(x, y)
-    vcm.cp_atts(gg.getLongitude(), grido.getLongitude())
-    vcm.cp_atts(gg.getLatitude(), grido.getLatitude())
+    cp_atts(gg.getLongitude(), grido.getLongitude())
+    cp_atts(gg.getLatitude(), grido.getLatitude())
     return grido
 
 def isrect(gg, tol=1.e-2, mode="real", f=None, nocache=False):
@@ -2658,7 +2658,8 @@ def isrect(gg, tol=1.e-2, mode="real", f=None, nocache=False):
 
     # File grid
     if not nocache and f is not None:
-        fgrid = vcio.ncget_fgrid(f, gg)
+        from vcio import ncget_fgrid
+        fgrid = ncget_fgrid(f, gg)
     else:
         fgrid = None
 
@@ -2714,7 +2715,8 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=F
     # Bounds and resolution
     xx, yy = get_xy(xx, yy)
     dx, dy = resol((xx, yy), proj='merc')
-    m = vcgb.get_map((xx, yy), resol=None, proj='merc')
+    from .basemap import get_map
+    m = get_map((xx, yy), resol=None, proj='merc')
     x0, y0 = m(lon0, lat0)
     x1, y1 = m(lon1, lat1)
     Dx = N.abs(x1-x0)
@@ -2762,7 +2764,7 @@ def depth2dz(depth, axis=None, mode=None, masked=True):
         dz.long_name = "Layer thickness"
         dz.id = 'dz'
         dz.units = 'm'
-    elif vca.isaxis(depth):
+    elif isaxis(depth):
         dz = N.empty(depth.shape)
     else:
         dz = depth.copy()
@@ -2926,9 +2928,9 @@ def get_zdim(var, axis=None, default=None, strict=True):
     """Get the index of the Z dimension"""
     if isinstance(axis, int): return axis
     ndim = len(var.shape)
-    if ndim==1 and (not strict or vca.isdep(var)): # a single axis
+    if ndim==1 and (not strict or isdep(var)): # a single axis
         return 0
-    if vca.isaxis(axis) and cdms2.isVariable(var): # find axis index in var axes
+    if isaxis(axis) and cdms2.isVariable(var): # find axis index in var axes
         i = var.getAxisList().index(axis)
         if i!=-1: axis = i
     if axis is not None and not strict and hasattr(axis, '__len__') and len(axis)!=0: # find the same axis length
@@ -2984,7 +2986,7 @@ def isdepthup(depth, axis=None, ro=True):
     isup = N.abs(firstval)>N.abs(lastval)
 
     # Set attribute
-    if not ro and vca.isaxis(depth):
+    if not ro and isaxis(depth):
         depth.positive = 'up' if isup else 'down'
     return isup
 
@@ -3006,13 +3008,13 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
     if single: vv = [vv]
 
     # Get depth
-    getdepth = vca.isaxis(depth) or isinstance(depth, N.ndarray)
+    getdepth = isaxis(depth) or isinstance(depth, N.ndarray)
     if depth is None:
-        if vca.isaxis(vv[0]):
+        if isaxis(vv[0]):
             depth = depth
         else:
             depth = vv[0].getLevel()
-    if axis is None and vca.isaxis(depth):
+    if axis is None and isaxis(depth):
         axis = depth
     if depth in [True, False]:
         isup = depth
@@ -3032,7 +3034,7 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
         # Revert depths
         if not isup and getdeth:
             depth[:] *= -1
-            if vca.isaxis(depth):
+            if isaxis(depth):
                 depth.assignValue(-depth[::-1])
                 depth.positive = 'up'
             else:
@@ -3041,7 +3043,7 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
     # Revert variables or depths
     if not isup:
         for ivar, var in enumerate(vv):
-            if vca.isaxis(var):
+            if isaxis(var):
                 var.assignValue(-var[::-1])
                 var.positive = 'up'
             else:

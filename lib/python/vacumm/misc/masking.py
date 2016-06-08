@@ -48,21 +48,12 @@ from _geoslib import Point, Polygon, LineString
 import gc
 from genutil import minmax
 
-import misc as vcg
-
-import sys;print 'masking', 'vacumm.misc.misc' in sys.modules,  'vacumm.misc' in sys.modules
-print sys.modules['vacumm.misc.misc']
-print vcg
-#vcm = __import__('vacumm.misc.misc')
-from importlib import import_module
-vcm = import_module('vacumm.misc.misc')
-#import vacumm.misc.misc as vcm
-
 from .misc import nduniq
-
 from .axes import islon, islat
-
+from .grid import (get_xy, set_grid, isgrid, bounds2d, meshcells, curv2rect,
+    meshbounds, bounds1d, get_grid, resol)
 from .poly import convex_hull, envelop, create_polygons, polygons
+
 
 uniq = nduniq # backward compat
 
@@ -169,10 +160,10 @@ def get_dist_to_coast(grid, mask=None, proj=True):
     """
     if mask is None and N.ma.isMA(grid):
         mask = grid
-    xx, yy = vcg.get_xy(grid, proj=proj, mesh=True, num=True)
+    xx, yy = get_xy(grid, proj=proj, mesh=True, num=True)
     if mask is None:
         from basemap import gshhs_autores, merc
-        x, y = vcg.get_xy(grid, proj=False, num=True, mesh=False)
+        x, y = get_xy(grid, proj=False, num=True, mesh=False)
         res = gshhs_autores(x.min(), x.max(), y.min(), y.max())
         mask = polygon_mask(grid, res)
     elif N.ma.isMA(mask):
@@ -197,7 +188,7 @@ def get_dist_to_coast(grid, mask=None, proj=True):
         mindists.id = 'coastdist'
         mindists.long_name = 'Distance to coast'
         mindists.units = 'm'
-        vcg.set_grid(mindists, vcg.get_grid(grid))
+        set_grid(mindists, get_grid(grid))
     return mindists
 
 
@@ -424,11 +415,11 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
     """
 
     # Get proper numeric axes
-    gg = vcg.get_grid(gg)
+    gg = get_grid(gg)
     if proj is not False:
         proj = get_proj(gg)
-    curved = vcg.isgrid(gg, curv=True) or proj
-    xx, yy = vcg.get_xy(gg, mesh=True, num=True, proj=proj)
+    curved = isgrid(gg, curv=True) or proj
+    xx, yy = get_xy(gg, mesh=True, num=True, proj=proj)
 
     # Thresholds
     if not isinstance(thresholds, (list, tuple)):
@@ -445,8 +436,8 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
     else:
         mask = N.zeros(xx.shape, dtype='?')
 
-    xxb = vcg.bounds2d(xx)
-    yyb = vcg.bounds2d(yy)
+    xxb = bounds2d(xx)
+    yyb = bounds2d(yy)
     if bmode:
 #        yyb[yyb>90.] = 89.99
 #        yyb[yyb<-90.] = -89.99
@@ -466,7 +457,7 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
         xmax = xx[0, -1]+dx/10.
         ymax = yy[-1, 0]+dy/10.
     if curved:
-        xxc, yyc = vcg.meshcells(xx, yy)
+        xxc, yyc = meshcells(xx, yy)
         dxx = N.diff(xxc, axis=1)
         dxy = N.diff(xxc, axis=0)
         dyx = N.diff(yyc, axis=1)
@@ -751,17 +742,17 @@ def grid_envelop(gg, centers=False, poly=True):
         - ``False``: Return two 1D arrays ``xpts,ypts``
     """
     # Axes
-    x, y = vcg.get_xy(gg, num=True)
+    x, y = get_xy(gg, num=True)
 
     # Rectangular grids
-    gg = vcg.curv2rect(gg,mode=False)
-    if vcg.isgrid(gg, curv=False):
+    gg = curv2rect(gg,mode=False)
+    if isgrid(gg, curv=False):
         if centers:
             x0 = x.min() ;  x1 = x.max()
             y0 = y.min() ;  y1 = y.max()
         else:
-            xb = vcg.bounds1d(x)
-            yb = vcg.bounds1d(y)
+            xb = bounds1d(x)
+            yb = bounds1d(y)
             x0 = xb.min() ;  x1 = xb.max()
             y0 = yb.min() ;  y1 = yb.max()
         if poly:
@@ -769,8 +760,8 @@ def grid_envelop(gg, centers=False, poly=True):
         return N.array([x0, x1]), N.array([y0, y1])
 
     # Get the 2D axes
-    xx, yy = vcg.meshgrid(x, y)
-    xxb, yyb = vcg.meshbounds(x, y)
+    xx, yy = meshgrid(x, y)
+    xxb, yyb = meshbounds(x, y)
     if centers:
         xxref, yyref = xx, yy
     else:
@@ -837,12 +828,12 @@ def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
         A mask on output grid, where True means "outside bounds of input grid".
     """
 
-    if vcg.isgrid(ggi, curv=False): # Rectangular
-        x, y = vcg.get_xy(ggi)
-        xb = vcg.bounds1d(x)
-        yb = vcg.bounds1d(y)
-        ggo = vcg.get_grid(ggo)
-        xxo, yyo = vcg.meshgrid(*vcg.get_xy(ggo))
+    if isgrid(ggi, curv=False): # Rectangular
+        x, y = get_xy(ggi)
+        xb = bounds1d(x)
+        yb = bounds1d(y)
+        ggo = get_grid(ggo)
+        xxo, yyo = meshgrid(*get_xy(ggo))
         return (xxo<=xb.min())|(xxo>=xb.max())|(yyo<=yb.min())|(yyo>=yb.max())
 
     elif poly: # Using a polygon
@@ -854,11 +845,11 @@ def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
 
     else: # Using regridding
         from regridding import regrid2d
-        xxb, yyb = vcg.meshbounds(*vcg.meshbounds(*vcg.get_xy(ggi)))
+        xxb, yyb = meshbounds(*meshbounds(*get_xy(ggi)))
         vari = MV2.asarray(xxb*0.)
         vari[[0, -1]] = 1.
         vari[:, [0, -1]] = 1.
-        vcg.set_grid(vari, vcg.curv_grid(xxb, yyb))
+        set_grid(vari, curv_grid(xxb, yyb))
         varo = regrid2d(vari, ggo, method='nearest', ext=True).filled(1.)
         return varo.astype('?')
 
@@ -882,9 +873,9 @@ def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
             xx, yy, mask = mask
         else:
             gg, mask = mask
-            xx, yy = vcg.get_xy(gg)
+            xx, yy = get_xy(gg)
     else:
-        xx, yy = vcg.get_xy(mask)
+        xx, yy = get_xy(mask)
 
     # Resolution
     dx = N.diff(xx).mean()
@@ -940,9 +931,9 @@ def check_poly_straits(mask, polys, dcell=2, threshold=.75):
             xx, yy, mask = mask
         else:
             gg, mask = mask
-            xx, yy = vcg.get_xy(gg)
+            xx, yy = get_xy(gg)
     else:
-        xx, yy = vcg.get_xy(mask)
+        xx, yy = get_xy(mask)
 
     # Get cell bounds
     xxb, yyb = bounds2d(xx),  bounds2d(yy)
@@ -1287,7 +1278,7 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
 
 
     # Get numeric axes
-    xx, yy = vcg.get_xy(grid, num=True, mesh=True, m=False)
+    xx, yy = get_xy(grid, num=True, mesh=True, m=False)
 
     # Scaler
     if scaler is None:
@@ -1321,10 +1312,10 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
                 ymode = 'min'
             elif yrelres < 0:
                 ymode = 'max'
-        xr = vcg.resol(xx, axis=1, mode=xmode) if xres is None else xres
-        yr = vcg.resol(yy, axis=0, mode=ymode) if yres is None else yres
+        xr = resol(xx, axis=1, mode=xmode) if xres is None else xres
+        yr = resol(yy, axis=0, mode=ymode) if yres is None else yres
         if N.abs(N.log10(xres/yres))<2: # similar coordinates
-            xr, yr = vcg.resol(xxs, yys, mode=(xmode, ymode))
+            xr, yr = resol(xxs, yys, mode=(xmode, ymode))
             if xres is None: xres = -xr
             if yres is None: yres = -yr
         else:
@@ -1337,7 +1328,7 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
         x2d = xx if xres > 0 else xxs
         y2d = yy if yres > 0 else yys
     if xres is not None or yres is not None:
-        xbres, ybres = vcg.resol((x2d, y2d), mode='raw')
+        xbres, ybres = resol((x2d, y2d), mode='raw')
     if xres=='auto' or yres=='auto':
         xcres = N.ma.cumsum(xbres, axis=1)
         ycres = N.ma.cumsum(ybres, axis=0)
@@ -1420,7 +1411,7 @@ def get_avail_rate(data, num=True, mode='rate'):
     if not num and cdms2.isVariable(data):
         rate = MV2.array(rate, copy=0)
         if data.getGrid() is not None:
-            vcg.set_grid(rate, data.getGrid())
+            set_grid(rate, data.getGrid())
         if mode=="rate":
             rate.long_name = 'Availability rate'
         elif mode=='pct':

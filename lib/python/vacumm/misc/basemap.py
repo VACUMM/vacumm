@@ -42,19 +42,16 @@ from matplotlib import get_configdir
 from _geoslib import Polygon
 from genutil import minmax
 
-import vacumm.config
-import misc as vcg
+from vacumm.config import get_config_value
+from .misc import kwfilter, dict_check_default
+from .constants import EARTH_RADIUS
+from .grid import get_xy
 from .poly import create_polygon
-import vacumm.misc.misc as vcm
-import vacumm.misc.phys.constants as vcpc
-import vacumm.misc.io as vcio
 
 __all__  = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_map',
-'GSHHS_BM', 'merc', 'proj', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
+'merc', 'proj', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
 'create_map']
 __all__.sort()
-
-
 
 
 #: Earth radius of wgs84 ellipsoid
@@ -191,8 +188,8 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
 
     .. todo:: Merge :func:`get_map` with :func:`create_map`
     """
-    kwmap = vcm.kwfilter(kwargs, 'basemap', defaults={'area_thresh':0.})
-    kwmap.update(vcm.kwfilter(kwargs, 'map_'))
+    kwmap = kwfilter(kwargs, 'basemap', defaults={'area_thresh':0.})
+    kwmap.update(kwfilter(kwargs, 'map_'))
 
     # Map arguments
     kwargs.setdefault('area_thresh', 0.)
@@ -316,81 +313,6 @@ def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
         lat_center = 0.
         lon_center = 0.
     return Basemap(lat_ts=lat_center, lat_0=lat_center, lon_0=lon_center,  **kwmap)
-
-class GSHHS_BM(vcio.Shapes):
-    """Shoreline from USGS using Basemap
-
-    Initialized with a valid Basemap instance with resolution not equal to None,
-    or thanks to arguments passed to :func:`create_mapplot.map`
-
-    - *input*: Basemap or Shapes instance [default: None]
-
-    """
-    def __init__(self, input=None, clip=None, sort=True, reverse=True, proj=False, **kwargs):
-
-        # From another Shapes instance
-        if isinstance(input, vcio.Shapes):
-            if clip is None: # m is not None and
-                clip = [input.xmin, input.ymin, input.xmax, input.ymax]
-            input = input._m
-
-        # Get the map without projection
-        if not isinstance(input, Basemap):
-
-            # Base to create the map
-            kwmap = kwargs.copy()
-            if isinstance(input, str):
-                kwmap['res'] = input
-            elif isinstance(input, dict):
-                kwmap.update(input)
-
-            # Clipping zone
-            if clip is not None:
-
-                # Vertices
-                clip = create_polygon(clip, mode='verts')
-
-
-                # Map extension from clip bounds
-                kwmap.setdefault('lon_min', clip[:, 0].min())
-                kwmap.setdefault('lon_max', clip[:, 0].max())
-                kwmap.setdefault('lat_min', clip[:, 1].min())
-                kwmap.setdefault('lat_max', clip[:, 1].max())
-
-            # Default resolution is 'i' if nothing to estimate it
-            if not 'res' in kwmap and not 'resolution' in kwmap and \
-                (   (not 'lon' in kwmap and
-                        (not 'lon_min' in kwmap or not 'lon_max' in kwmap)) or
-                    (not 'lat' in kwmap and
-                        (not 'lat_min' in kwmap or not 'lat_max' in kwmap))):
-                kwmap['res'] = 'i'
-
-            # Check lats
-            if 'lat_min' in kwmap: kwmap['lat_min'] = max(kwmap['lat_min'], -89.99)
-            if 'lat_max' in kwmap: kwmap['lat_max'] = min(kwmap['lat_max'], 89.99)
-
-            # Build the map
-            m = create_map(**kwmap)
-            self.res = m.resolution
-
-        else:
-
-            clip = False
-            m = input
-
-        # Get unprojected polygons vertices
-        self.res = m.resolution
-        assert m.resolution is not None, 'Your map needs its resolution to be set'
-        all_verts = []
-        for i, verts in enumerate(m.coastpolygons):
-            if m.coastpolygontypes[i] in [2,4]: continue # Skip lakes
-            if m.projection!='cyl': # Project back
-                verts = m.projtran(verts[0], verts[1], inverse=True)
-            all_verts.append(N.asarray(verts).T)
-
-        # Final initialization
-        vcio.Shapes.__init__(self, all_verts, m=m, clip=clip, sort=sort, proj=proj,
-            shapetype=vcio.Shapes.POLYGON, **kwargs)
 
 
 #    def __init__(self, input=None, clip=None, sort=True, reverse=True, proj=False, **kwargs):
@@ -545,11 +467,11 @@ def get_proj(gg=None, proj=None, **kwargs):
     ymin = max(ymin, -89.99)
     if not isinstance(proj, str):
         proj = vacumm.config.get_config_value('vacumm.misc.basemap', 'proj')
-    vcm.dict_check_defaults(projparams, R=vcpc.R, units='m',
+    dict_check_defaults(projparams, R=EARTH_RADIUS, units='m',
         proj=proj,
         lat_ts = N.median(y) if len(y)>10 else N.mean(y),
         lon_0 = N.median(x) if len(x)>10 else N.mean(x))
-    vcm.dict_check_defaults(projparams, lat_0=projparams['lat_ts'])
+    dict_check_defaults(projparams, lat_0=projparams['lat_ts'])
     return Proj(projparams, xmin, ymin, xmax, ymax)
 
 
