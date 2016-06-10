@@ -60,7 +60,7 @@ from vacumm.misc.misc import (
     numod, deg2str, deg_from_dec, dict_filter_out, dict_copy_items, geo_scale,
     grow_depth, grow_lat, grow_variables, history, intersect, is_iterable,
     isempty, isnumber, lunique, main_geodir, selector2str, rm_html_tags,
-    tunique, split_selector, xls_style, Att,
+    tunique, split_selector, xls_style, Att, splitidx,
     )
 
 from vacumm.misc.axes import (
