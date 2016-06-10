@@ -2261,7 +2261,7 @@ class Plot(object):
             kwargs['s'] = size
         color = kwargs.pop('c', color)
         if color is not None:
-            kwargs['c'] = size
+            kwargs['c'] = color
         #kwsh.setdefault('zorder', zorder-0.01)
         #kwgl.setdefault('zorder', zorder-0.01)
 
