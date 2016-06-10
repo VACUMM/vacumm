@@ -5,7 +5,7 @@
 
     Tutorials: :ref:`user.tut.misc.grid.regridding`
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -51,14 +51,15 @@ from _geoslib import Point, Polygon
 
 from ...__init__ import VACUMMError, VACUMMWarning
 from .kriging import krig as _krig_
-from .misc import (axis1d_from_bounds, get_xy, isgrid, t2uvgrids, get_grid, 
-    set_grid, bounds1d, bounds2d, get_axis, 
-    meshgrid, create_grid, resol, meshcells, curv2rect, merge_axis_slice, 
+from .misc import (axis1d_from_bounds, get_xy, isgrid, t2uvgrids, get_grid,
+    set_grid, bounds1d, bounds2d, get_axis,
+    meshgrid, create_grid, resol, meshcells, curv2rect, merge_axis_slice,
     get_axis_slices, get_axis, transect_specs, create_axes2d,
     get_distances)
 from .. import axes as A
-from ...misc.misc import cp_atts, intersect, kwfilter, get_atts, set_atts, closeto
-from ...misc.atime import are_same_units, ch_units
+from ...misc.misc import (cp_atts, intersect, kwfilter, get_atts, set_atts, closeto,
+    splitidx, MV2_concatenate)
+from ...misc.atime import are_same_units, ch_units, time_split
 from .basemap import get_proj
 
 MV=MV2
@@ -1994,7 +1995,7 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
 
 
 def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
-        getcoords=False, outaxis=None, **kwargs):
+        getcoords=False, outaxis=None, split=None, **kwargs):
     """Make a transect in a -YX variable
 
     :Example:
@@ -2043,52 +2044,105 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
         lons = N.atleast_1d(lons)
         lats = N.atleast_1d(lats)
 
+    # Split transect to limit memory usage
+    if split:
 
-    # Spatial interpolation
-    if outaxis=='time':
-        outaxis = None
-        ko = False
-    else:
-        ko = outaxis is not None
-    var = grid2xy(var, lons, lats, outaxis=outaxis)
-
-    # Interpolate to a lagrangian time axis
-    if times is not None and var.getTime() is not None:
-
-        if ko: outaxis = var.getAxis(-1)
-
-        # Time axis
-        if not A.istime(times):
+        if isinstance(split, (int, list)):
+            idx = splitidx(lons, split)
+        else:
+            assert times is not None, ('Such transect splitting cannot be operated'
+                'without the "times" argument')
             times = A.create_time(times)
+            if isinstance(split, float):
+                idx = splitidx(times, split)
+            else:
+                idx = []
+                for itv in time_split(times, split)[:-1]:
+                    ijk = times.mapIntervalExt(itv[:2]+('co', ))
+                    if ijk is None: continue
+                    idx.append(ijk[0])
+        idx.append(len(lons))
+        vv = []
+        lastj = None
+        lastdist = 0
+        for i, i0 in enumerate(idx[:-1]):
+            i1 = idx[i+1]+1
+            slons = lons[i0:i1]
+            slats = lats[i0:i1]
+            if times is not None:
+                stimes = times.subaxis(i0, i1)
+            else:
+                stimes = None
+            svar = transect(var, slons, slats, times=stimes, method=method,
+                getcoords=False)
+            for oaxis, soutaxis in enumerate(svar.getAxisList()): # find the outaxis
+                if hasattr(soutaxis, '_vacumm_transect'):
+                    break
+            if not A.isaxis(outaxis):
+                if soutaxis.id.startswith('dist'):
+                    soutaxis[:] += lastdist
+                    lastdist = soutaxis[-1]
+            if i!=len(idx)-2:
+                sel = [slice(None)]*svar.ndim
+                sel[oaxis] = slice(None, -1)
+                svar = svar[tuple(sel)]
+            vv.append(svar)
+        var = MV2_concatenate(vv, axis=oaxis)
+        if A.isaxis(outaxis):
+            var.setAxis(-1, outaxis)
 
-        # Interpolate
-        if len(times)!=len(lons):
-            raise VACUMMError('Your time axis must have a length of: %i (!=%i'%(
-                len(times), len(lons)))
-        var_square = regrid1d(var, times) # (nl,nz,nl)
+    else:
 
-        # Init out
-        iaxis = var.getOrder().index('t')
-        sel = [slice(None)]*var_square.ndim
-        if outaxis is None: # time -> (nt=nl,nz)
-            sel[-1] = 0
-            oaxis = iaxis
-        else: # space -> (nz,nd=nl)
-            sel[iaxis] = 0 
-            oaxis = -1
-        var = var_square[tuple(sel)].clone()
+        # Spatial interpolation
+        if outaxis=='time':
+            outaxis = None
+            ko = False
+        else:
+            ko = outaxis is not None
+        var = grid2xy(var, lons, lats, outaxis=outaxis)
+        var.getAxis(-1)._vacumm_transect = True
 
-        # Select the diagnonal the ~square matrix and fill var
-        varsm = var_square.asma()
-        ii = N.arange(len(times))
-        sel = [slice(None)]*varsm.ndim
-        sel[iaxis] = sel[-1] = ii
-        varsm = varsm[tuple(sel)] # (nd,nz)
-        if oaxis==-1:
-            oaxis = varsm.ndim
-        if oaxis!=0:
-            varsm = N.rollaxis(varsm, 0, oaxis)
-        var[:] = varsm
+        # Interpolate to a lagrangian time axis
+        if times is not None and var.getTime() is not None:
+
+            if ko: outaxis = var.getAxis(-1)
+
+            # Time axis
+            if not A.istime(times):
+                times = A.create_time(times)
+
+            # Interpolate
+            if len(times)!=len(lons):
+                raise VACUMMError('Your time axis must have a length of: %i (!=%i'%(
+                    len(times), len(lons)))
+            var_square = regrid1d(var, times) # (nl,nz,nl)
+
+            # Init out
+            iaxis = var.getOrder().index('t')
+            sel = [slice(None)]*var_square.ndim
+            if outaxis is None: # time -> (nt=nl,nz)
+                sel[-1] = 0
+                oaxis = iaxis
+            else: # space -> (nz,nd=nl)
+                sel[iaxis] = 0
+                oaxis = -1
+            var = var_square[tuple(sel)].clone()
+
+            # Select the diagnonal the ~square matrix and fill var
+            varsm = var_square.asma()
+            del var_square
+            ii = N.arange(len(times))
+            sel = [slice(None)]*varsm.ndim
+            sel[iaxis] = sel[-1] = ii
+            varsm = varsm[tuple(sel)] # (nd,nz)
+            if oaxis==-1:
+                oaxis = varsm.ndim - 1
+            if oaxis!=0:
+                varsm = N.rollaxis(varsm, 0, oaxis+1)
+            var[:] = varsm
+            del varsm
+            outaxis = var.getAxis(oaxis)
+            outaxis._vacumm_transect = True
 
 
     # Single point
