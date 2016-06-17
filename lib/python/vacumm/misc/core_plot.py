@@ -2386,6 +2386,13 @@ class Plot(object):
         """
         if figfile is None: return
 
+        # List of files
+        if isinstance(figfile, (list, tuple)):
+            oo = []
+            for ff in figfile:
+                oo.append(self.savefig(ff, verbose=verbose, mkdir=mkdir, **kwargs))
+            return oo
+
         # Remote output file
         rem = figfile if isinstance(figfile, OutputWorkFile) else False
         if rem: figfile = figfile.local_file
