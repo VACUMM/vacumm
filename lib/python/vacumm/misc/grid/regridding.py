@@ -1969,6 +1969,8 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
             outaxis = None
         else:
             outaxis = 'lon'
+    elif outaxis=='num' or outaxis is False:
+        outaxis = varo.getAxis(-1)
     if outaxis in ['x', 'lon']:
         outaxis = A.create_lon(xo)
     elif outaxis in ['y', 'lat']:
@@ -2062,6 +2064,7 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
                     if ijk is None: continue
                     idx.append(ijk[0])
         idx.append(len(lons))
+
         vv = []
         lastj = None
         lastdist = 0
@@ -2070,7 +2073,10 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
             slons = lons[i0:i1]
             slats = lats[i0:i1]
             if times is not None:
-                stimes = times.subaxis(i0, i1)
+                if A.isaxis(times):
+                    stimes = times.subaxis(i0, i1)
+                else:
+                    stimes = times[i0:i1]
             else:
                 stimes = None
             svar = transect(var, slons, slats, times=stimes, method=method,
@@ -2103,7 +2109,8 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
         var.getAxis(-1)._vacumm_transect = True
 
         # Interpolate to a lagrangian time axis
-        if times is not None and var.getTime() is not None:
+        if (times is not None and var.getTime() is not None and
+                var.getTime() is not outaxis):
 
             if ko: outaxis = var.getAxis(-1)
 
@@ -2126,7 +2133,7 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
             else: # space -> (nz,nd=nl)
                 sel[iaxis] = 0
                 oaxis = -1
-            var = var_square[tuple(sel)].clone()
+            var = var_square[tuple(sel)].clone() # fixme: scalar cases
 
             # Select the diagnonal the ~square matrix and fill var
             varsm = var_square.asma()
