@@ -47,7 +47,14 @@ from vacumm import VACUMMError, VACUMMWarning, help as vchelp
 # - config
 
 from vacumm.config import (
-    edit_user_conf_file, print_config, get_config_value, data_sample
+    VACUMM_CFG, VACUMM_CFGSPECS, VACUMM_CFGSPECS_FILE, VACUMM_VDT, VACUMM_VDT_LIVE,
+    VCValidator, check_data_file, download_file, edit_file, get_cfg_checked,
+    get_cfg_path, get_com_conf_dir, get_com_conf_file, get_data_dir,
+    get_default_config, get_dir_dict, get_dist_dir, get_dl_dir,
+    get_home_conf_dir, get_scripts_dir, get_tut_dir, get_user_conf_file,
+    get_user_conf_dir, load_cfg, save_config_value, set_config_value,
+    edit_user_conf_file, print_config, get_config_value, data_sample,
+    write_default_config
     )
 
 # - misc
