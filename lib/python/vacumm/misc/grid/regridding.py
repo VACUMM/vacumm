@@ -1912,7 +1912,7 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
             xi = xi - 360.
 
     # Interpolate
-    if method == 'nearest' or mi is not None:
+    if method == 'nearest': # or mi is not None:
 
         func = _nearest2dto1d_ if rect else _nearest2dto1dc_
         zo = func(xi, yi, zi, xo, yo, mv)
@@ -2048,7 +2048,7 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
 
     # Split transect to limit memory usage
     if split:
-
+        xxx
         if isinstance(split, (int, list)):
             idx = splitidx(lons, split)
         else:
@@ -2105,7 +2105,7 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
             ko = False
         else:
             ko = outaxis is not None
-        var = grid2xy(var, lons, lats, outaxis=outaxis)
+        var = grid2xy(var, lons, lats, outaxis=outaxis, method=method)
         var.getAxis(-1)._vacumm_transect = True
 
         # Interpolate to a lagrangian time axis
