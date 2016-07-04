@@ -1912,12 +1912,16 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
             xi = xi - 360.
 
     # Interpolate
+    if method is None:
+        method = 'bilinear'
+    else:
+        method = str(method)
     if method == 'nearest': # or mi is not None:
 
         func = _nearest2dto1d_ if rect else _nearest2dto1dc_
         zo = func(xi, yi, zi, xo, yo, mv)
 
-    elif method == 'bilinear':
+    elif 'linear' in method:
 
         func = _bilin2dto1d_ if rect else _bilin2dto1dc_
         zo = func(xi, yi, zi, xo, yo, mv)
@@ -1949,7 +1953,7 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
 
         if mi is not None: del mi, mo
 
-    elif method != 'nearest':
+    else:
         raise NotImplementedError, 'Method yet not implemented: '+method
 
     # Output
@@ -1997,7 +2001,8 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
 
 
 def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
-        getcoords=False, outaxis=None, split=None, **kwargs):
+        getcoords=False, outaxis=None, split=None,
+        tmethod='linear', **kwargs):
     """Make a transect in a -YX variable
 
     :Example:
@@ -2048,7 +2053,6 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
 
     # Split transect to limit memory usage
     if split:
-        xxx
         if isinstance(split, (int, list)):
             idx = splitidx(lons, split)
         else:
@@ -2117,12 +2121,12 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
             # Time axis
             if not A.istime(times):
                 times = A.create_time(times)
-
-            # Interpolate
             if len(times)!=len(lons):
                 raise VACUMMError('Your time axis must have a length of: %i (!=%i'%(
                     len(times), len(lons)))
-            var_square = regrid1d(var, times) # (nl,nz,nl)
+
+            # Interpolate
+            var_square = regrid1d(var, times, method=tmethod) # (nl,nz,nl)
 
             # Init out
             iaxis = var.getOrder().index('t')
