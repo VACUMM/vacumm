@@ -293,6 +293,7 @@ class StatAccum(object):
             self.nitems = 0
             self.dual = None
             self.restart_file = None
+            self.ns = self.nt = -1
 
     def append(self, *items):
         """Append data to the accumulator"""
@@ -316,10 +317,10 @@ class StatAccum(object):
             self.sstats = self.smean or self.sstd or self.sbias or self.srms or \
                 self.scrms or self.savail or self.smin or self.smax or self.shist
             self.tsum = self.tmean or self.tbias or self.tstd or self.tcrms or self.tcorr
-            self.tsqr = self.tmean or self.tstd or self.trms or self.tcrms or self.tcorr
+            self.tsqr = self.tstd or self.trms or self.tcrms or self.tcorr
             self.tprod = self.trms or self.tcrms or self.tcorr
             self.ssum = self.smean or self.sbias or self.sstd or self.scrms or self.scorr
-            self.ssqr = self.smean or self.sstd or self.srms or self.scrms or self.scorr
+            self.ssqr = self.sstd or self.srms or self.scrms or self.scorr
             self.sprod = self.srms or self.scrms or self.scorr
             if self.shist or self.thist:
                 self.nbins = self.bins.shape[0]-1
@@ -400,7 +401,7 @@ class StatAccum(object):
 #                    setattr(self, '_s'+name, [])
                 self._stimes = tuple([[] for i in xrange(len(items))]) if self.withtime else None
                 self._scount = []
-                self.ns = items[0].size/items[0].shape[0]
+            self.ns = items[0].size/items[0].shape[0]
 
         # Checks
         if not self.tstats and not self.sstats:
@@ -689,7 +690,7 @@ class StatAccum(object):
 
             # Templates
             ttemplates = [self._ttemplates]
-            if self.hist:
+            if self.thist:
                 templates.append(self._thtemplates)
             for ttpls in ttemplates:
                 for i, ttpl in enumerate(ttpls):
@@ -1295,7 +1296,7 @@ def _get_var_and_axes_(var, exc=None):
     out = [var]+var.getAxisList()
     if var.getGrid():
         out.extend([var.getLongitude(), var.getLatitude()])
-    if not exc: return
+    if not exc: return out
     exc0 = map(id, exc)
     exc1 = [e.id for e in exc]
     return filter(lambda o: id(o) not in exc0 and o.id not in exc1, out)
@@ -1303,7 +1304,7 @@ def _get_var_and_axes_(var, exc=None):
 def _rm_id_prefix_(var, prefix, exc=None):
     """Remove prefix in ids of a variable and its axes"""
     for obj in _get_var_and_axes_(var, exc=exc):
-        if not obj.id.startswith(prefix):
+        if obj.id.startswith(prefix):
             obj.id = obj.id[len(prefix):]
 
 def _add_id_prefix_(var, prefix, exc=None):
