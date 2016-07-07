@@ -2276,7 +2276,7 @@ class Plot(object):
         return o
 
     def add_place(self, x, y, text, zorder=150, shadow=False, glow=False,
-            text_offset=(0, 10), **kwargs):
+            text_offset=(0, 10), ha='center', va='center', **kwargs):
         """Place a point using :meth:`add_point` and a label using :meth:`add_text`
 
         :Examples:
@@ -2299,8 +2299,25 @@ class Plot(object):
         kwtext = kwfilter(kwargs, 'text_')
         dict_check_defaults(kwpoint, zorder=zorder, shadow=shadow, glow=glow)
         dict_check_defaults(kwtext, zorder=zorder, shadow=shadow, glow=glow,
-            ha='center', va='center', weight='bold')
-
+            ha=ha, va=va, weight='bold')
+        tha = kwtext['ha']
+        tva = kwtext['va']
+        if tha=='auto':
+            if text_offset[0]==0:
+                tha = 'center'
+            elif text_offset[0]>0:
+                tha = 'left'
+            else:
+                tha = 'right'
+        if tva=='auto':
+            if text_offset[1]==0:
+                tva = 'center'
+            elif text_offset[1]>0:
+                tva = 'bottom'
+            else:
+                tva = 'top'
+        kwtext['ha'] = tha
+        kwtext['va'] = tva
         p = self.add_point(x, y, **kwpoint)
         kwtext.setdefault('transform', self.get_transoffset(*text_offset))
         t = self.add_text(x, y, text, **kwtext)
