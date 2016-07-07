@@ -1,6 +1,30 @@
 Release notes
 #############
 
+Version 3.2.0
+=============
+
+- Added support for auto placement of text in add_place
+- Added support for list of files to savefig
+- Added suppor for dict to initialise childnodes in XmlConfig
+- Added time split support to transect
+- Added splitidx to get 1d splitting specs
+- Added the add_grid method to Plot2D
+- Added the x/ycorners options to add_grid function
+- Added index support to ghhs_autores
+- Added cmap+color validators to misc.config
+- Added extraopts to ConfigManager
+- Added get_quiverkey_value to plot
+- Added x/y2db argument to Plot2D
+- Added start_redirections and stop_redirections to log.Logger
+- Fixed method testing in grid2xy and transect
+- Fixed color in add_point
+- Fixed masking in StepsNorm
+- Fixed minute case in basic_auto_scaling
+- Fixed generic2d masking and gaussian2d
+- Fixed config read in grid module
+- Fixed issue #2: verbose and notice fail for Logger subclasses
+
 Version 3.1.1
 =============
 
