@@ -642,7 +642,14 @@ class XmlConfig(object):
         for nsa,s in self.xml_attributes.items():
             ns, a = splitns(nsa)
             if a in kwargs:
-                setattr(self, a, kwargs[a])
+                v = kwargs[a]
+                t = s.get('type', None)
+                if t:
+                    try:
+                        v = t(v)
+                    except:
+                        raise TypeError('Unsupported type %r, %s required'%(v.__class__, t))
+                setattr(self, a, v)
         for a,s in self.xml_childnodes.items():
             if a in kwargs:
                 v = kwargs[a]
