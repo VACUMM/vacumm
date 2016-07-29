@@ -117,7 +117,7 @@ from vacumm.misc.filters import (
 from vacumm.misc.remote import InputWorkFiles, OutputWorkFile
 
 from vacumm.misc.log import (Logger, ColoredStreamHandler, LoggerAdapter,
-    StreamLogWrapper)
+    StreamLogWrapper, get_str_level, get_int_level)
 
 from vacumm.misc.config import (ConfigManager, cfgargparse, ConfigException,
     ValidationWarning, cfg2rst, cfgoptparse, filter_section, get_secnames,
@@ -154,7 +154,7 @@ from vacumm.misc.plot import (
     add_logo, add_left_label, add_right_label, add_top_label, add_bottom_label,
     ellipsis, get_cls, hldays, rotate_xlabels, rotate_ylabels,
     scale_xlim, scale_ylim, wedge, set_major_locator, set_minor_locator,
-    xdate, ydate, get_quiverkey_value,
+    xdate, ydate, get_quiverkey_value, add_lightshading,
     )
 curve = curve2
 map = map2
@@ -223,7 +223,8 @@ from vacumm.data import setup_dataset, DS
 
 from vacumm.data.cf import (
     format_var, format_axis, format_grid, match_var, change_loc, match_obj,
-    set_loc, get_loc
+    set_loc, get_loc, GENERIC_NAMES, GENERIC_AXIS_NAMES, GENERIC_VAR_NAMES,
+    AXIS_SPECS, VAR_SPECS, GRID_SPECS, ARAKAWA_SUFFIXES, HIDDEN_CF_ATTS,
     )
 
 from vacumm.data.misc.sigma import NcSigma, sigma2depths, SigmaGeneralized, SigmaStandard
