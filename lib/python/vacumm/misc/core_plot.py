@@ -66,7 +66,8 @@ from matplotlib.ticker import FormatStrFormatter, Formatter, Locator, \
 from matplotlib.transforms import offset_copy
 from mpl_toolkits.basemap import Basemap
 
-from ._ext_plot import DropShadowFilter, FilteredArtistList, GrowFilter
+from ._ext_plot import (DropShadowFilter, FilteredArtistList, GrowFilter,
+    LightFilter)
 from .misc import kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts, \
     auto_scale, zoombox, dict_check_defaults, basic_auto_scale, dict_copy_items, \
     dict_merge
@@ -4167,7 +4168,7 @@ class QuiverKey:
         return Plot.quiverkey(self, qv, value, **kwargs)
 
 
-class Stick(ScalarMappable, Curve, QuiverKey):
+class Stick(QuiverKey, ScalarMappable, Curve):
     """Class for makeing a stick plot (vectors on a line)
 
     :Params:
@@ -6536,7 +6537,7 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
 
 
 
-def add_agg_filter(objs, filter, zorder=None, ax=None):
+def add_agg_filter(objs, filter, zorder=None, ax=None, add=True):
     """Add a filtered version of objects to plot
 
     :Params:
@@ -6557,7 +6558,10 @@ def add_agg_filter(objs, filter, zorder=None, ax=None):
     # Filter
     if ax is None: ax = P.gca()
     shadows = FilteredArtistList(objs, filter)
-    ax.add_artist(shadows)
+    if hasattr(add, 'add_artist'):
+        add.add_artist(shadows)
+    elif add:
+        ax.add_artist(shadows)
 
     # Text
     for t in objs:
@@ -6578,7 +6582,8 @@ def add_agg_filter(objs, filter, zorder=None, ax=None):
 
     return shadows
 
-def add_shadow(objs, width=3, xoffset=2, yoffset=-2, alpha=0.5, color='k', zorder=None, ax=None):
+def add_shadow(objs, width=3, xoffset=2, yoffset=-2, alpha=0.5, color='k',
+        zorder=None, ax=None, add=True):
     """Add a drop-shadow to objects
 
     :Params:
@@ -6596,11 +6601,11 @@ def add_shadow(objs, width=3, xoffset=2, yoffset=-2, alpha=0.5, color='k', zorde
     if color is not None: color = RGB(color)
     try:
         gauss = DropShadowFilter(width, offsets=(xoffset, yoffset), alpha=alpha, color=color)
-        return add_agg_filter(objs, gauss, zorder=zorder, ax=ax)
+        return add_agg_filter(objs, gauss, zorder=zorder, ax=ax, add=add)
     except:
         warn('Cannot plot shadows using agg filters')
 
-def add_glow(objs, width=3, zorder=None, color='w', ax=None, alpha=1.):
+def add_glow(objs, width=3, zorder=None, color='w', ax=None, alpha=1., add=True):
     """Add a glow effect to text
 
     :Params:
@@ -6616,11 +6621,12 @@ def add_glow(objs, width=3, zorder=None, color='w', ax=None, alpha=1.):
     if color is not None: color = RGB(color)
     try:
         white_glows = GrowFilter(width, color=color, alpha=alpha)
-        return add_agg_filter(objs, white_glows, zorder=zorder, ax=ax)
+        return add_agg_filter(objs, white_glows, zorder=zorder, ax=ax, add=add)
     except:
          warn('Cannot add glow effect using agg filters')
 
-def add_lightshading(objs, width=7, zorder=None, ax=None, **kwargs):
+def add_lightshading(objs, width=7, fraction=0.5, zorder=None, ax=None, add=True,
+        **kwargs):
     """Add a light shading effect to objects
 
     :Params:
@@ -6637,7 +6643,7 @@ def add_lightshading(objs, width=7, zorder=None, ax=None, **kwargs):
     if zorder is None: zorder = True
     try:
         lf = LightFilter(width, fraction=fraction, **kwargs)
-        return add_agg_filter(objs, lf, zorder=zorder, ax=ax)
+        return add_agg_filter(objs, lf, zorder=zorder, add=add, ax=ax)
     except:
          warn('Cannot add light shading effect using agg filters')
 
