@@ -1659,6 +1659,7 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
         else:
             if xres is None: xres = xr
             if yres is None: yres = yr
+    x2d = y2d = xbres = ybres = xcres = ycres = None
     if xres=='auto' or yres=='auto':
         x2d = xxs
         y2d = yys
@@ -1673,8 +1674,8 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
         xares = -1.*xcres.max()/nauto
         yares = -1.*ycres.max()/nauto
         xres = yres = min(xares, yares)
-    else:
-        x2d = y2d = xbres = ybres = xcres = ycres = None
+#    else:
+#        x2d = y2d = xbres = ybres = xcres = ycres = None
 
     # Resolution along X
     if xres=='auto':
@@ -1789,7 +1790,7 @@ def merge_masks(varlist, copy=False, mode='max'):
         var[:] = N.ma.masked_where(mask, var, copy=False)
         out.append(var)
     return out
-        
+
 
 
 ######################################################################
