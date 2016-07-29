@@ -65,7 +65,10 @@ from .atime import mpl,time,axis_add,compress,SpecialDateFormatter
 from .axes import check_axes, isaxis, istime, axis_type
 from .color import simple_colors, Scalar2RGB, get_cmap
 from .color import get_cmap, Scalar2RGB
-from .core_plot import dict_aliases, latlab, add_shadow, get_axis, AutoDualDateFormatter, AutoDateLocator2, geo_scale, kwfilter, meshgrid, m2deg, zoombox, lonlab, deplab, add_glow, DualDateFormatter, meshbounds, dict_check_defaults, auto_scale, var2d, AutoDateFormatter2
+from .core_plot import (dict_aliases, latlab, add_shadow, get_axis, AutoDualDateFormatter,
+    AutoDateLocator2, geo_scale, kwfilter, meshgrid, m2deg, zoombox, lonlab, deplab, add_glow,
+    DualDateFormatter, meshbounds, dict_check_defaults, auto_scale, var2d, AutoDateFormatter2,
+    add_lightshading)
 from .core_plot import add_glow, add_shadow, add_agg_filter, hlitvs, AutoDateFormatter2,  \
     AutoDateLocator2, AutoDateMinorLocator, AutoDualDateFormatter, add_compass, \
     add_right_label, add_left_label, add_top_label, add_bottom_label
