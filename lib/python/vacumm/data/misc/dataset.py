@@ -75,7 +75,7 @@ N = numpy
 from vacumm.misc import auto_scale, MV2_concatenate, MV2_axisConcatenate, create_selector, \
     split_selector, dict_merge, dict_check_defaults, set_atts, broadcast
 from vacumm.misc.atime import add as add_time, comptime, datetime as adatetime, Intervals, \
-    time_selector
+    filter_time_selector
 from vacumm.misc.axes import create_time, create_dep, create_lat, create_lon, guess_timeid, get_axis_type, isaxis
 from vacumm.misc.bases import Object
 import vacumm.misc.color as C
