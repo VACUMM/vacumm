@@ -690,8 +690,8 @@ class StatAccum(object):
 
             # Templates
             ttemplates = [self._ttemplates]
-            if self.thist:
-                templates.append(self._thtemplates)
+#            if self.thist:
+#                ttemplates.append(self._thtemplates)
             for ttpls in ttemplates:
                 for i, ttpl in enumerate(ttpls):
                     ttpl = ttpl.clone()
@@ -799,11 +799,22 @@ class StatAccum(object):
             # Other stats
             self._sstats = {}
             for key in self.single_stats:
-                self._sstats[key] = ()
-                for i in xrange(self.nitems):
-                    self._sstats[key] += self._load_array_(f, 's%s%s'%(key, str(i))),
+                if not self.dual: # single var
+                    vid = 's' + key
+                    if vid not in f.variables:
+                        continue
+                    self._sstats[key] = self._load_array_(f, vid),
+                else: # two vars
+                    for i in xrange(self.nitems):
+                        vid = 's%s%s'%(key, str(i))
+                        if vid not in f.variables:
+                            break
+                        self._sstats.setdefault(key, ())
+                        self._sstats[key] += self._load_array_(f, vid),
             for key in self.dual_stats:
-                 self._sstats[key] = self._load_array_(f, 's%s'%key)
+                vid = 's%s'%key
+                if vid in f.variables:
+                    self._sstats[key] = self._load_array_(f, vid)
 
         # Temporal statistics
         if self.tstats:
@@ -837,7 +848,7 @@ class StatAccum(object):
             for i in xrange(self.nitems):
                 prefix = 'var%i_'%i
                 for vname in f.variables:
-                    if vname.startswith(prefix): break
+                    if vname.startswith(prefix) and vname != prefix+'atts': break
                 ttpl = f(vname)
                 _rm_id_prefix_(ttpl, 'var%i_'%i, exc=self._baxis)
                 self._ttemplates += ttpl,
