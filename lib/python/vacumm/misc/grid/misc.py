@@ -475,7 +475,7 @@ def isregular(axis, tol=.05, iaxis=None, dx=None):
     return not ((dxx/dx)%1.>tol).any()
 
 
-def bounds1d(xx):
+def bounds1d(xx, cellwidth=None):
     """Compute bounds on a linear sequence or axis.
     It is based on :func:`cdms2.genGenericBounds` of CDAT.
 
@@ -500,8 +500,9 @@ def bounds1d(xx):
         rightPoint = M.array([1.5*xx[-1]-0.5*xx[-2]])
         bnds = N.concatenate((leftPoint,midArray,rightPoint))
     else:
-        delta = width/2.0
-        bnds = M.array([self[0]-delta,self[0]+delta])
+        assert cellwidth is not None
+        delta = cellwidth/2.0
+        bnds = M.array([xx[0]-delta, xx[0]+delta])
 
     # Transform to (n,2) array
     retbnds = M.zeros((len(xx),2),'d')
@@ -645,7 +646,7 @@ def meshgrid(x,y,copy=1):
 
     raise ValueError, "Unable to safely convert to 2D axes"
 
-def bounds2mesh(xb,yb=None):
+def bounds2mesh(xb, yb=None):
     """Convert 2D 4-corners cell bounds arrays (results from :func:`bounds2d`) to 2D arrays
 
     :Params:
@@ -685,7 +686,7 @@ def bounds2mesh(xb,yb=None):
     return res
 
 
-def meshcells(x, y=None):
+def meshcells(x, y=None, xwidth=None, ywidth=None):
     """Return a 1D or 2D array corresponding the cell corners
 
     :params:
@@ -698,11 +699,12 @@ def meshcells(x, y=None):
         OR
         ``xxb(ny+1,nx+1),yyb(ny+1,nx+1)``
 
+    TODO: Add full support to meshcells for xwidth and ywidth params
     """
     if not isinstance(x, N.ndarray):
         x = N.asarray(x)
     if y is None and len(x.shape)==1:
-        return  bounds2mesh(bounds1d(x))
+        return  bounds2mesh(bounds1d(x, xwidth))
     if y is not None:
         if not  isinstance(y, N.ndarray):
             y = N.asarray(y)
@@ -825,9 +827,9 @@ def cells2grid(xxb,yyb):
     return xxyy[0],xxyy[1]
 
 
-def meshbounds(*args):
+def meshbounds(*args, **kwargs):
     """A shortcut to :func:`meshcells`"""
-    return meshcells(*args)
+    return meshcells(*args, **kwargs)
 
 def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
     squeeze=False, **kwargs):
@@ -1344,7 +1346,7 @@ def get_axis(gg, iaxis=0, geo=True, strict=False):
         getfrom = grid
     else:
         getfrom = gg
-    ndim = len(getfrom.shape)
+    ndim = N.ndim(getfrom)
     if iaxis < 0:
         iaxis = ndim+iaxis
     if iaxis <= 2 and isgrid(grid,curv=True):
