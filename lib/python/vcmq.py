@@ -77,7 +77,7 @@ from vacumm.misc.atime import (
     lindates, ch_units, add_margin, round_date, midnight_date, midnight_interval,
     mpl, tic, toc, pat2freq, pat2glob, has_time_pattern,
     is_interval, is_time, is_axistime, is_cdtime, is_datetime, is_in_time_interval,
-    is_numtime, is_strtime, itv_intersect, itv_union, julday,
+    is_numtime, is_strtime, itv_intersect, itv_union, julday, reltime,
     are_valid_units, SpecialDateFormatter, check_range,
     daily, daily_bounds, day_of_the_year, unit_type, toc,
     hourly, hourly_bounds, hourly_exact, monthly, tsel2slice,
