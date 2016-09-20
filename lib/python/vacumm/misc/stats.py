@@ -564,6 +564,7 @@ class StatAccum(object):
         htpl = MV2.resize(tpl.astype('l'), (self.nbins,)+tpl.shape)
         htpl.setAxisList([self._baxis]+tpl.getAxisList())
         set_grid(htpl, get_grid(tpl))
+        cp_atts(tpl, htpl)
         return htpl
 
     def _asarray_(self, a):
@@ -694,9 +695,12 @@ class StatAccum(object):
 #                ttemplates.append(self._thtemplates)
             for ttpls in ttemplates:
                 for i, ttpl in enumerate(ttpls):
-                    ttpl = ttpl.clone()
+#                    ttpl = ttpl.clone(copyData=0)
+#                    for ia, axis in enumerate(ttpl.getAxisList()): #FIXME:grid cloning
+#                        ttpl.setAxis(ia, axis.clone(copyData=0))
                     _add_id_prefix_(ttpl, 'var%i_'%i, exc=self._baxis)
                     f.write(ttpl)
+                    _rm_id_prefix_(ttpl, 'var%i_'%i, exc=self._baxis)
 
         # Attributes
         for ivar, atts in enumerate(self._atts):
@@ -1305,7 +1309,7 @@ def _get_var_and_axes_(var, exc=None):
     if not isinstance(exc, (list, tuple)):
         exc = [exc]
     out = [var]+var.getAxisList()
-    if var.getGrid():
+    if var.getGrid() and var.getLongitude().id!=var.getAxis(-1).id:
         out.extend([var.getLongitude(), var.getLatitude()])
     if not exc: return out
     exc0 = map(id, exc)
