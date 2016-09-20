@@ -1565,6 +1565,9 @@ def scalebox(box, factor):
         xmax = lon.max()
         ymin = lat.min()
         ymax = lat.max()
+    elif isinstance(box, dict):
+        xmin, xmax = box['lon']
+        ymin, ymax = box['lat']
     else:
         xmin, ymin, xmax, ymax = box
     dx = (xmax-xmin)*(factor-1)*.5
@@ -1572,6 +1575,9 @@ def scalebox(box, factor):
     newbox = xmin-dx, ymin-dy, xmax+dx, ymax+dy
     if isinstance(box,(list, tuple)):
         return box.__class__(newbox)
+    if isinstance(box, dict):
+        return dict(lon=(newbox[0], newbox[2]),
+            lat=(newbox[1], newbox[3]))
     return N.array(newbox)
 
 def zoombox(box, factor):
