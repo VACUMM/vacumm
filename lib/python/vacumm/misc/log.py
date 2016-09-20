@@ -215,9 +215,7 @@ class _Redirector_(object):
         self.func = func
         self.prefix = prefix
     def write(self, buf):
-        self.func(self.prefix+buf.rstrip())
-#        for line in buf.rstrip().splitlines():
-#            self.func(self.prefix+line.rstrip())
+        self.func(self.prefix+buf.rstrip().strip('\n'))
     def flush(self):
         pass
 
