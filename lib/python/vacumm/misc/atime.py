@@ -526,8 +526,6 @@ def comptime(mytime, nummode='mpl'):
         :func:`reltime()` :func:`datetime()`
     """
 
-    import cdtime,types
-
     # Numeric mode
     tunits = _nummode_(nummode)
 
@@ -2427,7 +2425,7 @@ class IterDates(object):
         return [date for date in self]
 
 
-def time_split(what, how, roundit=None):
+def time_split(what, how, roundit=None, bb='co'):
     """Generic function to split an interval into subintervals
 
     :Params:
@@ -2449,17 +2447,17 @@ def time_split(what, how, roundit=None):
           ``(1,'year')`` or ``"year"`` (see :class:`Intervals`).
     """
     # Convert to comptime
-    bb = 'cc'
+    bbw = 'cc'
     if isinstance(what, tuple):
         if len(what)==3:
-            bb = what[2]
+            bbw = what[2]
         what = list(what[:2])
     what = comptime(what)
     if not isinstance(what, list):
         raise TypeError, "Can't split a single date"
     tmin = min(what)
     tmax = max(what)
-    tminmax = (tmin, tmax, bb)
+    tminmax = (tmin, tmax, bbw)
     if not how:
         return tminmax
 
@@ -2467,8 +2465,8 @@ def time_split(what, how, roundit=None):
     if is_time(how): how = [how]
 
     # dt
-    if isNumberType(how) or isinstance(how, basestring) or \
-        isinstance(how, tuple):
+    if (isNumberType(how) or isinstance(how, basestring) or
+            isinstance(how, tuple)):
         how = Intervals(tminmax[:2], how, roundto=roundit)
 
     # Interval interator
@@ -2832,7 +2830,7 @@ def tsel2slice(taxis, *args, **kwargs):
 
     # Convert to list valid time selector
     kwargs['ids'] = [taxis.id]
-    selector = time_selector(*args, **kwargs)
+    selector = filter_time_selector(*args, **kwargs)
 
     # No selection
     if len(selector.components())==0:
@@ -2847,6 +2845,8 @@ def tsel2slice(taxis, *args, **kwargs):
     try:
         ii = ii(selector).filled()
     except:
+        return False
+    if ii.size==0:
         return False
 
     # Deduce final indices
