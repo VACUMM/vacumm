@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Classes for all plots"""
-# Copyright or © or Copr. Actimar/IFREMER (2012-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2012-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -61,19 +61,19 @@ from matplotlib.path import Path
 from matplotlib.patheffects import Normal
 from matplotlib.text import Text
 from matplotlib.text import Text
-from matplotlib.ticker import FormatStrFormatter, Formatter, Locator, \
-    NullLocator, AutoMinorLocator
+from matplotlib.ticker import (FormatStrFormatter, Formatter, Locator,
+    NullLocator, AutoMinorLocator, AutoLocator)
 from matplotlib.transforms import offset_copy
 from mpl_toolkits.basemap import Basemap
 
 from ._ext_plot import (DropShadowFilter, FilteredArtistList, GrowFilter,
     LightFilter)
-from .misc import kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts, \
-    auto_scale, zoombox, dict_check_defaults, basic_auto_scale, dict_copy_items, \
-    dict_merge
+from .misc import (kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts,
+    auto_scale, zoombox, dict_check_defaults, basic_auto_scale, dict_copy_items,
+    dict_merge, phaselab)
 from .atime import mpl, comptime, strftime, is_numtime, numtime
-from .axes import check_axes, istime, axis_type, set_order, get_order, merge_orders, \
-    check_order, order_match, isaxis
+from .axes import (check_axes, istime, axis_type, set_order, get_order, merge_orders,
+    check_order, order_match, isaxis)
 from .color import get_cmap, cmap_magic, cmap_rainbow, RGB, land, whiten, darken, RGBA
 from .docstrings import docfiller
 from .filters import generic2d
@@ -1218,8 +1218,9 @@ class Plot(object):
         # Grid
         self.grid(grid, **kw['grid'])
 
-        # Highlight days
+        # Highlight intervals
         if kwargs.pop('hldays', hlitvs):
+            print 'ok!'
             if kwargs.pop('hldays', False):
                 kw['hlitvs'].setdefault['units'] = 'day'
             self.hlitvs(**kw['hlitvs'])
@@ -4903,7 +4904,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
                 l.set_alpha(kwcl['alpha'])
                 l.set_zorder(kwcl['zorder'])
             if clshadow: self.add_shadow(cl, **kwclsh)
-            if clglow: self.add_shadow(cl, **kwclgl)
+            if clglow: self.add_glow(cl, **kwclgl)
 
     def plot_quiver(self, zorder=None, quiverkey=True, barbs=False,
             shadow=False, glow=False, quiver_cmap=None,
@@ -5370,7 +5371,7 @@ class Map(Plot2D):
 
 
     def pre_plot(self, map=None, projection='cyl', resolution='auto',
-            overlay=False, fullscreen=False, map_update=None,
+            epsg=None, overlay=False, fullscreen=False, map_update=None,
             lon_min=None, lon_max=None, lat_min=None, lat_max=None,
             lon_center=None, lat_center=None, lat_ts=None,
             nocache=False, cache_dir=None, zoom=None, **kwargs):
@@ -5468,7 +5469,7 @@ class Map(Plot2D):
 
             self.map = create_map(lon_min, lon_max, lat_min, lat_max, projection=projection,
                 resolution=resolution, overlay=overlay, fullscreen=fullscreen,
-                lon_center=lon_center, lat_center=lat_center, lat_ts=lat_ts,
+                lon_center=lon_center, lat_center=lat_center, lat_ts=lat_ts, epsg=epsg,
                 nocache=nocache, cache_dir=cache_dir, zoom=zoom, ax=self.axes, **kwmap)
 
         # Projection of coordinates
@@ -5494,7 +5495,7 @@ class Map(Plot2D):
         return self.map(lon, lat, inverse=inverse)
 
 
-    def plot(self, lowhighs=False, **kwargs):
+    def plot(self, lowhighs=False, arcgisimage=None, **kwargs):
         """Main plot
 
         It performs the following tasks:
@@ -5507,6 +5508,7 @@ class Map(Plot2D):
 
         # Keywords
         kwlh = kwfilter(kwargs, 'lowhighs')
+        kwag = kwfilter(kwargs, 'arcgisimage')
 
         # Generic 2D plot
         Plot2D.plot(self, **kwargs)
@@ -5515,6 +5517,34 @@ class Map(Plot2D):
         lowhighs = kwargs.pop('lowhigh', lowhighs)
         if lowhighs:
             self.add_lowhighs(**kwlh)
+
+        # Plot arcgisimage
+        if arcgisimage is True:
+            arcgisimage = "esriimagery"
+        if isinstance(arcgisimage, basestring):
+            arcgisimage = dict(
+                esriimagery="ESRI_Imagery_World_2D",
+                esristreet="ESRI_StreetMap_World_2D",
+                esristreetmap="ESRI_StreetMap_World_2D",
+                natgeo="NatGeo_World_Map",
+                ngstopo="NGS_Topo_US_2D",
+                usatopo="USA_Topo_Maps",
+                ocean="Ocean_Basemap",
+                topo="World_Topo_Map",
+                shaded="World_Shaded_Relief",
+                physical="World_Physical_Map",
+                imagery="World_Imagery",
+                street="World_Street_Map",
+                streetmap="World_Street_Map",
+                terrain="World_Terrain_Base",
+            ).get(arcgisimage, arcgisimage)
+            dict_check_defaults(kwag, service=arcgisimage, xpixels=800)
+            try:
+                self.map.arcgisimage(**kwag)
+            except Exception(e):
+                warn('Error when plotting arcgisimage: {}.\nMessage: {}'.format(
+                    arcgisimage, e.message))
+
 
         # Update map limits
         self.map.set_axes_limits(ax=self.axes)
@@ -6672,6 +6702,52 @@ class MinuteLabel:
         self.kwargs = kwargs
     def __call__(self, deg):
         return self.func(deg, **self.kwargs)
+
+class AutoDegreesMinutesLocator(AutoLocator):
+    def bin_boundaries(self, vmin, vmax):
+        steps = None
+        mn = 1/60.
+        if (vmax-vmin) > 50.:
+            steps = [1, 2, 3, 6, 9, 10]
+        elif (vmax-vmin) > 3.:
+            steps = [1, 2, 2.5, 3, 5, 10]
+        elif vmax//mn != vmin//mn:
+            nmn = int(N.ceil((vmax-vmin)*60.))+1
+            nmax = 10
+            if nmn > nmax:
+                steps = [1, 10/6.,15/6.,20/6.,30/6.,10]
+        self.set_params(steps=steps)
+        return AutoLocator.bin_boundaries(self, vmin, vmax)
+
+class AutoDegreesMinutesFormatter(Formatter):
+    """Phase formatter with degrees and minutes
+
+    :Example:
+
+        >>> locator = xaxis.get_major_locator()
+        >>> xaxis.set_formatter(AutoDegreesMinutesFormatter(locator, label='lon'))
+    """
+    def __init__(self, locator=None, **kwargs):
+        if not isinstance(locator, Locator):
+            data = N.asarray(locator)
+            locator = data.min(), data.max()
+        self.locator = locator
+        self.kwargs = kwargs.copy()
+        self.kwargs.setdefault('decimal', False)
+    def __call__(self, x, pos=None):
+        if isinstance(self.locator, tuple):
+            vmin, vmax = self.locator
+        else:
+            vmin, vmax = self.locator.axis.get_view_interval()
+        kwargs = self.kwargs.copy()
+        kwargs['auto_minutes'] = vmax//1 != vmax//1
+        return phaselab(x, **kwargs)
+
+
+
+class DepthFormatter(Formatter):
+    def __call__(self, x, pos=None):
+        return "{:g}m".format(x)
 
 def twinxy(xy, ax=None, fig=None):
     """Create an :func:`~matplotlib.axes.Axes` instance based on existing one(s)*
