@@ -1829,7 +1829,15 @@ def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
     if hasattr(gg, 'xy') and callable(gg.xy):
         xx, yy = gg.xy()
     elif isinstance(gg, (tuple, list)):
-        xx, yy = gg
+        if len(gg)==4:
+            xmin, ymin, xmax, ymax = gg
+            xx = N.array([xmin, xmax])
+            yy = N.array([ymin, ymax])
+        else:
+            xx, yy = gg
+            if isinstance(xx, tuple): # (xmin,xmax,'ccb')
+                xx = N.array(xx[:2])
+                yy = N.array(yy[:2])
     elif isinstance(gg, N.ndarray) and not cdms2.isVariable(gg) and \
         gg.ndim==2 and gg.shape[0]==2:
         xx, yy = gg
@@ -3037,7 +3045,7 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
             depth = vv[0].getLevel()
     if axis is None and isaxis(depth):
         axis = depth
-    if depth in [True, False]:
+    if isinstance(depth, bool):
         isup = depth
     else:
 
