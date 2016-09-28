@@ -495,7 +495,8 @@ def _toright_(ar, iax):
 
 
 def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None,
-    xmap=None, xmapper=None, mask_thres=.5, extrap=0, erri=None, errl=None, geterr=False):
+        xmap=None, xmapper=None, mask_thres=.5, extrap=0,
+        erri=None, errl=None, geterr=False):
     """Interpolation along one axis
 
     :Params:
@@ -575,7 +576,10 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
     if N.ma.isMA(axon): axon = axon.filled(missing_value)
 
     # Working data axis
-    if axis is None:# Guess it
+    if vari.ndim==1: # 1D
+            axis = 0
+
+    elif axis is None:# Guess it
 
         if A.isaxis(axo): # From axis type
             axis = order.find(A.axis_type(axo))
@@ -601,9 +605,9 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
     if axi is None: axi = vari.getAxis(axis)
     # - special case for time axis: must have same units !
     dxi2o = 1.
-    if (A.axis_type(axo), order[axis]) == ('t', 't') and \
-        hasattr(axi, 'units') and hasattr(axo, 'units') and \
-        not are_same_units(axi.units, axo.units):
+    if ((A.axis_type(axo), order[axis]) == ('t', 't') and
+            hasattr(axi, 'units') and hasattr(axo, 'units') and
+            not are_same_units(axi.units, axo.units)):
         axi = ch_units(axi, axo.units, copy=True)
         if errl is not None:
             axou = axo.units.split(1)[0] + axi.units.split(1)[1]
