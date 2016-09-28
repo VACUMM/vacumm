@@ -66,7 +66,7 @@ from .axes import check_axes, isaxis, istime, axis_type
 from .color import simple_colors, Scalar2RGB, get_cmap
 from .color import get_cmap, Scalar2RGB
 from .core_plot import (dict_aliases, latlab, add_shadow, get_axis, AutoDualDateFormatter,
-    AutoDateLocator2, geo_scale, kwfilter, meshgrid, m2deg, zoombox, lonlab, deplab, add_glow,
+    AutoDateLocator2, geo_scale, kwfilter, meshgrid, m2deg, lonlab, deplab, add_glow,
     DualDateFormatter, meshbounds, dict_check_defaults, auto_scale, var2d, AutoDateFormatter2,
     add_lightshading)
 from .core_plot import add_glow, add_shadow, add_agg_filter, hlitvs, AutoDateFormatter2,  \
@@ -77,8 +77,7 @@ from .docstrings import docfill
 from .grid import regridding
 from .grid.basemap import gshhs_reslist, gshhs_autores, cache_map, cached_map
 from .grid.misc import get_xy
-from .misc import is_iterable, broadcast
-from .misc import is_iterable
+from .misc import is_iterable, broadcast, squarebox, zoombox
 from .phys.units import deg2m
 from ..__init__ import VACUMMError
 
@@ -3774,7 +3773,8 @@ def plot2d(*args, **kwargs):
     return Plot2D(*args, **kwargs)
 
 
-def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., maplims=None, bgcolor=(0, .8, 1.), fig=None, alpha=1, **kwargs):
+def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., xmargin=None, ymargin=None,
+        lon=None, lat=None, square=False, bgcolor=(0, .8, 1.), fig=None, alpha=1, **kwargs):
     """Create a minimap with :func:`map2`
 
     A minimap is small and generally in a corner of the figure,
@@ -3793,14 +3793,18 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., maplims=None, bgcolor=(0, .
     from color import RGB
     data = gg if cdms2.isVariable(gg) else None
     x, y = get_xy(gg)
+    if lon is not None:
+        x = N.asarray(lon)
+    if lat is not None:
+        x = N.asarray(lat)
     x = N.asarray(x)
     y = N.asarray(y)
     xmin = x.min()
     xmax = x.max()
     ymin = y.min()
     ymax = y.max()
-    if zoom:
-        xmin, ymin, xmax, ymax = zoombox([xmin, ymin, xmax, ymax], zoom)
+    xmin, ymin, xmax, ymax = zoombox([xmin, ymin, xmax, ymax],
+        xmargin=xmargin, ymargin=ymargin, square=square)
     kwargs.setdefault('anchor', 'E')
     kwargs.setdefault('colorbar', False)
     kwargs.setdefault('contour', False)
@@ -3810,7 +3814,8 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., maplims=None, bgcolor=(0, .
     if alpha:
         bgcolor += alpha,
     oldax = P.gca()
-    dict_check_defaults(kwargs, title=False, xhide=True, yhide=True, proj='merc')
+    dict_check_defaults(kwargs, title=False, xhide=True, yhide=True, proj='merc',
+        drawparallels_linewidth=.2, drawmeridians_linewidth=.2)
     m = map2(data, lon = (xmin, xmax), lat=(ymin,ymax), show=False,
         axes_rect = bbox, bgcolor=bgcolor, fig=fig, **kwargs)
 #    m.axes.set_alpha(alpha)
