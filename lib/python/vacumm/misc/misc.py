@@ -729,7 +729,7 @@ def lonlab(longitudes, **kwargs):
         :func:`latlab` :func:`deplab`
     """
     kwargs['label'] = 'lon'
-    return phase(longitudes, **kwargs)
+    return phaselab(longitudes, **kwargs)
 if lonlab.__doc__ is not None:
     lonlab.__doc__ = lonlab.__doc__ % phase_params
 
@@ -746,7 +746,7 @@ def latlab(latitudes,**kwargs):
         :func:`lonlab` :func:`deplab`
     """
     kwargs['label'] = 'lat'
-    return phase(latitudes, **kwargs)
+    return phaselab(latitudes, **kwargs)
 if latlab.__doc__ is not None:
     latlab.__doc__ = latlab.__doc__ % phase_params
 
@@ -1573,7 +1573,16 @@ def _box2xyminmax_(box):
         xmin, ymin, xmax, ymax = box
     return xmin, ymin, xmax, ymax
 
-def scalebox(box, factor, square=False):
+def _returnbox_(oldbox, newbox):
+    if isinstance(oldbox,(list, tuple)):
+        return oldbox.__class__(newbox)
+    if isinstance(oldbox, dict):
+        return dict(lon=(newbox[0], newbox[2]),
+            lat=(newbox[1], newbox[3]))
+    return N.array(newbox)
+
+
+def scalebox(box, factor, square=False, xmargin=None, ymargin=None):
     """Alter box limits with a zoom factor
 
     :Params:
@@ -1587,22 +1596,30 @@ def scalebox(box, factor, square=False):
         >>> scalebox([0,0,1,2], 1.1)
         [-0.55, -1.10, 1.55, 2.55]
     """
-    if square:
-        return squarebox(box, factor)
+    # Scale
     xmin, ymin, xmax, ymax = _box2xyminmax_(box)
     dx = (xmax-xmin)*(factor-1)*.5
     dy = (ymax-ymin)*(factor-1)*.5
-    newbox = xmin-dx, ymin-dy, xmax+dx, ymax+dy
-    if isinstance(box,(list, tuple)):
-        return box.__class__(newbox)
-    if isinstance(box, dict):
-        return dict(lon=(newbox[0], newbox[2]),
-            lat=(newbox[1], newbox[3]))
-    return N.array(newbox)
 
-def zoombox(box, factor, square=False):
+    # Margin
+    if ymargin is None:
+        ymargin = xmargin
+    if xmargin:
+        dx += xmargin
+    if ymargin:
+        dy += ymargin
+
+    newbox = xmin-dx, ymin-dy, xmax+dx, ymax+dy
+    box = _returnbox_(box, newbox)
+
+    if square:
+        box = squarebox(box)
+
+    return box
+
+def zoombox(box, factor, square=False, xmargin=None, ymargin=None):
     """Alias for :func:`scalebox` with ``1/factor`` as zoom factor."""
-    return scalebox(box, 1/factor, square=square)
+    return scalebox(box, 1/factor, square=square, xmargin=xmargin, ymargin=ymargin)
 
 def squarebox(box, scale=1):
     """Get an approximate ``[xmin, ymin, xmax, ymax]`` that is square in meters"""
@@ -1622,7 +1639,8 @@ def squarebox(box, scale=1):
         dlat /= dyx
         latmin = mlat - dlat * .5
         latmax = mlat + dlat * .5
-    return scalebox([lonmin, latmin, lonmax, latmax], scale, square=False)
+    newbox = scalebox([lonmin, latmin, lonmax, latmax], scale, square=False)
+    return _returnbox_(box, newbox)
 
 
 
