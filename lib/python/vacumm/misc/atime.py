@@ -2907,11 +2907,66 @@ def toc(stime=0.):
         print tc.clock()-stime, " seconds"
 
 
+def interp_clim(clim, times, method='linear', day=15):
+    """Interpolate a bathymetry at specified dates"""
+    from .grid.regridding import regrid1d, extend1d
+    assert method in ('linear', 'cubic')
+    taxis = create_time(times)
+    assert not (N.diff(taxis[:])<0).any(), 'Output times must be monotonically increasing'
+    assert clim.shape[0]==12
+    ctimes = taxis.asComponentTime()
+    months = N.array([ct.month for ct in ctimes])
+    years = N.array([ct.year for ct in ctimes])
+    atts = get_atts(clim)
+    cmonths = range(1, 13)
+    cyears = [0]*12
+
+    left_extent = 0
+    right_extent = 0
+    if method=='linear':
+        left_extent = int((months==1).any())
+        right_extent = int((months==12).any())
+    else:
+        if (months==1).any():
+            left_extent = 2
+        elif (months==2).any():
+            left_extent = 1
+        if (months==12).any():
+            right_extent = 2
+        elif (months==11).any():
+            right_extent = 1
+
+    if left_extent or right_lextent:
+        clim = extend1d(clim, ext=(left_extent, right_extent), axis=0, mode='cylic')
+        cmonths = cmonths[12-left_extent:] + cmonths + cmonths[:right_extent]
+        cyears = [-1]*left_extent + cyears + [1]*right_extent
+    else:
+        old_clim_taxis = clim.getAxis(0)
+
+    climo = MV2.zeros((len(taxis), )+clim.shape[1:]) + MV2.masked
+    for year in N.unique(years):
+        i, j, k = taxis.mapIntervalExt((cdtime.comptime(year, 1, 1),
+            cdtime.comptime(year+1, 1, 1), 'co'))
+        year_axis = create_time([cdtime.comptime(year+y, m, day)
+            for y, m in zip(cyears, cmonths)])
+        clim.setAxis(0, year_axis)
+        climo[i:j] = regrid1d(clim, taxis.subaxis(i, j), method=method, axis=0)
+    if not left_extent and not right_lextentexpand:
+        clim.setAxis(0, old_clim_taxis)
+    climo.setAxis(0, taxis)
+    set_atts(climo, atts)
+    return climo
+
+
+
+
+
 #####################################################################
 ######################################################################
 
 import grid as G
 from .axes import istime,check_axes,check_axis,create_time, isaxis
-from .misc import cp_atts,isnumber,kwfilter,split_selector, filter_selector
+from .misc import (cp_atts,isnumber,kwfilter,split_selector, filter_selector,
+    get_atts, set_atts)
 from vacumm import VACUMMError
 
