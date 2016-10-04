@@ -3507,6 +3507,7 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
             - ``None``: ``"extrap"`` if axis else ``"same"``
             - ``"extrap"`` or ``"linear"``: Linear extrapolation.
             - ``"same"``: Constant extrapolation.
+            - ``"cyclic"``: Cyclic extrapolation.
             - ``"masked"``: Masked.
 
         - **axis**, optional: Axis on which to operate.
@@ -3528,8 +3529,8 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
     varm, varf, datatype, mode = _extend_init_(var, varo_shape, mode)
 
     # Get slice specs
-    ss = get_axis_slices(var, axis, extinner=slice(ext[0], no-ext[1]),
-        extleft=slice(0, ext[0]), extright=slice(no-ext[1], None))
+    ss = get_axis_slices(var, axis, extinner=slice(ext[0], -ext[1]),
+        extleft=slice(0, ext[0]), extright=slice(-ext[1], None))
 
     # Unchanged data
     varf[ss['extinner']] = varm
@@ -3538,6 +3539,8 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
     if ext[0]:
         if mode=='masked':
             varf[ss['extleft']] = N.ma.masked
+        elif mode=='cylic':
+            varf[ss['extleft']] = varm[ss['extright']]
         else:
             if mode=='extrap':
                 dv = varm[ss['first']]-varm[ss['firstp1']]
@@ -3551,6 +3554,8 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
     if ext[1]:
         if mode=='masked':
             varf[ss['extright']] = N.ma.masked
+        elif mode=='cylic':
+            varf[ss['extright']] = varm[ss['extleft']]
         else:
             if mode=='extrap':
                 dv = varm[ss['last']]-varm[ss['lastm1']]
