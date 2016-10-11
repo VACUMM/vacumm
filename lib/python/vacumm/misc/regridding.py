@@ -50,12 +50,15 @@ import genutil
 from _geoslib import Point, Polygon
 
 from vacumm import VACUMMError, VACUMMWarning
-from .misc import cp_atts, set_atts
-from .atime import are_same_units, ch_units
+from .misc import (cp_atts, get_atts, set_atts, intersect, kwfilter, closeto,
+    splitidx, MV2_concatenate)
+from .atime import are_same_units, ch_units, time_split
 from .axes import (check_axes, check_axis, isaxis, axis_type, create_lon,
     create_lat, create_time, create_axis)
 from .grid import (get_axis, curv2rect, transect_specs, set_grid, get_axis_slices,
-    merge_axis_slice, isgrid, create_axes2d, get_xy, get_grid)
+    merge_axis_slice, isgrid, create_axes2d, get_xy, get_grid, t2uvgrids,
+    bounds1d, bounds2d, meshgrid, create_grid, resol, meshcells, curv2rect,
+    merge_axis_slice, transect_specs, create_axes2d, get_distances)
 from .basemap import get_proj
 from .kriging import krig as _krig_
 
@@ -1087,8 +1090,8 @@ def fill2d(var, xx=None, yy=None, mask=None, copy=True, **kwargs):
     assert var.ndim >= 2, 'Input var must be at least 2D'
 
     # Get Axes
-    xo = vcg.get_axis(var, -1)
-    yo = vcg.get_axis(var, -2)
+    xo = get_axis(var, -1)
+    yo = get_axis(var, -2)
     if xx is None: xx = xo.getValue()
     if yy is None: yy = yo.getValue()
     if xx.ndim != 2 or yy.ndim !=2:
@@ -1883,12 +1886,12 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
     """
 
     # Prefer 1D axes
-    grid = vcg.get_grid(vari)
-    grid = vcg.curv2rect(grid, mode=False)
+    grid = get_grid(vari)
+    grid = curv2rect(grid, mode=False)
 
     # Format
     # - input
-    xi, yi = vcg.get_xy(grid, num=True)
+    xi, yi = get_xy(grid, num=True)
     rect = xi.ndim==1
     mv = vari.getMissing()
     if mv is None:
@@ -1968,6 +1971,8 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
             outaxis = None
         else:
             outaxis = 'lon'
+    elif outaxis=='num' or outaxis is False:
+        outaxis = varo.getAxis(-1)
     if outaxis in ['x', 'lon']:
         outaxis = vca.create_lon(xo)
     elif outaxis in ['y', 'lat']:
@@ -1994,7 +1999,7 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
 
 
 def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
-        getcoords=False, outaxis=None, **kwargs):
+        getcoords=False, outaxis=None, split=None, **kwargs):
     """Make a transect in a -YX variable
 
     :Example:
@@ -2034,7 +2039,7 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
     if isinstance(lons, tuple): # Find coordinates
         lon0, lon1 = lons
         lat0, lat1 = lats
-        lons, lats = vcg.transect_specs(var, lon0, lat0, lon1, lat1, subsamp=subsamp)
+        lons, lats = transect_specs(var, lon0, lat0, lon1, lat1, subsamp=subsamp)
         single = False
     elif times is None and cdms2.isVariable(lons) and lons.getTime() is not None:
         times = lons.getTime()
@@ -2043,52 +2048,110 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
         lons = N.atleast_1d(lons)
         lats = N.atleast_1d(lats)
 
+    # Split transect to limit memory usage
+    if split:
 
-    # Spatial interpolation
-    if outaxis=='time':
-        outaxis = None
-        ko = False
+        if isinstance(split, (int, list)):
+            idx = splitidx(lons, split)
+        else:
+            assert times is not None, ('Such transect splitting cannot be operated'
+                'without the "times" argument')
+            times = A.create_time(times)
+            if isinstance(split, float):
+                idx = splitidx(times, split)
+            else:
+                idx = []
+                for itv in time_split(times, split)[:-1]:
+                    ijk = times.mapIntervalExt(itv[:2]+('co', ))
+                    if ijk is None: continue
+                    idx.append(ijk[0])
+        idx.append(len(lons))
+
+        vv = []
+        lastj = None
+        lastdist = 0
+        for i, i0 in enumerate(idx[:-1]):
+            i1 = idx[i+1]+1
+            slons = lons[i0:i1]
+            slats = lats[i0:i1]
+            if times is not None:
+                if A.isaxis(times):
+                    stimes = times.subaxis(i0, i1)
+                else:
+                    stimes = times[i0:i1]
+            else:
+                stimes = None
+            svar = transect(var, slons, slats, times=stimes, method=method,
+                getcoords=False)
+            for oaxis, soutaxis in enumerate(svar.getAxisList()): # find the outaxis
+                if hasattr(soutaxis, '_vacumm_transect'):
+                    break
+            if not A.isaxis(outaxis):
+                if soutaxis.id.startswith('dist'):
+                    soutaxis[:] += lastdist
+                    lastdist = soutaxis[-1]
+            if i!=len(idx)-2:
+                sel = [slice(None)]*svar.ndim
+                sel[oaxis] = slice(None, -1)
+                svar = svar[tuple(sel)]
+            vv.append(svar)
+        var = MV2_concatenate(vv, axis=oaxis)
+        if A.isaxis(outaxis):
+            var.setAxis(-1, outaxis)
+
     else:
-        ko = outaxis is not None
-    var = grid2xy(var, lons, lats, outaxis=outaxis)
 
-    # Interpolate to a lagrangian time axis
-    if times is not None and var.getTime() is not None:
+        # Spatial interpolation
+        if outaxis=='time':
+            outaxis = None
+            ko = False
+        else:
+            ko = outaxis is not None
+        var = grid2xy(var, lons, lats, outaxis=outaxis)
+        var.getAxis(-1)._vacumm_transect = True
 
-        if ko: outaxis = var.getAxis(-1)
+        # Interpolate to a lagrangian time axis
+        if (times is not None and var.getTime() is not None and
+                var.getTime() is not outaxis):
 
-        # Time axis
-        if not vca.istime(times):
-            times = vca.create_time(times)
+            if ko: outaxis = var.getAxis(-1)
 
-        # Interpolate
-        if len(times)!=len(lons):
-            raise VACUMMError('Your time axis must have a length of: %i (!=%i'%(
-                len(times), len(lons)))
-        var_square = regrid1d(var, times) # (nl,nz,nl)
+            # Time axis
+            if not A.istime(times):
+                times = A.create_time(times)
 
-        # Init out
-        iaxis = var.getOrder().index('t')
-        sel = [slice(None)]*var_square.ndim
-        if outaxis is None: # time -> (nt=nl,nz)
-            sel[-1] = 0
-            oaxis = iaxis
-        else: # space -> (nz,nd=nl)
-            sel[iaxis] = 0
-            oaxis = -1
-        var = var_square[tuple(sel)].clone()
+            # Interpolate
+            if len(times)!=len(lons):
+                raise VACUMMError('Your time axis must have a length of: %i (!=%i'%(
+                    len(times), len(lons)))
+            var_square = regrid1d(var, times) # (nl,nz,nl)
 
-        # Select the diagnonal the ~square matrix and fill var
-        varsm = var_square.asma()
-        ii = N.arange(len(times))
-        sel = [slice(None)]*varsm.ndim
-        sel[iaxis] = sel[-1] = ii
-        varsm = varsm[tuple(sel)] # (nd,nz)
-        if oaxis==-1:
-            oaxis = varsm.ndim
-        if oaxis!=0:
-            varsm = N.rollaxis(varsm, 0, oaxis)
-        var[:] = varsm
+            # Init out
+            iaxis = var.getOrder().index('t')
+            sel = [slice(None)]*var_square.ndim
+            if outaxis is None: # time -> (nt=nl,nz)
+                sel[-1] = 0
+                oaxis = iaxis
+            else: # space -> (nz,nd=nl)
+                sel[iaxis] = 0
+                oaxis = -1
+            var = var_square[tuple(sel)].clone() # fixme: scalar cases
+
+            # Select the diagnonal the ~square matrix and fill var
+            varsm = var_square.asma()
+            del var_square
+            ii = N.arange(len(times))
+            sel = [slice(None)]*varsm.ndim
+            sel[iaxis] = sel[-1] = ii
+            varsm = varsm[tuple(sel)] # (nd,nz)
+            if oaxis==-1:
+                oaxis = varsm.ndim - 1
+            if oaxis!=0:
+                varsm = N.rollaxis(varsm, 0, oaxis+1)
+            var[:] = varsm
+            del varsm
+            outaxis = var.getAxis(oaxis)
+            outaxis._vacumm_transect = True
 
 
     # Single point
@@ -2183,7 +2246,7 @@ def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
                 for i in -2, -1:
 #                   varo.setAxis(i, refine(vari.getAxis(i), factor))
                     varo.setAxis(i, (yo, xo)[i])
-                    varo.setGrid(vcg.create_grid(xo,yo,fmasko))
+                    varo.setGrid(create_grid(xo,yo,fmasko))
 
     return varo
 _cellave_methods = ['conservative', 'remap', 'cellave', 'conserv']
@@ -2368,7 +2431,7 @@ def regrid2dold(vari, ggo, method='auto', mask_thres=.5, ext=False,
     # 3D variable?
     if vari.ndim != 3:
         vari3d = MV.resize(vari, (nzi, nyi, nxi))
-        vcg.set_grid(vari3d, ggi)
+        set_grid(vari3d, ggi)
 #        vari3d.getAxis(0).designateLevel() # hack against cdat bug
         maski3d = N.resize(maski, vari3d.shape)
     else:
@@ -2430,7 +2493,7 @@ def regrid2dold(vari, ggo, method='auto', mask_thres=.5, ext=False,
             if esmfcons:
                 check_mask = True
                 vari3d = MV2.where(maski3d, 0., vari3d)
-                vcg.set_grid(vari3d, ggi)
+                set_grid(vari3d, ggi)
             tool = None
 
         # Regridder
@@ -2495,7 +2558,7 @@ def regrid2dold(vari, ggo, method='auto', mask_thres=.5, ext=False,
     varo[N.isnan(varo)] = mv
     varo = MV2.masked_values(varo, mv, copy=0)
 #   if not isgrid(ggo, curv=True):
-    vcg.set_grid(varo, ggo)
+    set_grid(varo, ggo)
     if vari.ndim>2:
         for iaxis in range(vari.ndim-2):
             varo.setAxis(iaxis, vari.getAxis(iaxis))
@@ -3019,7 +3082,7 @@ def shift1d(var, shift=0, bmode=None, axis=-1, copy=True, shiftaxis=True, **kwar
         refvar = varf.copy()
 
     # Get slice specs
-    ss = vcg.get_axis_slices(var, axis)
+    ss = get_axis_slices(var, axis)
     sn = _shiftslicenames_(shift)
 
     # Inner data
@@ -3088,9 +3151,9 @@ def shift2d(vari, ishift=0, jshift=0, bmode=None, copy=True, **kwargs):
 
 
     # Slices
-    ssx = vcg.get_axis_slices(var, -1)
+    ssx = get_axis_slices(var, -1)
     snx = _shiftslicenames_(ishift)
-    ssy = vcg.get_axis_slices(var, -2)
+    ssy = get_axis_slices(var, -2)
     sny = _shiftslicenames_(jshift)
 
     # Shift along X only
@@ -3099,7 +3162,7 @@ def shift2d(vari, ishift=0, jshift=0, bmode=None, copy=True, **kwargs):
         varx = shift1d(vari, ishift, **kwxshift)
         if jshift==0:
             if sg:
-                vcg.set_grid(varx, grido)
+                set_grid(varx, grido)
             return varx
 
     # Shift along Y only
@@ -3109,7 +3172,7 @@ def shift2d(vari, ishift=0, jshift=0, bmode=None, copy=True, **kwargs):
         vary = shift1d(vari, jshift, **kwyshift)
         if ishift==0:
             if sg:
-                vcg.set_grid(vary, grido)
+                set_grid(vary, grido)
             return vary
 
     # Inner Y
@@ -3117,13 +3180,13 @@ def shift2d(vari, ishift=0, jshift=0, bmode=None, copy=True, **kwargs):
     var[ssy[sny['firsts']]] += 0.5*(varx[ssy[sny['firsts']]]+varx[ssy[sny['lasts']]])
 
     # Top Y
-    sstopyfirsts = vcg.merge_axis_slice(ssy[sny['last']], ssx[snx['firsts']])
-    sstopylasts = vcg.merge_axis_slice(ssy[sny['last']], ssx[snx['lasts']])
+    sstopyfirsts = merge_axis_slice(ssy[sny['last']], ssx[snx['firsts']])
+    sstopylasts = merge_axis_slice(ssy[sny['last']], ssx[snx['lasts']])
     var[sstopyfirsts] = 0.5*(vary[sstopyfirsts]+vary[sstopylasts])
 
     # Shift along X and Y
-    sslast = vcg.merge_axis_slice(ssy[sny['last']], ssx[snx['last']])
-    sslastxy = vcg.get_axis_slices(var.ndim-1, -1)
+    sslast = merge_axis_slice(ssy[sny['last']], ssx[snx['last']])
+    sslastxy = get_axis_slices(var.ndim-1, -1)
     sslastx = sslastxy[snx['last']]
     sslasty = sslastxy[sny['last']]
     varlastx = shift1d(varx[ssx[snx['last']]], ishift, **kwxshift) #; del varx
@@ -3134,7 +3197,7 @@ def shift2d(vari, ishift=0, jshift=0, bmode=None, copy=True, **kwargs):
 
     # Grid for MV2 arrays
     if sg:
-        vcg.set_grid(var, grido)
+        set_grid(var, grido)
 
     return var
 
@@ -3147,7 +3210,7 @@ def shiftgrid(gg, ishift=0, jshift=0, bmode='linear', **kwargs):
         - **gg**: cdms2 grid.
         - **i/jshift**: Fraction cell to shift.
     """
-    xx, yy = vcg.get_xy(gg)
+    xx, yy = get_xy(gg)
     bmode = kwargs.get('mode', bmode)
     if len(xx.shape)==2:
         xs = shift2d(xx, ishift=ishift, jshift=jshift, bmode=bmode)
@@ -3156,8 +3219,8 @@ def shiftgrid(gg, ishift=0, jshift=0, bmode='linear', **kwargs):
         xs = shift1d(xx, ishift, bmode=bmode)
         ys = shift1d(yy, jshift, bmode=bmode)
 
-    if vcg.isgrid(gg) or cdms2.isVariable(gg):
-        return vcg.create_grid(xs, ys)
+    if isgrid(gg) or cdms2.isVariable(gg):
+        return create_grid(xs, ys)
     return xs, ys
 
 def _extend_init_(var, new_shape, mode):
@@ -3228,7 +3291,7 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
     varm, varf, datatype, mode = _extend_init_(var, varo_shape, mode)
 
     # Get slice specs
-    ss = vcg.get_axis_slices(var, axis, extinner=slice(ext[0], no-ext[1]),
+    ss = get_axis_slices(var, axis, extinner=slice(ext[0], no-ext[1]),
         extleft=slice(0, ext[0]), extright=slice(no-ext[1], None))
 
     # Unchanged data
@@ -3270,7 +3333,7 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
 
         elif datatype=='axis2d':
 
-            varo = vcg.create_axes2d(varf)
+            varo = create_axes2d(varf)
             vacumm.misc.misc.cp_atts(var, varo)
             for iaxis in 0, 1:
                 vacumm.misc.misc.cp_atts(var.getAxis(iaxis), varo.getAxis(iaxis))
@@ -3292,9 +3355,9 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
                     iext = ext if axis==var.ndim-1 else 0
                     jext = ext if axis==var.ndim-2 else 0
                     grido = extendgrid(gridi, iext=iext, jext=jext)
-                    vcg.set_grid(varo, extendgrid(gridi, iext=iext, jext=jext))
+                    set_grid(varo, extendgrid(gridi, iext=iext, jext=jext))
                 else:
-                    vcg.set_grid(varo, gridi)
+                    set_grid(varo, gridi)
         else:
             varo = varf
     else:
@@ -3368,7 +3431,7 @@ def extendgrid(gg, iext=0, jext=0, mode='extrap'):
             - ``"masked"``: Masked.
 
     """
-    xx, yy = vcg.get_xy(gg)
+    xx, yy = get_xy(gg)
 
     if len(xx.shape)==2:
         xs = extend2d(xx, iext=iext, jext=jext, mode=mode)
@@ -3377,8 +3440,8 @@ def extendgrid(gg, iext=0, jext=0, mode='extrap'):
         xs = extend1d(xx, iext, mode=mode)
         ys = extend1d(yy, jext, mode=mode)
 
-    if vcg.isgrid(gg) or cdms2.isVariable(gg):
-        return vcg.create_grid(xs, ys)
+    if isgrid(gg) or cdms2.isVariable(gg):
+        return create_grid(xs, ys)
     return xs, ys
 
 
@@ -3635,15 +3698,15 @@ class CurvedInterpolator(object):
     def __init__(self, fromgrid, topts, g2g=False):
 
         # Input coordinates
-        xxi, yyi = vcg.get_xy(fromgrid, mesh=True, num=True)
+        xxi, yyi = get_xy(fromgrid, mesh=True, num=True)
         self._shapei = xxi.shape
 
         # Output coordinates
         if cdms2.isVariable(topts): topts = topts.getGrid()
         if g2g:
-            topts = vcg.get_grid(topts)
-        if vcg.isgrid(topts):
-            xxo, yyo = vcg.meshgrid(topts.getLongitude(), topts.getLatitude())
+            topts = get_grid(topts)
+        if isgrid(topts):
+            xxo, yyo = meshgrid(topts.getLongitude(), topts.getLatitude())
             xo = xxo.ravel()
             yo = yyo.ravel()
             self._grido = topts
@@ -3692,7 +3755,7 @@ class CurvedInterpolator(object):
             for i, ax in enumerate(vari.getAxisList()[:-2]):
                 varo.setAxis(i, ax)
             if self._grido:
-                vcg.set_grid(varo, self._grido)
+                set_grid(varo, self._grido)
 
         return varo
 

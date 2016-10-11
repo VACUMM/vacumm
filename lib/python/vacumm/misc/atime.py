@@ -51,7 +51,8 @@ import cdtime
 import cdutil
 
 from vacumm import VACUMMError
-from .misc import cp_atts, filter_selector, kwfilter, split_selector
+from .misc import (cp_atts, filter_selector, kwfilter, split_selector, get_atts,
+    set_atts)
 from .axes import istime, check_axes, create_time
 
 

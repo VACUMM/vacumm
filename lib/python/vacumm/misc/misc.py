@@ -71,7 +71,7 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'create_selector', 'selector2str', 'split_selector', 'squeeze_variable', 'dict_copy_items',
     "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
     'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out',
-    'kwfilterout', 'filter_selector', 'isempty', 'checkdir']
+    'kwfilterout', 'filter_selector', 'isempty', 'checkdir', 'splitidx']
 __all__.sort()
 
 def broadcast(set, n, mode='last', **kwargs):
@@ -2027,3 +2027,64 @@ def nduniq(data, axis=0):
         keep = keep & ~bad
     del wdata
     return N.compress(data, keep, axis=axis)
+
+def splitidx(arr, crit):
+    """Return a list of split indices for a 1d array according to a criteria
+
+
+
+    Params
+    ------
+    arr: 1D array
+    crit: int, list of int, int array, float
+        If a positive int, it refers to the number of almost equal intervals.
+        If a negative int, it refers to the max number of item per interval.
+        If a list or array of int, it is directly intepreted as split indices,
+        with some checks.
+        If a float, the input array is monotically increasing and the intervals
+        are at least of size crit.
+
+    Return
+    ------
+    idx: list of ints
+        Indices that are compatible ith :func:`numpy.array_split`.
+    """
+    # Check array
+    arr = N.asarray(arr[:])
+    if N.size(arr)==0:
+        return []
+    nx = N.shape(arr)[0]
+
+    # Positive integer = equal size
+    if isinstance(crit, int) and int>=0:
+        if crit<1:
+            return [0]
+        if crit>nx:
+            return range(nx)
+        return range(0, nx, crit)
+
+    # Negative integer = fixed size
+    if isinstance(crit, int) and int<0:
+        crit = -crit
+        if crit>nx:
+            return [0]
+        return range(0, nx, crit)
+
+    # Float = equal value
+    if isinstance(crit, float):
+        assert (N.diff(arr)>=0).all(), 'Array must be monotically increasing'
+        if crit>=arr.ptp():
+            return [0]
+        idx = [0]
+        cum = arr[0]
+        while cum+crit < arr[-1]:
+            cum += crit
+            idx.append(N.where(arr > cum)[-1][0])
+        return idx
+
+    # Direct list of ints
+    idx = N.array(idx)
+    idx[idx<0] += nx
+    idx = idx[(idx>0)&(idx<nx)]
+    return idx.tolist()
+

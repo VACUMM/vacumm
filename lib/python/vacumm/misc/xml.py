@@ -660,8 +660,10 @@ class XmlConfig(object):
                     else:
                         if t and not isinstance(v, (list,tuple)):
                             raise TypeError('Unsupported type %r, %r required'%(v.__class__, (list,tuple)))
-                        for vv in v:
-                            if t and not isinstance(vv, t):
+                        for i, vv in enumerate(v):
+                            if isinstance(vv, dict):
+                                v[i] = t(**vv)
+                            elif t and not isinstance(vv, t):
                                 raise TypeError('Unsupported type %r, %r required'%(vv.__class__, t))
                 setattr(self, a, v)
         for a,s in self.xml_textnodes.items():

@@ -873,10 +873,13 @@ class ConfigManager(object):
             if cfgfilepatch == 'after' and getattr(options, 'cfgfile', None):
                 self.patch(cfg, self.load(options.cfgfile))
 
+
             if not getparser and not getargs: return cfg
             out = cfg,
             if getparser: out += parser,
-            if getargs: out += options,
+            if getargs:
+                options.vacumm_cfg = cfg
+                out += options,
             return out
 
         else:

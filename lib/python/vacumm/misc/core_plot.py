@@ -2264,7 +2264,7 @@ class Plot(object):
             kwargs['s'] = size
         color = kwargs.pop('c', color)
         if color is not None:
-            kwargs['c'] = size
+            kwargs['c'] = color
         #kwsh.setdefault('zorder', zorder-0.01)
         #kwgl.setdefault('zorder', zorder-0.01)
 
@@ -2388,6 +2388,13 @@ class Plot(object):
             - Other keywords are passed to :func:`matplotlib.pyplot.savefig`.
         """
         if figfile is None: return
+
+        # List of files
+        if isinstance(figfile, (list, tuple)):
+            oo = []
+            for ff in figfile:
+                oo.append(self.savefig(ff, verbose=verbose, mkdir=mkdir, **kwargs))
+            return oo
 
         # Remote output file
         rem = figfile if isinstance(figfile, vcr.OutputWorkFile) else False
