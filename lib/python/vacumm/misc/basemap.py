@@ -190,7 +190,7 @@ def _cached_map_file_(m=None, mapdir=None, **kwargs):
 
 
 def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
-        projection='cyl', resolution='auto',
+        projection='cyl', resolution='auto', epsg=None,
         lon_center=None, lat_center=None, lat_ts=None, zoom=None, ax=None,
         overlay=False, fullscreen=False, nocache=False, cache_dir=None, **kwargs):
     """Generic creation of a :class:`Basemap` instance with caching
@@ -262,6 +262,7 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
     kwargs.setdefault('urcrnrlon', lon_max)
     kwargs.setdefault('llcrnrlat', N.clip(lat_min, -90, 90))
     kwargs.setdefault('urcrnrlat', N.clip(lat_max, -90, 90))
+    kwargs['epsg'] = epsg
 
     # Check the cache
     kwcache = kwargs.copy()

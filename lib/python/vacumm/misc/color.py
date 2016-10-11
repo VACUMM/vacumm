@@ -53,6 +53,10 @@ from matplotlib.cm import cmap_d
 import matplotlib.cbook as cbook
 from mpl_toolkits.basemap import cm as basemap_cm
 from genutil import minmax
+try:
+    import cmocean.cm as cmoceancm
+except:
+    cmoceancm = None
 
 import vacumm
 from .misc import kwfilter, broadcast, dict_check_defaults
@@ -2412,13 +2416,6 @@ def cmaps_gmt(names=True):
         :func:`cmap_gmt` :func:`print_cmaps_gmt` :func:`get_cmap`
     """
     return cmaps_registered(include='GMT_', names=names)
-#    cmaps = []
-#    for file in glob.glob(os.path.join(_gmt_cpt_dir, '*.cpt')):
-#        f = open(file)
-#        lines = f.readlines()
-#        f.close()
-#        cmaps.append(os.path.basename(file)[:-4])
-#    return cmaps
 
 def print_cmaps_gmt():
     """List available gmt colormaps
@@ -2428,13 +2425,6 @@ def print_cmaps_gmt():
         :func:`cmap_gmt` :func:`cmaps_gmt` :func:`get_cmap`
     """
     print 'List of available GMT colormaps: '+', '.join(cmaps_gmt(names=True))
-#    for file in glob.glob(os.path.join(_gmt_cpt_dir, '*.cpt')):
-#        f = open(file)
-#        lines = f.readlines()
-#        f.close()
-#        name = os.path.basename(file)[:-4]
-#        description = lines[2].strip('# \t\n')
-#        print '%s %s' % ((name+':').ljust(20),description)
 
 _re_split_gmt = re.compile(r'[\t/\-]+').split
 def cmap_gmt(name, register=True, **kwargs):
@@ -2973,6 +2963,7 @@ def discretize_cmap(cmap, bounds, name=None, **kwargs):
 
 
 # Register colormaps
+# - vacumm
 cmap_bwr()
 cmap_bwre()
 cmap_br()
@@ -3004,9 +2995,13 @@ cmap_eke()
 cmap_currents()
 cmap_nice_gfdl()
 cmap_ssec()
-
+# - basemap
 for _name in basemap_cm.datad.keys():
 #    sname = _name.lower() if _name.startswith('GMT_') else _name
     _cmap = getattr(basemap_cm, _name)
     P.register_cmap(_name, _cmap)
 del _cmap, _name
+# - cmocean
+if cmoceancm is not None:
+    for cmname in cmoceancm.cmapnames:
+        P.register_cmap('cmocean_'+cmname, getattr(cmoceancm, cmname))

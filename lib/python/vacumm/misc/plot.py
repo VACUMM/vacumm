@@ -65,17 +65,17 @@ from vacumm import VACUMMError
 from .units import m2deg
 from .docstrings import docfill
 from .misc import (kwfilter, broadcast, auto_scale, is_iterable, geo_scale, deplab,
-    zoombox, dict_check_defaults)
+    zoombox, dict_check_defaults, squarebox)
 from .color import get_cmap, Scalar2RGB, simple_colors
 from .axes import istime, check_axes
 from .atime import mpl, time, axis_add, SpecialDateFormatter
-from .grid import get_grid, get_axis, meshbounds, meshgrid, var2d
+from .grid import get_grid, get_axis, meshbounds, meshgrid, var2d, get_xy
 from .core_plot import (Curve, Bar, Stick, Hov, Map, Section, Plot2D,
     add_glow, add_shadow, add_agg_filter, hlitvs, AutoDateFormatter2,
     AutoDateLocator2, AutoDateMinorLocator, AutoDualDateFormatter, add_compass,
     add_right_label, add_left_label, add_top_label, add_bottom_label,
+    add_param_label, get_quiverkey_value, add_lightshading,
     )
-
 
 
 __all__ = [ 'traj', 'ellipsis',
@@ -92,7 +92,7 @@ __all__ = [ 'traj', 'ellipsis',
     'add_glow', 'add_shadow', 'add_agg_filter', 'plot2d', 'hlitvs',
     'add_compass', 'add_param_label', 'dtarget', 'add_map_places',
     'add_right_label', 'add_left_label', 'add_top_label', 'add_bottom_label',
-    'get_quiverkey_value']
+    'get_quiverkey_value', "add_lightshading", ]
 __all__.sort()
 
 
@@ -3723,7 +3723,8 @@ def plot2d(*args, **kwargs):
     return vccp.Plot2D(*args, **kwargs)
 
 
-def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., maplims=None, bgcolor=(0, .8, 1.), fig=None, alpha=1, **kwargs):
+def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., xmargin=None, ymargin=None,
+        lon=None, lat=None, square=False, bgcolor=(0, .8, 1.), fig=None, alpha=1, **kwargs):
     """Create a minimap with :func:`map2`
 
     A minimap is small and generally in a corner of the figure,
@@ -3742,14 +3743,18 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., maplims=None, bgcolor=(0, .
     from color import RGB
     data = gg if cdms2.isVariable(gg) else None
     x, y = get_xy(gg)
+    if lon is not None:
+        x = N.asarray(lon)
+    if lat is not None:
+        x = N.asarray(lat)
     x = N.asarray(x)
     y = N.asarray(y)
     xmin = x.min()
     xmax = x.max()
     ymin = y.min()
     ymax = y.max()
-    if zoom:
-        xmin, ymin, xmax, ymax = vcm.zoombox([xmin, ymin, xmax, ymax], zoom)
+    xmin, ymin, xmax, ymax = zoombox([xmin, ymin, xmax, ymax], zoom,
+        xmargin=xmargin, ymargin=ymargin, square=square)
     kwargs.setdefault('anchor', 'E')
     kwargs.setdefault('colorbar', False)
     kwargs.setdefault('contour', False)
@@ -3759,7 +3764,8 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., maplims=None, bgcolor=(0, .
     if alpha:
         bgcolor += alpha,
     oldax = P.gca()
-    vcm.dict_check_defaults(kwargs, title=False, xhide=True, yhide=True, proj='merc')
+    dict_check_defaults(kwargs, title=False, xhide=True, yhide=True, proj='merc',
+        drawparallels_linewidth=.2, drawmeridians_linewidth=.2)
     m = map2(data, lon = (xmin, xmax), lat=(ymin,ymax), show=False,
         axes_rect = bbox, bgcolor=bgcolor, fig=fig, **kwargs)
 #    m.axes.set_alpha(alpha)

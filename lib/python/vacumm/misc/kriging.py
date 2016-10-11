@@ -116,7 +116,7 @@ def variogram_model(mtype, n, s, r, nrelmax=0.2):
     s = max(s, 0)
 
     if mtype == 'linear':
-        return lambda h: n + (s-n) * ((h/r)*int(h<=r) + int(h>r))
+        return lambda h: n + (s-n) * ((h/r)*(h<=r) + 1*(h>r))
 
     if mtype=='exponential':
         return lambda h: n + (s-n) * (1 - N.exp(-3*h/r))
@@ -392,9 +392,9 @@ def variogram_multifit(xx, yy, zz, mtype=None, getall=False, getp=False, **kwarg
     return vm.get_variogram_model(mp)
 
 def cloud_split(x, y, npmax=1000, getdist=True, getcent=True):
-    """Split data intot cloud of points of max size cmax:
+    """Split data intot cloud of points of max size npmax:
 
-    :Returns: ``None`` if ``len(x)<=cmax``
+    :Returns: ``None`` if ``len(x)<=npmax``
 
         Else ``indices``
         or ``(indices, global_distorsion, distortions)``.
@@ -425,7 +425,8 @@ def cloud_split(x, y, npmax=1000, getdist=True, getcent=True):
     if getdist:
         sdistorsions = [sdistorsions[i] for i in order]
         dists = global_distorsion,  sdistorsions
-    centroids = centroids[order]
+    if getcent:
+        centroids = centroids[order]
 
     # Output
     if not getdist and not getcent: return indices
@@ -454,7 +455,7 @@ def syminv(A):
     else:
         return res
 
-class OrdinaryCloudKriger(object):
+class CloudKriger(object):
     """Ordinary kriger using mutliclouds of points
 
     Big input cloud of points (size > ``npmax``)
@@ -529,8 +530,14 @@ class OrdinaryCloudKriger(object):
             List of input data of each cloud.
     """
 
-    def __init__(self, x, y, z, mtype=None, vgf=None, npmax=1000,
-            nproc=None, exact=False, distfunc='simple', errfunc=None, **kwargs):
+    def __init__(self, x, y, z, krigtype, mtype=None, vgf=None, npmax=1000,
+            nproc=None, exact=False, distfunc='simple', errfunc=None,
+            mean=None, farvalue=None, **kwargs):
+        if krigtype is None:
+            krigtype = 'ordinary'
+        krigtype = str(krigtype).lower()
+        assert krigtype in ['simple', 'ordinary'], ('krigtype must be either '
+            '"simple" or "ordinary"')
         self.x, self.y, self.z, self.mask = _get_xyz_(x, y, z, noextra=False, getmask=True)
         self.np = self.x.shape[0]
         self.nt = 0 if self.z.ndim==1 else z.shape[0]
@@ -549,6 +556,14 @@ class OrdinaryCloudKriger(object):
         self.exact = exact
         self.distfunc = distfunc
         self.errfunc = errfunc
+        self.krigtype = krigtype
+        self._simple = self.krigtype == 'simple'
+        if not self._simple:
+            mean = 0.
+        elif mean is None:
+            mean = self.z.mean()
+        self.mean = mean
+        self.farvalue = farvalue
 
     def __len__(self):
         return self.x.shape[0]
@@ -623,6 +638,11 @@ class OrdinaryCloudKriger(object):
         self.variogram_fitting_results = res
         return self.variogram_func
 
+    def get_sill(self):
+        vgf = self.variogram_func
+        if self.variogram_fitting_results is not None:
+            return self.variogram_fitting_results['params']['s']
+        return vgf(1e60)
 
     def set_variogram_func(self, vgf):
         """Set the variogram function"""
@@ -658,6 +678,7 @@ class OrdinaryCloudKriger(object):
         if not hasattr(self, '_dd'): self._dd = []
         Ainv = []
         AA = []
+        next = int(not self._simple)
         for ic in xrange(self.ncloud):
 
             # Get distance between input points
@@ -669,14 +690,16 @@ class OrdinaryCloudKriger(object):
                 dd = self._dd[ic]
 
             # Form A
-            A = N.empty((self.npc[ic]+1, self.npc[ic]+1))
-            A[:-1, :-1] = vgf(dd)
+            np = self.npc[ic]
+            A = N.empty((np+next, np+next))
+            A[:np, :np] = vgf(dd)
             if self.exact:
                 N.fill_diagonal(A, 0)
-                A[:-1, :-1][isclose(A[:-1, :-1], 0.)] = 0.
-            A[-1] = 1
-            A[:, -1] = 1
-            A[-1, -1] = 0
+                A[:np, :np][isclose(A[:np, :np], 0.)] = 0.
+            if not self._simple:
+                A[-1] = 1
+                A[:, -1] = 1
+                A[-1, -1] = 0
 
             # Invert for single cloud
             if self.nproc==1:
@@ -731,6 +754,7 @@ class OrdinaryCloudKriger(object):
 
         # Loop on clouds
         Ainv = self.Ainv
+        next = int(not self._simple)
         for ic in xrange(self.ncloud): # TODO: multiproc here?
 
             # Distances to output points
@@ -738,11 +762,13 @@ class OrdinaryCloudKriger(object):
             dd = get_distances(xo, yo, self.xc[ic], self.yc[ic], mode=self.distfunc)
 
             # Form B
-            B = N.empty((self.npc[ic]+1, npo))
-            B[-1] = 1
-            B[:-1] = vgf(dd)
+            np = self.npc[ic]
+            B = N.empty((np+next, npo))
+            B[:self.npc[ic]] = vgf(dd)
+            if not self._simple:
+                B[-1] = 1
             if self.exact:
-                B[:-1][isclose(B[:-1], 0.)] = 0.
+                B[:np][isclose(B[:np], 0.)] = 0.
             del dd
 
             # Block kriging
@@ -756,9 +782,20 @@ class OrdinaryCloudKriger(object):
             # Compute weights
             W = N.ascontiguousarray(symm(Ainv[ic], N.asfortranarray(B, 'd')))
 
+            # Simple kriging with adjusted mean for long distance values
+            if self._simple and self.farvalue is not None:
+                s = self.get_sill()
+                Ais = self.get_sill() * Ainv[ic].sum(axis=0)
+                mean = self.farvalue - (self.zc[ic] * Ais).sum()
+                mean /= (1 - Ais.sum())
+            else:
+                mean = self.mean
+
             # Interpolate
-            z = N.ascontiguousarray(dgemv(N.asfortranarray(W[:-1].T, 'd'),
-                N.asfortranarray(self.zc[ic], 'd')))
+            z = N.ascontiguousarray(dgemv(N.asfortranarray(W[:np].T, 'd'),
+                N.asfortranarray(self.zc[ic]-mean, 'd')))
+            if not self._simple:
+                z += mean
 
             # Simplest case
             if not geterr and self.ncloud<2:
@@ -793,7 +830,26 @@ class OrdinaryCloudKriger(object):
     __call__ = interp
 
 
+class OrdinaryCloudKriger(CloudKriger):
+    """Ordinary kriger using cloud splitting"""
+    def __init__(self, x, y, z, mtype=None, vgf=None, npmax=1000,
+            nproc=None, exact=False, distfunc='simple', errfunc=None,
+            **kwargs):
+        CloudKriger.__init__(self, x, y, z, 'ordinary', mtype=mtype, vgf=vgf, npmax=npmax,
+            nproc=nproc, exact=False, distfunc=distfunc, errfunc=errfunc,
+            **kwargs)
 OrdinaryKriger = OrdinaryCloudKriger
+
+
+class SimpleCloudKriger(CloudKriger):
+    """Simple kriger using cloud splitting"""
+    def __init__(self, x, y, z, mtype=None, vgf=None, npmax=1000,
+            nproc=None, exact=False, distfunc='simple', errfunc=None,
+            mean=None, farvalue=None, **kwargs):
+        CloudKriger.__init__(self, x, y, z, 'simple', mtype=mtype, vgf=vgf, npmax=npmax,
+            nproc=nproc, exact=False, distfunc=distfunc, errfunc=errfunc,
+            mean=mean, farvalue=farvalue, **kwargs)
+
 
 def krig(xi, yi, zi, xo, yo, vgf=None, geterr=False, **kwargs):
     """Quickly krig data"""

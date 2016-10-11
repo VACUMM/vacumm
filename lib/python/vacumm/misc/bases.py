@@ -199,12 +199,16 @@ try:
         if hasattr(_psutil_process, 'get_cpu_percent'):
             cpu = _psutil_process.get_cpu_percent()
             mem = _psutil_process.get_memory_percent()
-            rss, vsz  = _psutil_process.get_memory_info()
+            meminfo  = _psutil_process.get_memory_info()
         else:
             cpu = _psutil_process.cpu_percent()
             mem = _psutil_process.memory_percent()
-            rss, vsz  = _psutil_process.memory_info()
-        ps = '[CPU: %d%%  MEM: %d%%  RSS: %dMo  VSZ: %dMo]'%(cpu, mem, rss / 2**20, vsz / 2**20)
+            meminfo = _psutil_process.memory_info()
+        rss, vsz = meminfo[:2]
+        ps = '[CPU: %d%%  MEM: %d%%  RSS: %dMo  VSZ: %dMo'%(cpu, mem, rss / 2**20, vsz / 2**20)
+        if len(meminfo) >= 6:
+            ps += '  SHR: %dMo  DAT: %dMo'%(meminfo[2] / 2**20, meminfo[5] / 2**20)
+        ps += ']'
         return ps
 except Exception, e:
     vcl.Logger.default.verbose('psinfo disabled: %s', e)
@@ -240,7 +244,7 @@ def describe(obj, stats=None, format=pprint.pformat):
                     mi, ma, av, co = MV2.min(obj), MV2.max(obj), MV2.average(obj), MV2.count(obj)
             except: vcl.logger.exception('Error getting statistics of object %s', type(obj))
         if isinstance(obj, AbstractVariable):
-            return '%s: %s, shape:(%s), order: %s%s'%(
+            return '%s: %s, shape: (%s), order: %s%s'%(
                 otype, obj.id,
                 ','.join('%s=%s'%(a.id, a.shape[0]) for a in obj.getAxisList()),
                 obj.getOrder(),

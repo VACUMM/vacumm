@@ -60,8 +60,8 @@ from matplotlib.path import Path
 from matplotlib.patheffects import Normal
 from matplotlib.text import Text
 from matplotlib.text import Text
-from matplotlib.ticker import FormatStrFormatter, Formatter, Locator, \
-    NullLocator, AutoMinorLocator
+from matplotlib.ticker import (FormatStrFormatter, Formatter, Locator,
+    NullLocator, AutoMinorLocator, AutoLocator)
 from matplotlib.transforms import offset_copy
 from mpl_toolkits.basemap import Basemap
 
@@ -69,7 +69,7 @@ from vacumm import VACUMMError
 from vacumm.config import VACUMM_CFG, VACUMM_CFGSPECS, VACUMM_VDT, get_cfg_checked
 from .misc import (kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts,
     auto_scale, zoombox, dict_check_defaults, basic_auto_scale, dict_copy_items,
-    dict_merge)
+    dict_merge, phaselab)
 from ._ext_plot import (FilteredArtistList, DropShadowFilter, GrowFilter,
     LightFilter)
 from .docstrings import docfiller
@@ -1220,8 +1220,9 @@ class Plot(object):
         # Grid
         self.grid(grid, **kw['grid'])
 
-        # Highlight days
+        # Highlight intervals
         if kwargs.pop('hldays', hlitvs):
+            print 'ok!'
             if kwargs.pop('hldays', False):
                 kw['hlitvs'].setdefault['units'] = 'day'
             self.hlitvs(**kw['hlitvs'])
@@ -2279,7 +2280,7 @@ class Plot(object):
         return o
 
     def add_place(self, x, y, text, zorder=150, shadow=False, glow=False,
-            text_offset=(0, 10), **kwargs):
+            text_offset=(0, 10), ha='center', va='center', **kwargs):
         """Place a point using :meth:`add_point` and a label using :meth:`add_text`
 
         :Examples:
@@ -2302,8 +2303,25 @@ class Plot(object):
         kwtext = kwfilter(kwargs, 'text_')
         dict_check_defaults(kwpoint, zorder=zorder, shadow=shadow, glow=glow)
         dict_check_defaults(kwtext, zorder=zorder, shadow=shadow, glow=glow,
-            ha='center', va='center', weight='bold')
-
+            ha=ha, va=va, weight='bold')
+        tha = kwtext['ha']
+        tva = kwtext['va']
+        if tha=='auto':
+            if text_offset[0]==0:
+                tha = 'center'
+            elif text_offset[0]>0:
+                tha = 'left'
+            else:
+                tha = 'right'
+        if tva=='auto':
+            if text_offset[1]==0:
+                tva = 'center'
+            elif text_offset[1]>0:
+                tva = 'bottom'
+            else:
+                tva = 'top'
+        kwtext['ha'] = tha
+        kwtext['va'] = tva
         p = self.add_point(x, y, **kwpoint)
         kwtext.setdefault('transform', self.get_transoffset(*text_offset))
         t = self.add_text(x, y, text, **kwtext)
@@ -4154,7 +4172,7 @@ class QuiverKey:
         return Plot.quiverkey(self, qv, value, **kwargs)
 
 
-class Stick(ScalarMappable, Curve, QuiverKey):
+class Stick(QuiverKey, ScalarMappable, Curve):
     """Class for makeing a stick plot (vectors on a line)
 
     :Params:
@@ -4886,7 +4904,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
                 l.set_alpha(kwcl['alpha'])
                 l.set_zorder(kwcl['zorder'])
             if clshadow: self.add_shadow(cl, **kwclsh)
-            if clglow: self.add_shadow(cl, **kwclgl)
+            if clglow: self.add_glow(cl, **kwclgl)
 
     def plot_quiver(self, zorder=None, quiverkey=True, barbs=False,
             shadow=False, glow=False, quiver_cmap=None,
@@ -5353,7 +5371,7 @@ class Map(Plot2D):
 
 
     def pre_plot(self, map=None, projection='cyl', resolution='auto',
-            overlay=False, fullscreen=False, map_update=None,
+            epsg=None, overlay=False, fullscreen=False, map_update=None,
             lon_min=None, lon_max=None, lat_min=None, lat_max=None,
             lon_center=None, lat_center=None, lat_ts=None,
             nocache=False, cache_dir=None, zoom=None, **kwargs):
@@ -5451,7 +5469,7 @@ class Map(Plot2D):
 
             self.map = create_map(lon_min, lon_max, lat_min, lat_max, projection=projection,
                 resolution=resolution, overlay=overlay, fullscreen=fullscreen,
-                lon_center=lon_center, lat_center=lat_center, lat_ts=lat_ts,
+                lon_center=lon_center, lat_center=lat_center, lat_ts=lat_ts, epsg=epsg,
                 nocache=nocache, cache_dir=cache_dir, zoom=zoom, ax=self.axes, **kwmap)
 
         # Projection of coordinates
@@ -5477,7 +5495,7 @@ class Map(Plot2D):
         return self.map(lon, lat, inverse=inverse)
 
 
-    def plot(self, lowhighs=False, **kwargs):
+    def plot(self, lowhighs=False, arcgisimage=None, **kwargs):
         """Main plot
 
         It performs the following tasks:
@@ -5490,6 +5508,7 @@ class Map(Plot2D):
 
         # Keywords
         kwlh = kwfilter(kwargs, 'lowhighs')
+        kwag = kwfilter(kwargs, 'arcgisimage')
 
         # Generic 2D plot
         Plot2D.plot(self, **kwargs)
@@ -5498,6 +5517,34 @@ class Map(Plot2D):
         lowhighs = kwargs.pop('lowhigh', lowhighs)
         if lowhighs:
             self.add_lowhighs(**kwlh)
+
+        # Plot arcgisimage
+        if arcgisimage is True:
+            arcgisimage = "esriimagery"
+        if isinstance(arcgisimage, basestring):
+            arcgisimage = dict(
+                esriimagery="ESRI_Imagery_World_2D",
+                esristreet="ESRI_StreetMap_World_2D",
+                esristreetmap="ESRI_StreetMap_World_2D",
+                natgeo="NatGeo_World_Map",
+                ngstopo="NGS_Topo_US_2D",
+                usatopo="USA_Topo_Maps",
+                ocean="Ocean_Basemap",
+                topo="World_Topo_Map",
+                shaded="World_Shaded_Relief",
+                physical="World_Physical_Map",
+                imagery="World_Imagery",
+                street="World_Street_Map",
+                streetmap="World_Street_Map",
+                terrain="World_Terrain_Base",
+            ).get(arcgisimage, arcgisimage)
+            dict_check_defaults(kwag, service=arcgisimage, xpixels=800)
+            try:
+                self.map.arcgisimage(**kwag)
+            except Exception(e):
+                warn('Error when plotting arcgisimage: {}.\nMessage: {}'.format(
+                    arcgisimage, e.message))
+
 
         # Update map limits
         self.map.set_axes_limits(ax=self.axes)
@@ -6520,7 +6567,7 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
 
 
 
-def add_agg_filter(objs, filter, zorder=None, ax=None):
+def add_agg_filter(objs, filter, zorder=None, ax=None, add=True):
     """Add a filtered version of objects to plot
 
     :Params:
@@ -6541,7 +6588,10 @@ def add_agg_filter(objs, filter, zorder=None, ax=None):
     # Filter
     if ax is None: ax = P.gca()
     shadows = FilteredArtistList(objs, filter)
-    ax.add_artist(shadows)
+    if hasattr(add, 'add_artist'):
+        add.add_artist(shadows)
+    elif add:
+        ax.add_artist(shadows)
 
     # Text
     for t in objs:
@@ -6562,7 +6612,8 @@ def add_agg_filter(objs, filter, zorder=None, ax=None):
 
     return shadows
 
-def add_shadow(objs, width=3, xoffset=2, yoffset=-2, alpha=0.5, color='k', zorder=None, ax=None):
+def add_shadow(objs, width=3, xoffset=2, yoffset=-2, alpha=0.5, color='k',
+        zorder=None, ax=None, add=True):
     """Add a drop-shadow to objects
 
     :Params:
@@ -6580,11 +6631,11 @@ def add_shadow(objs, width=3, xoffset=2, yoffset=-2, alpha=0.5, color='k', zorde
     if color is not None: color = RGB(color)
     try:
         gauss = DropShadowFilter(width, offsets=(xoffset, yoffset), alpha=alpha, color=color)
-        return add_agg_filter(objs, gauss, zorder=zorder, ax=ax)
+        return add_agg_filter(objs, gauss, zorder=zorder, ax=ax, add=add)
     except:
         warn('Cannot plot shadows using agg filters')
 
-def add_glow(objs, width=3, zorder=None, color='w', ax=None, alpha=1.):
+def add_glow(objs, width=3, zorder=None, color='w', ax=None, alpha=1., add=True):
     """Add a glow effect to text
 
     :Params:
@@ -6600,11 +6651,12 @@ def add_glow(objs, width=3, zorder=None, color='w', ax=None, alpha=1.):
     if color is not None: color = RGB(color)
     try:
         white_glows = GrowFilter(width, color=color, alpha=alpha)
-        return add_agg_filter(objs, white_glows, zorder=zorder, ax=ax)
+        return add_agg_filter(objs, white_glows, zorder=zorder, ax=ax, add=add)
     except:
          warn('Cannot add glow effect using agg filters')
 
-def add_lightshading(objs, width=7, zorder=None, ax=None, **kwargs):
+def add_lightshading(objs, width=7, fraction=0.5, zorder=None, ax=None, add=True,
+        **kwargs):
     """Add a light shading effect to objects
 
     :Params:
@@ -6621,7 +6673,7 @@ def add_lightshading(objs, width=7, zorder=None, ax=None, **kwargs):
     if zorder is None: zorder = True
     try:
         lf = LightFilter(width, fraction=fraction, **kwargs)
-        return add_agg_filter(objs, lf, zorder=zorder, ax=ax)
+        return add_agg_filter(objs, lf, zorder=zorder, add=add, ax=ax)
     except:
          warn('Cannot add light shading effect using agg filters')
 
@@ -6650,6 +6702,52 @@ class MinuteLabel:
         self.kwargs = kwargs
     def __call__(self, deg):
         return self.func(deg, **self.kwargs)
+
+class AutoDegreesMinutesLocator(AutoLocator):
+    def bin_boundaries(self, vmin, vmax):
+        steps = None
+        mn = 1/60.
+        if (vmax-vmin) > 50.:
+            steps = [1, 2, 3, 6, 9, 10]
+        elif (vmax-vmin) > 3.:
+            steps = [1, 2, 2.5, 3, 5, 10]
+        elif vmax//mn != vmin//mn:
+            nmn = int(N.ceil((vmax-vmin)*60.))+1
+            nmax = 10
+            if nmn > nmax:
+                steps = [1, 10/6.,15/6.,20/6.,30/6.,10]
+        self.set_params(steps=steps)
+        return AutoLocator.bin_boundaries(self, vmin, vmax)
+
+class AutoDegreesMinutesFormatter(Formatter):
+    """Phase formatter with degrees and minutes
+
+    :Example:
+
+        >>> locator = xaxis.get_major_locator()
+        >>> xaxis.set_formatter(AutoDegreesMinutesFormatter(locator, label='lon'))
+    """
+    def __init__(self, locator=None, **kwargs):
+        if not isinstance(locator, Locator):
+            data = N.asarray(locator)
+            locator = data.min(), data.max()
+        self.locator = locator
+        self.kwargs = kwargs.copy()
+        self.kwargs.setdefault('decimal', False)
+    def __call__(self, x, pos=None):
+        if isinstance(self.locator, tuple):
+            vmin, vmax = self.locator
+        else:
+            vmin, vmax = self.locator.axis.get_view_interval()
+        kwargs = self.kwargs.copy()
+        kwargs['auto_minutes'] = vmax//1 != vmax//1
+        return phaselab(x, **kwargs)
+
+
+
+class DepthFormatter(Formatter):
+    def __call__(self, x, pos=None):
+        return "{:g}m".format(x)
 
 def twinxy(xy, ax=None, fig=None):
     """Create an :func:`~matplotlib.axes.Axes` instance based on existing one(s)*

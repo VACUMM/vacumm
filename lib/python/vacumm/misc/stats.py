@@ -289,6 +289,7 @@ class StatAccum(object):
             self.nitems = 0
             self.dual = None
             self.restart_file = None
+            self.ns = self.nt = -1
 
     def append(self, *items):
         """Append data to the accumulator"""
@@ -312,10 +313,10 @@ class StatAccum(object):
             self.sstats = self.smean or self.sstd or self.sbias or self.srms or \
                 self.scrms or self.savail or self.smin or self.smax or self.shist
             self.tsum = self.tmean or self.tbias or self.tstd or self.tcrms or self.tcorr
-            self.tsqr = self.tmean or self.tstd or self.trms or self.tcrms or self.tcorr
+            self.tsqr = self.tstd or self.trms or self.tcrms or self.tcorr
             self.tprod = self.trms or self.tcrms or self.tcorr
             self.ssum = self.smean or self.sbias or self.sstd or self.scrms or self.scorr
-            self.ssqr = self.smean or self.sstd or self.srms or self.scrms or self.scorr
+            self.ssqr = self.sstd or self.srms or self.scrms or self.scorr
             self.sprod = self.srms or self.scrms or self.scorr
             if self.shist or self.thist:
                 self.nbins = self.bins.shape[0]-1
@@ -396,7 +397,7 @@ class StatAccum(object):
 #                    setattr(self, '_s'+name, [])
                 self._stimes = tuple([[] for i in xrange(len(items))]) if self.withtime else None
                 self._scount = []
-                self.ns = items[0].size/items[0].shape[0]
+            self.ns = items[0].size/items[0].shape[0]
 
         # Checks
         if not self.tstats and not self.sstats:
@@ -558,7 +559,8 @@ class StatAccum(object):
     def _template_t2ht_(self, tpl):
         htpl = MV2.resize(tpl.astype('l'), (self.nbins,)+tpl.shape)
         htpl.setAxisList([self._baxis]+tpl.getAxisList())
-        vcg.set_grid(htpl, vcg.get_grid(tpl))
+        set_grid(htpl, get_grid(tpl))
+        cp_atts(tpl, htpl)
         return htpl
 
     def _asarray_(self, a):
@@ -686,13 +688,16 @@ class StatAccum(object):
 
             # Templates
             ttemplates = [self._ttemplates]
-            if self.hist:
-                templates.append(self._thtemplates)
+#            if self.thist:
+#                ttemplates.append(self._thtemplates)
             for ttpls in ttemplates:
                 for i, ttpl in enumerate(ttpls):
-                    ttpl = ttpl.clone()
+#                    ttpl = ttpl.clone(copyData=0)
+#                    for ia, axis in enumerate(ttpl.getAxisList()): #FIXME:grid cloning
+#                        ttpl.setAxis(ia, axis.clone(copyData=0))
                     _add_id_prefix_(ttpl, 'var%i_'%i, exc=self._baxis)
                     f.write(ttpl)
+                    _rm_id_prefix_(ttpl, 'var%i_'%i, exc=self._baxis)
 
         # Attributes
         for ivar, atts in enumerate(self._atts):
@@ -795,11 +800,22 @@ class StatAccum(object):
             # Other stats
             self._sstats = {}
             for key in self.single_stats:
-                self._sstats[key] = ()
-                for i in xrange(self.nitems):
-                    self._sstats[key] += self._load_array_(f, 's%s%s'%(key, str(i))),
+                if not self.dual: # single var
+                    vid = 's' + key
+                    if vid not in f.variables:
+                        continue
+                    self._sstats[key] = self._load_array_(f, vid),
+                else: # two vars
+                    for i in xrange(self.nitems):
+                        vid = 's%s%s'%(key, str(i))
+                        if vid not in f.variables:
+                            break
+                        self._sstats.setdefault(key, ())
+                        self._sstats[key] += self._load_array_(f, vid),
             for key in self.dual_stats:
-                 self._sstats[key] = self._load_array_(f, 's%s'%key)
+                vid = 's%s'%key
+                if vid in f.variables:
+                    self._sstats[key] = self._load_array_(f, vid)
 
         # Temporal statistics
         if self.tstats:
@@ -833,7 +849,7 @@ class StatAccum(object):
             for i in xrange(self.nitems):
                 prefix = 'var%i_'%i
                 for vname in f.variables:
-                    if vname.startswith(prefix): break
+                    if vname.startswith(prefix) and vname != prefix+'atts': break
                 ttpl = f(vname)
                 _rm_id_prefix_(ttpl, 'var%i_'%i, exc=self._baxis)
                 self._ttemplates += ttpl,
@@ -1290,9 +1306,9 @@ def _get_var_and_axes_(var, exc=None):
     if not isinstance(exc, (list, tuple)):
         exc = [exc]
     out = [var]+var.getAxisList()
-    if var.getGrid():
+    if var.getGrid() and var.getLongitude().id!=var.getAxis(-1).id:
         out.extend([var.getLongitude(), var.getLatitude()])
-    if not exc: return
+    if not exc: return out
     exc0 = map(id, exc)
     exc1 = [e.id for e in exc]
     return filter(lambda o: id(o) not in exc0 and o.id not in exc1, out)
@@ -1300,7 +1316,7 @@ def _get_var_and_axes_(var, exc=None):
 def _rm_id_prefix_(var, prefix, exc=None):
     """Remove prefix in ids of a variable and its axes"""
     for obj in _get_var_and_axes_(var, exc=exc):
-        if not obj.id.startswith(prefix):
+        if obj.id.startswith(prefix):
             obj.id = obj.id[len(prefix):]
 
 def _add_id_prefix_(var, prefix, exc=None):

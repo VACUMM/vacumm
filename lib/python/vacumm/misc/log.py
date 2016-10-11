@@ -215,9 +215,7 @@ class _Redirector_(object):
         self.func = func
         self.prefix = prefix
     def write(self, buf):
-        self.func(self.prefix+buf.rstrip())
-#        for line in buf.rstrip().splitlines():
-#            self.func(self.prefix+line.rstrip())
+        self.func(self.prefix+buf.rstrip().strip('\n'))
     def flush(self):
         pass
 
@@ -663,27 +661,32 @@ class Logger(logging.getLoggerClass()):
         cls.shared_handlers.append(handler)
 
     @classmethod
-    def add_optparser_options(cls, parser, rename=None, prefix='', suffix=''):
+    def _add_parser_options(cls, parser, rename=None, prefix='', suffix=''):
+        '''Add logging options to a optparse OptionParser'''
         names = dict(((n,n) for n in ('debug', 'verbose', 'loglevel','logformat','logdateformat','lognocolor')))
         if rename is not None: names.update(rename)
         fmt = lambda n: '--%s%s%s'%(prefix, names[n], suffix)
-        parser.add_option(fmt('debug'), dest='_logger_debug', action='store_true', default=False, help='Set logging level to DEBUG')
-        parser.add_option(fmt('verbose'), dest='_logger_verbose', action='store_true', default=False, help='Set logging level to VERBOSE')
-        parser.add_option(fmt('loglevel'), dest='_logger_level', action='store', default=None, metavar='level', help='Set logging level, available levels are: %s. You may restrict this level for specific classes with filters: --loglevel=Class1=debug,Class2=warning'%(', '.join(get_str_levels())))
-        parser.add_option(fmt('logformat'), dest='_logger_format', action='store', default=None, metavar='format', help='Set logging format. Can also use filters.')
-        parser.add_option(fmt('logdateformat'), dest='_logger_dateformat', action='store', default=None, metavar='format', help='Set logging date format. Can also use filters.')
-        parser.add_option(fmt('lognocolor'), dest='_logger_nocolor', action='store_true', default=None, metavar='format', help='Disable logging colors')
-
-    def apply_optparser_options(self, options):
-        if options._logger_debug: self.set_level(logging.DEBUG)
-        if options._logger_verbose: self.set_level(logging.VERBOSE)
-        if options._logger_level: self.set_level(options._logger_level, filter=True)
-        if options._logger_format: self.set_format(options._logger_format, filter=True)
-        if options._logger_dateformat: self.set_date_format(options._logger_dateformat, filter=True)
-        if options._logger_nocolor: self.colorize(False)
+        import optparse
+        # we must handle both optparse and argparse
+        add = getattr(parser, 'add_option' if isinstance(parser, optparse.OptionParser) else 'add_argument')
+        add(fmt('debug'), dest='_logger_debug', action='store_true', default=False, help='Set logging level to DEBUG')
+        add(fmt('verbose'), dest='_logger_verbose', action='store_true', default=False, help='Set logging level to VERBOSE')
+        add(fmt('loglevel'), dest='_logger_level', action='store', default=None, metavar='level', help='Set logging level, available levels are: %s. You may restrict this level for specific classes with filters: --loglevel=Class1=debug,Class2=warning'%(', '.join(get_str_levels())))
+        add(fmt('logformat'), dest='_logger_format', action='store', default=None, metavar='format', help='Set logging format. Can also use filters.')
+        add(fmt('logdateformat'), dest='_logger_dateformat', action='store', default=None, metavar='format', help='Set logging date format. Can also use filters.')
+        add(fmt('lognocolor'), dest='_logger_nocolor', action='store_true', default=None, help='Disable logging colors')
 
     @classmethod
-    def apply_class_optparser_options(cls, options, instances=True):
+    def add_optparser_options(cls, *args, **kwargs):
+        return cls._add_parser_options(*args, **kwargs)
+
+    @classmethod
+    def add_argparser_options(cls, *args, **kwargs):
+        return cls._add_parser_options(*args, **kwargs)
+
+    @classmethod
+    def _apply_class_parser_options(cls, options, instances=True):
+        '''Apply logging options from a optparse OptionParser, to this class defaults and optionally all existing instances'''
         if options._logger_debug: cls.set_default_level(logging.DEBUG)
         if options._logger_verbose: cls.set_default_level(logging.VERBOSE)
         if options._logger_level: cls.set_default_level(options._logger_level)
@@ -693,6 +696,29 @@ class Logger(logging.getLoggerClass()):
         if instances:
             for logger in cls.instances:
                 logger.apply_optparser_options(options)
+
+    @classmethod
+    def apply_class_optparser_options(cls, *args, **kwargs):
+        return cls._apply_class_parser_options(*args, **kwargs)
+
+    @classmethod
+    def apply_class_argparser_options(cls, *args, **kwargs):
+        return cls._apply_class_parser_options(*args, **kwargs)
+
+    def _apply_parser_options(self, options):
+        '''Apply logging options from a optparse OptionParser, to this instance'''
+        if options._logger_debug: self.set_level(logging.DEBUG)
+        if options._logger_verbose: self.set_level(logging.VERBOSE)
+        if options._logger_level: self.set_level(options._logger_level, filter=True)
+        if options._logger_format: self.set_format(options._logger_format, filter=True)
+        if options._logger_dateformat: self.set_date_format(options._logger_dateformat, filter=True)
+        if options._logger_nocolor: self.colorize(False)
+
+    def apply_optparser_options(self, *args, **kwargs):
+        return self._apply_parser_options(*args, **kwargs)
+
+    def apply_argparser_options(self, *args, **kwargs):
+        return self._apply_parser_options(*args, **kwargs)
 
     def config(self, *args, **kwargs):
         '''

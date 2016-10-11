@@ -62,7 +62,7 @@ from vacumm.config import (
 from vacumm.misc.misc import (
     lonlab, latlab, deplab, kwfilter, broadcast, ArgList, closeto, dict_merge,
     dict_check_defaults, cp_atts, dict_filter,  cp_props, numod, set_atts, get_atts,
-    set_lang, geodir, auto_scale, MV2_concatenate, MV2_axisConcatenate,
+    set_lang, geodir, auto_scale, MV2_concatenate, MV2_axisConcatenate, phaselab,
     zoombox, squeeze_variable, set_lang_fr, scalebox, checkdir, create_selector,
     numod, deg2str, deg_from_dec, dict_filter_out, dict_copy_items, geo_scale,
     grow_depth, grow_lat, grow_variables, history, intersect, is_iterable,
@@ -84,7 +84,7 @@ from vacumm.misc.atime import (
     lindates, ch_units, add_margin, round_date, midnight_date, midnight_interval,
     mpl, tic, toc, pat2freq, pat2glob, has_time_pattern,
     is_interval, is_time, is_axistime, is_cdtime, is_datetime, is_in_time_interval,
-    is_numtime, is_strtime, itv_intersect, itv_union, julday,
+    is_numtime, is_strtime, itv_intersect, itv_union, julday, reltime,
     are_valid_units, SpecialDateFormatter, check_range,
     daily, daily_bounds, day_of_the_year, unit_type, toc,
     hourly, hourly_bounds, hourly_exact, monthly, tsel2slice,
@@ -124,7 +124,7 @@ from vacumm.misc.filters import (
 from vacumm.misc.remote import InputWorkFiles, OutputWorkFile
 
 from vacumm.misc.log import (Logger, ColoredStreamHandler, LoggerAdapter,
-    StreamLogWrapper)
+    StreamLogWrapper, get_str_level, get_int_level)
 
 from vacumm.misc.config import (ConfigManager, cfgargparse, ConfigException,
     ValidationWarning, cfg2rst, cfgoptparse, filter_section, get_secnames,
@@ -161,7 +161,7 @@ from vacumm.misc.plot import (
     add_logo, add_left_label, add_right_label, add_top_label, add_bottom_label,
     ellipsis, get_cls, hldays, rotate_xlabels, rotate_ylabels,
     scale_xlim, scale_ylim, wedge, set_major_locator, set_minor_locator,
-    xdate, ydate, get_quiverkey_value,
+    xdate, ydate, get_quiverkey_value, add_lightshading,
     )
 curve = curve2
 map = map2
@@ -239,7 +239,8 @@ from vacumm.data import setup_dataset, DS
 
 from vacumm.data.cf import (
     format_var, format_axis, format_grid, match_var, change_loc, match_obj,
-    set_loc, get_loc
+    set_loc, get_loc, GENERIC_NAMES, GENERIC_AXIS_NAMES, GENERIC_VAR_NAMES,
+    AXIS_SPECS, VAR_SPECS, GRID_SPECS, ARAKAWA_SUFFIXES, HIDDEN_CF_ATTS,
     )
 
 from vacumm.data.misc.sigma import NcSigma, sigma2depths, SigmaGeneralized, SigmaStandard

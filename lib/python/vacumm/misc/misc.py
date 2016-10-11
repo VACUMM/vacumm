@@ -66,8 +66,8 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'dict_filter','dict_aliases', 'dict_merge', 'mask_nan', 'write_ascii_time1d', 'xls_style',
     'FileTree', 'geodir', 'main_geodir', 'intersect', 'Att', 'broadcast', 'makeiter',
     'get_svn_revision', 'dirsize', 'Cfg2Att', 'closeto', 'cp_props',
-    'zoombox','scalebox','history', 'dict_check_defaults', 'is_iterable',
-    'grow_variables', 'grow_depth', 'grow_lat',
+    'zoombox','scalebox','history', 'dict_check_defaults', 'is_iterable', 'squarebox',
+    'grow_variables', 'grow_depth', 'grow_lat', 'phaselab',
     'create_selector', 'selector2str', 'split_selector', 'squeeze_variable', 'dict_copy_items',
     "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
     'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out',
@@ -574,7 +574,7 @@ def rm_html_tags(str):
 
 
 
-_geolab_params = """- **decimal**, optional: Use decimal representation
+phase_params = """- **decimal**, optional: Use decimal representation
         - **fmt**, optional: Format for decimal representation
         - **no_seconds**, optional: Do not add seconds to degrees representation
         - **tex**, optional: Use Tex degree symbol
@@ -588,23 +588,28 @@ _geolab_params = """- **decimal**, optional: Use decimal representation
 """
 
 def deg2str(*args,**kwargs):
-    return _geolab(*args,**kwargs)
+    return phase(*args,**kwargs)
 
-def _geolab(vals, fmt='%.5g', longitude=True, decimal=True, tex=None, auto_minutes=False,
+def phaselab(vals, fmt='%.5g', label=None, decimal=True, tex=None, auto_minutes=False,
             no_seconds=False, no_symbol=False, no_zeros=False, auto=False, bfdeg=False, **kwargs):
-    """Return a nice label for longitude or latitude
+    """Return a nice label for degrees
 
     Inspired from Basemap toolkit of Matplotlib
+
+
     """
     if kwargs.has_key('nosec'): no_seconds = kwargs['nosec']
     if kwargs.has_key('dec'): decimal = kwargs['dec']
     if kwargs.has_key('nosym'): no_symbol = kwargs['nosym']
 
-    # Longitude/latitude
-    if longitude:
+    # Longitude/latitude/none
+    if label=='lon':
         pstr,mstr = 'E','W'
-    else:
+    elif label=='lat':
         pstr,mstr = 'N','S'
+    else:
+        pstr,mstr = '',''
+        label = None
 
     # Use tex strings
     if tex is None:
@@ -665,7 +670,8 @@ def _geolab(vals, fmt='%.5g', longitude=True, decimal=True, tex=None, auto_minut
                 val += 360.
             if val<0:
                 sig = mstr
-                val = -val
+                if label is not None:
+                    val = -val
             else:
                 sig = pstr
             nodeg = auto_minutes and abs(val%1) > 1.e-4
@@ -711,7 +717,7 @@ def _geolab(vals, fmt='%.5g', longitude=True, decimal=True, tex=None, auto_minut
     else:
         return labs[0]
 
-def lonlab(longitudes,**kwargs):
+def lonlab(longitudes, **kwargs):
     """Return nice longitude labels
 
     :Params:
@@ -723,9 +729,10 @@ def lonlab(longitudes,**kwargs):
 
         :func:`latlab` :func:`deplab`
     """
-    return _geolab(longitudes,**kwargs)
+    kwargs['label'] = 'lon'
+    return phaselab(longitudes, **kwargs)
 if lonlab.__doc__ is not None:
-    lonlab.__doc__ = lonlab.__doc__ % _geolab_params
+    lonlab.__doc__ = lonlab.__doc__ % phase_params
 
 def latlab(latitudes,**kwargs):
     """Return nice latitude labels
@@ -739,9 +746,10 @@ def latlab(latitudes,**kwargs):
 
         :func:`lonlab` :func:`deplab`
     """
-    return _geolab(latitudes,longitude=False,**kwargs)
+    kwargs['label'] = 'lat'
+    return phaselab(latitudes, **kwargs)
 if latlab.__doc__ is not None:
-    latlab.__doc__ = latlab.__doc__ % _geolab_params
+    latlab.__doc__ = latlab.__doc__ % phase_params
 
 def deplab(depths, fmt='%gm', auto=False, nosign=False):
     """Return well formatted depth labels
@@ -1542,7 +1550,41 @@ def MV2_axisConcatenate(axes, id=None, attributes=None, copy=True):
 MV2_axisConcatenate.__doc__ = MV2.axisConcatenate.__doc__
 
 
-def scalebox(box, factor):
+def _box2xyminmax_(box):
+    if cdms2.isVariable(box):
+        if box.getGrid() is None:
+            raise TypeError('You must provide a variable with a valid grid')
+        box = box.getGrid()
+    from grid.misc import isgrid, get_xy
+    if isgrid(box):
+        lon, lat = get_xy(box, num=True)
+        xmin = lon.min()
+        xmax = lon.max()
+        ymin = lat.min()
+        ymax = lat.max()
+    elif isinstance(box, dict):
+        xmin, xmax = box['lon']
+        ymin, ymax = box['lat']
+    elif isinstance(box, tuple):
+        lon, lat = box
+        xmin = N.min(lon)
+        xmax = N.max(lon)
+        ymin = N.min(lat)
+        ymax = N.max(lat)
+    else:
+        xmin, ymin, xmax, ymax = box
+    return xmin, ymin, xmax, ymax
+
+def _returnbox_(oldbox, newbox):
+    if isinstance(oldbox,(list, tuple)):
+        return oldbox.__class__(newbox)
+    if isinstance(oldbox, dict):
+        return dict(lon=(newbox[0], newbox[2]),
+            lat=(newbox[1], newbox[3]))
+    return N.array(newbox)
+
+
+def scalebox(box, factor, square=False, xmargin=None, ymargin=None):
     """Alter box limits with a zoom factor
 
     :Params:
@@ -1556,29 +1598,53 @@ def scalebox(box, factor):
         >>> scalebox([0,0,1,2], 1.1)
         [-0.55, -1.10, 1.55, 2.55]
     """
-    if cdms2.isVariable(box):
-        if box.getGrid() is None:
-            raise TypeError('You must provide a variable with a valid grid')
-        box = box.getGrid()
-    from grid.misc import isgrid, get_xy
-    if isgrid(box):
-        lon, lat = get_xy(box, num=True)
-        xmin = lon.min()
-        xmax = lon.max()
-        ymin = lat.min()
-        ymax = lat.max()
-    else:
-        xmin, ymin, xmax, ymax = box
+    # Scale
+    xmin, ymin, xmax, ymax = _box2xyminmax_(box)
     dx = (xmax-xmin)*(factor-1)*.5
     dy = (ymax-ymin)*(factor-1)*.5
-    newbox = xmin-dx, ymin-dy, xmax+dx, ymax+dy
-    if isinstance(box,(list, tuple)):
-        return box.__class__(newbox)
-    return N.array(newbox)
 
-def zoombox(box, factor):
+    # Margin
+    if ymargin is None:
+        ymargin = xmargin
+    if xmargin:
+        dx += xmargin
+    if ymargin:
+        dy += ymargin
+
+    newbox = xmin-dx, ymin-dy, xmax+dx, ymax+dy
+    box = _returnbox_(box, newbox)
+
+    if square:
+        box = squarebox(box)
+
+    return box
+
+def zoombox(box, factor, square=False, xmargin=None, ymargin=None):
     """Alias for :func:`scalebox` with ``1/factor`` as zoom factor."""
-    return scalebox(box, 1/factor)
+    return scalebox(box, 1/factor, square=square, xmargin=xmargin, ymargin=ymargin)
+
+def squarebox(box, scale=1):
+    """Get an approximate ``[xmin, ymin, xmax, ymax]`` that is square in meters"""
+    lonmin, latmin, lonmax, latmax = _box2xyminmax_(box)
+    dlon = lonmax-lonmin
+    dlat = latmax-latmin
+    mlon = 0.5 * (lonmin + lonmax)
+    mlat = 0.5 * (latmin + latmax)
+    dx = dlon * N.cos(N.radians(mlat))
+    dy = dlat * 1.
+    dyx = dy/dx
+    if dyx > 1:
+        dlon *= dyx
+        lonmin = mlon - dlon * .5
+        lonmax = mlon + dlon * .5
+    else:
+        dlat /= dyx
+        latmin = mlat - dlat * .5
+        latmax = mlat + dlat * .5
+    newbox = scalebox([lonmin, latmin, lonmax, latmax], scale, square=False)
+    return _returnbox_(box, newbox)
+
+
 
 def history(nbcommand=None):
     """Display the command history for the interactive python."""

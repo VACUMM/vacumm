@@ -532,7 +532,6 @@ def comptime(mytime, nummode='mpl'):
         :func:`reltime()` :func:`datetime()`
     """
 
-
     # Numeric mode
     tunits = _nummode_(nummode)
 
@@ -2430,7 +2429,7 @@ class IterDates(object):
         return [date for date in self]
 
 
-def time_split(what, how, roundit=None):
+def time_split(what, how, roundit=None, bb='co'):
     """Generic function to split an interval into subintervals
 
     :Params:
@@ -2452,17 +2451,17 @@ def time_split(what, how, roundit=None):
           ``(1,'year')`` or ``"year"`` (see :class:`Intervals`).
     """
     # Convert to comptime
-    bb = 'cc'
+    bbw = 'cc'
     if isinstance(what, tuple):
         if len(what)==3:
-            bb = what[2]
+            bbw = what[2]
         what = list(what[:2])
     what = comptime(what)
     if not isinstance(what, list):
         raise TypeError, "Can't split a single date"
     tmin = min(what)
     tmax = max(what)
-    tminmax = (tmin, tmax, bb)
+    tminmax = (tmin, tmax, bbw)
     if not how:
         return tminmax
 
@@ -2470,8 +2469,8 @@ def time_split(what, how, roundit=None):
     if is_time(how): how = [how]
 
     # dt
-    if operator.isNumberType(how) or isinstance(how, basestring) or \
-        isinstance(how, tuple):
+    if (isNumberType(how) or isinstance(how, basestring) or
+            isinstance(how, tuple)):
         how = Intervals(tminmax[:2], how, roundto=roundit)
 
     # Interval interator
@@ -2833,7 +2832,7 @@ def tsel2slice(taxis, *args, **kwargs):
 
     # Convert to list valid time selector
     kwargs['ids'] = [taxis.id]
-    selector = time_selector(*args, **kwargs)
+    selector = filter_time_selector(*args, **kwargs)
 
     # No selection
     if len(selector.components())==0:
@@ -2848,6 +2847,8 @@ def tsel2slice(taxis, *args, **kwargs):
     try:
         ii = ii(selector).filled()
     except:
+        return False
+    if ii.size==0:
         return False
 
     # Deduce final indices
@@ -2906,6 +2907,57 @@ def toc(stime=0.):
             print (r/60), " minutes"
     else:
         print tc.clock()-stime, " seconds"
+
+
+def interp_clim(clim, times, method='linear', day=15):
+    """Interpolate a bathymetry at specified dates"""
+    from .grid.regridding import regrid1d, extend1d
+    assert method in ('linear', 'cubic')
+    taxis = create_time(times)
+    assert not (N.diff(taxis[:])<0).any(), 'Output times must be monotonically increasing'
+    assert clim.shape[0]==12
+    ctimes = taxis.asComponentTime()
+    months = N.array([ct.month for ct in ctimes])
+    years = N.array([ct.year for ct in ctimes])
+    atts = get_atts(clim)
+    cmonths = range(1, 13)
+    cyears = [0]*12
+
+    left_extent = 0
+    right_extent = 0
+    if method=='linear':
+        left_extent = int((months==1).any())
+        right_extent = int((months==12).any())
+    else:
+        if (months==1).any():
+            left_extent = 2
+        elif (months==2).any():
+            left_extent = 1
+        if (months==12).any():
+            right_extent = 2
+        elif (months==11).any():
+            right_extent = 1
+
+    if left_extent or right_lextent:
+        clim = extend1d(clim, ext=(left_extent, right_extent), axis=0, mode='cylic')
+        cmonths = cmonths[12-left_extent:] + cmonths + cmonths[:right_extent]
+        cyears = [-1]*left_extent + cyears + [1]*right_extent
+    else:
+        old_clim_taxis = clim.getAxis(0)
+
+    climo = MV2.zeros((len(taxis), )+clim.shape[1:]) + MV2.masked
+    for year in N.unique(years):
+        i, j, k = taxis.mapIntervalExt((cdtime.comptime(year, 1, 1),
+            cdtime.comptime(year+1, 1, 1), 'co'))
+        year_axis = create_time([cdtime.comptime(year+y, m, day)
+            for y, m in zip(cyears, cmonths)])
+        clim.setAxis(0, year_axis)
+        climo[i:j] = regrid1d(clim, taxis.subaxis(i, j), method=method, axis=0)
+    if not left_extent and not right_lextentexpand:
+        clim.setAxis(0, old_clim_taxis)
+    climo.setAxis(0, taxis)
+    set_atts(climo, atts)
+    return climo
 
 
 
