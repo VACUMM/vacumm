@@ -1,16 +1,15 @@
 # -*- coding: utf8 -*-
-"""Docstring refomatting utilities for VACUMM help
+"""Docstring reformatting utilities for VACUMM internal usage
 
-.. warning:: This module requires python 2.7+ to work.
+.. warning::
+
+    It requires python 2.7 and :mod:`sphinx.ext.napoleon` to work.
 """
-# Copyright or © or Copr. Actimar/IFREMER (2012-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
-#
-# This software is a computer program whose purpose is to [describe
-# functionalities and technical features of your software].
 #
 # This software is governed by the CeCILL license under French law and
 # abiding by the rules of distribution of free software.  You can  use,
@@ -37,147 +36,71 @@
 #
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-
-
+#
 from textwrap import dedent
 import re, inspect
 
+from sphinx.ext.napoleon import GoogleDocstring, NumpyDocstring
+from sphinx.ext.napoleon import Config
+from sphinx.util.docstrings import prepare_docstring
+
+def get_indent_int(line):
+    for i, s in enumerate(line):
+        if not s.isspace():
+            return i
+    return len(line)
+def get_indent_str(line):
+    return ' '*get_indent_int(line)
+
+class FieldsGetter(NumpyDocstring):
+    """A crude derivation of :class:`NumpyDocstring` to intercept field declarations"""
+    vacumm_fields = []
+    def _parse_parameters_section(self, section):
+        fields = self.vacumm_fields = self._consume_fields()
+        if self._config.napoleon_use_param:
+            lines = []
+            for _name, _type, _desc in fields:
+                field = ':param %s: ' % _name
+                lines.extend(self._format_block(field, _desc))
+                if _type:
+                    lines.append(':type %s: %s' % (_name, _type))
+            return lines + ['']
+        else:
+            return self._format_fields('Parameters', fields)
+
 class Docstring2Params(dict):
-    """Scan the docstring of an object to load parameters names and descriptions
-    and reformat them.
+    """Inspect a docstring to retreive and format field declarations"""
+    def __init__(self, obj, select=None, prefix=None):
+
+        fg = FieldsGetter(prepare_docstring(getattr(obj, '__doc__', '')))
+        prefix = prefix or ''
+        for _name, _type, _desc in fg.vacumm_fields:
+            self[prefix+_name] = (_type, _desc)
 
 
-    The docstring must follow this example::
+    def format(self, select=None, indent=1):
+        """Reformat one or several fields
 
-        '''Description
+        Parameters
+        ----------
+        indent: optional, string, int, object
+            Indentation string for all but the first line.
+            A single indentation is four spaces.
 
-        Some text
+            - String: Used as is.
+            - Integer:  ``indent`` times the 4 spaces.
+            - ``False``: ``''``.
+            - Other object: detected from indentation at object declaration, which
+              inspected from source code.
 
-        :Section: text
+        select: optional, strings
+            List of parameter names to format.
+            If None, all available parameters are used.
 
-        :Params:
-
-            - **arg**: text
-              text
-            - **opt**, optional: text
-
-        Some text or sections.
-
-        '''
-
-    In particular:
-
-        - Parameters are described as in this example, on one or more lines.
-        - They must be inside a section whose name contains "param".
-
-    :Params:
-
-        - **obj**: Typically a function, method or class.
-        - **select**, optional: A single or a list of parameter names to
-          restrict scan.
-
-    :Example:
-
-        >>> dsp = Docstring2Params(myfunc)
-        >>> dsp.format('firstparam')
-        >>> params = dsp.asdict(select=['secondpar', 'thirdpar'], indent=8)
-    """
-
-    # Regular expressions
-    RE_SECTION_MATCH = re.compile(r'^:([^:]+):.*').match
-    RE_INDENT_MATCH = re.compile(r"^(\s*)(\S.*)?$").match
-    RE_PARAM = re.compile(r"^(\s+)-\s*\*\*?\s*([^\*]+)\s*\*\*?([^:]*:.*)$")
-
-    def __init__(self, obj, select=None, prefix=None, sections = ['param']):
-
-        dict.__init__(self)
-
-        # Format docstring
-        if isinstance(obj, basestring): obj = eval(obj)
-        self._target = obj
-        self._docstring = doc = obj.__doc__
-        if doc is None:
-            self.params = {}
-            return
-        nn = doc.index("\n")
-        doc = doc[nn+1:]
-        doc = dedent(doc)
-        docs = doc.splitlines()
-        if select is not None and isinstance(select, basestring):
-            select = [select]
-        if prefix is None: prefix = ''
-
-        # Loop on lines
-        param = 0
-        ifc = None
-        for iline, line in enumerate(docs):
-
-            # Section header
-            m = self.RE_SECTION_MATCH(line)
-            if m:
-                if True in [secname in m.group(1).lower() for secname in sections]: # Params section header
-                    param = 1
-                    continue
-                elif param: # New section, so the end
-                    break
-
-            # Still no param section found
-            if not param: continue
-
-            # Param declaration
-            mp = self.RE_PARAM.match(line)
-            if mp:
-                param = mp.group(2)
-                if select is None or param in select:
-                    if prefix:
-                        line = self.RE_PARAM.sub(r'\1- **%s\2**\3'%prefix, line)
-                    if not (prefix+param) in self:
-                        self[prefix+param] = []
-                    self[prefix+param].append(line)
-                if ifc is None: ifc = len(mp.group(1)) # Official indent
-                continue
-
-            # Valid line for a param description continuation
-            if not isinstance(param, basestring): continue
-            mi = self.RE_INDENT_MATCH(line)
-            ns = len(mi.group(1))
-            rem = mi.group(2)
-            if rem is None or ns >= ifc:
-                if ns == ifc and rem is not None:
-                    if rem.startswith('-'): # Description without parameter
-                        param = 2
-                    else: # No longer describing a parameter
-                        param = 1
-                elif param != 2 and (select is None or param in select):
-                    self[prefix+param].append(line)
-                continue
-
-            # End of parameters
-            break
-
-        # Remove trail empty line of the last param
-        if self and isinstance(param, basestring) and len(self[prefix+param])>1:
-            p = self[prefix+param]
-            while p[-1].strip()=='': del p[-1]
-
-
-    def format(self, select=None, indent=4):
-        """Reformat one or several parameters
-
-        :Params:
-
-            - **indent**, optional: Indentation string for all but the first line.
-
-              - String: Used as is.
-              - Integer:  ``ident`` times the space char.
-              - ``False``: ``''``.
-              - Class method: 12 spaces.
-              - Other object: 8 spaces.
-
-            - **select**, optional: List of parameter names to format.
-              If None, all available parameters are used.
-
-
+        Return
+        ------
+        string
+            Formatted declarations of fields
         """
         # Selection of parameters
         if select is None:
@@ -185,25 +108,35 @@ class Docstring2Params(dict):
             select.sort()
         elif isinstance(select, basestring):
             select = [select]
+
         # Indentation
-        if indent is True or indent is None: indent = 4
-        elif not indent: indent = ''
-        elif isinstance(indent, int): indent = ' '*indent
-        elif not isinstance(indent, basestring):
-            indent = (12*' ') if inspect.ismethod(indent) else (8*' ')
+        indent_unit = 4*' '
+        if indent is True or indent is None:
+            indent = 1
+        elif not indent:
+            indent = ''
+        if not isinstance(indent, (basestring, int)): # object
+            indent = get_indent_str(inspect.getsource(indent))
+        if isinstance(indent, int):
+            indent = indent_unit * indent
+        indent = indent + indent_unit # obj indentation + 1 unit
+
+        # Loop on params
         out = []
         for param in select:
             if param not in self: continue
-            if len(self[param])==1:
-                out.append(self[param][0].strip())
-            else:
-                out.extend(dedent('\n'.join(self[param])).splitlines())
-                if not self[param][-1].strip():
-                    out.append('')
+            _type, desc = self[param]
+            ss = param
+            if _type:
+                ss = ss + ': ' + _type
+            ss = ss + '\n'
+            if desc:
+                ss = ss + indent + indent_unit + ('\n'+indent+indent_unit).join(desc)
+            out.append(ss)
         return ('\n'+indent).join(out)
 
 
-    def asfmtdict(self, indent=8, select=None):
+    def asfmtdict(self, indent=1, select=None):
         """Get parameters as a dictionary of formatted descriptions"""
         out = {}
         for param in self:
@@ -235,12 +168,13 @@ class DocFiller(object):
             def myfunc2(para, parb, parc, pard)
                 """My description
 
-                :Params:
+                Parameters
+                ----------
 
-                    {MyClass1_my_method[para]}
-                    {MyClass2[parb]}
-                    {MyClass2[parc]}
-                    {myfync1[pard]}
+                {MyClass1_my_method[para]}
+                {MyClass2[parb]}
+                {MyClass2[parc]}
+                {myfync1[pard]}
     '''
     def __init__(self, *objs, **aobjs):
         self.content = {}
@@ -257,17 +191,19 @@ class DocFiller(object):
             self.content[key] = Docstring2Params(obj, prefix=prefix)
 
     def formatted(self, indent):
-        """Format all parameter descriptions
+        """Format all parameter declarations
 
-        :Params:
+        Parameters
+        ----------
+        indent: optional: string, int, object
+            Indentation string for all but the first line.
+            A single indentation as four spaces.
 
-            - **indent**, optional: Indentation string for all but the first line.
-
-              - String: Used as is.
-              - Integer:  ``ident`` times the space char.
-              - ``False``: ``''``.
-              - Class method: 12 spaces.
-              - Other object: 8 spaces.
+            - String: Used as is.
+            - Integer:  ``indent`` times the 4 spaces.
+            - ``False``: ``''``.
+            - Other object: detected from indentation at object declaration, which
+              inspected from source code.
 
         """
         out = {}
@@ -275,44 +211,36 @@ class DocFiller(object):
             out[key] = val.asfmtdict(indent=indent)
         return out
 
-    def docfill(self, obj):
+    def docfill(self, obj, indent=None):
         '''Fill docstring of an object with collected parameter descriptions
 
         It is typically used to format function docstrings using a decorator.
 
-        .. warning::
-
-            It cannot be applied to methods and classes.
-
         '''
-#        print obj.__doc__
-#        print self.formatted(obj)
-#        obj.__doc__ = obj.__doc__.format(**self.formatted(obj))
+        indent = obj if indent is None else indent
         try:
-            obj.__doc__ = obj.__doc__.format(**self.formatted(obj))
+            obj.__doc__ = obj.__doc__.format(**self.formatted(indent))
         except KeyError, e:
             if self.verbose: print 'Missing key for docfill: '+e.message
-#            print 'When formatting doc:'
-#            print obj.__doc__
         except Exception, e:
             if self.verbose: print 'Docfill error:', e.message
         return obj
 
-from vacumm import docfiller_verbose
-docfiller = DocFiller(verbose=docfiller_verbose)
-docfill = docfiller.docfill
+    __call__ = docfill
 
 if __name__=='__main__':
 
     df = DocFiller(Docstring2Params.format)
+    print df.content
 
-    @df.docfill
-    def myfunc(indent):
+    @df
+    def myfunc(arg):
         """Description
 
-        :Params:
+        Parameters
+        ----------
 
-            {Docstring2Params_format[indent]}
+        {Docstring2Params_format[indent]}
         """
         pass
 
