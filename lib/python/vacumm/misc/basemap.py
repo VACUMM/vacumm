@@ -77,15 +77,19 @@ def gshhs_autores(lon_min, lon_max, lat_min, lat_max, asindex=False, shift=None)
 def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
     """Check if we have a cached map
 
-    - *m*: A Basemap instance [Default: None]
-    - *mapdir*: Where are stored the cached maps. If ``None``,
+    Parameters
+    ----------
+    m:
+        A Basemap instance [Default: None]
+    mapdir:
+        Where are stored the cached maps. If ``None``,
       :func:`matplotlib.get_configdir` is used as a parent directory,
-      which is the matplotlib configuration directory
-      (:file:`~/.matplotlib` undex linux), and
+        which is the matplotlib configuration directory
+        (:file:`~/.matplotlib` undex linux), and
       :file:`basemap/cached_maps` as the subdirectory.
 
-    :Example:
-
+    Example
+    -------
     >>> m = cached_map(lon_min=-5, lon_max=6, lat_min=40, lat_max=50, projection='lcc', resolution='f')
     >>> m = cached_map(m) # Does only caching of map
     """
@@ -135,12 +139,14 @@ def cache_map(m, mapdir=None):
 def clean_cache(mapdir=None, maxsize=None):
     """Clean cache directory by checking its size
 
-    :Params:
-
-        - **mapdir**, optional: Directory where maps are cached
-        - **maxsize**, optional: Maximal size of directory in bytes.
-          Default value from :confopt:`[vacumm.misc.grid.basemap]max_cache_size`
-          configuration value.
+    Parameters
+    ----------
+    mapdir: optional
+        Directory where maps are cached
+    maxsize: optional
+        Maximal size of directory in bytes.
+        Default value from :confopt:`[vacumm.misc.grid.basemap]max_cache_size`
+        configuration value.
     """
     from ...misc.misc import dirsize
     mapdir = get_map_dir(mapdir)
@@ -293,13 +299,17 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
 def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
     """Quickly create :class:`Basemap` instance
 
-    :Params:
-
-        - **gg**, optional: cdms grid or variable, or (xx,yy).
-        - **res**, optional: Resolution.
-        - **proj**, optional: Projection [default: None->'merc']
-        - **auto**, optional: If True, get geo specs according to grid. If False, whole earth.
-          If None, auto = res is None.
+    Parameters
+    ----------
+    gg: optional
+        cdms grid or variable, or (xx,yy).
+    res: optional
+        Resolution.
+    proj: optional
+        Projection [default: None->'merc']
+    auto: optional
+        If True, get geo specs according to grid. If False, whole earth.
+        If None, auto = res is None.
 
     .. todo:: Merge with :func:`create_map`
     """
@@ -311,7 +321,7 @@ def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
     if gg is None: auto = False
     kwmap = dict(resolution=res, projection=proj)
     if auto:
-        xx, yy = vcg.get_xy(gg, proj=False)
+        xx, yy = get_xy(gg, proj=False)
         lat_center = yy.mean()
         lon_center = xx.mean()
         kwmap.update(
@@ -325,100 +335,18 @@ def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
     return Basemap(lat_ts=lat_center, lat_0=lat_center, lon_0=lon_center,  **kwmap)
 
 
-#    def __init__(self, input=None, clip=None, sort=True, reverse=True, proj=False, **kwargs):
-#        # Clipping argument
-#        if clip is not None:
-#            clip = create_polygon(clip)
-#
-#        from_map = not isinstance(input, Shapes)
-#        if not from_map:
-#            # Already a Shapes instance
-#            self._m = input._m
-#            self._proj = input.get_proj(proj)
-#            polys = input.get_shapes(proj=proj)
-#
-#        else:
-#            # Get the map
-#            if isinstance(input, Basemap):
-#                assert input.resolution is not None, 'Your map needs its resolution to be set'
-#                m = input
-#            else:
-#                if isinstance(input, str):
-#                    kwargs['res'] = input
-#                elif isinstance(input, dict):
-#                    kwargs.update(input)
-#
-#                # Map extension from clip bounds
-#                if clip is not None:
-#                    bb = clip.boundary
-#                    kwargs.setdefault('lon_min', bb[:, 0].min())
-#                    kwargs.setdefault('lon_max', bb[:, 0].max())
-#                    kwargs.setdefault('lat_min', bb[:, 1].min())
-#                    kwargs.setdefault('lat_max', bb[:, 1].max())
-#
-#                # Default resolution is 'i' if nothing to estimate it
-#                if not kwargs.has_key('res') and not kwargs.has_key('resolution') and \
-#                    (   (not kwargs.has_key('lon') and
-#                            (not kwargs.has_key('lon_min') or not kwargs.has_key('lon_max'))) or
-#                        (not kwargs.has_key('lat') and
-#                            (not kwargs.has_key('lat_min') or not kwargs.has_key('lat_max')))):
-#                    kwargs['res'] = 'i'
-#
-#                # Check lats
-#                if kwargs.has_key('lat_min'): kwargs['lat_min'] = max(kwargs['lat_min'], -90)
-#                if kwargs.has_key('lat_max'): kwargs['lat_max'] = min(kwargs['lat_max'], 90)
-#
-#                # Build the map
-#                m = create_map(**kwargs)
-#
-#
-#            polys = m.coastpolygons
-#            self._m = m
-#            self._proj = proj
-#
-#        # Convert to GEOS polygons and clip
-#        self._shapes = []
-#        for i, pp in enumerate(polys):
-#
-#            # Get the polygon with good projection
-#            if not from_map:
-#                poly = pp
-#            else:
-#                if m.coastpolygontypes[i] in [2,4]: continue # Skip lakes
-#                if callable(proj) and m.projection!='cyl': # Project back for reprojection
-#                    pp = m.projtran(pp[0], pp[1], inverse=True)
-#                poly = create_polygon(pp, proj=proj)
-#
-#            # Clip it
-#            self._shapes.extend(clip_shape(poly, clip))
-#
-#        # Save some info
-#        self._info = []
-#        self._type = 2
-#        self._shaper = Polygon
-#        if self._shapes:
-#            xy = N.concatenate([s.boundary for s in self._shapes])
-#            self.xmin = xy[:, 0].min()
-#            self.xmax = xy[:, 0].max()
-#            self.ymin = xy[:, 1].min()
-#            self.ymax = xy[:, 1].max()
-#            del xy
-#        else:
-#            xmin = N.inf
-#            xmax = -N.inf
-#            ymin = N.inf
-#            ymax = -N.inf
-#
-#        # Sort polygons?
-#        if sort:
-#            self.sort(reverse=reverse)
 
 def merc(lon=None, lat=None, **kwargs):
     """Mercator map
 
-    - Extra keywords are passed to :class:`mpl_toolkits.basemap.Basemap`
-    - *lon*: Longitudes to define ``llcrnrlon`` and ``urcrnrlon``
-    - *lat*: Latitudes to define  ``lat_ts``, ``llcrnrlat`` and ``urcrnrlat``
+    Parameters
+    ----------
+    lon:
+        Longitudes to define ``llcrnrlon`` and ``urcrnrlon``
+    lat:
+        Latitudes to define  ``lat_ts``, ``llcrnrlat`` and ``urcrnrlat``
+    **kwargs
+        Extra keywords are passed to :class:`mpl_toolkits.basemap.Basemap`
     """
     kwargs.setdefault('resolution', None)
     if lon is not None:
@@ -443,31 +371,35 @@ def get_proj(gg=None, proj=None, **kwargs):
 
     Projection is set by default to "laea" and cover the coordinates.
 
-    :Params:
+    Parameters
+    ----------
+    gg: optional
+        Grid or coordinates (see :func:`~vacumm.misc.grid.misc.get_xy`).
+        If not provided, lon bounds are set to (-180,180) and lat bounds to (-89.99,89.99).
+    **kwargs
+        Other keywords are passed to :class:`~mpl_toolkits.basemap.proj.Proj`. One of
+        them is the projection type, which defaults to configuration option
+        :confopt:`[vacumm.misc.grid.basemap] proj`.
 
-        - **gg**, optional: Grid or coordinates (see :func:`~vacumm.misc.grid.misc.get_xy`).
-          If not provided, lon bounds are set to (-180,180) and lat bounds to (-89.99,89.99).
-        - Other keywords are passed to :class:`~mpl_toolkits.basemap.proj.Proj`. One of
-          them is the projection type, which defaults to configuration option
-          :confopt:`[vacumm.misc.grid.basemap] proj`.
+    Return
+    ------
+    A :class:`mpl_toolkits.basemap.proj.Proj` instance.
 
-    :Return: A :class:`mpl_toolkits.basemap.proj.Proj` instance.
+    Examples
+    --------
+    >>> proj = get_proj(sst.getGrid(), proj='laea')
+    >>> x, y = proj(lon, lat)
 
-    :Examples:
+    >>> proj = get_proj((lon, lat))
+    >>> xx, yy = N.meshgrid(lon, lat)
+    >>> xx, yy = proj(xx, yy)
+    >>> print proj(xx, yy, inverse=True)
 
-        >>> proj = get_proj(sst.getGrid(), proj='laea')
-        >>> x, y = proj(lon, lat)
-
-        >>> proj = get_proj((lon, lat))
-        >>> xx, yy = N.meshgrid(lon, lat)
-        >>> xx, yy = proj(xx, yy)
-        >>> print proj(xx, yy, inverse=True)
-
-        >>> proj = get_proj(R=6000000.)
+    >>> proj = get_proj(R=6000000.)
     """
     if callable(proj): return proj
     if gg is not None:
-        x,y = vcg.get_xy(gg, num=True)
+        x,y = get_xy(gg, num=True)
         xmin, ymin, xmax, ymax = x.min(), y.min(), x.max(), y.max()
     else:
         xmin, ymin, xmax, ymax = -180, -90, 180, 90

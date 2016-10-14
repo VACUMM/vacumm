@@ -160,7 +160,7 @@ def traj(lons,lats,res=None,dots=True,color=True,m=None,zoom=.9,cmap=None,colorb
         lat_min,lat_max = minmax(lats)
         lon_range = (lon_min+lon_max)*.5 + .5*(lon_max-lon_min)/zoom * N.array([-1,1])
         lat_range = (lat_min+lat_max)*.5 + .5*(lat_max-lat_min)/zoom * N.array([-1,1])
-        kwmap = vcm.kwfilter(kwargs,'map',defaults=dict(lon=lon_range,lat=lat_range))
+        kwmap = kwfilter(kwargs,'map',defaults=dict(lon=lon_range,lat=lat_range))
         kwmap['show'] = False
         kwmap['res'] = kwargs.pop('resolution',res)
         m = map(**kwmap)
@@ -172,15 +172,15 @@ def traj(lons,lats,res=None,dots=True,color=True,m=None,zoom=.9,cmap=None,colorb
     # Plot
     kwargs.setdefault('linewidth',2)
     if color is not True and is_color_like(color): # Classic one color
-        kwdots = vcm.kwfilter(kwargs,'dots')
+        kwdots = kwfilter(kwargs,'dots')
         lines = m.plot(xx,yy,**kwargs)
         kwdots.setdefault('color',lines[0].get_color())
         if dots: m.plot(xx,yy,'o',**kwdots)
 
     elif color is not False: # Color varying
-        if not vcm.is_iterable(color) or len(color) != len(xx):
+        if not is_iterable(color) or len(color) != len(xx):
             tt = xx.getAxis(0)
-        if vca.istime(tt): tt = vct.mpl(tt)
+        if istime(tt): tt = mpl(tt)
         mp = ScalarMappable(cmap=cmap)#,norm=no_norm())
         mp.set_array(N.array(tt))
         ttmin = min(tt)
@@ -195,7 +195,7 @@ def traj(lons,lats,res=None,dots=True,color=True,m=None,zoom=.9,cmap=None,colorb
             P.gca().add_line(line)
             lines.append(line)
         if dots:
-            kwdots = vcm.kwfilter(kwargs,'dots',defaults=dict(linestyle='o',markersize='5'))
+            kwdots = kwfilter(kwargs,'dots',defaults=dict(linestyle='o',markersize='5'))
             kwdots.update(kwargs)
             for line in P.gca()._get_lines(*args,**kwdots):
                 line.set_color(color[ip])
@@ -216,26 +216,37 @@ def traj(lons,lats,res=None,dots=True,color=True,m=None,zoom=.9,cmap=None,colorb
 def vtaylor(data, ref=None, ref_color='red', color=None, label=None, title=None, xoffset=5, yoffset=-2, show=False, stdmax=None, savefig=None, **kwargs):
     """Plot a Taylor diagram using :mod:`vcs` module from CDAT
 
-    - **data**: A single or several points where a point is a pair of (std, corr).
-    - *ref*: Reference value (standard deviation of observations).
-    - *color*: Color of the points. It can be a list to set a different color for each pair.
-    - *label*: Label of the points. Obviously, if there are several points, there must have several labels.
-    - *x|yoffset*: Offset in font size unit of label position.
-    - *title*: A string or ``False``.
-    - *savefig*: Save figure to ``savefig``.
-    - *savefig_<keyword>*: ``keyword`` is used for saving figure.
-    - Other keywords are passed to :meth:`plot`.
+    Parameters
+    ----------
+    data:
+        A single or several points where a point is a pair of (std, corr).
+    ref:
+        Reference value (standard deviation of observations).
+    color:
+        Color of the points. It can be a list to set a different color for each pair.
+    label:
+        Label of the points. Obviously, if there are several points, there must have several labels.
+    x|yoffset:
+        Offset in font size unit of label position.
+    title:
+        A string or ``False``.
+    savefig:
+        Save figure to ``savefig``.
+    savefig_<keyword>:
+        ``keyword`` is used for saving figure.
+    **kwargs
+        Other keywords are passed to :meth:`plot`.
 
-    Example:
-
+    Example
+    -------
     >>> taylor([21.,.83], ref=30., title='Single point')
     >>> taylor(([[[21.,.83], [33., .7]], ref=28., color=['blue', 242], label=['Point 1', 'Point2'])
 
 
-    .. warning::
-
-        This function uses the :mod:`vcs` module for plotting.
-        Therefore, yan can't alter the plot with :mod:`matplotlib` functions.
+    Warning
+    -------
+    This function uses the :mod:`vcs` module for plotting.
+    Therefore, yan can't alter the plot with :mod:`matplotlib` functions.
     """
     # Data
     if cdms2.isVariable(data):
@@ -263,7 +274,7 @@ def vtaylor(data, ref=None, ref_color='red', color=None, label=None, title=None,
     td.preserveaspectratio='n'
     if color is not None:
         if not isinstance(color, list):
-            color = vcm.broadcast(list([color]), np)
+            color = broadcast(list([color]), np)
         td.Marker.id_color = color
     if label is not None:
         if not isinstance(label, list):
@@ -271,9 +282,9 @@ def vtaylor(data, ref=None, ref_color='red', color=None, label=None, title=None,
         td.Marker.id = label
 #   td.Marker.symbol=['dot','cross','circle', 'dot']
     if not isinstance(xoffset, list):
-        xoffset = vcm.broadcast(list([xoffset]), np)
+        xoffset = broadcast(list([xoffset]), np)
     if not isinstance(yoffset, list):
-        yoffset = vcm.broadcast(list([yoffset]), np)
+        yoffset = broadcast(list([yoffset]), np)
     td.Marker.xoffset=xoffset
     td.Marker.yoffset=yoffset
 
@@ -320,7 +331,7 @@ def vtaylor(data, ref=None, ref_color='red', color=None, label=None, title=None,
     t.xtic2.line=l
     t.xtic2.priority=1
     vmax = data[:, 0].max()
-    stdticks = vcm.auto_scale([0., vmax], vmin=0.)
+    stdticks = auto_scale([0., vmax], vmin=0.)
     mjrstd1=vcs.mklabels(stdticks)
     td.xticlabels1=mjrstd1
     mjrstd2=vcs.mklabels(stdticks)
@@ -352,7 +363,7 @@ def vtaylor(data, ref=None, ref_color='red', color=None, label=None, title=None,
     td.max=stdmax
 
     # Main plot
-    kwsf = vcm.kwfilter(kwargs, 'savefig')
+    kwsf = kwfilter(kwargs, 'savefig')
     x.plot(data,t,td, bg=int(not show), title=title, **kwargs)
 
     # Save
@@ -365,13 +376,17 @@ def vtaylor(data, ref=None, ref_color='red', color=None, label=None, title=None,
 def dtaylor(stats, stdref=None, labels=None, colors=None, **kwargs):
     """Directly plot a Taylor diagram
 
-    :Params:
-
-        - **stats**: Statistics is the form ``[std, corr]`` or ``[[std1,corr1],[std2,corr2],...]``
-        - **stdref**: Standard deviation of reference
-        - **labels**,optional: Label of the points. Obviously, if there are several points, there must have several labels.
-          If ``None``, it tries to get it from the `long_name` attribute. If ``False``, it doesn't display it.
-        - **reflabel**,optional: Name of the reference label. It defaults to ``"Reference"``.
+    Parameters
+    ----------
+    stats:
+        Statistics is the form ``[std, corr]`` or ``[[std1,corr1],[std2,corr2],...]``
+    stdref:
+        Standard deviation of reference
+    labels: optional
+        Label of the points. Obviously, if there are several points, there must have several labels.
+        If ``None``, it tries to get it from the `long_name` attribute. If ``False``, it doesn't display it.
+    reflabel: optional
+        Name of the reference label. It defaults to ``"Reference"``.
         $_taylor_
     """
     stats = N.asarray(stats)
@@ -385,40 +400,47 @@ def dtaylor(stats, stdref=None, labels=None, colors=None, **kwargs):
 def taylor(datasets, ref, labels=False, colors=None, units=None, normalize=True, **kwargs):
     """Plot a Taylor diagram after computing statistics
 
-    :Params:
-
-        - **datasets**: One or several arrays that must be evaluated against the reference.
-          Best is to provide :mod:`cdms2` variables with an appropriate `long_name` attribute
-          to set labels automatically.
-        - **ref**: Reference array of the same shape as all ``datasets`` arrays.
-        - **labels**,optional: Label of the points.
-          Obviously, if there are several points, there must have several labels.
-          If ``None``, it tries to get it from the `long_name` attribute.
-          If ``False``, it doesn't display it.
-        - **reflabel**,optional: Name of the reference label.
-          It defaults to the `long_name` attribute or to ``"Reference"``.
-        - **normalize**,optional: Normalize standard deviation and RMSE
+    Parameters
+    ----------
+    datasets:
+        One or several arrays that must be evaluated against the reference.
+        Best is to provide :mod:`cdms2` variables with an appropriate `long_name` attribute
+        to set labels automatically.
+    ref:
+        Reference array of the same shape as all ``datasets`` arrays.
+    labels: optional
+        Label of the points.
+        Obviously, if there are several points, there must have several labels.
+        If ``None``, it tries to get it from the `long_name` attribute.
+        If ``False``, it doesn't display it.
+    reflabel: optional
+        Name of the reference label.
+        It defaults to the `long_name` attribute or to ``"Reference"``.
+    normalize: optional
+        Normalize standard deviation and RMSE
         $_taylor_
 
-    :Example:
+    Example
+    -------
+    Basic usage:
 
-        Basic usage:
+    >>> taylor(var_model, var_obs, title='Single point', reflabel='Observations')
 
-        >>> taylor(var_model, var_obs, title='Single point', reflabel='Observations')
+    Two variables with the same reference:
 
-        Two variables with the same reference:
+    >>> taylor([var_model1,var_model2], var_ref)
 
-        >>> taylor([var_model1,var_model2], var_ref)
+    Two variables without the same reference (like temprature and salinity):
 
-        Two variables without the same reference (like temprature and salinity):
+    >>> taylor([sst,sss], [sstref,sssref], labels=True)
 
-        >>> taylor([sst,sss], [sstref,sssref], labels=True)
+    A huge model ensemble of SST with colors varying with averaged SSS:
 
-        A huge model ensemble of SST with colors varying with averaged SSS:
+    >>> taylor([sstm for sstm in sstens], sstsat, colors=cdutil.averager(sss, 'xy'))
 
-        >>> taylor([sstm for sstm in sstens], sstsat, colors=cdutil.averager(sss, 'xy'))
+    .. rubric:: Tutorial
 
-    :Tutorial: ":ref:`user.tut.misc.plot.basic.taylor`".
+    ":ref:`user.tut.misc.plot.basic.taylor`".
     """
     # Check datasets, units and labels
     # - datasets
@@ -465,37 +487,57 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
     reflabel='Observations', normalize=True, addref=True, legend=True, negative=None,
     minimal=False, stdmax=None, autoresize=True, scatter=False, zorder=12, cmap=None,
     **kwargs):
-    """- **stdref**, optional: Standard deviation of the reference used either when
-          normalizing statistics or to plot the reference arc and point.
-          All statistics can have a different reference standard deviation;
-          in this case, statistics are normalized (``normalize`` is set to True).
-        - **addref**,optional: Add the reference arc and point to the plot.
-        - **normalize**, optional: Force the normalization of statistics (standard
-          deviations).
-        - **negative**,optional: Force plot of negative correlations.
-        - **legend**, optional: Add the legend.
-        - **size**,optional: Size(s) of the markers in points.
-        - **colors**,optional: Color of the points. It can be a list to set
-          a different color for each pair.
-        - **cmap**, optional: Colormap use when ``colors`` is a numeric array.
-        - **label_colors**,optional: Color of the labels.
-          If ``"same"``, color is taken from ``colors``.
-        - **label_<keyword>**,optional: ``<keyword>`` is passed
-          to :func:`~matplotlib.pyplot.text` for plotting the labels.
-        - **symbols**,optional: Symbols for the points (default to ``"o"``).
-        - **point_<keyword>**,optional: ``<keyword>`` is passed to
-          :func:`~matplotlib.pyplot.plot` (:func:`~matplotlib.pyplot.scatter` if
-          ``scatter`` is True) or for plotting the points.
-        - **reflabel**,optional: Label of the reference.
-        - **refcolor**,optional: Color of the reference.
-        - **title**,optional: A string for the general title.
-        - **scatter**, optional: Use :func:`matplotlib.pyplot.scatter` to improve
-          plot efficiency when the number of points is huge. Labels are not plotted in
-          this mode.
-        - **savefig**,optional: Save figure to ``savefig``.
-        - **savefig_<keyword>**,optional: ``<keyword>`` is used for saving figure.
-        - **savefigs**,optional: Save figure to ``savefig`` using :func:`~vacumm.misc.plot.savefigs`.
-        - **savefigs_<keyword>**,optional: ``<keyword>`` is used for saving figure using :func:`~vacumm.misc.plot.savefigs`."""
+    """stdref: optional
+        Standard deviation of the reference used either when
+        normalizing statistics or to plot the reference arc and point.
+        All statistics can have a different reference standard deviation;
+        in this case, statistics are normalized (``normalize`` is set to True).
+    addref: optional
+        Add the reference arc and point to the plot.
+    normalize: optional
+        Force the normalization of statistics (standard
+        deviations).
+    negative: optional
+        Force plot of negative correlations.
+    legend: optional
+        Add the legend.
+    size: optional
+        Size(s) of the markers in points.
+    colors: optional
+        Color of the points. It can be a list to set
+        a different color for each pair.
+    cmap: optional
+        Colormap use when ``colors`` is a numeric array.
+    label_colors: optional
+        Color of the labels.
+        If ``"same"``, color is taken from ``colors``.
+    label_<keyword>: optional
+        ``<keyword>`` is passed
+        to :func:`~matplotlib.pyplot.text` for plotting the labels.
+    symbols: optional
+        Symbols for the points (default to ``"o"``).
+    point_<keyword>: optional
+        ``<keyword>`` is passed to
+        :func:`~matplotlib.pyplot.plot` (:func:`~matplotlib.pyplot.scatter` if
+        ``scatter`` is True) or for plotting the points.
+    reflabel: optional
+        Label of the reference.
+    refcolor: optional
+        Color of the reference.
+    title: optional
+        A string for the general title.
+    scatter: optional
+        Use :func:`matplotlib.pyplot.scatter` to improve
+        plot efficiency when the number of points is huge. Labels are not plotted in
+        this mode.
+    savefig: optional
+        Save figure to ``savefig``.
+    savefig_<keyword>: optional
+        ``<keyword>`` is used for saving figure.
+    savefigs: optional
+        Save figure to ``savefig`` using :func:`~vacumm.misc.plot.savefigs`.
+    savefigs_<keyword>: optional
+        ``<keyword>`` is used for saving figure using :func:`~vacumm.misc.plot.savefigs`."""
     from matplotlib.transforms import offset_copy
 
     # Normalization
@@ -519,7 +561,7 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
     corrmin = stats[:, 1].min()
     if negative is None:
         negative = corrmin < 0
-    sticks = vcm.auto_scale([0, stdmax], vmin=0.)
+    sticks = auto_scale([0, stdmax], vmin=0.)
     stdmax = sticks[-1]
     stdmin = -stdmax if negative else 0
     sticksref = N.arange(0., stdmax*N.sqrt(2.), sticks[1]-sticks[0])
@@ -528,12 +570,12 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
         rticks = (-N.asarray(rticks[:0:-1])).tolist()+rticks
 
     # Check options
-    labels = vcm.broadcast(labels, np, fillvalue=None)
+    labels = broadcast(labels, np, fillvalue=None)
     cmap = get_cmap(cmap)
     if colors is None:
         colors =  kwargs.pop('color', 'k')
     if not isinstance(colors, N.ndarray):
-        colors = vcm.broadcast(colors,np)
+        colors = broadcast(colors,np)
         if any([isinstance(c,(int,float)) for c in colors]): # list of scalars
             colors = N.array(colors)
     if isinstance(colors, N.ndarray):
@@ -543,15 +585,15 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
     for i in xrange(np):
         if colors[i] is None:
             colors[i] = 'k'
-    sizes = N.asarray(vcm.broadcast(kwargs.pop('size', 8), np))
-    alphas = vcm.broadcast(kwargs.pop('alpha', 1), np)
-    label_size = vcm.broadcast(kwargs.pop('label_size', P.rcParams['font.size']), np)
+    sizes = N.asarray(broadcast(kwargs.pop('size', 8), np))
+    alphas = broadcast(kwargs.pop('alpha', 1), np)
+    label_size = broadcast(kwargs.pop('label_size', P.rcParams['font.size']), np)
     label_colors = kwargs.pop('label_colors', 'k')
     if label_colors=='same':
         label_colors = colors
     else:
-        label_colors = vcm.broadcast(colors, np, fillvalue='k')
-    symbols = vcm.broadcast(kwargs.pop('symbols', 'o'), np)
+        label_colors = broadcast(colors, np, fillvalue='k')
+    symbols = broadcast(kwargs.pop('symbols', 'o'), np)
     if negative and autoresize:
         x0,y0 = P.gcf().get_size_inches()
         x1 = x0*2.
@@ -572,8 +614,8 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
     ax = P.gca()
 
     # Points
-    kwpt = vcm.kwfilter(kwargs, 'point')
-    kwlab = vcm.kwfilter(kwargs, 'label')
+    kwpt = kwfilter(kwargs, 'point')
+    kwlab = kwfilter(kwargs, 'label')
     if scatter:
 
         # All points
@@ -680,7 +722,7 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
             P.legend(hdls, labs,
                 loc='upper right' if not negative else 'upper left',
                 #markerscale=10,
-                numpoints=1, **vcm.kwfilter(kwargs, 'legend_',
+                numpoints=1, **kwfilter(kwargs, 'legend_',
                     defaults=dict(shadow=False, fancybox=True))).legendPatch.set_alpha(.5)
 
         # Final setup
@@ -728,18 +770,26 @@ def dtarget(bias, rmsc, stdmod, stdref=None, colors='cyan', sizes=20,
     title='Target diagram', cmap=None, units=None, colorbar=True, **kwargs):
     """Plot a (direct) target diagram from already computed statistics
 
-    :Params:
-
-        - **bias** : Bias.
-        - **rmsc**: Centered RMS error.
-        - **stdmod**: Standard deviation of the model.
-        - **stdref**, optional: Standard deviation of the observations.
-        - **colors**, optional: Single or list of colors, or
-          array of values, used to color markers.
-        - **sizes**, optional: Single or list of sizes of markers.
-        - **title**, optional: Title of the plot.
-        - **scatter_<keyword>**, optional: ``<keyword>`` is passed
-          to :func:`matplotlib.pyplot.scatter`.
+    Parameters
+    ----------
+    bias:
+        Bias.
+    rmsc:
+        Centered RMS error.
+    stdmod:
+        Standard deviation of the model.
+    stdref, optional:
+        Standard deviation of the observations.
+    colors, optional:
+        Single or list of colors, or
+        array of values, used to color markers.
+    sizes: optional:
+        Single or list of sizes of markers.
+    title: optional:
+        Title of the plot.
+    scatter_<keyword>: optional
+        ``<keyword>`` is passed
+        to :func:`matplotlib.pyplot.scatter`.
 
     .. todo::
 
@@ -826,8 +876,12 @@ def rankhist(obs, ens, title='Rank histogram', bins=None, **kwargs):
     The rank is computed using :func:`~vacumm.misc.stats.ensrank`.
     It may vary from ``0`` to ``nens``.
 
-    - **obs**, (...): Observations or rank
-    - **ens**, (nens,...): Ensemble or nens
+    Parameters
+    ----------
+    obs: array(...)
+        Observations or rank
+    ens: array(nens,...)
+        Ensemble or nens
 
     """
     from stats import ensrank
@@ -837,7 +891,7 @@ def rankhist(obs, ens, title='Rank histogram', bins=None, **kwargs):
         ens = MV2.asarray(ens)
         rank = ensrank(obs, ens)
         nens = ens.shape[0]
-    kwhist = vcm.kwfilter(kwargs, 'hist_')
+    kwhist = kwfilter(kwargs, 'hist_')
     if N.ma.isMA(rank): rank = rank.compressed()
     _start_plot_(**kwargs)
     if bins is None: bins = N.arange(-.5, nens+1.5)
@@ -853,25 +907,41 @@ def rankhist(obs, ens, title='Rank histogram', bins=None, **kwargs):
 
 
 def ellipsis(xpos,ypos,eAXIS,eaxis=None,rotation=0,
-    sign=0,np=100,gobj=None,m=None, scale=1.,fill=False,sign_usearrow=True,
-    axes=True,sign_usecolor=False,sign_usewidth=False,units=None,
-    key=True,key_align='top',key_orientation='tangential',
-    glow=False, shadow=False,
-    key_position=1.15,key_format='%(value)g %(units)s',**kwargs):
+        sign=0,np=100,gobj=None,m=None, scale=1.,fill=False,sign_usearrow=True,
+        axes=True,sign_usecolor=False,sign_usewidth=False,units=None,
+        key=True,key_align='top',key_orientation='tangential',
+        glow=False, shadow=False,
+        key_position=1.15,key_format='%(value)g %(units)s',**kwargs):
     """Create a dicretized ellipsis
 
-    - **xpos**: X position of the ellipsis.
-    - **ypos**: Y    //
-    - **eAXIS**: Length of grand axis
-    - *eaxis*: Length of little axis [default: eAXIS]
-    - *rotation*: Rotation angle in degrees of grand axis from X axis [default: 0.]
-    - *sign*: Indicate a direction of evolution along the ellipsis using a variable line width and/or color [default: 0]. If 0, nothing is done. If positive or negative, it defines the direction relative the trigonometric convention.
-    - *sign_usearrow*: Use an arrow to indicate sign [default: True]
-    - *sign_usewidth*: Use width variation to indicate sign [default: False]
-    - *sign_usecolor*: Use color variation (from grey to default color) to indicate sign [default: False]
-    - *scale*: Scale factor to apply to grand and little axes [default: 1.]
-    - *np*: Number of discretized segments [default: 100]
-    - *gobj*: Graphical object on which to plot the ellipsis (can be a Basemap object) [default: ~matplotlib.pyplot.gca()]. If map object, eAXIS and eaxis are supposed to be in kilometers.
+    Parameters
+    ----------
+    xpos: X position of the ellipsis.
+    ypos: Y    //
+    eAXIS:
+        Length of grand axis
+    eaxis:
+        Length of little axis [default: eAXIS]
+    rotation:
+        Rotation angle in degrees of grand axis from X axis [default: 0.]
+    sign:
+        Indicate a direction of evolution along the ellipsis using a variable
+        line width and/or color [default: 0]. If 0, nothing is done.
+        If positive or negative, it defines the direction relative the trigonometric convention.
+    sign_usearrow:
+        Use an arrow to indicate sign [default: True]
+    sign_usewidth:
+        Use width variation to indicate sign [default: False]
+    sign_usecolor:
+        Use color variation (from grey to default color) to indicate sign [default: False]
+    scale:
+        Scale factor to apply to grand and little axes [default: 1.]
+    np:
+        Number of discretized segments [default: 100]
+    gobj:
+        Graphical object on which to plot the ellipsis (can be a Basemap object)
+        [default: ~matplotlib.pyplot.gca()].
+        If map object, eAXIS and eaxis are supposed to be in kilometers.
     """
 
     # Angles for discretization
@@ -921,7 +991,7 @@ def ellipsis(xpos,ypos,eAXIS,eaxis=None,rotation=0,
 
     # Add axes
     if axes:
-        kwaxes = vcm.kwfilter(kwargs,'axes',
+        kwaxes = kwfilter(kwargs,'axes',
             defaults=dict(color='k',linestyle=':',alpha=.5))
         for ea,ap in (eAXIS,0.),(eaxis,N.pi/2):
             xaxis = N.array([-1,1]) * N.cos(rotation+ap) * ea/2
@@ -939,7 +1009,7 @@ def ellipsis(xpos,ypos,eAXIS,eaxis=None,rotation=0,
 
     # Plot with sign indicator
     myplot = None
-    kwkey = vcm.kwfilter(kwargs,'key')
+    kwkey = kwfilter(kwargs,'key')
     if int(sign) != 0 :
         sign = float(sign)
         if not sign_usearrow and not fill: # FIXME: color and fill for ellipsis
@@ -1016,9 +1086,9 @@ def ellipsis(xpos,ypos,eAXIS,eaxis=None,rotation=0,
 
         # Draw
         kglow = kwkey.pop('glow', glow)
-        kwkglow = vcm.kwfilter(kwkey, 'glow')
+        kwkglow = kwfilter(kwkey, 'glow')
         kshadow = kwkey.pop('shadow', shadow)
-        kwkshadow = vcm.kwfilter(kwkey, 'shadow')
+        kwkshadow = kwfilter(kwkey, 'shadow')
         tt = P.text(key_x,key_y,key_text,**kwkey)
         if kglow:
             vacumm.misc.core_plot.add_glow(tt, **kwkglow)
@@ -1104,22 +1174,38 @@ def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None,
         ax=None, **kwargs):
     """Add a a 1D or 2D grid to a plot
 
-    Params:
-        - **gg**: A cdms grid OR a (lon,lat) tuple of axes OR a cdms variable with a grid
-        - **x/ycorners**: Corners coordinates (ny+1,nx+1)
-        - *borders*: Display cell borders
-        - *centers*: Display cell centers. If == 2, connect centers.
-        - *samp*: Undersampling rate
-        - *m*: A basemap instance to plot on
-        - *color*: Default color (or *c*)
-        - *linecolor*: Color of the lines (or *lc*) [defaults to *color*]
-        - *linestyle*: Line style (or *ls*)
-        - *edgecolor*: Edge color of marker (or *ec*) [defaults to *color*]
-        - *facecolor*: Face color of marker (or *fc*) [defaults to *color*]
-        - *marker*: Type of marker
-        - *markersize*: Size of markers (or *s*)
-        - *alpha*: Alpha transparency (or *a*)
-        - *zorder*: Order of the grid in the stack (100 should be above all objects)
+    Parameters
+    ----------
+    gg:
+        A cdms grid OR a (lon,lat) tuple of axes OR a cdms variable with a grid
+    x/ycorners:
+        Corners coordinates (ny+1,nx+1)
+    borders:
+        Display cell borders
+    centers:
+        Display cell centers. If == 2, connect centers.
+    samp:
+        Undersampling rate
+    m:
+        A basemap instance to plot on
+    color:
+        Default color (or *c*)
+    linecolor:
+        Color of the lines (or *lc*) [defaults to *color*]
+    linestyle:
+        Line style (or *ls*)
+    edgecolor:
+        Edge color of marker (or *ec*) [defaults to *color*]
+    facecolor:
+        Face color of marker (or *fc*) [defaults to *color*]
+    marker:
+        Type of marker
+    markersize:
+        Size of markers (or *s*)
+    alpha:
+        Alpha transparency (or *a*)
+    zorder:
+        Order of the grid in the stack (100 should be above all objects)
     """
     # Axes
     xx, yy = get_xy(gg, mesh=True, num=True)
@@ -1170,11 +1256,11 @@ def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None,
             kwdef['label'] = label_centers
             kwdef['alpha'] = alpha
             centers = ax.plot(xx[::samp, ::samp].ravel(), yy[::samp, ::samp].ravel(), marker, markersize=markersize,
-                **vcm.kwfilter(kwargs, 'center', defaults=kwdef))
+                **kwfilter(kwargs, 'center', defaults=kwdef))
 
         # Lines
         if centers==2 or centers<0:
-            kwpg = vcm.kwfilter(kwargs, 'center', defaults=kwlines)
+            kwpg = kwfilter(kwargs, 'center', defaults=kwlines)
             edges = _plot_grid_(ax, xx, yy, samp, alpha, zorder, label_edges, **kwpg)
 
     else:
@@ -1182,7 +1268,7 @@ def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None,
 
     # Create lines
     if edges:
-        kwpg = vcm.kwfilter(kwargs, 'edge', defaults=kwlines)
+        kwpg = kwfilter(kwargs, 'edge', defaults=kwlines)
         edges = _plot_grid_(ax, xx2d, yy2d, samp, alpha, zorder, label_edges, **kwpg)
 
 #        lines = ()
@@ -1213,9 +1299,14 @@ def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None,
 def rotate_tick_labels(angle,vertical=0,*args,**kwargs):
     """Rotate labels along an axis
 
-    - **angle**: Angle in degrees OR False.
-    - *vertical*: On vertical axis if not 0 [default: 0]
-    - Other arguments are passed to :func:`~matplotlib.pyplot.setp`
+    Parameters
+    ----------
+    angle:
+        Angle in degrees OR False.
+    vertical:
+        On vertical axis if not 0 [default: 0]
+    **kwargs
+        Other arguments are passed to :func:`~matplotlib.pyplot.setp`
     """
     ax = kwargs.get('ax',P.gca())
     func = eval('ax.get_%sticklabels()' % 'xy'[vertical])
@@ -1254,10 +1345,17 @@ def _xyscale_(xylim,factor,keep_min=False,keep_max=False,**kwargs):
 def xscale(*args,**kwargs):
     """Scale xlim using factor and auto_scale
 
-    - **factor**: Relative factor with 1. meaning no change
-    - *keep_min/keep_max*: Kee min/max during scaling [default: False]
+    Parameters
+    ----------
+    factor:
+        Relative factor with 1. meaning no change
+    keep_min/keep_max:
+        Kee min/max during scaling [default: False]
 
-    Return: New xlim()
+    Return
+   -------
+    tuple
+        New xlim()
     """
     return _xyscale_(P.xlim,*args,**kwargs)
 
@@ -1268,10 +1366,16 @@ def scale_xlim(*args,**kwargs):
 def yscale(*args,**kwargs):
     """Scale ylim using factor and auto_scale
 
-    - **factor**: Relative factor with 1. meaning no change
-    - *keep_min/keep_max*: Kee min/max during scaling [default: False]
+    Parameters
+    ----------
+    factor:
+        Relative factor with 1. meaning no change
+    keep_min/keep_max:
+        Kee min/max during scaling [default: False]
 
-    Return: New ylim()
+    Return
+    tuple
+        New ylim()
     """
     return _xyscale_(P.ylim,*args,**kwargs)
 
@@ -1283,7 +1387,10 @@ def scale_ylim(*args,**kwargs):
 def xhide(choice=True,**kwargs):
     """Hide or not an axis
 
-    - **choice**: What to do [default: True]
+    Parameters
+    ----------
+    choice:
+        What to do [default: True]
     """
     ax = kwargs.get('ax',P.gca())
     P.setp(ax.get_xticklabels(),"visible",not choice)
@@ -1291,7 +1398,10 @@ def xhide(choice=True,**kwargs):
 def yhide(choice=True,**kwargs):
     """Hide or not an axis
 
-    - **choice**: What to do [default: True]
+    Parameters
+    ----------
+    choice:
+        What to do [default: True]
     """
     ax = kwargs.get('ax',P.gca())
     P.setp(ax.get_yticklabels(),"visible",not choice)
@@ -1299,6 +1409,8 @@ def yhide(choice=True,**kwargs):
 def xdate(rotation=45.,**kwargs):
     """Consider x axis as dates
 
+    Parameters
+    ----------
     $_xydate_
     """
     _xydate_('x',rotation=rotation,**kwargs)
@@ -1307,6 +1419,8 @@ def xdate(rotation=45.,**kwargs):
 def ydate(rotation=0.,**kwargs):
     """Consider y axis as dates
 
+    Parameters
+    ----------
     $_xydate_
     """
     _xydate_('y',rotation=rotation,**kwargs)
@@ -1315,16 +1429,28 @@ def _xydateold_(xy, tz=None, auto=True, fmt=None, rotation=None,
     locator=None, minor_locator=None, nominor=False,
     nmax_ticks=None, intv=None, trange=None, **kwargs):
     """
-    - *tz*: Time zone.
-    - *auto*: Auto Scaling [default: True]
-    - *rotation*: Rotation angle of tick labels. If None, automatic [default: None]
-    - *fmt*: Date format.
-    - *locator*: Major locator. Can be within ['year','month','Weekday','day','hour','minute','second'] or be like matplotlib.dates.MonthLocator().
-    - *minor_locator*: Minor locator.
-    - *nominor*: Do not try to add minor ticks [default: False]
-    - *nmax_ticks*: Maximal number of ticks
-    - *locator_<keyword>*: <keyword> is passed to locator if locator is a string. If locator = 'month', locator = MonthLocator(locator_<keyword>=<value>).
-    - *minor_locator_<keyword>*: Same with minor_locator.
+    tz:
+        Time zone.
+    auto:
+        Auto Scaling [default: True]
+    rotation:
+        Rotation angle of tick labels. If None, automatic [default: None]
+    fmt:
+        Date format.
+    locator:
+        Major locator. Can be within ['year','month','Weekday','day','hour','minute','second']
+        or be like :class:`matplotlib.dates.MonthLocator`.
+    minor_locator:
+        Minor locator.
+    nominor:
+        Do not try to add minor ticks [default: False]
+    nmax_ticks:
+        Maximal number of ticks
+    locator_<keyword>:
+        <keyword> is passed to locator if locator is a string.
+        If locator = 'month', locator = MonthLocator(locator_<keyword>=<value>).
+    minor_locator_<keyword>:
+        Same with minor_locator.
     """
     ax = kwargs.get('ax',P.gca())
 ##  print 'xlimssss',P.gca(),ax
@@ -1479,16 +1605,28 @@ def _xydate_(xy, tz=None, auto=True, fmt='dual', rotation=None,
     locator=None, minor_locator=True, minor_formatter=None, nominor=False,
     nmax_ticks=None, intv=None, trange=None, **kwargs):
     """
-    - *tz*: Time zone.
-    - *auto*: Auto Scaling [default: True]
-    - *rotation*: Rotation angle of tick labels. If None, automatic [default: None]
-    - *fmt*: Date format.
-    - *locator*: Major locator. Can be within ['year','month','Weekday','day','hour','minute','second'] or be like matplotlib.dates.MonthLocator().
-    - *minor_locator*: Minor locator.
-    - *nominor*: Do not try to add minor ticks [default: False]
-    - *nmax_ticks*: Maximal number of ticks
-    - *locator_<keyword>*: <keyword> is passed to locator if locator is a string. If locator = 'month', locator = MonthLocator(locator_<keyword>=<value>).
-    - *minor_locator_<keyword>*: Same with minor_locator.
+    tz:
+        Time zone.
+    auto:
+        Auto Scaling [default: True]
+    rotation:
+        Rotation angle of tick labels. If None, automatic [default: None]
+    fmt:
+        Date format.
+    locator:
+        Major locator. Can be within ['year','month','Weekday','day','hour','minute','second']
+        or be like :class:`matplotlib.dates.MonthLocator`.
+    minor_locator:
+        Minor locator.
+    nominor:
+        Do not try to add minor ticks [default: False]
+    nmax_ticks:
+        Maximal number of ticks
+    locator_<keyword>:
+        <keyword> is passed to locator if locator is a string.
+        If locator = 'month', locator = MonthLocator(locator_<keyword>=<value>).
+    minor_locator_<keyword>:
+        Same with minor_locator.
     """
     axes = kwargs.get('ax',P.gca())
     axis = getattr(axes, xy+'axis')
@@ -1619,17 +1757,23 @@ def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=
 
     .. note:: It is highly suggested to prefer png to other formats for your logo.
 
-    :Params:
-
-        - *file*: File of the image.
-        - *axes*: Axes specs of the image (overwrites loc and scale keywords),
-          passed to meth:`~matplotlib.figure.Figure.add_axes`.
-        - *loc*: Position of the image (use words in 'lower', 'upper', 'left',
-          'right', 'center') .
-        - *scale*: Scale the image. By default, it is auto scale so that the logo is
-          never greater than 1/4 of the figure width or height.
-        - *alpha*: Alpha transparency.
-        - *tool*: None, 'mpl' (png only) or 'pil'.
+    Parameters
+    ----------
+    file:
+        File of the image.
+    axes:
+        Axes specs of the image (overwrites loc and scale keywords),
+        passed to meth:`~matplotlib.figure.Figure.add_axes`.
+    loc:
+        Position of the image (use words in 'lower', 'upper', 'left',
+        'right', 'center') .
+    scale:
+        Scale the image. By default, it is auto scale so that the logo is
+        never greater than 1/4 of the figure width or height.
+    alpha:
+        Alpha transparency.
+    tool:
+        None, 'mpl' (png only) or 'pil'.
     """
     if not os.path.exists(logofile):
         raise VACUMMError("Logo file not found: %s"%logofile)
@@ -1733,13 +1877,22 @@ def wedge(direction,width=18,fig=None,axes=None,figsize=(4,4),shadow=False,
     center=True,center_radius=.04,scale=1., **kwargs):
     """Plot a wedge
 
-    - **direction**: Direction of the wedge in degrees from north
-    - *width*: Base width of the wedge in degrees [default: 20]
-    - *shadow*: Add a shadow [default: False]
-    - *shadow_alpha*: Alpha transparency of the shadow [default: .5]
-    - *circle*: Add a circle arround the wedge [default: True]
-    - *shadow_<keyword>*: <keyword> is passed to :class:`matplotlib.patches.Shadow` class.
-    - *circle_<keyword>*: <keyword> is passed to :class:`matplotlib.patches.Circle` class.
+    Parameters
+    ----------
+    direction:
+        Direction of the wedge in degrees from north
+    width:
+        Base width of the wedge in degrees [default: 20]
+    shadow:
+        Add a shadow [default: False]
+    shadow_alpha:
+        Alpha transparency of the shadow [default: .5]
+    circle:
+        Add a circle arround the wedge [default: True]
+    shadow_<keyword>:
+        <keyword> is passed to :class:`matplotlib.patches.Shadow` class.
+    circle_<keyword>:
+        <keyword> is passed to :class:`matplotlib.patches.Circle` class.
     """
 
     # Figure and axes
@@ -1814,16 +1967,22 @@ def add_time_mark(date, ymin=0, ymax=1, color='r', line=True,
     ax=None, fig=None, **kwargs):#:,alongx=True):
     """Plot a time mark along a time axis using a line and a marker
 
-    :Params:
-
-        - **date**: Date (converted using :func:`~vacumm.misc.atime.mpl`).
-        - **color**, optional: Color of the line and marker.
-        - **line**, optional: Plot the line?
-        - **line_<kw>**, optional: Keyword ``kw`` is passed to
-          :func:`~matplotlib.pyplot.axvline`.
-        - **marker**, optional: Plot the marker? Or symbol.
-        - **line_<kw>**, optional: Keyword ``kw`` is passed to
-          :func:`~matplotlib.pyplot.axvline`.
+    Parameters
+    ----------
+    date:
+        Date (converted using :func:`~vacumm.misc.atime.mpl`).
+    color: optional
+        Color of the line and marker.
+    line: optional
+        Plot the line?
+    line_<kw>: optional
+        Keyword ``kw`` is passed to
+        :func:`~matplotlib.pyplot.axvline`.
+    marker: optional
+        Plot the marker? Or symbol.
+    line_<kw>: optional
+        Keyword ``kw`` is passed to
+        :func:`~matplotlib.pyplot.axvline`.
 
     """
     # Inits
@@ -1867,22 +2026,27 @@ def add_time_mark(date, ymin=0, ymax=1, color='r', line=True,
 def add_key(key=None, pos=1, fmt='%s)', xmargin=10, ymargin=10, fig=None, axes=None, **kwargs):
     """Add a key to specify the plot number in a figure
 
-    :Params:
+    Parameters
+    ----------
+    key: optional
+        A string or a integer. If an integer is given,
+        it converted to letter (1->'a').
+    pos: optional
+        Position of the key. It can be an integer or string:
 
-        - **key**, optional: A string or a integer. If an integer is given,
-          it converted to letter (1->'a').
-        - **pos**, optional: Position of the key. It can be an integer or string:
+        - ``1 = top left``
+        - ``2 = top right``
+        - ``3 = bottom right``
+        - ``4 = bottom left``
 
-            - ``1 = top left``
-            - ``2 = top right``
-            - ``3 = bottom right``
-            - ``4 = bottom left``
-
-          If negative, push it outside axis box.
-          It can also be an explicit position
-        - **fmt**, optional: Format of the string.
-        - **{x|y}margin**, optional: Margin from axes in points.
-        - Other keywords are passed to :func:`~matplotlib.pyplot.text`.
+        If negative, push it outside axis box.
+        It can also be an explicit position
+    fmt: optional
+        Format of the string.
+    {x|y}margin: optional
+        Margin from axes in points.
+    **kwargs
+        Other keywords are passed to :func:`~matplotlib.pyplot.text`.
 
     """
     # Base
@@ -1932,12 +2096,15 @@ def add_key(key=None, pos=1, fmt='%s)', xmargin=10, ymargin=10, fig=None, axes=N
 def hldays(color='.95', y=False, tmin=None, tmax=None, fig=None, axes=None, **kwargs):
     """Highlight different days with a different background color
 
-    :Params:
-
-        - *color*: Background color.
-        - *y*: Work on Y axis.
-        - Other keyparam are passed to :func:`~matplotlib.pyplot.axhspan`
-          or :func:`~matplotlib.pyplot.axvspan`.
+    Parameters
+    ----------
+    color:
+        Background color.
+    y:
+        Work on Y axis.
+    **kwargs
+        Other keyparam are passed to :func:`~matplotlib.pyplot.axhspan`
+        or :func:`~matplotlib.pyplot.axvspan`.
     """
     # Base
     if fig is None: fig = P.gcf()
@@ -2018,19 +2185,24 @@ def gobjs(*args, **kwargs):
 def savefigs(basename, png=True, pdf=False, verbose=True, dpi=100, nodots=True, fig=None, **kwargs):
     """Save a figure in multiple formats (optimized for sphinx doc generator)
 
-    - **basename**: File name without suffix
-    - *png*: If True, save to png format
-    - *pdf*: If True, save to pdf format
-    - *verbose*: If True, print file names that are created
-    - Other keywords are passed to :func:`~matplotlib.pyplot.savefig`
+    basename:
+        File name without suffix
+    png:
+        If True, save to png format
+    pdf:
+        If True, save to pdf format
+    verbose:
+        If True, print file names that are created
+    **kwargs
+        Other keywords are passed to :func:`~matplotlib.pyplot.savefig`
 
-    .. warning::
-
-        Dots ('.') in figure name are converted to dashes  ('-')
-        for compatilibity reasons with latex.
-        It is optimized for the sphinx doc generator and may
-        NOT BE SUITABLE FOR YOU. In this case, use
-        :func:`~matplotlib.pyplot.savefig` instead.
+    Warning
+    -------
+    Dots ('.') in figure name are converted to dashes  ('-')
+    for compatilibity reasons with latex.
+    It is optimized for the sphinx doc generator and may
+    NOT BE SUITABLE FOR YOU. In this case, use
+    :func:`~matplotlib.pyplot.savefig` instead.
     """
     for ext in 'png', 'py':
         if basename.endswith('.'+ext):
@@ -2054,14 +2226,21 @@ def savefigs(basename, png=True, pdf=False, verbose=True, dpi=100, nodots=True, 
 def make_movie(fig_pattern, outfile, delay=1, clean=False, verbose=False, windows=True):
     """Make a movie from a series of figures
 
-    - **fig_pattern** Unix-like file pattern to select png figures.
-    - **outfile**: Output file.
-    - *delay**: Delay in seconds between two frames.
-    - *windows*: When output is a movie, choose basic mpeg for windows instead of mpeg4 codec.
-    - *clean*: If ``True``, remove figures once the movies os created.
+    Paremeters
+    ----------
+    fig_pattern:
+        Unix-like file pattern to select png figures.
+    outfile:
+        Output file.
+    delay:
+        Delay in seconds between two frames.
+    windows:
+        When output is a movie, choose basic mpeg for windows instead of mpeg4 codec.
+    clean:
+        If ``True``, remove figures once the movies os created.
 
-    :Usage:
-
+    Example
+    -------
     >>> make_movie('/home/toto/fig*.png', 'movie.mpg', delay=.5, clean=True)
     """
     # Check input files
@@ -2115,9 +2294,14 @@ def make_movie(fig_pattern, outfile, delay=1, clean=False, verbose=False, window
 def get_cls(n, colors=simple_colors, linestyles=linestyles):
     """Get a list of string argument for :func:`~matplotlib.pyplot.plot` to specify the color and the linestyle
 
-    - **n**: Length of the list
-    - *colors*: Colors on which to cycle
-    - *linestyles*: Linestyles on which to cycle
+    Parameters
+    ----------
+    n:
+        Length of the list
+    colors:
+        Colors on which to cycle
+    linestyles:
+        Linestyles on which to cycle
     """
     cls = []
     cc = []
@@ -2139,11 +2323,16 @@ def get_cls(n, colors=simple_colors, linestyles=linestyles):
 
 def _check_var_(var,rank,order=None,xaxis=None,yaxis=None,tadd=None,tadd_copy=True,tlocal=False,xatts=None,yatts=None,**kwargs):
     """
-    - *xaxis*: Use this X axis.
-    - *yaxis*: Use this Y axis.
-    - *tadd*: Add value to time (like tadd=1 or tadd=(1,'day'))
-    - *tadd*: Make a copy of the axis before any tadd [default: True]
-    - *tlocal*: Convert current UTC time axes to local time [default: False]
+    xaxis:
+        Use this X axis.
+    yaxis:
+        Use this Y axis.
+    tadd:
+        Add value to time (like tadd=1 or tadd=(1,'day'))
+    tadd:
+        Make a copy of the axis before any tadd [default: True]
+    tlocal:
+        Convert current UTC time axes to local time [default: False]
     """
     if var is None: return
 
@@ -2174,7 +2363,7 @@ def _check_var_(var,rank,order=None,xaxis=None,yaxis=None,tadd=None,tadd_copy=Tr
 # Loop on all set
     for ivar,var in enumerate(vars):
         assert var.rank() >= rank, 'Your variable must have a rank > %i (current rank is %i)' % (rank,var.rank())
-        vca.check_axes(var)
+        check_axes(var)
         clone = False
         # Reorder axes
         if order is not None:
@@ -2246,15 +2435,24 @@ def _check_var_(var,rank,order=None,xaxis=None,yaxis=None,tadd=None,tadd_copy=Tr
 
 def _start_plot_(figure=None,figsize=None,subplot=None,subplots_adjust=None,bgcolor=None,noframe=False, fullscreen=False, **kwargs):
     """
-    Misc settings:
-
-    - *figure*: Figure number.
-    - *figsize*: Initialize the figure with this size.
-    - *subplots_adjust*: Dictionary sent to :func:`~matplotlib.pyplot.subplots_adjust`. You can also use keyparams 'left', 'right', 'top', 'bottom', 'wspace', 'hspace' !
-    - *sa*: Alias for subplots_adjust.
-    - *bgcolor*: Background axis color.
-    - *axes_rect*: [left, bottom, width, height] in normalized (0,1) units to create axes using :func:`~matplotlib.pyplot.axes`.
-    - *axes_<keyword>*: <keyword> is passed to :func:`~matplotlib.pyplot.axes`.
+    Parameters
+    ----------
+    figure:
+        Figure number.
+    figsize:
+        Initialize the figure with this size.
+    subplots_adjust:
+        Dictionary sent to :func:`~matplotlib.pyplot.subplots_adjust`.
+        You can also use keyparams 'left', 'right', 'top', 'bottom', 'wspace', 'hspace' !
+    sa:
+        Alias for subplots_adjust.
+    bgcolor:
+        Background axis color.
+    axes_rect:
+        [left, bottom, width, height] in normalized (0,1) units to create axes using
+        :func:`~matplotlib.pyplot.axes`.
+    axes_<keyword>:
+        <keyword> is passed to :func:`~matplotlib.pyplot.axes`.
     """
     subplots_adjust = kwargs.pop('sa', subplots_adjust)
     for adj in 'left', 'right', 'top', 'bottom', 'wspace', 'hspace':
@@ -2312,14 +2510,22 @@ def _start_plot_(figure=None,figsize=None,subplot=None,subplots_adjust=None,bgco
 
 def colorbar(pp=None, vars=None, drawedges=False, levels=None, colorbar_horizontal=False, colorbar=True, colorbar_visible=True, colorbar_position=None,units=None, standalone=False,cax=None,extend='neither', **kwargs):
     """
-    Colorbar:
+    Colorbar
 
-    - *colorbar*: Plot the colorbar [default: True]
-    - *colorbar_horizontal*: Colorbar is horizontal [defaults: False]
-    - *colorbar_position*: To change the default position. Position is relative to the SPACE LEFT in the form (center,width) with values in [0,1] [defaults: False]
-    - *colorbar_visible*: Colorbar is visible [defaults: True]
-    - *colorbar_<keyword>*: <keyword> is passed to :func:`~matplotlib.pyplot.colorbar`
-    - *units*: Indicate these units on along the colorbar, else it guessed from the variable or suppressed if value is False [default: None]
+    colorbar:
+        Plot the colorbar [default: True]
+    colorbar_horizontal:
+        Colorbar is horizontal [defaults: False]
+    colorbar_position:
+        To change the default position. Position is relative to the SPACE LEFT
+        in the form (center,width) with values in [0,1] [defaults: False]
+    colorbar_visible:
+        Colorbar is visible [defaults: True]
+    colorbar_<keyword>:
+        <keyword> is passed to :func:`~matplotlib.pyplot.colorbar`
+    units:
+        Indicate these units on along the colorbar, else it guessed from the
+        variable or suppressed if value is False [default: None]
     """
     if pp is not False and colorbar:
 
@@ -2391,14 +2597,22 @@ def colorbar(pp=None, vars=None, drawedges=False, levels=None, colorbar_horizont
 _colorbar_ = colorbar
 
 def colorbar_new(sm=None, vars=None, drawedges=False, levels=None, horizontal=False, visible=True, position=None,units=None, standalone=False, cax=None, ax=None, extend='neither', **kwargs):
-    """
-    Plot a colorbar as :func:`~matplotlib.pyplot.colorbar` with some advanced features
+    """Plot a colorbar as :func:`~matplotlib.pyplot.colorbar` with some advanced features
 
-    - *horizontal*: Colorbar is horizontal [defaults: False]
-    - *position*: To change the default position. Position is relative to the SPACE LEFT in the form (center,width) with values in [0,1] [defaults: False]
-    - *visible*: Colorbar is visible [defaults: True]
-    - *units*: Indicate these units on along the colorbar, else it guessed from the variable or suppressed if value is False [default: None]
-    - Other key are passed to :func:`~matplotlib.pyplot.colorbar`
+    Parameters
+    ----------
+    horizontal:
+        Colorbar is horizontal [defaults: False]
+    position:
+        To change the default position. Position is relative to the
+        SPACE LEFT in the form (center,width) with values in [0,1] [defaults: False]
+    visible:
+        Colorbar is visible [defaults: True]
+    units:
+        Indicate these units on along the colorbar, else it guessed
+        from the variable or suppressed if value is False [default: None]
+    **kwargs
+        Other key are passed to :func:`~matplotlib.pyplot.colorbar`
     """
     if pp is False: return
 
@@ -2477,14 +2691,22 @@ def colorbar_new(sm=None, vars=None, drawedges=False, levels=None, horizontal=Fa
 
 
 def _levels_(var,anomaly=None,levels=None,nmax=8,vmin=None,vmax=None,**kwargs):
-    """
-    Data levels:
+    """Data levels
 
-    - *levels*: Force the use of these levels for contours.
-    - *anomaly*: Levels must be symetric about zero (useful for anomly plots) and color map is misc.plot.cmap_bwre() [default: None]. If None, is is turned to True if max is near -min (20%)
-    - *nmax*: Max number of levels (see misc.auto_scale) [default: 10]
-    - *vmin*: Force min value for pcolor.
-    - *vmax*: Force max value for pcolor.
+    Parameters
+    ----------
+    levels:
+        Force the use of these levels for contours.
+    anomaly:
+        Levels must be symetric about zero (useful for anomly plots)
+        and color map is misc.plot.cmap_bwre() [default: None].
+        If None, is is turned to True if max is near -min (20%)
+    nmax:
+        Max number of levels (see misc.auto_scale) [default: 10]
+    vmin:
+        Force min value for pcolor.
+    vmax:
+        Force max value for pcolor.
     """
     vmin = kwargs.get('min_value', vmin)
     vmax = kwargs.get('max_value', vmax)
@@ -2514,25 +2736,42 @@ def _levels_(var,anomaly=None,levels=None,nmax=8,vmin=None,vmax=None,**kwargs):
 #   return lonlab(deg,decimal=False,no_seconds=True,no_zeros=True)
 
 def decorate_axis(axis=None,vertical=0,date_rotation=None,date_fmt=None,date_locator=None,date_minor_locator=None,date_nominor=False,nodate=False,values=None,ax=None,**kwargs):
-    """
-    Axis decoration:
+    """Axis decoration:
 
-    - *[x/y]title*: Main label of the axis.
-    - *[x/y]label*: Same as x/ytitle.
-    - *[x/y]hide]*: Hide x/ytick labels.
-    - *[x/y]rotation*: Rotation of x/ytick labels (except for time).
-    - *[x/y]strict*: Strict axis limit.
-    - *[x/y]lim*: Override axis limit.
-    - *[x/y]min/max*: Override axis limit by x/ylim.
-    - *[x/y]minmax/maxmin*: Set maximal value of x/ymin and minimal value or x/ymax.
-    - *[x/y]nmax*: Max number of ticks.
-    - *x/yfmt*: Numeric format for x/y axis if not of time type.
-    - *date_rotation*: Rotation of time ticklabels.
-    - *date_locator*: Major locator for dates.
-    - *date_minor_locator*: Minor locator for dates.
-    - *date_nominor*: Suppress minor ticks for dates.
-    - *date_nmax_ticks*: Max number of ticks for dates
-    - *nodate*: Time axis must not be formatted as a time axis [default: False]
+    Parameters
+    ----------
+    [x/y]title:
+        Main label of the axis.
+    [x/y]label:
+        Same as x/ytitle.
+    [x/y]hide]:
+        Hide x/ytick labels.
+    [x/y]rotation:
+        Rotation of x/ytick labels (except for time).
+    [x/y]strict:
+        Strict axis limit.
+    [x/y]lim:
+        Override axis limit.
+    [x/y]min/max:
+        Override axis limit by x/ylim.
+    [x/y]minmax/maxmin:
+        Set maximal value of x/ymin and minimal value or x/ymax.
+    [x/y]nmax:
+        Max number of ticks.
+    x/yfmt:
+        Numeric format for x/y axis if not of time type.
+    date_rotation:
+        Rotation of time ticklabels.
+    date_locator:
+        Major locator for dates.
+    date_minor_locator:
+        Minor locator for dates.
+    date_nominor:
+        Suppress minor ticks for dates.
+    date_nmax_ticks:
+        Max number of ticks for dates
+    nodate:
+        Time axis must not be formatted as a time axis [default: False]
     """
     # Current axes
     if ax is not None:
@@ -2726,25 +2965,46 @@ def decorate_axis(axis=None,vertical=0,date_rotation=None,date_fmt=None,date_loc
 
 def _end_plot_(var=None,grid=True,figtext=None,show=True,close=False,savefig=None,title=None,logo=False,fullscreen=False,anchor=None, autoresize=2, key=None, dayhl=False, **kwargs):
     """
-    - *title*: Title of the figure [defaults to var.long_name or '']
-    - *grid*: Plot the grid [default: True]
-    - *dayhl*: Add day highlithing [default: False]
-    - *figtext*: figtext Add text at a specified position on the figure. Example: figtext=[0,0,'text'] add a 'text' at the lower left corner, or simply figtext='text'.
-    - *anchor*: Anchor of the axes (useful when resizing) in ['C', 'SW', 'S', 'SE', 'E', 'NE', 'N', 'NW', 'W'].
-    - *logo*: Add a logo to the figure [default: False]. logo can be a file name.
-    - *show*: Display the figure [default: True]
-    - *savefig*: Save the figure to this file.
-    - *savefigs*: Save the figure into multiple formats using :func:`savefigs` and 'savefigs' as the prefix to the files.
-    - *autoresize*: Auto resize the figure according axes (1 or True), axes+margins (2). If 0 or False, not resized [default: False=2].
-    - *key*: Add a key (like 'a)') to the axes using add_key is different from None [default: None]
-    - *close*: Close the figure at the end [default: False]
-    - *title_<keyword>*: <keyword> is passed to :func:`~matplotlib.pyplot.title`
-    - *key_<keyword>*: <keyword> is passed to :func:`add_key`
-    - *logo_<keyword>*: <keyword> is passed to :func:`add_logo`
-    - *figtext_<keyword>*: <keyword> is passed to :func:`~matplotlib.pyplot.figtext`
-    - *savefig_<keyword>*: <keyword> is passed to :func:`~matplotlib.pyplot.savefig`
-    - *savefigs_<keyword>*: <keyword> is passed to :func:`savefigs`
-    - *grid_<keyword>*: <keyword> is passed to :func:`~matplotlib.pyplot.grid`
+    Parameters
+    ----------
+    title:
+        Title of the figure [defaults to var.long_name or '']
+    grid:
+        Plot the grid [default: True]
+    dayhl:
+        Add day highlithing [default: False]
+    figtext:
+        figtext Add text at a specified position on the figure. Example: figtext=[0,0,'text'] add a 'text' at the lower left corner, or simply figtext='text'.
+    anchor:
+        Anchor of the axes (useful when resizing) in ['C', 'SW', 'S', 'SE', 'E', 'NE', 'N', 'NW', 'W'].
+    logo:
+        Add a logo to the figure [default: False]. logo can be a file name.
+    show:
+        Display the figure [default: True]
+    savefig:
+        Save the figure to this file.
+    savefigs:
+        Save the figure into multiple formats using :func:`savefigs` and 'savefigs' as the prefix to the files.
+    autoresize:
+        Auto resize the figure according axes (1 or True), axes+margins (2). If 0 or False, not resized [default: False=2].
+    key:
+        Add a key (like 'a)') to the axes using add_key is different from None [default: None]
+    close:
+        Close the figure at the end [default: False]
+    title_<keyword>:
+        <keyword> is passed to :func:`~matplotlib.pyplot.title`
+    key_<keyword>:
+        <keyword> is passed to :func:`add_key`
+    logo_<keyword>:
+        <keyword> is passed to :func:`add_logo`
+    figtext_<keyword>:
+        <keyword> is passed to :func:`~matplotlib.pyplot.figtext`
+    savefig_<keyword>:
+        <keyword> is passed to :func:`~matplotlib.pyplot.savefig`
+    savefigs_<keyword>:
+        <keyword> is passed to :func:`savefigs`
+    grid_<keyword>:
+        <keyword> is passed to :func:`~matplotlib.pyplot.grid`
     """
 
     # Overlay case
@@ -2883,8 +3143,8 @@ def curve2(*args, **kwargs):
     :class:`~vacumm.misc.core_plot.Plot1D`.
 
 
-    :Examples:
-
+    Examples
+    --------
         >>> curve2(sst, 'r-', shadow=True, ymax=25., long_name='SST', subplot=212)
 
         >>> curve2(xe, label='Full signal', show=False)
@@ -2984,83 +3244,77 @@ def bar2(*args, **kwargs):
     with properties also from :class:`~vacumm.misc.core_plot.Plot` and
     :class:`~vacumm.misc.core_plot.Plot1D`.
 
-    :Examples:
+    Examples
+    --------
+    >>> bar2(rain, color='c', align='left', width=0.95, savefig='rain.png')
 
-        >>> bar2(rain, color='c', align='left', width=0.95, savefig='rain.png')
+    >>> bar2(rain, vminmax=5.,show=False)
+    >>> bar2(snow, offset=rain, title='Precipitations')
 
-        >>> bar2(rain, vminmax=5.,show=False)
-        >>> bar2(snow, offset=rain, title='Precipitations')
+    Parameters
+    ----------
+    {Curve_load_data[data]}
+    {Plot1D__check_order_[vertical]}
+    {Plot1D__set_axes_[axis]}
+    {Plot[long_name]}
+    {Plot[units]}
+    {Bar_plot[width]}
+    {Bar_plot[lag]}
+    {Bar_plot[align]}
+    {Bar_plot[offset]}
+    {Bar_plot[label]}
+    {Bar_plot[shadow]}
+    {Bar_plot[shadow_<param>]}
 
-    :Data params:
-
-        {Curve_load_data[data]}
-        {Plot1D__check_order_[vertical]}
-        {Plot1D__set_axes_[axis]}
-        {Plot[long_name]}
-        {Plot[units]}
-
-    :Bar params:
-
-        {Bar_plot[width]}
-        {Bar_plot[lag]}
-        {Bar_plot[align]}
-        {Bar_plot[offset]}
-        {Bar_plot[label]}
-        {Bar_plot[shadow]}
-        {Bar_plot[shadow_<param>]}
-
-    :Plot initialization:
-
-        {Plot_pre_plot[fig]}
-        {Plot_pre_plot[figsize]}
-        {Plot_pre_plot[subplot]}
-        {Plot_pre_plot[subplots_adjust]}
-        {Plot_pre_plot[top/bottom/left/right/wspace/hspace]}
-        {Plot_pre_plot[axes]}
-        {Plot_pre_plot[axes_<param>]}
-        {Plot_pre_plot[axes_rect]}
-        {Plot_pre_plot[bgcolor]}
-        {Plot_pre_plot[twin]}
-        {Plot_pre_plot[noframe]}
-        {Plot_pre_plot[fullscreen]}
-
-    :Plot finalization:
-
-        {Plot[title]}
-        {Plot_post_plot[title_<param>]}
-        {Plot[latex_units]}
-        {Plot[x/ymin/max]}
-        {Plot[x/ymin/max]}
-        {Plot_format_axes[x/y/vlim]}
-        {Plot_format_axes[x/y/vminmax]}
-        {Plot_format_axes[x/y/vmaxmin]}
-        {Plot[x/ymasked]}
-        {Plot[x/ylong_name]}
-        {Plot[x/yunits]}
-        {Plot[x/ylabel]}
-        {Plot_format_axes[x/yticks]}
-        {Plot_format_axes[x/yticklabels]}
-        {Plot_format_axes[x/y/vskip]}
-        {Plot_format_axes[x/yhide]}
-        {Plot_post_plot[grid]}
-        {Plot_post_plot[grid_<param>]}
-        {Plot_post_plot[legend]}
-        {Plot_post_plot[legend_<param>]}
-        {Plot_post_plot[figtext]}
-        {Plot_post_plot[figtext_<param>]}
-        {Plot_post_plot[legend]}
-        {Plot_post_plot[legend_<param>]}
-        {Plot_post_plot[key]}
-        {Plot_post_plot[key_<param>]}
-        {Plot_post_plot[anchor]}
-        {Plot_post_plot[autoresize]}
-        {Plot_post_plot[savefig]}
-        {Plot_savefig[savefig_verbose]}
-        {Plot_post_plot[savefig_<param>]}
-        {Plot_post_plot[savefigs]}
-        {Plot_post_plot[savefigs_<param>]}
-        {Plot_post_plot[show]}
-        {Plot_post_plot[close]}
+    Other parameters
+    ----------------
+    {Plot_pre_plot[fig]}
+    {Plot_pre_plot[figsize]}
+    {Plot_pre_plot[subplot]}
+    {Plot_pre_plot[subplots_adjust]}
+    {Plot_pre_plot[top/bottom/left/right/wspace/hspace]}
+    {Plot_pre_plot[axes]}
+    {Plot_pre_plot[axes_<param>]}
+    {Plot_pre_plot[axes_rect]}
+    {Plot_pre_plot[bgcolor]}
+    {Plot_pre_plot[twin]}
+    {Plot_pre_plot[noframe]}
+    {Plot_pre_plot[fullscreen]}
+    {Plot[title]}
+    {Plot_post_plot[title_<param>]}
+    {Plot[latex_units]}
+    {Plot[x/ymin/max]}
+    {Plot[x/ymin/max]}
+    {Plot_format_axes[x/y/vlim]}
+    {Plot_format_axes[x/y/vminmax]}
+    {Plot_format_axes[x/y/vmaxmin]}
+    {Plot[x/ymasked]}
+    {Plot[x/ylong_name]}
+    {Plot[x/yunits]}
+    {Plot[x/ylabel]}
+    {Plot_format_axes[x/yticks]}
+    {Plot_format_axes[x/yticklabels]}
+    {Plot_format_axes[x/y/vskip]}
+    {Plot_format_axes[x/yhide]}
+    {Plot_post_plot[grid]}
+    {Plot_post_plot[grid_<param>]}
+    {Plot_post_plot[legend]}
+    {Plot_post_plot[legend_<param>]}
+    {Plot_post_plot[figtext]}
+    {Plot_post_plot[figtext_<param>]}
+    {Plot_post_plot[legend]}
+    {Plot_post_plot[legend_<param>]}
+    {Plot_post_plot[key]}
+    {Plot_post_plot[key_<param>]}
+    {Plot_post_plot[anchor]}
+    {Plot_post_plot[autoresize]}
+    {Plot_post_plot[savefig]}
+    {Plot_savefig[savefig_verbose]}
+    {Plot_post_plot[savefig_<param>]}
+    {Plot_post_plot[savefigs]}
+    {Plot_post_plot[savefigs_<param>]}
+    {Plot_post_plot[show]}
+    {Plot_post_plot[close]}
 
     """
     kwargs.setdefault('plot', True)
@@ -3077,101 +3331,95 @@ def stick2(*args, **kwargs):
     :class:`~vacumm.misc.core_plot.ScalarMappable` and
     :class:`~vacumm.misc.core_plot.QuiverKey`.
 
-    :Example:
+    Example
+    -------
+    >>> stick2(u, v, color='mod', vmax=10., quiver_scale=50., mod=True)
+    >>> stick2(r, a, polar=True, degrees=False, quiverkey_value=5)
 
-        >>> stick2(u, v, color='mod', vmax=10., quiver_scale=50., mod=True)
-        >>> stick2(r, a, polar=True, degrees=False, quiverkey_value=5)
+    Parameters
+    ----------
+    {Stick_load_data[udata]}
+    {Stick_load_data[vdata]}
+    {Stick_load_data[polar]}
+    {Stick_load_data[degrees]}
+    {Plot1D__check_order_[vertical]}
+    {Plot1D__set_axes_[axis]}
+    {Plot[long_name]}
+    {Plot[units]}
+    {Stick_plot[pos]}
+    {Stick_plot[mod]}
+    {Stick_plot[mod_<param>]}
+    {Stick_plot[line]}
+    {Stick_plot[alpha]}
+    {Stick_plot[headwidth]}
+    {Stick_plot[headlength]}
+    {Stick_plot[headaxislength]}
+    {Stick_plot[minlength]}
+    {Stick_plot[minshaft]}
+    {Stick_plot[cmap]}
+    {Stick_plot[cmap_<param>]}
+    {Stick_plot[levels]}
+    {Stick_plot[levels_<param>]}
+    {Stick_plot[shadow]}
+    {Stick_plot[shadow_<param>]}
+    {ScalarMappable_post_plot[colorbar]}
+    {ScalarMappable_post_plot[colorbar_<param>]}
+    {QuiverKey_quiverkey[quiverkey_pos]}
+    {QuiverKey_quiverkey[quiverkey_text]}
+    {QuiverKey_quiverkey[quiverkey_value]}
+    {QuiverKey_quiverkey[quiverkey_units]}
+    {QuiverKey_quiverkey[quiverkey_latex_units]}
 
-    :Data params:
-
-        {Stick_load_data[udata]}
-        {Stick_load_data[vdata]}
-        {Stick_load_data[polar]}
-        {Stick_load_data[degrees]}
-        {Plot1D__check_order_[vertical]}
-        {Plot1D__set_axes_[axis]}
-        {Plot[long_name]}
-        {Plot[units]}
-
-    :Stick params:
-
-        {Stick_plot[pos]}
-        {Stick_plot[mod]}
-        {Stick_plot[mod_<param>]}
-        {Stick_plot[line]}
-        {Stick_plot[alpha]}
-        {Stick_plot[headwidth]}
-        {Stick_plot[headlength]}
-        {Stick_plot[headaxislength]}
-        {Stick_plot[minlength]}
-        {Stick_plot[minshaft]}
-        {Stick_plot[cmap]}
-        {Stick_plot[cmap_<param>]}
-        {Stick_plot[levels]}
-        {Stick_plot[levels_<param>]}
-        {Stick_plot[shadow]}
-        {Stick_plot[shadow_<param>]}
-        {ScalarMappable_post_plot[colorbar]}
-        {ScalarMappable_post_plot[colorbar_<param>]}
-        {QuiverKey_quiverkey[quiverkey_pos]}
-        {QuiverKey_quiverkey[quiverkey_text]}
-        {QuiverKey_quiverkey[quiverkey_value]}
-        {QuiverKey_quiverkey[quiverkey_units]}
-        {QuiverKey_quiverkey[quiverkey_latex_units]}
-
-    :Plot initialization:
-
-        {Plot_pre_plot[fig]}
-        {Plot_pre_plot[figsize]}
-        {Plot_pre_plot[subplot]}
-        {Plot_pre_plot[subplots_adjust]}
-        {Plot_pre_plot[top/bottom/left/right/wspace/hspace]}
-        {Plot_pre_plot[axes]}
-        {Plot_pre_plot[axes_<param>]}
-        {Plot_pre_plot[axes_rect]}
-        {Plot_pre_plot[bgcolor]}
-        {Plot_pre_plot[twin]}
-        {Plot_pre_plot[noframe]}
-        {Plot_pre_plot[fullscreen]}
-        {ScalarMappable_colorbar[cax]}
-
-    :Plot finalization:
-
-        {Plot[title]}
-        {Plot_post_plot[title_<param>]}
-        {Plot[latex_units]}
-        {Plot[x/ymin/max]}
-        {Plot[x/ymin/max]}
-        {Plot_format_axes[x/y/vlim]}
-        {Plot_format_axes[x/y/vminmax]}
-        {Plot_format_axes[x/y/vmaxmin]}
-        {Plot[x/ymasked]}
-        {Plot[x/ylong_name]}
-        {Plot[x/yunits]}
-        {Plot[x/ylabel]}
-        {Plot_format_axes[x/yticks]}
-        {Plot_format_axes[x/yticklabels]}
-        {Plot_format_axes[x/y/vskip]}
-        {Plot_format_axes[x/yhide]}
-        {Plot_post_plot[grid]}
-        {Plot_post_plot[grid_<param>]}
-        {Plot_post_plot[legend]}
-        {Plot_post_plot[legend_<param>]}
-        {Plot_post_plot[figtext]}
-        {Plot_post_plot[figtext_<param>]}
-        {Plot_post_plot[legend]}
-        {Plot_post_plot[legend_<param>]}
-        {Plot_post_plot[key]}
-        {Plot_post_plot[key_<param>]}
-        {Plot_post_plot[anchor]}
-        {Plot_post_plot[autoresize]}
-        {Plot_post_plot[savefig]}
-        {Plot_savefig[savefig_verbose]}
-        {Plot_post_plot[savefig_<param>]}
-        {Plot_post_plot[savefigs]}
-        {Plot_post_plot[savefigs_<param>]}
-        {Plot_post_plot[show]}
-        {Plot_post_plot[close]}
+    Other parameters
+    ----------------
+    {Plot_pre_plot[fig]}
+    {Plot_pre_plot[figsize]}
+    {Plot_pre_plot[subplot]}
+    {Plot_pre_plot[subplots_adjust]}
+    {Plot_pre_plot[top/bottom/left/right/wspace/hspace]}
+    {Plot_pre_plot[axes]}
+    {Plot_pre_plot[axes_<param>]}
+    {Plot_pre_plot[axes_rect]}
+    {Plot_pre_plot[bgcolor]}
+    {Plot_pre_plot[twin]}
+    {Plot_pre_plot[noframe]}
+    {Plot_pre_plot[fullscreen]}
+    {ScalarMappable_colorbar[cax]}
+    {Plot[title]}
+    {Plot_post_plot[title_<param>]}
+    {Plot[latex_units]}
+    {Plot[x/ymin/max]}
+    {Plot[x/ymin/max]}
+    {Plot_format_axes[x/y/vlim]}
+    {Plot_format_axes[x/y/vminmax]}
+    {Plot_format_axes[x/y/vmaxmin]}
+    {Plot[x/ymasked]}
+    {Plot[x/ylong_name]}
+    {Plot[x/yunits]}
+    {Plot[x/ylabel]}
+    {Plot_format_axes[x/yticks]}
+    {Plot_format_axes[x/yticklabels]}
+    {Plot_format_axes[x/y/vskip]}
+    {Plot_format_axes[x/yhide]}
+    {Plot_post_plot[grid]}
+    {Plot_post_plot[grid_<param>]}
+    {Plot_post_plot[legend]}
+    {Plot_post_plot[legend_<param>]}
+    {Plot_post_plot[figtext]}
+    {Plot_post_plot[figtext_<param>]}
+    {Plot_post_plot[legend]}
+    {Plot_post_plot[legend_<param>]}
+    {Plot_post_plot[key]}
+    {Plot_post_plot[key_<param>]}
+    {Plot_post_plot[anchor]}
+    {Plot_post_plot[autoresize]}
+    {Plot_post_plot[savefig]}
+    {Plot_savefig[savefig_verbose]}
+    {Plot_post_plot[savefig_<param>]}
+    {Plot_post_plot[savefigs]}
+    {Plot_post_plot[savefigs_<param>]}
+    {Plot_post_plot[show]}
+    {Plot_post_plot[close]}
 
     """
     kwargs.setdefault('plot', True)
@@ -3186,116 +3434,113 @@ def hov2(*args, **kwargs):
     Plot data as a Hovmoller diagram (2D with one axis as time)
     and get a :class:`~vacumm.misc.core_plot.Nov` object.
 
-    :Example:
+    Example
+    -------
+    >>> hov2(temp[:,-1,:,3], order='ty') # Force time as Y axis
+    >>> h = hov2(ssh, show=False)
 
-        >>> hov2(temp[:,-1,:,3], order='ty') # Force time as Y axis
-        >>> h = hov2(ssh, show=False)
+    Parameters
+    ----------
+    {Plot2D_load_data[data]}
+    {Plot__check_order_[order]}
+    {Plot2D__set_axes_[x/yaxis]}
+    {Plot[long_name]}
+    {Plot[units]}
+    {Plot2D_plot[contour]}
+    {Plot2D_plot_contour[contour_<param>]}
+    {Plot2D_plot_fill[fill]}
+    {Plot2D_plot_fill[nofill]}
+    {ScalarMappable[levels]}
+    {Plot2D_plot[levels_<param>]}
+    {ScalarMappable[levels_mode]}
+    {ScalarMappable[keepminmax]}
+    {ScalarMappable[nmax_levels]}
+    {ScalarMappable[nmax]}
+    {ScalarMappable[cmap]}
+    {Plot2D_plot_fill[cmap_<param>]}
+    {Plot2D_plot_fill[alpha]}
+    {Plot2D_plot_fill[fill_<param>]}
+    {Plot2D_plot_fill[shading]}
+    {Plot2D_plot_fill[extend]}
+    {Plot2D_plot_contour[linewidths]}
+    {Plot2D_plot_contour[clabel]}
+    {Plot2D_plot_contour[clabel_<param>]}
+    {Plot2D_plot_quiver[quiver_<param>]}
+    {Plot2D_plot_quiver[quiver_norm]}
+    {Plot2D_plot_quiver[quiver_samp]}
+    {Plot2D_plot_quiver[quiver_x/ysamp]}
+    {Plot2D_plot_quiver[quiver_res]}
+    {Plot2D_plot_quiver[quiver_x/yres]}
+    {Plot2D_plot_quiver[quiver_relres]}
+    {Plot2D_plot_quiver[quiver_x/yrelres]}
+    {Plot2D_plot_quiver[quiverkey]}
+    {QuiverKey_quiverkey[quiverkey_pos]}
+    {QuiverKey_quiverkey[quiverkey_text]}
+    {QuiverKey_quiverkey[quiverkey_value]}
+    {QuiverKey_quiverkey[quiverkey_units]}
+    {QuiverKey_quiverkey[quiverkey_latex_units]}
+    {Plot2D_plot_quiver[quiverkey_<param>]}
+    {ScalarMappable_post_plot[colorbar]}
+    {ScalarMappable_post_plot[colorbar_<param>]}
 
-    :Data params:
+    Other parameters
+    ----------------
+    {Plot_pre_plot[fig]}
+    {Plot_pre_plot[figsize]}
+    {Plot_pre_plot[subplot]}
+    {Plot_pre_plot[subplots_adjust]}
+    {Plot_pre_plot[top/bottom/left/right/wspace/hspace]}
+    {Plot_pre_plot[axes]}
+    {Plot_pre_plot[axes_<param>]}
+    {Plot_pre_plot[axes_rect]}
+    {Plot_pre_plot[bgcolor]}
+    {Plot_pre_plot[twin]}
+    {Plot_pre_plot[noframe]}
+    {Plot_pre_plot[fullscreen]}
+    {Plot[title]}
+    {Plot_post_plot[title_<param>]}
+    {Plot[latex_units]}
+    {Plot[x/ymin/max]}
+    {Plot[x/ymin/max]}
+    {Plot_format_axes[x/y/vlim]}
+    {Plot_format_axes[x/y/vminmax]}
+    {Plot_format_axes[x/y/vmaxmin]}
+    {Plot[x/ymasked]}
+    {Plot[x/ylong_name]}
+    {Plot[x/yunits]}
+    {Plot[x/ylabel]}
+    {Plot_format_axes[x/yticks]}
+    {Plot_format_axes[x/yticklabels]}
+    {Plot_format_axes[x/y/vskip]}
+    {Plot_format_axes[x/yhide]}
+    {Plot_post_plot[grid]}
+    {Plot_post_plot[grid_<param>]}
+    {Plot_post_plot[legend]}
+    {Plot_post_plot[legend_<param>]}
+    {Plot_post_plot[figtext]}
+    {Plot_post_plot[figtext_<param>]}
+    {Plot_post_plot[legend]}
+    {Plot_post_plot[legend_<param>]}
+    {Plot_post_plot[key]}
+    {Plot_post_plot[key_<param>]}
+    {Plot_post_plot[anchor]}
+    {Plot_post_plot[autoresize]}
+    {Plot_post_plot[savefig]}
+    {Plot_savefig[savefig_verbose]}
+    {Plot_post_plot[savefig_<param>]}
+    {Plot_post_plot[savefigs]}
+    {Plot_post_plot[savefigs_<param>]}
+    {Plot_post_plot[show]}
+    {Plot_post_plot[close]}
 
-        {Plot2D_load_data[data]}
-        {Plot__check_order_[order]}
-        {Plot2D__set_axes_[x/yaxis]}
-        {Plot[long_name]}
-        {Plot[units]}
-
-    :2D plot params:
-
-        {Plot2D_plot[contour]}
-        {Plot2D_plot_contour[contour_<param>]}
-        {Plot2D_plot_fill[fill]}
-        {Plot2D_plot_fill[nofill]}
-        {ScalarMappable[levels]}
-        {Plot2D_plot[levels_<param>]}
-        {ScalarMappable[levels_mode]}
-        {ScalarMappable[keepminmax]}
-        {ScalarMappable[nmax_levels]}
-        {ScalarMappable[nmax]}
-        {ScalarMappable[cmap]}
-        {Plot2D_plot_fill[cmap_<param>]}
-        {Plot2D_plot_fill[alpha]}
-        {Plot2D_plot_fill[fill_<param>]}
-        {Plot2D_plot_fill[shading]}
-        {Plot2D_plot_fill[extend]}
-        {Plot2D_plot_contour[linewidths]}
-        {Plot2D_plot_contour[clabel]}
-        {Plot2D_plot_contour[clabel_<param>]}
-        {Plot2D_plot_quiver[quiver_<param>]}
-        {Plot2D_plot_quiver[quiver_norm]}
-        {Plot2D_plot_quiver[quiver_samp]}
-        {Plot2D_plot_quiver[quiver_x/ysamp]}
-        {Plot2D_plot_quiver[quiver_res]}
-        {Plot2D_plot_quiver[quiver_x/yres]}
-        {Plot2D_plot_quiver[quiver_relres]}
-        {Plot2D_plot_quiver[quiver_x/yrelres]}
-        {Plot2D_plot_quiver[quiverkey]}
-        {QuiverKey_quiverkey[quiverkey_pos]}
-        {QuiverKey_quiverkey[quiverkey_text]}
-        {QuiverKey_quiverkey[quiverkey_value]}
-        {QuiverKey_quiverkey[quiverkey_units]}
-        {QuiverKey_quiverkey[quiverkey_latex_units]}
-        {Plot2D_plot_quiver[quiverkey_<param>]}
-        {ScalarMappable_post_plot[colorbar]}
-        {ScalarMappable_post_plot[colorbar_<param>]}
-
-    :Plot initialization:
-
-        {Plot_pre_plot[fig]}
-        {Plot_pre_plot[figsize]}
-        {Plot_pre_plot[subplot]}
-        {Plot_pre_plot[subplots_adjust]}
-        {Plot_pre_plot[top/bottom/left/right/wspace/hspace]}
-        {Plot_pre_plot[axes]}
-        {Plot_pre_plot[axes_<param>]}
-        {Plot_pre_plot[axes_rect]}
-        {Plot_pre_plot[bgcolor]}
-        {Plot_pre_plot[twin]}
-        {Plot_pre_plot[noframe]}
-        {Plot_pre_plot[fullscreen]}
-
-    :Plot finalization:
-
-        {Plot[title]}
-        {Plot_post_plot[title_<param>]}
-        {Plot[latex_units]}
-        {Plot[x/ymin/max]}
-        {Plot[x/ymin/max]}
-        {Plot_format_axes[x/y/vlim]}
-        {Plot_format_axes[x/y/vminmax]}
-        {Plot_format_axes[x/y/vmaxmin]}
-        {Plot[x/ymasked]}
-        {Plot[x/ylong_name]}
-        {Plot[x/yunits]}
-        {Plot[x/ylabel]}
-        {Plot_format_axes[x/yticks]}
-        {Plot_format_axes[x/yticklabels]}
-        {Plot_format_axes[x/y/vskip]}
-        {Plot_format_axes[x/yhide]}
-        {Plot_post_plot[grid]}
-        {Plot_post_plot[grid_<param>]}
-        {Plot_post_plot[legend]}
-        {Plot_post_plot[legend_<param>]}
-        {Plot_post_plot[figtext]}
-        {Plot_post_plot[figtext_<param>]}
-        {Plot_post_plot[legend]}
-        {Plot_post_plot[legend_<param>]}
-        {Plot_post_plot[key]}
-        {Plot_post_plot[key_<param>]}
-        {Plot_post_plot[anchor]}
-        {Plot_post_plot[autoresize]}
-        {Plot_post_plot[savefig]}
-        {Plot_savefig[savefig_verbose]}
-        {Plot_post_plot[savefig_<param>]}
-        {Plot_post_plot[savefigs]}
-        {Plot_post_plot[savefigs_<param>]}
-        {Plot_post_plot[show]}
-        {Plot_post_plot[close]}
-
-    :More:
-
-        - **Specific params**: see :class:`~vacumm.misc.core_plot.Hov`.
-        - **Scalar params**: see :class:`~vacumm.misc.core_plot.ScalarMappable`.
-        - **Other generic params**: see :class:`~vacumm.misc.core_plot.Plot`.
+    See also
+    --------
+    Specific params:
+        see :class:`~vacumm.misc.core_plot.Hov`.
+    Scalar params:
+        see :class:`~vacumm.misc.core_plot.ScalarMappable`.
+    Other generic params:
+        see :class:`~vacumm.misc.core_plot.Plot`.
 
     """
     kwargs.setdefault('plot', True)
@@ -3313,150 +3558,146 @@ def map2(*args, **kwargs):
     :class:`~vacumm.misc.core_plot.ScalarMappable` and
     :class:`~vacumm.misc.core_plot.QuiverKey`.
 
-    :Example:
+    Example
+    -------
+    >>> map2(xe, resolution='i')
+    >>> map2(lon=(-10,0), lat=(45,55), drawrivers=True, drawrivers_color='b')
+    >>> m = map(bathy, show=False)
+    >>> m.add_place(x, y, 'Brest')
+    >>> m.show()
 
-        >>> map2(xe, resolution='i')
-        >>> map2(lon=(-10,0), lat=(45,55), drawrivers=True, drawrivers_color='b')
-        >>> m = map(bathy, show=False)
-        >>> m.add_place(x, y, 'Brest')
-        >>> m.show()
+    Parameters
+    ----------
+    {Plot2D_load_data[data]}
+    {Map_load_data[lon]}
+    {Map_load_data[lat]}
+    {Plot2D__set_axes_[x/yaxis]}
+    {Plot[long_name]}
+    {Plot[units]}
+    {Plot[latex_units]}
+    {Map_pre_plot[projection]}
+    {Map_pre_plot[resolution]}
+    {Map_pre_plot[map_update]}
+    {Map_pre_plot[nocache]}
+    {Map_pre_plot[zoom]}
+    {Map_post_plot[fillcontinents]}
+    {Map_post_plot[fillcontinents_<param>]}
+    {Map_post_plot[land_color]}
+    {Map_post_plot[drawrivers]}
+    {Map_post_plot[drawrivers_<param>]}
+    {Map_post_plot[meridians]}
+    {Map_post_plot[drawmeridians]}
+    {Map_post_plot[drawmeridians_<param>]}
+    {Map_post_plot[parallels]}
+    {Map_post_plot[drawparallels]}
+    {Map_post_plot[drawparallels_<param>]}
+    {Map_post_plot[meridional/zonal_labels]}
+    {Map_post_plot[fullscreen]}
+    {Map_post_plot[mapscale]}
+    {Map_post_plot[mapscale_<param>]}
+    {Map_post_plot[compass]}
+    {Map_post_plot[compass_<param>]}
+    {Map_post_plot[mscp]}
+    {Map_post_plot[mscp_<param>]}
+    {Plot2D_plot[contour]}
+    {Plot2D_plot_contour[contour_<param>]}
+    {Plot2D_plot_fill[fill]}
+    {Plot2D_plot_fill[nofill]}
+    {ScalarMappable[levels]}
+    {Plot2D_plot[levels_<param>]}
+    {ScalarMappable[levels_mode]}
+    {ScalarMappable[keepminmax]}
+    {ScalarMappable[nmax_levels]}
+    {ScalarMappable[nmax]}
+    {ScalarMappable[cmap]}
+    {Plot2D_plot_fill[cmap_<param>]}
+    {Plot2D_plot_fill[alpha]}
+    {Plot2D_plot_fill[fill_<param>]}
+    {Plot2D_plot_fill[shading]}
+    {Plot2D_plot_fill[extend]}
+    {Plot2D_plot_contour[linewidths]}
+    {Plot2D_plot_contour[clabel]}
+    {Plot2D_plot_contour[clabel_<param>]}
+    {Plot2D_plot_quiver[quiver_<param>]}
+    {Plot2D_plot_quiver[quiver_norm]}
+    {Plot2D_plot_quiver[quiver_samp]}
+    {Plot2D_plot_quiver[quiver_x/ysamp]}
+    {Plot2D_plot_quiver[quiver_res]}
+    {Plot2D_plot_quiver[quiver_x/yres]}
+    {Plot2D_plot_quiver[quiver_relres]}
+    {Plot2D_plot_quiver[quiver_x/yrelres]}
+    {Plot2D_plot_quiver[quiverkey]}
+    {QuiverKey_quiverkey[quiverkey_pos]}
+    {QuiverKey_quiverkey[quiverkey_text]}
+    {QuiverKey_quiverkey[quiverkey_value]}
+    {QuiverKey_quiverkey[quiverkey_units]}
+    {QuiverKey_quiverkey[quiverkey_latex_units]}
+    {Plot2D_plot_quiver[quiverkey_<param>]}
+    {ScalarMappable_post_plot[colorbar]}
+    {ScalarMappable_post_plot[colorbar_<param>]}
 
-    :Data params:
+    Other parameters
+    ----------------
+    {Plot_pre_plot[fig]}
+    {Plot_pre_plot[figsize]}
+    {Plot_pre_plot[subplot]}
+    {Plot_pre_plot[subplots_adjust]}
+    {Plot_pre_plot[top/bottom/left/right/wspace/hspace]}
+    {Plot_pre_plot[axes]}
+    {Plot_pre_plot[axes_<param>]}
+    {Plot_pre_plot[axes_rect]}
+    {Plot_pre_plot[bgcolor]}
+    {Plot_pre_plot[twin]}
+    {Plot_pre_plot[noframe]}
+    {Plot_pre_plot[fullscreen]}
+    {Plot[title]}
+    {Plot_post_plot[title_<param>]}
+    {Plot[latex_units]}
+    {Plot[x/ymin/max]}
+    {Plot[x/ymin/max]}
+    {Plot_format_axes[x/y/vlim]}
+    {Plot_format_axes[x/y/vminmax]}
+    {Plot_format_axes[x/y/vmaxmin]}
+    {Plot[x/ymasked]}
+    {Plot[x/ylong_name]}
+    {Plot[x/yunits]}
+    {Plot[x/ylabel]}
+    {Plot_format_axes[x/yticks]}
+    {Plot_format_axes[x/yticklabels]}
+    {Plot_format_axes[x/y/vskip]}
+    {Plot_format_axes[x/yhide]}
+    {Plot_post_plot[grid]}
+    {Plot_post_plot[grid_<param>]}
+    {Plot_post_plot[legend]}
+    {Plot_post_plot[legend_<param>]}
+    {Plot_post_plot[figtext]}
+    {Plot_post_plot[figtext_<param>]}
+    {Plot_post_plot[legend]}
+    {Plot_post_plot[legend_<param>]}
+    {Plot_post_plot[key]}
+    {Plot_post_plot[key_<param>]}
+    {Plot_post_plot[anchor]}
+    {Plot_post_plot[autoresize]}
+    {Plot_post_plot[savefig]}
+    {Plot_savefig[savefig_verbose]}
+    {Plot_post_plot[savefig_<param>]}
+    {Plot_post_plot[savefigs]}
+    {Plot_post_plot[savefigs_<param>]}
+    {Plot_post_plot[show]}
+    {Plot_post_plot[close]}
 
-        {Plot2D_load_data[data]}
-        {Map_load_data[lon]}
-        {Map_load_data[lat]}
-        {Plot2D__set_axes_[x/yaxis]}
-        {Plot[long_name]}
-        {Plot[units]}
-        {Plot[latex_units]}
-
-    :Map params:
-
-        {Map_pre_plot[projection]}
-        {Map_pre_plot[resolution]}
-        {Map_pre_plot[map_update]}
-        {Map_pre_plot[nocache]}
-        {Map_pre_plot[zoom]}
-        {Map_post_plot[fillcontinents]}
-        {Map_post_plot[fillcontinents_<param>]}
-        {Map_post_plot[land_color]}
-        {Map_post_plot[drawrivers]}
-        {Map_post_plot[drawrivers_<param>]}
-        {Map_post_plot[meridians]}
-        {Map_post_plot[drawmeridians]}
-        {Map_post_plot[drawmeridians_<param>]}
-        {Map_post_plot[parallels]}
-        {Map_post_plot[drawparallels]}
-        {Map_post_plot[drawparallels_<param>]}
-        {Map_post_plot[meridional/zonal_labels]}
-        {Map_post_plot[fullscreen]}
-        {Map_post_plot[mapscale]}
-        {Map_post_plot[mapscale_<param>]}
-        {Map_post_plot[compass]}
-        {Map_post_plot[compass_<param>]}
-        {Map_post_plot[mscp]}
-        {Map_post_plot[mscp_<param>]}
-
-    :2D plot params:
-
-        {Plot2D_plot[contour]}
-        {Plot2D_plot_contour[contour_<param>]}
-        {Plot2D_plot_fill[fill]}
-        {Plot2D_plot_fill[nofill]}
-        {ScalarMappable[levels]}
-        {Plot2D_plot[levels_<param>]}
-        {ScalarMappable[levels_mode]}
-        {ScalarMappable[keepminmax]}
-        {ScalarMappable[nmax_levels]}
-        {ScalarMappable[nmax]}
-        {ScalarMappable[cmap]}
-        {Plot2D_plot_fill[cmap_<param>]}
-        {Plot2D_plot_fill[alpha]}
-        {Plot2D_plot_fill[fill_<param>]}
-        {Plot2D_plot_fill[shading]}
-        {Plot2D_plot_fill[extend]}
-        {Plot2D_plot_contour[linewidths]}
-        {Plot2D_plot_contour[clabel]}
-        {Plot2D_plot_contour[clabel_<param>]}
-        {Plot2D_plot_quiver[quiver_<param>]}
-        {Plot2D_plot_quiver[quiver_norm]}
-        {Plot2D_plot_quiver[quiver_samp]}
-        {Plot2D_plot_quiver[quiver_x/ysamp]}
-        {Plot2D_plot_quiver[quiver_res]}
-        {Plot2D_plot_quiver[quiver_x/yres]}
-        {Plot2D_plot_quiver[quiver_relres]}
-        {Plot2D_plot_quiver[quiver_x/yrelres]}
-        {Plot2D_plot_quiver[quiverkey]}
-        {QuiverKey_quiverkey[quiverkey_pos]}
-        {QuiverKey_quiverkey[quiverkey_text]}
-        {QuiverKey_quiverkey[quiverkey_value]}
-        {QuiverKey_quiverkey[quiverkey_units]}
-        {QuiverKey_quiverkey[quiverkey_latex_units]}
-        {Plot2D_plot_quiver[quiverkey_<param>]}
-        {ScalarMappable_post_plot[colorbar]}
-        {ScalarMappable_post_plot[colorbar_<param>]}
-
-    :Plot initialization:
-
-        {Plot_pre_plot[fig]}
-        {Plot_pre_plot[figsize]}
-        {Plot_pre_plot[subplot]}
-        {Plot_pre_plot[subplots_adjust]}
-        {Plot_pre_plot[top/bottom/left/right/wspace/hspace]}
-        {Plot_pre_plot[axes]}
-        {Plot_pre_plot[axes_<param>]}
-        {Plot_pre_plot[axes_rect]}
-        {Plot_pre_plot[bgcolor]}
-        {Plot_pre_plot[twin]}
-        {Plot_pre_plot[noframe]}
-        {Plot_pre_plot[fullscreen]}
-
-    :Plot finalization:
-
-        {Plot[title]}
-        {Plot_post_plot[title_<param>]}
-        {Plot[latex_units]}
-        {Plot[x/ymin/max]}
-        {Plot[x/ymin/max]}
-        {Plot_format_axes[x/y/vlim]}
-        {Plot_format_axes[x/y/vminmax]}
-        {Plot_format_axes[x/y/vmaxmin]}
-        {Plot[x/ymasked]}
-        {Plot[x/ylong_name]}
-        {Plot[x/yunits]}
-        {Plot[x/ylabel]}
-        {Plot_format_axes[x/yticks]}
-        {Plot_format_axes[x/yticklabels]}
-        {Plot_format_axes[x/y/vskip]}
-        {Plot_format_axes[x/yhide]}
-        {Plot_post_plot[grid]}
-        {Plot_post_plot[grid_<param>]}
-        {Plot_post_plot[legend]}
-        {Plot_post_plot[legend_<param>]}
-        {Plot_post_plot[figtext]}
-        {Plot_post_plot[figtext_<param>]}
-        {Plot_post_plot[legend]}
-        {Plot_post_plot[legend_<param>]}
-        {Plot_post_plot[key]}
-        {Plot_post_plot[key_<param>]}
-        {Plot_post_plot[anchor]}
-        {Plot_post_plot[autoresize]}
-        {Plot_post_plot[savefig]}
-        {Plot_savefig[savefig_verbose]}
-        {Plot_post_plot[savefig_<param>]}
-        {Plot_post_plot[savefigs]}
-        {Plot_post_plot[savefigs_<param>]}
-        {Plot_post_plot[show]}
-        {Plot_post_plot[close]}
-
-    :Other params:
-
-        - **Specific params**: see :class:`~vacumm.misc.core_plot.Map`.
-        - **Specific plot initialization params**: see :class:`~vacumm.misc.core_plot.Map.pre_plot`.
-        - **Specific plot params**: see :class:`~vacumm.misc.core_plot.Map.plot`.
-        - **Specific plot finalization params**: see :class:`~vacumm.misc.core_plot.Map.post_plot`.
-        - **Other generic params**: see :class:`~vacumm.misc.core_plot.Plot`.
+    See also
+    --------
+    Specific params:
+        see :class:`~vacumm.misc.core_plot.Map`.
+    Specific plot initialization params:
+        see :class:`~vacumm.misc.core_plot.Map.pre_plot`.
+    Specific plot params:
+        see :class:`~vacumm.misc.core_plot.Map.plot`.
+    Specific plot finalization params:
+        see :class:`~vacumm.misc.core_plot.Map.post_plot`.
+    Other generic params:
+        see :class:`~vacumm.misc.core_plot.Plot`.
 
     """
 
@@ -3479,114 +3720,111 @@ def section2(*args, **kwargs):
     :class:`~vacumm.misc.core_plot.ScalarMappable` and
     :class:`~vacumm.misc.core_plot.QuiverKey`.
 
-    :Example:
+    Example
+    -------
+    >>> section2(temp[0,:, :,3])
 
-        >>> section2(temp[0,:, :,3])
+    Parameters
+    ----------
+    {Plot2D_load_data[data]}
+    {Plot2D__set_axes_[x/yaxis]}
+    {Plot[long_name]}
+    {Plot[units]}
+    {Plot2D_plot[contour]}
+    {Plot2D_plot_contour[contour_<param>]}
+    {Plot2D_plot_fill[fill]}
+    {Plot2D_plot_fill[nofill]}
+    {ScalarMappable[levels]}
+    {Plot2D_plot[levels_<param>]}
+    {ScalarMappable[levels_mode]}
+    {ScalarMappable[keepminmax]}
+    {ScalarMappable[nmax_levels]}
+    {ScalarMappable[nmax]}
+    {ScalarMappable[cmap]}
+    {Plot2D_plot_fill[cmap_<param>]}
+    {Plot2D_plot_fill[alpha]}
+    {Plot2D_plot_fill[fill_<param>]}
+    {Plot2D_plot_fill[shading]}
+    {Plot2D_plot_fill[extend]}
+    {Plot2D_plot_contour[linewidths]}
+    {Plot2D_plot_contour[clabel]}
+    {Plot2D_plot_contour[clabel_<param>]}
+    {Plot2D_plot_quiver[quiver_<param>]}
+    {Plot2D_plot_quiver[quiver_norm]}
+    {Plot2D_plot_quiver[quiver_samp]}
+    {Plot2D_plot_quiver[quiver_x/ysamp]}
+    {Plot2D_plot_quiver[quiver_res]}
+    {Plot2D_plot_quiver[quiver_x/yres]}
+    {Plot2D_plot_quiver[quiver_relres]}
+    {Plot2D_plot_quiver[quiver_x/yrelres]}
+    {Plot2D_plot_quiver[quiverkey]}
+    {QuiverKey_quiverkey[quiverkey_pos]}
+    {QuiverKey_quiverkey[quiverkey_text]}
+    {QuiverKey_quiverkey[quiverkey_value]}
+    {QuiverKey_quiverkey[quiverkey_units]}
+    {QuiverKey_quiverkey[quiverkey_latex_units]}
+    {Plot2D_plot_quiver[quiverkey_<param>]}
+    {ScalarMappable_post_plot[colorbar]}
+    {ScalarMappable_post_plot[colorbar_<param>]}
 
-    :Data params:
+    Other parameters
+    ----------------
+    {Plot_pre_plot[fig]}
+    {Plot_pre_plot[figsize]}
+    {Plot_pre_plot[subplot]}
+    {Plot_pre_plot[subplots_adjust]}
+    {Plot_pre_plot[top/bottom/left/right/wspace/hspace]}
+    {Plot_pre_plot[axes]}
+    {Plot_pre_plot[axes_<param>]}
+    {Plot_pre_plot[axes_rect]}
+    {Plot_pre_plot[bgcolor]}
+    {Plot_pre_plot[twin]}
+    {Plot_pre_plot[noframe]}
+    {Plot_pre_plot[fullscreen]}
+    {Plot[title]}
+    {Plot_post_plot[title_<param>]}
+    {Plot[latex_units]}
+    {Plot[x/ymin/max]}
+    {Plot[x/ymin/max]}
+    {Plot_format_axes[x/y/vlim]}
+    {Plot_format_axes[x/y/vminmax]}
+    {Plot_format_axes[x/y/vmaxmin]}
+    {Plot[x/ymasked]}
+    {Plot[x/ylong_name]}
+    {Plot[x/yunits]}
+    {Plot[x/ylabel]}
+    {Plot_format_axes[x/yticks]}
+    {Plot_format_axes[x/yticklabels]}
+    {Plot_format_axes[x/y/vskip]}
+    {Plot_format_axes[x/yhide]}
+    {Plot_post_plot[grid]}
+    {Plot_post_plot[grid_<param>]}
+    {Plot_post_plot[legend]}
+    {Plot_post_plot[legend_<param>]}
+    {Plot_post_plot[figtext]}
+    {Plot_post_plot[figtext_<param>]}
+    {Plot_post_plot[legend]}
+    {Plot_post_plot[legend_<param>]}
+    {Plot_post_plot[key]}
+    {Plot_post_plot[key_<param>]}
+    {Plot_post_plot[anchor]}
+    {Plot_post_plot[autoresize]}
+    {Plot_post_plot[savefig]}
+    {Plot_savefig[savefig_verbose]}
+    {Plot_post_plot[savefig_<param>]}
+    {Plot_post_plot[savefigs]}
+    {Plot_post_plot[savefigs_<param>]}
+    {Plot_post_plot[show]}
+    {Plot_post_plot[close]}
 
-        {Plot2D_load_data[data]}
-        {Plot2D__set_axes_[x/yaxis]}
-        {Plot[long_name]}
-        {Plot[units]}
-
-    :2D plot params:
-
-        {Plot2D_plot[contour]}
-        {Plot2D_plot_contour[contour_<param>]}
-        {Plot2D_plot_fill[fill]}
-        {Plot2D_plot_fill[nofill]}
-        {ScalarMappable[levels]}
-        {Plot2D_plot[levels_<param>]}
-        {ScalarMappable[levels_mode]}
-        {ScalarMappable[keepminmax]}
-        {ScalarMappable[nmax_levels]}
-        {ScalarMappable[nmax]}
-        {ScalarMappable[cmap]}
-        {Plot2D_plot_fill[cmap_<param>]}
-        {Plot2D_plot_fill[alpha]}
-        {Plot2D_plot_fill[fill_<param>]}
-        {Plot2D_plot_fill[shading]}
-        {Plot2D_plot_fill[extend]}
-        {Plot2D_plot_contour[linewidths]}
-        {Plot2D_plot_contour[clabel]}
-        {Plot2D_plot_contour[clabel_<param>]}
-        {Plot2D_plot_quiver[quiver_<param>]}
-        {Plot2D_plot_quiver[quiver_norm]}
-        {Plot2D_plot_quiver[quiver_samp]}
-        {Plot2D_plot_quiver[quiver_x/ysamp]}
-        {Plot2D_plot_quiver[quiver_res]}
-        {Plot2D_plot_quiver[quiver_x/yres]}
-        {Plot2D_plot_quiver[quiver_relres]}
-        {Plot2D_plot_quiver[quiver_x/yrelres]}
-        {Plot2D_plot_quiver[quiverkey]}
-        {QuiverKey_quiverkey[quiverkey_pos]}
-        {QuiverKey_quiverkey[quiverkey_text]}
-        {QuiverKey_quiverkey[quiverkey_value]}
-        {QuiverKey_quiverkey[quiverkey_units]}
-        {QuiverKey_quiverkey[quiverkey_latex_units]}
-        {Plot2D_plot_quiver[quiverkey_<param>]}
-        {ScalarMappable_post_plot[colorbar]}
-        {ScalarMappable_post_plot[colorbar_<param>]}
-
-    :Plot initialization:
-
-        {Plot_pre_plot[fig]}
-        {Plot_pre_plot[figsize]}
-        {Plot_pre_plot[subplot]}
-        {Plot_pre_plot[subplots_adjust]}
-        {Plot_pre_plot[top/bottom/left/right/wspace/hspace]}
-        {Plot_pre_plot[axes]}
-        {Plot_pre_plot[axes_<param>]}
-        {Plot_pre_plot[axes_rect]}
-        {Plot_pre_plot[bgcolor]}
-        {Plot_pre_plot[twin]}
-        {Plot_pre_plot[noframe]}
-        {Plot_pre_plot[fullscreen]}
-
-    :Plot finalization:
-
-        {Plot[title]}
-        {Plot_post_plot[title_<param>]}
-        {Plot[latex_units]}
-        {Plot[x/ymin/max]}
-        {Plot[x/ymin/max]}
-        {Plot_format_axes[x/y/vlim]}
-        {Plot_format_axes[x/y/vminmax]}
-        {Plot_format_axes[x/y/vmaxmin]}
-        {Plot[x/ymasked]}
-        {Plot[x/ylong_name]}
-        {Plot[x/yunits]}
-        {Plot[x/ylabel]}
-        {Plot_format_axes[x/yticks]}
-        {Plot_format_axes[x/yticklabels]}
-        {Plot_format_axes[x/y/vskip]}
-        {Plot_format_axes[x/yhide]}
-        {Plot_post_plot[grid]}
-        {Plot_post_plot[grid_<param>]}
-        {Plot_post_plot[legend]}
-        {Plot_post_plot[legend_<param>]}
-        {Plot_post_plot[figtext]}
-        {Plot_post_plot[figtext_<param>]}
-        {Plot_post_plot[legend]}
-        {Plot_post_plot[legend_<param>]}
-        {Plot_post_plot[key]}
-        {Plot_post_plot[key_<param>]}
-        {Plot_post_plot[anchor]}
-        {Plot_post_plot[autoresize]}
-        {Plot_post_plot[savefig]}
-        {Plot_savefig[savefig_verbose]}
-        {Plot_post_plot[savefig_<param>]}
-        {Plot_post_plot[savefigs]}
-        {Plot_post_plot[savefigs_<param>]}
-        {Plot_post_plot[show]}
-        {Plot_post_plot[close]}
-
-    :More:
-
-        - **Specific params**: see :class:`~vacumm.misc.core_plot.Section`.
-        - **Scalar params**: see :class:`~vacumm.misc.core_plot.ScalarMappable`.
-        - **Other generic params**: see :class:`~vacumm.misc.core_plot.Plot`.
+    See also
+    --------
+    Specific params:
+        see :class:`~vacumm.misc.core_plot.Section`.
+    Scalar params:
+        see :class:`~vacumm.misc.core_plot.ScalarMappable`.
+    Other generic params:
+        see :class:`~vacumm.misc.core_plot.Plot`.
 
     """
     kwargs.setdefault('plot', True)
@@ -3603,119 +3841,118 @@ def plot2d(*args, **kwargs):
     :class:`~vacumm.misc.core_plot.ScalarMappable` and
     :class:`~vacumm.misc.core_plot.QuiverKey`.
 
-    :Example:
+    Example
+    -------
+    >>> plot2d(xe)
 
-        >>> plot2d(xe)
+    Parameters
+    ----------
+    {Plot2D_load_data[data]}
+    {Map_load_data[lon]}
+    {Map_load_data[lat]}
+    {Plot2D__set_axes_[x/yaxis]}
+    {Plot[long_name]}
+    {Plot[units]}
+    {Plot[latex_units]}
+    {Plot2D_plot[contour]}
+    {Plot2D_plot_contour[contour_<param>]}
+    {Plot2D_plot_fill[fill]}
+    {Plot2D_plot_fill[nofill]}
+    {ScalarMappable[levels]}
+    {Plot2D_plot[levels_<param>]}
+    {ScalarMappable[levels_mode]}
+    {ScalarMappable[keepminmax]}
+    {ScalarMappable[nmax_levels]}
+    {ScalarMappable[nmax]}
+    {ScalarMappable[cmap]}
+    {Plot2D_plot_fill[cmap_<param>]}
+    {Plot2D_plot_fill[alpha]}
+    {Plot2D_plot_fill[fill_<param>]}
+    {Plot2D_plot_fill[shading]}
+    {Plot2D_plot_fill[extend]}
+    {Plot2D_plot_contour[linewidths]}
+    {Plot2D_plot_contour[clabel]}
+    {Plot2D_plot_contour[clabel_<param>]}
+    {Plot2D_plot_quiver[quiver_<param>]}
+    {Plot2D_plot_quiver[quiver_norm]}
+    {Plot2D_plot_quiver[quiver_samp]}
+    {Plot2D_plot_quiver[quiver_x/ysamp]}
+    {Plot2D_plot_quiver[quiver_res]}
+    {Plot2D_plot_quiver[quiver_x/yres]}
+    {Plot2D_plot_quiver[quiver_relres]}
+    {Plot2D_plot_quiver[quiver_x/yrelres]}
+    {Plot2D_plot_quiver[quiverkey]}
+    {QuiverKey_quiverkey[quiverkey_pos]}
+    {QuiverKey_quiverkey[quiverkey_text]}
+    {QuiverKey_quiverkey[quiverkey_value]}
+    {QuiverKey_quiverkey[quiverkey_units]}
+    {QuiverKey_quiverkey[quiverkey_latex_units]}
+    {Plot2D_plot_quiver[quiverkey_<param>]}
+    {ScalarMappable_post_plot[colorbar]}
+    {ScalarMappable_post_plot[colorbar_<param>]}
 
-    :Data params:
+    Other parameters
+    ----------------
+    {Plot_pre_plot[fig]}
+    {Plot_pre_plot[figsize]}
+    {Plot_pre_plot[subplot]}
+    {Plot_pre_plot[subplots_adjust]}
+    {Plot_pre_plot[top/bottom/left/right/wspace/hspace]}
+    {Plot_pre_plot[axes]}
+    {Plot_pre_plot[axes_<param>]}
+    {Plot_pre_plot[axes_rect]}
+    {Plot_pre_plot[bgcolor]}
+    {Plot_pre_plot[twin]}
+    {Plot_pre_plot[noframe]}
+    {Plot_pre_plot[fullscreen]}
+    {Plot[title]}
+    {Plot_post_plot[title_<param>]}
+    {Plot[latex_units]}
+    {Plot[x/ymin/max]}
+    {Plot[x/ymin/max]}
+    {Plot_format_axes[x/y/vlim]}
+    {Plot_format_axes[x/y/vminmax]}
+    {Plot_format_axes[x/y/vmaxmin]}
+    {Plot[x/ymasked]}
+    {Plot[x/ylong_name]}
+    {Plot[x/yunits]}
+    {Plot[x/ylabel]}
+    {Plot_format_axes[x/yticks]}
+    {Plot_format_axes[x/yticklabels]}
+    {Plot_format_axes[x/y/vskip]}
+    {Plot_format_axes[x/yhide]}
+    {Plot_post_plot[grid]}
+    {Plot_post_plot[grid_<param>]}
+    {Plot_post_plot[legend]}
+    {Plot_post_plot[legend_<param>]}
+    {Plot_post_plot[figtext]}
+    {Plot_post_plot[figtext_<param>]}
+    {Plot_post_plot[legend]}
+    {Plot_post_plot[legend_<param>]}
+    {Plot_post_plot[key]}
+    {Plot_post_plot[key_<param>]}
+    {Plot_post_plot[anchor]}
+    {Plot_post_plot[autoresize]}
+    {Plot_post_plot[savefig]}
+    {Plot_savefig[savefig_verbose]}
+    {Plot_post_plot[savefig_<param>]}
+    {Plot_post_plot[savefigs]}
+    {Plot_post_plot[savefigs_<param>]}
+    {Plot_post_plot[show]}
+    {Plot_post_plot[close]}
 
-        {Plot2D_load_data[data]}
-        {Map_load_data[lon]}
-        {Map_load_data[lat]}
-        {Plot2D__set_axes_[x/yaxis]}
-        {Plot[long_name]}
-        {Plot[units]}
-        {Plot[latex_units]}
-
-    :2D plot params:
-
-        {Plot2D_plot[contour]}
-        {Plot2D_plot_contour[contour_<param>]}
-        {Plot2D_plot_fill[fill]}
-        {Plot2D_plot_fill[nofill]}
-        {ScalarMappable[levels]}
-        {Plot2D_plot[levels_<param>]}
-        {ScalarMappable[levels_mode]}
-        {ScalarMappable[keepminmax]}
-        {ScalarMappable[nmax_levels]}
-        {ScalarMappable[nmax]}
-        {ScalarMappable[cmap]}
-        {Plot2D_plot_fill[cmap_<param>]}
-        {Plot2D_plot_fill[alpha]}
-        {Plot2D_plot_fill[fill_<param>]}
-        {Plot2D_plot_fill[shading]}
-        {Plot2D_plot_fill[extend]}
-        {Plot2D_plot_contour[linewidths]}
-        {Plot2D_plot_contour[clabel]}
-        {Plot2D_plot_contour[clabel_<param>]}
-        {Plot2D_plot_quiver[quiver_<param>]}
-        {Plot2D_plot_quiver[quiver_norm]}
-        {Plot2D_plot_quiver[quiver_samp]}
-        {Plot2D_plot_quiver[quiver_x/ysamp]}
-        {Plot2D_plot_quiver[quiver_res]}
-        {Plot2D_plot_quiver[quiver_x/yres]}
-        {Plot2D_plot_quiver[quiver_relres]}
-        {Plot2D_plot_quiver[quiver_x/yrelres]}
-        {Plot2D_plot_quiver[quiverkey]}
-        {QuiverKey_quiverkey[quiverkey_pos]}
-        {QuiverKey_quiverkey[quiverkey_text]}
-        {QuiverKey_quiverkey[quiverkey_value]}
-        {QuiverKey_quiverkey[quiverkey_units]}
-        {QuiverKey_quiverkey[quiverkey_latex_units]}
-        {Plot2D_plot_quiver[quiverkey_<param>]}
-        {ScalarMappable_post_plot[colorbar]}
-        {ScalarMappable_post_plot[colorbar_<param>]}
-
-    :Plot initialization:
-
-        {Plot_pre_plot[fig]}
-        {Plot_pre_plot[figsize]}
-        {Plot_pre_plot[subplot]}
-        {Plot_pre_plot[subplots_adjust]}
-        {Plot_pre_plot[top/bottom/left/right/wspace/hspace]}
-        {Plot_pre_plot[axes]}
-        {Plot_pre_plot[axes_<param>]}
-        {Plot_pre_plot[axes_rect]}
-        {Plot_pre_plot[bgcolor]}
-        {Plot_pre_plot[twin]}
-        {Plot_pre_plot[noframe]}
-        {Plot_pre_plot[fullscreen]}
-
-    :Plot finalization:
-
-        {Plot[title]}
-        {Plot_post_plot[title_<param>]}
-        {Plot[latex_units]}
-        {Plot[x/ymin/max]}
-        {Plot[x/ymin/max]}
-        {Plot_format_axes[x/y/vlim]}
-        {Plot_format_axes[x/y/vminmax]}
-        {Plot_format_axes[x/y/vmaxmin]}
-        {Plot[x/ymasked]}
-        {Plot[x/ylong_name]}
-        {Plot[x/yunits]}
-        {Plot[x/ylabel]}
-        {Plot_format_axes[x/yticks]}
-        {Plot_format_axes[x/yticklabels]}
-        {Plot_format_axes[x/y/vskip]}
-        {Plot_format_axes[x/yhide]}
-        {Plot_post_plot[grid]}
-        {Plot_post_plot[grid_<param>]}
-        {Plot_post_plot[legend]}
-        {Plot_post_plot[legend_<param>]}
-        {Plot_post_plot[figtext]}
-        {Plot_post_plot[figtext_<param>]}
-        {Plot_post_plot[legend]}
-        {Plot_post_plot[legend_<param>]}
-        {Plot_post_plot[key]}
-        {Plot_post_plot[key_<param>]}
-        {Plot_post_plot[anchor]}
-        {Plot_post_plot[autoresize]}
-        {Plot_post_plot[savefig]}
-        {Plot_savefig[savefig_verbose]}
-        {Plot_post_plot[savefig_<param>]}
-        {Plot_post_plot[savefigs]}
-        {Plot_post_plot[savefigs_<param>]}
-        {Plot_post_plot[show]}
-        {Plot_post_plot[close]}
-
-    :Other params:
-
-        - **Specific params**: see :class:`~vacumm.misc.core_plot.Plot2D`.
-        - **Specific plot initialization params**: see :class:`~vacumm.misc.core_plot.Plot.pre_plot`.
-        - **Specific plot params**: see :class:`~vacumm.misc.core_plot.Plot2D.plot`.
-        - **Specific plot finalization params**: see :class:`~vacumm.misc.core_plot.Plot.post_plot`.
-        - **Other generic params**: see :class:`~vacumm.misc.core_plot.Plot`.
+    See also
+    --------
+    Specific params:
+        see :class:`~vacumm.misc.core_plot.Plot2D`.
+    Specific plot initialization params:
+        see :class:`~vacumm.misc.core_plot.Plot.pre_plot`.
+    Specific plot params:
+        see :class:`~vacumm.misc.core_plot.Plot2D.plot`.
+    Specific plot finalization params:
+        see :class:`~vacumm.misc.core_plot.Plot.post_plot`.
+    Other generic params:
+        see :class:`~vacumm.misc.core_plot.Plot`.
 
     """
     kwargs.setdefault('plot', True)
@@ -3730,14 +3967,16 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., xmargin=None, ymargin=None,
     A minimap is small and generally in a corner of the figure,
     and used to show simple geographic information.
 
-    :Examples:
+    Examples
+    --------
+    >>> minimap(((lonmin,lonmax),(latmin,latmax))).add_point(-5,48)
+    >>> minimap(sst.getGrid())
+    >>> m = minimap(sst)
+    >>> m.add_point(lon, lat)
 
-        >>> minimap(((lonmin,lonmax),(latmin,latmax))).add_point(-5,48)
-        >>> minimap(sst.getGrid())
-        >>> m = minimap(sst)
-        >>> m.add_point(lon, lat)
-
-    :Return: A :class:`~vacumm.misc.core_plot.Map` object.
+    Return
+    ------
+    :class:`~vacumm.misc.core_plot.Map`
     """
     from grid import get_xy
     from color import RGB
@@ -3779,15 +4018,19 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., xmargin=None, ymargin=None,
 def add_map_point(gg, lon, lat, marker='o', color='r', size=40,  m=None, alpha=1,  **kwargs):
     """Add a small map with a point at specified longitude and latitude
 
-    :Params:
+    Parameters
+    ----------
+    gg:
+        Map limits passed to :func:`minimap`
+        or  :meth:`~vacumm.misc.core_plot.Map` instance.
+    lon/lat:
+        Coordinates of the point.
 
-        - **gg**: Map limits passed to :func:`minimap`
-          or  :meth:`~vacumm.misc.core_plot.Map` instance.
-        - **lon/lat**: Coordinates of the point.
-
-    :See also: :func:`minimap` :meth:`~vacumm.misc.core_plot.Plot.add_point`
+    See also
+    --------
+    :func:`minimap` :meth:`~vacumm.misc.core_plot.Plot.add_point`
     """
-    kwmap = vcm.kwfilter(kwargs, 'map')
+    kwmap = kwfilter(kwargs, 'map')
     for att in 'bbox', 'bgcolor', 'fig':
         if att in kwargs: kwmap[att] = kwargs.pop(att)
     if isinstance(gg, vccp.Map): m = gg
@@ -3798,16 +4041,21 @@ def add_map_places(gg, lon, lat, txt, marker='o', color='r', size=40,  m=None,
         alpha=1, **kwargs):
     """Add a small map with one or several places at specified longitude and latitude
 
-    :Params:
+    Parameters
+    ----------
+    gg:
+        Map limits passed to :func:`minimap`
+        or  :meth:`~vacumm.misc.core_plot.Map` instance.
+    lon/lat:
+        Coordinates arrays of the points.
+    txt:
+        Text array associated to the points
 
-        - **gg**: Map limits passed to :func:`minimap`
-          or  :meth:`~vacumm.misc.core_plot.Map` instance.
-        - **lon/lat**: Coordinates arrays of the points.
-        - **txt**: Text array associated to the points
-
-    :See also: :func:`minimap` :meth:`~vacumm.misc.core_plot.Plot.add_place`
+    See also
+    --------
+    func:`minimap` :meth:`~vacumm.misc.core_plot.Plot.add_place`
     """
-    kwmap = vcm.kwfilter(kwargs, 'map')
+    kwmap = kwfilter(kwargs, 'map')
     for att in 'bbox', 'bgcolor', 'fig':
         if att in kwargs: kwmap[att] = kwargs.pop(att)
     if isinstance(gg, vccp.Map): m = gg
@@ -3819,17 +4067,21 @@ def add_map_places(gg, lon, lat, txt, marker='o', color='r', size=40,  m=None,
 def add_map_line(gg, extents, color='r', linewidth=1.5, m=None, **kwargs):
     """Add a small map with a line at specified longitudes and latitudes
 
-    :Params:
-
-        - **gg**: Map limits passed to :func:`minimap`
-          or  :meth:`~vacumm.misc.core_plot.Map` instance.
-        - **extents**: Extents in the forms ``[xmin,ymin,xmax,ymax]``
-          ``dict(x=(xmin,xmax),y=xmin,xmax)`` or
+    Parameters
+    ----------
+    gg:
+        Map limits passed to :func:`minimap`
+        or  :meth:`~vacumm.misc.core_plot.Map` instance.
+    extents:
+        Extents in the forms ``[xmin,ymin,xmax,ymax]``
+        ``dict(x=(xmin,xmax),y=xmin,xmax)`` or
               ``dict(lon=(xmin,xmax),lat=xmin,xmax)``.
 
-    :See also: :func:`minimap` :meth:`~vacumm.misc.core_plot.Plot.add_line`
+    See also
+    --------
+    :func:`minimap` :meth:`~vacumm.misc.core_plot.Plot.add_line`
     """
-    kwmap = vcm.kwfilter(kwargs, 'map')
+    kwmap = kwfilter(kwargs, 'map')
     for att in 'bbox', 'bgcolor', 'fig':
         if att in kwargs: kwmap[att] = kwargs.pop(att)
     if isinstance(gg, vccp.Map): m = gg
@@ -3839,15 +4091,19 @@ def add_map_line(gg, extents, color='r', linewidth=1.5, m=None, **kwargs):
 def add_map_lines(gg, xx, yy, color='r', linewidth=1.5, m=None, closed=False, **kwargs):
     """Add a small map with a broken line specified longitudes and latitudes
 
-    :Params:
+    Parameters
+    ----------
+    gg:
+        Map limits passed to :func:`minimap`
+        or  :meth:`~vacumm.misc.core_plot.Map` instance.
+    xx/yy:
+        1D arrays of coordinates.
 
-        - **gg**: Map limits passed to :func:`minimap`
-          or  :meth:`~vacumm.misc.core_plot.Map` instance.
-        - **xx/yy**: 1D arrays of coordinates.
-
-    :See also: :func:`minimap` :meth:`~vacumm.misc.core_plot.Plot.add_lines`
+    See also
+    --------
+   :func:`minimap` :meth:`~vacumm.misc.core_plot.Plot.add_lines`
     """
-    kwmap = vcm.kwfilter(kwargs, 'map')
+    kwmap = kwfilter(kwargs, 'map')
     for att in 'bbox', 'bgcolor', 'fig':
         if att in kwargs: kwmap[att] = kwargs.pop(att)
     if isinstance(gg, vccp.Map): m = gg
@@ -3857,24 +4113,25 @@ def add_map_lines(gg, xx, yy, color='r', linewidth=1.5, m=None, closed=False, **
 def add_map_box(gg, box, color='r', linewidth=1.5, m=None, **kwargs):
     """Add a small map with a box at specified longitudes and latitudes
 
-    :Params:
+    Parameters
+    ----------
+    gg:
+        Map limits passed to :func:`minimap`
+        or  :meth:`~vacumm.misc.core_plot.Map` instance.
+    box:
+        Box limits in the forms ``[xmin,ymin,xmax,ymax]``
+        ``dict(x=(xmin,xmax),y=xmin,xmax)`` or
+        ``dict(lon=(xmin,xmax),lat=xmin,xmax)``.
 
-        - **gg**: Map limits passed to :func:`minimap`
-          or  :meth:`~vacumm.misc.core_plot.Map` instance.
-        - **box**: Box limits in the forms ``[xmin,ymin,xmax,ymax]``
-          ``dict(x=(xmin,xmax),y=xmin,xmax)`` or
-          ``dict(lon=(xmin,xmax),lat=xmin,xmax)``.
-
-    :See also: :func:`minimap` :meth:`~vacumm.misc.core_plot.Plot.add_box`
+    See also
+    --------
+    :func:`minimap` :meth:`~vacumm.misc.core_plot.Plot.add_box`
     """
-    kwmap = vcm.kwfilter(kwargs, 'map')
+    kwmap = kwfilter(kwargs, 'map')
     for att in 'bbox', 'bgcolor', 'fig':
         if att in kwargs: kwmap[att] = kwargs.pop(att)
     if isinstance(gg, vccp.Map): m = gg
     if m is None: m = minimap(gg, **kwmap)
     return m.add_box(box, color=color, linewidth=linewidth, **kwargs)
-
-#####################################################################
-######################################################################
 
 

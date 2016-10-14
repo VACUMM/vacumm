@@ -41,8 +41,9 @@ from .io import read_shapefile
 from .basemap import get_proj
 from .grid import resol
 from .regridding import xy2xy, regrid2d, regrid_method
+from .color import get_cmap, land
 from .core_plot import Map
-from .plot import map2
+from .plot import map2, _colorbar_
 
 class Shapes(object):
     """A class to read shapefiles and return GEOS objects
@@ -349,14 +350,14 @@ class Shapes(object):
         if not len(self): return 0,0
         x, y = self.get_xy(key=0)
         if deg and callable(self._proj): # m->deg
-            dx, dy = vcg.resol((x, y), proj=False)
+            dx, dy = resol((x, y), proj=False)
             x0 = x.mean()
             y0 = y.mean()
             x1, y1 = self._proj(x0+dx, y0+dx, inverse=True)
             return x1-x0, y1-y0
         elif not deg and not callable(self._proj):
-            return vcg.resol((x, y), proj=True)
-        return vcg.resol((x, y), proj=False)
+            return resol((x, y), proj=True)
+        return resol((x, y), proj=False)
 
 
     def get_map(self):
@@ -425,7 +426,7 @@ class Shapes(object):
             kwmap.setdefault('res', None)
             kwmap.setdefault('proj', 'merc')
             kwmap.update(show=False, axes=ax, title=title)
-            m = vcp.map2(**kwmap)
+            m = map2(**kwmap)
             ax = m.axes
         isbm = isinstance(m, Basemap)
 
@@ -443,7 +444,7 @@ class Shapes(object):
         oo = []
         if not self.is_type(self.POINTS):
             if (fill is None and self.is_type(self.POLYGONS)) or fill is True: # Polygons
-                if fillcolor is None: fillcolor=vcc.land
+                if fillcolor is None: fillcolor=land
                 for kv in dict(facecolor=fillcolor).items():
                     kwfill.setdefault(*kv)
                 cc = PolyCollection(data, **kwfill)
@@ -1614,7 +1615,7 @@ class XYZ(object):
         kwm = kwfilter(kwargs, 'map')
         kwhull = kwfilter(kwargs, 'hull')
         kwcb = kwfilter(kwargs, 'colorbar')
-        kwplot = dict(linewidth=linewidth, cmap=vcc.get_cmap(cmap))
+        kwplot = dict(linewidth=linewidth, cmap=get_cmap(cmap))
         kwplot.update(kwargs)
         pts = None
 
@@ -1639,7 +1640,7 @@ class XYZ(object):
             kwm.setdefault('lon', (xmin, xmax))
             kwm.setdefault('lat', (ymin, ymax))
             kwm['projection'] = 'merc'
-            m = vcp.map2(show=False, savefig=None, **kwm)
+            m = map2(show=False, savefig=None, **kwm)
         if m:
             G = m.map if hasattr(m, 'map') else m
             self._m = G
@@ -1709,11 +1710,11 @@ class XYZ(object):
             if self.units is None:
                 self.units = units
         if colorbar:
-            vcp._colorbar_(pts, units=units, **kwcb)
+            _colorbar_(pts, units=units, **kwcb)
         if savefig:
             P.savefig(savefig)
         elif savefigs:
-            vcp.savefigs(savefigs)
+            savefigs(savefigs)
         if show:
             P.show()
         return pts

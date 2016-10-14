@@ -51,10 +51,9 @@ from .misc import split_selector, kwfilter, squeeze_variable, is_iterable
 from .poly import create_polygon, clip_shape
 from .atime import (has_time_pattern, time_selector, is_interval, is_time,
     strptime, comptime, are_same_units, ch_units, now, datetime)
+from .axes import get_checker, islon, islat, istime, islevel
 
 from . import axes as vca
-from . import color as vcc
-#from . import grid as vcg
 
 __all__ = ['list_forecast_files', 'NcIterBestEstimate', 'NcIterBestEstimateError', 'NcFileObj',
     'ncfind_var', 'ncfind_axis', 'ncfind_obj', 'ncget_var', 'ncread_var', 'ncread_files', 'ncread_best_estimate',
@@ -853,7 +852,7 @@ def ncget_axis(f, checker, ids=None, ro=False, **kwargs):
     f = nfo.f
 
     if isinstance(checker, basestring):
-        checker = vca.get_checker(checker)
+        checker = get_checker(checker)
     elif isinstance(checker, (list, tuple, dict)):
         axid = ncfind_obj(f, checker, ids=ids, **kwargs)
         if axid is None: return
@@ -901,7 +900,7 @@ def ncget_lon(f, ids=None, ro=False):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, vca.islon, ids, ro=ro)
+    return ncget_axis(f, islon, ids, ro=ro)
 
 def ncget_lat(f, ids=None, ro=False):
     """Get latitude axis of a netcdf file
@@ -911,7 +910,7 @@ def ncget_lat(f, ids=None, ro=False):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, vca.islat, ids, ro=ro)
+    return ncget_axis(f, islat, ids, ro=ro)
 
 def ncget_time(f, ids=None, ro=False):
     """Get time axis of a netcdf file
@@ -921,7 +920,7 @@ def ncget_time(f, ids=None, ro=False):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, vca.istime, ids, ro=ro)
+    return ncget_axis(f, istime, ids, ro=ro)
 
 def ncget_level(f, ids=None, ro=False):
     """Get level axis of a netcdf file
@@ -931,7 +930,7 @@ def ncget_level(f, ids=None, ro=False):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, vca.islevel, ids, ro=ro)
+    return ncget_axis(f, islevel, ids, ro=ro)
 
 def ncget_grid(f, ids=None, torect=False):
     """Get a grid of a netcdf file

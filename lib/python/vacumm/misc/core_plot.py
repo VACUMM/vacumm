@@ -91,7 +91,7 @@ MA = N.ma
 
 
 
-__all__ = ['PlotError','Plot', 'Plot1D', 'Curve', 'Bar', 'Stick',
+__all__ = ['PlotError', 'Plot', 'Plot1D', 'Curve', 'Bar', 'Stick',
     'Plot2D', 'Map', 'Hov', 'QuiverKey',
     'ScalarMappable','AutoDateFormatter2', 'AutoDateLocator2',
     'AutoDateMinorLocator', 'AutoDualDateFormatter', 'DualDateFormatter',
@@ -103,72 +103,90 @@ class PlotError(VACUMMError):
 class Plot(object):
     """Base class for all plots
 
-    :Generic params:
+    Parameters
+    ----------
+    load_data: optional
+        Load data.
+    pre_plot: optional
+        Initialize the plot (preprocessing).
+    plot: optional
+        Plot data.
+    post_plot: optional
+        Finalize plot.
+    Data loading:
+        See :meth:`load_data`, :meth:`_set_axes_`, :meth:`_check_order_` .
+    Plot initialisation:
+        see  :meth:`pre_plot`.
+    Plot:
+        see :meth:`plot`
+    Plot finalization:
+        see :meth:`post_plot`
 
-        - **load_data**, optional: Load data.
-        - **pre_plot**, optional: Initialize the plot (preprocessing).
-        - **plot**, optional: Plot data.
-        - **post_plot**, optional: Finalize plot.
-        - **Data loading**: See :meth:`load_data`, :meth:`_set_axes_`, :meth:`_check_order_` .
-        - **Plot initialisation**: see  :meth:`pre_plot`.
-        - **Plot**: see :meth:`plot`
-        - **Plot finalization**: see :meth:`post_plot`
 
-
-    :Attribute params:
-
-
-        - **long_name**, optional: Force the :attr:`~vacumm.misc.core_plot.Plot.long_name`
-          attribute used in :attr:`~vacumm.misc.core_plot.Plot.title`.
-          See also param ``x/ylong_name``.
-        - **x/ylong_name**, optional: Same as :attr:`~vacumm.misc.core_plot.Plot.long_name`
-          but for X and Y axes (:attr:`~vacumm.misc.core_plot.Plot.xlong_name`
-          or :attr:`~vacumm.misc.core_plot.Plot.ylong_name`). It refers only to
-          axes for 2D plots, and potentially to data for 1D plots.
-        - **units**, optional: Force the :attr:`~vacumm.misc.core_plot.Plot.units`
-          attribute used in labels (:attr:`~vacumm.misc.core_plot.Plot.label`,
+    Other parameters
+    ----------------
+    long_name: optional
+        Force the :attr:`~vacumm.misc.core_plot.Plot.long_name`
+        attribute used in :attr:`~vacumm.misc.core_plot.Plot.title`.
+        See also param ``x/ylong_name``.
+    x/ylong_name: optional
+        Same as :attr:`~vacumm.misc.core_plot.Plot.long_name`
+        but for X and Y axes (:attr:`~vacumm.misc.core_plot.Plot.xlong_name`
+        or :attr:`~vacumm.misc.core_plot.Plot.ylong_name`). It refers only to
+        axes for 2D plots, and potentially to data for 1D plots.
+    units: optional
+        Force the :attr:`~vacumm.misc.core_plot.Plot.units`
+        attribute used in labels (:attr:`~vacumm.misc.core_plot.Plot.label`,
           :attr:`~vacumm.misc.core_plot.Plot.xlabel` or
           :attr:`~vacumm.misc.core_plot.Plot.ylabel`).
-        - **latex_units**, optional: Interpret units with latex after defining
-          the  :attr:`~vacumm.misc.core_plot.Plot.latex_units` attribute.
-          Alternatively, you can simply specify units enclosed with ``"$"``.
-        - **x/yunits**, optional: Same as :attr:`~vacumm.misc.core_plot.Plot.units`
-          but for X and Y axes (:attr:`~vacumm.misc.core_plot.Plot.xunits`
-          or :attr:`~vacumm.misc.core_plot.Plot.yunits`). It refers only to
-          axes for 2D plots, and potentially to data for 1D plots.
-          See also param ``x/yunits``.
-        - **x/ymin/max**, optional: Force min and max along X and Y by setting
-          attributes :attr:`~vacumm.misc.core_plot.Plot.xmin`,
+    latex_units: optional
+        Interpret units with latex after defining
+        the  :attr:`~vacumm.misc.core_plot.Plot.latex_units` attribute.
+        Alternatively, you can simply specify units enclosed with ``"$"``.
+    x/yunits: optional
+        Same as :attr:`~vacumm.misc.core_plot.Plot.units`
+        but for X and Y axes (:attr:`~vacumm.misc.core_plot.Plot.xunits`
+        or :attr:`~vacumm.misc.core_plot.Plot.yunits`). It refers only to
+        axes for 2D plots, and potentially to data for 1D plots.
+        See also param ``x/yunits``.
+    x/ymin/max: optional
+        Force min and max along X and Y by setting
+        attributes :attr:`~vacumm.misc.core_plot.Plot.xmin`,
           :attr:`~vacumm.misc.core_plot.Plot.xmax`,
           :attr:`~vacumm.misc.core_plot.Plot.ymin` or
           :attr:`~vacumm.misc.core_plot.Plot.ymax`.
-        - **vmin/max**, optional: Force min and max value for data by setting
-          attributes :attr:`~vacumm.misc.core_plot.Plot.vmin`,
+    vmin/max: optional
+        Force min and max value for data by setting
+        attributes :attr:`~vacumm.misc.core_plot.Plot.vmin`,
           :attr:`~vacumm.misc.core_plot.Plot.vmax`.
-          This may be equivalent to
-          to set X or Y extrema for 1D plots.
-        - **x/ylabel**, optional: Force label used for X and Y axes
-          by setting attributes :attr:`~vacumm.misc.core_plot.Plot.xlabel` or
+        This may be equivalent to
+        to set X or Y extrema for 1D plots.
+    x/ylabel: optional
+        Force label used for X and Y axes
+        by setting attributes :attr:`~vacumm.misc.core_plot.Plot.xlabel` or
           :attr:`~vacumm.misc.core_plot.Plot.ylabel`.
-        - **title**, optional: Force the title of the plot by setting
+    title: optional
+        Force the title of the plot by setting
           :attr:`~vacumm.misc.core_plot.Plot.title`
-        - **x/ymasked**, optional: Force the plot to fit all data
-          positions along X and/or Y,
-          even if data is missing, by setting attributes
+    x/ymasked: optional
+        Force the plot to fit all data
+        positions along X and/or Y,
+        even if data is missing, by setting attributes
           :attr:`~vacumm.misc.core_plot.Plot.xmasked`,
           :attr:`~vacumm.misc.core_plot.Plot.ymasked`
-          or :attr:`~vacumm.misc.core_plot.Plot.xymasked`.
-        - **anim**, optional: Create an animation for the current figure.
+        or :attr:`~vacumm.misc.core_plot.Plot.xymasked`.
+    anim: optional
+        Create an animation for the current figure.
 
-        Example:
+    Example
+    -------
+    >>> myplot = Plot(data, xmin=3.5, title='My plot')
+    >>> print myplot.xmin, myplot.title
+    3.5 Myplot
 
-        >>> myplot = Plot(data, xmin=3.5, title='My plot')
-        >>> print myplot.xmin, myplot.title
-        3.5 Myplot
 
 
-
-        The followwing rules apply:
+    The followwing rules apply:
 
         - :attr:`title` defaults to :attr:`long_name`,
           which defaults to the ``long_name`` attribute of input data.
@@ -215,7 +233,7 @@ class Plot(object):
             may not be equal to ``matplotlib.pyplot.xlim()[0]``.
 
 
-    :Generic tasks:
+    .. rubric:: Generic tasks
 
         #. Call to :meth:`load_attributes`.
         #. Call to :meth:`load_data` if ``load_data is True``.
@@ -311,10 +329,10 @@ class Plot(object):
 
         Attributes not found are set to ``None``.
 
-        :Example:
-
-            >>> items = dict(xmin=4., title='%(long_name)s')
-            >>> myplot.load_attributes('xmin', 'units', units='degC', **items)
+        Example
+        -------
+        >>> items = dict(xmin=4., title='%(long_name)s')
+        >>> myplot.load_attributes('xmin', 'units', units='degC', **items)
         """
         # User attributes
         for att in self._primary_attributes+self._secondary_attributes+self._special_attributes:
@@ -337,47 +355,43 @@ class Plot(object):
         """Load data and format data, and check rank.
         It finally calls :meth:`_check_order_`.
 
-        :Params:
+        Parameters
+        ----------
+        data:
+            A single :mod:`cdms2` variable or a tuple of them,
+            in the forms ``(m,)``, or ``(u,v)``, ``(m,u,v)``, where:
 
-            - **data**: A single :mod:`cdms2` variable or a tuple of them,
-              in the forms ``(m,)``, or ``(u,v)``, ``(m,u,v)``, where:
+            - ``u``: X component of a vector.
+            - ``v``: Y component of a vector.
+            - ``m``: A scalar variable. If ``u`` and ``v`` are set,
+              it defaults to their modulus.
 
-                - ``u``: X component of a vector.
-                - ``v``: Y component of a vector.
-                - ``m``: A scalar variable. If ``u`` and ``v`` are set,
-                  it defaults to their modulus.
+        order: optional
+            See :meth:`_check_order_`
+        transpose: optional
+            See :meth:`_check_order_`
+        **kwargs
+            Keywords are passed to :meth:`_set_axes_` for
+            axis subtitutions.
 
-            - **order**, optional: See :meth:`_check_order_`
-            - **transpose**, optional: See :meth:`_check_order_`
-            - Keywords are passed to :meth:`_set_axes_` for
-              axis subtitutions.
+        Attributes
+        ----------
+        data: tuple of arrays
+            A 1- to 3-element tuple of :class:`MV2.array`
+            in a form of similar to **data** above.
+        x: array
+            The last axis of the first element of data,
+            or ``None`` if X axis refer to data.
+        y: array
+            The first axis of the first element of data,
+            or ``None`` if Y axis refer to data.
 
-        :Attributes:
+        mask: array, bool
+            The data mask.
 
-            The following attributes are defined:
-
-            .. attribute:: data
-
-                A 1- to 3-element tuple of :class:`MV2.array`
-                in a form of similar to **data** above.
-
-            .. attribute:: x
-
-                The last axis of the first element of data,
-                or ``None`` if X axis refer to data.
-
-            .. attribute:: y
-
-                The first axis of the first element of data,
-                or ``None`` if Y axis refer to data.
-
-            .. attribute:: mask
-
-                The data mask.
-
-        :See also:
-
-            :meth:`_check_order_` :meth`_set_axes_`
+        See also
+        --------
+        :meth:`_check_order_` :meth`_set_axes_`
         """
         self.raw_data = data
         self.data =  None
@@ -480,44 +494,39 @@ class Plot(object):
     def _check_order_(self, order=None, transpose=False, vertical=None, **kwargs):
         """Check the order of axes
 
-        :Params:
+        Parameters
+        ----------
+        order: optional
+            A string of length 2 that specify the physical type
+            of plot axes. The first char refers to the Y axis, and the second
+            to the X axis. It must contain one of the following characters:
 
-            - **order**, optional: A string of length 2 that specify the physical type
-              of plot axes. The first char refers to the Y axis, and the second
-              to the X axis. It must contain one of the following characters:
+            - ``x``: longitude
+            - ``y``: latitude
+            - ``z``: level
+            - ``t``: time
+            - ``-``: any of the latters
+            - ``d``: data
 
-                - ``x``: longitude
-                - ``y``: latitude
-                - ``z``: level
-                - ``t``: time
-                - ``-``: any of the latters
-                - ``d``: data
+            If char is upper-cased, its type is mandatory and must be found
+            in input :mod:`cdms2` variables.
+            It defines the :attr:`~vacumm.misc.core_plot.Plot.order` attribute.
+        vertical:
+            Force data to be plotted along the vertical axis.
+        transpose:
+            Transpose the plot axes
+            (:attr:`~vacumm.misc.core_plot.Plot.order`).
 
-              If char is upper-cased, its type is mandatory and must be found
-              in input :mod:`cdms2` variables.
-              It defines the :attr:`~vacumm.misc.core_plot.Plot.order` attribute.
-
-            - **vertical**: Force data to be plotted along the vertical axis.
-            - **transpose**: Transpose the plot axes
-              (:attr:`~vacumm.misc.core_plot.Plot.order`).
-
-        :Attributes:
-
-            This methods defines the following attributes:
-
-            .. attribute:: order
-
-                Two-character string define the order of axis types.
-                It is the sum of the :attr:`xtype` and :attr:`ytype`.
-                Examples: ``"xt"``, ``z-``.
-
-            .. attribute:: xtype
-
-                Type of the X axis (see above).
-
-            .. attribute:: ytype
-
-                Type of the Y axis (see above).
+        Attributes
+        ----------
+        order: string
+            Two-character string define the order of axis types.
+            It is the sum of the :attr:`xtype` and :attr:`ytype`.
+            Examples: ``"xt"``, ``z-``.
+        xtype: string
+            Type of the X axis (see above).
+        ytype: string
+            Type of the Y axis (see above).
         """
         if self._order is None:
             raise NotImplementedError
@@ -616,7 +625,9 @@ class Plot(object):
     def get_data(self, scalar=False):
         """Get data as a tuple of :class:`~numpy.ma.core.MaskedArray`
 
-        :See also: :meth:`get_xdata` :meth:`get_ydata` :attr:`uvscaler`
+        See also
+        --------
+        :meth:`get_xdata` :meth:`get_ydata` :attr:`uvscaler`
         """
         data = [var.asma() for var in self.data]
         if len(data)==3:
@@ -635,22 +646,27 @@ class Plot(object):
     def get_xdata(self, scalar=True, masked=False, bounds=False):
         """Get the numerical data associated with the X axis
 
-        .. note::
+        Note
+        ----
+        It can come from a physical axis or data
+        depending on the axis type :attr:`xtype`.
 
-            It can come from a physical axis or data
-            depending on the axis type :attr:`xtype`.
+        Parameters
+        ----------
+        scalar: optional
+            Set it to ``True`` to get data
+            as a scalar array in case X axis refers to a tuple of data.
+            If set to an int, it takes the element #scalar of this tuple.
+        masked: optional
+            If it is an axis (not data), values are
+            masked with data mask.
+        bounds: optional
+            The data bounds (valid only of X
+            is an axis).
 
-        :Params:
-
-            - **scalar**, optional: Set it to ``True`` to get data
-              as a scalar array in case X axis refers to a tuple of data.
-              If set to an int, it takes the element #scalar of this tuple.
-            - **masked**, optional: If it is an axis (not data), values are
-              masked with data mask.
-            - **bounds**, optional: The data bounds (valid only of X
-              is an axis).
-
-        :See also: :meth:`get_ydata` :meth:`get_data`
+        See also
+        --------
+        :meth:`get_ydata` :meth:`get_data`
         """
         # Nothing
         if not self.has_data(): return
@@ -679,22 +695,27 @@ class Plot(object):
     def get_ydata(self, scalar=True, masked=False, bounds=False):
         """Get the numerical data associated with the Y axis
 
-        .. note::
+        Note
+        ----
+        It can come from a physical axis or data
+        depending on the axis type :attr:`ytype`.
 
-            It can come from a physical axis or data
-            depending on the axis type :attr:`ytype`.
+        Parameters
+        ----------
+        scalar: optional
+            Set it to ``True`` to get data
+            as a scalar array in case Y axis refers to a tuple of data.
+            If set to an int, it takes the element #scalar of this tuple.
+        masked: optional
+            If it is an axis (not data), values are
+            masked with data mask.
+        bounds: optional
+            The data bounds (valid only of Y
+            is an axis).
 
-        :Params:
-
-            - **scalar**, optional: Set it to ``True`` to get data
-              as a scalar array in case Y axis refers to a tuple of data.
-              If set to an int, it takes the element #scalar of this tuple.
-            - **masked**, optional: If it is an axis (not data), values are
-              masked with data mask.
-            - **bounds**, optional: The data bounds (valid only of Y
-              is an axis).
-
-        :See also: :meth:`get_xdata` :meth:`get_data`
+        See also
+        --------
+        :meth:`get_xdata` :meth:`get_data`
         """
         # Nothing
         if not self.has_data(): return
@@ -728,44 +749,54 @@ class Plot(object):
         verbose=False, axes_host=False, axes_xoffset=0, **kwargs):
         """Initialize the plot
 
-        :Tasks:
+        .. rubric:: Tasks
+        #. Filter keyword parameters.
+        #. Create the :class:`~matplotlib.fig.Figure` instance and
+           store it into :attr:`fig`.
+        #. Create the :class:`~matplotlib.axes.Axes` instance and
+           store it into :attr:`axes`
 
-            #. Filter keyword parameters.
-            #. Create the :class:`~matplotlib.fig.Figure` instance and
-               store it into :attr:`fig`.
-            #. Create the :class:`~matplotlib.axes.Axes` instance and
-               store it into :attr:`axes`
+        Parameters
+        ----------
+        fig: optional
+            Figure number.
+        figsize: optional
+            Initialize the figure with this size.
+        axes: optional
+            Use this axes object.
+        subplot: optional
+            Call to :func:`~matplotlib.pyplot.subplot` to create axes.
+        subplots_adjust: optional
+            Dictionary sent to :func:`~matplotlib.pyplot.subplots_adjust`.
+            You can also use keyparams 'left', 'right', 'top', 'bottom', 'wspace', 'hspace'!
+        top/bottom/left/right/wspace/hspace: optional
+            Override ``subplots_adjust``.
+        sa: optional
+            Alias for subplots_adjust.
+        twin: optional
+            Use ``"x"`` or ``"y"`` or ``"xy"``  to make a copy of current
+            X or Y axes (see :func:`matplotlib.pyplot.twinx`).
+            You can also provide a dictionary : ``twin=dict(x=axes1, y=axes2)``.
+        bgcolor: optional
+            Background axis color.
+        axes_rect: optional
+            [left, bottom, width, height] in normalized (0,1) units to create axes using :func:`~matplotlib.pyplot.axes`.
+        axes_<param>: optional
+            <param> is passed to :func:`~matplotlib.pyplot.axes`.
+        noframe: optional
+            Suppress plot frames.
+        fullscreen: optional
+            Plot in full screen mode (thus, ``noframe==True``).
+        verbose: optional
+            Informs about errors with axes.
 
-        :Params:
 
-            - **fig**, optional: Figure number.
-            - **figsize**, optional: Initialize the figure with this size.
-            - **axes**, optional: Use this axes object.
-            - **subplot**, optional: Call to :func:`~matplotlib.pyplot.subplot` to create axes.
-            - **subplots_adjust**, optional: Dictionary sent to :func:`~matplotlib.pyplot.subplots_adjust`.
-              You can also use keyparams 'left', 'right', 'top', 'bottom', 'wspace', 'hspace'!
-            - **top/bottom/left/right/wspace/hspace**, optional: Override ``subplots_adjust``.
-            - **sa**, optional: Alias for subplots_adjust.
-            - **twin**, optional: Use ``"x"`` or ``"y"`` or ``"xy"``  to make a copy of current
-              X or Y axes (see :func:`matplotlib.pyplot.twinx`).
-              You can also provide a dictionary : ``twin=dict(x=axes1, y=axes2)``.
-            - **bgcolor**, optional: Background axis color.
-            - **axes_rect**, optional: [left, bottom, width, height] in normalized (0,1) units to create axes using :func:`~matplotlib.pyplot.axes`.
-            - **axes_<param>**, optional: <param> is passed to :func:`~matplotlib.pyplot.axes`.
-            - **noframe**, optional: Suppress plot frames.
-            - **fullscreen**, optional: Plot in full screen mode (thus, ``noframe==True``).
-            - **verbose**, optional: Informs about errors with axes.
-
-
-        :Attributes:
-
-            .. attribute:: fig
-
-                :class:`~matplotlib.fig.Figure` on which plots are drawn.
-
-            .. attribute:: axes
-
-                :class:`~matplotlib.axes.Axes` instance of the current plot.
+        Attributes
+        ----------
+        fig: :class:`~matplotlib.fig.Figure`
+            instance on which plots are drawn.
+        axes: :class:`~matplotlib.axes.Axes`
+            instance of the current plot.
 
         """
         # Keywords management
@@ -931,11 +962,14 @@ class Plot(object):
     def get_brothers(self, notme=False, mefirst=True, filter=False):
         """Return all :class:`Plot` instances that belongs to current axes
 
-        :Params:
-
-            - **notme**, optional: Do not include current object in the list.
-            - **mefirst**, optional: Place me at the beginning of the list.
-            - **filter**, optional: If callable, use it to filter out brothers.
+        Parameters
+        ----------
+        notme: optional
+            Do not include current object in the list.
+        mefirst: optional
+            Place me at the beginning of the list.
+        filter: optional
+            If callable, use it to filter out brothers.
         """
         brothers = self.get_axobj('plotters')
         brothers = [] if brothers is None else list(brothers)
@@ -952,15 +986,18 @@ class Plot(object):
     def get_current(cls, axes=None):
         """Retreive an instance of this class if found to be plotted in currents axes
 
-        :Params:
+        Parameters
+        ----------
+        axes: optional
+            Check this axes instance instead of the current one.
 
-            - **axes**, optional: Check this axes instance instead of the current one.
+        Return
+        ------
+        Last plotted instance, else ``None``
 
-        :Return: Last plotted instance, else ``None``
-
-        :Example:
-
-            >>> m = Map.get_current()
+        Example
+        -------
+        >>> m = Map.get_current()
         """
         if axes is None:
             if P.get_fignums() and P.gcf().axes:
@@ -976,26 +1013,29 @@ class Plot(object):
     def add_obj(self, gtype, obj, single=False):
         """Add a graphic object to the bank of current instance
 
-        :Params:
+        Parameters
+        ----------
+        gtype:
+            A list (or a single element) of string keys
+            to name the object.
+        obj:
+            The object it self (may be a list).
+        single: optional
+            If ``True``, ``obj`` if store as is
+            (i.e is not appended to existing store objects having the same name).
 
-            - **gtype**: A list (or a single element) of string keys
-              to name the object.
-            - **obj**: The object it self (may be a list).
-            - **single**, optional: If ``True``, ``obj`` if store as is
-              (i.e is not appended to existing store objects having the same name).
+        Return
+        ------
+        The object added.
 
-        :Return:
+        Example
+        -------
+        >>> text_object = myplot.add_obj(['plotted', 'text', myplot.axes.text(10, 20, 'text'))
+        >>> text_object = myplot.add_obj('colorbar', myplot.colorbar(), single=True)
 
-            The object added.
-
-        :Example:
-
-            >>> text_object = myplot.add_obj(['plotted', 'text', myplot.axes.text(10, 20, 'text'))
-            >>> text_object = myplot.add_obj('colorbar', myplot.colorbar(), single=True)
-
-        :See also:
-
-            :meth:`set_obj` :meth:`get_obj`
+        See also
+        --------
+        :meth:`set_obj` :meth:`get_obj`
         """
         # Store the object
         if not hasattr(self, '_gobjs'):
@@ -1021,18 +1061,18 @@ class Plot(object):
     def get_obj(self, gtype):
         """Get a graphic object stored in the bank
 
-        :Example:
+        Example
+        -------
+        >>> myplot.get_obj('pcolor')[0].set_zorder(15)
+        >>> myplot.get_obj('key').set_color('red')
 
-            >>> myplot.get_obj('pcolor')[0].set_zorder(15)
-            >>> myplot.get_obj('key').set_color('red')
+        Return
+        ------
+        The object or ``None`` if not found.
 
-        :Return:
-
-            The object or ``None`` if not found.
-
-        :See also:
-
-            :meth:`add_obj`
+        See also
+        --------
+        :meth:`add_obj`
         """
         if not hasattr(self, '_gobjs'):
             self._gobjs = {}
@@ -1055,17 +1095,17 @@ class Plot(object):
     def add_axobj(self, gtype, obj, single=False, axis=None):
         """Add a object to the bank of current :class:`matplotlib.axes.Axes` instance
 
-        :Return:
+        Return
+        ------
+        The object added.
 
-            The object added.
+        Example
+        -------
+        >>> text_object = myplot.add_axobj('vmin', 24.5)
 
-        :Example:
-
-            >>> text_object = myplot.add_axobj('vmin', 24.5)
-
-        :See also:
-
-            :meth:`get_axobj`
+        See also
+        --------
+        :meth:`get_axobj`
         """
         if self.axes is None: return
         container = self.axes if axis is None else getattr(self.axes, axis+'axis')
@@ -1087,33 +1127,36 @@ class Plot(object):
         """Get an object stored in the bank of current
         :class:`matplotlib.axes.Axes` instance
 
-        :Params:
+        Parameters
+        ----------
+        gtype: optional
+            Object type (name).
+            If not set, all objects are returned.
+        axis: optional
+            If one of ``"x"`` or ``"y"``,
+            get objects stored in current
+            xaxis or yaxis instead if current axes instance.
+        axes: optional
+            Target axes, which defaults to
 
-            - **gtype**, optional: Object type (name).
-              If not set, all objects are returned.
-            - **axis**, optional: If one of ``"x"`` or ``"y"``,
-              get objects stored in current
-              xaxis or yaxis instead if current axes instance.
-            - **axes**, optional: Target axes, which defaults to
+            #. attribute :attr:`axes`,
+            #. result from :func:`matplotlib.pyplot.gca`.
 
-                #. attribute :attr:`axes`,
-                #. result from :func:`matplotlib.pyplot.gca`.
+        Example
+        -------
+        >>> myplot.get_axobj()
+        >>> myplot.get_axobj('vmin')
+        >>> myplot.get_axobj('hlitvs', axis='x')
 
-        :Example:
+        >>> Plot.get_axobj()
 
-            >>> myplot.get_axobj()
-            >>> myplot.get_axobj('vmin')
-            >>> myplot.get_axobj('hlitvs', axis='x')
+        Return
+        ------
+        The object or ``None`` if not found.
 
-            >>> Plot.get_axobj()
-
-        :Return:
-
-            The object or ``None`` if not found.
-
-        :See also:
-
-            :meth:`add_axobj`
+        See also
+        --------
+        :meth:`add_axobj`
         """
         if axes is None and hasattr(self, 'axes'): axes = self.axes
         if axes is None: return
@@ -1136,11 +1179,13 @@ class Plot(object):
         """Check if an attribute has been manually set different from ``None``
 
 
-        :Example:
+        Example
+        -------
+        >>> return myplot.iset('xmin')
 
-            >>> return myplot.iset('xmin')
-
-        :See also: :meth:`get_obj` :meth:`get_axobj`
+        See also
+        --------
+        :meth:`get_obj` :meth:`get_axobj`
         """
         if key in ['units', 'long_name']:
             return getattr(self, key) is not None
@@ -1154,40 +1199,63 @@ class Plot(object):
         param_label=None, **kwargs):
         """Finish plotting stuff (plot size, grid, texts, saves, etc)
 
-        :Params:
-
-            - **title**: Title of the figure [defaults to var.long_name or '']
-            - **grid**: Plot the grid [default: True]
-            - **grid_<param>**: <param> is passed to :func:`~matplotlib.pyplot.grid`
-            - **hlitvs**: Add highlithing if time axis [default: False]
-            - **figtext**: figtext Add text at a specified position on the
-              figure. Example: figtext=[0,0,'text'] add a 'text' at the
-              lower left corner, or simply figtext='text'.
-            - **figtext_<param>**: <param> is passed to
+        Parameters
+        ----------
+        title:
+            Title of the figure [defaults to var.long_name or '']
+        grid:
+            Plot the grid [default: True]
+        grid_<param>:
+            <param> is passed to :func:`~matplotlib.pyplot.grid`
+        hlitvs:
+            Add highlithing if time axis [default: False]
+        figtext:
+            figtext Add text at a specified position on the
+            figure. Example: figtext=[0,0,'text'] add a 'text' at the
+            lower left corner, or simply figtext='text'.
+        figtext_<param>:
+            <param> is passed to
               :func:`~matplotlib.pyplot.figtext`
-            - **anchor**: Anchor of the axes (useful when resizing) in
-              ['C', 'SW', 'S', 'SE', 'E', 'NE', 'N', 'NW', 'W'].
-            - **legend**, optional: Draw the legend using :func:`~matplotlib.pyplot.legend`.
-            - **legend_<param>**: <param> is passed to :func:`~matplotlib.pyplot.legend`
-            - **show**: Display the figure [default: True]
-            - **savefig**: Save the figure to this file.
-            - **savefig_<param>**: <param> is passed to method :meth:`savefig`
-              and finally to the matplotlib function :func:`~matplotlib.pyplot.savefig`.
-            - **savefigs**: Save the figure into multiple formats using
+        anchor:
+            Anchor of the axes (useful when resizing) in
+            ['C', 'SW', 'S', 'SE', 'E', 'NE', 'N', 'NW', 'W'].
+        legend: optional
+            Draw the legend using :func:`~matplotlib.pyplot.legend`.
+        legend_<param>:
+            <param> is passed to :func:`~matplotlib.pyplot.legend`
+        show:
+            Display the figure [default: True]
+        savefig:
+            Save the figure to this file.
+        savefig_<param>:
+            <param> is passed to method :meth:`savefig`
+            and finally to the matplotlib function :func:`~matplotlib.pyplot.savefig`.
+        savefigs:
+            Save the figure into multiple formats using
               :func:`savefigs` and 'savefigs' as the prefix to the files.
-            - **savefigs_<param>**: <param> is passed to :func:`savefigs`
-            - **autoresize**: Auto resize the figure according axes (1 or True),
-              axes+margins (2). If 0 or False, not resized [default: False=2].
-            - **key**: Add a key (like 'a)') to the axes using add_key
-              if different from None [default: None]
-            - **key_<param>**: <param> is passed to :func:`add_key`
-            - **param_label**: Add a param label to the figure using
+        savefigs_<param>:
+            <param> is passed to :func:`savefigs`
+        autoresize:
+            Auto resize the figure according axes (1 or True),
+            axes+margins (2). If 0 or False, not resized [default: False=2].
+        key:
+            Add a key (like 'a)') to the axes using add_key
+            if different from None [default: None]
+        key_<param>:
+            <param> is passed to :func:`add_key`
+        param_label:
+            Add a param label to the figure using
               :meth:`add_param_label` if different from None [default: None]
-            - **param_label_<param>**: <param> is passed to :meth:`add_param_label`
-            - **close**: Close the figure at the end [default: False]
-            - **title_<param>**: <param> is passed to :func:`~matplotlib.pyplot.title`
-            - **logo_<param>**: <param> is passed to :func:`add_logo`
-            - **tight_layout**: To make a tight layout one everything is plotted.
+        param_label_<param>:
+            <param> is passed to :meth:`add_param_label`
+        close:
+            Close the figure at the end [default: False]
+        title_<param>:
+            <param> is passed to :func:`~matplotlib.pyplot.title`
+        logo_<param>:
+            <param> is passed to :func:`add_logo`
+        tight_layout:
+            To make a tight layout one everything is plotted.
         """
         self._post_plotted = True
 
@@ -1270,26 +1338,42 @@ class Plot(object):
         date_locator=None, date_minor_locator=None, date_nominor=False, **kwargs):
         """Scale and format X and Y axes
 
-        :Params:
-
-            - **x/y/vskip**, optional: Skip axis formating.
-            - **nodate**, optional: do not format as date.
-            - **date_rotation**, optional: Rotate date labels.
-            - **date_fmt**, optional: Date format (like ``"%s/%m/%Y"``).
-            - **date_locator**, optional: Major locator (see :func:`setup_time_axis`).
-            - **date_minor_locator**, optional: Minor locator (see :func:`setup_time_axis`).
-            - **date_nominor**, optional: Do not plot minor localor.
-            - **x/y/vmin/max**, optional: Force min/max of X or Y axis (defaults to :attr:`xmin`, etc).
-            - **x/y/vlim**, optional: Force min/max of X or Y axis with `(min,max)`` like argument.
-            - **x/y/vminmax**, optional: Minimal max value
-              -> use this value if max is too low.
-            - **x/y/vmaxmin**, optional: Maximal min value.
-            - **x/yticks**, optional: Position of ticks.
+        Parameters
+        ----------
+        x/y/vskip: optional
+            Skip axis formating.
+        nodate: optional
+            do not format as date.
+        date_rotation: optional
+            Rotate date labels.
+        date_fmt: optional
+            Date format (like ``"%s/%m/%Y"``).
+        date_locator: optional
+            Major locator (see :func:`setup_time_axis`).
+        date_minor_locator: optional
+            Minor locator (see :func:`setup_time_axis`).
+        date_nominor: optional
+            Do not plot minor localor.
+        x/y/vmin/max: optional
+            Force min/max of X or Y axis (defaults to :attr:`xmin`, etc).
+        x/y/vlim: optional
+            Force min/max of X or Y axis with `(min,max)`` like argument.
+        x/y/vminmax: optional
+            Minimal max value
+            -> use this value if max is too low.
+        x/y/vmaxmin: optional
+            Maximal min value.
+        x/yticks: optional
+            Position of ticks.
             - **x/yfmt** (or **...format**, **...tickfmt**, **...tickformat**, optional: Format of ticks.
-            - **x/yticklabels**, optional: Label of ticks.
-            - **x/yhide**, optional: Hide labels.
-            - **x/ynmax** (or **...nmax_ticks***), optional: Max number of ticks for some locators.
-            - **x/y/vtitle** (or **..label**), optional: Title of the axis (defaults to :attr:`xlabel`, etc).
+        x/yticklabels: optional
+            Label of ticks.
+        x/yhide: optional
+            Hide labels.
+        x/ynmax or ...nmax_ticks: optional
+            Max number of ticks for some locators.
+        x/y/vtitle ..label: optional
+            Title of the axis (defaults to :attr:`xlabel`, etc).
         """
         vkwargs = kwfilter(kwargs, 'v', copy=True, short=True)
         for iaxis, xy in enumerate(('x', 'y')):
@@ -1540,17 +1624,20 @@ class Plot(object):
     def get_xy(self, x, y, transform=None, xyscaler=None, default_transform=None):
         """Convert (x,y) in data coordinates
 
-        :Params:
-
-            - **x/y**: Coordinates referenced to data, axes or figure.
-            - **transform**, optional: Transform applied to coordinates.
-              This either a :class:`matplotlib.transforms.Transform` or a string:
-              ``"data"``, ``"axes"``, ``"figure"``.
-            - **xyscaler**, optional: Converter of coordinates used when input
-              coordinates are in data coordinates. It must be a callable,
-              and it defaults to attribute :attr:`xyscaler` if existing.
-              It converts for instance from degrees to meters for :class:`Map`
-              instances. If equal to False, no conversion is performed.
+        Parameters
+        ----------
+        x/y:
+            Coordinates referenced to data, axes or figure.
+        transform: optional
+            Transform applied to coordinates.
+            This either a :class:`matplotlib.transforms.Transform` or a string:
+            ``"data"``, ``"axes"``, ``"figure"``.
+        xyscaler: optional
+            Converter of coordinates used when input
+            coordinates are in data coordinates. It must be a callable,
+            and it defaults to attribute :attr:`xyscaler` if existing.
+            It converts for instance from degrees to meters for :class:`Map`
+            instances. If equal to False, no conversion is performed.
         """
         transform = self._transform_(transform, default_transform)
 
@@ -1576,22 +1663,27 @@ class Plot(object):
         It can be used for instance to plot an object with an
         offset with respect to its specified position.
 
-        :Params:
+        Parameters
+        ----------
+        x/y:
+            Relative position.
+        units: optional
+            Units ("points", "inches", "pixels", ...)
+        transform: optional
+            Base transform for reference position.
+            Choose for instance "data" or "axes".
 
-            - **x/y**: Relative position.
-            - **units**, optional: Units ("points", "inches", "pixels", ...)
-            - **transform**, optional: Base transform for reference position.
-              Choose for instance "data" or "axes".
 
+        Example
+        -------
+        >>> o = Plot2D(data)
+        >>> o.add_point(-4, 43)
+        >>> t = o.get_transoffset(0, 10)
+        >>> o.text(-4, 43, transform=t)
 
-        :Example:
-
-            >>> o = Plot2D(data)
-            >>> o.add_point(-4, 43)
-            >>> t = o.get_transoffset(0, 10)
-            >>> o.text(-4, 43, transform=t)
-
-        :See also: :func:`~maplotlib.transforms.offset_copy`
+        See also
+        --------
+        :func:`~maplotlib.transforms.offset_copy`
         """
         transform = self._transform_(transform, 'data')
         return offset_copy(transform, fig=self.fig, x=x, y=y, units=units)
@@ -1600,10 +1692,10 @@ class Plot(object):
         """Add a grid to axes using :func:`~matplotlib.pyplot.grid`
 
 
-        :Example:
-
-            >>> myplot.grid(color='r')
-            >>> myplot.grid(False)
+        Example
+        -------
+        >>> myplot.grid(color='r')
+        >>> myplot.grid(False)
         """
 #        grid = self.get_axobj('grid')
 #        print 'grid',grid
@@ -1618,15 +1710,14 @@ class Plot(object):
     def add_figtext(self, *args, **kwargs):
         """Add text to the current figure using :func:`~matplotlib.pyplot.figtext`
 
-        :Defaults:
+        .. rubric:: Defaults
+        - Position: defaults to the top center.
+        - Alignement: ``ha="center", va="top"``
 
-            - Position: defaults to the top center.
-            - Alignement: ``ha="center", va="top"``
-
-        :Example:
-
-            >>> myplot.figtext('Group of plots')
-            >>> myplot.figtext(0.2, 0.92, 'My plots', color='b', ha='left', va='center')
+        Example
+        -------
+        >>> myplot.figtext('Group of plots')
+        >>> myplot.figtext(0.2, 0.92, 'My plots', color='b', ha='left', va='center')
         """
         # Arguments
         if len(args)==0: return
@@ -1661,18 +1752,25 @@ class Plot(object):
         xyscaler=None, strip=True, **kwargs):
         """Add text to the plot axes
 
-        :Params:
-
-            - **x,y**: Coordinates of the text.
-            - **text**: Text to plot.
-            - **transform**, optional: Type of coordinates
-              (like ``"axes"`` or ``"data"``).
-            - **shadow**, optional: Add a droped shadow below the text
-              (see :func:`add_shadow`).
-            - **shadow_<param>**, optional: ``<param>`` is passed to :func:`add_shadow`.
-            - **glow**, optional: Add a glow effect the text
-              (see :func:`add_glow`).
-            - **glow_<param>**, optional: ``<param>`` is passed to :func:`add_glow`.
+        Parameters
+        ----------
+        x,y:
+            Coordinates of the text.
+        text:
+            Text to plot.
+        transform: optional
+            Type of coordinates
+            (like ``"axes"`` or ``"data"``).
+        shadow: optional
+            Add a droped shadow below the text
+            (see :func:`add_shadow`).
+        shadow_<param>: optional
+            ``<param>`` is passed to :func:`add_shadow`.
+        glow: optional
+            Add a glow effect the text
+            (see :func:`add_glow`).
+        glow_<param>: optional
+            ``<param>`` is passed to :func:`add_glow`.
             - Other keywords are passed to :func:`matplotlib.pyplot.text`.
 
         """
@@ -1734,7 +1832,9 @@ class Plot(object):
     def add_left_label(self, text, **kwargs):
         """Add a text label to the left of the plot
 
-        :See also: :func:`~vacumm.misc.plot.add_left_label`
+        See also
+        --------
+        :func:`~vacumm.misc.plot.add_left_label`
         """
         kwargs['ax'] = self.axes
         return add_left_label(text, **kwargs)
@@ -1742,7 +1842,9 @@ class Plot(object):
     def add_right_label(self, text, **kwargs):
         """Add a text label to the right of the plot
 
-        :See also: :func:`~vacumm.misc.plot.add_right_label`
+        See also
+        --------
+        :func:`~vacumm.misc.plot.add_right_label`
         """
         kwargs['ax'] = self.axes
         return add_right_label(text, **kwargs)
@@ -1750,7 +1852,9 @@ class Plot(object):
     def add_top_label(self, text, **kwargs):
         """Add a text label to the top of the plot
 
-        :See also: :func:`~vacumm.misc.plot.add_top_label`
+        See also
+        --------
+        :func:`~vacumm.misc.plot.add_top_label`
         """
         kwargs['ax'] = self.axes
         return add_top_label(text, **kwargs)
@@ -1758,7 +1862,9 @@ class Plot(object):
     def add_bottom_label(self, text, **kwargs):
         """Add a text label to the bottom of the plot
 
-        :See also: :func:`~vacumm.misc.plot.add_bottom_label`
+        See also
+        --------
+        :func:`~vacumm.misc.plot.add_bottom_label`
         """
         kwargs['ax'] = self.axes
         return add_bottom_label(text, **kwargs)
@@ -1777,15 +1883,17 @@ class Plot(object):
         """Add parameters description to the bottom/left of the figure using
         :func:`~vacumm.misc.plot.add_param_label`
 
-        :Example:
+        Example
+        -------
+        >>> c = curve2(sst, show=False)
+        >>> c.add_param_label(dict(max=.23, kz=0.25), color='r')
 
-            >>> c = curve2(sst, show=False)
-            >>> c.add_param_label(dict(max=.23, kz=0.25), color='r')
-
-        :Params:
-
-            - **text**: Either a string or a dictionary.
-            - See :func:`~vacumm.misc.plot.add_param_label` for other parameters
+        Parameters
+        ----------
+        text:
+            Either a string or a dictionary.
+        **kwargs
+            Passed to :func:`~vacumm.misc.plot.add_param_label`
         """
         kwargs['fig'] = self.fig
         return add_param_label(text, **kwargs)
@@ -1796,22 +1904,31 @@ class Plot(object):
         xyscaler=None, strip=True, **kwargs):
         """Add an annotation to the plot axes using :func:`matplotlib.pyplot.annotate`
 
-        :Params:
-
-            - **x,y**: Coordinates of the text.
-            - **text**: Text to plot.
-            - **xycoords/transform**, optional: Type of coordinates of point
-              (like ``"axes"`` or ``"data"``).
-            - **textcoords**, optional: Type of coordinates of text
-              (like ``"axes"`` or ``"data"``).
-            - **arrowprops**, optional: Dictionary of arrow properties or
-              string thet defines the arrow style.
-            - **shadow**, optional: Add a droped shadow below the text
-              (see :func:`add_shadow`).
-            - **shadow_<param>**, optional: ``<param>`` is passed to :func:`add_shadow`.
-            - **glow**, optional: Add a glow effect the text
-              (see :func:`add_glow`).
-            - **glow_<param>**, optional: ``<param>`` is passed to :func:`add_glow`.
+        Parameters
+        ----------
+        x,y:
+            Coordinates of the text.
+        text:
+            Text to plot.
+        xycoords/transform: optional
+            Type of coordinates of point
+            (like ``"axes"`` or ``"data"``).
+        textcoords: optional
+            Type of coordinates of text
+            (like ``"axes"`` or ``"data"``).
+        arrowprops: optional
+            Dictionary of arrow properties or
+            string thet defines the arrow style.
+        shadow: optional
+            Add a droped shadow below the text
+            (see :func:`add_shadow`).
+        shadow_<param>: optional
+            ``<param>`` is passed to :func:`add_shadow`.
+        glow: optional
+            Add a glow effect the text
+            (see :func:`add_glow`).
+        glow_<param>: optional
+            ``<param>`` is passed to :func:`add_glow`.
             - Other keywords are passed to :func:`matplotlib.pyplot.annotate`.
 
         """
@@ -1881,22 +1998,25 @@ class Plot(object):
     def ptitle(self, title=None, force=None, **kwargs):
         """Add a title to the plot
 
-        .. note::
+        Note
+        ---
+        No title is added to the plot if a title already exists
+        and the specified title is guessed (not hard set).
 
-            No title is added to the plot if a title already exists
-            and the specified title is guessed (not hard set).
+        Parameters
+        ----------
+        title:
+            Title to add to plot.
 
-        :Params:
+            - A string: directly used.
+            - ``True`` or ``None``: the :attr:`title` attribute is used.
+            - ``False``: not title is plotted.
 
-            - **title**: Title to add to plot.
-
-                - A string: directly used.
-                - ``True`` or ``None``: the :attr:`title` attribute is used.
-                - ``False``: not title is plotted.
-
-            - **force**, optional: If the title is already plotted,
-              it is not overwritten, except if ``force is True``.
-            - Other keywords are passed to :func:`matplotlib.pyplot.title`.
+        force: optional
+            If the title is already plotted,
+            it is not overwritten, except if ``force is True``.
+        **kwargs
+            Other keywords are passed to :func:`matplotlib.pyplot.title`.
 
         """
         if title is None:
@@ -1914,12 +2034,16 @@ class Plot(object):
 
         Arguments and keywords are passed to :meth:`~matplotlib.axes.Axes.legend`.
 
-        Defaults values :
+        .. rubric:: Default values
 
-            - **loc**: ``"best"``
-            - **shadow**: ``False``
-            - **fancybox**: ``True``
-            - **alpha** (applied to legend patch): ``0.5``
+        loc:
+            ``"best"``
+        shadow:
+            ``False``
+        fancybox:
+            ``True``
+        alpha** (applied to legend patch):
+            ``0.5``
         """
         kwargs.setdefault('loc', 'best')
 #        kwargs.setdefault('shadow', False)
@@ -1982,22 +2106,32 @@ class Plot(object):
     def add_box(self, box, zorder=150, shadow=False, glow=False, color='r', npts=10, xyscaler=None, **kwargs):
         """Add a box to the plot using :meth:`matplotlib.pyplots.plot`
 
-        :Params:
+        Parameters
+        ----------
+        box:
+            Box limits in the forms ``[xmin,ymin,xmax,ymax]``
+            ``dict(x=(xmin,xmax),y=(xmin,xmax)``.
+        color: optional
+            Line color of the box.
+        npts: optional
+            Number of points per side
+            (useful with special map projections).
+        shadow: optional
+            Add a droped shadow below the box
+            (see :func:`add_shadow`).
+        shadow_<param>: optional
+            ``<param>`` is passed to :func:`add_shadow`.
+        glow: optional
+            Add a glow effect the box
+            (see :func:`add_glow`).
+        glow_<param>: optional
+            ``<param>`` is passed to :func:`add_glow`.
+        **kwargs
+            Other keywords are passed to :func:`matplotlib.pyplot.plot`.
 
-            - **box**: Box limits in the forms ``[xmin,ymin,xmax,ymax]``
-              ``dict(x=(xmin,xmax),y=(xmin,xmax)``.
-            - **color**, optional: Line color of the box.
-            - **npts**, optional: Number of points per side
-              (useful with special map projections).
-            - **shadow**, optional: Add a droped shadow below the box
-              (see :func:`add_shadow`).
-            - **shadow_<param>**, optional: ``<param>`` is passed to :func:`add_shadow`.
-            - **glow**, optional: Add a glow effect the box
-              (see :func:`add_glow`).
-            - **glow_<param>**, optional: ``<param>`` is passed to :func:`add_glow`.
-            - Other keywords are passed to :func:`matplotlib.pyplot.plot`.
-
-        :See also: :func:`matplotlib.pyplot.plot`
+        See also
+        --------
+        :func:`matplotlib.pyplot.plot`
         """
         # Limits
         try:
@@ -2048,17 +2182,26 @@ class Plot(object):
             color=False, **kwargs):
         """Add an arrow to the map using :func:`matplotlib.pyplot.quiver`
 
-        :Params:
+        Parameters
+        ----------
+        x,y:
+            Coordinates of the position of the tail
+        udata:
+            X or radial component of arrows.
+        vdata:
+            Y or directional component of arrows.
+        polar: optional
+            Consider polar coordinates: ``(u, v) -> (rho, theta)``
+        degrees: optional
+            If True (default), trat ``theta`` as degrees, else radians.
+        quiver_<param>: optional
+            ``<param>`` is passed to :func:`matplotlib.pyplot.quiver`.
+        **kwargs
+            Other keywords are passed to :func:`matplotlib.pyplot.plot`.
 
-            - **x,y**: Coordinates of the position of the tail
-            - **udata**: X or radial component of arrows.
-            - **vdata**: Y or directional component of arrows.
-            - **polar**, optional: Consider polar coordinates: ``(u, v) -> (rho, theta)``
-            - **degrees**, optional: If True (default), trat ``theta`` as degrees, else radians.
-            - **quiver_<param>**, optional: ``<param>`` is passed to :func:`matplotlib.pyplot.quiver`.
-            - Other keywords are passed to :func:`matplotlib.pyplot.plot`.
-
-        :See also: :func:`matplotlib.pyplot.scatter`
+        See also
+        --------
+        :func:`matplotlib.pyplot.scatter`
         """
         # Data for arrows
         udata = MV2.asarray(udata)
@@ -2113,15 +2256,22 @@ class Plot(object):
             units=None, latex_units=None, **kwargs):
         """Add a quiver key to the plot
 
-        :Params:
-
-            - **qv**: Results of :func:`~matplotlib.pyplot.quiver`.
-            - **value**: Numeric value for key (used by text).
-            - **pos**, optional: Position of key for arrow .
-            - **text**, optional: Text or format with variables 'value' and 'units'.
-            - **units**, optional: Units for key (used by text).
-            - **latex_units**, optional: Interpret units using latex.
-            - Extra keywords are passed to :func:`~matplotlib.pyplot.quiverkey`.
+        Parameters
+        ----------
+        qv:
+            Results of :func:`~matplotlib.pyplot.quiver`.
+        value:
+            Numeric value for key (used by text).
+        pos: optional
+            Position of key for arrow .
+        text: optional
+            Text or format with variables 'value' and 'units'.
+        units: optional
+            Units for key (used by text).
+        latex_units: optional
+            Interpret units using latex.
+        **kwargs
+            Extra keywords are passed to :func:`~matplotlib.pyplot.quiverkey`.
         """
 
         # Value
@@ -2173,22 +2323,32 @@ class Plot(object):
         npts=10, xyscaler=None, **kwargs):
         """Add a line to the plot using :meth:`matplotlib.pyplots.plot`
 
-        :Params:
+        Parameters
+        ----------
+        extents:
+            Extents in the forms ``[xmin,ymin,xmax,ymax]``
+            ``dict(x=(xmin,xmax),y=xmin,xmax)``.
+        color: optional
+            Line color of the line.
+        npts: optional
+            Number of points per side
+            (useful with special map projections).
+        shadow: optional
+            Add a droped shadow below the box
+            (see :func:`add_shadow`).
+        shadow_<param>: optional
+            ``<param>`` is passed to :func:`add_shadow`.
+        glow: optional
+            Add a glow effect the box
+            (see :func:`add_glow`).
+        glow_<param>: optional
+            ``<param>`` is passed to :func:`add_glow`.
+        **kwargs
+            Other keywords are passed to :func:`matplotlib.pyplot.plot`.
 
-            - **extents**: Extents in the forms ``[xmin,ymin,xmax,ymax]``
-              ``dict(x=(xmin,xmax),y=xmin,xmax)``.
-            - **color**, optional: Line color of the line.
-            - **npts**, optional: Number of points per side
-              (useful with special map projections).
-            - **shadow**, optional: Add a droped shadow below the box
-              (see :func:`add_shadow`).
-            - **shadow_<param>**, optional: ``<param>`` is passed to :func:`add_shadow`.
-            - **glow**, optional: Add a glow effect the box
-              (see :func:`add_glow`).
-            - **glow_<param>**, optional: ``<param>`` is passed to :func:`add_glow`.
-            - Other keywords are passed to :func:`matplotlib.pyplot.plot`.
-
-        :See also: :func:`matplotlib.pyplot.plot`
+        See also
+        --------
+        :func:`matplotlib.pyplot.plot`
         """
         # Positions
         try:
@@ -2231,20 +2391,29 @@ class Plot(object):
             color='r', size=20, xyscaler=None, **kwargs):
         """Add a point to the map using :meth:`matplotlib.pyplots.plot`
 
-        :Params:
+        Parameters
+        ----------
+        x,y:
+            Coordinates.
+        color: optional
+            Line color of the point.
+        shadow: optional
+            Add a droped shadow below the box
+            (see :func:`add_shadow`).
+        shadow_<param>: optional
+            ``<param>`` is passed
+            to :func:`add_shadow`.
+        glow: optional
+            Add a glow effect the box
+            (see :func:`add_glow`).
+        glow_<param>: optional
+            ``<param>`` is passed to :func:`add_glow`.
+        **kwargs
+            Other keywords are passed to :func:`matplotlib.pyplot.plot`.
 
-            - **x,y**: Coordinates.
-            - **color**, optional: Line color of the point.
-            - **shadow**, optional: Add a droped shadow below the box
-              (see :func:`add_shadow`).
-            - **shadow_<param>**, optional: ``<param>`` is passed
-              to :func:`add_shadow`.
-            - **glow**, optional: Add a glow effect the box
-              (see :func:`add_glow`).
-            - **glow_<param>**, optional: ``<param>`` is passed to :func:`add_glow`.
-            - Other keywords are passed to :func:`matplotlib.pyplot.plot`.
-
-        :See also: :func:`matplotlib.pyplot.scatter`
+        See also
+        --------
+        :func:`matplotlib.pyplot.scatter`
         """
         # Coordinates
         x = _asnum_(x)
@@ -2283,20 +2452,25 @@ class Plot(object):
             text_offset=(0, 10), ha='center', va='center', **kwargs):
         """Place a point using :meth:`add_point` and a label using :meth:`add_text`
 
-        :Examples:
+        Examples
+        --------
+        >>> m = map2(sst, show=False)
+        >>> m.add_place(-5, 44, 'Buoy 654', text_offset=(20,0), text_ha='left',
+            text_color='b', point_size=100, shadow=True)
 
-            >>> m = map2(sst, show=False)
-            >>> m.add_place(-5, 44, 'Buoy 654', text_offset=(20,0), text_ha='left',
-                text_color='b', point_size=100, shadow=True)
-
-        :Params:
-
-            - **x/y**: Coordinates of the place in data units.
-            - **text**: Name of the place.
-            - **text_offset**, optional: Offset of the text in points with relative to
-              coordinates.
-            - **point_<param>**, optional: ``<param>`` is passed to :meth:`add_point`.
-            - **text_<param>**, optional: ``<param>`` is passed to :meth:`add_text`.
+        Parameters
+        ----------
+        x/y:
+            Coordinates of the place in data units.
+        text:
+            Name of the place.
+        text_offset: optional
+            Offset of the text in points with relative to
+            coordinates.
+        point_<param>: optional
+            ``<param>`` is passed to :meth:`add_point`.
+        text_<param>: optional
+            ``<param>`` is passed to :meth:`add_text`.
 
         """
         kwpoint = kwfilter(kwargs, 'point_')
@@ -2332,21 +2506,30 @@ class Plot(object):
         xyscaler=None, closed=False, **kwargs):
         """Add lines to the plot using :meth:`matplotlib.axes.Axes.plot`
 
-        :Params:
+        Parameters
+        ----------
+        xx/yy:
+            Coordinates (in degrees).
+        color: optional
+            Line color of the line.
+        closed: optional
+            Close the lines to form a polygon.
+        shadow: optional
+            Add a droped shadow below the box
+            (see :func:`add_shadow`).
+        shadow_<param>: optional
+            ``<param>`` is passed to :func:`add_shadow`.
+        glow: optional
+            Add a glow effect the box
+            (see :func:`add_glow`).
+        glow_<param>: optional
+            ``<param>`` is passed to :func:`add_glow`.
+        **kwargs
+            Other keywords are passed to :func:`matplotlib.pyplot.plot`.
 
-
-            - **xx/yy**: Coordinates (in degrees).
-            - **color**, optional: Line color of the line.
-            - **closed**, optional: Close the lines to form a polygon.
-            - **shadow**, optional: Add a droped shadow below the box
-              (see :func:`add_shadow`).
-            - **shadow_<param>**, optional: ``<param>`` is passed to :func:`add_shadow`.
-            - **glow**, optional: Add a glow effect the box
-              (see :func:`add_glow`).
-            - **glow_<param>**, optional: ``<param>`` is passed to :func:`add_glow`.
-            - Other keywords are passed to :func:`matplotlib.pyplot.plot`.
-
-        :See also: :func:`matplotlib.pyplot.plot`
+        See also
+        --------
+        :func:`matplotlib.pyplot.plot`
         """
         # Positions
         xx = N.ma.ravel(_asnum_(xx))
@@ -2397,13 +2580,17 @@ class Plot(object):
     def savefig(self, figfile, verbose=False, mkdir=True, **kwargs):
         """Save the figure to a file
 
-        :Params:
-
-            - **figfile**: Figure file name. Also accepts
+        Parameters
+        ----------
+        figfile:
+            Figure file name. Also accepts
               :class:`~vacumm.misc.remote.OutputWorkFile`.
-            - **verbose**, optional: Informs about file name when written.
-            - **mkdir**, optional: Make figure directory if it does not exists.
-            - Other keywords are passed to :func:`matplotlib.pyplot.savefig`.
+        verbose: optional
+            Informs about file name when written.
+        mkdir: optional
+            Make figure directory if it does not exists.
+        **kwargs
+            Other keywords are passed to :func:`matplotlib.pyplot.savefig`.
         """
         if figfile is None: return
 
@@ -2415,7 +2602,7 @@ class Plot(object):
             return oo
 
         # Remote output file
-        rem = figfile if isinstance(figfile, vcr.OutputWorkFile) else False
+        rem = figfile if isinstance(figfile, OutputWorkFile) else False
         if rem: figfile = figfile.local_file
 
         # Extension
@@ -2577,12 +2764,14 @@ class Plot(object):
     def get_uvscaler(self, guess=True, lat=None, raw=False):
         """Get :attr:`uvscaler`
 
-        :Params:
-
-            - **guess**, optional: Guess scaler from axis types
-              and data units if not specified.
-            - **lat**, optional: Latitude value passed to
-              :meth:`get_metric_scale` to guess plot axis metric scale.
+        Parameters
+        ----------
+        guess: optional
+            Guess scaler from axis types
+            and data units if not specified.
+        lat: optional
+            Latitude value passed to
+            :meth:`get_metric_scale` to guess plot axis metric scale.
 
         """
         uvscaler = self.get_obj('uvscaler')
@@ -2648,13 +2837,16 @@ class Plot(object):
         del_uvscaler, doc="""Function to rescale U anv V data along X and Y axes.
             ``None`` is returned if no scaling is possible.
 
-            :Example:
+            Example
+            --------
 
-                >>> uvscaler = myplot.uvscaler
-                >>> if uvscaler is not None:
-                    ... u2,v2 = myplot.uvscaler(u, v)
+            >>> uvscaler = myplot.uvscaler
+            >>> if uvscaler is not None:
+            ... u2,v2 = myplot.uvscaler(u, v)
 
-            :Return: A callable function or ``None`` if no scaling is possible
+            Return
+            ------
+                A callable function or ``None`` if no scaling is possible
             """)
 
 
@@ -2667,15 +2859,17 @@ class Plot(object):
         else :func:`~vacumm.misc.phys.units.tometric` is used
         using axis units.
 
-        :Params:
+        Parameters
+        ----------
+        xy: string
+            Plot axis type (``"x"``, ``"y"``...).
+        lat, optional:
+            Latitude for degrees to meter conversion
+            of longitude coordinates. It default to :attr:`uvlat`.
 
-            - **xy**: Plot axis type (``"x"``, ``"y"``...).
-            - **lat**, optional: Latitude for degrees to meter conversion
-              of longitude coordinates. It default to :attr:`uvlat`.
-
-        :Return:
-
-            - ``None`` if conversion of possible, else a float value.
+        Return
+        ------
+        ``None`` if conversion of possible, else a float value.
 
         """
         # X or Y plot axis
@@ -3277,18 +3471,19 @@ class Plot(object):
         fmtlnu='%(long_name)s [%(units)s]', long_name=True, units=True):
         """Format long_name and units as string according to their availability
 
-        :Params:
+        Parameters
+        ----------
+        prefix: optional
+            Prefix of the attributes
 
-            - **prefix**, optional: Prefix of the attributes
-
-        :Example:
-
-            >>> myplot.get_fmt_lnu()
-            '%(long_name)s [%(units)s]'
-            >>> myplot.get_fmt_lnu(prefix='x', fmtlnu='%(long_name)s [%(units)s]')
-            '%(xlong_name)s [%(xunits)s]'
-            >>> myplot.get_fmt_lnu(long_name=False)
-            '%(xunits)s'
+        Example
+        -------
+        >>> myplot.get_fmt_lnu()
+        '%(long_name)s [%(units)s]'
+        >>> myplot.get_fmt_lnu(prefix='x', fmtlnu='%(long_name)s [%(units)s]')
+        '%(xlong_name)s [%(xunits)s]'
+        >>> myplot.get_fmt_lnu(long_name=False)
+        '%(xunits)s'
         """
         if getattr(self, prefix+'long_name') is None: long_name = False
         if getattr(self, prefix+'units') is None: units = False
@@ -3310,11 +3505,11 @@ class Plot(object):
     def dict(self, *keys, **items):
         """Get attributes as a dictionary
 
-        .. note::
-
-            :attr:`units` is treated in a special way.
-            If :attr:`latex_units` is ``True``, it is formatted
-            as ``$<units>$``.
+        Note
+        ----
+        :attr:`units` is treated in a special way.
+        If :attr:`latex_units` is ``True``, it is formatted
+        as ``$<units>$``.
 
         """
         if len(keys)==0:
@@ -3356,11 +3551,14 @@ class Plot1D(Plot):
     def _check_order_(self, vertical=None, **kwargs):
         """Check order of data
 
-        :Params:
+        Parameters
+        ----------
+        vertical: optional
+            Plot vertically.
 
-            - **vertical**, optional: Plot vertically.
-
-        :Sea also: :meth:`Plot._check_order_`
+        Sea also
+        --------
+        :meth:`Plot._check_order_`
         """
 
         # Force vertical plot
@@ -3376,9 +3574,10 @@ class Plot1D(Plot):
     def _set_axes_(self, axis=None, axisatts=None, **kwargs):
         """Get/set used axes
 
-        :Params:
-
-            - **axis**, optional: Change plot axis.
+        Parameters
+        ----------
+        axis: optional
+            Change plot axis.
         """
 
         # Get axis and adjust order
@@ -3419,53 +3618,60 @@ class Plot1D(Plot):
 class ScalarMappable:
     """Abstract class for adding scalar mappable utilities
 
-    :Attribute params:
+    Other parameters
+    ----------------
+    levels: optional
+        Levels to use for contours or colorbar ticks.
+        "They can be specified as a single value, a list or array, or "
+        "as a tuple used as argument to :func:`numpy.arange`.
+        It sets the attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.levels`.
+    nmax_levels: optional
+        Maximal number of levels when
+      :attr:`~vacumm.misc.core_plot.ScalarMappable.levels` are computed automatically.
+        It sets the attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.nmax_levels`.
+    nmax: optional
+        Same as **nmax_levels**.
+        It sets the attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.keepminmax`.
+    cmap: optional
+        Colormap name (see :func:`get_cmap`).
+        If not specified, it is taken from
+        config section ``[vacumm.misc.plot]`` and config option ``cmap``, as a string
+        that defaults to ``magic``.
+    levels_mode: optional
+        Mode of computing levels if needed.
+        It can be specified at initialisation with
+        attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.levels_mode`.
+        If not specified, it it taken from the config section
+        ``[vacumm.misc.plot]`` and config option ``levels_mode``.
 
-        - **levels**, optional: Levels to use for contours or colorbar ticks.
-          "They can be specified as a single value, a list or array, or "
-          "as a tuple used as argument to :func:`numpy.arange`.
-          It sets the attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.levels`.
-        - **nmax_levels**, optional: Maximal number of levels when
-          :attr:`~vacumm.misc.core_plot.ScalarMappable.levels` are computed automatically.
-          It sets the attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.nmax_levels`.
-        - **nmax**, optional: Same as **nmax_levels**.
-          It sets the attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.keepminmax`.
-        - **cmap**, optional: Colormap name (see :func:`vcc.get_cmap`).
-          If not specified, it is taken from
-          config section ``[vacumm.misc.plot]`` and config option ``cmap``, as a string
-          that defaults to ``magic``.
-        - **levels_mode**, optional: Mode of computing levels if needed.
-          It can be specified at initialisation with
-          attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.levels_mode`.
-          If not specified, it it taken from the config section
-          ``[vacumm.misc.plot]`` and config option ``levels_mode``.
+        - ``"symetric"``: Min and max are set opposite.
+        - ``"positive"``: Min is set to 0.
+        - ``"negative"``: Max is set to 0.
+        - ``"auto"``: If abs(min) and abs(max) are close,
+          ``"symetric"`` is assumed. If min and max are > 0,
+          ``"positive"`` is assumed, and the reverse for
+          ``"negative"``.
 
-            - ``"symetric"``: Min and max are set opposite.
-            - ``"positive"``: Min is set to 0.
-            - ``"negative"``: Max is set to 0.
-            - ``"auto"``: If abs(min) and abs(max) are close,
-              ``"symetric"`` is assumed. If min and max are > 0,
-              ``"positive"`` is assumed, and the reverse for
-              ``"negative"``.
-        - **keepminmax**, optional:
-          It can be specified at initialisation with
-          attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.keepminmax`.
-          If not specified, it it taken from the config section
-          ``[vacumm.misc.plot]`` and config option ``keepminmax``.
-          If False or 0, adjust
-          :attr:`~vacumm.misc.core_plot.ScalarMappable.vmin` and
-          :attr:`~vacumm.misc.core_plot.ScalarMappable.vmax`
-          to first and last values of :attr:`~vacumm.misc.core_plot.ScalarMappable.levels`;
-          if 1, do not change :attr:`~vacumm.misc.core_plot.ScalarMappable.vmin`,
-          :attr:`~vacumm.misc.core_plot.ScalarMappable.vmax` and :attr:`levels`
-          if 2, adjust first and last values of :attr:`levels` or
-          :attr:`~vacumm.misc.core_plot.ScalarMappable.vmin`,
-          :attr:`~vacumm.misc.core_plot.ScalarMappable.vmax`.
-          It sets the attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.cmap`.
-        - **cblabel**, optional: Preformed label of the colorbar.
-          It may be formed as a template using other attributes
-          like :attr:`long_name`, :attr:`~vacumm.misc.core_plot.Plot.units`,
-          :attr:`xmin`,  etc. Example: ``"%(long_name)s [%(units)s]"``.
+    keepminmax: optional
+        It can be specified at initialisation with
+        attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.keepminmax`.
+        If not specified, it it taken from the config section
+        ``[vacumm.misc.plot]`` and config option ``keepminmax``.
+        If False or 0, adjust
+      :attr:`~vacumm.misc.core_plot.ScalarMappable.vmin` and
+      :attr:`~vacumm.misc.core_plot.ScalarMappable.vmax`
+        to first and last values of :attr:`~vacumm.misc.core_plot.ScalarMappable.levels`;
+        if 1, do not change :attr:`~vacumm.misc.core_plot.ScalarMappable.vmin`,
+      :attr:`~vacumm.misc.core_plot.ScalarMappable.vmax` and :attr:`levels`
+        if 2, adjust first and last values of :attr:`levels` or
+      :attr:`~vacumm.misc.core_plot.ScalarMappable.vmin`,
+      :attr:`~vacumm.misc.core_plot.ScalarMappable.vmax`.
+        It sets the attribute :attr:`~vacumm.misc.core_plot.ScalarMappable.cmap`.
+    cblabel: optional
+        Preformed label of the colorbar.
+        It may be formed as a template using other attributes
+        like :attr:`long_name`, :attr:`~vacumm.misc.core_plot.Plot.units`,
+        :attr:`xmin`,  etc. Example: ``"%(long_name)s [%(units)s]"``.
 
 
     """
@@ -3492,41 +3698,45 @@ class ScalarMappable:
             autoscaling='normal', **kwargs):
         """Get :attr:`levels` for contours and colorbar ticks
 
-        :Params:
+        Parameters
+        ----------
 
-            - **mode**, optional: Mode of computing levels if needed.
-              It can be specified at initialisation with
-              attribute :attr:`levels_mode`.
-              If not specified, it it taken from the config section
-              ``[vacumm.misc.plot]`` and config option ``levels_mode``.
+        mode: optional
+        Mode of computing levels if needed.
+        It can be specified at initialisation with
+        attribute :attr:`levels_mode`.
+        If not specified, it it taken from the config section
+        ``[vacumm.misc.plot]`` and config option ``levels_mode``.
 
-                - ``"symetric"``: Min and max are set opposite.
-                - ``"positive"``: Min is set to 0.
-                - ``"negative"``: Max is set to 0.
-                - ``"auto"``: If abs(min) and abs(max) are close,
-                  ``"symetric"``is assumed. If min and max are > 0,
-                  ``"positive"`` is assumed, and the reverse for
-                  ``"negative"``.
+        - ``"symetric"``: Min and max are set opposite.
+        - ``"positive"``: Min is set to 0.
+        - ``"negative"``: Max is set to 0.
+        - ``"auto"``: If abs(min) and abs(max) are close,
+          ``"symetric"``is assumed. If min and max are > 0,
+          ``"positive"`` is assumed, and the reverse for
+          ``"negative"``.
 
-            - **keepminmax**, optional:
-              It can be specified at initialisation with
-              attribute :attr:`keepminmax`.
-              If not specified, it it taken from the config section
-              ``[vacumm.misc.plot]`` and config option ``keepminmax``.
-              If False or 0, adjust
-              :attr:`vmin` and :attr:`vmax` to first and last values of :attr:`levels`;
-              if 1, do not change :attr:`vmin`, :attr:`vmax` and :attr:`levels`
-              if 2, adjust first and last values of :attr:`levels` or
+        keepminmax: optional
+            It can be specified at initialisation with
+            attribute :attr:`keepminmax`.
+            If not specified, it it taken from the config section
+            ``[vacumm.misc.plot]`` and config option ``keepminmax``.
+            If False or 0, adjust
+            :attr:`vmin` and :attr:`vmax` to first and last values of :attr:`levels`;
+            if 1, do not change :attr:`vmin`, :attr:`vmax` and :attr:`levels`
+            if 2, adjust first and last values of :attr:`levels` or
               :attr:`vmin`, :attr:`vmax`.
-            - **nocache**, optional: Once levels are computed, they are stored
-              in cache. If ``nocache is True``, first check cache before
-              trying to compute levels.
-            - **autoscaling**, optional: Autoscaling mode.
+        nocache: optional
+            Once levels are computed, they are stored
+            in cache. If ``nocache is True``, first check cache before
+            trying to compute levels.
+        autoscaling: optional
+            Autoscaling mode.
 
-                - ``"normal"``: Use :func:`~vacumm.misc.misc.auto_scale`.
-                - ``"degrees"``: Use :func:`~vacumm.misc.misc.geo_scale`.
-                - `A callable: Use it to auto scale. It should accept
-                  the follwing keywords: vmin, vmax, nmax, keepminmax.
+            - ``"normal"``: Use :func:`~vacumm.misc.misc.auto_scale`.
+            - ``"degrees"``: Use :func:`~vacumm.misc.misc.geo_scale`.
+            - `A callable: Use it to auto scale. It should accept
+              the follwing keywords: vmin, vmax, nmax, keepminmax.
 
         """
         # Cache
@@ -3677,13 +3887,15 @@ class ScalarMappable:
     def get_cmap(self, cmap=None, nocache=False, tint=0, **kwargs):
         """Get :attr:`cmap`
 
-        :Params:
-
-            - **cmap**, optional: Colormap name (see :func:`vcc.get_cmap`).
-              It defaults to ``"magic"``.
-            - **nocache**, optional: Once cmap is computed, it is stored
-              in cache. If ``nocache is True``, first check cache before
-              trying to compute cmap.
+        Parameters
+        ----------
+        cmap: optional
+            Colormap name (see :func:`get_cmap`).
+            It defaults to ``"magic"``.
+        nocache: optional
+            Once cmap is computed, it is stored
+            in cache. If ``nocache is True``, first check cache before
+            trying to compute cmap.
 
         """
         cmap = self.get_obj('cmap')
@@ -3708,13 +3920,13 @@ class ScalarMappable:
             cmap = getattr(color, 'cmap_'+cmap)(self.levels, **kwargs)
 
         elif not isinstance(cmap, Colormap):
-            cmap = vcc.get_cmap(cmap, **kwargs)
+            cmap = get_cmap(cmap, **kwargs)
         if tint is None: tint = 0
         tint = N.clip(tint, -1, 1)
         if tint<0:
-            cmap = vcc.darken(cmap, -tint)
+            cmap = darken(cmap, -tint)
         elif tint>0:
-            cmap = vcc.whiten(cmap, tint)
+            cmap = whiten(cmap, tint)
         self._cmap = cmap
         return cmap
     def set_cmap(self, cmap):
@@ -3749,8 +3961,8 @@ class ScalarMappable:
 
         It is useful for instance for :meth:`colorbar`.
 
-        .. note:
-
+        Note
+        ----
             The scalar mappable is search for in current instance only.
         """
         return self.get_obj('scalar_mappable')
@@ -3774,17 +3986,23 @@ class ScalarMappable:
         The colorbar is drawn only if :meth:`get_scalar_mappable` returns a valid
         scalar mappable.
 
-        :Params:
-
-            - **cax**, optional: Axes for the colorbar.
-            - **label_<param>**, optional: <param> is passed to
+        Parameters
+        ----------
+        cax: optional
+            Axes for the colorbar.
+        label_<param>: optional
+            <param> is passed to
               :meth:`~matplotlib.colorbar.Colorbar.set_label`.
-            - **ticklabels_<param>**, optional: <param> is set as a property
-              of tick labels.
-            - Other keywords are passed to the :meth:`matplotlib.figure.Figure.colorbar`
-              method.
+        ticklabels_<param>: optional
+            <param> is set as a property
+            of tick labels.
+        **kwargs
+            Other keywords are passed to the :meth:`matplotlib.figure.Figure.colorbar`
+            method.
 
-        :See also: :meth:`get_colorbar` :meth:`get_scalar_mappable`
+        See also
+        --------
+        :meth:`get_colorbar` :meth:`get_scalar_mappable`
         """
         # Get scalar mappable
         sm = self.get_scalar_mappable()
@@ -3865,11 +4083,14 @@ class ScalarMappable:
     def post_plot(self, colorbar=True, savefig=None, savefigs=None, show=True, close=False, **kwargs):
         """
 
-        :Params:
+        Parameters
+        ----------
 
-            - **colorbar**, optional: Plot the colorbar.
-            - **colorbar_<param>**, optional: ``<param>`` is passed to
-              :meth:`~vacumm.misc.core_plot.ScalarMappable.colorbar`.
+        colorbar: optional
+            Plot the colorbar.
+        colorbar_<param>: optional
+            ``<param>`` is passed to
+            :meth:`~vacumm.misc.core_plot.ScalarMappable.colorbar`.
         """
 
         # Keywords
@@ -3901,38 +4122,46 @@ class ScalarMappable:
 class Curve(Plot1D):
     """Class for plotting simple curve
 
-    :Params:
+    Parameters
+    ----------
 
-        - **data**: Data to plot. It may be a single variable or tuple.
-          It a tuple is passed, here are the possible forms:
+    data:
+        Data to plot. It may be a single variable or tuple.
+        It a tuple is passed, here are the possible forms:
 
-            - ``(M,)``: Simple scalar.
-            - ``(U,V)``: Vector coordinates and the modulus is plotted.
-            - ``(M,U,V)``: Modulus and vector coordinates and
-              only the modulus is used and plotted.
+        - ``(M,)``: Simple scalar.
+        - ``(U,V)``: Vector coordinates and the modulus is plotted.
+        - ``(M,U,V)``: Modulus and vector coordinates and
+          only the modulus is used and plotted.
 
-        - **parg**, optional: Argument passed to :func:`~matplotlib.pyplot.plot`
-          after the data.
-        - **Specific plot params**: See :meth:`plot`.
-        - **Other generic params**: See :class:`Plot`.
+    parg: optional
+        Argument passed to :func:`~matplotlib.pyplot.plot`
+        after the data.
+    Specific plot params:
+        See :meth:`plot`.
+    Other generic params:
+        See :class:`Plot`.
 
 
-    :Example:
-
-        >>> c = Curve(mydata, xmin=3, plot=False)
-        >>> c.ymax = 5.
-        >>> c.plot('-r')
-        >>> c.post_plot(savefig='toto.png')
+    Example
+    -------
+    >>> c = Curve(mydata, xmin=3, plot=False)
+    >>> c.ymax = 5.
+    >>> c.plot('-r')
+    >>> c.post_plot(savefig='toto.png')
     """
 
     def load_data(self, *args, **kwargs):
         """Check order of data
 
-        :Params:
+        Parameters
+        ----------
+        data:
+            A :mod:`MV2` 1D array.
 
-            - **data**: A :mod:`MV2` 1D array.
-
-        :See also: :meth:`Plot.load_data`
+        See also
+        --------
+        :meth:`Plot.load_data`
         """
         return Plot.load_data(self, *args, **kwargs)
 
@@ -3940,30 +4169,41 @@ class Curve(Plot1D):
             shadow=False, glow=False, **kwargs):
         """Plot of data as a curve
 
-        :Params:
-
-            - **parg**, optional: Argument passed to :func:`~matplotlib.pyplot.plot`
-              after the data.
-            - **nosingle**, optional: Single point with missing data around
-              are not plotted.
-            - **fill_between**, optional: Plot curve using
-              :func:`~matplotlib.pyplot.fill_between`.
-              Reference value defaults to 0. and may be given
-              provided by the parameter.
-            - **fill_between_<param>**, optional: ``<param>`` is passed to
-              :func:`~matplotlib.pyplot.fill_between`.
-            - **err**, optional: Errors as ``(2,nx)`` array to add to the plot
-              using :func:`~matplotlib.pyplot.errorbar`.
-            - **err_<param>**, optional: ``<param>`` is passed to
-              :func:`~matplotlib.pyplot.errorbar`.
-            - **label**, optional: Alternative label for the plot
-              (see also :attr:`~vacumm.misc.core_plot.Plot.label`).
-            - **shadow**, optional: A shadow is plotted below the line and points.
-            - **shadow_<param>**, optional: ``<param>`` is passed to
-              :meth:`~vacumm.misc.core_plot.Plot.add_shadow`.
-            - **glow**, optional: A glow effect is plotted below the line and points.
-            - **glow_<param>**, optional: ``<param>`` is passed to
-              :meth:`~vacumm.misc.core_plot.Plot.add_glow`.
+        Parameters
+        ----------
+        parg: optional
+            Argument passed to :func:`~matplotlib.pyplot.plot`
+            after the data.
+        nosingle: optional
+            Single point with missing data around
+            are not plotted.
+        fill_between: optional
+            Plot curve using
+            :func:`~matplotlib.pyplot.fill_between`.
+            Reference value defaults to 0. and may be given
+            provided by the parameter.
+        fill_between_<param>: optional
+            ``<param>`` is passed to
+            :func:`~matplotlib.pyplot.fill_between`.
+        err: optional
+            Errors as ``(2,nx)`` array to add to the plot
+            using :func:`~matplotlib.pyplot.errorbar`.
+        err_<param>: optional
+            ``<param>`` is passed to
+            :func:`~matplotlib.pyplot.errorbar`.
+        label: optional
+            Alternative label for the plot
+            (see also :attr:`~vacumm.misc.core_plot.Plot.label`).
+        shadow: optional
+            A shadow is plotted below the line and points.
+        shadow_<param>: optional
+            ``<param>`` is passed to
+            :meth:`~vacumm.misc.core_plot.Plot.add_shadow`.
+        glow: optional
+            A glow effect is plotted below the line and points.
+        glow_<param>: optional
+            ``<param>`` is passed to
+            :meth:`~vacumm.misc.core_plot.Plot.add_glow`.
         """
         if self.masked: return
 
@@ -4072,44 +4312,57 @@ class Curve(Plot1D):
 class Bar(Plot1D):
     """Class for plotting simple curve
 
-    :Params:
+    Parameters
+    ----------
+    data:
+        1D array.
+    Specific plot params:
+        See :meth:`plot`.
+    Other generic params:
+        See :class:`Plot`.
 
-        - **data**: 1D array.
-        - **Specific plot params**: See :meth:`plot`.
-        - **Other generic params**: See :class:`Plot`.
 
-
-    :Example:
-
-        >>> c = Bar(mydata, xwidth=.8, plot=False, order='zd')
-        >>> c.ymax = 5.
-        >>> c.plot()
-        >>> c.post_plot(savefig='rain.png')
+    Example
+    -------
+    >>> c = Bar(mydata, xwidth=.8, plot=False, order='zd')
+    >>> c.ymax = 5.
+    >>> c.plot()
+    >>> c.post_plot(savefig='rain.png')
     """
 
     def plot(self, width=1., lag=0, align='center', shadow=False, glow=False, offset=None,
         label=None, **kwargs):
         """Plot data as bar plot
 
-        :Params:
+        Parameters
+        ----------
+        width: optional
+            Relative width of the bars(``0<width<1``).
+            a width of ``1`` means that successive are bars are joined.
+        lag: optional
+            Relative lag to apply to the position
+        align: optional
+            Alignment relative to coordinates.
+        shadow: optional
+            Add a shadow to the bars.
+        shadow_<param>: optional
+            ``<param>`` is passed to :meth:`add_shadow`.
+        glow: optional
+            Add a glow effect to the bars.
+        glow_<param>: optional
+            ``<param>`` is passed to :meth:`add_shadow`.
+        offset: optional
+            Bars start at ``offset``.
+        label: optional
+            Alternative label for the plot
+            (see also :attr:`~Plot.label`).
+        bar_<param>: optional
+            ``param`` is passed to :func:`matplotlib.pyplot.bar` (or :func:`matplotlib.pyplot.barh`).
 
-            - **width**, optional: Relative width of the bars(``0<width<1``).
-              a width of ``1`` means that successive are bars are joined.
-            - **lag**, optional: Relative lag to apply to the position
-            - **align**, optional: Alignment relative to coordinates.
-            - **shadow**, optional: Add a shadow to the bars.
-            - **shadow_<param>**, optional: ``<param>`` is passed to :meth:`add_shadow`.
-            - **glow**, optional: Add a glow effect to the bars.
-            - **glow_<param>**, optional: ``<param>`` is passed to :meth:`add_shadow`.
-            - **offset**, optional: Bars start at ``offset``.
-            - **label**, optional: Alternative label for the plot
-              (see also :attr:`~Plot.label`).
-            - **bar_<param>**, optional: ``param`` is passed to :func:`matplotlib.pyplot.bar` (or :func:`matplotlib.pyplot.barh`).
-
-        :Example:
-
-            >>> Bar(rain1).plot(width=.45, align='left', color='cyan')
-            >>> Bar(rain2).plot(width=.45, lag=.5, align='left', color='b')
+        Example
+        -------
+        >>> Bar(rain1).plot(width=.45, align='left', color='cyan')
+        >>> Bar(rain2).plot(width=.45, lag=.5, align='left', color='b')
         """
         if self.masked: return
 
@@ -4153,15 +4406,22 @@ class QuiverKey:
 
         See :meth:`Plot.quiverkey` for arguments.
 
-        :Params:
-
-            - **qv**: Results of :func:`~matplotlib.pyplot.quiver`.
-            - **pos**, optional: Position of key for arrow .
-            - **text**, optional: Text or format with variables 'value' and 'units'.
-            - **value**, optional: Numeric value for key (used by text).
-            - **units**, optional: Units for key (used by text).
-            - **latex_units**, optional: Interpret units using latex.
-            - Extra keywords are passed to :func:`~matplotlib.pyplot.quiverkey`.
+        Parameters
+        ----------
+        qv:
+            Results of :func:`~matplotlib.pyplot.quiver`.
+        pos: optional
+            Position of key for arrow .
+        text: optional
+            Text or format with variables 'value' and 'units'.
+        value: optional
+            Numeric value for key (used by text).
+        units: optional
+            Units for key (used by text).
+        latex_units: optional
+            Interpret units using latex.
+        **kwargs
+            Extra keywords are passed to :func:`~matplotlib.pyplot.quiverkey`.
         """
         # Value
         if value is None:
@@ -4175,22 +4435,27 @@ class QuiverKey:
 class Stick(QuiverKey, ScalarMappable, Curve):
     """Class for makeing a stick plot (vectors on a line)
 
-    :Params:
+    Parameters
+    ----------
+    udata:
+        1D array of intensities along X.
+    vdata:
+        1D array of intensities along V.
+    Specific data loading params:
+        See :meth:`load_data`.
+    Specific plot params:
+        See :meth:`plot`.
+    Specific plot finalization params:
+        See :meth:`~vacumm.misc.core_plot.ScalarMappable.post_plot`.
+    Generic  params:
+        See :class:`Plot`.
 
-        - **udata**: 1D array of intensities along X.
-        - **vdata**: 1D array of intensities along V.
-        - **Specific data loading params**: See :meth:`load_data`.
-        - **Specific plot params**: See :meth:`plot`.
-        - **Specific plot finalization params**: See :meth:`~vacumm.misc.core_plot.ScalarMappable.post_plot`.
-        - **Generic  params**: See :class:`Plot`.
-
-
-    :Example:
-
-        >>> c = Stick(u10, v10, savefig='cart.png')
-        >>> c = Stick(r, theta, polar=True,width=.8, plot=False, order='zd')
-        >>> c.plot()
-        >>> c.post_plot(savefig='polar.png')
+    Example
+    -------
+    >>> c = Stick(u10, v10, savefig='cart.png')
+    >>> c = Stick(r, theta, polar=True,width=.8, plot=False, order='zd')
+    >>> c.plot()
+    >>> c.post_plot(savefig='polar.png')
     """
 
 #    _primary_attributes = Plot._primary_attributes + ['levels', 'nmax', 'nmax_levels', 'cmap']
@@ -4204,17 +4469,20 @@ class Stick(QuiverKey, ScalarMappable, Curve):
     def load_data(self, data, **kwargs):
         """Load variables
 
-        :Special params:
+        Other parameters
+        ----------------
+        udata:
+            X or radial component of arrows.
+        vdata:
+            Y or directional component of arrows.
+        polar: optional
+            Consider polar coordinates: ``(u, v) -> (rho, theta)``
+        degrees: optional
+            If True (default), trat ``theta`` as degrees, else radians.
 
-            - **udata**: X or radial component of arrows.
-            - **vdata**: Y or directional component of arrows.
-            - **polar**, optional: Consider polar coordinates: ``(u, v) -> (rho, theta)``
-            - **degrees**, optional: If True (default), trat ``theta`` as degrees, else radians.
-
-        :Tasks:
-
-            #. Calls :meth:`Plot.load_data`.
-            #. Deals with polar case, if keyword ``polar==True``.
+        .. rubric::
+        #. Calls :meth:`Plot.load_data`.
+        #. Deals with polar case, if keyword ``polar==True``.
         """
         polar = kwargs.pop('polar')
         degrees = kwargs.pop('degrees')
@@ -4250,45 +4518,67 @@ class Stick(QuiverKey, ScalarMappable, Curve):
         anomaly=False, **kwargs):
         """Main plot
 
-        :Params:
+        Parameters
+        ----------
+        pos: optional
+            Position of the arrow tails.
+            It defaults to the middle of the appropriate axis.
+        mod: optional
+            Plot the curve of the modulus.
+        mod_<param>: optional
+            ``<param>`` is passed to
+            :meth:`Curve.plot` when plotting the modulus.
+        color:
+            Can be either
 
-            - **pos**, optional: Position of the arrow tails.
-              It defaults to the middle of the appropriate axis.
-            - **mod**, optional: Plot the curve of the modulus.
-            - **mod_<param>***, optional: ``<param>`` is passed to
-              :meth:`Curve.plot` when plotting the modulus.
-            - **color**: Can be either
+            - ``"mod"``: The color is function of the modulus.
+            - A normal color argument for :func:`~matplotlib.pyplot.quiver`
+              (single or list/array).
 
-                - ``"mod"``: The color is function of the modulus.
-                - A normal color argument for :func:`~matplotlib.pyplot.quiver`
-                  (single or list/array).
-
-            - **line**, optional: Add a transversal line along the arrow tails.
-            - **alpha**, optional: Opacity.
-            - **scale**, optional: Scale of arrows
-              (see :func:`~matplotlib.pyplot.quiver`).
-            - **headwidth**, optional: Head width of arrows
-              (see :func:`~matplotlib.pyplot.quiver`).
-            - **headlength**, optional: Head length of arrows
-              (see :func:`~matplotlib.pyplot.quiver`).
-            - **headaxislength**, optional: Length of arrow head on axis
-              (see :func:`~matplotlib.pyplot.quiver`).
-            - **minlength**, optional: See :func:`~matplotlib.pyplot.quiver`.
-            - **minshaft**, optional: See :func:`~matplotlib.pyplot.quiver`.
-            - **quiverkey**, optional: Add key to scale arrows.
-            - **quiverkey_<param>**, optional: ``<param>`` is passed
-              to :meth:`~vacumm.misc.core_plot.QuiverKey.quiverkey`.
-            - **shadow**, optional: Add a drop shadow.
-            - **shadow_<param>**, optional: ``<param>`` is passed to :meth:`add_shadow`
-            - **glow**, optional: Add a drop glow effect.
-            - **glow_<param>**, optional: ``<param>`` is passed to :meth:`add_glow`
-            - **cmap**, optional: Colormap to use when ``color="mod"``.
-            - **cmap_<param>**, optional: Passed to
-              meth:`~vacumm.misc.core_plot.ScalarMappable.get_cmap` to tune
-              colormap.
-            - **levels**, optional: Levels of values to use when ``color="mod"``.
-            - **levels_<param>**, optional: Passed to
-              meth:`~vacumm.misc.core_plot.ScalarMappable.get_levels` to tune levels.
+        line: optional
+            Add a transversal line along the arrow tails.
+        alpha: optional
+            Opacity.
+        scale: optional
+            Scale of arrows
+            (see :func:`~matplotlib.pyplot.quiver`).
+        headwidth: optional
+            Head width of arrows
+            (see :func:`~matplotlib.pyplot.quiver`).
+        headlength: optional
+            Head length of arrows
+            (see :func:`~matplotlib.pyplot.quiver`).
+        headaxislength: optional
+            Length of arrow head on axis
+            (see :func:`~matplotlib.pyplot.quiver`).
+        minlength: optional
+            See :func:`~matplotlib.pyplot.quiver`.
+        minshaft: optional
+            See :func:`~matplotlib.pyplot.quiver`.
+        quiverkey: optional
+            Add key to scale arrows.
+        quiverkey_<param>: optional
+            ``<param>`` is passed
+            to :meth:`~vacumm.misc.core_plot.QuiverKey.quiverkey`.
+        shadow: optional
+            Add a drop shadow.
+        shadow_<param>: optional
+            ``<param>`` is passed to :meth:`add_shadow`
+        glow: optional
+            Add a drop glow effect.
+        glow_<param>: optional
+            ``<param>`` is passed to :meth:`add_glow`
+        cmap: optional
+            Colormap to use when ``color="mod"``.
+        cmap_<param>: optional
+            Passed to
+            meth:`~vacumm.misc.core_plot.ScalarMappable.get_cmap` to tune
+            colormap.
+        levels: optional
+            Levels of values to use when ``color="mod"``.
+        levels_<param>: optional
+            Passed to
+            meth:`~vacumm.misc.core_plot.ScalarMappable.get_levels` to tune levels.
 
         """
         if self.masked: return
@@ -4424,14 +4714,18 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         cannot be properly stored internally in variables (like a section grid).
 
 
-        :Params:
-
-            - **x/yaxis**, optional: 1D or 2D array or axes to use for axis,
-              instead of internal axes of input variables.
-            - **x/y2d**, optional: (ny,nx) array of cell center coordinates.
-            - **x/y2db**, optional: (ny+1,nx+1) array of cell bounds coordinates
-              used in pcolor like plots.
-            - **x/yatts**, optional: Dictionnary of alter given ``x/yaxis``.
+        Parameters
+        ----------
+        x/yaxis: optional
+            1D or 2D array or axes to use for axis,
+            instead of internal axes of input variables.
+        x/y2d: optional
+            (ny,nx) array of cell center coordinates.
+        x/y2db: optional
+            (ny+1,nx+1) array of cell bounds coordinates
+            used in pcolor like plots.
+        x/yatts: optional
+            Dictionnary of alter given ``x/yaxis``.
 
         """
 
@@ -4447,18 +4741,18 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
                 for i, axis in enumerate([yaxis, xaxis]):
                     c = getattr(axis, 'axis', '-').lower()
                     if order[i]=='-' and c!='-': order[i] = c
-                vca.set_order(self.data[ivar], order)
+                set_order(self.data[ivar], order)
                 self.data[ivar]._nogridorder = True
         xax = get_axis(self.data[0], 1, strict=True, geo=False)
         if xaxis is None:
             xaxis = xax
-        elif not vca.isaxis(xaxis):
+        elif not isaxis(xaxis):
             xaxis = MV2.array(xaxis, copy=0)
             cp_atts(xax, xaxis, overwrite=False)
         yax = get_axis(self.data[0], 0, strict=True, geo=False)
         if yaxis is None:
             yaxis = yax
-        elif not vca.isaxis(yaxis):
+        elif not isaxis(yaxis):
             yaxis = MV2.array(yaxis, copy=0)
             cp_atts(yax, yaxis, overwrite=False)
 
@@ -4511,36 +4805,29 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
     def load_data(self, data, **kwargs):
         """Load data and axes
 
-        :Tasks:
+        .. rubric:: Tasks
 
-            #. Call to :meth:`Plot.load_data`.
-            #. Compute :attr:`x2d`, :attr:`y2d`, :attr:`x2db`, :attr:`y2db`
+        #. Call to :meth:`Plot.load_data`.
+        #. Compute :attr:`x2d`, :attr:`y2d`, :attr:`x2db`, :attr:`y2db`
 
-        :Params:
+        Parameters
+        ----------
+        data: A single or a tuple or 2D :mod:`MV2` arrays.
 
-            - **data**: A single or a tuple or 2D :mod:`MV2` arrays.
+            - Single variable: Plot 2D scalar field with contours, filled contours, pcolor or image.
+            - 2-tuple ``(U,V)``: Plot arrows.
+            - 3-tuple ``(M,U,V)``: Plot both scalar field ``M`` and arrows.
 
-              - Single variable: Plot 2D scalar field with contours, filled contours, pcolor or image.
-              - 2-tuple ``(U,V)``: Plot arrows.
-              - 3-tuple ``(M,U,V)``: Plot both scalar field ``M`` and arrows.
-
-        :Specific attributes:
-
-            .. attribute:: x2d
-
-                2D version of the X axis data.
-
-            .. attribute:: y2d
-
-                2D version of the Y axis data.
-
-            .. attribute:: x2db
-
-                2D bounds coordinates of the X axis data.
-
-            .. attribute:: y2db
-
-                2D bounds coordinates of the Y axis data.
+        Attributes
+        ----------
+        x2d: array(ny,nx)
+            2D version of the X axis data.
+        y2d: array(ny,nx)
+            2D version of the Y axis data.
+        x2db: array(ny,nx)
+            2D bounds coordinates of the X axis data.
+        y2db: array(ny,nx)
+            2D bounds coordinates of the Y axis data.
         """
         # Check
         if data is None: return
@@ -4582,13 +4869,16 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             This scaler is used by :meth:`plot_quiver` for undersampling
             based on resolution.
 
-            :Example:
+            Example
+            -------
 
-                >>> xyscaler = myplot.xyscaler
-                >>> if xyscaler is not None:
-                    ... x,y = myplot.xyscaler(x, y)
+            >>> xyscaler = myplot.xyscaler
+            >>> if xyscaler is not None:
+            ... x,y = myplot.xyscaler(x, y)
 
-            :Return: A callable function or ``None`` if no scaling is possible
+            Return
+           -------
+           A callable function or ``None`` if no scaling is possible
             """)
 
     @staticmethod
@@ -4638,45 +4928,55 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         zorder=None, shadow=False, glow=False, **kwargs):
         """Plot filled stuff
 
-        :Params:
+        Parameters
+        ----------
+        fill: optional
+            Type filling.
+            It defaults to ``fill`` option of the ``[vacumm.misc.plot]`` section
+            of the configuration (see :func:`~vacumm.config.edit_config`).
 
-            - **fill**, optional: Type filling.
-              It defaults to ``fill`` option of the ``[vacumm.misc.plot]`` section
-              of the configuration (see :func:`~vacumm.config.edit_config`).
+            - ``0`` or ``"no"`` or ``"nofill"`` or ``False``: No filling.
+            - ``1`` or ``"pcolor"`` or ``"pcolormesh"``: Fill using :func:`~matplotlib.pyplot.pcolor`
+              or :func:`~matplotlib.pyplot.pcolormesh`.
+            - ``2`` or ``"imshow"``: Fill using :func:`~matplotlib.pyplot.imshow`.
+            - ``3`` or ``"contourf"``: Fill using :func:`~matplotlib.pyplot.contourf`.
 
-                - ``0`` or ``"no"`` or ``"nofill"`` or ``False``: No filling.
-                - ``1`` or ``"pcolor"`` or ``"pcolormesh"``: Fill using :func:`~matplotlib.pyplot.pcolor`
-                  or :func:`~matplotlib.pyplot.pcolormesh`.
-                - ``2`` or ``"imshow"``: Fill using :func:`~matplotlib.pyplot.imshow`.
-                - ``3`` or ``"contourf"``: Fill using :func:`~matplotlib.pyplot.contourf`.
+        fill_<param>:
+            ``<param>`` is passed to the corresponding plot function.
+        nofill: optional
+            Implies ``fill=0``.
+        cmap: optional
+            Colormap (defaults to ``"magic"``).
+        cmap_<param>: optional
+            Passed to
+            :meth:`~vacumm.misc.core_plot.ScalarMappable.get_cmap` to tune
+            colormap.
+        norm: optional
+            :class:`~matplotlib.colors.Normalize` instance.
+        alpha: optional
+            Opacity.
+        shading: optional
+            Shading with :func:`~matplotlib.pyplot.pcolor`.
+        extend: optional
+            Let's :func:`~matplotlib.pyplot.contourf` add
+            contours to cover all data range.
+        zorder: optional
+            Plot order.
 
-            - **fill_<param>**: ``<param>`` is passed to the corresponding plot function.
-            - **nofill**, optional: Implies ``fill=0``.
-            - **cmap**, optional: Colormap (defaults to ``"magic"``).
-            - **cmap_<param>**, optional: Passed to
-              :meth:`~vacumm.misc.core_plot.ScalarMappable.get_cmap` to tune
-              colormap.
-            - **norm**, optional: :class:`~matplotlib.colors.Normalize` instance.
-            - **alpha**, optional: Opacity.
-            - **shading**, optional: Shading with :func:`~matplotlib.pyplot.pcolor`.
-            - **extend**, optional: Let's :func:`~matplotlib.pyplot.contourf` add
-              contours to cover all data range.
-            - **zorder**, optional: Plot order.
+        .. rubric:: Tasks
 
-        :Tasks:
+        #. Guess the fill method.
+        #. Get the colormap with :meth:`~ScalarMappable.get_cmap`.
+        #. Get the scalar data with :meth:`~Plot.get_data`.
+        #. Calls :func:`~matplotlib.pyplot.imshow` or
+           :func:`~matplotlib.pyplot.pcolor` or
+           :func:`~matplotlib.pyplot.pcolormesh` or
+           :func:`~matplotlib.pyplot.contourf`.
+        #. Calls :func:`~matplotlib.pyplot.clabel`
 
-            #. Guess the fill method.
-            #. Get the colormap with :meth:`~ScalarMappable.get_cmap`.
-            #. Get the scalar data with :meth:`~Plot.get_data`.
-            #. Calls :func:`~matplotlib.pyplot.imshow` or
-               :func:`~matplotlib.pyplot.pcolor` or
-               :func:`~matplotlib.pyplot.pcolormesh` or
-               :func:`~matplotlib.pyplot.contourf`.
-            #. Calls :func:`~matplotlib.pyplot.clabel`
-
-        .. note::
-
-            :meth:`~ScalarMappable.get_levels` must have been previously called.
+        Note
+        ----
+        :meth:`~ScalarMappable.get_levels` must have been previously called.
 
         """
         if self.masked: return
@@ -4804,26 +5104,33 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             colors='k', shadow=False, glow=False, **kwargs):
         """Plot contour lines
 
-        :Params:
+        Parameters
+        ----------
+        contour_<param>: optional
+            ``<param>`` is passed to
+            :func:`~matplotlib.pyplot.contour`.
+        zorder: optional
+            Plot order.
+        alpha: optional
+            Opacity.
+        linewidths: optional
+            Contour linewidths.
+        clabel: optional
+            Add contour labels with
+            :func:`~matplotlib.pyplot.clabel`. If not specified, it is taken from
+            config section ``[vacumm.misc.plot]`` and config option ``clabel``.
+        clabel_<param>: optional
+            ``<param>`` is passed to
+            :func:`~matplotlib.pyplot.clabel`..
+        contour_<param>: optional
+            ``<param>`` is passed to
+            :func:`~matplotlib.pyplot.contour`.
 
-            - **contour_<param>**, optional: ``<param>`` is passed to
-              :func:`~matplotlib.pyplot.contour`.
-            - **zorder**, optional: Plot order.
-            - **alpha**, optional: Opacity.
-            - **linewidths**, optional: Contour linewidths.
-            - **clabel**, optional: Add contour labels with
-              :func:`~matplotlib.pyplot.clabel`. If not specified, it is taken from
-              config section ``[vacumm.misc.plot]`` and config option ``clabel``.
-            - **clabel_<param>**, optional: ``<param>`` is passed to
-              :func:`~matplotlib.pyplot.clabel`..
-            - **contour_<param>**, optional: ``<param>`` is passed to
-              :func:`~matplotlib.pyplot.contour`.
+        .. rubric:: Tasks
 
-        :Tasks:
-
-            #. Get the scalar data with :meth:`~Plot.get_data`.
-            #. Calls :func:`~matplotlib.pyplot.contour`.
-            #. Calls :func:`~matplotlib.pyplot.clabel`
+        #. Get the scalar data with :meth:`~Plot.get_data`.
+        #. Calls :func:`~matplotlib.pyplot.contour`.
+        #. Calls :func:`~matplotlib.pyplot.clabel`
 
         """
         if self.masked: return
@@ -4927,50 +5234,64 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             Direct unsampling is incompatible with resolution undersampling:
             the former prevails against the latter.
 
-        :Params:
+        Parameters
+        ----------
+        quiver_norm: optional, int
+            Normalize/colorize arrows
 
-            - **quiver_norm**,optional: Normalize/colorize arrows
+            - ``0`` or ``None``: No normalization, no colorization (default)
+            - ``1``: Normalization, no colorization.
+            - ``2``: Normalization, colorization.
+            - ``3``: No normalization, colorization.
 
-                - ``0`` or ``None``: No normalization, no colorization (default)
-                - ``1``: Normalization, no colorization.
-                - ``2``: Normalization, colorization.
-                - ``3``: No normalization, colorization.
+        quiver_<param>: optional
+            ``<param>`` is passed to
+            :func:`~matplotlib.pyplot.quiver`.
+        barbs: optional
+            Plot wind barbs instead of arrows
+            (see :func:`~matplotlib.pyplot.barbs`).
+        zorder: optional
+            Plot order.
+        alpha: optional
+            Opacity.
+        shadow: optional
+            Add shadow below arrows.
+        glow: optional
+            Add glow effect to arrows.
+        quiverkey: optional
+            Add key to scale arrows.
+        quiverkey_<param>: optional
+            ``<param>`` is passed
+            to :meth:`~vacumm.misc.core_plot.QuiverKey.quiverkey`.
+        cmap: optional
+            Colormap to use when ``color="mod"`` (defaults to
+            ``"magic"``).
+        quiver_samp: optional
+            Horizontal sampling of arrows (in both directions) [default: 1]
+        quiver_x/ysamp: optional
+            Sampling along X/Y [default: quiver_samp]
+        quiver_res: optional
+            Horizontal resolution of arrows (in both directions)
+            for undersampling [default: None]
+            If ``'auto'``, resolution is computed so as to have at max ``quiver_nauto``
+            arrow in along an axis. If it is a :class:`complex` type, its imaginary part
+            set the ``quiver_nauto`` parameter and ``quiver_res`` is set to ``'auto'``.
+        quiver_x/yres: optional
+            Same along X/Y [default: quiver_res]
+        quiver_relres: optional
+            Relative resolution (in both directions).
 
-            - **quiver_<param>**, optional: ``<param>`` is passed to
-              :func:`~matplotlib.pyplot.quiver`.
-            - **barbs**, optional: Plot wind barbs instead of arrows
-              (see :func:`~matplotlib.pyplot.barbs`).
-            - **zorder**, optional: Plot order.
-            - **alpha**, optional: Opacity.
-            - **shadow**, optional: Add shadow below arrows.
-            - **glow**, optional: Add glow effect to arrows.
-            - **quiverkey**, optional: Add key to scale arrows.
-            - **quiverkey_<param>**, optional: ``<param>`` is passed
-              to :meth:`~vacumm.misc.core_plot.QuiverKey.quiverkey`.
-            - **cmap**, optional: Colormap to use when ``color="mod"`` (defaults to
-              ``"magic"``).
-            - **quiver_samp**, optional: Horizontal sampling of arrows (in both directions) [default: 1]
-            - **quiver_x/ysamp**, optional: Sampling along X/Y [default: quiver_samp]
-            - **quiver_res**, optional: Horizontal resolution of arrows (in both directions)
-              for undersampling [default: None]
-                If ``'auto'``, resolution is computed so as to have at max ``quiver_nauto``
-                arrow in along an axis. If it is a :class:`complex` type, its imaginary part
-                set the ``quiver_nauto`` parameter and ``quiver_res`` is set to ``'auto'``.
-            - **quiver_x/yres**, optional: Same along X/Y [default: quiver_res]
-            - **quiver_relres**, optional: Relative resolution (in both directions).
+            - If > 0, = ``mean(res)*relres``.
+            - If < -1, = ``min(res)*abs(relres)``.
+            - If < 0 and > -1, = ``max(res)*abs(relres)``
 
-              - If > 0, = ``mean(res)*relres``.
-              - If < -1, = ``min(res)*abs(relres)``.
-              - If < 0 and > -1, = ``max(res)*abs(relres)``
+        quiver_x/yrelres: optional
+            Same along X/Y [default: quiver_relres]
 
-            - **quiver_x/yrelres**, optional: Same along X/Y [default: quiver_relres]
-
-
-        :Tasks:
-
-            #. Get the scalar data with :meth:`~Plot.get_data`.
-            #. Calls :func:`~matplotlib.pyplot.quiver`.
-            #. Calls :func:`~matplotlib.pyplot.quiverkey`
+        .. rubric:: Tasks
+        #. Get the scalar data with :meth:`~Plot.get_data`.
+        #. Calls :func:`~matplotlib.pyplot.quiver`.
+        #. Calls :func:`~matplotlib.pyplot.quiverkey`
 
         """
         if self.masked: return
@@ -5089,40 +5410,48 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         **kwargs):
         """Plot stream lines with :func:`~matplotlib.pyplot.streamplot`
 
-        :Params:
+        Parameters
+        ----------
+        streamplot_color: optional
 
-            - **streamplot_color**,optional:
+            - ``None`` or `"default"`: Default colorization.
+            - ``"modulus"``: Colorization as a function of the modulus.
+            - Else, passed directly to :func:`~matplotlib.pyplot.streamplot`
 
-                - ``None`` or `"default"`: Default colorization.
-                - ``"modulus"``: Colorization as a function of the modulus.
-                - Else, passed directly to :func:`~matplotlib.pyplot.streamplot`
+        streamplot_linewidth: optional
 
-            - **streamplot_linewidth**,optional:
+            - ``None`` or ``"default"``: Default linewidth.
+            - ``"modulus"``: Linewidth proportional to the modulus with a maximum
+              linewidth of ``streamplot_lwmod``.
+            - Else, passed directly to :func:`~matplotlib.pyplot.streamplot`
 
-                - ``None`` or ``"default"``: Default linewidth.
-                - ``"modulus"``: Linewidth proportional to the modulus with a maximum
-                  linewidth of ``streamplot_lwmod``.
-                - Else, passed directly to :func:`~matplotlib.pyplot.streamplot`
+        streamplot_lwmodmin: optional
+            Min linewidth used when ``streamplot_linewidth`
+            is set to ``"modulus"``.
+        streamplot_lwmodmax: optional
+            Max linewidth used when ``streamplot_linewidth`
+            is set to ``"modulus"``.
+        streamplot_<param>: optional
+            ``<param>`` is passed to
+            :func:`~matplotlib.pyplot.streamplot`.
+        zorder: optional
+            Plot order.
+        alpha: optional
+            Opacity.
+        shadow: optional
+            Add shadow below arrows.
+        glow: optional
+            Add glow effect to arrows.
+        streamplotkey: optional
+            Add key to scale arrows.
+        cmap: optional
+            Colormap to use when ``color="modulus"`` (defaults to
+            ``"magic"``).
 
-            - **streamplot_lwmodmin**, optional: Min linewidth used when ``streamplot_linewidth`
-              is set to ``"modulus"``.
-            - **streamplot_lwmodmax**, optional: Max linewidth used when ``streamplot_linewidth`
-              is set to ``"modulus"``.
-            - **streamplot_<param>**, optional: ``<param>`` is passed to
-              :func:`~matplotlib.pyplot.streamplot`.
-            - **zorder**, optional: Plot order.
-            - **alpha**, optional: Opacity.
-            - **shadow**, optional: Add shadow below arrows.
-            - **glow**, optional: Add glow effect to arrows.
-            - **streamplotkey**, optional: Add key to scale arrows.
-            - **cmap**, optional: Colormap to use when ``color="modulus"`` (defaults to
-              ``"magic"``).
 
-
-        :Tasks:
-
-            #. Get the scalar data with :meth:`~Plot.get_data`.
-            #. Calls :func:`~matplotlib.pyplot.streamplot`.
+        .. rubric:: Tasks
+        #. Get the scalar data with :meth:`~Plot.get_data`.
+        #. Calls :func:`~matplotlib.pyplot.streamplot`.
 
         """
         if self.masked: return
@@ -5191,21 +5520,25 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
     def plot(self, levels=None, contour=True, anomaly=False, streamplot=False,  **kwargs):
         """Plot filled and/or contoured content
 
-        :Params:
+        Parameters
+        ----------
+        levels: optional
+            Levels for contouring and/or colormap.
+        levels_<param>: optional
+            Passed to
+            :meth:`~vacumm.misc.core_plot.ScalarMappable.get_levels` to tune levels.
+        contour: optional
+            Plot line contours.
+        streamplot: optional
+            Plot stream lines instead of arrows.
+        **kwargs
+            Other arguments are passed to :meth:`plot_fill` and :meth:`plot_contour`.
 
-            - **levels**, optional: Levels for contouring and/or colormap.
-            - **levels_<param>**, optional: Passed to
-              :meth:`~vacumm.misc.core_plot.ScalarMappable.get_levels` to tune levels.
-            - **contour**, optional: Plot line contours.
-            - **streamplot**, optional: Plot stream lines instead of arrows.
-            - Other arguments are passed to :meth:`plot_fill` and :meth:`plot_contour`.
-
-        :Tasks:
-
-            #. Get :attr:`~ScalarMappable.levels`.
-            #. Calls :meth:`plot_fill`.
-            #. Calls :meth:`plot_contour`.
-            #. Calls :meth:`plot_quiver` or :meth:`plot_streamplot`.
+        .. rubric:: Tasks
+        #. Get :attr:`~ScalarMappable.levels`.
+        #. Calls :meth:`plot_fill`.
+        #. Calls :meth:`plot_contour`.
+        #. Calls :meth:`plot_quiver` or :meth:`plot_streamplot`.
         """
         if self.masked: return
 
@@ -5258,9 +5591,10 @@ class Map(Plot2D):
     It uses a :class:`mpl_toolkits.basemap.Basemap` instance, stored in attribute :attr:`map`.
     Some other attributes: :attr:`lon`, :attr:`lat`, :attr:`map_update`.
 
-    .. attribute:: map
-
-        A :class:`~mpl_toolkits.basemap.Basemap` initialized in :meth:`pre_plot`.
+    Attributes
+    ----------
+    map: :class:`~mpl_toolkits.basemap.Basemap`
+        instance initialized in :meth:`pre_plot`.
 
     """
     _order = 'YX'
@@ -5289,11 +5623,12 @@ class Map(Plot2D):
         :func:`~vacumm.misc.phys.units.deg2m` and
         :func:`~vacumm.misc.phys.units.m2deg`.
 
-        :Params:
-
-            - **x/y**: Coordinates in degrees or meters
-            - **inverse**, optional: Reverse projection (meters->degrees)
-            - **current**, optional: If True,
+        Parameters
+        ----------
+        x/y:
+            Coordinates in degrees or meters
+        inverse: optional
+            Reverse projection (meters->degrees)
         """
         if getattr(self, 'map', None) is None or self.map.projection=='cyl':
             if inverse:
@@ -5331,18 +5666,20 @@ class Map(Plot2D):
             #. Call to the generic :meth:`Plot2D.load_data` method.
             #. Set attributes :attr:`lon` :attr:`lat`.
 
-        :Params:
+        Parameters
+        ----------
+        data: optional
+            See :meth:`~vacumm.misc.core_plot.Plot2D.load_data`.
+        lon: optional
+            Longitude interval.
+        lat: optional
+            Latitude interval.
 
-            - **data**, optional: See :meth:`~vacumm.misc.core_plot.Plot2D.load_data`.
-            - **lon**, optional: Longitude interval.
-            - **lat**, optional: Latitude interval.
-
-        .. attribute:: lon
-
+        Attributes
+        ----------
+        lon: interval or array
             Longitudes as a two-elements tuple or and array.
-
-        .. attribute:: lat
-
+        lat: interval or array
             Latitudes as a two-elements tuple or and array.
         """
 
@@ -5377,22 +5714,26 @@ class Map(Plot2D):
             nocache=False, cache_dir=None, zoom=None, **kwargs):
         """Plot initialisation.
 
-       :Tasks:
+        .. rubric:: Tasks
+        #. Call to the generic :meth:`Plot.pre_plot` method.
+        #. Setup a :class:`~mpl_toolkits.basemap.Basemap` instance
+           and store it in :attr:`map`.
+        #. Project :attr:`~Plot2D.x2d`, :attr:`~Plot2D.y2d`,
+           :attr:`~Plot2D.x2db` and :attr:`~Plot2D.y2db`
+           using :attr:`map`.
 
-            #. Call to the generic :meth:`Plot.pre_plot` method.
-            #. Setup a :class:`~mpl_toolkits.basemap.Basemap` instance
-               and store it in :attr:`map`.
-            #. Project :attr:`~Plot2D.x2d`, :attr:`~Plot2D.y2d`,
-               :attr:`~Plot2D.x2db` and :attr:`~Plot2D.y2db`
-               using :attr:`map`.
+        Parameters
+        ----------
+        **kwargs
+        See :meth:`Plot.pre_plot`.
 
-       :Generic params: See :meth:`Plot.pre_plot`.
-
-       :Special params:
-
-           - **projection**: Map projection, like "merc".
-             See :mod:`~mpl_toolkits.basemap.Basemap` for a list of possible projections.
-           - **resolution**: GSHHS resolution of shoreline or 's' for Histolitt (SHOM).
+        Other parameters
+        ----------------
+        projection:
+            Map projection, like "merc".
+            See :mod:`~mpl_toolkits.basemap.Basemap` for a list of possible projections.
+        resolution:
+            GSHHS resolution of shoreline or 's' for Histolitt (SHOM).
 
             - ``"c"``: Crude.
             - ``"l"``: Low.
@@ -5401,29 +5742,24 @@ class Map(Plot2D):
             - ``"f"``: Full.
             - ``"s"``: Histolittfor the french coast
               (from a shapefile file automatically
-              downloaded once the license is accepted).
+              downl -oaded once the license is accepted).
 
-           - **nocache**: Management of cached maps.
+        nocache:
+            Management of cached maps.
 
-             .. only:: html and epub
+            - ``0``: Read and write cached maps.
+            - ``1``: Only write cached maps.
+            - ``2``: Caching is disabled.
 
-                   - ``0``: Read and write cached maps.
-                   - ``1``: Only write cached maps.
-                   - ``2``: Caching is disabled.
+        map_update:
+            Force the update of the map latter by :meth:`post_plot`,
+            setting :attr:`map_update`.
+        zoom:
+            Zoom on map bounds before creating it.
 
-             .. only:: latex
-
-                    ``0``: read and write cached maps.;
-                    ``1``: Only write cached maps;
-                    ``2``: Caching is disabled.
-
-            - **map_update**: Force the update of the map latter by :meth:`post_plot`,
-              setting :attr:`map_update`.
-
-            - **zoom**: Zoom on map bounds before creating it.
-
-        .. attribute:: map_update
-
+        Attributes
+        ----------
+        map_update: bool
             An attribute to know if current map must be updated by :meth:`post_plot`.
             It is also a parameter to method.
         """
@@ -5500,8 +5836,8 @@ class Map(Plot2D):
 
         It performs the following tasks:
 
-            #. Call to generic :meth:`~Plot2D.plot` method.
-            #. Call to :meth:`add_lowhighs`.
+        #. Call to generic :meth:`~Plot2D.plot` method.
+        #. Call to :meth:`add_lowhighs`.
         """
 
 
@@ -5625,16 +5961,26 @@ class Map(Plot2D):
         xpad=30, ypad=None):
         """Get position of point and reference points in data coordinates (meters)
 
-        :Params:
+        Parameters
+        ----------
+        pos:
+            Position in data (lon, lat), axes or figure coordinates for placement.
+        posref:
+            Position in data (lon, lat) coordinates of reference point.
+        x/yrel:
+            Default placement position relative to longitude and latitude ranges.
+        transform:
+            Coordinates transform for ``pos`` which defaults to "data".
+            Use a valid transform, or "data", "axes" or "figure".
+        x/ypad:
+            Padding if dots for placement when given as a string like "upper left".
 
-            - **pos**: Position in data (lon, lat), axes or figure coordinates for placement.
-            - **posref**: Position in data (lon, lat) coordinates of reference point.
-            - **x/yrel**: Default placement position relative to longitude and latitude ranges.
-            - **transform**: Coordinates transform for ``pos`` which defaults to "data".
-              Use a valid transform, or "data", "axes" or "figure".
-            - **x/ypad**: Padding if dots for placement when given as a string like "upper left".
-
-        Return: ``(x,y),(xref,yref)`` in meters
+        Return
+        ------
+        tuple
+            ``(x,y)`` in meters
+        tuple
+            ``(xref,yref)`` in meters
         """
         # Placement point
         offset = None
@@ -5678,26 +6024,36 @@ class Map(Plot2D):
         xrel=0.1, yrel=0.1, getpos=False, posonly=False, shadow=False, zorder=10, **kwargs):
         """Add a map scale using :meth:`mpl_toolkits.basemap.Basemap.drawmapscale`
 
-        :Params:
+        Parameters
+        ----------
+        pos: optional
+            ``(lon,lat)`` where to draw it.
+        posref: optional
+            ``(lon,lat)`` of reference position where the scale
+            is estimated.
+        scale: optional
+            Length of the scale in projection coordinates (m).
+        barstyle: optional
+            Bar style: 'simple' or 'fancy'.
+        transform: optional
+            Coordinates transform for ``pos`` which defaults to "data".
+            Use a valid transform, or "data", "axes" or "figure".
+        x/yrel: optional
+            Default placement position relative to longitude and latitude ranges.
+        x/ypad: optional
+            Padding if dots for placement when given as a string like "upper left".
+        shadow: optional
+            Add a shadow.
+        shadow_<param>: optional
+            ``<param>`` is passed to
+            :meth:`~vacumm.misc.core_plot.Plot.add_shadow`.
+        **kwargs
+            Other keywords are passed to :meth:`~mpl_toolkits.basemap.Basemap.drawmapscale`.
 
-            - **pos**, optional: ``(lon,lat)`` where to draw it.
-            - **posref**, optional: ``(lon,lat)`` of reference position where the scale
-              is estimated.
-            - **scale**, optional: Length of the scale in projection coordinates (m).
-            - **barstyle**, optional: Bar style: 'simple' or 'fancy'.
-            - **transform**, optional: Coordinates transform for ``pos`` which defaults to "data".
-              Use a valid transform, or "data", "axes" or "figure".
-            - **x/yrel**, optional: Default placement position relative to longitude and latitude ranges.
-            - **x/ypad**, optional: Padding if dots for placement when given as a string like "upper left".
-            - **shadow**, optional: Add a shadow.
-            - **shadow_<param>**, optional: ``<param>`` is passed to
-              :meth:`~vacumm.misc.core_plot.Plot.add_shadow`.
-            - Othe keywords are passed to :meth:`~mpl_toolkits.basemap.Basemap.drawmapscale`.
-
-        :Example:
-
-            >>> mymap.add_mapscale((.2,.2), transform='axes')
-            >>> mymap.add_mapscale('upper right', posref=(-2,45), fontsize=10)
+        Example
+        -------
+        >>> mymap.add_mapscale((.2,.2), transform='axes')
+        >>> mymap.add_mapscale('upper right', posref=(-2,45), fontsize=10)
         """
         if self.map is None: return
         kwsh = kwfilter(kwargs, 'shadow_')
@@ -5736,23 +6092,34 @@ class Map(Plot2D):
 
         See :func:`~vacumm.misc.plot.add_compass` all options.
 
-        :Params:
+        Parameters
+        ----------
+        pos: optional
+            ``(lon,lat)`` where to draw it.
+        size: optional
+            Size in pixels.
+        posref: optional
+            ``(lon,lat)`` of reference position where the north
+            is estimated.
+        style: optional
+            Compas style: 'simple' or 'fancy'.
+        transform:
+            Coordinates transform for ``pos`` which defaults to "data".
+            Use a valid transform, or "data", "axes" or "figure".
+        x/yrel:
+            Default placement position relative to longitude and latitude ranges.
+        x/ypad:
+            Padding in dots for placement when given as a string like "upper left".
+        shadow: optional
+            Add a shadow.
+        shadow_<param>: optional
+            ``<param>`` is passed to
+            :meth:`~vacumm.misc.core_plot.Plot.add_shadow`.
+        **kwargs
+            Other keywords are passed to :func:`~vacumm.misc.plot.add_compass`.
 
-            - **pos**, optional: ``(lon,lat)`` where to draw it.
-            - **size**, optional: Size in pixels.
-            - **posref**, optional: ``(lon,lat)`` of reference position where the north
-              is estimated.
-            - **style**, optional: Compas style: 'simple' or 'fancy'.
-            - **transform**: Coordinates transform for ``pos`` which defaults to "data".
-              Use a valid transform, or "data", "axes" or "figure".
-            - **x/yrel**: Default placement position relative to longitude and latitude ranges.
-            - **x/ypad**: Padding in dots for placement when given as a string like "upper left".
-            - **shadow**, optional: Add a shadow.
-            - **shadow_<param>**, optional: ``<param>`` is passed to
-              :meth:`~vacumm.misc.core_plot.Plot.add_shadow`.
-            - Othe keywords are passed to :func:`~vacumm.misc.plot.add_compass`.
-
-        :Example:
+        Example
+        -------
 
             >>> map2(data, compass=True)
             >>> mymap.add_compass((-4,45), 40, facecolor1='r', text_weight='bold')
@@ -5800,25 +6167,28 @@ class Map(Plot2D):
         """Plot a mapscale and a compass above
 
 
-        :Params:
+        Parameters
+        ----------
+        pos:
+            Position of the mapscale (see :meth:`add_mapscale`).
+            The compass is drawn just above.
+        posref: optional
+            Position of reference point for both mapscale and
+            compass.
+        mapscale_<param>: optional
+            ``<param>`` is passed to
+            :meth:`~vacumm.misc.core_plot.Map.add_mapscale`.
+        scompass_<param>: optional
+            ``<param>`` is passed to
+            :meth:`~vacumm.misc.core_plot.Map.add_compass`.
 
-            - **pos**: Position of the mapscale (see :meth:`add_mapscale`).
-              The compass is drawn just above.
-            - **posref**, optional: Position of reference point for both mapscale and
-              compass.
-            - **mapscale_<param>**, optional: ``<param>`` is passed to
-              :meth:`~vacumm.misc.core_plot.Map.add_mapscale`.
-            - **scompass_<param>**, optional: ``<param>`` is passed to
-              :meth:`~vacumm.misc.core_plot.Map.add_compass`.
-
-
-        Example:
-
-            >>> map2(data, mscp=True, mscp_pos=(-2, 48))
-            >>> mymap.add_mscp('lower left')
-            >>> mymap.add_mscp((-4,45), mapscale_scale=100, mapscale_barstyle='fancy',
-                compass_size=50, compass_style='simple')
-            >>> mymap.add_mscp((.9,.1), transform='axes')
+        Example
+        -------
+        >>> map2(data, mscp=True, mscp_pos=(-2, 48))
+        >>> mymap.add_mscp('lower left')
+        >>> mymap.add_mscp((-4,45), mapscale_scale=100, mapscale_barstyle='fancy',
+            compass_size=50, compass_style='simple')
+        >>> mymap.add_mscp((.9,.1), transform='axes')
         """
 
         kwms = kwfilter(kwargs, 'mapscale')
@@ -5864,60 +6234,87 @@ class Map(Plot2D):
          **kwargs):
         """Post-processing of the plot
 
-        :Tasks:
+        .. rubric:: Tasks
 
-            #. Update the map if attribute :attr:`map_update` is True:
+        #. Update the map if attribute :attr:`map_update` is True:
 
-                #) Treat continents if attribute :attr:`map_update` = 2 and
-                   attribute :attr:`map` has a coastline resolution not ``None``:
-                   draw coastlines, fill continents and draw rivers.
+            #) Treat continents if attribute :attr:`map_update` = 2 and
+               attribute :attr:`map` has a coastline resolution not ``None``:
+               draw coastlines, fill continents and draw rivers.
 
-                #) Draw parallels and associated labels.
+            #) Draw parallels and associated labels.
 
-            #. Call to generic post processing of 2D plots (:meth:`Plot2D.post_plot`).
+        #. Call to generic post processing of 2D plots (:meth:`Plot2D.post_plot`).
 
-        :Params:
-
-            - **drawrivers**: Draw rivers on the map using method
-              :meth:`~mpl_toolkits.basemap.Basemap.drawrivers`.
-            - **drawrivers_<param>**: Pass ``<param>`` to the method.
-            - **fillcontinents**: Fill continents with color ``land_color``
-              using method :meth:`~mpl_toolkits.basemap.Basemap.fillcontinents`.
-            - **land_color**: Fill color.
-            - **fillcontinents_<param>**: Pass ``<param>`` to the method.
-            - **drawparallels**: Display or hide parallels and associated labels using
-              method :meth:`~mpl_toolkits.basemap.Basemap.drawparallels`.
-            - **drawparallels_<param>**: Pass ``<param>`` to the method.
-            - **drawparallels_fmt**: Default to :class:`MinuteLabel`.
-            - **drawparallels_gs_<param>**: Passed to :func:`~vacumm.misc.misc.geo_scale`.
-            - **parallels**: Parallels to plot.
-            - **drawmeridians**: Display or hide medidians and associated labels using
-              method :meth:`~mpl_toolkits.basemap.Basemap.drawmeridians`.
-            - **drawmeridians_<param>**: Pass ``<param>`` to the method.
-            - **drawmeridians_fmt**: Default to :class:`MinuteLabel`.
-            - **drawmeridians_gs_<param>**: Passed to :func:`~vacumm.misc.misc.geo_scale`.
-            - **meridians**: Meridians to plot.
-            - **meridional/zonal_labels**: Display or hide meridional/zonal labels.
-              ``meridional/zonal_labels=False`` is equivalent to ``y/xhide=True``.
-            - **no_seconds**: Do not display seconds in labels (if applicable).
-            - **minutes**: Do not use decimal degrees for labels (if applicable).
-            - **bfdeg**: Degrees are in bold (latex text only, if applicable).
-            - **x/y/ticklabels_<param>**: Pass ``<param>`` to
-              :meth:`~mpl_toolkits.basemap.Basemap.drawmeridians` and
-              :meth:`~mpl_toolkits.basemap.Basemap.drawparallels` to change text properties.
-            - **fullscreen**: Full screen mode -> no colorbar and no labels.
-            - **mapscale**: Add a map scale using
-              :meth:`~vacumm.misc.core_plot.Map.add_mapscale`.
-            - **mapscale_<param>**: Pass ``<param>`` to the
-              :meth:`~vacumm.misc.core_plot.Map.add_mapscale` method.
-            - **compass**: Add a compass using
-              :meth:`~vacumm.misc.core_plot.Map.add_compass`.
-            - **compass_<param>**: Pass ``<param>`` to the
-              :meth:`~vacumm.misc.core_plot.Map.add_compass` method.
-            - **mscp**: Add a mapscale AND a compass using
-              :meth:`~vacumm.misc.core_plot.Map.add_mscp`.
-            - **mscp_<param>**: Pass ``<param>`` to the
-              :meth:`~vacumm.misc.core_plot.Map.add_mscp` method.
+        Parameters
+        ----------
+        drawrivers:
+            Draw rivers on the map using method
+            :meth:`~mpl_toolkits.basemap.Basemap.drawrivers`.
+        drawrivers_<param>:
+            Pass ``<param>`` to the method.
+        fillcontinents:
+            Fill continents with color ``land_color``
+            using method :meth:`~mpl_toolkits.basemap.Basemap.fillcontinents`.
+        land_color:
+            Fill color.
+        fillcontinents_<param>:
+            Pass ``<param>`` to the method.
+        drawparallels:
+            Display or hide parallels and associated labels using
+            method :meth:`~mpl_toolkits.basemap.Basemap.drawparallels`.
+        drawparallels_<param>:
+            Pass ``<param>`` to the method.
+        drawparallels_fmt:
+            Default to :class:`MinuteLabel`.
+        drawparallels_gs_<param>:
+            Passed to :func:`~vacumm.misc.misc.geo_scale`.
+        parallels:
+            Parallels to plot.
+        drawmeridians:
+            Display or hide medidians and associated labels using
+            method :meth:`~mpl_toolkits.basemap.Basemap.drawmeridians`.
+        drawmeridians_<param>:
+            Pass ``<param>`` to the method.
+        drawmeridians_fmt:
+            Default to :class:`MinuteLabel`.
+        drawmeridians_gs_<param>:
+            Passed to :func:`~vacumm.misc.misc.geo_scale`.
+        meridians:
+            Meridians to plot.
+        meridional/zonal_labels:
+            Display or hide meridional/zonal labels.
+            ``meridional/zonal_labels=False`` is equivalent to ``y/xhide=True``.
+        no_seconds:
+            Do not display seconds in labels (if applicable).
+        minutes:
+            Do not use decimal degrees for labels (if applicable).
+        bfdeg:
+            Degrees are in bold (latex text only, if applicable).
+        x/y/ticklabels_<param>:
+            Pass ``<param>`` to
+            :meth:`~mpl_toolkits.basemap.Basemap.drawmeridians` and
+            :meth:`~mpl_toolkits.basemap.Basemap.drawparallels` to change text properties.
+        fullscreen:
+            Full screen mode -> no colorbar and no labels.
+        mapscale:
+            Add a map scale using
+            :meth:`~vacumm.misc.core_plot.Map.add_mapscale`.
+        mapscale_<param>:
+            Pass ``<param>`` to the
+            :meth:`~vacumm.misc.core_plot.Map.add_mapscale` method.
+        compass:
+            Add a compass using
+            :meth:`~vacumm.misc.core_plot.Map.add_compass`.
+        compass_<param>:
+            Pass ``<param>`` to the
+            :meth:`~vacumm.misc.core_plot.Map.add_compass` method.
+        mscp:
+            Add a mapscale AND a compass using
+            :meth:`~vacumm.misc.core_plot.Map.add_mscp`.
+        mscp_<param>:
+            Pass ``<param>`` to the
+            :meth:`~vacumm.misc.core_plot.Map.add_mscp` method.
 
 
         """
@@ -6109,17 +6506,22 @@ def get_axis_scale(axis, type=None):
     It searches for the units of the axis,
     and guess conversion factor.
 
-    :Params:
+    Parameters
+    ----------
+    axis:
+        A :mod:`cdms2` axis.
+    type: optional
+        Its type.
+        If ``None`` it is guessed.
+        See :func:`~vacumm.misc.axes.axis_type`.
 
-        - **axis**: A :mod:`cdms2` axis.
-        - **type**, optional: Its type.
-          If ``None`` it is guessed.
-          See :func:`~vacumm.misc.axes.axis_type`.
-
-    :Return: A scalar which defaults to ``1.``
+    Return
+    ------
+    scalar
+        Which defaults to ``1.``
     """
     if type is None:
-        type = vca.axis_type(axis).lower()
+        type = axis_type(axis).lower()
     units = getattr(axis, 'units', '')
     if type=='-' or not units: return 1.
     if type in ['x', 'y']:
@@ -6424,39 +6826,51 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
         maxticks=None, tz=None, interval_multiples=False, **kwargs):
     """Setup tick positions and labels of an time axis
 
-    :Params:
+    Parameters
+    ----------
 
-        - **axis**: :class:`~matplotlib.axis.Axis` instance (like ``P.gca().xaxis``)
-        - **tz**, optional: Time zone.
-        - **auto**, optional: Auto Scaling [default: True]
-        - **rotation**, optional: Rotation angle of tick labels.
-          If None, automatic [default: None]
-        - **formatter**, optional: Date format:
+    axis:
+        :class:`~matplotlib.axis.Axis` instance (like ``P.gca().xaxis``)
+    tz: optional
+        Time zone.
+    auto: optional
+        Auto Scaling [default: True]
+    rotation: optional
+        Rotation angle of tick labels.
+        If None, automatic [default: None]
+    formatter: optional
+        Date format:
 
-            - 'mpl' or 0 : use the internal Matplotlib auto date locator.
-            - "simple" or 1 or "auto": :class:`AutoDateFormatter2`
-            - "dual", 2, None, tuple or dict: :class:`AutoDualDateFormatter`
-              (default)
-            - String: :class:`DateFormatter`
-            - else a :class:`matplotlib.ticker.Formatter` instance.
+        - 'mpl' or 0 : use the internal Matplotlib auto date locator.
+        - "simple" or 1 or "auto": :class:`AutoDateFormatter2`
+        - "dual", 2, None, tuple or dict: :class:`AutoDualDateFormatter`
+          (default)
+        - String: :class:`DateFormatter`
+        - else a :class:`matplotlib.ticker.Formatter` instance.
 
-        - **locator**, optional: Major locator. Can be within
-          ['year','month','Weekday','day','hour','minute','second'],
-          be like :class:`matplotlib.dates.MonthLocator`.
-          or have a special value:
+    locator: optional
+        Major locator. Can be within
+        ['year','month','Weekday','day','hour','minute','second'],
+        be like :class:`matplotlib.dates.MonthLocator`.
+        or have a special value:
 
-            - None or 'auto' or 'vacumm': use the :class:`AutoDateLocator`
-              (default)
-            - 'mpl': use the internal Matplotlib auto date locator.
+        - None or 'auto' or 'vacumm': use the :class:`AutoDateLocator`
+          (default)
+        - 'mpl': use the internal Matplotlib auto date locator.
 
-        - **minor_locator**, optional: Minor locator.
-        - **nominor**, optional: Do not try to add minor ticks [default: False]
-        - **locator_<keyword>**, optional: <keyword> is passed to locator if
-          locator is a string. If locator = 'month',
-          locator = MonthLocator(locator_<keyword>=<value>).
-        - **minor_locator_<keyword>**, optional: Same with minor_locator.
-        - **maxticks**, optional: Maximal number of major ticks when
-          default auto locator is used.
+    minor_locator: optional
+        Minor locator.
+    nominor: optional
+        Do not try to add minor ticks [default: False]
+    locator_<keyword>: optional
+        <keyword> is passed to locator if
+        locator is a string. If locator = 'month',
+        locator = MonthLocator(locator_<keyword>=<value>).
+    minor_locator_<keyword>: optional
+        Same with minor_locator.
+    maxticks: optional
+        Maximal number of major ticks when
+        default auto locator is used.
     """
     if isinstance(axis, int):
         axis = 'xy'[axis]
@@ -6570,12 +6984,15 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
 def add_agg_filter(objs, filter, zorder=None, ax=None, add=True):
     """Add a filtered version of objects to plot
 
-    :Params:
+    Parameters
+    ----------
 
-        - **objs**: :class:`matplotlib.artist.Artist` instances.
-        - **filter**: :class:`BaseFilter` instance.
-        - **zorder**, optional: zorder (else guess from ``objs``).
-        - **ax**, optional: class:`matplotlib.axes.Axes` instance.
+    objs: :class:`matplotlib.artist.Artist`
+        Plotted objects.
+    filter: :class:`BaseFilter`
+    zorder: optional
+        zorder (else guess from ``objs``).
+    ax: optional, :class:`matplotlib.axes.Axes`
 
     Inspired from http://matplotlib.sourceforge.net/examples/pylab_examples/demo_agg_filter.html .
     """
@@ -6616,15 +7033,21 @@ def add_shadow(objs, width=3, xoffset=2, yoffset=-2, alpha=0.5, color='k',
         zorder=None, ax=None, add=True):
     """Add a drop-shadow to objects
 
-    :Params:
-
-        - **objs**: :class:`matplotlib.artist.Artist` instances.
-        - **width**, optional: Width of the gaussian filter in points.
-        - **xoffset**, optional: Shadow offset along X in points.
-        - **yoffset**, optional: Shadow offset along Y in points.
-        - **color**, optional: Color of the shadow.
-        - **zorder**, optional: zorder (else guess from ``objs``).
-        - **ax**, optional: class:`matplotlib.axes.Axes` instance.
+    Parameters
+    ----------
+    objs: :class:`matplotlib.artist.Artist`
+        Plotted objects.
+    width: optional
+        Width of the gaussian filter in points.
+    xoffset: optional
+        Shadow offset along X in points.
+    yoffset: optional
+        Shadow offset along Y in points.
+    color: optional
+        Color of the shadow.
+    zorder: optional
+        zorder (else guess from ``objs``).
+    ax: optional, :class:`matplotlib.axes.Axes`
 
     Inspired from http://matplotlib.sourceforge.net/examples/pylab_examples/demo_agg_filter.html .
     """
@@ -6638,13 +7061,17 @@ def add_shadow(objs, width=3, xoffset=2, yoffset=-2, alpha=0.5, color='k',
 def add_glow(objs, width=3, zorder=None, color='w', ax=None, alpha=1., add=True):
     """Add a glow effect to text
 
-    :Params:
-
-        - **objs**: Plotted objects.
-        - **width**, optional: Width of the gaussian filter in points.
-        - **color**, optional: Color of the shadow.
-        - **zorder**, optional: zorder (else guess from ``objs``).
-        - **ax**, optional: class:`matplotlib.axes.Axes` instance.
+    Parameters
+    ----------
+    objs: :class:`matplotlib.artist.Artist`
+        Plotted objects.
+    width: optional
+        Width of the gaussian filter in points.
+    color: optional
+        Color of the shadow.
+    zorder: optional
+        zorder (else guess from ``objs``).
+    ax: optional, :class:`matplotlib.axes.Axes`
 
     Inspired from http://matplotlib.sourceforge.net/examples/pylab_examples/demo_agg_filter.html .
     """
@@ -6659,14 +7086,19 @@ def add_lightshading(objs, width=7, fraction=0.5, zorder=None, ax=None, add=True
         **kwargs):
     """Add a light shading effect to objects
 
-    :Params:
-
-        - **objs**: Plotted objects.
-        - **width**, optional: Width of the gaussian filter in points.
-        - **fraction**, optional: Unknown.
-        - **zorder**, optional: zorder (else guess from ``objs``).
-        - **ax**, optional: class:`matplotlib.axes.Axes` instance.
-        - Extra keywords are passed to :class:`matplotlib.colors.LightSource`
+    Parameters
+    ----------
+    objs: :class:`matplotlib.artist.Artist`
+        Plotted objects.
+    width: optional
+        Width of the gaussian filter in points.
+    fraction: optional
+        Unknown.
+    zorder: optional
+        zorder (else guess from ``objs``).
+    ax: optional, :class:`matplotlib.axes.Axes`
+    **kwargs
+        Extra keywords are passed to :class:`matplotlib.colors.LightSource`
 
     Inspired from http://matplotlib.sourceforge.net/examples/pylab_examples/demo_agg_filter.html .
     """
@@ -6722,10 +7154,10 @@ class AutoDegreesMinutesLocator(AutoLocator):
 class AutoDegreesMinutesFormatter(Formatter):
     """Phase formatter with degrees and minutes
 
-    :Example:
-
-        >>> locator = xaxis.get_major_locator()
-        >>> xaxis.set_formatter(AutoDegreesMinutesFormatter(locator, label='lon'))
+    Example
+    -------
+    >>> locator = xaxis.get_major_locator()
+    >>> xaxis.set_formatter(AutoDegreesMinutesFormatter(locator, label='lon'))
     """
     def __init__(self, locator=None, **kwargs):
         if not isinstance(locator, Locator):
@@ -6755,11 +7187,14 @@ def twinxy(xy, ax=None, fig=None):
     This is an fusion and extension of :func:`matplotlib.pyplot.twinx` and
     :func:`matplotlib.pyplot.twiny`
 
-    :Params:
-
-        - **xy**: A string containing ``"x"`` and/or ``"y"``
-        - **ax**, optional: Consider this axes instance instead of the current one.
-        - **fig**, optional: Consider this figure instead of the current one.
+    Parameters
+    ----------
+    xy:
+        A string containing ``"x"`` and/or ``"y"``
+    ax: optional
+        Consider this axes instance instead of the current one.
+    fig: optional
+        Consider this figure instead of the current one.
     """
     if ax is None:
         if fig is None:
@@ -6857,12 +7292,16 @@ def loc2tuple(loc, xpad=0.02, ypad=0.02):
 def loc2align(loc, ha=None, va=None, margin=1/3.):
     """From location to dict of ha and va
 
-    :Params:
+    Parameters
+    ----------
+    loc:
+        (x,y) or string like "upper right.
+    ha/va: optional
+        alignments.
 
-        - **loc**: (x,y) or string like "upper right.
-        - **ha/va**, optional: alignments.
-
-    :Return: dict(ha=ha, va=va)
+    Return
+    ------
+    dict(ha=ha, va=va)
     """
     x, y = loc2tuple(loc, xpad=0, ypad=0)
     if ha is None:
@@ -6884,7 +7323,9 @@ def loc2align(loc, ha=None, va=None, margin=1/3.):
 def loc2offset(loc, xpad, ypad=None, margin=1/3.):
     """From location to (xoffset, ypoffset) where x/yoffset = +/- x/ypad
 
-    :Return: (xoffset,yoffset)
+    Return
+    ------
+    (xoffset,yoffset)
     """
     align = loc2align(loc, margin=margin)
     xoffset = yoffset = 0
@@ -6940,14 +7381,14 @@ def best_loc_map(m, onland=True, allowed=_locations):
 def add_param_label(text, loc=(0.01, 0.01), color='0.4', size=8, family='monospace', fig=None, **kwargs):
     """Add parameters description to the bottom/left of the figure
 
-    :Example:
+    Example
+    -------
+    >>> c = curve2(sst, show=False)
+    >>> c.add_param_label(dict(max=.23, kz=0.25))
 
-        >>> c = curve2(sst, show=False)
-        >>> c.add_param_label(dict(max=.23, kz=0.25))
-
-    :Params:
-
-        - **text**: Either a string or a dictionary.
+    Parameters
+    ----------
+    text: str, dict
     """
     # Convert dict to text
     if isinstance(text, dict):
@@ -6966,12 +7407,12 @@ def add_param_label(text, loc=(0.01, 0.01), color='0.4', size=8, family='monospa
 class Animator(object):
     """Animate objects on a figure
 
-    :Example:
-
-        >>> anim = Animator()
-        >>> anim.append(P.plot([5,6])
-        >>> anim.append(P.plot([4,8])
-        >>> anim.make_animation()
+    Example
+    -------
+    >>> anim = Animator()
+    >>> anim.append(P.plot([5,6])
+    >>> anim.append(P.plot([4,8])
+    >>> anim.make_animation()
 
     """
     def __init__(self, fig=None):
@@ -7034,21 +7475,25 @@ class Animator(object):
 def hlitvs(color='.95', axis='x', units='ticks', axes=None, maxticks=10, **kwargs):
     """Highlight intervals between ticks
 
-    :Params:
+    Parameters
+    ----------
+    color:
+        Background color.
+    axis:
+        Matplotlib axis or 'x'/'y'.
+    units: optional
+        Interval types
 
-        - *color*: Background color.
-        - *axis*: Matplotlib axis or 'x'/'y'.
-        - **units**, optional: Interval types
+        - `"ticks"`: Use axis ticks.
+        - A list or array: use it as ticks.
+        - `"auto"`: Estimate ticks using :class:`~matplotlib.ticker.AutoLocator`.
+        - `"date"` or `"time"`: Same but using :class:`AutoDateLocator2`.
+        - A time string like `"day"` for using :class:`~matplotlib.dates.DayLocator`.
+        - A locator.
 
-            - `"ticks"`: Use axis ticks.
-            - A list or array: use it as ticks.
-            - `"auto"`: Estimate ticks using :class:`~matplotlib.ticker.AutoLocator`.
-            - `"date"` or `"time"`: Same but using :class:`AutoDateLocator2`.
-            - A time string like `"day"` for using :class:`~matplotlib.dates.DayLocator`.
-            - A locator.
-
-        - Other keyparam are passed to :func:`~matplotlib.pyplot.axhspan`
-          or :func:`~matplotlib.pyplot.axvspan`.
+    **kwargs
+        Other keyparam are passed to :func:`~matplotlib.pyplot.axhspan`
+        or :func:`~matplotlib.pyplot.axvspan`.
     """
     # Get axis
     axes = kwargs.pop('ax', axes)
@@ -7086,7 +7531,7 @@ def hlitvs(color='.95', axis='x', units='ticks', axes=None, maxticks=10, **kwarg
     if tmax!=ticks[-1]: ticks.append(tmax)
 
     # Patch
-    alpha = vcc.RGBA(color)[-1]
+    alpha = RGBA(color)[-1]
     kwargs.setdefault('zorder', 0)
     kwargs.update(facecolor=color)
     kwargs.setdefault('linewidth', 0)
@@ -7203,11 +7648,13 @@ def _transform_(transform, default=None, ax=None, fig=None):
 def _transform_pixrot_(center, size, angle, anglemode, transform=None, posref=None, ax=None):
         """Special transform: size in pixel, rotation, translation in data
 
-        :Params:
-
-            - **trandform**: Transform for the center location.
-            - **posref**: Reference point for the angle if anglemode == 'data'.
-              It default to the center. Values must be in data coordinates.
+        Parameters
+        ----------
+        transform:
+            Transform for the center location.
+        posref:
+            Reference point for the angle if anglemode == 'data'.
+            It default to the center. Values must be in data coordinates.
         """
 
         if ax is None: ax = P.gca()
@@ -7262,21 +7709,33 @@ def add_compass(x, y, size=40, facecolor1='k', facecolor2='w', edgecolor='k',
     angle=0, ax=None, m=None, anglemode='pixels', **kwpatch):
     """Add a compass to the current plot
 
-    :Params:
-
-        - **x/y**: Position in data coordinates.
-        - **size**, optional: size in opixels.
-        - **style**, optional: "simple", "fancy".
-        - **angle**, optional: Angle of the north (trigo).
-        - **anglemode**, optional: "pixels" or "data".
-        - **facecolor1**, optional: Dark face color.
-        - **facecolor2**, optional: Light face color.
-        - **edgecolor**, optional: Edges color.
-        - **text_color**, optional: Text labels color.
-        - **text_size**, optional: Text labels size.
-        - **text_<param>**, optional: ``<param>`` is passed to
-          :class:`~matplotlib.text.Text` when adding labels.
-        - **fontsize/color**, optional: Same as ``text_size/color``.
+    Parameters
+    ----------
+    x/y:
+        Position in data coordinates.
+    size: optional
+        size in opixels.
+    style: optional
+        "simple", "fancy".
+    angle: optional
+        Angle of the north (trigo).
+    anglemode: optional
+        "pixels" or "data".
+    facecolor1: optional
+        Dark face color.
+    facecolor2: optional
+        Light face color.
+    edgecolor: optional
+        Edges color.
+    text_color: optional
+        Text labels color.
+    text_size: optional
+        Text labels size.
+    text_<param>: optional
+        ``<param>`` is passed to
+        :class:`~matplotlib.text.Text` when adding labels.
+    fontsize/color: optional
+        Same as ``text_size/color``.
     """
 
     kwtext = kwfilter(kwpatch, 'text_')

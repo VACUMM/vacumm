@@ -133,19 +133,20 @@ def istime(axis,
 def get_checker(name):
     """Get the function that checks if an axis of required type
 
-    :Params:
+    Parameters
+    ----------
+    name:
+        Generic name of the axis.
 
-        - **name**: Generic name of the axis.
+    Returns
+    -------
+    :func:`islon`, :func:`islat`, :func:`islevel`, :func:`istime`
+    or raises :exc:`TypeError`
 
-    :Returns:
-
-        :func:`islon`, :func:`islat`, :func:`islevel`, :func:`istime`
-        or raises :exc:`TypeError`
-
-    :Example:
-
-        >>> get_checker('x')
-        >>> get_checker('lon')(myaxis)
+    Example
+    -------
+    >>> get_checker('x')
+    >>> get_checker('lon')(myaxis)
     """
     errmsg = 'Input must be a generic name axis, like "x" or "lon"'
     if not isinstance(name, basestring):
@@ -165,16 +166,24 @@ def is_geo_axis_type(axis, atype, ids=None, standard_names=None, units=None,
     long_names=None, defaults=None, ro=False, checkatts=True):
     """Check if an axis is of a specific type
 
-    :Params:
-
-        - **axis**: CDAT 1D or 2D axis.
-        - **atype**: Axis type as one of 'x', 'y', 'z' or 'z'.
-        - **ids**, optional: List od ids to check.
-        - **standard_names**, optional: List of standard_names to check.
-        - **long_names**, optional: List of long_names to check.
-        - **units**, optional: List of units to check.
-        - **ro**, optional: Read-only mode?
-        - **checkatts**, optional: If False, do not check units and long_name attributes.
+    Parameters
+    ----------
+    axis:
+        CDAT 1D or 2D axis.
+    atype:
+        Axis type as one of 'x', 'y', 'z' or 'z'.
+    ids: optional
+        List od ids to check.
+    standard_names: optional
+        List of standard_names to check.
+    long_names: optional
+        List of long_names to check.
+    units: optional
+        List of units to check.
+    ro: optional
+        Read-only mode?
+    checkatts: optional
+        If False, do not check units and long_name attributes.
     """
     if not isaxis(axis): return False
     if defaults is None: defaults = {}
@@ -258,18 +267,21 @@ def check_axis(axis, **kw):
 def get_axis_type(axis, genname=False, **kw):
     """Return the axis type as a signle letter (CDAT standards): -, t, z, y, or x
 
-    :Params:
+    Parameters
+    ----------
+    axis:
+        CDAT axis.
+    genname: optional
+        Return a generic name or None.
+    **kw
+        Other keywords are passed to checking functions (:func:`islon`...).
 
-        - **axis**: CDAT axis.
-        - **genname**, optional: Return a generic name or None.
-        - Other keywords are passed to checking functions (:func:`islon`...).
-
-    :Example:
-
-        >>> get_axis_type(create_time((5,),'days since 2000'))
-        't'
-        >>> get_axis_type(axis, genname=True, ro=True, checkatts=False)
-        'time'
+    Example
+    -------
+    >>> get_axis_type(create_time((5,),'days since 2000'))
+    't'
+    >>> get_axis_type(axis, genname=True, ro=True, checkatts=False)
+    'time'
     """
     if islon(axis, **kw):
         at = "x"
@@ -297,17 +309,19 @@ def check_id(axis,**kwargs):
 def create_axis(values, atype='-', **atts):
     """Quickly create a :mod:`cdms2` axis
 
-    :Params:
+    Parameters
+    ----------
+    values:
+        Numerical values.
+    atype: optional
+        axis type within 'x','y','z','t','-' [default: '-']
+    **atts
+        Other keywords are passed as attributes to the axis.
 
-        - **values**: Numerical values.
-        - **atype**, optional: axis type within 'x','y','z','t','-' [default: '-']
-        - Other keywords are passed as attributes to the axis.
-
-    :Example:
-
-        >>> lon = create_axis(N.arange(-10., 0, 2), 'x')
-        >>> lon = create_axis((-10., 0, 2), 't', id='temps', units='seconds since 2000')
-        >>>
+    Example
+    -------
+    >>> lon = create_axis(N.arange(-10., 0, 2), 'x')
+    >>> lon = create_axis((-10., 0, 2), 't', id='temps', units='seconds since 2000')
     """
     if N.isscalar(values):
         values = (values, )
@@ -331,27 +345,32 @@ def create_axis(values, atype='-', **atts):
 
 create = create_axis
 
-def create_time(values,units=None,**atts):
+def create_time(values, units=None, **atts):
     """Create a time axis
 
-    :Params:
+    Parameters
+    ----------
+    values:
+        Numeric values, or list of date objects
+        (:class:`~datetime.datetime`, :func:`~cdtime.comptime`, :func:`~cdtime.reltime`).
+    units: optional
+        Time units like 'days since 2000-01-01'.
+    **atts
+        Other keywords are passed as attributes to the axis.
 
-        - **values**: Numeric values, or list of date objects
-          (:class:`~datetime.datetime`, :func:`~cdtime.comptime`, :func:`~cdtime.reltime`).
-        - **units**, optional: Time units like 'days since 2000-01-01'.
-        - Other keywords are passed as attributes to the axis.
+    Note
+    ----
+    Units must be provided explicitly if no date are passed.
 
-    .. note:: Units must be provided explicitly if no date are passed.
-
-    :Example:
-
-        >>> from vacumm.misc.atime import create_time
-        >>> from datetime import datetime
-        >>> import cdtime
-        >>> taxis = create_time([1,2],units='months since 2000',long_name='My time axis')
-        >>> taxis = create_time(taxis)
-        >>> create_time([datetime(2000,1,1),'2000-2-1'],units='months since 2000')
-        >>> create_time([cdtime.reltime(1,'months since 2000'),cdtime.comptime(2000,1)])
+    Example
+    -------
+    >>> from vacumm.misc.atime import create_time
+    >>> from datetime import datetime
+    >>> import cdtime
+    >>> taxis = create_time([1,2],units='months since 2000',long_name='My time axis')
+    >>> taxis = create_time(taxis)
+    >>> create_time([datetime(2000,1,1),'2000-2-1'],units='months since 2000')
+    >>> create_time([cdtime.reltime(1,'months since 2000'),cdtime.comptime(2000,1)])
     """
     from .axes import are_valid_units, comptime, strftime
     for var in values, units:
@@ -384,17 +403,20 @@ def create_time(values,units=None,**atts):
         raise ValueError,'Unable to guess units. You must specify them.'
     return create_axis(newvalues,'t',units=units,**atts)
 
-def create_lon(values,**atts):
+def create_lon(values, **atts):
     """Create a longitude axis
 
-    :Params:
+    Parameters
+    ----------
+    values:
+        Numeric values
+    **atts
+        Keywords are passed as attributes to the axis.
 
-        - **values**: Numeric values
-        - Keywords are passed as attributes to the axis.
-
-    :Example:
-        >>> create_lon(numpy.arange(-18., -5.))
-        >>> create_lon(numpy.arange(-18., -5.),long_name='original_longitude')
+    Example
+    -------
+    >>> create_lon(numpy.arange(-18., -5.))
+    >>> create_lon(numpy.arange(-18., -5.),long_name='original_longitude')
 
     """
     if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
@@ -403,17 +425,20 @@ def create_lon(values,**atts):
         return reate_axes2d(x=values, lonid=atts.pop('id', None), xatts=atts)
     return create_axis(values,'x',**atts)
 
-def create_lat(values,**atts):
+def create_lat(values, **atts):
     """Create a latitude axis
 
-    :Params:
+    Parameters
+    ----------
+    values:
+        Numeric values
+    **atts
+        Keywords are passed as attributes to the axis.
 
-        - **values**: Numeric values
-        - Keywords are passed as attributes to the axis.
-
-    :Example:
-        >>> create_lat(numpy.arange(40., 48., 1.5))
-        >>> create_lat(numpy.arange(40., 48., 1.5),long_name='strange_latitude')
+    Example
+    -------
+    >>> create_lat(numpy.arange(40., 48., 1.5))
+    >>> create_lat(numpy.arange(40., 48., 1.5),long_name='strange_latitude')
 
     """
     if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
@@ -425,14 +450,17 @@ def create_lat(values,**atts):
 def create_dep(values,**atts):
     """Create a depthaxis
 
-     :Params:
+     Parameters
+     ----------
+     values:
+        Numeric values
+    **atts
+        Keywords are passed as attributes to the axis.
 
-        - **values**: Numeric values
-        - Keywords are passed as attributes to the axis.
-
-    :Example:
-        >>> create_dep(numpy.arange(-1000., -500., 10.))
-        >>> create_dep(numpy.arange(-1000., -500., 10.),long_name='deep_depth')
+    Example
+    -------
+    >>> create_dep(numpy.arange(-1000., -500., 10.))
+    >>> create_dep(numpy.arange(-1000., -500., 10.),long_name='deep_depth')
 
     """
     return create_axis(values,'z',**atts)
@@ -442,20 +470,24 @@ create_depth = create_dep
 def guess_timeid(ncfile, vnames=None):
     """Guess the id of the time axis in a netcdf file
 
-    :Params:
+    Parameters
+    ----------
+    ncfile:
+        Netcdf file name or descriptor.
+    vnames: optional
+        List of variables to look for
+        a time axis (defaults to all variables)
 
-        - **ncfile**: Netcdf file name or descriptor.
-        - **vnames**, optional: List of variables to look for
-          a time axis (defaults to all variables)
+    Return
+    ------
+    The id as a string, or ``None`` if not found.
 
-    :Return: The id as a string, or ``None`` if not found.
-
-    :Example:
-
-        >>> tid = guess_timeid('file.nc')
-        >>> f = cdms2.open('file.nc')
-        >>> tid = guess_timeid(f)
-        >>> f.close()
+    Example
+    -------
+    >>> tid = guess_timeid('file.nc')
+    >>> f = cdms2.open('file.nc')
+    >>> tid = guess_timeid(f)
+    >>> f.close()
     """
     from .io import NcFileObj
     nfo = NcFileObj(ncfile)
@@ -471,15 +503,18 @@ def guess_timeid(ncfile, vnames=None):
 def set_order(var, order, replace=False):
     """Restore axis order of cdms variable
 
-    :Params:
+    Parameters
+    ----------
+    var:
+        A cdms array.
+    order:
+        A cdms order  string(like 'tx')
+    replace:
+        Erase existing axis types?
 
-        - **var**: A cdms array.
-        - **order**: A cdms order  string(like 'tx')
-        - **replace**: Erase existing axis types?
-
-    :Example:
-
-        >>> set_order(temp, 'tyx')
+    Example
+    -------
+    >>> set_order(temp, 'tyx')
     """
     current_order = var.getOrder()
     assert len(current_order)==len(order), \
@@ -504,16 +539,20 @@ def set_order(var, order, replace=False):
 def get_order(var):
     """Enhanced version of getOrder() method that handles 2D axes
 
-    :Params:
+    Parameters
+    ----------
+    var:
+        axis or cdms variable.
 
-        - **var**: axis or cdms variable.
+    Return
+    ------
+    string
+        containing letters x, y, z, t or -
 
-    :Output: string containing letters x, y, z, t or -
-
-    :Example:
-
-        >>> get_order(var)
-        "-yx"
+    Example
+    -------
+    >>> get_order(var)
+    "-yx"
     """
     # Already an order
     if isinstance(var, basestring):
@@ -546,16 +585,19 @@ def get_order(var):
 def order_match(order1, order2, asscore=False, strict=False):
     """Check that to axis orders are compatible
 
-    :Params:
+    Parameters
+    ----------
+    order1/2:
+        Order strings containing ``x``, ``y``, ``z``, ``t`` or ``-`` chars.
+    asscore: optional
+        Return the total level of matching, where, for one char:
 
-        - **order1/2**: Order strings containing ``x``, ``y``, ``z``, ``t`` or ``-`` chars.
-        - **asscore**, optional: Return the total level of matching, where, for one char:
+        - 0: no matching,
+        - 1: matching with ``-``,
+        - 2: letters equal.
 
-            - 0: no matching,
-            - 1: matching with ``-``,
-            - 2: letters equal.
-
-        - **strict**, optional: Be more strict.
+    strict: optional
+        Be more strict.
 
             - ``False``: Not strict.
             - ``True`` or ``"both"``: Fail even with ``-``.
@@ -563,14 +605,14 @@ def order_match(order1, order2, asscore=False, strict=False):
               the other one is not allowed to be different, except when the former
               has a ``-``.
 
-    :Examples:
-
-        >>> order_match('y', 'x')
-        False
-        >>> order_match('x-', 'xy')
-        True
-        >>> order_match('x-', 'xy', strict="right")
-        False
+    Examples
+    --------
+    >>> order_match('y', 'x')
+    False
+    >>> order_match('x-', 'xy')
+    True
+    >>> order_match('x-', 'xy', strict="right")
+    False
 
     """
     order1 = get_order(order1)
@@ -601,13 +643,13 @@ def merge_orders(order1, order2, raiseerr=True):
     When two orders doesn't have the same length,
     they are right adjusted.
 
-    :Examples:
-
-        >>> merge_orders('t-x', 'y-')
-        'tyx', 'yx'
-        >>> merge_orders('yx', 'tz')
-        'yx', 'tz'
-        >>> merge_orders(myvar, zaxis)
+    Examples
+    --------
+    >>> merge_orders('t-x', 'y-')
+    'tyx', 'yx'
+    >>> merge_orders('yx', 'tz')
+    'yx', 'tz'
+    >>> merge_orders(myvar, zaxis)
     """
     order1 = get_order(order1)
     order2 = get_order(order2)
@@ -677,21 +719,24 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
     """Check that the axis order of a variable is matches
     at least one the specifed valid orders
 
-    :Params:
+    Parameters
+    ----------
+    var:
+        MV2 array.
+    allowed:
+        A single order string or a list. It should contain one or
+        several of these letters:
 
-        - **var**: MV2 array.
-        - **allowed**: A single order string or a list. It should contain one or
-          several of these letters:
+        - ``x``: longitudes,
+        - ``y``: latitudes,
+        - ``z``: vertical levels,
+        - ``t``: time axis,
+        - ``d``: data values (ignored),
+        - ``-``: any kind of axis.
 
-            - ``x``: longitudes,
-            - ``y``: latitudes,
-            - ``z``: vertical levels,
-            - ``t``: time axis,
-            - ``d``: data values (ignored),
-            - ``-``: any kind of axis.
-
-    :Return:
-
+    Return
+    ------
+    array
         ``var``, or ``var, order, reordered`` if **reorder** is True.
     """
 

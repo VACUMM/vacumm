@@ -77,24 +77,27 @@ __all__.sort()
 def broadcast(set, n, mode='last', **kwargs):
     """Broadcast ``set`` to the specified length ``n``
 
-    :Params:
-
-        - **set**: A single element or a sequence.
-        - **n**: Final requested length.
-        - **mode**, optional: Filling mode.
+    Parameters
+    ----------
+    set:
+        A single element or a sequence.
+    n:
+        Final requested length.
+    mode: optional
+        Filling mode.
 
             - ``"last"``: Use the last element.
             - ``"first"``: Use the first element.
             - ``"cycle"``: Cycle through set.
             - if ``fillvalue`` is passed as a keyword, it is used to fill.
 
-    :Example:
-
-        >>> broadcast([2,4], 5)
-        >>> broadcast(5, 4)
-        >>> broadcast((2,3), 3)
-        >>> broadcast((2,3), 3, mode='first')
-        >>> broadcast([2,3], 3, mode='value', fillvalue=999)
+    Example
+    -------
+    >>> broadcast([2,4], 5)
+    >>> broadcast(5, 4)
+    >>> broadcast((2,3), 3)
+    >>> broadcast((2,3), 3, mode='first')
+    >>> broadcast([2,3], 3, mode='value', fillvalue=999)
 
     """
     set = makeiter(set)
@@ -126,16 +129,16 @@ class Att(dict):
 
     You initialize and manage it as using :class:`dict`.
 
-    :Example:
-
-        >>> dd = Att(toto=3)
-        >>> print dd['toto']
-        3
-        >>> print dd.toto
-        3
-        >>> dd.toto = 5
-        >>> print dd['toto']
-        5
+    Example
+    -------
+    >>> dd = Att(toto=3)
+    >>> print dd['toto']
+    3
+    >>> print dd.toto
+    3
+    >>> dd.toto = 5
+    >>> print dd['toto']
+    5
     """
 
     def __getattr__(self, att):
@@ -173,18 +176,20 @@ def bound_ops(bounds):
     """Get operators that must be used for checking inclusion within boundaries.
     Returned operators (ops) must be used in the following way to return True if value is inside bounds:
 
-    :Params:
+    Parameters
+    ----------
+    bounds:
+        Boundary closing indicator (like 'co')
 
-        - **bounds**: Boundary closing indicator (like 'co')
+    Example
+    -------
+    >>> ops[0](value,lower_bound)
+    >>> ops[1](value,upper_bound)
 
-    :Example:
-
-        >>> ops[0](value,lower_bound)
-        >>> ops[1](value,upper_bound)
-
-    :Return:
-
-        A 2-element tuple of operators taken within (operator.ge,operator.gt,operator.le,operator.lt).
+    Return
+    ------
+    A 2-element tuple
+        Operators taken within (operator.ge,operator.gt,operator.le,operator.lt).
     """
     if bounds[0] == 'c':
         ops = (operator.ge, )
@@ -202,26 +207,35 @@ def auto_scale(data = None, nmax = None,vmin = None, vmax = None,
                keepminmax=False, **kwargs):
     """Computes levels according to a dataset and its range of values. Locators are on a 10-base. Different scaling can be used with this version.
 
-    :Params:
-
-    - **data**: The dataset
-    - **vmax**, optional: Replaces max(data)
-    - **vmin**, optional:   //   min(data)
-    - **symetric**, optional: min_value and max_value are made symetric with respect to zero [default: False]
-    - **nmax**, optional:  Maximal number of levels
-    - **separators**, optional: Subdivision for irregular levels
-    - **fractions**, optional: Consider separators as fractions (]0.,1.[)
-    - **steps**, optional: Base 10 steps for finding levels [default: [1,2,2.5,5,10]]
-    - **geo**, optional: Treat levels as geographical degrees [default: False]
+    Parameters
+    ----------
+    data:
+        The dataset
+    vmax: optional
+        Replaces max(data)
+    vmin: optional
+        //   min(data)
+    symetric: optional
+        min_value and max_value are made symetric with respect to zero [default: False]
+    nmax: optional
+        Maximal number of levels
+    separators: optional
+        Subdivision for irregular levels
+    fractions: optional
+        Consider separators as fractions (]0.,1.[)
+    steps: optional
+        Base 10 steps for finding levels [default: [1,2,2.5,5,10]]
+    geo: optional
+        Treat levels as geographical degrees [default: False]
     - Other parameters are given to MaxNLocator
 
-    :Return:
+    Return
+    ------
+    Array of levels
 
-        Array of levels
-
-    :See also:
-
-        :func:`basic_auto_scale` :func:`geo_scale`
+    See also
+    --------
+    :func:`basic_auto_scale` :func:`geo_scale`
     """
 
 
@@ -291,17 +305,22 @@ def auto_scale(data = None, nmax = None,vmin = None, vmax = None,
 def basic_auto_scale(vmin,vmax,nmax=7,steps=[1,2,2.5,5,10],geo=False,minutes=False,**kwargs):
     """Computes levels according to a dataset and its range of values. Locators are on a 10-base.
 
-    :Params:
+    Parameters
+    ----------
+    vmin/vmax:
+        Find levels around this range.
+    nmax: optional
+        Maximal number of steps.
+    steps: optional
+        Base 10 steps for finding levels [default: [1,2,2.5,5,10]]
+    geo: optional
+        Assume longitude or latitude degrees [default: False].
+    minutes: optional
+        If geo, find suitable levels to match nice minutes locations when locations have floating values (like 1.2) [default: False].
 
-        - **vmin/vmax**: Find levels around this range.
-        - **nmax**, optional: Maximal number of steps.
-        - **steps**, optional: Base 10 steps for finding levels [default: [1,2,2.5,5,10]]
-        - **geo**, optional: Assume longitude or latitude degrees [default: False].
-        - **minutes**, optional: If geo, find suitable levels to match nice minutes locations when locations have floating values (like 1.2) [default: False].
-
-    :See also:
-
-        :func:`auto_scale` :func:`geo_scale`
+    See also
+    --------
+    :func:`auto_scale` :func:`geo_scale`
     """
 
 
@@ -354,10 +373,9 @@ def basic_auto_scale(vmin,vmax,nmax=7,steps=[1,2,2.5,5,10],geo=False,minutes=Fal
 def geo_scale(*args,**kwargs):
     """ :func:`auto_scale()` with geo=True
 
-
-    :See also:
-
-        :func:`basic_auto_scale` :func:`auto_scale`
+    See also
+    --------
+    :func:`basic_auto_scale` :func:`auto_scale`
     """
     kwargs.setdefault('geo', True)
     return auto_scale(*args, **kwargs)
@@ -366,15 +384,17 @@ def geo_scale(*args,**kwargs):
 def get_atts(var, id=True, extra=None, **kwargs):
     """ Get all attributes from a variable
 
-    :Params:
-
-        - **var**: Target variable
-        - **id**, optional: Get also id [default: False]
+    Parameters
+    ----------
+    var:
+        Target variable
+    id: optional
+        Get also id [default: False]
         - Other keywords are set as attributes
 
-    :See also:
-
-        :func:`cp_atts` :func:`set_atts` :func:`check_def_atts`
+    See also
+    --------
+    :func:`cp_atts` :func:`set_atts` :func:`check_def_atts`
     """
     atts = {}
     if hasattr(var,'attributes'):
@@ -391,18 +411,23 @@ def get_atts(var, id=True, extra=None, **kwargs):
 def cp_atts(var1, var2, overwrite=True, select=None, exclude=None, extra=None, **kwargs):
     """ Copy all atributes from one variable to another
 
-    :Params:
-
-        - **var1/var2**: Copy var1 attributes to var2
-        - **id**, optional: Also copy id [default: False]
-        - **overwrite**, optional: Overwrite attributes of ``var2``?
-        - **select**, optional: Copy only these attributes.
-        - **exclude**, optional: Attributes that must be excuded from copy.
+    Parameters
+    ----------
+    var1/var2:
+        Copy var1 attributes to var2
+    id: optional
+        Also copy id [default: False]
+    overwrite: optional
+        Overwrite attributes of ``var2``?
+    select: optional
+        Copy only these attributes.
+    exclude: optional
+        Attributes that must be excuded from copy.
         - Other keywords are set as attributes
 
-    :See also:
-
-        :func:`get_atts` :func:`set_atts`  :func:`check_def_atts`
+    See also
+    --------
+    :func:`get_atts` :func:`set_atts`  :func:`check_def_atts`
     """
     # Default list
     atts = get_atts(var1, extra=extra, **kwargs)
@@ -425,16 +450,20 @@ def cp_atts(var1, var2, overwrite=True, select=None, exclude=None, extra=None, *
 def set_atts(var, atts=None, overwrite=True, **kwargs):
     """Set attributes
 
-    :Params:
+    Parameters
+    ----------
+    var:
+        Change attributes of var
+    atts: optional
+        A dictionary of attributes
+    overwrite: optional
+        Overwrite attributes of ``var2``?
+    **kwargs
+        Other keywords are set as attributes
 
-        - **var**: Change attributes of var
-        - **atts**, optional: A dictionary of attributes
-        - **overwrite**, optional: Overwrite attributes of ``var2``?
-        - Other keywords are set as attributes
-
-    :See also:
-
-        :func:`cp_atts` :func:`get_atts` :func:`check_def_atts`
+    See also
+    --------
+    :func:`cp_atts` :func:`get_atts` :func:`check_def_atts`
     """
     if atts is None: atts = {}
     atts.update(kwargs)
@@ -447,9 +476,9 @@ def set_atts(var, atts=None, overwrite=True, **kwargs):
 def check_def_atts(obj, **defaults):
     """Check defaults attributes and set them if empty
 
-    :See also:
-
-        :func:`get_atts` :func:`cp_atts` :func:`set_atts`
+    See also
+    --------
+    :func:`get_atts` :func:`cp_atts` :func:`set_atts`
     """
     for att,val in defaults.items():
         if not hasattr(obj,att):
@@ -477,26 +506,33 @@ def cp_props(var1, var2, axes=None, grid=True, atts=None, exaxes=None, exatts=No
 
     Proporties are attributes, axes and grid.
 
-    :Params:
+    Parameters
+    ----------
+    var1/var2:
+        cdms variables.
+    axes: optional
+        Position of axes to copy. Positions are
+        converted to relative position to that last dimension to handle
+        the case of variables that don't have the same number of dimensions.
+        Set it to ``False`` to not copy axes.
+    exaxes: optional
+        Position of axes to not copy.
+    grid: optional
+        Also copy the grid?
+    atts: optional
+        Attributes to copy. Set it to ``False`` to not
+        copy attributes.
+    exatts: optional
+        Attributes to exclude from copy.
+    owatts: optional
+        Overwrite attributes?
 
-        - **var1/var2**: cdms variables.
-        - **axes**, optional: Position of axes to copy. Positions are
-          converted to relative position to that last dimension to handle
-          the case of variables that don't have the same number of dimensions.
-          Set it to ``False`` to not copy axes.
-        - **exaxes**, optional: Position of axes to not copy.
-        - **grid**, optional: Also copy the grid?
-        - **atts**, optional: Attributes to copy. Set it to ``False`` to not
-          copy attributes.
-        - **exatts**, optional: Attributes to exclude from copy.
-        - **owatts**, optional: Overwrite attributes?
-
-    :Examples:
-
-        >>> cp_props(var1, var2, atts=False)
-        >>> cp_props(var1, var2, axes=[1,-1], atts=['units','long_name'])
-        >>> cp_props(var1, var2, exaxes=0, grid=False)
-        >>> cp_props(var1, var2, axes=False, exatts='units', owatts=False)
+    Examples
+    --------
+    >>> cp_props(var1, var2, atts=False)
+    >>> cp_props(var1, var2, axes=[1,-1], atts=['units','long_name'])
+    >>> cp_props(var1, var2, exaxes=0, grid=False)
+    >>> cp_props(var1, var2, axes=False, exatts='units', owatts=False)
     """
 
     # Axes
@@ -529,11 +565,14 @@ def cp_props(var1, var2, axes=None, grid=True, atts=None, exaxes=None, exatts=No
 def is_iterable(obj, nostr=True, nogen=True):
     """Check if an object is iterable or not.
 
-    :Params:
+    Parameters
+    ----------
+    obj:
+        Object to check
 
-        - **obj**: Object to check
-
-    :Return: True/False
+    Return
+    ------
+    bool
     """
 
     if not nogen and type(obj) == GeneratorType: return True
@@ -553,18 +592,18 @@ def isnumber(var):
 def rm_html_tags(str):
     """Remove html tags from a string
 
-    :Params:
+    Parameters
+    ----------
+    str: string
 
-        - **str**: A string
+    Return
+    ------
+    string
 
-    :Return:
-
-        Cleaned string
-
-    Example:
-
-        >>> rm_html_tags('<title>My title</title>')
-        My title
+    Example
+    -------
+    >>> rm_html_tags('<title>My title</title>')
+    My title
     """
 
     import re
@@ -574,17 +613,26 @@ def rm_html_tags(str):
 
 
 
-phase_params = """- **decimal**, optional: Use decimal representation
-        - **fmt**, optional: Format for decimal representation
-        - **no_seconds**, optional: Do not add seconds to degrees representation
-        - **tex**, optional: Use Tex degree symbol
-          (depends on ``rcParams['text.usetex']`` by default)
-        - **no_symbol**, optional: Don't use degree symbol
-        - **no_zeros**, optional: Don't insert zeros when integer < 10
-        - **auto**, optional: If True, find the ticks according to the range of values
-        - **auto_minutes**, optional: Automatically suppress degrees if value is not exactly a degree (just display minutes and seconds) else display degree
-        - **bfdeg**, optional: Use bold face for degrees when alone if auto_minutes and
-          ``rcParams['text.usetex']`` are True.
+phase_params = """decimal: optional
+        Use decimal representation
+    fmt: optional, string
+        Format for decimal representation
+    no_seconds: optional, bool
+        Do not add seconds to degrees representation
+    tex: optional, bool
+        Use Tex degree symbol
+        (depends on ``rcParams['text.usetex']`` by default)
+    no_symbol: optional, bool
+        Don't use degree symbol
+    no_zeros: optional, bool
+        Don't insert zeros when integer < 10
+    auto: optional, bool
+        If True, find the ticks according to the range of values
+    auto_minutes: optional, bool
+        Automatically suppress degrees if value is not exactly a degree (just display minutes and seconds) else display degree
+    bfdeg: optional, bool
+        Use bold face for degrees when alone if auto_minutes and
+        ``rcParams['text.usetex']`` are True.
 """
 
 def deg2str(*args,**kwargs):
@@ -720,14 +768,15 @@ def phaselab(vals, fmt='%.5g', label=None, decimal=True, tex=None, auto_minutes=
 def lonlab(longitudes, **kwargs):
     """Return nice longitude labels
 
-    :Params:
+    Parameters
+    ----------
+    longitudes: floats
+        Value of longitudes
+    %s
 
-        - **longitudes**: Value of longitudes
-        %s
-
-    :See also:
-
-        :func:`latlab` :func:`deplab`
+    See also
+    --------
+    :func:`latlab` :func:`deplab`
     """
     kwargs['label'] = 'lon'
     return phaselab(longitudes, **kwargs)
@@ -737,14 +786,15 @@ if lonlab.__doc__ is not None:
 def latlab(latitudes,**kwargs):
     """Return nice latitude labels
 
-    :Params:
+    Parameters
+    ----------
+    latitudes: float
+        Value of latitudes
+    %s
 
-        - **latitudes**: Value of latitudes
-        %s
-
-    :See also:
-
-        :func:`lonlab` :func:`deplab`
+    See also
+    --------
+    :func:`lonlab` :func:`deplab`
     """
     kwargs['label'] = 'lat'
     return phaselab(latitudes, **kwargs)
@@ -754,17 +804,20 @@ if latlab.__doc__ is not None:
 def deplab(depths, fmt='%gm', auto=False, nosign=False):
     """Return well formatted depth labels
 
-    :Params:
+    Parameters
+    ----------
+    depths:
+        Numerical depths
+    fmt: optional
+        Numeric format of the string (including units) [default: '%gm']
+    auto: optional
+        If True, find the ticks according to the range of depths [default: False]
+    nosign: optional
+        Absolute values are used.
 
-        - **depths**: Numerical depths
-
-        - **fmt**, optional: Numeric format of the string (including units) [default: '%gm']
-        - **auto**, optional: If True, find the ticks according to the range of depths [default: False]
-        - **nosign**, optional: Absolute values are used.
-
-    :See also:
-
-        :func:`lonlab` :func:`latlab`
+    See also
+    --------
+    :func:`lonlab` :func:`latlab`
     """
 
     single = not iterable(depths)
@@ -806,22 +859,28 @@ def deg_from_dec(dec):
 def dict_filter(kwargs,filters, defaults=None, copy=False, short=False, keep=False, **kwadd):
     """Filter out kwargs (typically extra calling keywords)
 
-    :Params:
+    Parameters
+    ----------
+    kwargs:
+        Dictionnary to filter.
+    filters:
+        Single or list of prefixes.
+    defaults:
+        dictionnary of default values for output fictionnary.
+    copy:
+        Simply copy items, do not remove them from kwargs.
+    short:
+        Allow prefixes to not end with ``"_"``.
+    keep:
+        Keep prefix filter in output keys.
 
-        - **kwargs**: Dictionnary to filter.
-        - **filters**: Single or list of prefixes.
-        - *defaults*: dictionnary of default values for output fictionnary.
-        - *copy*: Simply copy items, do not remove them from kwargs.
-        - *short*: Allow prefixes to not end with ``"_"``.
-        - *keep*: Keep prefix filter in output keys.
-
-    :Example:
-
-        >>> kwargs = {'basemap':'f', 'basemap_fillcontinents':True, 'quiet':False,'basemap_plot':False}
-        >>> print kwfilter(kwargs,'basemap', defaults=dict(drawcoastlines=True,plot=True),good=True)
-        {'plot': False, 'fillcontinents': True, 'good': True, 'basemap': 'f', 'drawcoastlines': True}
-        >>> print kwargs
-        {'quiet': False}
+    Example
+    -------
+    >>> kwargs = {'basemap':'f', 'basemap_fillcontinents':True, 'quiet':False,'basemap_plot':False}
+    >>> print kwfilter(kwargs,'basemap', defaults=dict(drawcoastlines=True,plot=True),good=True)
+    {'plot': False, 'fillcontinents': True, 'good': True, 'basemap': 'f', 'drawcoastlines': True}
+    >>> print kwargs
+    {'quiet': False}
     """
 
     if isinstance(filters,str):
@@ -863,18 +922,22 @@ def kwfilter(*args, **kwargs):
 def dict_filter_out(kwargs, filters, copy=False, mode='start'):
     """Remove entries from a dictionary
 
-    :Params:
+    Parameters
+    ----------
+    kwargs:
+        Valid dictionary.
+    filters:
+        Single or list of prefixes. Entries with a key starting with
+        one of these filters are removed.
+    copy: optional
+        Create a copy or work on original dict?
+    mode: optional
+        Matching mode.
 
-        - **kwargs**: Valid dictionary.
-        - **filters**: Single or list of prefixes. Entries with a key starting with
-          one of these filters are removed.
-        - **copy**, optional: Create a copy or work on original dict?
-        - **mode**, optional: Matching mode.
-
-            - ``"start"``: remove if key starts with filter.
-            - ``"end"``: remove if key ends with filter.
-            - ``"regexp"``: remove if key match regexp match filter.
-            - else remove if key is exactly filter.
+        - ``"start"``: remove if key starts with filter.
+        - ``"end"``: remove if key ends with filter.
+        - ``"regexp"``: remove if key match regexp match filter.
+        - else remove if key is exactly filter.
     """
     if copy: kwargs = kwargs.copy()
     if isinstance(filters,str):
@@ -896,11 +959,11 @@ def dict_aliases(kwargs, aliases):
     """Remove duplicate entries in a dictionnary according to a list of aliases.
     The first alias has priority over the following.
 
-    :Example:
-
-        >>> kwargs = dict(min=4, title='Title', label='Label')
-        >>> dict_aliases(kwargs, ['label', 'title'])
-        {'min': 4, 'label': 'Label'}
+    Example
+    -------
+    >>> kwargs = dict(min=4, title='Title', label='Label')
+    >>> dict_aliases(kwargs, ['label', 'title'])
+    {'min': 4, 'label': 'Label'}
     """
     if isinstance(aliases, (str, unicode)):
         aliases = [aliases]
@@ -954,27 +1017,36 @@ def dict_merge(*dd, **kwargs):
 
     First dictionaries have to priority their followers
 
-    :Params:
+    Parameters
+    ----------
+    *dd:
+        Argument are interpreted as dictionary to merge.
+        Those who are not dictionaries are skipped.
+    mergesubdicts: optional
+        Also merge dictionary items
+        (like in a tree) [default: True].
+    mergetuples: optional
+        Also merge tuple items [default: False].
+    mergelists: optional
+        Also merge list items [default: False].
+    unique: optional
+        Uniquify lists and tuples [default: True].
+    skipnones: optional
+        Skip Nones [default: True].
+    skipempty: optional
+        Skip everything is not converted to False
+        using bool [default: False].
+    cls: optional
+        Class to use. Default to the first class found in arguments
+        that is not a :class:`dict`, else defaults to :class:`dict`.
 
-        - **dd**: Argument are interpreted as dictionary to merge.
-          Those who are not dictionaries are skipped.
-        - **mergesubdicts**, optional: Also merge dictionary items
-          (like in a tree) [default: True].
-        - **mergetuples**, optional: Also merge tuple items [default: False].
-        - **mergelists**, optional: Also merge list items [default: False].
-        - **unique**, optional: Uniquify lists and tuples [default: True].
-        - **skipnones**, optional: Skip Nones [default: True].
-        - **skipempty**, optional: Skip everything is not converted to False
-          using bool [default: False].
-        - **cls**, optional: Class to use. Default to the first class found in arguments
-          that is not a :class:`dict`, else defaults to :class:`dict`.
+    Example
+    -------
 
-    :Example:
-
-        >>> d1 = dict(a=3, b=5)
-        >>> d2 = dict(a=5, c=7)
-        >>> print dict_merge(d1,d2)
-        {'a': 3, 'c': 7, 'b': 5}
+    >>> d1 = dict(a=3, b=5)
+    >>> d2 = dict(a=5, c=7)
+    >>> print dict_merge(d1,d2)
+    {'a': 3, 'c': 7, 'b': 5}
 
     """
     # Options
@@ -1033,11 +1105,14 @@ def dict_merge(*dd, **kwargs):
 def dict_copy_items(ddi, ddo, keys):
     """Copy existing items of an array to another one
 
-    :Params:
-
-        - **ddi**: Dictionary from which items are taken.
-        - **ddo**: Dictionary in which items are put.
-        - **keys**: single or list of keys.
+    Parameters
+    ----------
+    ddi:
+        Dictionary from which items are taken.
+    ddo:
+        Dictionary in which items are put.
+    keys:
+        single or list of keys.
     """
     if isinstance(keys, basestring):
         keys = [keys]
@@ -1053,15 +1128,17 @@ def dict_copy_items(ddi, ddo, keys):
 def mask_nan(input):
     """Mask NaN from a variable
 
-    :Params:
+    Parameters
+    ----------
+    input:
+        Array (numpy, numpy.ma or MV2)
 
-        - **input**: Array (numpy, numpy.ma or MV2)
+    Note
+    ----
+    If input is pure numpy, it is converted to numpy.ma
 
-    .. note::
-
-        If input is pure numpy, it is converted to numpy.ma
-
-    :Example:
+    Example
+    -------
 
         >>> var = N.array([1,N.nan])
         >>> print mask_nan(var)
@@ -1107,11 +1184,14 @@ def mask_nan(input):
 def write_ascii_time1d(var,file,fmt='%g'):
     """Write an ascii file in the following format: YYY/MM/DD HH:MN:SS DATA where DATA is one column.
 
-    :Params:
-
-        - **var**: a cdms variable WITH A TIME AXIS
-        - **file**: output file name
-        - **fmt**, optional: format of DATA [default: '%g']
+    Parameters
+    ----------
+    var:
+        a cdms variable WITH A TIME AXIS
+    file:
+        output file name
+    fmt: optional
+        format of DATA [default: '%g']
     """
 
     import vacumm.misc.atime as T
@@ -1133,27 +1213,38 @@ def write_ascii_time1d(var,file,fmt='%g'):
 def xls_style(style=None,b=None,i=None,u=None,c=None,o=None,bd=None,fmt=None,va=None,ha=None, f=None, s=None, n=None, copy=True, **kwargs):
     """Excel style sheet for pyExcelerator cell objects
 
-    :Params:
+    Parameters
+    ----------
+    style: optional
+        Style object to update.
+    scopy: optional
+        Make a copy of ``style`` if passed.
+    b: optional
+        Bold [True/False].
+    i: optional
+        italic[True/False].
+    u: optional
+        Underline [True/False].
+    c: optional
+        Colour index [from 0 to 82!, with 0=black, 1=white, 2=red, 3=green, 4=blue, 5=yellow, 6=magenta, 7=cyan].
+    o: optional
+        Outline [True/False].
+    bd: optional
+        Borders [True/int/False/dict(top=int...)].
+    fmt: optional
+        Format ['general','0.0',...].
+    va: optional
+        Vertical alignment ['top','bottom','center','justified'].
+    ha: optional
+        Horizontal alignment ['left','right','center','justified'].
 
-        - **style**, optional: Style object to update.
-        - **scopy**, optional: Make a copy of ``style`` if passed.
-        - **b**, optional: Bold [True/False].
-        - **i**, optional: italic[True/False].
-        - **u**, optional: Underline [True/False].
-        - **c**, optional: Colour index [from 0 to 82!, with 0=black, 1=white, 2=red, 3=green, 4=blue, 5=yellow, 6=magenta, 7=cyan].
-        - **o**, optional: Outline [True/False].
-        - **bd**, optional: Borders [True/int/False/dict(top=int...)].
-        - **fmt**, optional: Format ['general','0.0',...].
-        - **va**, optional: Vertical alignment ['top','bottom','center','justified'].
-        - **ha**, optional: Horizontal alignment ['left','right','center','justified'].
+    Example
+    -------
+    >>> style_num = xls_style(fmt='0.00')
+    >>> style_num_left = xls_style(style_num, left=2, copy=True)
+    >>> style_full = xls_style(c=2, b=True, va='center', ha='justified')
 
-    :Example:
-
-        >>> style_num = xls_style(fmt='0.00')
-        >>> style_num_left = xls_style(style_num, left=2, copy=True)
-        >>> style_full = xls_style(c=2, b=True, va='center', ha='justified')
-
-    :Tutorial: :ref:`user.tut.misc.io.xls`
+    Tutorial: :ref:`user.tut.misc.io.xls`
     """
     try:
         from pyExcelerator import XFStyle,Borders,Alignment, Font
@@ -1216,13 +1307,18 @@ def xls_style(style=None,b=None,i=None,u=None,c=None,o=None,bd=None,fmt=None,va=
 class FileTree(object):
     """Build a file tree
 
-    :Params:
-
-        - **input_dir**: Input directory.
-        - **patterns**, optional: A string (or a list of strings) indicating which REGULAR EXPRESSION patterns files must match (using glob.glob) [default: '.*']
-        - **exclude**, optional:: A string (or a list of strings) indicating which REGULAR EXPRESSION patterns files must not match (using re.search) [default: ['CVS/','.svn/']]
-        - **include**, optional:: A string (or a list of strings) indicating which REGULAR EXPRESSION patterns files must match if they are excluded by 'exclude' patterns (using re.search) [default: None]
-        - **relative**, optional:: Return file names relative to input_dir [default: False]
+    Parameters
+    ----------
+    input_dir:
+        Input directory.
+    patterns: optional
+        A string (or a list of strings) indicating which REGULAR EXPRESSION patterns files must match (using glob.glob) [default: '.*']
+    exclude: optional
+        : A string (or a list of strings) indicating which REGULAR EXPRESSION patterns files must not match (using re.search) [default: ['CVS/','.svn/']]
+    include: optional
+        : A string (or a list of strings) indicating which REGULAR EXPRESSION patterns files must match if they are excluded by 'exclude' patterns (using re.search) [default: None]
+    relative: optional
+        : Return file names relative to input_dir [default: False]
     """
     default_patterns = dict(patterns=['.*'],exclude=['~$','^CVS$/','^\.svn$/','^\.DS_Store$','\.db$','\.ini$'],include=[],)
 
@@ -1386,7 +1482,8 @@ def main_geodir(directions, amp=None, num=False, res=22.5, getamp=False, **kwarg
 def intersect(seg1,seg2,length=False):
     """Intersection of two segments
 
-    :Example:
+    Example
+    -------
 
         >>> intersect([1,10],(5,12))
         [5, 10]
@@ -1442,10 +1539,11 @@ def get_svn_revision(path, max=False):
 def dirsize(folder, units='b'):
     """Get the size of a directory
 
-    :Params:
-
-        - **folder**: path of the directory
-        - **units**, optional:
+    Parameters
+    ----------
+    folder:
+        path of the directory
+    units: optional
 
             - ``"b"``: bytes
             - ``"k"``: Kb
@@ -1469,12 +1567,16 @@ def dirsize(folder, units='b'):
 def closeto(a, b, rtol=1.e-5, atol=1.e-8):
     """Check which values of a numeric array are close to those of another array
 
-    :Params:
+    Parameters
+    ----------
+    a:
+        A :class:`numpy.ndarray` variable.
+    b:
+        Another array.
 
-        - **a**: A :class:`numpy.ndarray` variable.
-        - **b**: Another array.
-
-    :See also: :func:`~numpy.allclose`
+    See also
+    --------
+    :func:`~numpy.allclose`
     """
     mask = N.ma.nomask
     if N.ma.isMA(a):
@@ -1587,16 +1689,18 @@ def _returnbox_(oldbox, newbox):
 def scalebox(box, factor, square=False, xmargin=None, ymargin=None):
     """Alter box limits with a zoom factor
 
-    :Params:
+    Parameters
+    ----------
+    box:
+        A list of ``[xmin,ymin,xmax,ymax]``.
+    factor:
+        Zoom factor where 1 means no change,
+        and a factor < 1 means a smaller box.
 
-        - **box**: A list of ``[xmin,ymin,xmax,ymax]``.
-        - **factor**: Zoom factor where 1 means no change,
-          and a factor < 1 means a smaller box.
-
-    :Example:
-
-        >>> scalebox([0,0,1,2], 1.1)
-        [-0.55, -1.10, 1.55, 2.55]
+    Example
+    -------
+    >>> scalebox([0,0,1,2], 1.1)
+    [-0.55, -1.10, 1.55, 2.55]
     """
     # Scale
     xmin, ymin, xmax, ymax = _box2xyminmax_(box)
@@ -1661,21 +1765,24 @@ def history(nbcommand=None):
 def create_selector(*args, **kwargs):
     """Create a :class:`cdms2.selectors.Selector`
 
-    :Params:
+    Parameters
+    ----------
 
-        - **args**: Each item of args is treated in a special way:
+    *args:
+        Each item of args is treated in a special way:
 
-            - A dictionary is treated using: ``selector.refine(**args[i])``
-            - A list  is treated using: ``selector.refine(*args[i])``
-            - Else (single slice, tuple, etc): ``selector.refine(args[i])``
+        - A dictionary is treated using: ``selector.refine(**args[i])``
+        - A list  is treated using: ``selector.refine(*args[i])``
+        - Else (single slice, tuple, etc): ``selector.refine(args[i])``
 
-        - **kwargs**: Items are integrated using: ``selector.refine(**kwargs)``
+    **kwargs:
+        Items are integrated using: ``selector.refine(**kwargs)``
 
-    :Examples:
-
-        >>> create_selector((time1,time2),slice(0,1),lat=(lat1,lat2))
-        >>> create_selector([(time1,time2),(lat1,lat2)],(lon1,lon2))
-        >>> selector2 = create_selector(selector1, lon=(lon1,lon2))
+    Examples
+    --------
+    >>> create_selector((time1,time2),slice(0,1),lat=(lat1,lat2))
+    >>> create_selector([(time1,time2),(lat1,lat2)],(lon1,lon2))
+    >>> selector2 = create_selector(selector1, lon=(lon1,lon2))
     """
     selector = cdms2.selectors.Selector()
     for arg in args:
@@ -1694,11 +1801,11 @@ def create_selector(*args, **kwargs):
 def selector2str(selector):
     """Convert a selector to a generic string where <obj ...> labels are removed
 
-    :Example:
-
-        >>> sel = cdms2.selectors.Selector(slice(2,5),time=(4,6))
-        >>> selector2str(sel)
-        '((slice(2, 5, None)),("time", (4, 6)))'
+    Example
+    -------
+    >>> sel = cdms2.selectors.Selector(slice(2,5),time=(4,6))
+    >>> selector2str(sel)
+    '((slice(2, 5, None)),("time", (4, 6)))'
     """
     if not isinstance(selector, cdms2.selectors.Selector):
         selector = create_selector(selector)
@@ -1712,18 +1819,22 @@ def selector2str(selector):
 def split_selector(selector):
     """Split a selector into (positionalComponents, axisComponents).
 
-    :Params:
-        - **selector**: cdms2.selectors.Selector
+    Parameters
+    ----------
+    selector:
+        cdms2.selectors.Selector
 
-    :Return: a tuple of:
+    Return
+    ------
+    a tuple of:
         - the list of positionalComponents
         - the dict of axisComponents
 
-    :Exemple:
-
-        >>> selector = cdms2.selectors.Selector(slice(2,5),time=(4,6))
-        >>> split_selector(selector)
-        ((slice(2, 5, None),), {'time': (4, 6)})
+    Example
+    -------
+    >>> selector = cdms2.selectors.Selector(slice(2,5),time=(4,6))
+    >>> split_selector(selector)
+    ((slice(2, 5, None),), {'time': (4, 6)})
 
     """
     posed = []
@@ -1738,15 +1849,21 @@ def split_selector(selector):
 def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False, noslice=False):
     """Filter a :class:`cdms2.selectors.Selector` instance to keep only a list of ids
 
-    :Params:
-
-        - **selector**: A :class:`cdms2.selectors.Selector` instance.
-        - **ids**, optional: Allowed ids.
-        - **copy**, optional: Filter original or copy?
-        - **out**, optional: Filter in (keep target selections)
-          or out(remove target selections)?
-        - **keeppos**, optional: Keep positional components?
-        - **noslice**, optional: Remove slices?
+    Parameters
+    ----------
+    selector:
+        A :class:`cdms2.selectors.Selector` instance.
+    ids: optional
+        Allowed ids.
+    copy: optional
+        Filter original or copy?
+    out: optional
+        Filter in (keep target selections)
+        or out(remove target selections)?
+    keeppos: optional
+        Keep positional components?
+    noslice: optional
+        Remove slices?
     """
     if not isinstance(selector, cdms2.selectors.Selector):
         selector = create_selector(selector)
@@ -1785,25 +1902,27 @@ def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False, nos
 def squeeze_variable(var, spec=True, asmv=False):
     """Remove singleton axes from a MV2 variable
 
-    :Params:
-
-        - **var**: MV2 array.
-        - **spec**, optional: Squeeze specification.
+    Parameters
+    ----------
+    var:
+        MV2 array.
+    spec: optional
+        Squeeze specification.
 
             - ``True`` or ``None``: Simply squeeze out all singletons.
             - ``False``: Does nothing (return the same variable).
             - A string containing geo letters like 'xyzt' to remove
               axes according to their type.
 
-        - **asmv**, optional: If True and input is a MV2 array,
-          always return a MV2 array, even if all
-          result is a scalar value or masked.
+    asmv: optional
+        If True and input is a MV2 array,
+        always return a MV2 array, even if all
+        result is a scalar value or masked.
 
-
-    :Examples:
-
-        >>> squeeze_variable(var)
-        >>> squeeze_variable(var, spec='tx')
+    Examples
+    --------
+    >>> squeeze_variable(var)
+    >>> squeeze_variable(var, spec='tx')
     """
     # Nothing to do
     if spec is False or spec==0 or not isinstance(var, N.ndarray):
@@ -1874,20 +1993,27 @@ def grow_variables(var1, var2):
 def grow_depth(var, depth=None, mode=None, default=0., getvar=True):
     """Make depth and variable have the same shape
 
-    :Params:
+    Parameters
+    ----------
 
-        - **var**: A MV2 array with a depth dimension.
-        - **depth**, optional: Depth axis or array. If None,
-          it is guessed from var. If not found, it defaults to ``default``.
-        - **default**, optional: Default value for depth if not found.
-        - **mode**, optional: How to handle case where shape of var
-          is changed:
+    var:
+        A MV2 array with a depth dimension.
+    depth: optional
+        Depth axis or array. If None,
+        it is guessed from var. If not found, it defaults to ``default``.
+    default: optional
+        Default value for depth if not found.
+    mode: optional
+        How to handle case where shape of var
+        is changed:
 
             - ``None``: Nothing happens
             - ``"warn"``: A warning with :func:`~warnings.warn`.
             - ``"raise"``: Raise a :exc:`~VACUMMError` exception.
 
-    :Return: ``var, depth`` where ``depth`` may be a scalar equal to ``default``
+    Return
+    ------
+    ``var, depth`` where ``depth`` may be a scalar equal to ``default``
     """
     if depth is None:
         depth = var.getLevel()
@@ -1912,20 +2038,26 @@ def grow_depth(var, depth=None, mode=None, default=0., getvar=True):
 def grow_lat(var, lat=None, mode=None, default=None, getvar=True):
     """Make latitude and variable have the same shape
 
-    :Params:
-
-        - **var**: A MV2 array with a lat dimension.
-        - **depth**, optional: Latitude axis or array. If None,
-          it is guessed from var.
-        - **default**, optional: Default value for lat if not found.
-        - **mode**, optional: How to handle case where shape of var
-          is changed:
+    Parameters
+    ----------
+    var:
+        A MV2 array with a lat dimension.
+    depth: optional
+        Latitude axis or array. If None,
+        it is guessed from var.
+    default: optional
+        Default value for lat if not found.
+    mode: optional
+        How to handle case where shape of var
+        is changed:
 
             - ``None``: Nothing happens
             - ``"warn"``: A warning with :func:`~warnings.warn`.
             - ``"raise"``: Raise a :exc:`~VACUMMError` exception.
 
-    :Return: ``var, lat where lat may be ``None``
+    Return
+    ------
+    ``var, lat where lat may be ``None``
     """
     if lat is None:
         lat = var.getLatitude()
@@ -1978,21 +2110,21 @@ def N_choose(a, choices, out=None, mode='raise'):
 class ArgList(object):
     """Utility to always manage arguments as list and return results as input
 
-    :Examples:
+    Examples
+    --------
+    >>> a = 'a'
+    >>> al = ArgList(a)
+    >>> al.get() # input for function as list
+    ['a']
+    >>> al.put(['aa']) # output as input
+    'aa'
 
-        >>> a = 'a'
-        >>> al = ArgList(a)
-        >>> al.get() # input for function as list
-        ['a']
-        >>> al.put(['aa']) # output as input
-        'aa'
-
-        >>> a = ['a','b']
-        >>> al = ArgList(a)
-        >>> al.get()
-        ['a', 'b']
-        >>> al.put(['aa'])
-        ['aa']
+    >>> a = ['a','b']
+    >>> al = ArgList(a)
+    >>> al.get()
+    ['a', 'b']
+    >>> al.put(['aa'])
+    ['aa']
 
     """
     def __init__(self, argsi):
@@ -2029,9 +2161,13 @@ def set_lang_fr(ennum=True):
 def numod(*vv):
     """Get the needed numeric module to be able to handle all specified variables
 
-    :Params: Scalars or numeric arrays.
+    Parameters
+    ----------
+    Scalars or numeric arrays.
 
-    :Return: :mod:`numpy`, :mod:`numpy.ma` or :mod:`MV2`.
+    Return
+    ------
+    :mod:`numpy`, :mod:`numpy.ma` or :mod:`MV2`.
     """
     nm = N
     for v in vv:
@@ -2043,14 +2179,18 @@ def numod(*vv):
 def checkdir(path, asfile=None, chmod=None):
     """Make sure that a directory exists and has right access
 
-    :Params:
+    Parameters
+    ----------
+    path:
+        Directory of file path.
+    asfile: optional
+        Interpret ``path`` as file name instead of a
+        directory name. When ``None``, it is set to ``True`` if it has a dot
+        (``"."``) inside.
 
-        - **path**: Directory of file path.
-        - **asfile**, optional: Interpret ``path`` as file name instead of a
-          directory name. When ``None``, it is set to ``True`` if it has a dot
-          (``"."``) inside.
-
-      :Return: The directory name.
+    Return
+    ------
+    The directory name.
     """
     if asfile is None:
         asfile = '.' in path
@@ -2068,7 +2208,8 @@ def checkdir(path, asfile=None, chmod=None):
 def nduniq(data, axis=0):
     """Remove duplicates in a numpy array along a given axis
 
-    :Example:
+    Example
+    -------
 
     >>> import numpy as N
     >>> a = N.arange(20.).reshape((10,2))
@@ -2096,8 +2237,6 @@ def nduniq(data, axis=0):
 
 def splitidx(arr, crit):
     """Return a list of split indices for a 1d array according to a criteria
-
-
 
     Params
     ------

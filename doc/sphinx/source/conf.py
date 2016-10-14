@@ -39,6 +39,7 @@ extensions = [
         'sphinx.ext.ifconfig',
         'sphinx.ext.extlinks',
         'sphinx.ext.viewcode',
+        'sphinx.ext.napoleon',
         'sphinxcontrib.cheeseshop',
         'sphinxcontrib.ansi',
         'sphinxcontrib.programoutput',

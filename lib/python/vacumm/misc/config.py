@@ -101,13 +101,20 @@ def _valwraplist_(validator):
     '''
     Wrap a validation function to handle list value using an existing validator.
     This adds the following list checking behaviors that can be used as named
-    arguments in specifications:
-        - **n**: required fixed number of elements
-        - **nmin**: required minimum number of elements
-        - **nmax**: required maximum number of elements
-        - **odd**: number of elements must be odd
-        - **even**: number of elements must be even
-        - **shape**: check value shape (requires numpy)
+    arguments in specifications
+
+    n:
+        required fixed number of elements
+    nmin:
+        required minimum number of elements
+    nmax:
+        required maximum number of elements
+    odd:
+        number of elements must be odd
+    even:
+        number of elements must be even
+    shape:
+        check value shape (requires numpy)
     '''
     def list_validator_wrapper(value, *args, **kwargs):
         # Handle None and default
@@ -295,7 +302,8 @@ def _validator_workdir_(value, default=''):
 def _validator_path_(value, default='', expand=None):
     '''
     Parse a value as a path
-    :Params:
+    Parameters
+    ----------
         -- **expand**: expandvars and expandhome on loaded path
 
     **Warning: expand currently can't work with interpolation**
@@ -423,27 +431,35 @@ class ConfigManager(object):
     """A configuration management class based on a configuration specification file
     and a :class:`validate.Validator`
 
-    :Example:
+    Example
+    -------
+    >>> Cfg = Config('config.ini', interpolation='template')
+    >>> Cfg.opt_parse()
+    >>> cfg = Cfg.load('config.cfg')
 
-        >>> Cfg = Config('config.ini', interpolation='template')
-        >>> Cfg.opt_parse()
-        >>> cfg = Cfg.load('config.cfg')
-
-    :See also: :class:`configobj.ConfigObj` and :class:`validate.Validator`
+    See also
+    --------
+    :class:`configobj.ConfigObj` and :class:`validate.Validator`
 
     """
     def __init__(self, cfgspecfile=None, validator=None, interpolation='template',
             encoding=None, boolean_false=True, splitsecdesc=False, cfgfilter=None,
             cfgfilter_default=False):
         '''
-        :Params:
-            - **cfgspecfile**, optional: The specification file to be used with this.
-            - **validator**, optional: A custom :class:`validate.Validator`
-              to use or a mapping dict of validator functions.
-            - **interpolation**, optional: See :class:`configobj.ConfigObj`.
-            - **boolean_false**, optional: Make sure that booleans have a default value.
-            - **splitsecdesc**, optional: Section descriptions are split in two
-              components separated by ':'.
+        Parameters
+        ----------
+        cfgspecfile: optional
+            The specification file to be used with this.
+        validator: optional
+            A custom :class:`validate.Validator`
+            to use or a mapping dict of validator functions.
+        interpolation: optional
+            See :class:`configobj.ConfigObj`.
+        boolean_false: optional
+            Make sure that booleans have a default value.
+        splitsecdesc: optional
+            Section descriptions are split in two
+            components separated by ':'.
         '''
         # Specifications
         self._encoding = encoding
@@ -504,13 +520,17 @@ class ConfigManager(object):
     def defaults(self, nocomments=False, interpolation=None):
         """Get the default config
 
-        :Params:
+        Parameters
+        ----------
+        nocomments: optional
+            Do not include option comments in config file.
+            If equal to 2, remove section comments too.
+        interpolation: optional
+            if True, interpolate values.
 
-            - **nocomments**, optional: Do not include option comments in config file.
-              If equal to 2, remove section comments too.
-            - **interpolation**, optional: if True, interpolate values.
-
-        :Return: A :class:`~configobj.ConfigObj` instance
+        Return
+        ------
+        A :class:`~configobj.ConfigObj` instance
         """
         if interpolation is None or interpolation is True: interpolation = self._interpolation
         cfg = ConfigObj(interpolation=interpolation, configspec=self._configspec,
@@ -525,15 +545,22 @@ class ConfigManager(object):
     def reset(self, cfgfile='config.cfg', backup=True, nocomments=True, verbose=True):
         """Reset a config file  to default values
 
-        :Params:
+        Parameters
+        ----------
+        cfgfile: optional
+            The configuration file to reset.
+        backup: optional
+            Backup the old config file.
+        nocomments: optional
+            Do not include comment in config file.
 
-            - **cfgfile**, optional: The configuration file to reset.
-            - **backup**, optional: Backup the old config file.
-            - **nocomments**, optional: Do not include comment in config file.
+        Return
+        ------
+        A :class:`~configobj.ConfigObj` instance
 
-        :Return: A :class:`~configobj.ConfigObj` instance
-
-        :See also: :meth:`defaults`
+        See also
+        --------
+        :meth:`defaults`
         """
 
         # Load defaults
@@ -560,26 +587,33 @@ class ConfigManager(object):
         validate='fix', geterr=False, patch=None, force=True, cfgfilter=False, **kwpatch):
         """Get a :class:`~configobj.ConfigObj` instance loaded from a file
 
-        :Params:
+        Parameters
+        ----------
+        cfgfile: optional
+            config file
 
-            - **cfgfile**, optional: config file
+            - a config file name
+            - a :class:`~configobj.ConfigObj` instance
+            - ``None``: defaults to ``"config.cfg"``
 
-                - a config file name
-                - a :class:`~configobj.ConfigObj` instance
-                - ``None``: defaults to ``"config.cfg"``
+        validate: optional
+            Type of validation
 
-            - **validate**, optional: Type of validation
+            - ``False``: no validation
+            - ``"fix"``: validation fixes and reports errors
+            - ``"report"``: validation reports errors
+            - ``"raise"``: validation raises errors
 
-                - ``False``: no validation
-                - ``"fix"``: validation fixes and reports errors
-                - ``"report"``: validation reports errors
-                - ``"raise"``: validation raises errors
+        geterr: optional
+            Return validation results as well
+        force: optional
+            Force re-instantiation of ``cfgfile`` when it is already
+            a :class:`ConfigObj` instance.
 
-            - **geterr**, optional: Return validation results as well
-            - **force**, optional: Force re-instantiation of ``cfgfile`` when it is already
-              a :class:`ConfigObj` instance.
-
-        :Return: Depends on ``geterr``
+        Return
+        ------
+        tuple, :class:`~configobj.ConfigObj`
+            Depends on ``geterr``
 
             - if ``True``: ``(cfg, err)`` where is the result of :meth:`~configobj.ConfigObj.validate`
             - else: ``cfg`` (:class:`~configobj.ConfigObj` instance)
@@ -674,13 +708,16 @@ class ConfigManager(object):
     def patch(self, cfg, cfgpatch, validate=False):
         """Replace config values of ``cfg`` by those of ``cfgpatch``
 
-        :Params:
-
-            - **cfg**: A :class:`~configobj.ConfigObj` instance, a config file or
-              a dictionary, that must be patched.
-            - **cfgpatch**: A :class:`~configobj.ConfigObj` instance, a config file or
-              a dictionary, used for patching.
-            - **validate**, optional: If ``True``, validate configs if they have a valid config spec.
+        Parameters
+        ----------
+        cfg:
+            A :class:`~configobj.ConfigObj` instance, a config file or
+            a dictionary, that must be patched.
+        cfgpatch:
+            A :class:`~configobj.ConfigObj` instance, a config file or
+            a dictionary, used for patching.
+        validate: optional
+            If ``True``, validate configs if they have a valid config spec.
         """
         if not isinstance(cfg, ConfigObj):
             cfg = ConfigObj(cfg, configspec=self._configspec, encoding=self._encoding)#, interpolation=False)
@@ -723,38 +760,58 @@ class ConfigManager(object):
             section and option names.
 
 
-        :Params:
-
-            - **parser**: optional, a default one is created if not given. This can be:
+        Parameters
+        ----------
+        parser:
+            optional, a default one is created if not given. This can be:
                 - a :class:`OptionParser` instance
                 - a :class:`dict` with keyword arguments for the one to be created
-            - **exc**, optional: List of keys to be excluded from parsing.
-            - **parse**, optional: If ``True``, parse commande line options and arguments
-            - **args**, optional: List of arguments to parse instead of default sys.argv[1:]
-            - **getparser**: allow getting the parser in addition to the config if parse=True
-            - **getargs**: allow getting the parsed arguments in addition to the config if parse=True
-            - **patch**, optional: used if parse is True.
-                Can take the following values:
-                - a :class:`bool` value indicating wheter to apply defaults on the returned config
-                  before applying the command line config
-                - a :class:`ConfigObj` instance to apply on the returned config
-                  before applying the command line config
-            - **cfgfileopt**: optional, if present a config file option will be added.
-                Can be a :class:`string` or couple of strings to use as the option short and/or long name
-            - **cfgfilepatch**: specify if the returned config must be patched if a config file command
-                line option is provided and when to patch it. Can take the following values:
-                - True or 'before': the config file would be used before command line options
-                - 'after': the config file would be used after command line options
-                - Any False like value: the config file would not be used
-            - **nested**: Name of a section whose defines the configuration.
-              It must be used when the configuration in nested in more general configuration.
-            - **extraopts**: Extra options to declare in the form
-              ``[(args1, kwargs1), ((args2, kwargs2), ...]``
+        exc: optional
+            List of keys to be excluded from parsing.
+        parse: optional
+            If ``True``, parse commande line options and arguments
+        args: optional
+            List of arguments to parse instead of default sys.argv[1:]
+        getparser:
+            allow getting the parser in addition to the config if parse=True
+        getargs:
+            allow getting the parsed arguments in addition to the config if parse=True
+        patch: optional
+            used if parse is True.
+            Can take the following values:
 
-        :Return:
-            - the :class:`OptionParser` if parse is False
-            - the resulting :class:`~configobj.ConfigObj` if parse is True and getparser is not True
-            - the resulting :class:`~configobj.ConfigObj` and the :class:`OptionParser` if both parse and getparser are True
+            - a :class:`bool` value indicating wheter to apply defaults on the returned config
+              before applying the command line config
+            - a :class:`ConfigObj` instance to apply on the returned config
+              before applying the command line config
+
+        cfgfileopt:
+            optional, if present a config file option will be added.
+                Can be a :class:`string` or couple of strings to use as the option short and/or long name
+        cfgfilepatch:
+            specify if the returned config must be patched if a config file command
+            line option is provided and when to patch it. Can take the following values:
+
+            - True or 'before': the config file would be used before command line options
+            - 'after': the config file would be used after command line options
+            - Any False like value: the config file would not be used
+
+        nested:
+            Name of a section whose defines the configuration.
+            It must be used when the configuration in nested in more general configuration.
+        extraopts:
+            Extra options to declare in the form
+            ``[(args1, kwargs1), ((args2, kwargs2), ...]``
+
+        Return
+        ------
+        :class:`OptionParser`
+            if parse is False
+        :class:`~configobj.ConfigObj`
+
+            if parse is True and getparser is not True
+        (:class:`~configobj.ConfigObj`, :class:`OptionParser`)
+            if both parse and getparser are True
         """
 
         # Prepare the option parser
@@ -888,7 +945,10 @@ class ConfigManager(object):
     def arg_patch(self, parser, exc=[], cfgfileopt='cfgfile'):
         """Call to :meth:`arg_parse` with an automatic patching of current configuration
 
-        :Return: ``cfg, args``
+        Return
+        ------
+        :class:`~configobj.ConfigObj`
+        :class:`OptionParser`
         """
 
         # Create a patch configuration from commandline arguments
@@ -929,33 +989,49 @@ class ConfigManager(object):
             section and option names.
 
 
-        :Params:
+        Parameters
+        ----------
 
-            - **parser**: optional, a default one is created if not given. This can be:
-                - a :class:`OptionParser` instance
-                - a :class:`dict` with keyword arguments for the one to be created
-            - **exc**, optional: List of keys to be excluded from parsing.
-            - **parse**, optional: If ``True``, parse commande line options and arguments
-            - **args**, optional: List of arguments to parse instead of default sys.argv[1:]
-            - **getparser**: allow getting the parser in addition to the config if parse=True
-            - **patch**, optional: used if parse is True.
-                Can take the following values:
-                - a :class:`bool` value indicating wheter to apply defaults on the returned config
-                  before applying the command line config
-                - a :class:`ConfigObj` instance to apply on the returned config
-                  before applying the command line config
-            - **cfgfileopt**: optional, if present a config file option will be added.
-                Can be a :class:`string` or couple of strings to use as the option short and/or long name
-            - **cfgfilepatch**: specify if the returned config must be patched if a config file command
-                line option is provided and when to patch it. Can take the following values:
-                - True or 'before': the config file would be used before command line options
-                - 'after': the config file would be used after command line options
-                - Any False like value: the config file would not be used
+        parser:optional, :class:`OptionParser`, :class:`dict`
+            a default one is created if not given. This can be:
+            - a :class:`OptionParser` instance
+            - a :class:`dict` with keyword arguments for the one to be created
+        exc: optional
+            List of keys to be excluded from parsing.
+        parse: optional
+            If ``True``, parse commande line options and arguments
+        args: optional
+            List of arguments to parse instead of default sys.argv[1:]
+        getparser: bool
+            Allow getting the parser in addition to the config if parse=True
+        patch: optional, :class:`bool`, :class:`ConfigObj`
+            used if parse is True.
+            Can take the following values:
 
-        :Return:
-            - the :class:`OptionParser` if parse is False
-            - the resulting :class:`~configobj.ConfigObj` if parse is True and getparser is not True
-            - the resulting :class:`~configobj.ConfigObj` and the :class:`OptionParser` if both parse and getparser are True
+            - a :class:`bool` value indicating wheter to apply defaults on the returned config
+              before applying the command line config
+            - a :class:`ConfigObj` instance to apply on the returned config
+              before applying the command line config
+
+        cfgfileopt: optional
+            If present a config file option will be added.
+            Can be a :class:`string` or couple of strings to use as the option short and/or long name
+        cfgfilepatch:
+            specify if the returned config must be patched if a config file command
+            line option is provided and when to patch it. Can take the following values:
+
+            - True or 'before': the config file would be used before command line options
+            - 'after': the config file would be used after command line options
+            - Any False like value: the config file would not be used
+
+        Return
+        ------
+        :class:`OptionParser`
+            if parse is False
+        :class:`~configobj.ConfigObj`
+            if parse is True and getparser is not True
+        :class:`~configobj.ConfigObj`, :class:`OptionParser`
+            if both parse and getparser are True
         """
 
         # Prepare the option parser
@@ -1080,7 +1156,9 @@ class ConfigManager(object):
     def opt_patch(self, parser, exc=[], cfgfileopt='cfgfile'):
         """Call to :meth:`arg_parse` with an automatic patching of current configuration
 
-        :Return: ``cfg, args``
+        Return
+        ------
+        ``cfg, args``
         """
 
         # Create a patch configuration from commandline arguments
@@ -1102,9 +1180,10 @@ class ConfigManager(object):
         description="Long help based on config specs"):
         """Get the generic long help from config specs
 
-        :Params:
-
-            - **rst**, optional: Reformat output in rst.
+        Parameters
+        ----------
+        rst: optional
+            Reformat output in rst.
         """
 
         # Standard options
@@ -1131,9 +1210,10 @@ class ConfigManager(object):
         description="Long help based on config specs"):
         """Get the generic long help from config specs
 
-        :Params:
-
-            - **rst**, optional: Reformat output in rst.
+        Parameters
+        ----------
+        rst: optional
+            Reformat output in rst.
         """
 
         # Standard options
@@ -1177,10 +1257,12 @@ def filter_section(sec, cfgfilter, default=False):
     this subsection is filtered in the same way with the value as restrictions
     (``cfgfilter[subsection]``).
 
-    :Params:
-
-        - **sec**: A :class:`configobj.Section` instance.
-        - **cfgfilter**: A dictionary tree with the same structure as ``sec``.
+    Parameters
+    ----------
+    sec:
+        A :class:`configobj.Section` instance.
+    cfgfilter:
+        A dictionary tree with the same structure as ``sec``.
 
     """
     # Default behavior
@@ -1208,21 +1290,29 @@ def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
         exc=[], extraopts=None, **kwargs):
     """Merge configuration and commandline arguments
 
-    :Params:
+    Parameters
+    ----------
+    cfgspecfile:
+        Config specification file (.ini).
+    parser:
+        :class:`~argpase.ArgumentParser` instance.
+    cfgfileopt: optional
+        Name of the option used to specify the
+        user config file. Example: ``'cfgfile'`` creates the option
+        ``--cfgfile=<config file>``.
+    cfgfile: optional
+        Default name for the loaded config file.
+    exc: optional
+        Config option name that must not be used to generated
+        a commandline option.
+    **kwargs
+        Extra params are passed to :class:`ConfigManager` initialization.
 
-        - **cfgspecfile**: Config specification file (.ini).
-        - **parser**: :class:`~argpase.ArgumentParser` instance.
-        - **cfgfileopt**, optional: Name of the option used to specify the
-          user config file. Example: ``'cfgfile'`` creates the option
-          ``--cfgfile=<config file>``.
-        - **cfgfile**, optional: Default name for the loaded config file.
-        - **exc**, optional: Config option name that must not be used to generated
-          a commandline option.
-        - Extra params are passed to :class:`ConfigManager` initialization.
+    Return
+    ------
+    :class:`ConfigObj`
 
-    :Return: A :class:`ConfigObj` object
-
-    :Tasks:
+    Tasks:
 
         1. Initialize a default configuration (:class:`ConfigManager`)
            from the specification file given by ``cfgspecfile``.
@@ -1242,19 +1332,25 @@ def cfgoptparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
     exc=[], **kwargs):
     """Merge configuration and commandline arguments
 
-    :Params:
+    Parameters
+    ----------
+    cfgspecfile:
+        Config specification file (.ini).
+    parser:
+        :class:`~argpase.ArgumentParser` instance.
+    cfgfileopt: optional
+        Name of the option used to specify the
+        user config file. Example: ``'cfgfile'`` creates the option
+        ``--cfgfile=<config file>``.
+    cfgfile: optional
+        Default name for the loaded config file.
+    exc: optional
+        Config option name that must not be used to generated
+        a commandline option.
+    **kwargs
+        Extra params are passed to :class:`ConfigManager` initialization.
 
-        - **cfgspecfile**: Config specification file (.ini).
-        - **parser**: :class:`~argpase.ArgumentParser` instance.
-        - **cfgfileopt**, optional: Name of the option used to specify the
-          user config file. Example: ``'cfgfile'`` creates the option
-          ``--cfgfile=<config file>``.
-        - **cfgfile**, optional: Default name for the loaded config file.
-        - **exc**, optional: Config option name that must not be used to generated
-          a commandline option.
-        - Extra params are passed to :class:`ConfigManager` initialization.
-
-    :Tasks:
+    Tasks:
 
         1. Initialize a default configuration (:class:`ConfigManager`)
            from the specification file given by ``cfgspecfile``.
@@ -1275,12 +1371,17 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
 
     This is useful for autodocumenting executable python scripts that show a formatted help.
 
-    :Params:
+    Parameters
+    ----------
+    shelp:
+        Help string showing options (results from :option:``--help``).
+    prog: optional
+        Program name, otherwise guess it from usage.
 
-        - **shelp**: Help string showing options (results from :option:``--help``).
-        - **prog**, optional: Program name, otherwise guess it from usage.
-
-    :Output: String converted to rst format (with :rst:dir:`cmdoption` directives).
+    Return
+    ------
+    string
+        String converted to rst format (with :rst:dir:`cmdoption` directives).
 
     """
     rhelp = []
@@ -1378,29 +1479,45 @@ def getspec(spec, validator=None):
         '''
         Get an option specification.
 
-        :Params:
-            - **spec**: the specification string
-            - **validator**: (optional) the validator to use
+        Parameters
+        ----------
+        spec:
+            the specification string
+        validator:
+            (optional) the validator to use
 
-        :Return: A dict with keys:
-            - **funcname**: the validation function name
-            - **args**:  the positionnal arguments
-            - **kwargs**: the named arguments
-            - **default**: the default value
-            - **iterable**: if the value is list-like
-            - **func**: the validation function
-            - **opttype**: the function used with :mod:`optparse`
-            - **argtype**: the function used with :mod:`argparse`
+        Return
+        ------
+        dict
+            A dict with keys:
+            funcname:
+                the validation function name
+            args:
+                the positionnal arguments
+            kwargs:
+                the named arguments
+            default:
+                the default value
+            iterable:
+                if the value is list-like
+            func:
+                the validation function
+            opttype:
+                the function used with :mod:`optparse`
+            argtype:
+                the function used with :mod:`argparse`
 
         Read access to these keys can also be done as attribute of the returned dict
         (d.funcname == d['funcname'], ...)
 
-        For example, a specification file containing:
+        For example, a specification file containing::
 
-        [section]
-            option = integer(default=0, min=-10, max=10)
+            [section]
+                option = integer(default=0, min=-10, max=10)
 
-        Would return: (integer, [], {'min': '-10', 'max': '10'}, 0)
+        Would return::
+
+            (integer, [], {'min': '-10', 'max': '10'}, 0)
 
         This can be usefull when you added extraneous named arguments into your
         specification file for your own use.
@@ -1557,14 +1674,15 @@ def _shelp_(sec, key, format='%(shelp)s [default: %(default)r]', mode='auto',
     undoc='Undocumented', adddot=True):
     """Get help string
 
-    :Params:
+    Parameters
+    ----------
 
-        - **mode**:
+    mode: string
 
-            - inline: inline comment only,
-            - above: above comments only,
-            - merge: merge inline and above comments,
-            - auto: if one is empty use the other one, else use inline
+        - inline: inline comment only,
+        - above: above comments only,
+        - merge: merge inline and above comments,
+        - auto: if one is empty use the other one, else use inline
 
     """
     # filter
@@ -1766,13 +1884,17 @@ def cfg2rst(cfg):
 
     Then one can reference an option with for example ``:confopt:`[s1][s2]c`.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **cfg**: :class:`ConfigObj` or :class:`ConfigManager` instance.
-          In the case of a :class:`ConfigManager`, the :meth:`~ConfigManager.defaults`
-          are used.
+    cfg: :class:`ConfigObj`, :class:`ConfigManager`
+        :class:`ConfigObj` or :class:`ConfigManager` instance.
+        In the case of a :class:`ConfigManager`, the :meth:`~ConfigManager.defaults`
+        are used.
 
-    :Return: rst string
+    Return
+    ------
+    string
     """
     out = ''
     if isinstance(cfg, ConfigManager):

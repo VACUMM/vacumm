@@ -41,11 +41,12 @@ File utilities
 ==============
 
 This module provides various file related features:
-    - filesystem traversal with depth support
-    - file search, wildcard or regex based
-    - file rollover (backup)
-    - size parsing and formatting
-    - directory creation without error on existing directory
+
+- filesystem traversal with depth support
+- file search, wildcard or regex based
+- file rollover (backup)
+- size parsing and formatting
+- directory creation without error on existing directory
 '''
 
 
@@ -56,12 +57,16 @@ def mkdirs(d):
     '''
     Create a directory, including parents.
 
-    :Params:
-        - **d**: the directory, or list of directories, that may be created
+    Parameters
+    ----------
+    d:
+        the directory, or list of directories, that may be created
 
-    :Return:
-        - **created**: For a single directory: d if directory has been created, '' otherwise
-          (already exists). For a list of directories, the list of directories which have been created.
+    Return
+    ------
+    created:
+        For a single directory: d if directory has been created, '' otherwise
+        (already exists). For a list of directories, the list of directories which have been created.
     '''
     if not isinstance(d, basestring):
         return [dd for dd in d if mkdirs(dd)]
@@ -76,13 +81,17 @@ def mkfdirs(f):
     Create a file directory, including parents. This may be used before writing to a file
     to ensure the parent directories exists.
 
-    :Params:
-        - **f**: the file, or list of files, for which the directory may be created
+    Parameters
+    ----------
+    f:
+        the file, or list of files, for which the directory may be created
 
-    :Return:
-        - **created**: For a single file: f directory if it has been created, '' otherwise
-          (already exists). For a list of files, the list of f directories which have been created
-          were created
+    Return
+    ------
+    created:
+        For a single file: f directory if it has been created, '' otherwise
+        (already exists). For a list of files, the list of f directories which have been created
+        were created
     '''
     if not isinstance(f, basestring):
         return [os.path.dirname(ff) for ff in f if mkfdirs(ff)]
@@ -94,13 +103,21 @@ def rollover(filepath, count=1, suffix='.%d', keep=True, verbose=False):
     Make a rollover of the specified file. Keep a certain number of backups
     of a file by renaming them with a suffix number.
 
-    :Params:
-        - **filepath**: the file to make a backup of
-        - **count**: maximum number of backup files
-        - **suffix**: suffix to use when renaming files, must contain a '%d' marker which will be used to mark backup number
-        - **keep**: whether to keep existing file in addition to the backup one
+    Parameters
+    ----------
+    filepath:
+        the file to make a backup of
+    count:
+        maximum number of backup files
+    suffix:
+        suffix to use when renaming files, must contain a '%d' marker which will be used to mark backup number
+    keep:
+        whether to keep existing file in addition to the backup one
 
-    :Return: True if a backup occured, False otherwise (count is 0 or filepath does not exists)
+    Return
+    ------
+    bool
+        True if a backup occured, False otherwise (count is 0 or filepath does not exists)
 
     '''
     if not count > 0: return False
@@ -145,14 +162,20 @@ sisizeunits = {
 def strfsize(size, fmt=None, si=None):
     """Format a size in bytes using the appropriate unit multiplicator (Ko, Mo, Kio, Mio)
 
-    :Params:
+    Parameters
+    ----------
 
-        - **size**: the size in bytes
-        - **fmt**: the format to use, will receive size and unit arguments
+    size:
+        the size in bytes
+    fmt:
+        the format to use, will receive size and unit arguments
                    (None will automatically use "%(size).3f %(unit)s" or "%(size)d %(unit)s")
-        - **si**: whether to use SI (International System) units (10^3, ...) or CEI units (2**10, ...)
+    si:
+        whether to use SI (International System) units (10^3, ...) or CEI units (2**10, ...)
 
-    :Return: a string
+    Return
+    ------
+    string
     """
     if fmt is None:
         fmt = '%(size).3f %(unit)s' if float(size) % 1 else '%(size)d %(unit)s'
@@ -170,12 +193,18 @@ _strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\
 def strpsize(size, si=True):
     """Parse a size in Ko, Mo, Kio, Mio, ...
 
-    :Params:
+    Parameters
+    ----------
 
-        - **size**: the size string (eg. "1Ko", "2 Mo", " 10 Go"
-        - **si**: whether to use International System units (10^3, ...) or CEI units (2**10, ...)
+    size:
+        the size string (eg. "1Ko", "2 Mo", " 10 Go"
+    si:
+        whether to use International System units (10^3, ...) or CEI units (2**10, ...)
 
-    :Return: the float number of bytes
+    Return
+    ------
+    float
+        the float number of bytes
     """
     if not isinstance(size, basestring): size = '%s'%(size)
     m = _strpsizerex.match(size)
@@ -197,17 +226,24 @@ def walk(top, topdown=True, onerror=None, followlinks=False, depth=None, onfile=
     New implementation of os.walk **with depth support to avoid unnecessary large scans**.
     This yield a supplementary depth value for each walk (top, dirs, nondirs, depth)
 
-    :Params:
-        - **depth**: Limit the depth of walk:
-            - None: no limit
-            - 0: limited to top directory entries
-            - 1: limited to first directory under the top directory
-            - N: limited to Nth directory under the top directory
+    Parameters
+    ----------
+    depth: int
+        Limit the depth of walk:
 
-    .. warning::
-        **Do not use the _depth attribute** as it is used to track the current depth in the yield processing
+        - None: no limit
+        - 0: limited to top directory entries
+        - 1: limited to first directory under the top directory
+        - N: limited to Nth directory under the top directory
 
-    :See: :func:`os.walk` for more details on other parameters.
+    Warning
+    -------
+    **Do not use the _depth attribute** as it is used to track
+    the current depth in the yield processing
+
+    Sea also
+    --------
+    :func:`os.walk` for more details on other parameters.
     '''
     if depth is not None and depth >= 0 and _depth > depth: return
     try: names = os.listdir(top)
@@ -239,19 +275,31 @@ def xfind(pattern, path=None, depth=0, files=True, dirs=False, matchall=False, a
     '''
     Find paths matching the pattern wildcard.
 
-    :Params:
-        - **pattern**: pattern or list of patterns using special characters \\*,?,[seq],[!seq] (see standard module fnmatch)
-        - **path**: if not None, entries are searched from this location, otherwise current directory is used
-        - **depth**: if not None, it designate the recursion limit (0 based, None for no limit, see walk function)
-        - **files**: if False, file entries will not be returned
-        - **dirs**: if False, directory entries will not be returned
-        - **matchall**: if False, only file/directory names are evaluated, entire path otherwise
-        - **abspath**: if True, returned paths are absolute
-        - **exclude**: if not None, it designate a pattern or list of patterns which will be used to exclude files or directories
-        - **followlinks**: if True, symbolic links will be walked (see walk function)
-        - **expandpath**: if True, environment variables and special character ~ will be expanded in the passed search path
+    Parameters
+    ----------
+    pattern:
+        pattern or list of patterns using special characters \\*,?,[seq],[!seq] (see standard module fnmatch)
+    path:
+        if not None, entries are searched from this location, otherwise current directory is used
+    depth:
+        if not None, it designate the recursion limit (0 based, None for no limit, see walk function)
+    files:
+        if False, file entries will not be returned
+    dirs:
+        if False, directory entries will not be returned
+    matchall:
+        if False, only file/directory names are evaluated, entire path otherwise
+    abspath:
+        if True, returned paths are absolute
+    exclude:
+        if not None, it designate a pattern or list of patterns which will be used to exclude files or directories
+    followlinks:
+        if True, symbolic links will be walked (see walk function)
+    expandpath:
+        if True, environment variables and special character ~ will be expanded in the passed search path
 
-    :Example:
+    Example
+    -------
 
     >>> find('*.nc', '/path/to/data')
     ['/path/to/data/data_2010-01-01.nc', '/path/to/data/data_2010-01-02.nc', ...]
@@ -290,31 +338,46 @@ def xefind(regex, path=None, depth=0, files=True, dirs=False, matchall=False, ab
     '''
     Find paths matching the regex regular expression.
 
-    :Params:
-        - **regex**: the file regular expression
-        - **path**: if not None, entries are searched from this location, otherwise current directory is used
-        - **depth**: if not None, it designate the recursion limit (0 based, None for no limit, see walk function)
-        - **files**: if False, file entries will not be returned
-        - **dirs**: if False, directory entries will not be returned
-        - **matchall**: if False, only file/directory names are evaluated, entire path otherwise
-        - **abspath**: if True, returned paths are absolute
-        - **exclude**: if not None, it designate a regular expression which will be used to exclude files or directories
-        - **getmatch**: if True, return a list of (path, match_object) couples
-        - **followlinks**: if True, symbolic links will be walked (see walk function)
-        - **regexflags**: if not None, it will be used as regex compile flags
-        - **xregexflags**: if not None, it will be used as exclude regex compile flags
-        - **expandpath**: if True, environment variables and special character ~ will be expanded in the passed search path
+    Parameters
+    ----------
+    regex:
+        the file regular expression
+    path:
+        if not None, entries are searched from this location, otherwise current directory is used
+    depth:
+        if not None, it designate the recursion limit (0 based, None for no limit, see walk function)
+    files:
+        if False, file entries will not be returned
+    dirs:
+        if False, directory entries will not be returned
+    matchall:
+        if False, only file/directory names are evaluated, entire path otherwise
+    abspath:
+        if True, returned paths are absolute
+    exclude:
+        if not None, it designate a regular expression which will be used to exclude files or directories
+    getmatch:
+        if True, return a list of (path, match_object) couples
+    followlinks:
+        if True, symbolic links will be walked (see walk function)
+    regexflags:
+        if not None, it will be used as regex compile flags
+    xregexflags:
+        if not None, it will be used as exclude regex compile flags
+    expandpath:
+        if True, environment variables and special character ~ will be expanded in the passed search path
 
-    :Example:
+    Example
+    -------
 
-        >>> find('.*\.nc', '/path/to/data')
-        ['/path/to/data/data_2010-01-01.nc', '/path/to/data/data_2010-01-02.nc', ...]
+    >>> find('.*\.nc', '/path/to/data')
+    ['/path/to/data/data_2010-01-01.nc', '/path/to/data/data_2010-01-02.nc', ...]
 
-        >>> filelist = find('data_([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})\.nc', 'data', getmatch=True, abspath=False)
-        >>> for filepath, matchobj in filelist:
-        >>>     print filepath, ':', matchobj.groups()
-        data/data_2010-01-1.nc : ('2010', '01', '1')
-        data/data_2010-01-10.nc : ('2010', '01', '10')
+    >>> filelist = find('data_([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})\.nc', 'data', getmatch=True, abspath=False)
+    >>> for filepath, matchobj in filelist:
+    >>>     print filepath, ':', matchobj.groups()
+    data/data_2010-01-1.nc : ('2010', '01', '1')
+    data/data_2010-01-10.nc : ('2010', '01', '10')
     '''
     if not path: path = '.'
     if expandpath: path = os.path.expanduser(os.path.expandvars(path))
@@ -352,26 +415,34 @@ def tfind(regex, path=None, fmt='%Y-%m-%dT%H:%M:%SZ', min=None, max=None, group=
 
     The regex regular expression must define at least one group which describe the date string location in paths.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **fmt**: (python) date format
-        - **min**: minimum date filter: a datetime object or a date string in fmt format. None means no max date filtering.
-        - **max**: maximum date filter: a datetime object or a date string in fmt format. None means no max date filtering.
-        - **group**: the regex group(s) number(s) or name(s): one or a list of string or integer. None means all groups.
-        - **xmin**: if True, min is exclusive
-        - **xmax**: if True, max is exclusive
+    fmt:
+        (python) date format
+    min:
+        minimum date filter: a datetime object or a date string in fmt format. None means no max date filtering.
+    max:
+        maximum date filter: a datetime object or a date string in fmt format. None means no max date filtering.
+    group:
+        the regex group(s) number(s) or name(s): one or a list of string or integer. None means all groups.
+    xmin:
+        if True, min is exclusive
+    xmax:
+        if True, max is exclusive
 
     The group(s) can be specified either by their number or name. These group will be concatenated to
     form the date that will be parsed.
 
-    :Examples:
+    Examples
+    --------
 
     Assuming we are lokking for the follwing files:
 
-        - path/to/data/data_2010-01-01T00H.nc
-        - path/to/data/data_2010-01-01T12H.nc
-        - path/to/data/data_2010-01-02T00H.nc
-        - path/to/data/data_2010-01-02T12H.nc
+    - path/to/data/data_2010-01-01T00H.nc
+    - path/to/data/data_2010-01-01T12H.nc
+    - path/to/data/data_2010-01-02T00H.nc
+    - path/to/data/data_2010-01-02T12H.nc
 
     The commands below will have the same result:
 
@@ -384,8 +455,9 @@ def tfind(regex, path=None, fmt='%Y-%m-%dT%H:%M:%SZ', min=None, max=None, group=
         >>> items = tfind('data_([0-9]{4})-([0-9]{4})-([0-9]{4})T([0-9]{2})Z\.nc', 'path/to/data', '%Y%m%d%H')
         >>> items = tfind('(data)_(?P<y>[0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2})Z\.nc', 'path/to/data', '%Y%m%d%H', group=('y',3,4,5)))
 
-    :Return:
-
+    Return
+    ------
+    list
         Depending on getdate and getmatch, a list in the form:
 
         - If getdate=False and getmatch=False: [path1, path2, ...]

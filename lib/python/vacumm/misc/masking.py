@@ -52,8 +52,9 @@ from .misc import nduniq
 from .axes import islon, islat
 from .grid import (get_xy, set_grid, isgrid, bounds2d, meshcells, curv2rect,
     meshbounds, bounds1d, get_grid, resol)
+from .units import deg2m
 
-from .poly import convex_hull, create_polygon, polygons # compat
+from .poly import convex_hull, create_polygon, polygons # compat only
 envelop = convex_hull
 
 uniq = nduniq # backward compat
@@ -658,7 +659,7 @@ def _trans_(trans, xx, yy):
 #   return d2m(xx, yy)
 
 def d2m(x, y):
-    return vcu.deg2m(x, y), vcu.deg2m(y)
+    return deg2m(x, y), deg2m(y)
 
 def polygon_select(xx, yy, polys, zz=None, mask=False):
     """Select unstructered points that are inside polygons
