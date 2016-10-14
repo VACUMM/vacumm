@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Utilities to manage VACUMM basic configuration of modules"""
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -44,7 +44,7 @@ from warnings import warn
 import numpy.distutils
 
 from configobj import ConfigObj
-from validate import Validator
+from validate import Validator, VdtMissingValue
 
 from vacumm import VACUMMError
 
@@ -363,7 +363,7 @@ def get_dl_dir(suggest=None, filedesc=None, quiet=False):
 VACUMM_CFGSPECS_FILE = os.path.join(os.path.dirname(__file__),  'vacumm.ini')
 
 #: Config specifications
-VACUMM_CFGSPECS = ConfigObj(CFGSPECS_FILE, interpolation=False, list_values=True)
+VACUMM_CFGSPECS = ConfigObj(VACUMM_CFGSPECS_FILE, interpolation=False, list_values=False)
 
 
 class VCValidator(Validator):
@@ -456,7 +456,7 @@ def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
             not os.path.exists(fgfile)):
         cfgfile = ""
 #        warn('Invalid cfgfile passed to load_cfg. Skipping.')
-    cfg = ConfigObj(cfgfile, configspec=VACUMM_CFGSPECS, interpolation=ConfigParser)
+    cfg = ConfigObj(cfgfile, configspec=VACUMM_CFGSPECS, interpolation='template')
 
     # Default section
     cfg.setdefault('DEFAULT', get_dir_dict())
@@ -466,19 +466,21 @@ def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
         cfg.validate(VACUMM_VDT)
 
     # Merge with currently loaded config?
-    import vacumm.config
-    if not hasattr(vacumm.config, 'VACUMM_CFG'): # nothing to merge with
-        merge = False
-    if merge:
-        oldcfg = vacumm.config.VACUMM_CFG
-        if live:
-            oldcfg.copy()
-        oldcfg.merge(cfg)
-        cfg = oldcfg
+    import vacumm
+    if hasattr(vacumm, 'config'): # must be loaded :)
+        import vacumm.config
+        if not hasattr(vacumm.config, 'VACUMM_CFG'): # nothing to merge with
+            merge = False
+        if merge:
+            oldcfg = vacumm.config.VACUMM_CFG
+            if live:
+                oldcfg.copy()
+            oldcfg.merge(cfg)
+            cfg = oldcfg
 
-    # Store it?
-    if not live:
-        vacumm.config.VACUMM_CFG = cfg
+        # Store it?
+        if not live:
+            vacumm.config.VACUMM_CFG = cfg
 
     return cfg
 
