@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Diagnostics about thermodynamics"""
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -40,8 +40,7 @@ from vacumm import VACUMMError
 from vacumm.data.cf import format_var, match_var
 from vacumm.misc.grid import get_zdim, get_axis_slices, get_grid, set_grid
 from vacumm.misc.axes import islat
-from vacumm.misc import N_choose, grow_depth, grow_lat
-from vacumm.misc.misc import grow_variables
+from vacumm.misc.misc import grow_variables, N_choose, grow_depth, grow_lat
 
 try:
     from seawater import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0, \

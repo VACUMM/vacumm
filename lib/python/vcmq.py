@@ -110,7 +110,7 @@ from vacumm.misc.io import (
     ncread_axis, ncget_var, ncget_axis, ncfind_var, ncfind_axis, NcIterBestEstimate,
     ncget_fgrid, grib2nc, grib_get_names, ncfind_obj, ncget_grid,
     ncget_lon, ncget_lat, ncget_time, ncget_var, ncmatch_obj, ncread_best_estimate,
-    XYZ, XYZMerger, Shapes, NcIterBestEstimate, NcIterBestEstimateError,
+    NcIterBestEstimate, NcIterBestEstimateError,
     NcFileObj, ColoredFormatter, TermColors,
     Logger as SimpleLogger,
     )
@@ -190,8 +190,8 @@ from vacumm.misc.color import (
 
 from vacumm.misc.poly import (
     create_polygon, clip_shape, polygons, convex_hull,
-    get_geos_type, is_linestring, is_point, is_polygon, clap_shapes,
-    plot_polygon, proj_shapes, sort_shapes)
+    get_geos_type, is_linestring, is_point, is_polygon, clip_shapes,
+    plot_polygon, proj_shape, sort_shapes)
 envelop = convex_hull
 
 from vacumm.misc.grid import (

@@ -43,7 +43,7 @@ import re, math, numpy as N, cdms2, MV2
 from traceback import format_exc
 from warnings import warn
 from cdms2.selectors import Selector
-from vacumm.misc import selector2str, create_selector
+from vacumm.misc.misc import selector2str, create_selector
 import vacumm.data.cf as cf
 from vacumm.misc.grid import dz2depth as dz2depths
 from vacumm.misc.io import NcFileObj, ncread_axis, ncread_var

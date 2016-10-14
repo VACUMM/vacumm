@@ -35,7 +35,7 @@
 #
 
 import cdms2
-from vacumm.misc.grid.regridding import shift2d, shift1d
+from vacumm.misc.regridding import shift2d, shift1d
 
 __all__ = ['ARAKAWA_LOCATIONS', 'ARAKAWA_POSITIONS', 'ArakawaGrid', 'CGrid', 'AGrid',
     'ArakawaGridTransfer']

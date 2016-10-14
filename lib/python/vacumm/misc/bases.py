@@ -69,7 +69,7 @@ import configobj
 from .config import ConfigManager
 from .exception import getDetailedExceptionInfo
 from .misc import kwfilter, dict_merge
-from .log import logger, Logger
+from .log import logger, Logger, get_str_levels
 
 # Test application origin: a python script or an executable (py2exe/cx_freeze)
 isfreezed = os.path.basename(sys.executable) == os.path.basename(sys.argv[0])

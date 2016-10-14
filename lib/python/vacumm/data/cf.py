@@ -39,7 +39,7 @@ import string
 
 import cdms2, MV2, re
 from vacumm import VACUMMError
-from vacumm.misc import kwfilter, dict_merge
+from vacumm.misc.misc import kwfilter, dict_merge
 from vacumm.misc.axes import create as create_axis, isaxis
 from vacumm.misc.grid import create_axes2d
 from vacumm.misc.io import ncmatch_obj
