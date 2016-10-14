@@ -72,7 +72,9 @@ class Docstring2Params(dict):
     """Inspect a docstring to retreive and format field declarations"""
     def __init__(self, obj, select=None, prefix=None):
 
-        fg = FieldsGetter(prepare_docstring(getattr(obj, '__doc__', '')))
+#        fg = FieldsGetter(prepare_docstring(getattr(obj, '__doc__', '')))
+        doc = inspect.getdoc(obj) or ''
+        fg = FieldsGetter(doc)
         prefix = prefix or ''
         for _name, _type, _desc in fg.vacumm_fields:
             self[prefix+_name] = (_type, _desc)
@@ -227,6 +229,10 @@ class DocFiller(object):
         return obj
 
     __call__ = docfill
+
+from vacumm.config import VACUMM_CFG
+docfiller = DocFiller(verbose=VACUMM_CFG['vacumm.misc.docstrings']['verbose'])
+docfill = docfiller.docfill
 
 if __name__=='__main__':
 

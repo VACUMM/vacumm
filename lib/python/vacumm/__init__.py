@@ -93,3 +93,6 @@ class VACUMMError(Exception):
 
 class VACUMMWarning(UserWarning):
     """Standard VACUMM warning"""
+
+import config
+VACUMM_CFG = CFG = config.VACUMM_CFG
