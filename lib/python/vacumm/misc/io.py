@@ -939,8 +939,8 @@ def ncget_grid(f, ids=None, torect=False):
     grid = None
     for id in ids:
         grid = f[id].getGrid()
-        if grid is not None:
-            grid = grid.clone()
+        if grid is not None :
+#            grid = grid.clone()
             break
     del nfo
     if torect:
