@@ -560,6 +560,9 @@ class StatAccum(object):
             self.append(items)
         return self
 
+    def isempty(self):
+        return self.iterindex==0
+
     def _template_t2ht_(self, tpl):
         htpl = MV2.resize(tpl.astype('l'), (self.nbins,)+tpl.shape)
         htpl.setAxisList([self._baxis]+tpl.getAxisList())
