@@ -83,7 +83,7 @@ from vacumm.misc.atime import (
     hourly, hourly_bounds, hourly_exact, monthly, tsel2slice,
     reduce, yearly, are_same_units, ascii_to_num, detrend, from_utc,
     time_selector, selector, filter_time_selector,
-    plot_dt, strtime,
+    plot_dt, strtime, interp_clim,
     datetime as adatetime,
     add,
     )
@@ -175,7 +175,8 @@ from vacumm.misc.color import (
     cmap_regular_steps, cmap_rnb2_hymex, cmap_rs, cmap_smoothed_regular_steps,
     cmap_smoothed_steps, cmap_ss, cmap_ssec, cmap_steps, cmap_topo,
     cmap_white_centered_hymex, cmap_wjet, cmap_wjets, cmap_wr, cmap_wre,
-    to_shadow,
+    to_shadow, to_grey, saturate, desaturate, change_saturation,
+    change_luminosity,
 
     )
 
