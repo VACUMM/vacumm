@@ -444,7 +444,7 @@ def taylor(datasets, ref, labels=False, colors=None, units=None, normalize=True,
         ref = [ref]
     ref = list(ref)
     ref = broadcast(ref, n, mode='last')
-    for r in ref:
+    for i, r in enumerate(ref):
         r = MV2.asarray(r)
         if units in [True, None]:
             units = getattr(r, 'units', None)
@@ -3803,7 +3803,7 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., xmargin=None, ymargin=None,
     xmax = x.max()
     ymin = y.min()
     ymax = y.max()
-    xmin, ymin, xmax, ymax = zoombox([xmin, ymin, xmax, ymax],
+    xmin, ymin, xmax, ymax = zoombox([xmin, ymin, xmax, ymax], zoom,
         xmargin=xmargin, ymargin=ymargin, square=square)
     kwargs.setdefault('anchor', 'E')
     kwargs.setdefault('colorbar', False)
