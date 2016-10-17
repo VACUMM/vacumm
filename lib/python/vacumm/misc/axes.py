@@ -358,6 +358,8 @@ def create_time(values,units=None,**atts):
             break
     if units is not None and not are_good_units(units):
         raise AttributeError('Bad time units: "%s"'%units)
+
+
     istuple = isinstance(values, tuple)
     if not istuple or (istuple and len(values)>3):
         if isinstance(values,str) or not isSequenceType(values):
@@ -374,12 +376,14 @@ def create_time(values,units=None,**atts):
                     units = value.units
                 value = comptime(value)
                 if units is None:
-                    units = strftime('minutes since %Y-%m-%d %H:%M:%S',value)
+                    units = strftime('hours since %Y-%m-%d %H:%M:%S',value)
                 newvalues.append(value.torel(units).value)
     else:
         newvalues = values
+
     if units is None:
         raise ValueError,'Unable to guess units. You must specify them.'
+
     return create_axis(newvalues,'t',units=units,**atts)
 
 def create_lon(values,**atts):
