@@ -200,7 +200,6 @@ def _validator_numerics_(value, default=None, min=None, max=None, type='float', 
             try:
                 val = type(val)
             except:
-                print 'eval type!!'
                 raise VdtTypeError(value)
         if min is not None and val<min:
             val = type(min)
@@ -369,6 +368,7 @@ _VALIDATOR_SPECS_ = {
         'string':validate.is_string,
         # single value
         'date':_validator_cdtime_,
+        'cdtime':_validator_cdtime_,
         'timeunits':_validator_timeunits_,
         'minmax':_validator_minmax_,
         'numerics':_validator_numerics_,
