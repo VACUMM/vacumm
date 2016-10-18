@@ -166,7 +166,7 @@ from vacumm.misc.color import (
     plot_cmap, show_cmap, get_cmap, simple_colors, RGB, RGBA,
     cmap_srs, Scalar2RGB, darken, whiten, cmaps_mpl,
     cmap_gmt, cmaps_registered, cmaps_vacumm, print_cmaps_gmt, plot_cmaps,
-    anamorph_cmap, discretize_cmap, StepsNorm,
+    anamorph_cmap, discretise_cmap, StepsNorm,
     cmap_ajete, cmap_ajets, cmap_bathy, cmap_br, cmap_bwr, cmap_bwre, cmap_custom,
     cmap_chla, cmap_currents, cmap_dynamic_cmyk_hymex, cmap_eke, cmap_jet,
     cmap_jete, cmap_jets, cmap_land, cmap_linear, cmap_magic, cmap_mg,
@@ -176,7 +176,9 @@ from vacumm.misc.color import (
     cmap_smoothed_steps, cmap_ss, cmap_ssec, cmap_steps, cmap_topo,
     cmap_white_centered_hymex, cmap_wjet, cmap_wjets, cmap_wr, cmap_wre,
     to_shadow, to_grey, saturate, desaturate, change_saturation,
-    change_luminosity,
+    change_luminosity, change_value, pastelise,
+    discretise_cmap as discretize_cmap,
+    pastelise as pastelize,
 
     )
 
