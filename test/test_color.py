@@ -9,6 +9,7 @@ class TSF(VCTestCase):
         'test_color_darken',
         'test_color_saturate',
         'test_color_desaturate',
+        'test_color_pastelise',
         ]:
         exec(method_template.format(test_name))
 

@@ -18,6 +18,7 @@ class TSF(VCTestCase):
         'test_regrid_fortran_nearest2dto1dc',
         'test_regrid_fortran_bilin2dto1dc',
         'test_regrid_fortran_dstwgt2dto1dc',
+        'test_regrid_fortran_linear4dto1d',
         'test_regrid_regrid1d',
         'test_regrid_curvedinterpolator',
         'test_regrid_regrid2d',
@@ -27,6 +28,8 @@ class TSF(VCTestCase):
         'test_regrid_kriging_krig',
         'test_regrid_kriging_parallel',
         'test_regrid_kriging_regrid',
+        'test_regrid_transect_split',
+        'test_regrid_transect_xyt',
         ]:
         exec(method_template.format(test_name))
 

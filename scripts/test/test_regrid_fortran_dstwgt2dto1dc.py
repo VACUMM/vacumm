@@ -23,7 +23,7 @@ yo = N.random.uniform(-nxy/4., nxy+nxy/4., no)
 # Interpolate
 mv = zzi.get_fill_value()
 zo = dstwgt2dto1dc(xxi,yyi,zzi.filled(mv),xo,yo,mv)
-zo = N.ma.masked_values(zo, mv) 
+zo = N.ma.masked_values(zo, mv)
 
 # Plot
 kw = dict(vmin=zzi.min(), vmax=zzi.max())
