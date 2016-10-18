@@ -101,8 +101,9 @@ __all__ = ['cmap_custom', 'cmap_bwr', 'cmap_bwre', 'cmap_br', 'cmap_wr', 'cmap_w
     'cmap_previmer', 'cmap_rnb2_hymex','cmap_rainbow_sst_hymex','cmap_dynamic_cmyk_hymex',
     'cmap_white_centered_hymex','cmap_red_tau_hymex', 'cmap_previmer2', 'cmap_ssec',
     'cmap_ncview_rainbow', 'cmap_eke', 'cmap_rb', 'cmap_currents', 'cmaps_registered',
-    'cmap_br2','cmap_nice_gfdl', 'anamorph_cmap', 'discretize_cmap', 'to_grey',
+    'cmap_br2','cmap_nice_gfdl', 'anamorph_cmap', 'discretise_cmap', 'to_grey',
     'change_luminosity', 'saturate', 'desaturate', 'change_saturation',
+    'change_value', 'pastelise'
     ]
 __all__.sort()
 
@@ -2538,8 +2539,9 @@ def _generic_transform_(c, converter, channels, *args, **kwargs):
     # Colormap case
     if isinstance(c, Colormap):
         c = deepcopy(c)
-        c._init()
-        c._lut[:-3, :-1] = _generic_transform_(c._lut[:-3, :-1], converter, channels, *args, **kwargs)
+        if not hasattr(c, '_lut'):
+            c._init()
+        c._lut[:-3, :3] = _generic_transform_(c._lut[:-3, :3], converter, channels, *args, **kwargs)
         for att in '_under', '_over', '_bad':
             col = getattr(c, '_rgba'+att, None)
             if col is not None:
@@ -2567,13 +2569,12 @@ def _generic_transform_(c, converter, channels, *args, **kwargs):
 
     # Convert channels
     conv = lambda c: N.clip(converter(c, *args, **kwargs), 0, 1)
-    if 'r' in channels or 'g' in channels or 'b' in channels:
-        if 'r' in channels:
-            r = conv(r)
-        if 'g' in channels:
-            g = conv(g)
-        if 'b' in channels:
-            b = conv(b)
+    if 'r' in channels:
+        r = conv(r)
+    if 'g' in channels:
+        g = conv(g)
+    if 'b' in channels:
+        b = conv(b)
     if with_hsv:
         if 'h' in channels:
             h = conv(h)
@@ -2668,7 +2669,7 @@ def to_shadow(c,att=.3):
     return darken(c, 1-att)
 
 def to_grey(c, f, g=.5):
-    """Pull a color toward grey
+    """Pull a color toward a single grey vzlue
 
     :Params:
 
@@ -2697,19 +2698,42 @@ def desaturate(c, f):
     return _generic_transform_(c, _pull_toward_value_, 's', f, 0)
 
 def change_saturation(c, f):
-    """Reduce high and low values for a color 'c' by a factor 'f' (max when f=1)
+    """Change the saturation in HSV mode
 
     :Params:
 
         - **c**: Color
-        - **f**: Factor between 0 and 1.
-          When max, color is converted to medium grey ("0.5").
+        - **f**: Factor between 0 and 1. Null effect at 0.5.
     """
     f = 2*f-1
     if f>0:
         return saturate(c, f)
     return desaturate(c, -f)
 
+def change_value(c, f):
+    """Change de value in HSV mode
+
+    :Params:
+
+        - **c**: Color
+        - **f**: Factor between 0 and 1. Null effect at 0.5.
+    """
+    if f>.5:
+        return _generic_transform_(c, _pull_toward_value_, 'v', 2*(f-.5), 1)
+    return _generic_transform_(c, _pull_toward_value_, 'v', -2*(f-.5), 0)
+
+def pastelise(c, s=.25, v=.9):
+    """Make a color more pastel
+
+    Equivalent to::
+
+        >>> c = change_value(c, v)
+        >>> c = change_saturation(c, s)
+
+    """
+    c = change_value(c, v)
+    return change_saturation(c, s)
+pastelize = pastelise
 
 class StepsNorm(Normalize):
     """Normalize a given value to the 0-1 range on a stepped linear or log scale
@@ -3025,13 +3049,13 @@ def anamorph_cmap(cmap, transform, name=None):
 
     return cmapo
 
-def discretize_cmap(cmap, bounds, name=None, **kwargs):
+def discretise_cmap(cmap, bounds, name=None, **kwargs):
     """Make discret an existing colormap
 
     :Examples:
 
-        >>> discretize_cmap('jet', [.25, .5, .9]) # two not evenly spaced colors
-        >>> discretize_cmap('jet', 10) # ten evenly colors
+        >>> discretise_cmap('jet', [.25, .5, .9]) # two not evenly spaced colors
+        >>> discretise_cmap('jet', 10) # ten evenly colors
 
     :Params:
 
@@ -3063,6 +3087,7 @@ def discretize_cmap(cmap, bounds, name=None, **kwargs):
     new_cmap = cmap_custom(data, name=name, **kwargs)
     return new_cmap
 
+discretize_cmap = discretise_cmap
 
 # Register colormaps
 # - vacumm
