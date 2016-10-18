@@ -75,7 +75,7 @@ from .atime import mpl, comptime, strftime, is_numtime, numtime
 from .axes import (check_axes, istime, axis_type, set_order, get_order, merge_orders,
     check_order, order_match, isaxis)
 from .color import (get_cmap, cmap_magic, cmap_rainbow, RGB, land, whiten, darken,
-    RGBA, change_luminosity)
+    RGBA, change_luminosity, change_saturation)
 from .docstrings import docfiller
 from .filters import generic2d
 from .grid import get_axis, meshbounds, meshgrid, var2d
@@ -3674,7 +3674,7 @@ class ScalarMappable:
         Plot.del_vmax, doc="Data max to use for plot")
 
 
-    def get_cmap(self, cmap=None, nocache=False, tint=None, lum=None, **kwargs):
+    def get_cmap(self, cmap=None, nocache=False, tint=None, lum=None, sat=None, **kwargs):
         """Get :attr:`cmap`
 
         :Params:
@@ -3684,6 +3684,8 @@ class ScalarMappable:
             - **nocache**, optional: Once cmap is computed, it is stored
               in cache. If ``nocache is True``, first check cache before
               trying to compute cmap.
+            - **lum**, optional: Change luminosity.
+            - **sat**, optional: Change saturation.
 
         """
 
@@ -3717,6 +3719,10 @@ class ScalarMappable:
         if tint is not None:
             lum = tint*.5 + .5
         cmap = change_luminosity(cmap, lum)
+
+        # Saturation
+        if sat is not None:
+            cmap = change_saturation(cmap, sat)
 
         self._cmap = cmap
         return cmap
