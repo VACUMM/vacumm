@@ -1,4 +1,4 @@
-! Copyright or © or Copr. Actimar (contributor(s) : Stephane Raynaud) (2010)
+! Copyright or © or Copr. Actimar/IFREMER (contributor(s) : Stephane Raynaud) (2010-2016)
 !
 ! raynaud@actimar.fr
 !
@@ -2051,12 +2051,12 @@ subroutine linear4dto1d(xi,yi,zi,ti,vi,xo,yo,zo,to,vo,mv,nxi,nyi,nzi,nti,no)
                 endif
             endif
             ! - T
-            if(nti==1 .or. ti(j+1)==zi(j))then
+            if(nti==1)then
                 l = 1
                 d = 0d0
                 npl = 1
             else if(ti(nti)==to(io))then
-                l = nti-1
+                l = nti
                 d = 0d0
                 npl = 1
             else
@@ -2094,6 +2094,305 @@ subroutine linear4dto1d(xi,yi,zi,ti,vi,xo,yo,zo,to,vo,mv,nxi,nyi,nzi,nti,no)
     !$OMP END PARALLEL DO
 
 end subroutine linear4dto1d
+
+subroutine linear4dto1dx(xi,yi,zi,ti,vi,xo,yo,zo,to,vo,mv,nex,nxi,nyi,nzi,nti,no)
+    ! nearest neighbour interpolation of gridded data to random positions
+
+    implicit none
+
+    integer,intent(in) :: nxi,nyi,nzi,nti,no,nex
+    real(kind=8),intent(in) :: xi(nxi), yi(nyi), zi(nzi), ti(nti)
+    real(kind=8),intent(in) :: xo(no), yo(no), zo(no), to(no)
+    real(kind=8),intent(in) :: vi(nex,nti,nzi,nyi,nxi), mv
+    real(kind=8),intent(out) :: vo(nex,no)
+
+    real(kind=8) :: a , b, c, d
+    logical :: bmask(nex,nti,nzi,nyi,nxi)
+    integer :: io, i, j, k, l, ii, jj, kk, ll, npi, npj, npk, npl
+
+    vo = mv
+    bmask = abs(vi-mv)<abs(mv*epsilon(1d0)*1.1)
+
+    !$OMP PARALLEL DO PRIVATE(io,i,j,k,l,ii,jj,kk,ll)
+    !$& SHARED(xi,yi,zi,ti,vi,xo,yo,zo,vo,nei,nxi,nyi,nzi,nti,no,bmask)
+    do io = 1, no
+        if((nxi==1 .or. (xo(io)>=xi(1).and.xo(io)<=xi(nxi))) .and.&
+                & (nyi==1 .or. (yo(io)>=yi(1).and.yo(io)<=yi(nyi))) .and.&
+                & (nzi==1 .or. (zo(io)>=zi(1).and.zo(io)<=zi(nzi))) .and.&
+                & (nti==1 .or. (to(io)>=ti(1).and.to(io)<=ti(nti))))then
+
+            ! Weights
+            ! - X
+            if(nxi==1)then
+                i = 1
+                a = 0d0
+                npi = 1
+            else if(xi(nxi)==xo(io))then
+                i = nxi
+                npi = 1
+                a = 0d0
+            else
+                i = minloc(xi,dim=1,mask=xi>xo(io))-1
+                npi = 2
+                a = abs(xo(io)-xi(i))
+                if(a>180d0)a=360d0-180d0
+                a = a/(xi(i+1)-xi(i))
+            endif
+            ! - Y
+            if(nyi==1)then
+                j = 1
+                b = 0d0
+                npj = 1
+            else if(yi(nyi)==yo(io))then
+                j = nyi
+                b  = 0d0
+                npj = 1
+            else
+                j = minloc(yi, dim=1, mask=yi>yo(io)) - 1
+                b = (yo(io)-yi(j))/(yi(j+1)-yi(j))
+                npj = 2
+            endif
+            ! - Z
+            if(nzi==1)then
+                k = 1
+                c = 0d0
+                npk = 1
+            else if(zi(nzi)==zo(io))then
+                k = nzi
+                c = 0d0
+                npk = 1
+            else
+                k = minloc(zi,dim=1,mask=zi>zo(io))-1
+                if(zi(k+1)==zi(k))then
+                    c = 0d0
+                    npk = 1
+                else
+                    c = (zo(io)-zi(k))/(zi(k+1)-zi(k))
+                    npk = 2
+                endif
+            endif
+            ! - T
+            if(nti==1)then
+                l = 1
+                d = 0d0
+                npl = 1
+            else if(ti(nti)==to(io))then
+                l = nti
+                d = 0d0
+                npl = 1
+            else
+                l = minloc(ti, dim=1, mask=ti>to(io))-1
+                if(ti(l+1)==ti(l))then
+                    d = 0d0
+                    npl = 1
+                else
+                    d = (to(io)-ti(l))/(ti(l+1)-ti(l))
+                    npl = 2
+                endif
+            endif
+
+            ! Interpolate
+            vo(:,io) = 0d0
+            do ii=0,npi-1
+                do jj=0,npj-1
+                    do kk=0,npk-1
+                        do ll=0,npl-1
+                            vo(:,io) = vo(:,io) +vi(:,l+ll, k+kk, j+jj, i+ii) * &
+                                & ((1-a) * (1-ii) + a * ii)* &
+                                & ((1-b) * (1-jj) + b * jj)* &
+                                & ((1-c) * (1-kk) + c * kk)* &
+                                & ((1-d) * (1-ll) + d * ll)
+                        enddo
+                    enddo
+                enddo
+            enddo
+
+            ! Mask
+            vo(:,io) = merge(mv, vo(:,io), &
+                & any(reshape(bmask(:,l:l+npl-1, k:k+npk-1, j:j+npj-1, i:i+npi-1), &
+                &   (/nex, npl*npk*npj*npi/)), dim=2))
+
+        endif
+    enddo
+    !$OMP END PARALLEL DO
+
+end subroutine linear4dto1dx
+
+subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
+        nxi,nyi,nyix,nxiy, nyiz,nxiz,nzi, nti,ntiz, no,nex)
+    ! linear interpolation of gridded data to random positions
+
+    implicit none
+
+    integer,intent(in) :: nxi,nyi,nyix,nxiy, nyiz,nxiz,nzi, nti,ntiz, no,nex
+    real(kind=8),intent(in) :: xxi(nyix,nxi), yyi(nyi,nxiy), zzi(ntiz,nzi,nyiz,nxiz), ti(nti)
+    real(kind=8),intent(in) :: xo(no), yo(no), zo(no), to(no)
+    real(kind=8),intent(in) :: vi(nex,nti,nzi,nyi,nxi), mv
+    real(kind=8),intent(out) :: vo(nex,no)
+
+    real(kind=8) :: a , b, c, d, p, q, zi(nzi)
+    real(kind=8) :: ximin, yimin, zimin, timin, ximax, yimax, zimax, timax
+    logical :: bmask(nex,nti,nzi,nyi,nxi), curved
+    integer :: io, i, j, k, l, ii, jj, kk, ll, npi, npj, npk, npl
+
+    vo = mv
+    bmask = abs(vi-mv)<abs(mv*epsilon(1d0)*1.1)
+    ximin = minval(xxi)
+    ximax = maxval(xxi)
+    yimin = minval(yyi)
+    yimax = maxval(yyi)
+    zimin = minval(zzi)
+    zimax = maxval(zzi)
+    timin = minval(ti)
+    timax = maxval(ti)
+    curved = nyix/=1
+    if(curved .and. nxi/=nxiy .and. nyi/=nyix)stop "linear4dto1: Invalid curved dimensions"
+    if(nxiz/=1 .and. nxiz/=nxi)stop "linear4dto1: Invalid nxiz dimension"
+    if(nyiz/=1 .and. nyiz/=nyi)stop "linear4dto1: Invalid nyiz dimension"
+    if(ntiz/=1 .and. ntiz/=nti)stop "linear4dto1: Invalid ntiz dimension"
+
+
+
+    !$OMP PARALLEL DO PRIVATE(io,i,j,k,l,ii,jj,kk,ll,p,q)
+    !$& SHARED(xi,yi,zi,ti,vi,xo,yo,zo,vo,nei,nxi,nyi,nzi,nti,no,bmask)
+    do io = 1, no
+        if(       (nxi==1 .or. (xo(io)>=ximin.and.xo(io)<=ximax)) .and.&
+                & (nyi==1 .or. (yo(io)>=yimin.and.yo(io)<=yimax)) .and.&
+                & (nzi==1 .or. (zo(io)>=zimin.and.zo(io)<=zimax)) .and.&
+                & (nti==1 .or. (to(io)>=timin.and.to(io)<=timax)))then
+
+            ! Weights
+            if(curved)then
+
+                call curv2rel_single(xxi, yyi, xo(io), yo(io), p, q, nxi, nyi)
+                if(p<1 .or. p>nxi .or. q<1 .or. q>nyi) continue
+                i = int(p)
+                j = int(q)
+                a = p - i
+                b = q - j
+                npi = 2
+                npj = 2
+
+            else
+                ! - X
+                if(nxi==1)then
+                    i = 1
+                    a = 0d0
+                    npi = 1
+                else if(xxi(nxi,1)==xo(io))then
+                    i = nxi
+                    npi = 1
+                    a = 0d0
+                else
+                    i = minloc(xxi(:,1), dim=1, mask=xxi(:,1)>xo(io))-1
+                    npi = 2
+                    a = abs(xo(io)-xxi(i,1))
+                    if(a>180d0)a=360d0-180d0
+                    a = a/(xxi(i+1,1)-xxi(i,1))
+                endif
+
+                ! - Y
+                if(nyi==1)then
+                    j = 1
+                    b = 0d0
+                    npj = 1
+                else if(yyi(1,nyi)==yo(io))then
+                    j = nyi
+                    b  = 0d0
+                    npj = 1
+                else
+                    j = minloc(yyi(1,:), dim=1, mask=yyi(1,:)>yo(io)) - 1
+                    b = (yo(io)-yyi(1,j))/(yyi(1,j+1)-yyi(1,j))
+                    npj = 2
+                endif
+
+            endif
+
+            ! - T
+            if(nti==1)then
+                l = 1
+                d = 0d0
+                npl = 1
+            else if(ti(nti)==to(io))then
+                l = nti
+                d = 0d0
+                npl = 1
+            else
+                l = minloc(ti, dim=1, mask=ti>to(io))-1
+                if(ti(l+1)==ti(l))then
+                    d = 0d0
+                    npl = 1
+                else
+                    d = (to(io)-ti(l))/(ti(l+1)-ti(l))
+                    npl = 2
+                endif
+            endif
+
+            ! - Z
+            if(nzi==1)then
+                k = 1
+                c = 0d0
+                npk = 1
+            else
+
+                ! Local zi
+                zi = 0d0
+                do ii=0,npi-1
+                    do jj=0,npj-1
+                        do ll=0,npl-1
+                            zi = zi + zzi(l+ll, :, j+jj, i+ii) * &
+                                & ((1-a) * (1-ii) + a * ii)* &
+                                & ((1-b) * (1-jj) + b * jj)* &
+                                & ((1-d) * (1-ll) + d * ll)
+                        enddo
+                    enddo
+                enddo
+
+                ! Normal stuff
+                if(zi(nzi)==zo(io))then
+                    k = nzi
+                    c = 0d0
+                    npk = 1
+                else
+                    k = minloc(zi, dim=1, mask=zi>zo(io))-1
+                    if(zi(k+1)==zi(k))then
+                        c = 0d0
+                        npk = 1
+                    else
+                        c = (zo(io)-zi(k)) / (zi(k+1)-zi(k))
+                        npk = 2
+                    endif
+                endif
+            endif
+
+            ! Interpolate
+            vo(:,io) = 0d0
+            do ii=0,npi-1
+                do jj=0,npj-1
+                    do kk=0,npk-1
+                        do ll=0,npl-1
+                            vo(:,io) = vo(:,io) +vi(:,l+ll, k+kk, j+jj, i+ii) * &
+                                & ((1-a) * (1-ii) + a * ii)* &
+                                & ((1-b) * (1-jj) + b * jj)* &
+                                & ((1-c) * (1-kk) + c * kk)* &
+                                & ((1-d) * (1-ll) + d * ll)
+                        enddo
+                    enddo
+                enddo
+            enddo
+
+            ! Mask
+            vo(:,io) = merge(mv, vo(:,io), &
+                & any(reshape(bmask(:,l:l+npl-1, k:k+npk-1, j:j+npj-1, i:i+npi-1), &
+                &   (/nex, npl*npk*npj*npi/)), dim=2))
+
+        endif
+    enddo
+    !$OMP END PARALLEL DO
+
+end subroutine linear4dto1dxx
+
+
 
 subroutine nearest4dto1d(xi,yi,zi,ti,vi,xo,yo,zo,to,vo,mv,nxi,nyi,nzi,nti,no)
     ! nearest neighbour interpolation of gridded data to random positions
@@ -2288,47 +2587,64 @@ subroutine curv2rel(xxi, yyi, xo, yo, p, q, nxi, nyi, no)
     real(kind=8),intent(in) :: xxi(nyi,nxi), yyi(nyi,nxi), xo(no), yo(no)
     real(kind=8),intent(out) :: p(no), q(no)
 
-    integer :: io,i,j,ic,jc
-    real(kind=8) :: a,b
-    logical :: binside
+    integer :: io!,i,j,ic,jc
+!    real(kind=8) :: a,b
+!    logical :: binside
 
     p = -1d0
     q = -1d0
 
-    !$OMP PARALLEL DO PRIVATE(io,i,j,ic,jc,a,b,binside)
+    !$OMP PARALLEL DO PRIVATE(io)
     !$& SHARED(xxi,yyi,xo,yo,nxi,nyi,no,p,q)
     do io = 1, no
 
-        ! Find the closest corner
-        call closest2d(xxi,yyi,xo(io),yo(io),nxi,nyi,ic,jc,.true.)
-
-        ! Curvilinear to rectangular
-        binside = .false.
-        main: do i=max(ic-1,1), min(ic,nxi-1)
-            do j = max(jc-1,1), min(jc,nyi-1)
-
-                ! Get relative position
-                call curv2rect(xxi(j,i),xxi(j+1,i),xxi(j+1,i+1),xxi(j,i+1), &
-                             & yyi(j,i),yyi(j+1,i),yyi(j+1,i+1),yyi(j,i+1), &
-                             & xo(io), yo(io), a, b)
-
-                ! Store absolute indices
-                binside = a>=0d0-tiny(0d0) .and. a<=1d0+tiny(0d0) &
-                    & .and. b>=0d0-tiny(0d0) .and. b<=1d0+tiny(0d0)
-                if(binside)then
-                    p(io) = dble(i) + a
-                    q(io) = dble(j) + b
-                    exit main
-                endif
-
-            enddo
-!            if(binside)exit
-        enddo main
+        call curv2rel_single(xxi, yyi, xo(io), yo(io), p(io), q(io), nxi, nyi)
 
     enddo
     !$OMP END PARALLEL DO
 
 end subroutine curv2rel
+
+subroutine curv2rel_single(xxi, yyi, xo, yo, p, q, nxi, nyi)
+    ! curv2rel for a single output point
+
+    implicit none
+
+    integer,intent(in) :: nxi,nyi
+    real(kind=8),intent(in) :: xxi(nyi,nxi), yyi(nyi,nxi), xo, yo
+    real(kind=8),intent(out) :: p, q
+
+    integer :: i,j,ic,jc
+    real(kind=8) :: a,b
+
+    p = -1d0
+    q = -1d0
+
+    ! Find the closest corner
+    call closest2d(xxi,yyi,xo,yo,nxi,nyi,ic,jc,.true.)
+
+    ! Curvilinear to rectangular
+    main: do i=max(ic-1,1), min(ic,nxi-1)
+        do j = max(jc-1,1), min(jc,nyi-1)
+
+            ! Get relative position
+            call curv2rect(xxi(j,i),xxi(j+1,i),xxi(j+1,i+1),xxi(j,i+1), &
+                         & yyi(j,i),yyi(j+1,i),yyi(j+1,i+1),yyi(j,i+1), &
+                         & xo, yo, a, b)
+
+            ! Store absolute indices
+            if(a>=0d0-tiny(0d0) .and. a<=1d0+tiny(0d0) &
+                & .and. b>=0d0-tiny(0d0) .and. b<=1d0+tiny(0d0))then
+                p = dble(i) + a
+                q = dble(j) + b
+                return
+            endif
+
+        enddo
+    enddo main
+
+end subroutine curv2rel_single
+
 
 subroutine nearest2dto1dc_reduc(p,q,zzi,zo,mv,nxi,nyi,no,nz)
     ! Nearest interpolation of gridded data with 2D AXES to random positions
