@@ -74,7 +74,8 @@ from .misc import (kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp
 from .atime import mpl, comptime, strftime, is_numtime, numtime
 from .axes import (check_axes, istime, axis_type, set_order, get_order, merge_orders,
     check_order, order_match, isaxis)
-from .color import get_cmap, cmap_magic, cmap_rainbow, RGB, land, whiten, darken, RGBA
+from .color import (get_cmap, cmap_magic, cmap_rainbow, RGB, land, whiten, darken,
+    RGBA, change_luminosity)
 from .docstrings import docfiller
 from .filters import generic2d
 from .grid import get_axis, meshbounds, meshgrid, var2d
@@ -3673,7 +3674,7 @@ class ScalarMappable:
         Plot.del_vmax, doc="Data max to use for plot")
 
 
-    def get_cmap(self, cmap=None, nocache=False, tint=0, **kwargs):
+    def get_cmap(self, cmap=None, nocache=False, tint=None, lum=None, **kwargs):
         """Get :attr:`cmap`
 
         :Params:
@@ -3685,9 +3686,12 @@ class ScalarMappable:
               trying to compute cmap.
 
         """
+
+        # Get it
         cmap = self.get_obj('cmap')
 #        if not isinstance(cmap, Colormap): cmap = None
-        if cmap is None and not nocache and hasattr(self, '_cmap'):
+        if (cmap is None and not nocache and hasattr(self, '_cmap') and
+                tint is None and lum is None):
             cmap = self._cmap
         if cmap == 'mpl': cmap = False
         if cmap is None or cmap=='auto' or cmap is True :
@@ -3706,12 +3710,14 @@ class ScalarMappable:
 
         elif not isinstance(cmap, Colormap):
             cmap = get_cmap(cmap, **kwargs)
-        if tint is None: tint = 0
-        tint = N.clip(tint, -1, 1)
-        if tint<0:
-            cmap = darken(cmap, -tint)
-        elif tint>0:
-            cmap = whiten(cmap, tint)
+
+        # Luminosity
+        if lum is None:
+            lum = .5
+        if tint is not None:
+            lum = tint*.5 + .5
+        cmap = change_luminosity(cmap, lum)
+
         self._cmap = cmap
         return cmap
     def set_cmap(self, cmap):
@@ -5495,56 +5501,18 @@ class Map(Plot2D):
         return self.map(lon, lat, inverse=inverse)
 
 
-    def plot(self, lowhighs=False, arcgisimage=None, **kwargs):
+    def plot(self, **kwargs):
         """Main plot
 
         It performs the following tasks:
 
             #. Call to generic :meth:`~Plot2D.plot` method.
-            #. Call to :meth:`add_lowhighs`.
         """
 
 
 
-        # Keywords
-        kwlh = kwfilter(kwargs, 'lowhighs')
-        kwag = kwfilter(kwargs, 'arcgisimage')
-
         # Generic 2D plot
         Plot2D.plot(self, **kwargs)
-
-        # Plot lows and highs
-        lowhighs = kwargs.pop('lowhigh', lowhighs)
-        if lowhighs:
-            self.add_lowhighs(**kwlh)
-
-        # Plot arcgisimage
-        if arcgisimage is True:
-            arcgisimage = "esriimagery"
-        if isinstance(arcgisimage, basestring):
-            arcgisimage = dict(
-                esriimagery="ESRI_Imagery_World_2D",
-                esristreet="ESRI_StreetMap_World_2D",
-                esristreetmap="ESRI_StreetMap_World_2D",
-                natgeo="NatGeo_World_Map",
-                ngstopo="NGS_Topo_US_2D",
-                usatopo="USA_Topo_Maps",
-                ocean="Ocean_Basemap",
-                topo="World_Topo_Map",
-                shaded="World_Shaded_Relief",
-                physical="World_Physical_Map",
-                imagery="World_Imagery",
-                street="World_Street_Map",
-                streetmap="World_Street_Map",
-                terrain="World_Terrain_Base",
-            ).get(arcgisimage, arcgisimage)
-            dict_check_defaults(kwag, service=arcgisimage, xpixels=800)
-            try:
-                self.map.arcgisimage(**kwag)
-            except Exception(e):
-                warn('Error when plotting arcgisimage: {}.\nMessage: {}'.format(
-                    arcgisimage, e.message))
-
 
         # Update map limits
         self.map.set_axes_limits(ax=self.axes)
@@ -5858,10 +5826,10 @@ class Map(Plot2D):
         return ms+list(cp)
 
     def post_plot(self, drawrivers=False, fillcontinents=True, meridional_labels=True, zonal_labels=True,
-        drawcoastlines=True, drawmapboundary=True, meridians=None, parallels=None,
-        land_color=None, ticklabel_size=None, refine=0, no_seconds=False, fullscreen=False,
-        minutes=True, mapscale=False, compass=False, mscp=False, bfdeg=None,
-         **kwargs):
+            drawcoastlines=True, drawmapboundary=True, meridians=None, parallels=None,
+            land_color=None, ticklabel_size=None, refine=0, no_seconds=False, fullscreen=False,
+            minutes=True, mapscale=False, compass=False, mscp=False, bfdeg=None, lowhighs=False,
+            **kwargs):
         """Post-processing of the plot
 
         :Tasks:
@@ -6069,7 +6037,10 @@ class Map(Plot2D):
                         lab.set_visible(False)
                     llfound.append(llm)
 
-
+        # Plot lows and highs
+        lowhighs = kwargs.pop('lowhigh', lowhighs)
+        if lowhighs:
+            self.add_lowhighs(**kwfilter(kwargs, 'lowhighs'))
 
         # Map scale and compass
         if mscp:
