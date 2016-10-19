@@ -18,11 +18,11 @@ yyi[:, 0] = y0 + N.arange(nyi) * dyi[1]
 for j in range(1, nyi):
     yyi[:, j] = yyi[:, j-1] + dxi[1]
 xxbi, yybi = meshbounds(xxi, yyi)
-relpos2index = lambda fi, fj: fj * nyi + fi
+relpos2index = lambda fi, fj, nyi: fj * nyi + fi
 ii, jj = N.meshgrid(N.arange(nxi)+.5, N.arange(nyi)+.5)
 iib, jjb = meshbounds(ii, jj)
-zzi = relpos2index(ii, jj)
-zzbi = relpos2index(iib, jjb)
+zzi = relpos2index(ii, jj, nyi)
+zzbi = relpos2index(iib, jjb, nyi)
 
 # Input random points
 N.random.seed(0)
@@ -39,7 +39,7 @@ for i, (xo, yo) in enumerate(zip(xxo, yyo)):
     p, q = curv2rel_single(xxbi, yybi, xo, yo)
 #    print xo, yo, '|', p, q, (q-1) * nxi + p - 1
     if q>=0:
-        zzo[i] = relpos2index(p-1, q-1)
+        zzo[i] = relpos2index(p-1, q-1, nyi)
 
 # Plot
 vmin = zzbi.min()
