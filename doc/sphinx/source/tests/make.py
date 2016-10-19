@@ -111,9 +111,9 @@ for rstfile in glob('test_*.rst'):
         svnrm.append(rstfile)
 svnci.extend(svnrm)
 
-# Subversion commands
+# Git commands
 if not options.quiet and svnci:
-    print 'Subversion commands:\n'
+    print '\nGit commands:\n'
     if svnadd: print "git add "+' '.join(svnadd)
     if svnrm: print "git rm "+' '.join(svnrm)
     print "svn commit "+' '.join(svnci)

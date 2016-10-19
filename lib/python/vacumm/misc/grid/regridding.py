@@ -2641,7 +2641,6 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
 
         >>> regrid2d(var, (lon, lat), method='linear')
         >>> regrid2d(var, grid, method='cellave')
-        >>> regrid2d(var, grid, method='nat', hor=.2)
     """
 
     # Check grids

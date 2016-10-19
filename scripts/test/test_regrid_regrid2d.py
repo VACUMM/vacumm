@@ -43,7 +43,7 @@ gridco = rotate_grid((xco, yco), -20)
 # - original
 rc('font', size=8)
 rc('axes', labelsize=7)
-kw = dict(show=False, axes_aspect=1, colorbar=False, grid=False)
+kw = dict(show=False, axes_aspect=1, colorbar=False, grid=False, linewidth=.3)
 kwg = dict(edges=False, centers=True, markersize=2, alpha=1)
 ip = 1
 plot2d(varri, title='Original rectangular', figure=10,

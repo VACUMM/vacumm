@@ -1406,8 +1406,8 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nogeo, nxi, nyi, nxo, n
     if(nb==0)then
 
         ! Scan all input points everytime
-        do iyo = 1, nyo
-            do ixo = 1, nxo
+        do ixo = 1, nxo
+            do iyo = 1, nyo
                 call closest2d(xxi,yyi,xxo(iyo,ixo),yyo(iyo,ixo),nxi,nyi,imin,jmin,.not. geo)
                 varo(:,iyo,ixo) = vari(:,jmin,imin)
             enddo

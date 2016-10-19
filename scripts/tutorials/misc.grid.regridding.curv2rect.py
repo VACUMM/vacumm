@@ -50,5 +50,6 @@ map2(hs_dst, title='Dist. weights', subplot=326, m=m, **kwplot)
 add_grid(cgrid, lw=.7, alpha=.3)
 #m.show()
 savefigs(code_base_name(ext='png'))
+m.close()
 
 
