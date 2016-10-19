@@ -1346,7 +1346,7 @@ def get_axis(gg, iaxis=0, geo=True, strict=False):
         getfrom = grid
     else:
         getfrom = gg
-    ndim = N.ndim(getfrom)
+    ndim = len(getfrom.shape)
     if iaxis < 0:
         iaxis = ndim+iaxis
     if iaxis <= 2 and isgrid(grid,curv=True):
