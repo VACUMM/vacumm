@@ -3,6 +3,14 @@
 Download
 ========
 
+.. note::
+
+    You don't need to download sources if you install vacumm with :program:`conda`
+    as proposed in these sections
+    :ref:`user.install.prereq`,
+    :ref:`user.install.installs`,
+    and :ref:`user.install.installer`.
+
 
 Tarballs
 --------

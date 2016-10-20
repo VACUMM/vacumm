@@ -29,7 +29,7 @@ Features
 - A huge documentation with a gallery, a lot of examples and the complete API:
   http://www.ifremer.fr/vacumm
 - Full UV-CDAT support and extensions.
-- Matplotlib graphics with advanced plotting objects like geographical mapping tools.
+- Matplotlib/basemap graphics with advanced plotting objects like geographical mapping tools.
 - Numerous utilities for manipulating and converting time data.
 - Regridding and interpolation of random or gridded data, in 1D or 2D, with curvilinear grid support.
 - Helper routines for inspecting and reading NetCDF objects in single or multiple file datasets.
@@ -47,7 +47,7 @@ Features
 - A collection of scripts for some diagnostics.
 
 
-Requirements
+Dependencies
 ------------
 
 Mandatory:
@@ -60,22 +60,27 @@ Optional:
 `pytz <http://pytz.sourceforge.net>`_,
 `paramiko <http://www.paramiko.org>`_,
 `xlwt <https://pypi.python.org/pypi/xlwt>`_,
-`sphinx-fortran <https://pypi.python.org/pypi/sphinx-fortran>`_.
+`sphinx-fortran <https://pypi.python.org/pypi/sphinx-fortran>`_,
+`cmocean <https://pypi.python.org/pypi/cmocean>`_.
 
 
 Download
 --------
 
-To download VACUMM, please go to this page:
+To download VACUMM sources, please go to this page:
 http://www.ifremer.fr/vacumm/user.install.download.html
 
 
 Installation
 ------------
 
-::
+From sources::
 
     $ python setup.py install
+
+Using `conda <http://conda.pydata.org/docs/index.html>`_::
+
+    $ conda install -c vacumm vacumm
 
 
 Release notes

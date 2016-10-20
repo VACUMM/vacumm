@@ -1,4 +1,4 @@
-
+"""Test function :func:`~vacumm.misc.filters.generic2d`"""
 from vcmq import generic2d, N
 
 # Constant no mask

@@ -51,9 +51,9 @@ scfiles = glob(os.path.join(options.testdir, options.pattern))
 scfiles.sort()
 rstfiles = []
 skipped = []
-svnadd = []
-svnrm = []
-svnci = []
+gitadd = []
+gitrm = []
+gitci = []
 for i, script_path in enumerate(scfiles):
 
     # Basenames
@@ -100,22 +100,22 @@ for i, script_path in enumerate(scfiles):
     status = check_and_write(rstfile, content)
     rstfiles.append(rstfile)
     if status:
-        svnci.append(rstfile)
+        gitci.append(rstfile)
         if status==2:
-            svnadd.append(rstfile)
+            gitadd.append(rstfile)
 
 # Check unused rst files
 for rstfile in glob('test_*.rst'):
     if rstfile not in rstfiles+skipped:
         if options.verbose: print 'Unused: '+rstfile
-        svnrm.append(rstfile)
-svnci.extend(svnrm)
+        gitrm.append(rstfile)
+gitci.extend(gitrm)
 
 # Git commands
-if not options.quiet and svnci:
+if not options.quiet and gitci:
     print '\nGit commands:\n'
-    if svnadd: print "git add "+' '.join(svnadd)
-    if svnrm: print "git rm "+' '.join(svnrm)
-    print "svn commit "+' '.join(svnci)
+    if gitadd: print "git add "+' '.join(gitadd)
+    if gitrm: print "git rm "+' '.join(gitrm)
+    print "git commit "+' '.join(gitci)
 
 

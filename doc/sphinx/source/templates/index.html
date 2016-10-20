@@ -51,7 +51,7 @@
 
     </ul>
 
-    <h1>Requirements</h1>
+    <h1>Dependecies</h1>
 
     Mandatory:
     <a href="http://uvcdat.llnl.gov/">UVCDAT</a>,
@@ -62,17 +62,27 @@
     <a href="https://pypi.python.org/pypi/PIL">PIL</a>,
     <a href="http://pytz.sourceforge.net">pytz</a>,
     <a href="http://www.paramiko.org">paramiko</a>,
-    <a href="https://pypi.python.org/pypi/xlwt">xlwt</a>.
+    <a href="https://pypi.python.org/pypi/xlwt">xlwt</a>,
+    <a href="https://pypi.python.org/pypi/sphinx-fortran">sphinx-fortran</a>,
+    <a href="https://pypi.python.org/pypi/cmocean">cmocean</a>.
 
     <h1>Download</h1>
 
-    To download VACUMM, please go to this
+    To download VACUMM sources, please go to this
     <a href="{{ pathto('user.install.download') }}">page</a>.
 
     <h1>Installation</h1>
 
+    From sources:
+
     <div class="highlight-bash"><div class="highlight"><pre>
 <span class="gp">$</span> python setup.py install
+</pre></div></div>
+
+    Using <a href='http://conda.pydata.org/docs/index.html'>conda</a>:
+
+    <div class="highlight-bash"><div class="highlight"><pre>
+<span class="gp">$</span> conda install -c vacumm vacumm
 </pre></div></div>
 
     <h1>Release notes</h1>
@@ -92,12 +102,6 @@
     VACUMM is under the <a href="{{ pathto('appendix.license') }}">CeCiLL</a> license,
     which is compatible with well knwon GPL license.
 
-    <h1>Translation</h1>
-
-    The documentation is currently being translated.
-    Parts may be in english, in french or in both languages.
-    <b>If you want to contribute to the translation, you are welcome!</b>
-
     <h1>Contact</h1>
 
     Stephane Raynaud (raynaud (at) actimar.fr),
@@ -105,24 +109,15 @@
     See the <a href="{{ pathto('contact') }}">contact page</a>.
 
 
-    <h1>CAPARMOR users!</h1>
+    <h1>Test it!</h1>
 
-    If you have an access to the CAPARMOR supercomputer at IFREMER,
-    you can quickly try VACUMM from the shell:
-    <div class="highlight-bash"><div class="highlight"><pre>
-<span class="gp">$</span> module purge
-<span class="gp">$</span> module use /home11/caparmor/mars/PYTHON/modulefiles
-<span class="gp">$</span> module load uvcdat121
-<span class="gp">$</span> python
-</pre></div></div>
-
-    Then:
+    Try importating the core:
 
     <div class="highlight-python"><div class="highlight"><pre>
-<span class="gp">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">vacumm</span>
+<span class="gp">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">vacumm.misc</span>
 </pre></div></div>
 
-    Or for example:
+    A more concrete example:
     <div class="highlight-python"><div class="highlight"><pre>
 <span class="gp">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">vcmq</span> <span class="kn">import</span> *
 <span class="gp">&gt;&gt;&gt;</span> sst = DS(data_sample(<span class="s">&#39;mars3d.xy.nc&#39;</span>), <span class="s">&#39;mars&#39;</span>).get_sst()
