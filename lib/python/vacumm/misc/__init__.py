@@ -5,7 +5,7 @@ Misc tools
 Misc submodule can be used with vacumm.misc.*
 instead of vacumm.misc.misc.*.
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
