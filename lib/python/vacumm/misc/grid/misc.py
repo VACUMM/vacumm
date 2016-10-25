@@ -70,7 +70,7 @@ __all__ = ['isoslice','isgrid', 'get_resolution', 'get_distances', 'get_closest'
     'depth2dz', 'isdepthup', 'makedepthup', 'dz2depth', 'get_axis_slices',
     'xextend', 'xshift', 'curv2rect',  'isrect', 'create_grid2d', 'create_var2d', 'create_axes2d',
     'merge_axis_slice', 'merge_axis_slices', 'get_zdim', 'coord2slice', 'mask2ind',
-    'varsel']
+    'varsel', 'haversine']
 __all__.sort()
 
 
@@ -302,19 +302,10 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
             yya = units.deg2m(yya)
             xxb = units.deg2m(xxb,lat=yyb)
             yyb = units.deg2m(yyb)
-        dx = xxa-xxb
-        dy = yya-yyb
         if mode=='haversine':
-            dx *= N.pi/180
-            dy *= N.pi/180
-            xxa *= N.pi/180
-            yya *= N.pi/180
-            xxb *= N.pi/180
-            yyb *= N.pi/180
-            a = Nm.sin(dy/2)**2 + Nm.cos(yya) * Nm.cos(yyb) * Nm.sin(dx/2)**2
-            dist = constants.EARTH_RADIUS * 2 * Nm.arcsin(Nm.sqrt(a)) ; del a
+            dist = haversine(xxa, yya, xxb, yyb, degrees=True)
         else:
-            dist = Nm.sqrt(dx**2+dy**2)
+            dist = Nm.sqrt((xxa-xxb)**2+(yya-yyb)**2)
         del dx, dy
 
     # Reform
@@ -327,6 +318,18 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
         dist = float(dist)
     return dist
 
+def haversine(xa, ya, xb, yb, radius=None, degrees=True):
+    """Compute the haversine distance for a known radius"""
+    if radius:
+        radius = constants.EARTH_RADIUS
+    if degrees:
+        xa *= N.pi/180
+        ya *= N.pi/180
+        xb *= N.pi/180
+        yb *= N.pi/180
+    Nm = numod(xa, ya, xb, yb)
+    a = Nm.sin((ya-yb)/2)**2 + Nm.cos(ya) * Nm.cos(yb) * Nm.sin((xa-xb)/2)**2
+    return constants.EARTH_RADIUS * 2 * Nm.arcsin(Nm.sqrt(a))
 
 
 def get_closest(xx, yy, xp, yp, proj=True, mask=None,  gridded=True, **kwargs):
