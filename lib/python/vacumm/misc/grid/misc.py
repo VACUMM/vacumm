@@ -2138,7 +2138,13 @@ def _dist2x2d_(xx, yy, mode):
         get_distances(xx[:-1], yy[:-1], x[1:], yy[1:],  **kw))
 
 
-def resol2(axy, mode='median',  axis=-1, meters=False, cache=True, lat=45., checklims=True,
+def _dist1x1d_(xxyy, xy, axis, mode):
+    kw = dict(pairwise=True, mode=mode)
+    dslices = get_axis_slices(xxyy, axis)
+    if axis==-1:
+        return
+
+def resol2(axy, mode='median',  axis=None, meters=False, cache=True, lat=45., checklims=True,
     **kwargs):
     """Get the resolution of an axis or a grid
 
@@ -2237,41 +2243,27 @@ def resol2(axy, mode='median',  axis=-1, meters=False, cache=True, lat=45., chec
     kwdist = dict(mode=distmode, pairwise=True)
     fakelat = meters and islon(axy)
     if len(xy)==2 and (xy[0][:].ndim == 2 or xy[1][:].ndim == 2) : # 2x2D
+
         xy = meshgrid(*xy)
-#        for i in -1, -2: # resx,resy
-#            res += N.ma.sqrt(N.ma.diff(xy[0], axis=i)**2+N.ma.diff(xy[1], axis=i)**2),
         res = _dist2x2d_(*xy,  **kwdist)
 
     else: # Single 1D or 2D
 
         if N.ndim(xy[0][:])==2: # 2D
-            if axis<0: axis += xy[0].ndim
-            res = N.ma.abs(N.ma.diff(xy[0][:], axis=axis)),
-            #TODO: FINISH RESOL2 HERE
 
-        else:
-            if distmode=='simple':
-                res = ()
-                for tmp in xy:
-                    res += N.ma.abs(N.diff(tmp[:])),
+            if axis is None:
+                if islat(axy):
+                    axis = -2
+                else:
+                    axis = -1
+            if axis<0:
+                axis += xy[0].ndim
+
+            ds = get_axis_slices(2, axis)
+            if islon(axy):
+                resol = get_distances(xy[ds['firsts']], lat, xx[ds['lasts']], lat, **kwdist),
             else:
-                xy = meshgrid(*xy)
-                dxx, dyy = _dist2x2d_(*xy,  **kwdist)
-                res = dxx.mean(axis=0), dyy.mean(axis=1)
-                del dxx, dyy
-
-
-#        if len(xy[0].shape)==2:
-#            if axis<0: axis += xy[0].ndim
-#            if checklims:
-#                if axis==xy[0].ndim-1: # longitude
-#                    xy = N.ma.masked_outside(xy[0], -720., 720.),
-#                else:
-#                    xy = N.ma.clip(xy[0], -90., 90.),
-#                res = N.ma.abs(N.ma.diff(xy[0][:], axis=axis)), # (ny,nx-1) or (ny-1,nx)
-#        else:
-#            for tmp in xy:
-#                res += N.ma.abs(N.diff(tmp[:])),
+                resol = get_distances(0., xy[ds['firsts']], 0., xx[ds['lasts']], **kwdist),
 
 
     # Averages
