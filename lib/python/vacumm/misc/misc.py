@@ -41,7 +41,11 @@ Misc tools
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-import re,os
+import re
+import os
+import string
+import glob
+import fnmatch
 from copy import copy, deepcopy
 from itertools import cycle
 from types import IntType, FloatType, LongType, ComplexType
@@ -70,7 +74,8 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'create_selector', 'selector2str', 'split_selector', 'squeeze_variable', 'dict_copy_items',
     "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
     'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out',
-    'kwfilterout', 'filter_selector', 'isempty', 'checkdir', 'splitidx']
+    'kwfilterout', 'filter_selector', 'isempty', 'checkdir', 'splitidx',
+    'CaseChecker', 'check_case']
 __all__.sort()
 
 def broadcast(set, n, mode='last', **kwargs):
@@ -2122,3 +2127,106 @@ def splitidx(arr, crit):
     idx[idx<0] += nx
     idx = idx[(idx>0)&(idx<nx)]
     return idx.tolist()
+
+
+class CaseChecker(object):
+    """Check that a string that represents a "case" is valid"""
+
+    def __init__(self, valid_cases, errmode='raise', ic=True, casename="parameter"):
+
+        # Valid cases
+        if isinstance(valid_cases, basestring):
+            valid_cases = [valid_cases]
+        else:
+            valid_cases = list(valid_cases)
+        valid_cases = map(string.lower,valid_cases)
+        self.ic = ic
+        self.includes = []
+        self.excludes = []
+        self.iglobs = []
+        self.eglobs = []
+        for case in valid_cases:
+            if case.startswith('-'):
+                if glob.has_magic(case):
+                    self.eglobs.append(case.strip('-'))
+                else:
+                    self.excludes.append(case.strip('-'))
+            elif glob.has_magic(case):
+                self.iglobs.append(case.strip('+'))
+            else:
+                self.includes.append(case.strip('+'))
+
+#        print self.includes
+#        print self.iglobs
+#        print self.excludes
+#        print self.eglobs
+
+        # Error mode
+        assert errmode in ['raise', 'exit'] or callable(errmode), ('errmode must'
+            ' be either "raise",  "exit" or a callable')
+        self.errmode = errmode
+        self.casename = casename
+
+    @staticmethod
+    def _isvalid_single_(case, valids, globs):
+        if valids and case in valids:
+            return True
+        if globs and any([fnmatch.fnmatch(case, pattern) for pattern in globs]):
+            return True
+        return False
+
+    def isvalid(self, case):
+        """Check that case is a valid string or None"""
+        if case is None:
+            return True
+        assert isinstance(case, basestring)
+        if self.ic:
+            case = case.lower()
+
+        # Exclusion
+        if ((self.excludes+self.eglobs) and
+                self._isvalid_single_(case, self.excludes, self.eglobs)):
+            return False
+
+        # Inclusion
+        if not (self.includes+self.iglobs):
+            return True
+        return self._isvalid_single_(case, self.includes, self.iglobs)
+
+    def check(self, case):
+        """Check that case is a valid string or None and make an error if not"""
+        if not self.isvalid(case):
+            message = []
+            imessage = []
+            if self.includes:
+                imessage.append('it must be one of {self.includes}')
+            if self.iglobs:
+                imessage.append('it must match one of {self.iglobs}')
+            imessage = ' or '.join(imessage)
+            if imessage:
+                message.append(imessage)
+            emessage = []
+            if self.excludes:
+                emessage.append('it cannot be one of {self.excludes}')
+            if self.eglobs:
+                emessage.append('it cannot be one of {self.eglobs}')
+            emessage = ' or '.join(emessage)
+            if emessage:
+                message.append(emessage)
+            message = ("Invalid {self.casename} '{case}': " +
+                ' and '.join(message))
+            self.error(message.format(**locals()))
+
+    __call__ = check
+
+    def error(self, message):
+        """Exit with an error"""
+        if self.errmode=='exit':
+            sys.exit(message)
+        if callable(self.errmode):
+            self.errmode(message)
+        raise VACUMMError(message)
+
+def check_case(cases, case, **kwargs):
+    """Check that case is valid using :class:``CaseChecker` and allowed cases"""
+    return CaseChecker(cases, **kwargs)(case)

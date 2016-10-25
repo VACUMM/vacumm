@@ -2132,11 +2132,13 @@ def resol(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkli
     return res
 
 
-def _dist2x2d_(xx, yy, **kwdist):
-    return (get_distances(xx[:, :-1], yy[:, :-1], xx[:, 1:], yy[:, 1:],  **kwdist),
-        get_distances(xx[:-1], yy[:-1], x[1:], yy[1:],  **kwdist))
+def _dist2x2d_(xx, yy, mode):
+    kw = dict(pairwise=True, mode=mode)
+    return (get_distances(xx[:, :-1], yy[:, :-1], xx[:, 1:], yy[:, 1:], **kw),
+        get_distances(xx[:-1], yy[:-1], x[1:], yy[1:],  **kw))
 
-def resol2(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checklims=True,
+
+def resol2(axy, mode='median',  axis=-1, meters=False, cache=True, lat=45., checklims=True,
     **kwargs):
     """Get the resolution of an axis or a grid
 
@@ -2215,7 +2217,7 @@ def resol2(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkl
         if isaxis(axy): axy = axy.getValue()
         xy = axy,
 
-    else: # grid or pair of axes
+    else: # grid or pair of axes > convert to 2D arrays
 
         xy = get_xy(axy, num=True, proj=False, mesh=True, checklims=checklims)
 #    if checklims:
@@ -2227,9 +2229,13 @@ def resol2(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkl
 
 
     # Local distances
+    proj = kwargs.get('proj', False)
+    if proj: meters = True
+    if meters is None: meters = False
     res = ()
-    distmode = 'haversine' if proj or proj is None else 'simple'
+    distmode = 'haversine' if meters else 'simple'
     kwdist = dict(mode=distmode, pairwise=True)
+    fakelat = meters and islon(axy)
     if len(xy)==2 and (xy[0][:].ndim == 2 or xy[1][:].ndim == 2) : # 2x2D
         xy = meshgrid(*xy)
 #        for i in -1, -2: # resx,resy
@@ -2237,10 +2243,12 @@ def resol2(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkl
         res = _dist2x2d_(*xy,  **kwdist)
 
     else: # Single 1D or 2D
-        if N.ndim(xy[0][:])==2:
+
+        if N.ndim(xy[0][:])==2: # 2D
             if axis<0: axis += xy[0].ndim
             res = N.ma.abs(N.ma.diff(xy[0][:], axis=axis)),
             #TODO: FINISH RESOL2 HERE
+
         else:
             if distmode=='simple':
                 res = ()
@@ -2251,6 +2259,20 @@ def resol2(axy, mode='median',  axis=-1, proj=False, cache=True, lat=45., checkl
                 dxx, dyy = _dist2x2d_(*xy,  **kwdist)
                 res = dxx.mean(axis=0), dyy.mean(axis=1)
                 del dxx, dyy
+
+
+#        if len(xy[0].shape)==2:
+#            if axis<0: axis += xy[0].ndim
+#            if checklims:
+#                if axis==xy[0].ndim-1: # longitude
+#                    xy = N.ma.masked_outside(xy[0], -720., 720.),
+#                else:
+#                    xy = N.ma.clip(xy[0], -90., 90.),
+#                res = N.ma.abs(N.ma.diff(xy[0][:], axis=axis)), # (ny,nx-1) or (ny-1,nx)
+#        else:
+#            for tmp in xy:
+#                res += N.ma.abs(N.diff(tmp[:])),
+
 
     # Averages
     if mode.startswith('loc'):
