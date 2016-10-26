@@ -18,6 +18,9 @@ from traceback import format_exc
 import numpy as N
 npy = N
 np = N
+testing = N.testing
+assert_allclose = testing.assert_allclose
+assert_raises = testing.assert_raises
 
 # CDAT
 
