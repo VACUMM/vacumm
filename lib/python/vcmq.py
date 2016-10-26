@@ -41,7 +41,7 @@ from matplotlib.ticker import AutoLocator, MaxNLocator, FixedLocator, IndexLocat
 
 # VACUMM
 
-from vacumm import VACUMMError, VACUMMWarning, help as vchelp
+from vacumm import VACUMMError, VACUMMWarning, help as vchelp, vacumm_warning, vcwarn
 
 
 # - config

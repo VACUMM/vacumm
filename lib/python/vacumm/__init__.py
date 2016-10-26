@@ -34,6 +34,8 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from warnings import warn
+
 __project__ = 'vacumm'
 __version__ = '3.3.0'
 __release__ = '1'
@@ -93,3 +95,9 @@ class VACUMMError(Exception):
 
 class VACUMMWarning(UserWarning):
     """Standard VACUMM warning"""
+
+def vacumm_warning(message, stacklevel=2):
+    """Issue a :class:`VACUMMWarning`"""
+    warn(message, VACUMMWarning, stacklevel=stacklevel)
+
+vcwarn = vacumm_warning
