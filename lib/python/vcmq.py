@@ -220,7 +220,7 @@ from vacumm.misc.grid.masking import (
 from vacumm.misc.grid.kriging import (
     OrdinaryCloudKriger, variogram, variogram_fit, variogram_model,
     variogram_model_type, variogram_multifit, cloud_split,
-    KrigingError, VariogramModel, VariogramModelError,
+    KrigingError, VariogramModel, VariogramModelError, SimpleCloudKriger,
     )
 
 # - data

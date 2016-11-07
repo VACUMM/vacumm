@@ -32,6 +32,7 @@ class TSF(VCTestCase):
         'test_regrid_kriging_krig',
         'test_regrid_kriging_parallel',
         'test_regrid_kriging_regrid',
+        'test_regrid_kriging_simple_farvalue',
         'test_regrid_transect_split',
         'test_regrid_transect_xyt',
         ]:
