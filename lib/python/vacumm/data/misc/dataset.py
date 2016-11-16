@@ -511,6 +511,8 @@ class Dataset(Object):
         # Load specs of variables
         self._load_ncobj_specs_(ncobj_specs)
 
+
+
     def _load_ncobj_specs_(self, ncobj_specs=None):
         """Read the :attr:`ncobj_specs` attribute and reformat it"""
         # Get specs
@@ -634,8 +636,6 @@ class Dataset(Object):
         """
 
         # Specs from CF specs (vacumm.data.cf)
-        if varname=='bathy_w':
-            pass
         fromobj = None
         if varname in GENERIC_NAMES:
 
@@ -852,8 +852,15 @@ class Dataset(Object):
     def __len__(self):
         return len(self.dataset)
 
+    def __getitem__(self, key):
+        return self.dataset[key]
+
+    def get_variable_names(self):
+        """Get the list of netcdf variable names of the first file"""
+        return self[0].listvariables()
+
     def get_selector(self, time=None, lon=None, lat=None, level=None,
-        merge=True, only=None, split=False, **kwargs):
+            merge=True, only=None, split=False, **kwargs):
         """Get a cdms2.selectors.Selector from specified time/lat/lon/level selection
 
         :Params:
@@ -1132,6 +1139,8 @@ class Dataset(Object):
         # Specifications for searching, selecting and modifying the variable
         specs = self._get_ncobj_specs_(varname)
         if specs is None:
+            if isinstance(varname, basestring) and varname.startswith('+'):
+                specs = self._get_ncobj_specs_('+'+varname)
             if warn: self.warning('No valid specs to search for %s', varname)
             return None
         genname = specs['genname']
@@ -2073,6 +2082,32 @@ class OceanDataset(OceanSurfaceDataset):
     getvar_fmtdoc(get_dz_w, mode=_mode_doc)
 
     del _mode_doc
+
+
+    def get_variable(self, varname, level=None, squeeze=False, **kwargs):
+
+        # Convert level argument
+        if isinstance(level, basestring):
+
+            # Selector
+            bottom = slice(0, 1)
+            surf = slice(-1, None)
+            if level=='surf':
+                level = surf if self._isdepthup_() else bottom
+            elif level=='bottom':
+                level = bottom if self._isdepthup_() else surf
+            else:
+                raise DatasetError('Invalid level selector string: '+level)
+
+            # Squeeze Z dim
+            if not squeeze:
+                squeeze = 'z'
+            elif isinstance(squeeze, basestring) and 'z' not in squeeze:
+                squeeze = squeeze+'z'
+
+        return Dataset.get_variable(self, varname, level=level, squeeze=squeeze, **kwargs)
+
+    get_variable.__doc__ = Dataset.get_variable.__doc__
 
     def _isdepthup_(self, depth=None):
         """Guess if depths are positive up"""
