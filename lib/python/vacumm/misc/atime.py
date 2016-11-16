@@ -36,7 +36,7 @@ Time utilities
 #
 import os
 import re
-import time,datetime as DT
+import time, datetime as DT
 from operator import isNumberType, gt, ge, lt, le
 from re import split as resplit,match, compile as recompile
 import math
@@ -170,19 +170,20 @@ def day_of_the_year(mytime):
     tunits = 'days since %s'%ctyear
     return ctime.torel(tunits).value+1
 
-def lindates(first, last, incr, units):
+def lindates(first, last, incr, units=None):
     """Create a list of linearly incrementing dates
 
     :Params:
 
         - **first**: first date
         - **last**: first date
-        - **incr**: increment step
-        - **units**: units like "days" (see :func:`unit_type`)
+        - **incr**: increment step OR number of steps if units is None
+        - **units**: units like "days" (see :func:`unit_type`) or None
 
     :Example:
 
         >>> dates = lindates('2000', '2002-05', 3, 'months')
+        >>> dates = lindates('2000', '2002-05', 8)
 
     :Return:
 
@@ -190,8 +191,18 @@ def lindates(first, last, incr, units):
     """
     first = comptime(first)
     last = comptime(last)
-    units = unit_type(units)
     if last<first: return []
+
+    # Fixed number of steps
+    if units is None:
+        tunits = 'days since 2000'
+        t0 = first.torel(tunits).value
+        t1 = last.torel(tunits).value
+        tt = N.linspace(t0,  t1, int(incr))
+        return [cdtime.reltime(t, tunits).tocomp() for t in tt]
+
+    # Fixed step
+    units = unit_type(units)
     dates = [first]
     while dates[-1]<last:
         dates.append(add_time(dates[-1], incr, units))
