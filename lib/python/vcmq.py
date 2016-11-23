@@ -15,9 +15,8 @@ from traceback import format_exc
 
 # Numeric
 
-import numpy as N
-npy = N
-np = N
+import numpy
+npy = N = np = numpy
 testing = N.testing
 assert_allclose = testing.assert_allclose
 assert_raises = testing.assert_raises
@@ -64,7 +63,7 @@ from vacumm.misc.misc import (
     grow_depth, grow_lat, grow_variables, history, intersect, is_iterable,
     isempty, isnumber, lunique, main_geodir, selector2str, rm_html_tags,
     tunique, split_selector, xls_style, Att, splitidx, CaseChecker, check_case,
-    )
+    indices2slices, filter_level_selector, filter_selector)
 
 from vacumm.misc.axes import (
     create_lon, create_lat, create_time, create_depth,
