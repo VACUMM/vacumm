@@ -553,7 +553,7 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
     # Loop on objects
     for key in keys:
         kwsearch = {key:eval(key)}
-        for name in ids:
+        for i, name in enumerate(ids):
             v = f[name]
             if ncmatch_obj(v, name=name, ignorecase=ignorecase, **kwsearch):
                 break
@@ -1020,6 +1020,66 @@ def nccache_get_time(f, timeid=None, ro=False):
     _nccache_time[fname] = taxis
     return taxis
 
+class NcIterTimeSlice(object):
+    """Basic netcdf file iterator with a fixed slice"""
+    def __init__(self, files, tslice=None, timeid=None, keepopen=False, autoclose=True):
+        self.i = 0
+        if isinstance(files, basestring): files = [files]
+        self.nfiles = len(files)
+        self.files = files
+        self.nfonext = None
+        if tslice is None:
+            tslice = slice(None)
+        self.tslice = tslice
+        self.autoclose = autoclose
+        self.keepopen = keepopen
+        self.tslices = []
+        self.timeid = timeid
+
+    def __iter__(self):
+        return self
+
+    def next(self, verbose=False):
+
+        # Last iteration
+        if self.i == self.nfiles:
+            self.close()
+            raise StopIteration
+
+        # Open current file
+        if self.nfonext is not None: # from next one
+            f = self.nfonext.f
+            if not self.keepopen: self.nfo.close()
+            self.nfo = self.nfonext
+            self.nfonext = None
+        else: # first time used
+            self.nfo = NcFileObj(self.files[self.i])
+            f = self.nfo.f
+
+        # Get time axis
+        if hasattr(f, '_vacumm_timeid'):
+            self.timeid = f._vacumm_timeid
+        taxis = nccache_get_time(f, timeid=self.timeid, ro=True)
+        if taxis is None:
+            return f, None
+        self.timeid = taxis.id
+        if verbose:
+            print taxis
+
+        # Real slice
+        tslice = slice(*self.tslice.indices(len(taxis)))
+
+        # Finalize
+        self.i += 1
+        return f, self.tslice
+
+    def close(self):
+        """Close file descriptors that can be closed"""
+        if not self.keepopen:
+            if self.nfonext:
+                self.nfonext.close()
+            if self.nfo:
+                self.nfo.close()
 
 class NcIterBestEstimate(object):
     """Iterator on netcdf forecast files
@@ -1107,39 +1167,22 @@ class NcIterBestEstimate(object):
             self.nfo = NcFileObj(self.files[self.i])
             f = self.nfo.f
 
-        ## Check file cache
+        # Check file cache
         if not hasattr(f, '_vacumm_nibe_tslices'):
             f._vacumm_nibe_tslices = {}
-        #ftslices = f._vacumm_nibe_tslices
-        #if self.id in ftslices:
-            #print 'gotit from cache'
-            #return f, ftslices[self.id]
 
         # Get time axis
         if hasattr(f, '_vacumm_timeid'):
             self.timeid = f._vacumm_timeid
-#        elif self.timeid is None or self.timeid not in f.listdimension():
-#            self.timeid = guess_timeid(f)
-#        if self.timeid is None:
-#            return f, None
-#            raise IOError('No valid time axis found in netcdf file')
-#        taxis = f.getAxis(self.timeid)
         taxis = nccache_get_time(f, timeid=self.timeid, ro=True)
         if taxis is None:
             return f, None
-            raise IOError('No valid time axis found in netcdf file')
         self.timeid = taxis.id
         if verbose:
             print taxis
 
         # Get base time slice of current file
         ijk = tsel2slice(taxis, self.seltime, asind=True, nonone=True)
-        #if isinstance(self.seltime, slice):
-            #ij = self.seltime.indices(len(taxis))[:2]
-        #else:
-            #try: ij = taxis.mapInterval(self.seltime)
-            #except:
-                #ij = None
         if ijk is False:
             return self.empty() # nothing
         i, j, k = ijk
@@ -1275,7 +1318,7 @@ def ncread_best_estimate(filepattern, varname, *args, **kwargs):
 def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, select=None,
     atts=None, samp=None, grid=None, verbose=False, ignorecase=True, torect=True,
     squeeze=False, searchmode=None, nibeid=None, sort=True, nopat=False, patfreq=None,
-    patfmtfunc=None, check=True, **kwargs):
+    patfmtfunc=None, check=True, bestestimate=True, **kwargs):
     """Read the best estimate of a variable through a set of netcdf files
 
     .. warning:: Files are listed using function :func:`list_forecast_files`.
@@ -1353,7 +1396,10 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
     selects = broadcast(select, nvar)
     selectors = [create_selector(s, **kwargs) for s in selects]
     # - iterator on files
-    iterator = NcIterBestEstimate(ncfiles, time, timeid=timeid, toffset=toffset, id=nibeid)
+    if not toffset and not bestestimate and (isinstance(time, slice) or time is None):
+        iterator = NcIterTimeSlice(ncfiles, time, timeid=timeid)
+    else:
+        iterator = NcIterBestEstimate(ncfiles, time, timeid=timeid, toffset=toffset, id=nibeid)
     # - undepsampling
     if samp is not None:
         samp = [0 for s in samp if s==0 or not isinstance(s, int)]
