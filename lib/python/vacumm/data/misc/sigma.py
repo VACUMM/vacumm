@@ -43,8 +43,10 @@ import re, math, numpy as N, cdms2, MV2
 from traceback import format_exc
 from warnings import warn
 from cdms2.selectors import Selector
-from vacumm.misc import selector2str, create_selector
+from vacumm.misc import (selector2str, create_selector, split_selector,
+    filter_level_selector)
 import vacumm.data.cf as cf
+from vacumm.misc.axes import axis_type
 from vacumm.misc.grid import dz2depth as dz2depths
 from vacumm.misc.io import NcFileObj, ncread_axis, ncread_var
 
@@ -381,16 +383,22 @@ class NcSigma(object):
         # Axes
         var = ncread_axis(self.f, ncname, mode=None)
         if var is not None:
+
+            # Selector
+            atype = axis_type(var, genname=True)[:3]
+            for sname, sel in split_selector(selector)[1].items():
+                if sname==var.id or (atype is not None and atype==sname[:3]):
+                    if not isinstance(sel, slice):
+                        ijk = var.mapIntervalExt(sel)
+                    else:
+                        ijk = sel.indices(len(var))
+                    var = var.subaxis(*ijk)
             return var
-#        if ncname not in self.f.variables:
-#            return self.f.getAxis(ncname)
 
         # Variables
-#        var = self.f(ncname, selector)
         args = [ncname]
         if selector: args.append(selector)
         kwargs = {'mode':None}
-#        print ncread_var(self.f, ncname, **kwargs)(selector)
         var = ncread_var(self.f, *args, **kwargs)
         if var is None: return
         if hasattr(self.f[ncname], '_FillValue') and cdms2.isVariable(var):
@@ -409,8 +417,11 @@ class NcSigma(object):
         for a in at:
             a = self._at_(a, focus='ver')
             if self.sigma_name not in self.formula_terms[a]: continue
-            varname  = '+'+self.formula_terms[a][self.sigma_name]
-            var = self._get_from_cache_(varname, selector)
+            varname  = '+' + self.formula_terms[a][self.sigma_name]
+            ncname = self._get_ncname_(varname)
+            ids = [ncname] if ncname else []
+            zsel = filter_level_selector(selector, ids=ids)
+            var = self._get_from_cache_(varname, zsel)
             if var is None:
                 raise SigmaError('Sigma variable not found for sigma coordinates: '+varname)
 #            if hasattr(var, 'getValue'):
@@ -1097,15 +1108,16 @@ def as_selector(select=None):
     """Convert select to a :class:`cdms2.selectors.Selector` object"""
     if isinstance(select, cdms2.selectors.Selector):
         return select
-    selector = cdms2.selectors.Selector()
-    if select is None: return selector
-    if isinstance(select, dict):
-        selector.refine(**select)
-    elif isinstance(select, list):
-        selector.refine(*select)
-    else:
-        selector.refine(select)
-    return selector
+    return create_selector(select)
+#    selector = cdms2.selectors.Selector()
+#    if select is None: return selector
+#    if isinstance(select, dict):
+#        selector.refine(**select)
+#    elif isinstance(select, list):
+#        selector.refine(*select)
+#    else:
+#        selector.refine(select)
+#    return selector
 
 if __name__=='__main__':
     a=cdms2.selectors.Selector((7,4),time=(5,6))
