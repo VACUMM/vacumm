@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Conventions about data formats and names"""
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -706,33 +706,35 @@ AXIS_SPECS = OrderedDict(
         standard_names =  ['x_grid_index'],
         long_names = ["x-dimension of the grid"],
         axis = 'X',
+        atlocs=['t', 'u', 'v', 'f'],
     ),
     nj = dict(names = ['nj'],
         standard_names =  ['y_grid_index'],
         long_names = ["y-dimension of the grid"],
         axis = 'Y',
+        atlocs=['t', 'u', 'v', 'f'],
     ),
-    ni_u = dict(
-        names = ['ni_u'],
-        standard_names =  ['x_grid_index_at_u_location'],
-        long_names = ["x-dimension of the grid at U location"],
-        axis = 'X',
-    ),
-    nj_u = dict(names = ['nj_u'],
-        standard_names =  ['y_grid_index_at_u_location'],
-        long_names = ["y-dimension of the grid at U location"],
-        axis = 'Y',
-    ),
-    ni_v = dict(names = ['ni_v'],
-        standard_names =  ['x_grid_index_at_v_location'],
-        long_names = ["x-dimension of the grid at V location"],
-        axis = 'X',
-    ),
-    nj_v = dict(names = ['nj_v'],
-        standard_names =  ['y_grid_index_at_v_location'],
-        long_names = ["y-dimension of the grid at V location"],
-        axis = 'Y',
-    ),
+#    ni_u = dict(
+#        names = ['ni_u'],
+#        standard_names =  ['x_grid_index_at_u_location'],
+#        long_names = ["x-dimension of the grid at U location"],
+#        axis = 'X',
+#    ),
+#    nj_u = dict(names = ['nj_u'],
+#        standard_names =  ['y_grid_index_at_u_location'],
+#        long_names = ["y-dimension of the grid at U location"],
+#        axis = 'Y',
+#    ),
+#    ni_v = dict(names = ['ni_v'],
+#        standard_names =  ['x_grid_index_at_v_location'],
+#        long_names = ["x-dimension of the grid at V location"],
+#        axis = 'X',
+#    ),
+#    nj_v = dict(names = ['nj_v'],
+#        standard_names =  ['y_grid_index_at_v_location'],
+#        long_names = ["y-dimension of the grid at V location"],
+#        axis = 'Y',
+#    ),
 
 
 
@@ -741,6 +743,7 @@ axis_specs = AXIS_SPECS # compat
 
 #: Specifications for grid formating
 GRID_SPECS = {
+    '': dict(lon='lon', lat='lat', level='depth'),
     't': dict(lon='lon', lat='lat', level='depth_t'),
     'u': dict(lon='lon_u', lat='lat_u', level='depth_t'),
     'v': dict(lon='lon_v', lat='lat_v', level='depth_t'),
@@ -749,6 +752,7 @@ GRID_SPECS = {
 }
 #TODO: 't' must use lon_t and lat_t
 GRID_SPECS['r'] = GRID_SPECS['t']
+GRID_SPECS[None] = GRID_SPECS['']
 grid_specs = GRID_SPECS # compat
 
 _reloc =  OrderedDict(
@@ -1657,8 +1661,8 @@ def format_grid(grid, pt, **kwargs):
     gs = GRID_SPECS[pt]
     lon = grid.getLongitude()
     lat = grid.getLatitude()
-    format_axis(lon, gs['lon'])
-    format_axis(lat, gs['lat'])
+    format_axis(lon, gs['lon'], **kwargs)
+    format_axis(lat, gs['lat'], **kwargs)
 
 
 #: Hidden attributes of variable useful of this module
