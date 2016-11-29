@@ -1964,11 +1964,11 @@ def _dist2x2d_(xx, yy, mode):
         get_distances(xx[:-1], yy[:-1], xx[1:], yy[1:],  **kw))
 
 
-def _dist1x1d_(xxyy, xy, axis, mode):
-    kw = dict(pairwise=True, mode=mode)
-    dslices = get_axis_slices(xxyy, axis)
-    if axis==-1:
-        return
+#def _dist1x1d_(xxyy, xy, axis, mode):
+#    kw = dict(pairwise=True, mode=mode)
+#    dslices = get_axis_slices(xxyy, axis)
+#    if axis==-1:
+#        return
 
 def resol(axy, mode='median',  axis=None, meters=False, cache=True, lat=None,
         checklims=True, **kwargs):
