@@ -9,7 +9,7 @@ Misc tools
     >>> from vacumm.misc import auto_scale
 
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -55,8 +55,7 @@ import numpy as N, MV2, cdms2
 from matplotlib import rcParams
 from MV2 import nomask
 from cdms2 import createAxis, isVariable
-from genutil import grower
-from genutil import minmax
+from genutil import grower, minmax
 
 from ..__init__ import VACUMMError
 
@@ -76,7 +75,8 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
     'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out',
     'kwfilterout', 'filter_selector', 'isempty', 'checkdir', 'splitidx',
-    'CaseChecker', 'check_case', 'indices2slices', 'filter_level_selector']
+    'CaseChecker', 'check_case', 'indices2slices', 'filter_level_selector',
+    'match_atts', 'match_string']
 __all__.sort()
 
 def broadcast(set, n, mode='last', **kwargs):
@@ -458,6 +458,52 @@ def check_def_atts(obj, **defaults):
     for att,val in defaults.items():
         if not hasattr(obj,att):
             setattr(obj,att,val)
+
+
+def match_string(ss, checks, ignorecase=True, transform=None):
+    """Check that a string verify a check list that consists of
+    a list of either strings or callables"""
+    # Nothing
+    if not ss or not checks:
+        return False
+
+    # Setup
+    ss = ss.strip()
+    if ignorecase:
+        ss = ss.lower()
+    if not isinstance(checks, (list, tuple)):
+        checks = [checks]
+
+    # Callables
+    sss = []
+    for check in checks:
+        if callable(transform) and not callable(check):
+            check = transform(check)
+        if callable(check) and check(ss):
+            return True
+        if isinstance(check, basestring):
+            sss.append(check)
+
+    # Strings
+    sss = map(str.strip, sss)
+    if ignorecase:
+        sss = map(str.lower, sss)
+    return ss in sss
+
+def match_atts(obj, checks, id=True, ignorecase=True, transform=None):
+    """Check that at least one of the attributes of an object matches check list
+
+    :Params:
+        - **obj**: An object
+        - **checks**: A dictionary of (attributes name, checklist)
+    """
+    if obj is None or checks is None:
+        return False
+    for attname, attchecks in checks.items():
+        if (hasattr(obj, attname) and match_string(getattr(obj, attname),
+                attchecks, ignorecase=ignorecase, transform=transform)):
+            return True
+    return False
 
 def _pospos_(i, n):
     if isinstance(i, int):

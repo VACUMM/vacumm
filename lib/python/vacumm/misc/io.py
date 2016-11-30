@@ -568,27 +568,27 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
 
     return name
 
-def _isinlist_(name, checks, ignorecase):
-    """checks is a list of either strings or callables"""
-    # Nothing
-    if not name or not checks:
-        return False
-    name = name.strip()
-    if ignorecase:
-        name = name.lower()
-
-    # Callables
-    names = []
-    for check in checks:
-        if callable(check) and check(name):
-            return True
-        names.append(check)
-
-    # Strings
-    names = map(str.strip, names)
-    if ignorecase:
-        names = map(str.lower, names)
-    return name in names
+#def _isinlist_(name, checks, ignorecase):
+#    """checks is a list of either strings or callables"""
+#    # Nothing
+#    if not name or not checks:
+#        return False
+#    name = name.strip()
+#    if ignorecase:
+#        name = name.lower()
+#
+#    # Callables
+#    names = []
+#    for check in checks:
+#        if callable(check) and check(name):
+#            return True
+#        names.append(check)
+#
+#    # Strings
+#    names = map(str.strip, names)
+#    if ignorecase:
+#        names = map(str.lower, names)
+#    return name in names
 
 def ncmatch_obj(obj, name=None, standard_names=None, names=None,
         long_names=None, units=None, axis=None, ignorecase=True, **kwargs):
@@ -628,17 +628,24 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
         search[key] = val
 
     # Check long_name and units
-    for refs, val in [
-            (search['standard_names'], getattr(obj, "standard_name", None)),
-            (search['names'], name or getattr(obj, 'id', None)),
-            (search['axis'], getattr(obj, "axis",  None)),
-            (search['long_names'], getattr(obj, "long_name", None)),
-            (search['units'], getattr(obj, "units", None))]:
-        if refs is not None and val is not None:
-            if _isinlist_(val, refs, ignorecase):
-                return True
-
-    return False
+    checks = OrderedDict(
+        standard_name=search['standard_names'],
+        id=search['names'],
+        axis=search['axis'],
+        long_names=search['long_names'],
+        units=search['units'])
+    return match_atts(obj, checks, ignorecase)
+#    for refs, val in [
+#            (search['standard_names'], getattr(obj, "standard_name", None)),
+#            (search['names'], name or getattr(obj, 'id', None)),
+#            (search['axis'], getattr(obj, "axis",  None)),
+#            (search['long_names'], getattr(obj, "long_name", None)),
+#            (search['units'], getattr(obj, "units", None))]:
+#        if refs is not None and val is not None:
+#            if _isinlist_(val, refs, ignorecase):
+#                return True
+#
+#    return False
 
 
 def ncget_var(f, *args, **kwargs):
@@ -816,7 +823,7 @@ def _process_var(var, torect, samp, grid, kwgrid, squeeze, atts):
 
     return var
 
-def ncget_axis(f, checker, ids=None, ro=False, **kwargs):
+def ncget_axis(f, checker, ids=None, ro=False, checkaxis=False, **kwargs):
     """Get an axis in a netcdf file by searching all axes and variables
 
     If ``checker`` is a list, dict or tuple, :func:`ncfind_axis`
@@ -839,11 +846,10 @@ def ncget_axis(f, checker, ids=None, ro=False, **kwargs):
 
     nfo = NcFileObj(f)
     f = nfo.f
-
     if isinstance(checker, basestring):
         checker = get_checker(checker)
     elif isinstance(checker, (list, tuple, dict)):
-        axid = ncfind_obj(f, checker, ids=ids, **kwargs)
+        axid = ncfind_obj(f, checker, ids=ids, checkaxis=checkaxis, ro=ro, **kwargs)
         if axid is None: return
         axis = f[axid].clone()
         nfo.close()
@@ -860,7 +866,7 @@ def ncget_axis(f, checker, ids=None, ro=False, **kwargs):
     # Loop on targets
     axis = None
     for id in ids:
-        if checker(f[id], ro=True):
+        if checker(f[id], checkaxis=checkaxis, ro=True):
             axis = f[id]
             break
 #            if id in varids:
@@ -868,20 +874,24 @@ def ncget_axis(f, checker, ids=None, ro=False, **kwargs):
 #            return f.getAxis(id)
         elif id in varids:
             for i, aid in enumerate(f[id].listdimnames()):
-                if checker(f[aid], ro=True):
+                if checker(f[aid], checkaxis=checkaxis, ro=True):
                     axis = f[id].getAxis(i)
                     break
             else:
                 continue
             break
-    if axis is None: return
-    axis = axis.clone()
+    if axis is None:
+        return
+    if hasattr(axis, 'clone'):
+        axis = axis.clone()
+    else:
+        axis = axis()
     del nfo
-    checker(axis, ro=ro)
+    checker(axis, checkaxis=checkaxis, ro=ro)
     return axis
 
 
-def ncget_lon(f, ids=None, ro=False):
+def ncget_lon(f, ids=None, checkaxis=False, ro=False):
     """Get longitude axis of a netcdf file
 
     :Params:
@@ -889,9 +899,9 @@ def ncget_lon(f, ids=None, ro=False):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, islon, ids, ro=ro)
+    return ncget_axis(f, islon, ids, checkaxis=checkaxis, ro=ro)
 
-def ncget_lat(f, ids=None, ro=False):
+def ncget_lat(f, ids=None, checkaxis=False, ro=False):
     """Get latitude axis of a netcdf file
 
     :Params:
@@ -899,9 +909,9 @@ def ncget_lat(f, ids=None, ro=False):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, islat, ids, ro=ro)
+    return ncget_axis(f, islat, ids, checkaxis=checkaxis, ro=ro)
 
-def ncget_time(f, ids=None, ro=False):
+def ncget_time(f, ids=None, checkaxis=False, ro=False):
     """Get time axis of a netcdf file
 
     :Params:
@@ -909,9 +919,9 @@ def ncget_time(f, ids=None, ro=False):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, istime, ids, ro=ro)
+    return ncget_axis(f, istime, ids, checkaxis=checkaxis, ro=ro)
 
-def ncget_level(f, ids=None, ro=False):
+def ncget_level(f, ids=None, checkaxis=False, ro=False):
     """Get level axis of a netcdf file
 
     :Params:
@@ -919,7 +929,7 @@ def ncget_level(f, ids=None, ro=False):
         - **f**: Netcdf file name or object.
         - **ids**, optional: List of ids to help searching.
     """
-    return ncget_axis(f, islevel, ids, ro=ro)
+    return ncget_axis(f, islevel, ids, checkaxis=checkaxis, ro=ro)
 
 def ncget_grid(f, ids=None, torect=False):
     """Get a grid of a netcdf file
@@ -4464,7 +4474,7 @@ def netcdf4(level=3, deflate=1, shuffle=1):
     cdms2.setNetcdfDeflateFlag(deflate)
     cdms2.setNetcdfShuffleFlag(shuffle)
     cdms2.setNetcdfDeflateLevelFlag(level)
-
+netcdf4()
 
 ######################################################################
 ######################################################################
@@ -4480,7 +4490,7 @@ from .grid.masking import polygons, convex_hull, rsamp, polygon_mask, create_pol
 from .grid.regridding import griddata, xy2xy
 from .grid.basemap import get_proj
 from .misc import is_iterable,  broadcast, kwfilter, set_atts, create_selector, \
-    squeeze_variable, checkdir
+    squeeze_variable, checkdir, match_atts
 from .phys.units import deg2m, m2deg
 from .plot import map2, _colorbar_, savefigs as Savefigs, markers as Markers
 
