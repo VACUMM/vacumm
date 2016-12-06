@@ -104,7 +104,7 @@ from vacumm.misc.bases import (
 from vacumm.misc.io import (
     list_forecast_files, netcdf3, netcdf4, ncread_files, ncread_var,
     ncread_axis, ncget_var, ncget_axis, ncfind_var, ncfind_axis, NcIterBestEstimate,
-    ncget_fgrid, grib2nc, grib_get_names, ncfind_obj, ncget_grid,
+    ncget_fgrid, grib2nc, grib_get_names, ncfind_obj, ncget_grid, ncget_level,
     ncget_lon, ncget_lat, ncget_time, ncget_var, ncmatch_obj, ncread_best_estimate,
     XYZ, XYZMerger, Shapes, NcIterBestEstimate, NcIterBestEstimateError,
     NcFileObj, ColoredFormatter, TermColors,
