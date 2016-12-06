@@ -2058,7 +2058,7 @@ class ArgList(object):
         self.single = not isinstance(argsi, list)
         self.argsi = argsi
     def get(self):
-        return [argsi] if self.single else argsi
+        return [self.argsi] if self.single else self.argsi
     def put(self, argso):
         so = not isinstance(argso, list)
         if (so and self.single) or (not so and not self.single):
