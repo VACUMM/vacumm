@@ -500,6 +500,8 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
 
         # Names and standard_name
         names = name.get("name", name.get('names', None))
+        if names is None:
+            names = name.get("id", name.get('ids', None))
         standard_names = name.get("standard_name",  name.get('standard_names', None))
 
         # Axis
@@ -568,27 +570,6 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
 
     return name
 
-#def _isinlist_(name, checks, ignorecase):
-#    """checks is a list of either strings or callables"""
-#    # Nothing
-#    if not name or not checks:
-#        return False
-#    name = name.strip()
-#    if ignorecase:
-#        name = name.lower()
-#
-#    # Callables
-#    names = []
-#    for check in checks:
-#        if callable(check) and check(name):
-#            return True
-#        names.append(check)
-#
-#    # Strings
-#    names = map(str.strip, names)
-#    if ignorecase:
-#        names = map(str.lower, names)
-#    return name in names
 
 def ncmatch_obj(obj, name=None, standard_names=None, names=None,
         long_names=None, units=None, axis=None, ignorecase=True, **kwargs):
