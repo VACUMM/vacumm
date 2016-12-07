@@ -69,7 +69,7 @@ __all__ = ['isoslice','isgrid', 'get_resolution', 'get_distances', 'get_closest'
     'depth2dz', 'isdepthup', 'makedepthup', 'dz2depth', 'get_axis_slices',
     'xextend', 'xshift', 'curv2rect',  'isrect', 'create_grid2d', 'create_var2d', 'create_axes2d',
     'merge_axis_slice', 'merge_axis_slices', 'get_zdim', 'coord2slice', 'mask2ind',
-    'varsel', 'haversine']
+    'varsel', 'haversine', 'clone_grid']
 __all__.sort()
 
 
@@ -1595,6 +1595,25 @@ def create_grid(lon, lat, mask=None, lonatts={}, latatts={}, curv=None, **kwargs
 
     else: # Curvilinear
         return create_grid2d(lon, lat, xatts=lonatts, yatts=latatts, mask=mask, **kwargs)
+
+
+def clone_grid(grid):
+    """Clone a grid"""
+    if grid is None:
+        return
+    id = grid.id
+
+    lon = grid.getLongitude().clone()
+    lat = grid.getLatitude().clone()
+    if cdms2.isVariable(lon):
+        iaxis = lon.getAxis(1).clone()
+        jaxis = lon.getAxis(0).clone()
+        lon.setAxisList([jaxis, iaxis])
+        lat.setAxisList([jaxis, iaxis])
+
+    grid = create_grid(lon, lat, curv=len(lon.shape)==2)
+    grid.id = id
+    return grid
 
 
 def gridsel(gg, lon=None, lat=None):
