@@ -70,7 +70,7 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'FileTree', 'geodir', 'main_geodir', 'intersect', 'Att', 'broadcast', 'makeiter',
     'get_svn_revision', 'dirsize', 'Cfg2Att', 'closeto', 'cp_props',
     'zoombox','scalebox','history', 'dict_check_defaults', 'is_iterable', 'squarebox',
-    'grow_variables', 'grow_depth', 'grow_lat', 'phaselab',
+    'grow_variables', 'grow_depth', 'grow_lat', 'phaselab', 'ArgTuple',
     'create_selector', 'selector2str', 'split_selector', 'squeeze_variable', 'dict_copy_items',
     "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
     'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out',
@@ -2057,14 +2057,51 @@ class ArgList(object):
     def __init__(self, argsi):
         self.single = not isinstance(argsi, list)
         self.argsi = argsi
+
     def get(self):
         return [self.argsi] if self.single else self.argsi
+
     def put(self, argso):
         so = not isinstance(argso, list)
         if (so and self.single) or (not so and not self.single):
             return argso
         if so and not self.single:
             return [argso]
+        return argso[0]
+
+class ArgTuple(object):
+    """Utility to always manage arguments as tuple and return results as input
+
+    :Examples:
+
+        >>> a = 'a'
+        >>> al = ArgTuple(a)
+        >>> al.get() # input for function as tuple
+        ['a']
+        >>> al.put(['aa']) # output as input
+        'aa'
+
+        >>> a = ['a','b']
+        >>> al = ArgTuple(a)
+        >>> al.get()
+        ['a', 'b']
+        >>> al.put(['aa'])
+        ['aa']
+
+    """
+    def __init__(self, argsi):
+        self.single = not isinstance(argsi, tuple)
+        self.argsi = argsi
+
+    def get(self):
+        return (self.argsi, ) if self.single else self.argsi
+
+    def put(self, argso):
+        so = not isinstance(argso, tuple)
+        if (so and self.single) or (not so and not self.single):
+            return argso
+        if so and not self.single:
+            return (argso, )
         return argso[0]
 
 def set_lang(default='en_US.UTF-8', num=None):
