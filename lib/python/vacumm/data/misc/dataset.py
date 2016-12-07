@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -75,7 +75,7 @@ N = numpy
 from vacumm.misc import auto_scale, MV2_concatenate, MV2_axisConcatenate, create_selector, \
     split_selector, dict_merge, dict_check_defaults, set_atts, broadcast
 from vacumm.misc.atime import add as add_time, comptime, datetime as adatetime, Intervals, \
-    filter_time_selector
+    filter_time_selector, itv_intersect
 from vacumm.misc.axes import create_time, create_dep, create_lat, create_lon, guess_timeid, get_axis_type, isaxis
 from vacumm.misc.bases import Object
 import vacumm.misc.color as C
@@ -84,7 +84,7 @@ from vacumm.misc.io import ncget_var, ncfind_var, ncfind_obj, ncfind_axis, list_
     ncget_grid, ncget_axis, NcIterTimeSlice
 from vacumm.misc.grid.misc import meshweights, resol, create_grid, set_grid, \
     dz2depth, depth2dz, isdepthup, gridsel, makedepthup, curv2rect, isgrid,  \
-    coord2slice
+    coord2slice, clone_grid
 from vacumm.misc.grid.regridding import resol, interp1d, regrid1d, grid2xy, transect,  \
     shift1d, shift2d, extend1d, extend2d, regrid1dold
 from vacumm.misc.misc import is_iterable, kwfilter, squeeze_variable, dict_filter_out,  \
@@ -236,7 +236,7 @@ def getvar_decmets(cls):
 
 
 #: Template for auto formatting methods that get variables (like :meth:`get_sst`)
-getvar_fmtdoc_tpl = """%(func_name)s(time=None, level=None, lat=None, lon=None, squeeze=None, order=None, asvar=None, at=None, format=None, torect=True, verbose=None, warn=None, mode=None, **kwargs)
+getvar_fmtdoc_tpl = """%(func_name)s(time=None, level=None, lat=None, lon=None, squeeze=False, order=None, asvar=None, at=None, format=None, torect=True, verbose=None, warn=None, mode=None, **kwargs)
 
     Read the %(long_name)s %(units)s
 
@@ -497,10 +497,12 @@ class Dataset(Object):
         # Load dataset
         if dataset is None: dataset = []
         self.dataset = []
+        time, level, lat, lon, squeeze = self._parse_selects_(time, level, lat, lon)
         self.selects = dict(time=time, lon=lon, lat=lat, level=level)
         self.sselects = dict(lon=lon, lat=lat, level=level)
         self.selector = create_selector(**self.selects)
         self.sselector = create_selector(**self.sselects)
+        self.squeeze = squeeze
         Object.__init__(self, **kwargs)
         self.load_dataset(dataset, time=time, nopat=nopat, patfreq=patfreq,
             patfmtfunc=patfmtfunc, sort=sort, check=check)
@@ -513,7 +515,8 @@ class Dataset(Object):
         # Load specs of variables
         self._load_ncobj_specs_(ncobj_specs)
 
-
+    def _parse_selects_(self, time, level, lat, lon):
+        return time, level, lat, lon, False
 
     def _load_ncobj_specs_(self, ncobj_specs=None):
         """Read the :attr:`ncobj_specs` attribute and reformat it"""
@@ -608,9 +611,9 @@ class Dataset(Object):
                 specs['select'] = specs['slices']
             del specs['slices']
 
-        # Squeeze (as a list)
-        if 'squeeze' in specs and not isinstance(specs['squeeze'], list):
-            specs['squeeze'] = [specs['squeeze']]
+#        # Squeeze (as a list)
+#        if 'squeeze' in specs and not isinstance(specs['squeeze'], list):
+#            specs['squeeze'] = [specs['squeeze']]
 
         return specs
 
@@ -695,7 +698,7 @@ class Dataset(Object):
         select = create_selector()
         atts = None
         genname = None
-        squeeze = []
+        squeeze = self.squeeze
         physloc = None
         search = None
 
@@ -746,9 +749,10 @@ class Dataset(Object):
                             atts[att] = val[0]
 
             # Squeeze
-            squeeze = specs.get('squeeze', [])
-            if not isinstance(squeeze, list):
-                squeeze = [squeeze]
+            squeeze = specs.get('squeeze', False) #[])
+            squeeze = merge_squeeze_specs(self.squeeze, squeeze)
+#            if not isinstance(squeeze, list):
+#                squeeze = [squeeze]
 
             # Physical location
             physloc = specs.get('physloc')
@@ -1166,6 +1170,11 @@ class Dataset(Object):
         select.refine(self.get_selector(lon=lon, lat=lat, level=level,
             merge=True, only='xyz'))
         seltimes = self.get_seltimes(time=time) or [None]
+        if len(seltimes)==2 and all([isinstance(seltime, tuple) for seltime in seltimes]):
+            seltimes = [itv_intersect(*seltimes)]
+        if hasattr(select, 'squeeze') and select.squeeze:
+            squeeze = merge_squeeze_specs(base_squeeze, select.squeeze)
+
 
         # Search for the variable now
         ncvarid = self._get_cached_ncid_(genname)
@@ -1433,20 +1442,19 @@ class Dataset(Object):
             if warn:
                 msg = "Can't get grid"
                 if loc:
-                    msg = msg = 'at {] location'.format(loc.upper())
+                    msg = msg = 'at {} location'.format(loc.upper())
                 self.warn(msg)
             return
-
-        # Clone file grid
-        grid = grid.clone()
-
-        # Format
-        if format:
-            format_grid(grid, loc, format_subaxes=False)
 
         # Select
         if lon is not None or lat is not None:
             grid = gridsel(grid, lon, lat)
+        else: # clone
+            grid = clone_grid(grid)
+
+        # Format
+        if format:
+            format_grid(grid, loc, format_subaxes=False)
 
         return grid
 
@@ -2055,6 +2063,52 @@ class OceanDataset(OceanSurfaceDataset):
     auto_generic_var_names = ['temp', 'sal', 'u3d', 'v3d', 'ubt', 'vbt', 'kz', 'bathy',
         'eke', 'tke']
 
+
+
+    def _parse_selects_(self, time, level, lat, lon):
+
+        level, squeeze = self._parse_level_(level)
+
+        return time, level, lat, lon, squeeze
+
+
+
+    def _parse_level_(self, level, squeeze=False):
+
+        # Convert level argument from string
+        if isinstance(level, basestring):
+
+            # Selector
+            bottom = slice(0, 1)
+            surf = slice(-1, None)
+            if level=='surf':
+                level = surf if self._isdepthup_() else bottom
+            elif level=='bottom':
+                level = bottom if self._isdepthup_() else surf
+            else:
+                raise DatasetError('Invalid level selector string: '+level)
+
+            # Squeeze Z dim
+            squeeze = merge_squeeze_specs(squeeze, 'z')
+
+        return level, squeeze
+
+    def get_selector(self, level=None, **kwargs):
+
+        # Argument
+        level, squeeze = self._parse_level_(level)
+
+        selector = Dataset.get_selector(self, level=level, **kwargs)
+
+        if isinstance(selector, dict):
+            selector['squeeze'] = squeeze
+        elif isinstance(selector, cdms2.selectors.Selector):
+            selector.squeeze = squeeze
+
+        return selector
+
+    get_selector.__doc__ = Dataset.get_selector.__doc__
+
     def finalize_object(self, var, squeeze=False, order=None, asvar=None, torect=True,
         depthup=None, **kwargs):
         """Finalize a variable
@@ -2176,24 +2230,7 @@ class OceanDataset(OceanSurfaceDataset):
 
     def get_variable(self, varname, level=None, squeeze=False, **kwargs):
 
-        # Convert level argument
-        if isinstance(level, basestring):
-
-            # Selector
-            bottom = slice(0, 1)
-            surf = slice(-1, None)
-            if level=='surf':
-                level = surf if self._isdepthup_() else bottom
-            elif level=='bottom':
-                level = bottom if self._isdepthup_() else surf
-            else:
-                raise DatasetError('Invalid level selector string: '+level)
-
-            # Squeeze Z dim
-            if not squeeze:
-                squeeze = 'z'
-            elif isinstance(squeeze, basestring) and 'z' not in squeeze:
-                squeeze = squeeze+'z'
+        level, squeeze = self._parse_level_(level, squeeze)
 
         return Dataset.get_variable(self, varname, level=level, squeeze=squeeze, **kwargs)
 
@@ -2239,8 +2276,8 @@ class OceanDataset(OceanSurfaceDataset):
 
 
     def _get_depth_(self, at='t', level=None, time=None, lat=None, lon=None,
-        order=None, squeeze=None, asvar=None, torect=True, warn=True, mode=None,
-        format=True, **kwargs):
+            order=None, squeeze=None, asvar=None, torect=True, warn=True, mode=None,
+            format=True, grid=None, **kwargs):
 
         depth=None
         # Where?
@@ -2269,7 +2306,8 @@ class OceanDataset(OceanSurfaceDataset):
         seltimes = self.get_seltimes(time=time) or [None]
 #        selnotime = None
         gridmet = 'get_grid'+at_xy
-        grid = getattr(self, gridmet)()#False)
+        if grid is None:
+            grid = getattr(self, gridmet)()#False)
         curvsel = CurvedSelector(grid, sselector)
         kwfinal['curvsel'] = curvsel
         kwfinal['genname'] = genname='depth'+at_p
@@ -2618,24 +2656,28 @@ class OceanDataset(OceanSurfaceDataset):
             return
 
         # Interpolate
-        depth = -N.abs(depth)
-        zo = create_dep([depth] if N.isscalar(depth) else depth[:])
+        lvar = self._interp_at_depths_(var, vardepth, depth, **kwinterp)
+
+        # Time average
+        if timeavg and lvar.getOrder().startswith('t') and lvar.shape[0]>1:
+            lvar = MV2.average(lvar, axis=0)
+        return self.finalize_object(lvar, depthup=False, **kwargs)
+
+    @staticmethod
+    def _interp_at_depths_(var, vardepth, depths, **kwargs):
+        depths = -N.abs(depths)
+        zo = create_dep([depths] if N.isscalar(depths) else depths[:])
 
         if isinstance(vardepth,tuple):
             vardepth=vardepth[0]
         iaxi = var.getOrder().index('z')
         if len(vardepth.shape)>1:
 #            var, vardepth = grow_variables(var, vardepth)
-            kwinterp.update(axi=vardepth.filled(0.))
+            kwargs.update(axi=vardepth.filled(0.))
             iaxo = iaxi
         else:
             iaxo = 0
-        lvar = regrid1d(var, zo, iaxi = iaxi, iaxo=iaxo, **kwinterp)
-
-        # Time average
-        if timeavg and lvar.getOrder().startswith('t') and lvar.shape[0]>1:
-            lvar = MV2.average(lvar, axis=0)
-        return self.finalize_object(lvar, depthup=False, **kwargs)
+        return regrid1d(var, zo, iaxi=iaxi, iaxo=iaxo, **kwargs)
 
 
     def plot_hsection(self, varname, depth, time=None, lat=None, lon=None,
@@ -3733,4 +3775,21 @@ class CurvedSelector(object):
             if id in ['lon', 'lat']:
                 select._Selector__components.remove(c)
         return select
+
+
+def merge_squeeze_specs(squeeze1, squeeze2):
+    if squeeze1==squeeze2:
+        return squeeze1
+    s1 = isinstance(squeeze1, basestring)
+    s2 = isinstance(squeeze2, basestring)
+    if (((squeeze1 or squeeze1 is None) and not s1) or
+            ((squeeze2 or squeeze2 is None) and not s2)):
+        return True
+    if s1 and s2:
+        return squeeze1 + squeeze2
+    if s1:
+        return squeeze1
+    if s2:
+        return squeeze2
+    return s1 or s2
 

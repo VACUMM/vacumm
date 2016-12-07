@@ -3055,7 +3055,7 @@ def discretise_cmap(cmap, bounds, name=None, **kwargs):
     :Examples:
 
         >>> discretise_cmap('jet', [.25, .5, .9]) # two not evenly spaced colors
-        >>> discretise_cmap('jet', 10) # ten evenly colors
+        >>> discretise_cmap('jet', 10) # ten evenly spaced colors
 
     :Params:
 
