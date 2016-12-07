@@ -54,7 +54,7 @@ __all__ = ['list_forecast_files', 'NcIterBestEstimate', 'NcIterBestEstimateError
     'ncget_axis', 'netcdf3', 'netcdf4', 'ncread_axis', 'ncread_obj', 'ncget_fgrid',
     'grib_read_files', 'nccache_get_time', 'grib2nc', 'grib_get_names',
     'Shapes', 'XYZ', 'XYZMerger', 'write_snx', 'ColoredFormatter', 'Logger', 'TermColors'
-    ]
+    'NcIterTimeSlice']
 __all__.sort()
 
 MA = N.ma
@@ -279,7 +279,6 @@ def list_forecast_files(filepattern, time=None, check=True,
         >>> 'Simple conversion to list'
         >>> list_forecast_files('http://www.ifremer.fr/data/mrsPRVMR_r0_2010-05-06_00.nc')
     """
-
     sfp = str(filepattern)
     if len(sfp)>300: sfp = sfp[:300]+'...'
     if verbose:
@@ -293,7 +292,7 @@ def list_forecast_files(filepattern, time=None, check=True,
         for filepat in filepattern:
             files.extend(list_forecast_files(filepat, time=time, check=check,
                 patfreq=patfreq, patfmtfunc=patfmtfunc, patmargin=patmargin,
-                verbose=False, nopat=nopat))
+                verbose=False, nopat=nopat, sort=False))
 
 
     # Date pattern
@@ -414,13 +413,12 @@ def list_forecast_files(filepattern, time=None, check=True,
             print 'Found %i files'%len(files)
 
     # Sort files
-    if sort is True:
-        sort = sorted
     if sort:
+        key = lambda x: getattr(x, 'id', x)
         if callable(sort):
-            files = sort(files)
+            files = sort(files, key=key)
         else:
-            files.sort()
+            files.sort(key=key)
 
     return files
 
