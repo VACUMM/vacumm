@@ -1156,10 +1156,12 @@ class Dataset(Object):
         # Specifications for searching, selecting and modifying the variable
         specs = self._get_ncobj_specs_(varname)
         if specs is None:
-            if isinstance(varname, basestring) and varname.startswith('+'):
-                specs = self._get_ncobj_specs_('+'+varname)
-            if warn: self.warning('No valid specs to search for %s', varname)
-            return None
+            if (isinstance(varname, basestring) and not varname.startswith('+')
+                    and varname in self.get_variable_names()):
+                specs = self._get_ncobj_specs_('+'+varname)  # direct from file
+            elif warn:
+                self.warning('No valid specs to search for %s and not in file', varname)
+                return None
         genname = specs['genname']
         search = specs['search']
         select = specs['select']
