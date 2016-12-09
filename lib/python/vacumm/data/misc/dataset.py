@@ -1115,7 +1115,7 @@ class Dataset(Object):
     def get_variable(self, varname, time=None, lon=None, lat=None,
             level=None, atts=None, squeeze=False, order=None, asvar=None,
             torect=True, depthup=None,verbose=None, warn=True, searchmode=None,
-            format=True, at=None, **kwargs):
+            format=True, at=None, grid=None, **kwargs):
         '''Load a variable in a best time serie fashion.
 
         :Params:
@@ -1159,8 +1159,9 @@ class Dataset(Object):
             if (isinstance(varname, basestring) and not varname.startswith('+')
                     and varname in self.get_variable_names()):
                 specs = self._get_ncobj_specs_('+'+varname)  # direct from file
-            elif warn:
-                self.warning('No valid specs to search for %s and not in file', varname)
+            else:
+                if warn:
+                    self.warning('No valid specs to search for %s and not in file', varname)
                 return None
         genname = specs['genname']
         search = specs['search']
@@ -1193,7 +1194,9 @@ class Dataset(Object):
         # TODO: if grid not found and specs say that there must have a grid, create it with get_lon/get_lat
 
         # Curved grid case
-        curvsel = CurvedSelector(self.dataset[0][ncvarid].getGrid(), select)
+        if grid is None:
+            grid = self.dataset[0][ncvarid].getGrid()
+        curvsel = CurvedSelector(grid, select)
 
         # Intercept kwargs before ncread_files
 
@@ -3725,6 +3728,7 @@ class CurvedSelector(object):
 
         self.geosels = self.extract_geosels(select)
         self._post_sel = False
+        self.grid = grid
         if self.geosels and grid is not None and len(grid.getLongitude().shape)==2:
             islice, jslice, mask =  coord2slice(grid, *self.geosels[0])
             if islice is None: islice = ':'
@@ -3741,8 +3745,11 @@ class CurvedSelector(object):
         if var is None or not self._post_sel: return var
         if self.mask.any():
             var[:] = MV2.masked_where(N.resize(self.mask, var.shape), var, copy=0)
-        if len(self.geosels)==2:
-            islice, jslice, mask =  coord2slice(var, *self.geosels[1])
+        if len(self.geosels)==2 and self.grid is not None:
+            assert self.grid.shape == var.getGrid().shape,  'Incomptible grids'
+            islice, jslice, mask =  coord2slice(self.grid, *self.geosels[1])
+            if islice is None: islice = ':'
+            if jslice is None: jslice = ':'
             var = var(**{self.xid:islice, self.yid:jslice})
             if self.mask.any():
                 var[:] = MV2.masked_where(N.resize(mask, var.shape), var, copy=0)

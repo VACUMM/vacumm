@@ -67,7 +67,6 @@ VAR_SPECS = OrderedDict([
         standard_names = ['sea_water_temperature', 'sea_water_potential_temperature'],
         long_names = 'Temperature',
         units =  'degrees_celsius',
-#        axes = {'t':'time', 'x':'lon', 'y':'lat'},
     )),
     ('ptemp', dict(
         names = ['ptemp'],
