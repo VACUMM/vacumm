@@ -1512,12 +1512,15 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
                 specs[sname] = [no_loc_single(specs[sname][0], stype)]
         name = specs['names'][0]
     # - id
-    if (force or var.id.startswith('variable_') or
+    if ((force is True or force in [2, 'id', 'all'])
+            or var.id.startswith('variable_') or
             (isaxis and var.id.startswith('axis_'))): # FIXME: use regexp
         var.id = name
     # - attributes
+    forceatts = (force is True or force in ['atts', 'all'] or
+        (isinstance(force, int) and force>0))
     for att, val in cf2atts(specs, **kwargs).items():
-        if force or not getattr(var, att, ''):
+        if forceatts or not getattr(var, att, ''):
             setattr(var, att, val)
     # - physical location
     loc = get_loc(var, mode='ext')
