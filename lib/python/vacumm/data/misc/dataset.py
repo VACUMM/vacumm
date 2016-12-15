@@ -859,7 +859,9 @@ class Dataset(Object):
         return len(self.dataset)
 
     def __getitem__(self, key):
-        return self.dataset[key]
+        if isinstance(key, int):
+            return self.dataset[key]
+        return self.dataset[0][key]
 
     def get_variable_names(self):
         """Get the list of netcdf variable names of the first file"""
@@ -1196,7 +1198,10 @@ class Dataset(Object):
         # Curved grid case
         if grid is None:
             grid = self.dataset[0][ncvarid].getGrid()
-        curvsel = CurvedSelector(grid, select)
+        if grid is not None:
+            curvsel = CurvedSelector(grid, select)
+        else:
+            curvsel = None
 
         # Intercept kwargs before ncread_files
 
@@ -3724,12 +3729,14 @@ class GenericDataset(AtmosDataset, OceanDataset):
 class CurvedSelector(object):
     """Curved grid multiple selector"""
 
-    def __init__(self, grid, select):
+    def __init__(self, grid, select, force=True):
 
         self.geosels = self.extract_geosels(select)
         self._post_sel = False
         self.grid = grid
-        if self.geosels and grid is not None and len(grid.getLongitude().shape)==2:
+        self.force = force
+        self.curv = len(grid.getLongitude().shape)==2
+        if self.geosels and grid is not None and (self.curv or force):
             islice, jslice, mask =  coord2slice(grid, *self.geosels[0])
             if islice is None: islice = ':'
             if jslice is None: jslice = ':'
@@ -3742,10 +3749,11 @@ class CurvedSelector(object):
 
 
     def finalize(self, var):
-        if var is None or not self._post_sel: return var
+        if var is None or not self._post_sel:
+            return var
         if self.mask.any():
             var[:] = MV2.masked_where(N.resize(self.mask, var.shape), var, copy=0)
-        if len(self.geosels)==2 and self.grid is not None:
+        if len(self.geosels)==2 and self.grid is not None and (self.curv or self.force):
             assert self.grid.shape == var.getGrid().shape,  'Incomptible grids'
             islice, jslice, mask =  coord2slice(self.grid, *self.geosels[1])
             if islice is None: islice = ':'
@@ -3763,7 +3771,8 @@ class CurvedSelector(object):
         lats = []
         for c in select.components():
             id = getattr(c, 'id', None)
-            if id is None: continue
+            if id is None:
+                continue
             if id=='lon':
                 lons.append(c.spec)
             if id=='lat':
@@ -3780,7 +3789,8 @@ class CurvedSelector(object):
         """Remove lon and lat component selections"""
         for c in select().components():
             id = getattr(c, 'id', None)
-            if id is None: continue
+            if id is None:
+                continue
             if id in ['lon', 'lat']:
                 select._Selector__components.remove(c)
         return select
