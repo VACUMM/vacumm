@@ -2095,11 +2095,14 @@ class OceanDataset(OceanSurfaceDataset):
                 level = surf if self._isdepthup_() else bottom
             elif level=='bottom':
                 level = bottom if self._isdepthup_() else surf
+            elif level=='3d':
+                level = None
             else:
                 raise DatasetError('Invalid level selector string: '+level)
 
             # Squeeze Z dim
-            squeeze = merge_squeeze_specs(squeeze, 'z')
+            squeeze = (merge_squeeze_specs(squeeze, 'z')
+                if level is not None else False)
 
         return level, squeeze
 
