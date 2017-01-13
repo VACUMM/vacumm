@@ -560,7 +560,7 @@ class NcSigma(object):
         self._dz2d_config[at][ss] = config
         return config
 
-    def dz_to_depths(self, selector=None, at='t', copyaxes=True):
+    def dz_to_depths(self, selector=None, at='t', copyaxes=True, zerolid=False):
         """Get depths from layer thicknesses
 
         :Params:
@@ -574,7 +574,7 @@ class NcSigma(object):
         cfgname, dz, ref = config
         refloc = cfgname.split('/')[1]
         try:
-            return dz2depths(dz, ref, refloc=refloc)
+            return dz2depths(dz, ref, refloc=refloc, zerolid=zerolid)
         except Exception, e:
             raise SigmaError(msg+': '+format_exc())
 
@@ -631,7 +631,8 @@ class NcSigmaStandard(NcSigma):
 #        return NcSigma._load_sigma_('sigma', selector)
 
 
-    def sigma_to_depths(self, selector=None, at='t', mode=None, copyaxes=True, eta=None):
+    def sigma_to_depths(self, selector=None, at='t', mode=None, copyaxes=True,
+            eta=None, zerolid=None):
         """Get depths for the current state
 
         :Params:
@@ -666,7 +667,8 @@ class NcSigmaStandard(NcSigma):
                 self.load_sigma(selector)
 
                 # Compute it
-                return sigma2depths(self.sigma[at], depth, eta, stype=self.stype, copyaxes=copyaxes)
+                return sigma2depths(self.sigma[at], depth, eta, stype=self.stype,
+                    copyaxes=copyaxes, zerolid=zerolid)
 
             except Exception, e:
 
@@ -682,7 +684,8 @@ class NcSigmaStandard(NcSigma):
 
         # From dz
         try:
-            return self.dz_to_depths(selector=selector, at=at, copyaxes=copyaxes)
+            return self.dz_to_depths(selector=selector, at=at, copyaxes=copyaxes,
+                zerolid=zerolid)
         except SigmaError, e:
             if mode=='auto':
                 raise SigmaError("Can't compute depths from layer thicknesses or sigma coordinates")
@@ -855,7 +858,8 @@ class  NcSigmaGeneralized(NcSigma):
 #        """
 #        return self._load_sigma_('s', selector)
 
-    def sigma_to_depths(self, selector=None, at='t', mode=None, copyaxes=True, eta=None):
+    def sigma_to_depths(self, selector=None, at='t', mode=None, copyaxes=True,
+            eta=None, zerolid=False):
         """Get depths for the current state
 
         :Params:
@@ -892,7 +896,8 @@ class  NcSigmaGeneralized(NcSigma):
 
                 # Compute it
                 return sigma2depths(self.s[atz], depth, eta, stype=self.stype,
-                    cs=self.cs[atz], depth_c=depth_c, a=self.a, b=self.b, copyaxes=copyaxes)
+                    cs=self.cs[atz], depth_c=depth_c, a=self.a, b=self.b,
+                    copyaxes=copyaxes, zerolid=zerolid)
 
             except Exception, e:
 
@@ -908,7 +913,8 @@ class  NcSigmaGeneralized(NcSigma):
 
         # From dz
         try:
-            return self.dz_to_depths(selector=selector, at=at, copyaxes=copyaxes)
+            return self.dz_to_depths(selector=selector, at=at, copyaxes=copyaxes,
+                zerolid=zerolid)
         except SigmaError, e:
             if mode=='auto':
                 raise SigmaError("Can't compute depths from layer thicknesses or sigma coordinates")
@@ -940,7 +946,8 @@ def _check_sigma_type_(stype, nogen=False):
 
 
 def sigma2depths(sigma, depth, eta=None, stype='standard',
-    cs=None, depth_c=None, a=None, b=None, copyaxes=True):
+        cs=None, depth_c=None, a=None, b=None, copyaxes=True,
+        zerolid=False):
     """Conversion from standard or ocean sigma coordinates to depths
 
     :Params:
@@ -959,6 +966,9 @@ def sigma2depths(sigma, depth, eta=None, stype='standard',
         - **depth_c**, optional: Surface limit depth (s coords only).
         - **a**, optional: Surface control parameter (s coords only).
         - **b**, optional: Bottom control parameter (s coords only).
+        - **zerolid**, optional: The surface is put at a zero depth to simulate
+          observed depths. This makes the bottom to change with time if
+          the sea level is varying.
     """
 
     # Init depths
@@ -985,11 +995,15 @@ def sigma2depths(sigma, depth, eta=None, stype='standard',
     stype = _check_sigma_type_(stype)
     if stype==2:
         if cs is None:
+
             if a is None or b is None or depth_c is None:
-                raise SigmaError('You must prodive depth_c, and b parameters for sigma generalized coordinates conversions')
-            cs = (1-b)*N.sinh(a*sigma)/math.sinh(a) + \
-                b * (N.tanh(a*(sigma+.5))-math.tanh(.5*a)) / \
-                (2*math.tanh(.5*a))
+                raise SigmaError('You must prodive depth_c, and b '
+                    'parameters for sigma generalized coordinates conversions')
+
+            cs = ((1-b)*N.sinh(a*sigma)/math.sinh(a) +
+                b * (N.tanh(a*(sigma+.5))-math.tanh(.5*a)) /
+                (2*math.tanh(.5*a)))
+
         dd = depth-depth_c
 
     # Time loop
@@ -1003,15 +1017,18 @@ def sigma2depths(sigma, depth, eta=None, stype='standard',
                 depths[it, iz] += depth_c * sigma[iz]
                 depths[it, iz] += dd*cs[iz]
 
+                if zerolid:
+                    depths[it, iz] -= etam[it]
+
             else:
                 # Common base
                 depths[it, iz] = sigma[iz] * (etam[it] + depth)
 
                 # Sigma type
-                if stype==0:
-                    depths[it,iz] += etam[it] # standard
-                else:
+                if stype!=0:
                     depths[it,iz] -= depth # ocean
+                elif not zerolid:
+                    depths[it,iz] += etam[it] # standard
         if not withtime:
             depths = depths[0]
 
@@ -1056,12 +1073,13 @@ class SigmaStandard(object):
         self.stype = _check_sigma_type_(stype, nogen=True)
         self.depth = depth
         self.sigma = sigma
-    def sigma_to_depths(self, eta=None, selector=None, copyaxes=True):
+    def sigma_to_depths(self, eta=None, selector=None, copyaxes=True, zerolid=False):
         selector = as_selector(selector)
         depth = self.depth(selector)
         if eta is not None:
             eta = eta(selector)
-        return sigma2depths(self.sigma, depth, eta, stype=self.stype, copyaxes=copyaxes)
+        return sigma2depths(self.sigma, depth, eta, stype=self.stype,
+            copyaxes=copyaxes, zerolid=zerolid)
     __call__ = sigma_to_depths
 
 class SigmaGeneralized(object):
@@ -1094,14 +1112,14 @@ class SigmaGeneralized(object):
         self.depth_c = depth_c
         self.a = a
         self.b = b
-    def sigma_to_depths(self, eta=None, selector=None, copyaxes=True):
+    def sigma_to_depths(self, eta=None, selector=None, copyaxes=True, zerolid=False):
         selector = as_selector(selector)
         depth = self.depth(selector)
         depth_c = self.depth_c(selector)
         if eta is not None:
              eta = eta(selector)
         return sigma2depths(self.s, depth, eta, stype=self.stype, copyaxes=copyaxes,
-            depth_c=depth_c, a=self.a, b=self.b)
+            depth_c=depth_c, a=self.a, b=self.b, zerolid=zerolid)
     __call__ = sigma_to_depths
 
 def as_selector(select=None):

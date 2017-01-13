@@ -2290,7 +2290,7 @@ class OceanDataset(OceanSurfaceDataset):
 
     def _get_depth_(self, at='t', level=None, time=None, lat=None, lon=None,
             order=None, squeeze=None, asvar=None, torect=True, warn=True, mode=None,
-            format=True, grid=None, **kwargs):
+            format=True, grid=None, zerolid=False, **kwargs):
 
         depth=None
         # Where?
@@ -2363,7 +2363,8 @@ class OceanDataset(OceanSurfaceDataset):
 
                     # - try it
                     try:
-                        d = sigma_converter(sel, at=atz, copyaxes=True, mode='sigma')
+                        d = sigma_converter(sel, at=atz, copyaxes=True, mode='sigma',
+                            zerolid=zerolid)
                     except Exception, e:
                         if warn:
                             self.warning("Can't get depth from sigma. Error: \n"+e.message)

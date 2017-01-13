@@ -2966,7 +2966,8 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
     return vv
 
 
-def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge'):
+def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge',
+        zerolid=False):
     """Conversion from layer thickness to depths
 
     :Params:
@@ -2986,13 +2987,16 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge'):
         - **mode**, optional:
 
             - ``"edge"`` or ``"edge+"``: Compute depths at layer edges (interfaces).
-              Adding a + include the bottom layer, add a vertical level.
+              Adding a + includes the bottom layer and add a vertical level.
             - ``"middle"``: Compute depths at the middle of layers
+
+        - **zerolid**, optional: Force the surface to be at a zero depth
 
     """
 
     # Init depths
-    if mode is None: mode = 'edge'
+    if mode is None:
+        mode = 'edge'
     mode = str(mode)
     ext = '+' in mode
     mode = mode[:3]
@@ -3002,7 +3006,8 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge'):
     withtime = dz.getTime() is not None
     nt = dz.shape[0] if withtime else 1
     nz = dz.shape[int(withtime)]
-    if ext: nz += 1
+    if ext:
+        nz += 1
     shape = (nt, nz) + dz.shape[int(withtime)+1:]
     depths = MV2.zeros(shape, dz.dtype)
     depths.long_name = 'Depths'
@@ -3017,7 +3022,8 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge'):
     #TODO: dz2depth: positive up/down
 
     # Guess reference
-    if ref is None: ref = 0.
+    if ref is None:
+        ref = 0.
     if isinstance(refloc, basestring): refloc = refloc.lower()
     if refloc in ["eta", "ssh"]: refloc = 'top'
     elif refloc in ["depth", "bathy"]: refloc = 'bottom'
@@ -3053,7 +3059,14 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge'):
     if refloc == 'top': # zero at top
         for it in xrange(nt):
             depths[it] -= depths[it, -1]
+        if zerolid:
+            ref = 0
     depths[:] += ref
+
+    # Substract surface for zerolid
+    if zerolid and refloc != 'top':
+        for dep in depths:
+            dep[:] -= dep[-1]
 
     # Middle of layers
     if mode=='mid':
