@@ -96,8 +96,8 @@ class VACUMMError(Exception):
 class VACUMMWarning(UserWarning):
     """Standard VACUMM warning"""
 
-def vacumm_warning(message, stacklevel=2):
+def vacumm_warn(message, stacklevel=2):
     """Issue a :class:`VACUMMWarning`"""
     warn(message, VACUMMWarning, stacklevel=stacklevel)
 
-vcwarn = vacumm_warning
+vcwarn = vacumm_warning = vacumm_warn

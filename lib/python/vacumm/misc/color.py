@@ -3132,3 +3132,4 @@ del _cmap, _name
 if cmoceancm is not None:
     for cmname in cmoceancm.cmapnames:
         P.register_cmap('cmocean_'+cmname, getattr(cmoceancm, cmname))
+        P.register_cmap(cmname, getattr(cmoceancm, cmname))

@@ -43,7 +43,8 @@ from matplotlib.ticker import AutoLocator, MaxNLocator, FixedLocator, IndexLocat
 
 # VACUMM
 
-from vacumm import VACUMMError, VACUMMWarning, help as vchelp, vacumm_warning, vcwarn
+from vacumm import (VACUMMError, VACUMMWarning, help as vchelp, vacumm_warning,
+    vacumm_warn, vcwarn)
 
 
 # - config
@@ -231,7 +232,7 @@ from vacumm.data.cf import (
     format_var, format_axis, format_grid, match_var, change_loc, match_obj,
     set_loc, get_loc, GENERIC_NAMES, GENERIC_AXIS_NAMES, GENERIC_VAR_NAMES,
     AXIS_SPECS, VAR_SPECS, GRID_SPECS, ARAKAWA_SUFFIXES, HIDDEN_CF_ATTS,
-    match_known_var, match_known_axis
+    match_known_var, match_known_axis, get_cf_cmap
     )
 
 from vacumm.data.misc.sigma import NcSigma, sigma2depths, SigmaGeneralized, SigmaStandard
