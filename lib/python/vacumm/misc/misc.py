@@ -2329,7 +2329,7 @@ def check_case(cases, case, **kwargs):
 def indices2slices(indices):
     """Convert a list of indices to a list of slices"""
     if len(indices)==1:
-        return slice(indices[0], indices[0]+1)
+        return [slice(indices[0], indices[0]+1)]
     elif not indices:
         return []
     ii = N.sort(indices)
