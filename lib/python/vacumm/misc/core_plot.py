@@ -2109,7 +2109,7 @@ class Plot(object):
 
 
     def quiverkey(self, qv, value, pos=(0.,1.02), text='%(value)g %(units)s',
-            units=None, latex_units=None, **kwargs):
+            units=None, latex_units=None, value_mode=80, **kwargs):
         """Add a quiver key to the plot
 
         :Params:
@@ -2124,7 +2124,7 @@ class Plot(object):
         """
 
         # Value
-        value = get_quiverkey_value(value)
+        value = get_quiverkey_value(value, mode=value_mode)
 
         # Text
         if units is None:
@@ -3058,12 +3058,54 @@ class Plot(object):
             delattr(target, att)
 
 
+    # ID / SHORT NAME
+
+    def get_id(self, idata=None):
+        """Get :attr:`id`"""
+        return self._get_xyattr_('d', 'id', idata=idata)
+    def set_id(self, id=None):
+        """Set :attr:`id`"""
+        self._set_xyattr_('d', 'id', id)
+    def del_id(self):
+        """Del :attr:`id`"""
+        self._del_xyattr_('d', 'id')
+    id = property(get_id, set_id,
+        del_id, 'Current long name')
+
+    def get_xid(self):
+        """Get :attr:`xid`"""
+        return self._get_xyattr_('x', 'id')
+    def set_xid(self, id=None):
+        """Set :attr:`xid`"""
+        self._set_xyattr_('x', 'id', id)
+    def del_xid(self):
+        """Del :attr:`xid`"""
+        self._del_xyattr_('x', 'id')
+    xid = property(get_xid, set_xid,
+        del_xid, 'Current id of X axis')
+
+    def get_yid(self):
+        """Get :attr:`yid`"""
+        return self._get_xyattr_('y', 'id')
+    def set_yid(self, id=None):
+        """Set :attr:`yid`"""
+        self._set_xyattr_('y', 'id', id)
+    def del_yid(self):
+        """Del :attr:`yid`"""
+        self._del_xyattr_('y', 'id')
+    yid = property(get_yid, set_yid,
+        del_yid, 'Current id of Y axis')
+
+
 
     # LONG_NAME
 
     def get_long_name(self, idata=None):
         """Get :attr:`long_name`"""
-        return self._get_xyattr_('d', 'long_name', idata=idata)
+        long_name = self._get_xyattr_('d', 'long_name', idata=idata)
+        if long_name is None:
+            long_name = self.get_id(idata=idata).title().replace('_', ' ')
+        return long_name
     def set_long_name(self, long_name=None):
         """Set :attr:`long_name`"""
         self._set_xyattr_('d', 'long_name', long_name)
@@ -3075,7 +3117,10 @@ class Plot(object):
 
     def get_xlong_name(self):
         """Get :attr:`xlong_name`"""
-        return self._get_xyattr_('x', 'long_name')
+        long_name = self._get_xyattr_('x', 'long_name')
+        if long_name is None:
+            long_name = self.get_xid(idata=idata).title().replace('_', ' ')
+        return long_name
     def set_xlong_name(self, long_name=None):
         """Set :attr:`xlong_name`"""
         self._set_xyattr_('x', 'long_name', long_name)
@@ -3087,7 +3132,10 @@ class Plot(object):
 
     def get_ylong_name(self):
         """Get :attr:`ylong_name`"""
-        return self._get_xyattr_('y', 'long_name')
+        long_name = self._get_xyattr_('y', 'long_name')
+        if long_name is None:
+            long_name = self.get_yid(idata=idata).title().replace('_', ' ')
+        return long_name
     def set_ylong_name(self, long_name=None):
         """Set :attr:`ylong_name`"""
         self._set_xyattr_('y', 'long_name', long_name)
@@ -4162,7 +4210,7 @@ class Bar(Plot1D):
 
 class QuiverKey:
 
-    def quiverkey(self, qv, value=None, **kwargs):
+    def quiverkey(self, qv, value=None, value_mode=80, **kwargs):
         """Add a quiver key to the plot
 
         See :meth:`Plot.quiverkey` for arguments.
@@ -4180,7 +4228,7 @@ class QuiverKey:
         # Value
         if value is None:
             m,u,v = self.get_data()
-            value = get_quiverkey_value((u, v))
+            value = get_quiverkey_value((u, v), mode=value_mode)
             del m, u, v
 
         return Plot.quiverkey(self, qv, value, **kwargs)
@@ -5005,8 +5053,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         kwqvkey = kwfilter(kwargs, 'quiverkey')
         if zorder is not None:
             kwqv['zorder'] = zorder
-        if kwqv.has_key('width') and kwqv['width'] > .01:
-            kwqv['width'] *= 0.001
+#        if kwqv.has_key('width') and kwqv['width'] > .01:
+#            kwqv['width'] *= 0.001
         shadow = kwqv.pop('shadow', shadow)
         glow = kwqv.pop('glow', glow)
         kwsh = kwfilter(kwqv, 'shadow')
@@ -6108,12 +6156,27 @@ def get_axis_scale(axis, type=None):
         units
         #NOT FINISHED
 
-def get_quiverkey_value(data):
+def get_quiverkey_value(data, mode=80):
     """Get a decent value for a quiver key"""
+    # From components
     if isinstance(data, tuple):
         data = N.ma.sqrt(data[0]**2+data[1]**2)
-    vmax = N.ma.max(data) ; del data
-    v10 = N.ma.log10(vmax)
+
+    # Reference value
+    if mode=='max':
+        vref = N.ma.max(data)
+    elif mode=='mean':
+        vref = N.ma.mean(data)
+    else:
+        if mode=='median':
+            mode = .5
+        elif not isinstance(mode, (int, float)):
+            raise PlotError('Unkown quiverkey value mode: {}'.format(mode))
+        vref = N.percentile(data, mode)
+    del data
+
+    # Quiverkey value
+    v10 = N.ma.log10(vref)
     if ((v10+1) % 1) > (N.log10(.5) % 1):
         v10 = N.ma.ceil(v10)
     else:
@@ -7347,7 +7410,6 @@ def _asnum_(xy):
         out.append(xy)
     if single: return out[0]
     return out
-
 
 
 docfiller.scan(Plot, Plot.format_axes, Plot.load_data, Plot._check_order_,
