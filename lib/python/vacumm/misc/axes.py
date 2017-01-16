@@ -67,28 +67,28 @@ BASIC_AXIS_SPECS = {
         long_name = 'longitude',
         ),
     'lat': dict(
-        id='lat',
-        standard_name='latitude',
-        units=['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'],
+        id = 'lat',
+        standard_name = 'latitude',
+        units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'],
         long_name='latitude',
     ),
     'lev': dict(
-        id=['dep','lev','plev'],
-        standard_name=['depth','pressure_level'],
-        unit=['m','meters','hpa'],
-        long_name=['depth','pressure level','profondeur','pression','sigma','geopotential'],
+        id = ['dep','lev','plev'],
+        standard_name = ['depth','pressure_level'],
+        unit = ['m','meters','hpa'],
+        long_name = ['depth','pressure level','profondeur','pression','sigma','geopotential'],
     ),
     'dep': dict(
-        id=['dep'],
-        standard_name=['depth'],
-        unit=['m','meters'],
-        long_name=['depth','profondeur'],
+        id = ['dep'],
+        standard_name = ['depth'],
+        unit = ['m','meters'],
+        long_name = ['depth','profondeur'],
     ),
     'time': dict(
-        ids=['time','date'],
+        id = ['time','date'],
         standard_names = ['time'],
-        units=None,
-        long_names=['time','temps','date'],
+        units = None,
+        long_names = ['time','temps','date'],
     ),
 }
 
@@ -124,28 +124,38 @@ def islat(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attch
         checkaxis=checkaxis, **attchecks)
 
 def islev(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
-    """Check if a axis is of level type"""
+    """Check if an axis is of level type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['lev']
     dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['lev'])
+    if not checkaxis:
+        if 'units' in attchecks:
+            del attchecks['units']
+        if 'long_name' in attchecks:
+            del attchecks['long_name']
     return is_geo_axis_type(axis, 'z', defaults=defaults, ro=ro, checkatts=checkatts,
         checkaxis=checkaxis, **attchecks)
 islevel = islev
 
 def isdep(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
-    """Check if a axis is of depth type"""
+    """Check if an axis is of depth type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['lev']
     dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['dep'])
+    if not checkaxis:
+        if 'units' in attchecks:
+            del attchecks['units']
+        if 'long_name' in attchecks:
+            del attchecks['long_name']
     return is_geo_axis_type(axis, 'z', defaults=defaults, ro=ro, checkatts=checkatts,
         checkaxis=checkaxis, **attchecks)
 isdepth = isdep
 
 def istime(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
-    """Check if a axis is of time type"""
+    """Check if an axis is of time type"""
     if defaults is None:
-        defaults = BASIC_AXIS_DEFAULTS['lev']
-    dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['dep'])
+        defaults = BASIC_AXIS_DEFAULTS['time']
+    dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['time'])
     units = attchecks.setdefault('units', [])
     if not isinstance(units, (list, tuple)):
         units = [units]
@@ -209,6 +219,7 @@ def is_geo_axis_type(axis, atype, defaults=None, ro=False, checkaxis=True,
         - **checkatts**, optional: If False, do not check units and long_name attributes.
         - **attchecks**: Extra keywords are attributes name and checklist that
           will checks using :func:`~vacumm.misc.misc.match_atts`.
+
     """
     if defaults is None:
         defaults = {}
@@ -253,8 +264,10 @@ def is_geo_axis_type(axis, atype, defaults=None, ro=False, checkaxis=True,
     # Check from attributes
     if not checkatts:
         return False
+    #TODO: merge with ncmatch_obj
     valid = match_atts(axis, attchecks, ignorecase=True,
-        transform=lambda ss: re.compile(ss, re.I).match) # transform=startswith
+        transform=lambda ss: (re.compile(ss, re.I).match
+            if isinstance(ss, basestring) else None)) # transform=startswith
     if not valid:
         return False
     if not ro:
