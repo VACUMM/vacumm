@@ -1197,7 +1197,7 @@ class Plot(object):
         kw = {}
         for kwtype in ['grid', 'title', 'hlitvs', 'hldays', 'dayhl', 'finalize',
             'figtext', 'key', 'savefig', 'savefigs', 'show', 'legend',
-            'tight_layout', 'param_label']:
+            'tight_layout', 'param_label', 'autoresize']:
             kw[kwtype] = kwfilter(kwargs, kwtype+'_')
             if (kwtype in self._primary_attributes+self._secondary_attributes+
                     self._special_attributes and kw[kwtype].has_key(kwtype)):
@@ -1208,7 +1208,7 @@ class Plot(object):
         kw['hlitvs'].update(kw['hldays']) # compat
 
         # Resize plot
-        autoresized = self.autoresize(autoresize)
+        autoresized = self.autoresize(autoresize, **kw['autoresize'])
 
         # Anchor
         if anchor is None and autoresized:
@@ -1514,21 +1514,46 @@ class Plot(object):
             return not self.axes.is_first_col()
         return False
 
-    def autoresize(self, autoresize):
+    def autoresize(self, autoresize=True, minaspect=None):
         """Resize figure or axes to fit to data axes"""
-        if autoresize and self.axes.get_aspect() != 'auto' and \
-            isinstance(self.axes, Subplot) and \
-            self.axes.is_first_col() and self.axes.is_first_row() and \
-            self.axes.is_last_col() and self.axes.is_last_row():
-            r = self.axes.get_aspect()
-            if r=='equal': r=1.
+        if (autoresize and self.axes.get_aspect() != 'auto' and
+                isinstance(self.axes, Subplot) and
+                self.axes.is_first_col() and self.axes.is_first_row() and
+                self.axes.is_last_col() and self.axes.is_last_row()):
+
+            r = self.axes.get_aspect() # dy/dx
+            if r=='equal':
+                r = 1.
             r *= self.axes.get_data_ratio()
     #       rect = self.axes.get_position(True)
     #       if autoresize == 2: r *= rect.width/rect.height
-            w,h = self.fig.get_size_inches()
-            a = 1.*w*h
-            W = N.sqrt(a/r)
-            H = r*W
+
+            sp = self.fig.subplotpars
+            x0 = sp.left
+            x1 = sp.right
+            y0 = sp.bottom
+            y1 = sp.top
+            Dx = x1 - x0
+            Dy = y1 - y0
+            R = r * Dx / Dy
+
+            if minaspect is not None:
+                R = N.clip(R, minaspect, 1/minaspect)
+
+
+            w, h = self.fig.get_size_inches()
+
+            if autoresize=='x': # Resize x only, change the surface
+                H = h
+                W = H / R
+            elif autoresize=='y': # Resize y only, change the surface
+                W = w
+                H = R * W
+            else: # Resize both x and y without changing the surface
+                a = 1.*w*h
+                W = N.sqrt(a / R)
+                H = r * W
+
             self.fig.set_size_inches(W, H ,forward=True)
             return True
         return False
@@ -3119,7 +3144,7 @@ class Plot(object):
         """Get :attr:`xlong_name`"""
         long_name = self._get_xyattr_('x', 'long_name')
         if long_name is None:
-            long_name = self.get_xid(idata=idata).title().replace('_', ' ')
+            long_name = self.get_xid().title().replace('_', ' ')
         return long_name
     def set_xlong_name(self, long_name=None):
         """Set :attr:`xlong_name`"""
@@ -3134,7 +3159,7 @@ class Plot(object):
         """Get :attr:`ylong_name`"""
         long_name = self._get_xyattr_('y', 'long_name')
         if long_name is None:
-            long_name = self.get_yid(idata=idata).title().replace('_', ' ')
+            long_name = self.get_yid().title().replace('_', ' ')
         return long_name
     def set_ylong_name(self, long_name=None):
         """Set :attr:`ylong_name`"""
@@ -3747,6 +3772,8 @@ class ScalarMappable:
         if cmap == 'mpl': cmap = False
         if cmap is None or cmap=='auto' or cmap is True :
             cmap = get_config_value('vacumm.misc.plot', 'cmap')
+            if cmap.lower() in ['none', 'mpl']:
+                cmap = None # default from matplotlib
         if cmap=='mg': cmap = 'magic'
         elif cmap=='rb': cmap = 'rainbow'
         if cmap=='magic' or cmap=='rainbow':
@@ -4177,7 +4204,7 @@ class Bar(Plot1D):
 
         # Data
         data = self.get_data()[0]
-        axis = self.get_axis_data()
+        axis = self.get_axis_data().astype('d')
         bounds = meshbounds(axis)
         widths = N.diff(bounds)
         axis += widths*(lag if lag else 0.)
