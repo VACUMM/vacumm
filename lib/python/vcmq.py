@@ -165,6 +165,7 @@ map = map2
 hov = hov2
 stick = stick2
 section = section2
+bar = bar2
 
 from vacumm.misc.color import (
     plot_cmap, show_cmap, get_cmap, simple_colors, RGB, RGBA,
