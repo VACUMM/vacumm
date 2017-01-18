@@ -1005,7 +1005,7 @@ def nccache_get_time(f, timeid=None, ro=False):
         return _nccache_time[fname]
 
     # Read it
-    taxis = ncget_time(f, ids=timeid, ro=ro)
+    taxis = ncget_time(f, ids=timeid, ro=ro, checkaxis=True)
     _nccache_time[fname] = taxis
     return taxis
 
