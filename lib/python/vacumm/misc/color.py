@@ -59,6 +59,7 @@ except:
     cmoceancm = None
 
 import vacumm
+from vacumm import vacumm_warn
 
 # Color definitions
 
@@ -2186,7 +2187,7 @@ def cmap_red_tau_hymex(name="vacumm_red_tau_hymex", **kwargs):
     return cmap
 
 
-def get_cmap(cmap=None, **kwargs):
+def get_cmap(cmap=None, errmode=None, **kwargs):
     """A simple way to get a VACUMM, GMT or MPL colormap
 
     :Example:
@@ -2219,7 +2220,16 @@ def get_cmap(cmap=None, **kwargs):
         elif  cmap.startswith('vacumm_') and kwargs:
             cmap = eval('cmap_'+cmap[7:])(**kwargs)
         else:
-            cmap = P.get_cmap(cmap)
+            if errmode=='raise':
+                cmap = P.get_cmap(cmap)
+            else:
+                try:
+                    cmap = P.get_cmap(cmap)
+                except:
+                    if errmode=='warn':
+                        vacumm_warn('Invalid colormap: {!s}. Switch to default one'.format(cmap))
+                    cmap = P.get_cmap()
+
     else:
         cmap = P.get_cmap()
     return cmap

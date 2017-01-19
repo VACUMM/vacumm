@@ -76,7 +76,7 @@ from .axes import (check_axes, istime, axis_type, set_order, get_order, merge_or
     check_order, order_match, isaxis)
 from .color import (get_cmap, cmap_magic, cmap_rainbow, RGB, land, whiten, darken,
     RGBA, change_luminosity, change_saturation, pastelise,
-    CMAP_POSITIVE, CMAP_NEGATIVE, CMAP_ANOMALY)
+    CMAP_POSITIVE, CMAP_NEGATIVE, CMAP_SYMETRIC, CMAP_ANOMALY)
 from .docstrings import docfiller
 from .filters import generic2d
 from .grid import get_axis, meshbounds, meshgrid, var2d
@@ -3849,7 +3849,7 @@ class ScalarMappable:
                     cmap = self._get_config_cmap_('cmap_negative')
                     if cmap is None:
                         cmap = CMAP_NEGATIVE
-                cmap = get_cmap(cmap)
+                cmap = get_cmap(cmap, errmode='warn')
 
             elif cmap=='magic' or cmap=='rainbow':
 
@@ -3863,7 +3863,7 @@ class ScalarMappable:
 
         elif not isinstance(cmap, Colormap):
 
-            cmap = get_cmap(cmap, **kwargs)
+            cmap = get_cmap(cmap, errmode='warn', **kwargs)
 
         # Luminosity
         if lum is None:
