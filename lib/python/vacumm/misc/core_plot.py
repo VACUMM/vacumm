@@ -75,7 +75,8 @@ from .atime import mpl, comptime, strftime, is_numtime, numtime
 from .axes import (check_axes, istime, axis_type, set_order, get_order, merge_orders,
     check_order, order_match, isaxis)
 from .color import (get_cmap, cmap_magic, cmap_rainbow, RGB, land, whiten, darken,
-    RGBA, change_luminosity, change_saturation, pastelise)
+    RGBA, change_luminosity, change_saturation, pastelise,
+    CMAP_POSITIVE, CMAP_NEGATIVE, CMAP_ANOMALY)
 from .docstrings import docfiller
 from .filters import generic2d
 from .grid import get_axis, meshbounds, meshgrid, var2d
@@ -84,6 +85,7 @@ from .grid.regridding import shift1d
 from .phys.units import deg2m, tometric, m2deg
 from .remote import OutputWorkFile
 from ..config import get_config_value
+import color
 
 
 MA = N.ma
@@ -3541,7 +3543,8 @@ class ScalarMappable:
 
 
     """
-    _primary_attributes = Plot._primary_attributes + ['nmax', 'nmax_levels', 'levels', 'cmap', 'keepminmax',  'levels_mode']
+    _primary_attributes = Plot._primary_attributes + ['nmax', 'nmax_levels',
+        'levels_mode', 'levels', 'cmap', 'keepminmax']
     _secondary_attributes = Plot._secondary_attributes + ['cblabel']
 
     def get_nmax_levels(self):
@@ -3557,6 +3560,7 @@ class ScalarMappable:
         self.del_obj('nmax_levels')
     nmax_levels = nmax = property(get_nmax_levels, set_nmax_levels,
         del_nmax_levels, doc="Max number of :attr:`levels` for contours and colorbar ticks.")
+
 
     def get_levels(self, mode=None, keepminmax=None, nocache=False,
             autoscaling='normal', **kwargs):
@@ -3617,12 +3621,6 @@ class ScalarMappable:
             self.levels_mode = mode
         else:
             mode = self.levels_mode
-        if mode is None:
-            mode = get_config_value('vacumm.misc.plot', 'levels_mode').lower()
-            if mode not in ['auto', 'smart', 'normal', 'basic', 'positive', 'negative', 'symetric', 'anomaly']:
-                oldmode = mode
-                mode = get_config_value('vacumm.misc.plot', 'levels_mode', user=False)
-                warn('Bad value for config value [vacumm.misc.plot] levels_mode: %s. Switched to default: %s'%(oldmode, mode))
         if not self.has_data(): return
         if keepminmax is not None:
             self.keepminmax = keepminmax
@@ -3632,20 +3630,11 @@ class ScalarMappable:
         for key in 'positive', 'negative', 'symetric', 'anomaly':
             if kwargs.has_key(key) and kwargs[key]:
                 mode = key
-        if mode=='anomaly': mode = 'symetric'
-        elif mode=='smart': mode = 'auto'
-        elif mode=='basic': mode = 'normal'
         vmin = self.vmin if self.isset('vmin') else None
         vmax = self.vmax if self.isset('vmax') else None
         if mode == 'auto':
-            if self.masked:
-                mode = 'normal'
-            elif (self.vmin>=0 and self.vmax > 0) and (self.vmin<=self.vmax/3.):
-                mode = 'positive'
-            elif (self.vmin<0 and self.vmax<=0) and (self.vmax>=self.vmin/3.):
-                mode = 'negative'
-            elif (self.vmin+self.vmax)< 0.05 * (self.vmax-self.vmin):
-                mode = 'symetric'
+            mode = self.minmax2levelsmode(self.vmin, self.vmax)
+        self.levels_mode = mode
         if mode=='positive':
             vmin = 0.
         elif mode=='negative':
@@ -3653,7 +3642,6 @@ class ScalarMappable:
         elif mode=='symetric':
             vmax = max(N.abs(self.vmin), N.abs(self.vmax))
             vmin = -vmax
-        self.levels_mode = mode
 
         # Compute base levels
         assert autoscaling in ['normal', 'degrees'] or callable(autoscaling), 'Wrong autoscaling parameter'
@@ -3672,6 +3660,26 @@ class ScalarMappable:
         # Cache
         self._levels = levels
         return levels
+
+    def minmax2levelsmode(self, vmin=None, vmax=None):
+        """Get auto levels mode from min and max value
+
+        :Return: normal, symetric, positive or negative"""
+        if vmin is None:
+            vmin = self.vmin
+        if vmax is None:
+            vmax = self.vmax
+        if self.masked:
+            mode = 'normal'
+        elif (vmin>=0 and vmax > 0) and (vmin<=vmax/3.):
+            mode = 'positive'
+        elif (vmin<0 and vmax<=0) and (vmax>=vmin/3.):
+            mode = 'negative'
+        elif (vmin+vmax)< 0.05 * (vmax-vmin):
+            mode = 'symetric'
+        else:
+            mode = 'normal'
+        return mode
 
     def set_levels(self, value):
         """Set :attr:`levels`"""
@@ -3708,16 +3716,36 @@ class ScalarMappable:
         levels_mode = self.get_obj('levels_mode')
         if levels_mode is None:
             levels_mode = get_config_value('vacumm.misc.plot', 'levels_mode')
-        levels_mode = str(levels_mode)
+        levels_mode = self._check_levels_mode_(levels_mode)
         return levels_mode
-    def set_levels_mode(self, value):
+    def set_levels_mode(self, mode):
         """Set :attr:`levels_mode`"""
-        self.set_obj('levels_mode', value)
+        mode = self._check_levels_mode_(mode)
+        self.set_obj('levels_mode', mode)
     def del_levels_mode(self):
         """Del :attr:`levels_mode`"""
         self.del_obj('levels_mode')
     levels_mode = property(get_levels_mode, set_levels_mode,
-        del_levels_mode, doc="The way :attr:`levels` are estimated from :attr:`vmin` and :attr:`vmax`: 'positive'/'negative' means levels starting/ending from 0, 'anomaly' or 'symetric' means symetric levels, 'auto' or 'smart' means that mode is estimated from min and max.")
+        del_levels_mode, doc="The way :attr:`levels` are estimated from "
+            ":attr:`vmin` and :attr:`vmax`: 'positive'/'negative' means levels "
+            "starting/ending from 0, 'anomaly' or 'symetric' means symetric "
+            "levels, 'auto' or 'smart' means that mode is estimated "
+            "from min and max, and 'normal' means no special treatment.")
+    def _check_levels_mode_(self, mode):
+        """Check values and aliases, and fallback to config value"""
+        mode = str(mode).lower()
+        if mode not in ['auto', 'smart', 'normal', 'basic', 'positive',
+                'negative', 'symetric', 'anomaly']:
+            oldmode = mode
+            mode = get_config_value('vacumm.misc.plot', 'levels_mode', user=False)
+            warn('Bad value for config value [vacumm.misc.plot] levels_mode: %s. Switched to default: %s'%(oldmode, mode))
+        if mode=='anomaly':
+            mode = 'symetric'
+        elif mode=='smart':
+            mode = 'auto'
+        elif mode=='basic':
+            mode = 'normal'
+        return mode
 
     def get_vmin(self, index=0, glob=False):
         """Get :attr:`vmin`"""
@@ -3747,6 +3775,15 @@ class ScalarMappable:
         Plot.del_vmax, doc="Data max to use for plot")
 
 
+    @staticmethod
+    def _get_config_cmap_(key='cmap'):
+            cmap = get_config_value('vacumm.misc.plot', key)
+            if cmap is None:
+                cmap = get_config_value('vacumm.misc.plot', key, user=False)
+            if cmap is None or cmap.lower() in ['none', 'mpl']:
+                cmap = None # default from matplotlib
+            return cmap
+
     def get_cmap(self, cmap=None, nocache=False, tint=None, lum=None, sat=None,
             pastel=False, **kwargs):
         """Get :attr:`cmap`
@@ -3758,35 +3795,74 @@ class ScalarMappable:
             - **nocache**, optional: Once cmap is computed, it is stored
               in cache. If ``nocache is True``, first check cache before
               trying to compute cmap.
-            - **lum**, optional: Change luminosity.
+            - **lum**, optional: Change luminosity, between -1 and 1.
             - **sat**, optional: Change saturation.
 
         """
 
-        # Get it
+        # From cache
         cmap = self.get_obj('cmap')
-#        if not isinstance(cmap, Colormap): cmap = None
         if (cmap is None and not nocache and hasattr(self, '_cmap') and
                 tint is None and lum is None):
             cmap = self._cmap
-        if cmap == 'mpl': cmap = False
-        if cmap is None or cmap=='auto' or cmap is True :
-            cmap = get_config_value('vacumm.misc.plot', 'cmap')
-            if cmap.lower() in ['none', 'mpl']:
-                cmap = None # default from matplotlib
-        if cmap=='mg': cmap = 'magic'
-        elif cmap=='rb': cmap = 'rainbow'
-        if cmap=='magic' or cmap=='rainbow':
-            import color
-            mode = getattr(self, 'levels_mode', 'auto')
-            if mode=='auto': mode = 'normal'
-            if cmap=='magic': kwargs.setdefault('mode', mode)
-            kwargs.setdefault('stretcher', 'reduced_green')
-            if getattr(self, 'fill_method', None)=='contourf' or getattr(self, 'fill', '')=='contourf':
-                dict_check_defaults(kwargs, stretch=0, lstretch=0, rstretch=0)
-            cmap = getattr(color, 'cmap_'+cmap)(self.levels, **kwargs)
+
+        # From config
+        if cmap is None or cmap is True :
+            cmap = self._get_config_cmap_()
+
+        # Aliases
+        if cmap == 'mpl':
+            cmap = False
+        elif cmap=='mg':
+            cmap = 'magic'
+        elif cmap=='rb':
+            cmap = 'rainbow'
+        elif cmap == 'normal':
+            cmap = None
+
+        # Adaptative choices
+        cmap_levels = ['positive', 'negative', 'symetric', 'anomaly']
+        if cmap in ['auto', 'magic', 'rainbow']+cmap_levels:
+
+            # Levels mode
+            if cmap in cmap_levels:
+                levels_mode = self._check_levels_mode_(cmap)
+                cmap = 'auto'
+            else:
+                levels_mode = self.levels_mode
+                if levels_mode == 'auto':
+                    levels_mode = self.minmax2levelsmode(self.vmin, self.vmax)
+
+            if cmap=='auto':
+
+                if levels_mode == 'normal':
+                    cmap = None
+                elif levels_mode == 'symetric':
+                    cmap = self._get_config_cmap_('cmap_symetric')
+                    if cmap is None:
+                        cmap = CMAP_SYMETRIC
+                elif levels_mode == 'positive':
+                    cmap = self._get_config_cmap_('cmap_positive')
+                    if cmap is None:
+                        cmap = CMAP_POSITIVE
+                else:
+                    cmap = self._get_config_cmap_('cmap_negative')
+                    if cmap is None:
+                        cmap = CMAP_NEGATIVE
+                cmap = get_cmap(cmap)
+
+            elif cmap=='magic' or cmap=='rainbow':
+
+                if cmap=='magic':
+                    kwargs.setdefault('mode', levels_mode)
+                kwargs.setdefault('stretcher', 'reduced_green')
+                if getattr(self, 'fill_method', None)=='contourf' or getattr(self, 'fill', '')=='contourf':
+                    dict_check_defaults(kwargs, stretch=0, lstretch=0, rstretch=0)
+                cmap = getattr(color, 'cmap_'+cmap)(self.levels, **kwargs)
+
 
         elif not isinstance(cmap, Colormap):
+
             cmap = get_cmap(cmap, **kwargs)
 
         # Luminosity
@@ -4787,11 +4863,10 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         fill = self.fill_method = self.get_fill(**kwargs)
         if fill == 'no': return
 
-        # Color map
-        cmap = self.get_cmap(**kwcmap)
+        # Levels
+        levels = self.get_levels(**kwlevels)
 
         # Norm
-        levels = self.get_levels(**kwlevels)
 #        from matplotlib.colors import Normalize
         if norm is None:
             from color import StepsNorm
@@ -4800,6 +4875,9 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             norm = Normalize(min(levels), max(levels))
         elif not isinstance(norm, Normalize):
             norm = None
+
+        # Color map
+        cmap = self.get_cmap(**kwcmap)
 
         # Data
         data = self.get_data(scalar=True)
