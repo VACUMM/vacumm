@@ -2342,3 +2342,12 @@ def indices2slices(indices):
         i1 = indices[ic] + 1
         slices.append(slice(i0, i1))
     return slices
+
+def dicttree_get(dd, *keys, **kwargs):
+    """Get value of tree of dicts"""
+    default = kwargs.get('default', None)
+    if not isinstance(dd, dict) or not keys:
+        return dd
+    if keys[0] not in dd:
+        return default
+    return dicttree_get(dd[keys[0]], *keys[1:], **kwargs)

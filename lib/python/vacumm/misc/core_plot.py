@@ -3780,7 +3780,8 @@ class ScalarMappable:
             cmap = get_config_value('vacumm.misc.plot', key)
             if cmap is None:
                 cmap = get_config_value('vacumm.misc.plot', key, user=False)
-            if cmap is None or cmap.lower() in ['none', 'mpl']:
+            if cmap is None or cmap.lower() in ['none', 'mpl', 'default',
+                'normal', 'true', 'false']:
                 cmap = None # default from matplotlib
             return cmap
 
@@ -3817,12 +3818,12 @@ class ScalarMappable:
             cmap = 'magic'
         elif cmap=='rb':
             cmap = 'rainbow'
-        elif cmap == 'normal':
+        elif cmap == 'normal' or cmap is True or cmap is False:
             cmap = None
 
         # Adaptative choices
         cmap_levels = ['positive', 'negative', 'symetric', 'anomaly']
-        if cmap in ['auto', 'magic', 'rainbow']+cmap_levels:
+        if cmap in ['auto', 'magic', 'rainbow'] + cmap_levels:
 
             # Levels mode
             if cmap in cmap_levels:
