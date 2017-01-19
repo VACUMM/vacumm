@@ -3131,5 +3131,18 @@ del _cmap, _name
 # - cmocean
 if cmoceancm is not None:
     for cmname in cmoceancm.cmapnames:
-        P.register_cmap('cmocean_'+cmname, getattr(cmoceancm, cmname))
-        P.register_cmap(cmname, getattr(cmoceancm, cmname))
+        for suffix in '', '_r':
+            cmapname = cmname + suffix
+            cmap = getattr(cmoceancm, cmapname)
+            P.register_cmap('cmocean_' + cmapname, cmap)
+            P.register_cmap(cmapname, cmap)
+
+#: Colormap for posivite data
+CMAP_POSITIVE = 'speed'
+
+#: Colormap for negative data
+CMAP_NEGATIVE = 'tempo_r'
+
+#: Colomap for anomalies / symetric data
+CMAP_SYMETRIC = 'balance'
+CMAP_ANOMALY = CMAP_SYMETRIC
