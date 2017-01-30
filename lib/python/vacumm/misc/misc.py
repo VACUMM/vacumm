@@ -1003,7 +1003,7 @@ def isempty(x):
 def dict_merge(*dd, **kwargs):
     """Merge dictionaries
 
-    First dictionaries have to priority their followers
+    First dictionaries have priority over next
 
     :Params:
 
@@ -1015,7 +1015,7 @@ def dict_merge(*dd, **kwargs):
         - **mergelists**, optional: Also merge list items [default: False].
         - **unique**, optional: Uniquify lists and tuples [default: True].
         - **skipnones**, optional: Skip Nones [default: True].
-        - **skipempty**, optional: Skip everything is not converted to False
+        - **skipempty**, optional: Skip everything that is not converted to False
           using bool [default: False].
         - **cls**, optional: Class to use. Default to the first class found in arguments
           that is not a :class:`dict`, else defaults to :class:`dict`.
