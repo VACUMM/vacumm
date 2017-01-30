@@ -155,7 +155,7 @@ def coriolis_parameter(lat, gravity=default_gravity, fromvar=False, format_axes=
                 tile_shape[yaxis] = 1
                 latv[:] = N.tile(lat[:].reshape(new_shape), tile_shape)
     else:
-        latv = lat if N.isscalar(lat) else lat[:]
+        latv = lat if not N.ndim(lat) else lat[:]
 
     # Compute
     f0 = 2*N.ma.sin(N.pi*latv/180.)
