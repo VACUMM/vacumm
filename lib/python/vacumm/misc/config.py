@@ -117,7 +117,7 @@ def _valwraplist_(validator):
 
         # Handle single value
         if not isinstance(value, (list, tuple)):
-            value = (value,)
+            value = [value]
 
         # Do list checks
         n = kwargs.pop('n', None)
@@ -377,6 +377,7 @@ _VALIDATOR_SPECS_ = {
         'bbox':_validator_bbox_,
         'datetime':_validator_datetime_,
         'file':_validator_path_,
+        'path':_validator_path_,
         'directory':_validator_path_,
         'interval':_validator_interval_,
         'eval':_validator_eval_,
@@ -1205,7 +1206,7 @@ def filter_section(sec, cfgfilter, default=False):
     return sec
 
 def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
-        exc=[], extraopts=None, **kwargs):
+        exc=[], extraopts=None, args=None, **kwargs):
     """Merge configuration and commandline arguments
 
     :Params:
@@ -1236,7 +1237,7 @@ def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
     """
     return ConfigManager(cfgspecfile, **kwargs).arg_parse(
         parser, cfgfileopt=cfgfileopt, exc=exc, cfgfile=cfgfile, getargs=True,
-        extraopts=extraopts)
+        extraopts=extraopts, args=args)
 
 def cfgoptparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
     exc=[], **kwargs):
