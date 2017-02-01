@@ -357,6 +357,59 @@ def _validator_color_(value, default='k', alpha=False):
 
     raise VdtTypeError(value)
 
+
+_re_funccall = re.compile(r'^\s*(\w+\(.*\))\s*$').match
+_re_acc = re.compile(r'^\s*(\{.*\})\s*$').match
+_re_set = re.compile(r'^\s*(\w+)\s*=\s*(.+)\s*$').match
+def _validator_dict_(value, default={}, vtype=None):
+    """validator for dictionaries
+
+    Examples
+    --------
+    value:
+
+        - dict(a=2, b="x")
+        - {"a":2, "b":"x"}
+        - a=2
+        - a=2, b="x"
+        - OrderedDict(b=2)
+        - dict([("a",2),("b","x")])
+    """
+    if str(value)=='None':
+        return None
+    if isinstance(value, dict):
+        return value
+    if isinstance(value, basestring):
+        value = value.strip()
+        if value=='':
+            return {}
+        m = _re_funccall(value) or _re_acc(value)
+        if not m:
+            m = _re_set(value)
+            if not m:
+                raise VdtTypeError(value)
+            value = 'dict('+value+')'
+        if m:
+            try:
+                value = eval(value)
+            except:
+                raise VdtTypeError(value)
+            if not isinstance(value, dict):
+                raise VdtTypeError(value)
+            else:
+                return value
+    if isinstance(value, list):
+        out = {}
+        for val in value:
+            m = _re_set(val)
+            if not m:
+                raise VdtTypeError(val)
+            out[m.group(1)] = eval(m.group(2))
+        return out
+    raise VdtTypeError(value)
+
+
+
 # Define additionnal specifications
 # Value should be dict for internal use of this module (iterable, opttype, ...)
 # If value is not a dict, it is supposed to be the validator function
@@ -383,6 +436,7 @@ _VALIDATOR_SPECS_ = {
         'eval':_validator_eval_,
         'cmap':_validator_cmap_,
         'color':_validator_color_,
+        'dict':_validator_dict_,
         # lists validators for these scalars will be automatically generated
 }
 
