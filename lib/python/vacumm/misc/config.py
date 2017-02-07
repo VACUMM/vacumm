@@ -64,7 +64,7 @@ except: numpy = None
 
 __all__ = ['ConfigException', 'ValidationWarning', 'ConfigManager', 'print_short_help',
     'opt2rst', 'cfg2rst', 'cfgargparse', 'cfgoptparse', 'getspec', 'get_secnames',
-    'list_options', 'option2rst',  'filter_section']
+    'list_options', 'option2rst',  'filter_section', 'register_config_validator']
 
 class ConfigException(Exception):
     pass
@@ -331,12 +331,15 @@ def _validator_cdtime_(value, min=None, max=None, default=None):
     return value
 
 
-def _validator_eval_(value, default=None):
-    """Validator a string that can be evaluated"""
+def _validator_eval_(value, default=None, unchanged_if_failed=True):
+    """Validate a string that can be evaluated"""
     try:
         value = eval(str(value))
     except:
-        raise VdtTypeError(value)
+        if unchanged_if_failed:
+            return value
+        else:
+            raise VdtTypeError(value)
     return value
 
 
@@ -473,6 +476,14 @@ VALIDATOR_TYPES = _VALIDATOR_SPECS_.keys()
 # Build the mapping suitable for Validator.functions
 _VALIDATOR_FUNCTIONS_ = dict((k, v['func']) for k,v in _VALIDATOR_SPECS_.iteritems() if 'func' in v)
 _validator_functions_ = _VALIDATOR_FUNCTIONS_
+
+def register_config_validator(**kwargs):
+    """Add a new configobj validator function
+
+    :Example:
+    >>> register_config_validator(level=is_level)
+    """
+    _VALIDATOR_FUNCTIONS_.update(**kwargs)
 
 class ConfigManager(object):
     """A configuration management class based on a configuration specification file

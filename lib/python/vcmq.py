@@ -125,7 +125,8 @@ from vacumm.misc.log import (Logger, ColoredStreamHandler, LoggerAdapter,
 
 from vacumm.misc.config import (ConfigManager, cfgargparse, ConfigException,
     ValidationWarning, cfg2rst, cfgoptparse, filter_section, get_secnames,
-    getspec, list_options, opt2rst, option2rst, print_short_help)
+    getspec, list_options, opt2rst, option2rst, print_short_help,
+    register_config_validator)
 
 from vacumm.misc.stats import (StatAccum, qtmax, qtmin, qtminmax, ensrank,
     corr_proba, StatAccumError)
