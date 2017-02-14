@@ -65,6 +65,8 @@ from matplotlib.ticker import (FormatStrFormatter, Formatter, Locator,
     NullLocator, AutoMinorLocator, AutoLocator)
 from matplotlib.transforms import offset_copy
 from mpl_toolkits.basemap import Basemap
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.collections import PolyCollection, LineCollection
 
 from ._ext_plot import (DropShadowFilter, FilteredArtistList, GrowFilter,
     LightFilter)
@@ -877,6 +879,7 @@ class Plot(object):
             offset = (axes_xoffset, 0)
             self.axes.axis[loc] = new_fixed_axis(loc=loc, axes=self.axes, offset=offset)
             self.axes.axis[loc].toggle(all=True)
+        self.is3d = isinstance(self.axes, Axes3D)
 
         if noframe:
             self.axes.set_frame_on(False)
@@ -6144,19 +6147,43 @@ class Map(Plot2D):
                 kwfillcontinents = kwfilter(kwargs, 'fillcontinents_', defaults={'color':land_color})
 
                 if self.map.resolution is not None:# GSHHS
+
+                    # Draw coastlines
                     if drawcoastlines and not self.get_axobj('drawcoastlines'):
-                        self.set_axobj('drawcoastlines', self.map.drawcoastlines(**kwdrawcoastlines))
+                        o = self.map.drawcoastlines(**kwdrawcoastlines)
+                        self.set_axobj('drawcoastlines', o)
+                        if self.is3d:
+                            self.axes.add_collection3d(o)
+
+                    # Fill continents
                     fcsh = kwfillcontinents.pop('shadow', False)
                     kwfcsh = kwfilter(kwfillcontinents, 'shadow_')
                     if fillcontinents and not self.get_axobj('fillcontinents'):
-                        try:
-                            self.set_axobj('fillcontinents', self.map.fillcontinents(**kwfillcontinents))
-                        except:
-                            pass
-                        if self.get_axobj('fillcontinents') is not None and fcsh:
-                            add_shadow(self.get_axobj('fillcontinents'), **kwfcsh)
+                        if not self.is3d:
+                            try:
+                                self.set_axobj('fillcontinents', self.map.fillcontinents(**kwfillcontinents))
+                            except:
+                                pass
+                            if self.get_axobj('fillcontinents') is not None and fcsh:
+                                add_shadow(self.get_axobj('fillcontinents'), **kwfcsh)
+                        else:
+                            polys = []
+                            for polygon in self.map.landpolygons:
+                                polys.append(polygon.get_coords())
+                            kwfillcontinents['facecolor'] = kwfillcontinents.pop('color')
+                            kwfillcontinents.pop('lake_color', None)
+                            lc = PolyCollection(polys, linewidth=0, closed=False,
+                                **kwfillcontinents)
+                            del polys
+                            self.axes.add_collection3d(lc)
+
+
+                    # Draw rivers
                     if drawrivers and not self.get_axobj('drawrivers'):
-                        self.set_axobj('drawrivers', self.map.drawrivers(**kwfilter(kwargs,'drawrivers')))
+                        o = self.map.drawrivers(**kwfilter(kwargs,'drawrivers'))
+                        self.set_axobj('drawrivers', o)
+                        if self.is3d:
+                            self.axes.add_collection3d(o)
 
                 #elif m.res == 's': # SHOM
                 else:
@@ -6194,7 +6221,7 @@ class Map(Plot2D):
                 kwp['linewidth'] = kwm['linewidth'] = 0
             # - parallels
             if drawparallels:
-                if self._xyhide_('y', kwargs.get('yhide', False)):
+                if self._xyhide_('y', kwargs.get('yhide', False)) or self.is3d:
                     meridional_labels = 0
                 kwp.update(labels=[int(meridional_labels),0,0,0])
 #                kwp.update(kwpm_def)
@@ -6210,13 +6237,13 @@ class Map(Plot2D):
                 if minutes: kwp.setdefault('fmt',
                     MinuteLabel(parallels, zonal=False, tex=None,
                         no_seconds=no_seconds, bfdeg=bfdeg))
-                self.set_axobj('drawparallels', self.map.drawparallels(parallels,**kwp))
+#                self.set_axobj('drawparallels', self.map.drawparallels(parallels,**kwp))
                 self.parallels = parallels
             else:
                 self.parallels = None
             # - meridians
             if drawmeridians:
-                if self._xyhide_('x', kwargs.get('xhide', False)):
+                if self._xyhide_('x', kwargs.get('xhide', False)) or self.is3d:
                     zonal_labels = 0
                 kwm.update(labels=[0,0,0,int(zonal_labels)])
 #                kwm.update(kwpm_def)
@@ -6240,6 +6267,19 @@ class Map(Plot2D):
             else:
                 self.meridians = None
 
+            if self.is3d:
+                def addto3d(what):
+                    coords = []
+                    for par in self.get_axobj(what).values():
+                        for line in par[0]:
+                            coords.append(line.get_xydata())
+                    if coords:
+                        self.axes.add_collection3d(LineCollection(coords,
+                            linewidths=[line.get_linewidth()],
+                            linestyles=[line.get_linestyle()],
+                            colors=[line.get_color()],
+                            ))
+
             # - bfdeg (bold face degrees) homogeneisation
             if (drawparallels and isinstance(kwp['fmt'], MinuteLabel) and
                     drawmeridians and isinstance(kwm['fmt'], MinuteLabel) and
@@ -6249,9 +6289,13 @@ class Map(Plot2D):
             # - draw
             if drawparallels:
                 self.set_axobj('drawparallels', self.map.drawparallels(parallels,**kwp))
+                if self.is3d:
+                    addto3d('drawparallels')
             if drawmeridians:
                 # Draw
                 lonlabs = self.set_axobj('drawmeridians', self.map.drawmeridians(meridians,**kwm))
+                if self.is3d:
+                    addto3d('drawmeridians')
                 # Remove duplicated labels
                 llfound = []
                 for ll in lonlabs.keys()[:]:
