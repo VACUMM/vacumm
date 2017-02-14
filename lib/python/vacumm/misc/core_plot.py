@@ -98,6 +98,26 @@ __all__ = ['PlotError','Plot', 'Plot1D', 'Curve', 'Bar', 'Stick',
     'AutoDateMinorLocator', 'AutoDualDateFormatter', 'DualDateFormatter',
     'MinuteLabel', 'Section', 'twinxy']
 
+
+#: Aliases for argisimage services hosted by the arcgis server
+ARCGISIMAGE_ALIASES = dict(
+    esriimagery="ESRI_Imagery_World_2D",
+    esristreet="ESRI_StreetMap_World_2D",
+    esristreetmap="ESRI_StreetMap_World_2D",
+    natgeo="NatGeo_World_Map",
+    ngstopo="NGS_Topo_US_2D",
+    usatopo="USA_Topo_Maps",
+    ocean="Ocean_Basemap",
+    topo="World_Topo_Map",
+    shaded="World_Shaded_Relief",
+    physical="World_Physical_Map",
+    imagery="World_Imagery",
+    street="World_Street_Map",
+    streetmap="World_Street_Map",
+    terrain="World_Terrain_Base",
+)
+
+
 class PlotError(Exception):
     pass
 
@@ -3130,8 +3150,9 @@ class Plot(object):
     def get_long_name(self, idata=None):
         """Get :attr:`long_name`"""
         long_name = self._get_xyattr_('d', 'long_name', idata=idata)
-        if long_name is None:
-            long_name = self.get_id(idata=idata).title().replace('_', ' ')
+        id = self.get_id(idata=idata)
+        if long_name is None and id:
+            long_name = id.title().replace('_', ' ')
         return long_name
     def set_long_name(self, long_name=None):
         """Set :attr:`long_name`"""
@@ -5754,6 +5775,40 @@ class Map(Plot2D):
         return tts
 
 
+    def add_arcgisimage(self, service, **kwargs):
+        """Add an Arcgis image
+
+        Available service aliases (see :attr:`ARCGISIMAGE_ALIASES`): {}
+        """
+
+        # Alias
+        if not service:
+            return
+        if service is True:
+            service = "esriimagery"
+        if isinstance(service, basestring):
+            service = ARCGISIMAGE_ALIASES.get(service, service)
+
+        # Pixels
+        axext = self.axes.bbox.extents
+        fact = 1.3
+        xpixels = (axext[2]-axext[0])*fact
+#        ypixels = (axext[3]-axext[1])*fact
+        dpi = self.fig.dpi
+
+        # Call the basemap method
+        dict_check_defaults(kwargs, service=service,
+            xpixels=xpixels,
+#            ypixels=ypixels,
+            dpi=dpi)
+        try:
+            return self.map.arcgisimage(**kwargs)
+        except Exception, e:
+            warn('Error when plotting arcgisimage: {}.\nMessage: {}'.format(
+                service, e.message))
+
+    add_arcgisimage.__doc__.format(', '.join(ARCGISIMAGE_ALIASES.keys()))
+
     def _get_posposref_(self, pos=None, posref=None, xrel=0.1, yrel=0.1, transform='axes',
         xpad=30, ypad=None):
         """Get position of point and reference points in data coordinates (meters)
@@ -5990,10 +6045,14 @@ class Map(Plot2D):
 
         return ms+list(cp)
 
-    def post_plot(self, drawrivers=False, fillcontinents=True, meridional_labels=True, zonal_labels=True,
-            drawcoastlines=True, drawmapboundary=True, meridians=None, parallels=None,
-            land_color=None, ticklabel_size=None, refine=0, no_seconds=False, fullscreen=False,
-            minutes=True, mapscale=False, compass=False, mscp=False, bfdeg=None, lowhighs=False,
+    def post_plot(self, drawrivers=False, fillcontinents=True,
+            meridional_labels=True, zonal_labels=True,
+            drawcoastlines=True, drawmapboundary=True,
+            meridians=None, parallels=None,
+            land_color=None, ticklabel_size=None, refine=0,
+            no_seconds=False, fullscreen=False,
+            minutes=True, mapscale=False, compass=False, mscp=False,
+            bfdeg=None, lowhighs=False, arcgisimage=None,
             **kwargs):
         """Post-processing of the plot
 
@@ -6206,6 +6265,11 @@ class Map(Plot2D):
         lowhighs = kwargs.pop('lowhigh', lowhighs)
         if lowhighs:
             self.add_lowhighs(**kwfilter(kwargs, 'lowhighs'))
+
+        # Plot arcgis image
+        arcgisimage = kwargs.pop('arcgisimage', arcgisimage)
+        if arcgisimage:
+            self.add_arcgisimage(arcgisimage, **kwfilter(kwargs, 'arcgisimage'))
 
         # Map scale and compass
         if mscp:
