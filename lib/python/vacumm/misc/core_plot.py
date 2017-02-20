@@ -747,8 +747,8 @@ class Plot(object):
 
 
     def pre_plot(self, axes=None, figure=None, figsize=None, subplot=None, twin=None,
-        subplots_adjust=None, bgcolor=None, noframe=False, fullscreen=False,
-        verbose=False, axes_host=False, axes_xoffset=0, **kwargs):
+            subplots_adjust=None, bgcolor=None, noframe=False, fullscreen=False,
+            verbose=False, axes_host=False, axes_xoffset=0, **kwargs):
         """Initialize the plot
 
         :Tasks:
@@ -773,7 +773,8 @@ class Plot(object):
               X or Y axes (see :func:`matplotlib.pyplot.twinx`).
               You can also provide a dictionary : ``twin=dict(x=axes1, y=axes2)``.
             - **bgcolor**, optional: Background axis color.
-            - **axes_rect**, optional: [left, bottom, width, height] in normalized (0,1) units to create axes using :func:`~matplotlib.pyplot.axes`.
+            - **axes_rect**, optional: [left, bottom, width, height]
+              in normalized (0,1) units to create axes using :func:`~matplotlib.pyplot.axes`.
             - **axes_<param>**, optional: <param> is passed to :func:`~matplotlib.pyplot.axes`.
             - **noframe**, optional: Suppress plot frames.
             - **fullscreen**, optional: Plot in full screen mode (thus, ``noframe==True``).
@@ -835,10 +836,17 @@ class Plot(object):
             self.fig.subplots_adjust(**subplots_adjust)
 
         # Axes
-        if axes_host and axes is None and subplot is None and not axes_rect  \
-                and twin is None:
+        if (axes_host and axes is None and subplot is None and not axes_rect
+                and twin is None):
             subplot = 111
+        if axes=="3d":
+            kwaxes['projection'] = "3d"
+            if subplot is None and not axes_rect:
+                subplot = 111
+            axes = None
         if axes is not None:
+            if axes=="3d":
+                self.fig.add_sub
             self.axes = axes
             if self.axes.get_figure() != self.fig:
                 if verbose: print 'Axes does not match figure'
