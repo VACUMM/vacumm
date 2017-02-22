@@ -64,7 +64,7 @@ from matplotlib.text import Text
 from matplotlib.ticker import (FormatStrFormatter, Formatter, Locator,
     NullLocator, AutoMinorLocator, AutoLocator)
 from matplotlib.transforms import offset_copy
-from mpl_toolkits.basemap import Basemap
+from mpl_toolkits.basemap import Basemap, _setlatlab, _setlonlab
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.collections import PolyCollection, LineCollection
 
@@ -818,9 +818,11 @@ class Plot(object):
             kwargs['axes_frameon'] = False
 
         # Figure
+        if figure == 'old':
+            figure = None
         if isinstance(figure, Figure):
             self.fig = figure
-        elif figure is True:
+        elif figure is True or figure == 'new':
             self.fig = P.figure(**kwfig)
         elif figure is not None:
             self.fig = P.figure(figure, **kwfig)
@@ -6231,7 +6233,7 @@ class Map(Plot2D):
             if drawparallels:
                 if self._xyhide_('y', kwargs.get('yhide', False)) or self.is3d:
                     meridional_labels = 0
-                kwp.update(labels=[int(meridional_labels),0,0,0])
+                kwp.setdefault('labels', [int(meridional_labels),0,0,0])
 #                kwp.update(kwpm_def)
                 kwp.update(kwfilter(kwargs, 'yticklabels_'))
                 kwp = kwfilter(kwargs,'drawparallels',defaults=kwp)
@@ -6253,7 +6255,7 @@ class Map(Plot2D):
             if drawmeridians:
                 if self._xyhide_('x', kwargs.get('xhide', False)) or self.is3d:
                     zonal_labels = 0
-                kwm.update(labels=[0,0,0,int(zonal_labels)])
+                kwm.setdefault('labels', [0,0,0,int(zonal_labels)])
 #                kwm.update(kwpm_def)
                 kwm.update(kwfilter(kwargs, 'xticklabels_'))
                 kwm = kwfilter(kwargs,'drawmeridians',defaults=kwm)
@@ -6276,11 +6278,25 @@ class Map(Plot2D):
                 self.meridians = None
 
             if self.is3d:
-                def addto3d(what):
+                def addto3d(what, fmt='%g', labstyle=None, **kwargs):
+                    """Handle lines ans labels for 3D plots"""
                     coords = []
-                    for par in self.get_axobj(what).values():
+                    for value, par in self.get_axobj(what).items():
                         for line in par[0]:
-                            coords.append(line.get_xydata())
+                            xy = line.get_xydata()
+                            coords.append(xy)
+                            x = xy[0, 0]
+                            y = xy[0, 1]
+                            if what=='drawmeridians':
+                                lab = _setlatlab(fmt, value, labstyle)
+                                zdir = 'y'
+                                ha = 'left'
+                            else:
+                                lab = _setlonlab(fmt, value, labstyle)
+                                zdir = 'x'
+                                ha = 'right'
+                            self.axes.text(x, y, 0, lab, ha=ha, va='center',
+                                           zdir=zdir)
                     if coords:
                         self.axes.add_collection3d(LineCollection(coords,
                             linewidths=[line.get_linewidth()],
@@ -6298,12 +6314,12 @@ class Map(Plot2D):
             if drawparallels:
                 self.set_axobj('drawparallels', self.map.drawparallels(parallels,**kwp))
                 if self.is3d:
-                    addto3d('drawparallels')
+                    addto3d('drawparallels', **kwp)
             if drawmeridians:
                 # Draw
                 lonlabs = self.set_axobj('drawmeridians', self.map.drawmeridians(meridians,**kwm))
                 if self.is3d:
-                    addto3d('drawmeridians')
+                    addto3d('drawmeridians', **kwm)
                 # Remove duplicated labels
                 llfound = []
                 for ll in lonlabs.keys()[:]:
