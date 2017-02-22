@@ -168,6 +168,10 @@ stick = stick2
 section = section2
 bar = bar2
 
+from vacumm.misc.core_plot import (
+    Plot, Plot1D, Plot2D, ScalarMappable, Stick, Bar, Hov, Curve, Map, Section,
+    )
+
 from vacumm.misc.color import (
     plot_cmap, show_cmap, get_cmap, simple_colors, RGB, RGBA,
     cmap_srs, Scalar2RGB, darken, whiten, cmaps_mpl,
