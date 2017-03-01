@@ -46,6 +46,7 @@ import numpy.distutils
 from configobj import ConfigObj
 from validate import Validator, VdtMissingValue
 
+import vacumm
 from vacumm import VACUMMError
 
 def get_lib_dir():
@@ -466,27 +467,20 @@ def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
         cfg.validate(VACUMM_VDT)
 
     # Merge with currently loaded config?
-    import vacumm
-    if hasattr(vacumm, 'config'): # must be loaded :)
-        import vacumm.config
-        if not hasattr(vacumm.config, 'VACUMM_CFG'): # nothing to merge with
-            merge = False
-        if merge:
-            oldcfg = vacumm.config.VACUMM_CFG
-            if live:
-                oldcfg.copy()
-            oldcfg.merge(cfg)
-            cfg = oldcfg
+    if not hasattr(vacumm, 'CFG') or vacumm.CFG is None: # nothing to merge with
+        merge = False
+    if merge:
+        oldcfg = vacumm.CFG
+        if live:
+            oldcfg.copy()
+        oldcfg.merge(cfg)
+        cfg = oldcfg
 
-        # Store it?
-        if not live:
-            vacumm.config.VACUMM_CFG = cfg
+    # Store it?
+    if not live:
+        vacumm.VACUMM_CFG = vacumm.CFG = cfg
 
     return cfg
-
-#: Current VACUMM configuration (default+common+user)
-VACUMM_CFG = load_cfg('com')
-load_cfg('user')
 
 def _get_parent_sections_(sec):
     secs = []
@@ -921,6 +915,8 @@ def handle_edit_args(args):
     """Handle argparse args from ``vacumm_config.py edit ...``"""
 
     edit_user_conf_file(editor=args.editor)
+
+
 
 
 if __name__=='__main__':
