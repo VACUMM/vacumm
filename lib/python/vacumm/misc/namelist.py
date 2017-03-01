@@ -105,7 +105,8 @@ class Namelist(dict):
             - **Variables cannot be inserted directly into the Namelist**, you must access/setup the namelist level before (see examples)
               that's because there is no global variable in a namelist file !
 
-        :Examples:
+        Examples
+        --------
 
             >>> n = Namelist()
             >>> # The following is not correct and would results in a ValueError:

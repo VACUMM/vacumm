@@ -72,25 +72,35 @@ class ColPrinter(object):
     """
     Class to print formatted columns with header and frame
 
-    :Params:
+    Parameters
+    ----------
 
-        - **columns**: A list of column descriptions like [['Year',6,'%i'],...]
-          where the fist element is the title
-          of the column, the second is the width of the
-          column, and the last is the format of data.
-        - **file**, optional: Output to file instead of stdout.
-        - **align**, optional: Text alignment of titles in header, in ('left','right','center').
-        - **left,right,top,bottom**, optional: String to draw part of a frame
-        - **frame**: Shortcut to left=right='|',  and top=bottom='-'
-        - **headsep**, optional: Header separator. If empty or None, not printed.
-        - **colsep**, optional: Column separator.
-        - **print_header**, optional: Printer once object created.
+    columns:
+        A list of column descriptions like [['Year',6,'%i'],...]
+        where the fist element is the title
+        of the column, the second is the width of the
+        column, and the last is the format of data.
+    file: optional
+        Output to file instead of stdout.
+    align: optional
+        Text alignment of titles in header, in ('left','right','center').
+    left,right,top,bottom: optional
+        String to draw part of a frame
+    frame:
+        Shortcut to left=right='|',  and top=bottom='-'
+    headsep: optional
+        Header separator. If empty or None, not printed.
+    colsep: optional
+        Column separator.
+    print_header: optional
+        Printer once object created.
 
     .. Note::
 
         Obviously, you must use monospaced fonts
 
-    :Example:
+    Example
+    -------
 
         >>> p = ColPrinter([['Year',6,'%i'],['Value',7,'%4.1f']], headsep='=',align='center',frame=True)
         ------------------
@@ -243,34 +253,43 @@ def list_forecast_files(filepattern, time=None, check=True,
     nopat=False, patfreq=None, patfmtfunc=None, patmargin=None, verbose=False, sort=True):
     """Get a list of forecast files according to a file pattern
 
-    :Params:
+    Parameters
+    ----------
 
-        - **filepattern**: It can be either:
+    filepattern:
+        It can be either:
 
             - a global matching pattern (``"file??.nc"``),
             - a date pattern (``"file%Y-%m-%d.nc"``),
             - an url (``"http://site.net/file.nc"``),
             - a list of files.
 
-        - **time**: A time selector (``('2000', '2001', 'co')``).
+    time:
+        A time selector (``('2000', '2001', 'co')``).
 
-          .. warning::
+        .. warning::
               This argument is *mandatory* if ``filepattern`` is a date pattern,
               and *not used* if ``filepattern`` is of another type.
 
-        - **check**, optional: Check if local files exist.
-        - **nopat**, optional: Never consider that input patterns have date patterns.
-        - **patfreq**, optional: Frequency of files to generate file names for each date
+    check: optional
+        Check if local files exist.
+    nopat: optional
+        Never consider that input patterns have date patterns.
+    patfreq: optional
+        Frequency of files to generate file names for each date
            when ``filepattern`` is a date pattern.
-        - **patfmtfunc**, optional: Function to use in place of
+    patfmtfunc: optional
+        Function to use in place of
            :func:`~vacumm.misc.atime.strftime` to generate file names.
            It must take as arguments a date pattern and a CDAT component time.
-        - **sort**, optional: If True, files are sorted alphabetically after being listed;
-          if a callable function, they are sorted using this function (``files=sort(files)``).
+    sort: optional
+        If True, files are sorted alphabetically after being listed;
+        if a callable function, they are sorted using this function (``files=sort(files)``).
 
-          .. warning:: Files are sorted alphabetically by default!
+        .. warning:: Files are sorted alphabetically by default!
 
-    :Examples:
+    Examples
+    --------
 
         >>> 'Prefered way'
         >>> list_forecast_files('mrsPRVMR_r0_%Y-%m-%d_00.nc', ('2010-08-06', '2010-08-15'))
@@ -466,7 +485,8 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None,
     It first checks the standard_name, then the names (ids), the axis, and finally
     the long_names and units.
 
-    :Example:
+    Example
+    -------
 
         >>> f = cdms2.open('temp.nc')
         >>> ncfind_obj(f, 'temp')
@@ -475,21 +495,28 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None,
         >>> ncfind_obj(f, dict(standard_name="sea_surface_temperature"))
         >>> ncfind_obj(f, 'lon')
 
-    :Params:
+    Parameters
+    ----------
 
-        - **f**: A cdms2.dataset.CdmsFile.
-        - **name**: A string or list of string to look for,
-          or a dictionary with keys "name", "standard_name", "long_name", 'units' and 'axis'.
-        - **ignorecase**, optional: Ignore name case when searching variable.
-        - **regexp**, optional: Interpret long_names and units as regular expressions
-          that must be compiled.
-        - **searchmode**, optional: Search order when ``name`` is a dictionary
-          and not a OrderedDict. It defaults
-          to ``None`` or ``'snlua'`` which means:
-          *standard_name -> name -> long_name -> units -> axis* (first letters).
-          If ``name`` is an OrderedDict, it simply acts as a filter to restrict search.
+    f:
+        A cdms2.dataset.CdmsFile.
+    name:
+        A string or list of string to look for,
+        or a dictionary with keys "name", "standard_name", "long_name", 'units' and 'axis'.
+    ignorecase: optional
+        Ignore name case when searching variable.
+    regexp: optional
+        Interpret long_names and units as regular expressions
+        that must be compiled.
+    searchmode: optional
+        Search order when ``name`` is a dictionary
+        and not a OrderedDict. It defaults
+        to ``None`` or ``'snlua'`` which means:
+        *standard_name -> name -> long_name -> units -> axis* (first letters).
+        If ``name`` is an OrderedDict, it simply acts as a filter to restrict search.
 
-    :Return:
+    Return
+    ------
 
         The first matching object name, or None if not found.
 
@@ -608,18 +635,27 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
     It first checks the standard_name, then the names (ids), the axis, and finally
     the long_names and units.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **obj**: A MV2 array.
-        - **name**, optional: Name (id) of this array, wich defaults to the id attribute.
-        - **standard_names**, optional: List of possible standard_names.
-        - **names**, optional: List of possible names (ids).
-        - **axis**, optional: Axis type, as one of 'x, 'y', 'z', 't'.
-        - **long_names**, optional: List of possible long_names or callable expression
-          (such as regular expression method).
-        - **units**, optional: Same as ``long_names`` but for units.
+    obj:
+        A MV2 array.
+    name: optional
+        Name (id) of this array, wich defaults to the id attribute.
+    standard_names: optional
+        List of possible standard_names.
+    names: optional
+        List of possible names (ids).
+    axis: optional
+        Axis type, as one of 'x, 'y', 'z', 't'.
+    long_names: optional
+        List of possible long_names or callable expression
+        (such as regular expression method).
+    units: optional
+        Same as ``long_names`` but for units.
 
-    :Example:
+    Example
+    -------
 
         >>> ncmatch_obj(sst, standard_names='sea_surface_temperature', names=['sst'])
         >>> import re
@@ -656,7 +692,9 @@ def ncget_var(f, *args, **kwargs):
     Get a variable object as returned by :meth:`cdms2.dataset.CdmsFile.getVariable`
     which is equivalent to ``f[varname]``.
 
-    :Return: A cdms2.fvariable.FileVariable or None if not found.
+    Return
+    ------
+    A cdms2.fvariable.FileVariable or None if not found.
 
     :See: :func:`ncfind_var()`
     '''
@@ -693,10 +731,12 @@ def ncread_axis(f, name, select=None, ignorecase=True, mode='raise'):
 
     .. note:: Please use :func:`ncread_var` to read 2D axes.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **mode**, optional: if ``'raise'`` raises an :exc:`IOError`
-          if not found, else returns ``None``.
+    mode: optional
+        if ``'raise'`` raises an :exc:`IOError`
+        if not found, else returns ``None``.
     """
     # Inits
     nfo = NcFileObj(f)
@@ -724,23 +764,32 @@ def ncread_var(f, vname, *args, **kwargs):
 
     If variabe is not found, it raises
 
-    :Params:
+    Parameters
+    ----------
 
-        - **f**: File descriptor.
-        - **vname**: Variable name(s) (see :func:`ncfind_var`).
-        - **ignorecase**, optional: Case insensitive search for the name of variable.
+    f:
+        File descriptor.
+    vname:
+        Variable name(s) (see :func:`ncfind_var`).
+    ignorecase: optional
+        Case insensitive search for the name of variable.
         - Other arguments and keywords are passed to ``f``.
-        - **atts**: Dictionary of attributes to apply.
+    atts:
+        Dictionary of attributes to apply.
 
-        - **squeeze**, optional: A single argument (or a list of them) interpreted
-          as a squeeze specification passed to :func:`~vacumm.misc.misc.squeeze_variable`,
-          to squeeze out singleton axes.
-        - **torect**, optional: If True, try to convert output grid to rectanguar
-          using :func:`~vacumm.misc.grid.misc.curv2rect`.
-        - **mode**, optional: if ``'raise'`` raises an :exc:`IOError`
-          if not found, else returns ``None``.
+    squeeze: optional
+        A single argument (or a list of them) interpreted
+        as a squeeze specification passed to :func:`~vacumm.misc.misc.squeeze_variable`,
+        to squeeze out singleton axes.
+    torect: optional
+        If True, try to convert output grid to rectanguar
+        using :func:`~vacumm.misc.grid.misc.curv2rect`.
+    mode: optional
+        if ``'raise'`` raises an :exc:`IOError`
+        if not found, else returns ``None``.
 
-    :Example:
+    Example
+    -------
 
         >>> var = ncread_var(f, ['u', 'u2'], lon=(45, 47), atts={'id':'U'})
 
@@ -780,16 +829,22 @@ def ncread_var(f, vname, *args, **kwargs):
 
 def _process_var(var, torect, samp, grid, kwgrid, squeeze, atts):
     '''
-    - **samp**, optional: Undersample rate as a list of the same size as
-      the rank of the variable. Set values to 0, 1 for no undersampling.
-    - **torect**, optional: If True, try to convert output grid to rectanguar
-      using :func:`~vacumm.misc.grid.misc.curv2rect`.
-    - **grid**, optional: A grid to regrid the variable on.
-    - **grid_<keyword>**, optional: ``keyword`` is passed to
+    samp: optional
+        Undersample rate as a list of the same size as
+        the rank of the variable. Set values to 0, 1 for no undersampling.
+    torect: optional
+        If True, try to convert output grid to rectanguar
+        using :func:`~vacumm.misc.grid.misc.curv2rect`.
+    grid: optional
+        A grid to regrid the variable on.
+    grid_<keyword>: optional
+        ``keyword`` is passed to
       :func:`~vacumm.misc.grid.regridding.regrid`.
-    - **squeeze**, optional: Argument passed to :func:`squeeze_variable` to squeeze out singleton axes.
-            - Extra kwargs are used to refine the **selector** initialized with ``select``.
-    - **atts**: attributes dict (or list of attributes dict for each varname)
+    squeeze: optional
+        Argument passed to :func:`squeeze_variable` to squeeze out singleton axes.
+                - Extra kwargs are used to refine the **selector** initialized with ``select``.
+    atts:
+        attributes dict (or list of attributes dict for each varname)
     '''
     # To rectangular grid?
     if torect:
@@ -835,7 +890,8 @@ def ncget_axis(f, checker, ids=None, ro=False, **kwargs):
 
     :Param:
 
-        - **checker**: Can be either
+    checker:
+        Can be either
 
             - A generic name such as 'x' or 'lon',
             - A function to check that an object is an axis.
@@ -843,9 +899,12 @@ def ncget_axis(f, checker, ids=None, ro=False, **kwargs):
               This function must accept the 'ro' keyword ('readonly').
             - An argument to :func:`ncfind_axis`: list, dict, tuple.
 
-        - **ids**, optional: A list of ids to focus search.
+    ids: optional
+        A list of ids to focus search.
 
-    :Return: The axis or None if not found
+    Return
+    ------
+    The axis or None if not found
     """
 
     nfo = NcFileObj(f)
@@ -895,50 +954,65 @@ def ncget_axis(f, checker, ids=None, ro=False, **kwargs):
 def ncget_lon(f, ids=None, ro=False):
     """Get longitude axis of a netcdf file
 
-    :Params:
+    Parameters
+    ----------
 
-        - **f**: Netcdf file name or object.
-        - **ids**, optional: List of ids to help searching.
+    f:
+        Netcdf file name or object.
+    ids: optional
+        List of ids to help searching.
     """
     return ncget_axis(f, islon, ids, ro=ro)
 
 def ncget_lat(f, ids=None, ro=False):
     """Get latitude axis of a netcdf file
 
-    :Params:
+    Parameters
+    ----------
 
-        - **f**: Netcdf file name or object.
-        - **ids**, optional: List of ids to help searching.
+    f:
+        Netcdf file name or object.
+    ids: optional
+        List of ids to help searching.
     """
     return ncget_axis(f, islat, ids, ro=ro)
 
 def ncget_time(f, ids=None, ro=False):
     """Get time axis of a netcdf file
 
-    :Params:
+    Parameters
+    ----------
 
-        - **f**: Netcdf file name or object.
-        - **ids**, optional: List of ids to help searching.
+    f:
+        Netcdf file name or object.
+    ids: optional
+        List of ids to help searching.
     """
     return ncget_axis(f, istime, ids, ro=ro)
 
 def ncget_level(f, ids=None, ro=False):
     """Get level axis of a netcdf file
 
-    :Params:
+    Parameters
+    ----------
 
-        - **f**: Netcdf file name or object.
-        - **ids**, optional: List of ids to help searching.
+    f:
+        Netcdf file name or object.
+    ids: optional
+        List of ids to help searching.
     """
     return ncget_axis(f, islevel, ids, ro=ro)
 
 def ncget_grid(f, ids=None, torect=False):
     """Get a grid of a netcdf file
 
-    :Params:
+    Parameters
+    ----------
 
-        - **f**: Netcdf file name or object.
-        - **ids**, optional: List of ids to help searching.
+    f:
+        Netcdf file name or object.
+    ids: optional
+        List of ids to help searching.
     """
     nfo = NcFileObj(f)
     f = nfo.f
@@ -963,12 +1037,17 @@ def ncget_fgrid(f, gg):
 
     Matching is checked using ids of longitudes and latitudes.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **f**: file name or object.
-        - **gg**: cdms2 grid or variable with a grid.
+    f:
+        file name or object.
+    gg:
+        cdms2 grid or variable with a grid.
 
-    :Return: A :class:`FileGrid` instance or ``None``
+    Return
+    ------
+    A :class:`FileGrid` instance or ``None``
     """
     if f is None or gg is None: return
     if vacumm.misc.grid.isgrid(f): return f
@@ -1009,10 +1088,13 @@ def nccache_get_time(f, timeid=None, ro=False):
     A time axis not in cache is read using :func:`ncget_time`,
     them stored in cache.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **f**: File object or name.
-        - **timeid**, optional: Single or list of time ids for :func:`ncget_time`.
+    f:
+        File object or name.
+    timeid: optional
+        Single or list of time ids for :func:`ncget_time`.
 
     Example:
 
@@ -1037,19 +1119,26 @@ class NcIterBestEstimate(object):
 
     This class is useful for reading the best estimate of netcdf forcast files.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **files**: A list of netcdf files.
-        - **toffset**, optional: An integer or tuple of (<num>, '<units>')
-          to skip the first time steps of each files.
-        - **timeid**, optional: Time id. If ``None``, it is guessed
-          using :meth:`guess_timeid`.
-        - **tslices**, optional: A list of time slices
-          (typically taken from a previous loop on file),
-          to prevent guessing them.
-        - **keepopen**, optional: Keep all file descriptor open,
-          else close those who can be closed once no longer used.
-        - **autoclose**: Deprecated.
+    files:
+        A list of netcdf files.
+    toffset: optional
+        An integer or tuple of (<num>, '<units>')
+        to skip the first time steps of each files.
+    timeid: optional
+        Time id. If ``None``, it is guessed
+        using :meth:`guess_timeid`.
+    tslices: optional
+        A list of time slices
+        (typically taken from a previous loop on file),
+        to prevent guessing them.
+    keepopen: optional
+        Keep all file descriptor open,
+        else close those who can be closed once no longer used.
+    autoclose:
+        Deprecated.
 
     :Iterator: At each iteration, it returns ``f,tslice``
 
@@ -1060,7 +1149,8 @@ class NcIterBestEstimate(object):
             - ``None`` if not time is found (thus no slice to perform).
             - ``False``: if nothing to read at all.
 
-    :Example:
+    Example
+    -------
 
     >>> for f, tslice in NcIterBestEstimate(ncfiles, toffset=(1,'day')):
     ...     if tslice is False or time is None: continue
@@ -1229,7 +1319,8 @@ class NcIterBestEstimateError(VACUMMError):
 class NcFileObj(object):
     """Simple class to properly manage file object or name
 
-    :Examples:
+    Examples
+    --------
 
         >>> nfo = NcFileObj('myfile.nc')
         >>> nfo.f('sst')
@@ -1292,7 +1383,8 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
     .. warning:: Files are listed using function :func:`list_forecast_files`.
         Please read its documentation before using current function.
 
-    :Examples:
+    Examples
+    --------
 
         >>> var = ncread_files("r0_2010-%m-%d_00.nc", 'xe',
             ('2010-08-10', '2010-08-15', 'cc'), samp=[2, 1, 3])
@@ -1303,40 +1395,56 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
             select=dict(lon=(-10,-5), z=slice(23,24)), grid=smallgrid)
         >>> xe, sst = ncread_files("myfiles*.nc", [('xe', 'sla'),('sst','temp'),'u'])
 
-    :Params:
+    Parameters
+    ----------
 
-        - **varname**: Name of the netcdf variable to read.
+    varname:
+        Name of the netcdf variable to read.
 
             - If a simple name, it reads this variable.
             - If a list of names, it reads them all.
             - If a list of list of names, each variable is searched for
               using the sublist of names.
 
-        - **filepattern**: File pattern. See :func:`list_forecast_files`
-          for more information.
-        - **time**, optional: Time selector. This keyword is *mandatory*
-          if ``filepattern`` has date patterns.
-        - **toffset**: Skip the first time steps. See :class:`NcIterBestEstimate`
-          for more information.
-        - **select**, optional: An additional selector for reading
-          the variable. It can be a dictionary or a :class:`~cdms2.selectors.Selector`
-          instance (see :func:`~vacumm.misc.misc.create_selector`).
-        - **atts**: attributes dict (or list of attributes dict for each varname)
-          (see :func:`ncread_var`.)
-        - **samp**, optional: Undersample rate as a list of the same size as
-          the rank of the variable. Set values to 0, 1 for no undersampling.
-        - **grid**, optional: A grid to regrid the variable on.
-        - **grid_<keyword>**, optional: ``keyword`` is passed to
+    filepattern:
+        File pattern. See :func:`list_forecast_files`
+        for more information.
+    time: optional
+        Time selector. This keyword is *mandatory*
+        if ``filepattern`` has date patterns.
+    toffset:
+        Skip the first time steps. See :class:`NcIterBestEstimate`
+        for more information.
+    select: optional
+        An additional selector for reading
+        the variable. It can be a dictionary or a :class:`~cdms2.selectors.Selector`
+        instance (see :func:`~vacumm.misc.misc.create_selector`).
+    atts:
+        attributes dict (or list of attributes dict for each varname)
+        (see :func:`ncread_var`.)
+    samp: optional
+        Undersample rate as a list of the same size as
+        the rank of the variable. Set values to 0, 1 for no undersampling.
+    grid: optional
+        A grid to regrid the variable on.
+    grid_<keyword>: optional
+        ``keyword`` is passed to
           :func:`~vacumm.misc.grid.regridding.regrid`.
-        - **timeid**, optional: Time id (otherwise it is guessed).
-        - **ignorecase**, optional: Ignore variable name case (see :func:`ncfind_var`).
-        - **torect**, optional: If True, try to convert output grid to rectanguar
-          using :func:`~vacumm.misc.grid.misc.curv2rect` (see :func:`ncread_var`).
+    timeid: optional
+        Time id (otherwise it is guessed).
+    ignorecase: optional
+        Ignore variable name case (see :func:`ncfind_var`).
+    torect: optional
+        If True, try to convert output grid to rectanguar
+        using :func:`~vacumm.misc.grid.misc.curv2rect` (see :func:`ncread_var`).
         - Extra kwargs are used to refine the **selector** initialized with ``select``.
-        - **squeeze**, optional: Argument passed to :func:`ncread_var`
-          to squeeze out singleton axes.
-        - **searchmode**, optional: Search order (see :func:`ncfind_obj`).
-        - **sort/nopat/patfreq/patfmtfunc/check**, optional: These arguments are passed to
+    squeeze: optional
+        Argument passed to :func:`ncread_var`
+        to squeeze out singleton axes.
+    searchmode: optional
+        Search order (see :func:`ncfind_obj`).
+    sort/nopat/patfreq/patfmtfunc/check: optional
+        These arguments are passed to
           :func:`list_forecast_files`.
 
     :Raise: :class:`NcIterBestEstimateError` in case of error.
@@ -1499,7 +1607,8 @@ def grib_read_files(
     """
     Read cdms2 variables through one or a set of grib files.
 
-    :Examples:
+    Examples
+    --------
 
         >>> vardict = grib_read_files("r0_2010-%m-%d_00.grb", 'u',
                 ('2010-08-10', '2010-08-15', 'cc'), samp=[2, 1, 3])
@@ -1507,38 +1616,51 @@ def grib_read_files(
                 select=dict(lon=(-10.0,-5.0), lat=slice(100,200)), grid=smallgrid)
         >>> vardict = grib_read_files("myfiles*.grb", [dict(shortName=['u', 'u10']), dict(shortName=['v','v10'])])
 
-    :Params:
+    Parameters
+    ----------
 
-        - **filepattern**: must be:
+    filepattern:
+        must be:
             - File pattern. See :func:`list_forecast_files` for more information.
             - One or more string(s) of the files(s) to be processed. string(s) may contain wildcard characters.
-        - **varname**: Name of the grib variable(s) to read.
+    varname:
+        Name of the grib variable(s) to read.
             - If a simple name, it reads this variable **using the grib message's shortName**.
             - If a list of names, it reads them all.
             If a name is a dict, then it is used as grib selector in which case
             the user should not specify selectors which may interfer with the select keyword
             (see :func:`~pygrib.open.select`).
-        - **time**, optional: Time selector for files and data. This keyword is *mandatory*
-          if ``filepattern`` has date patterns.
+    time: optional
+        Time selector for files and data. This keyword is *mandatory*
+        if ``filepattern`` has date patterns.
 
-        - **select**, optional: An additional selector applied after data have been loaded.
-          It can be a dictionary or a :class:`~cdms2.selectors.Selector`
-          instance (see :func:`~vacumm.misc.misc.create_selector`).
+    select: optional
+        An additional selector applied after data have been loaded.
+        It can be a dictionary or a :class:`~cdms2.selectors.Selector`
+        instance (see :func:`~vacumm.misc.misc.create_selector`).
 
-        - **torect**, optional: If True, try to convert output grid to rectanguar
-          using :func:`~vacumm.misc.grid.misc.curv2rect` (see :func:`ncread_var`).
-        - **samp**, optional: Undersample rate as a list of the same size as
-          the rank of the variable. Set values to 0, 1 for no undersampling.
-        - **grid**, optional: A grid to regrid the variable on.
-        - **grid_<keyword>**, optional: ``keyword`` is passed to
+    torect: optional
+        If True, try to convert output grid to rectanguar
+        using :func:`~vacumm.misc.grid.misc.curv2rect` (see :func:`ncread_var`).
+    samp: optional
+        Undersample rate as a list of the same size as
+        the rank of the variable. Set values to 0, 1 for no undersampling.
+    grid: optional
+        A grid to regrid the variable on.
+    grid_<keyword>: optional
+        ``keyword`` is passed to
           :func:`~vacumm.misc.grid.regridding.regrid`.
-        - **squeeze**, optional: Argument passed to :func:`ncread_var` to squeeze out singleton axes.
-        - **atts**: attributes dict (or list of attributes dict for each varname)
+    squeeze: optional
+        Argument passed to :func:`ncread_var` to squeeze out singleton axes.
+    atts:
+        attributes dict (or list of attributes dict for each varname)
 
-        - *verbose*: function to be called for logging (sys.stderr if True,
+    verbose:
+        function to be called for logging (sys.stderr if True,
             disabled with False)
 
-    :Return:
+    Return
+    ------
 
         If varname is a list of names or dicts:
         - a dict of loaded variables as :class:`cdms2.tvariable.TransientVariable`
@@ -1973,7 +2095,8 @@ class CachedRecord:
     def get(self,var_name, time_range=None):
         """Get a variable
 
-        - **var_name**: Name of the variable
+    var_name:
+        Name of the variable
 
         Return: A 1D :mod:`MV2` variable
 
@@ -2000,9 +2123,12 @@ class CachedRecord:
     def plot(self,var_name,time_range=None,**kwargs):
         """Plot a variable
 
-        - **var_name**: Name of the variable
-        - *time*: Plot only within this time range (like ('2007-01-01','2007-02-01','co')
-        - *show*: Show the figure [default: None]
+    var_name:
+        Name of the variable
+    time:
+        Plot only within this time range (like ('2007-01-01','2007-02-01','co')
+    show:
+        Show the figure [default: None]
         - All other keywords are passed to :func:`vacumm.misc.plot.curve()`
 
         Example:
@@ -2350,24 +2476,41 @@ class Logger(object):
     """Class for logging facilities when subclassing.
     Logging may be sent to the console and/or a log file
 
-    :Params:
+    Parameters
+    ----------
 
-        - **name**: Name of the logger.
-        - **logfile**, optional: Log file.
-        - **console**, optional: Log to the console.
-        - **maxlogsize**, optional: Maximal size of log file before rotating it.
-        - **maxbackup**, optional: Maximal number of rotated files.
-        - **sfmt**, optional: Format of log messages in log file.
-        - **cfmt**, optional: Format of log message in console.
-        - **asctime**, optional: Time format.
-        - **level**, optional: Initialize logging level (see :meth:`set_loglevel`).
-        - **colors**, optional: Use colors when formatting terminal messages?
-        - **full_line**, optional: Colorize full line or just level name?
-        - **redirect_warnings**, optional: Redirect messages issued by :mod:`warnings.warn`.
-        - **redirect_stdout**, optional: Redirect messages issued to sys.stdout.
-        - **redirect_stderr**, optional: Redirect messages issued to sys.stderr.
+    name:
+        Name of the logger.
+    logfile: optional
+        Log file.
+    console: optional
+        Log to the console.
+    maxlogsize: optional
+        Maximal size of log file before rotating it.
+    maxbackup: optional
+        Maximal number of rotated files.
+    sfmt: optional
+        Format of log messages in log file.
+    cfmt: optional
+        Format of log message in console.
+    asctime: optional
+        Time format.
+    level: optional
+        Initialize logging level (see :meth:`set_loglevel`).
+    colors: optional
+        Use colors when formatting terminal messages?
+    full_line: optional
+        Colorize full line or just level name?
+    redirect_warnings: optional
+        Redirect messages issued by :mod:`warnings.warn`.
+    redirect_stdout: optional
+        Redirect messages issued to sys.stdout.
+    redirect_stderr: optional
+        Redirect messages issued to sys.stderr.
 
-    :See also: :mod:`logging` module
+    See also
+    --------
+    :mod:`logging` module
     """
     def __init__(self, name, logfile=None, console=True, maxlogsize=0, maxbackup=0,
             cfmt='%(name)s [%(levelname)-8s] %(message)s',
@@ -2467,7 +2610,8 @@ class Logger(object):
     def set_loglevel(self, level=None, console=None, file=None):
         """Set the log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 
-        :Example:
+        Example
+        -------
 
             >>> logger.set_loglevel('DEBUG', console='INFO')
         """
@@ -2526,8 +2670,10 @@ class TermColors(object):
     def format(self, text, color='NORMAL'):
         """Format a string for its color printing in a terminal
 
-        - **text**: simple string message
-        - *color*: color or debug level
+    text:
+        simple string message
+    color:
+        color or debug level
         """
         color = color.upper()
         if not hasattr(self, color): return text

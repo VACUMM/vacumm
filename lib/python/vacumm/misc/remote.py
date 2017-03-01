@@ -48,7 +48,8 @@ __all__ = ['SSHBank', 'sshbank', 'WorkFile', 'InputWorkFiles', 'OutputWorkFile']
 class SSHBank(object):
     """Interface to handle a bank of SSH/SFTP connections
 
-    :Example:
+    Example
+    -------
 
         >>> sshbank = SSHBank()
         >>> client = sshbank('camarpor')
@@ -112,14 +113,20 @@ class WorkFileException(Exception):
 class WorkFile(object):
     """Base class for :class:`InputWorkFiles` and class:`OutputWorkFile`
 
-    :Params:
+    Parameters
+    ----------
 
-        - **logger**:  A :class:`~vacumm.misc.io.Logger` (or subclass) instance
-        - **ssh**: A ssh connexion (for instance created using :class`SSHBank`
-          connected to an host).
-        - **umask**, optional: Argument to :func:`os.umask`
-        - **dmode**, optional: Directory unix mode (see :func:`os.chmod`)
-        - **fmode**, optional: File unix mode (see :func:`os.chmod`)
+    logger:
+        A :class:`~vacumm.misc.io.Logger` (or subclass) instance
+    ssh:
+        A ssh connexion (for instance created using :class`SSHBank`
+        connected to an host).
+    umask: optional
+        Argument to :func:`os.umask`
+    dmode: optional
+        Directory unix mode (see :func:`os.chmod`)
+    fmode: optional
+        File unix mode (see :func:`os.chmod`)
     """
     def __init__(self, logger, ssh, umask=0, dmode=S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH,
         fmode=S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH, raise_error=True):
@@ -170,7 +177,8 @@ class WorkFile(object):
     def remote_exec(self, cmd):
         """Execute a remote command and return result as list of lines
 
-        :Example:
+        Example
+        -------
 
             >>> files = workfile.remote_exec('ls')
 
@@ -195,11 +203,14 @@ class WorkFile(object):
     def expand_path(cls, path, subst=None):
         """Expand '~', environment and other variables in a path
 
-        :Params:
+        Parameters
+        ----------
 
-            - **path**: Path to be expanded
-            - **subst**, optional: Dictionnary of variables that may be used
-              for expansion
+        path:
+            Path to be expanded
+        subst: optional
+            Dictionnary of variables that may be used
+            for expansion
         """
         exps = globals().copy()
         exps.update(os.environ)
@@ -214,26 +225,31 @@ class WorkFile(object):
     def parse_path(cls, path, rootdir=None, subst=None, mode=None):
         """Get the (inputdir, outputdir, path) from path (and rootdir)
 
-        :Params:
+        Parameters
+        ----------
 
-            - **path**: Simple or complex path with remote and local part.
-              The generic form is :
-              ``"[<prefix>][(<remote_dir>><local_dir>)[<pattern>]"``
-              where ``<pattern>`` is global expression pattern (see :func:`glob.glob`).
-              It can also take the form of a tuple.
-              Remote paths follow specifications from RFC1738:
-              http://tools.ietf.org/html/rfc1738.html.
+        path:
+            Simple or complex path with remote and local part.
+            The generic form is :
+            ``"[<prefix>][(<remote_dir>><local_dir>)[<pattern>]"``
+            where ``<pattern>`` is global expression pattern (see :func:`glob.glob`).
+            It can also take the form of a tuple.
+            Remote paths follow specifications from RFC1738:
+            http://tools.ietf.org/html/rfc1738.html.
 
-              .. warning::
+            .. warning::
 
                   Be careful when using ``<prefix>`` with a remote path.
 
-            - **rootdir**, optional: Optional prefix to prepend to path.
-            - **subst**, optional: Dictionary of variables used for string isubstitutions on path.
-              All environnement variables (taken from :attr:`os.environ`) are also
-              substituted.
+        rootdir: optional
+            Optional prefix to prepend to path.
+        subst: optional
+            Dictionary of variables used for string isubstitutions on path.
+            All environnement variables (taken from :attr:`os.environ`) are also
+            substituted.
 
-        :Example:
+        Example
+        -------
 
             >>> obj.parse_path('(sftp://user@host.fr:1022/my/path>/local/path)/to/data.nc', mode='get')
             >>> obj.parse_path(('sftp://user@host.fr:1022/my/path','/local/path','/to/data.nc'), mode='get')
@@ -293,18 +309,25 @@ re_workdir_parse = re.compile('^(.*)\(([^>]+)>([^>]+)\)(.*)$').findall
 class InputWorkFiles(WorkFile):
     """A class to deal with input remote files
 
-    :Params:
+    Parameters
+    ----------
 
-        - *path*: path in the form ``"<prefix>(<remote_dir>><local_dir>)<pattern>"``.
-          (see :func:`parse_path`)
+    path:
+        path in the form ``"<prefix>(<remote_dir>><local_dir>)<pattern>"``.
+        (see :func:`parse_path`)
 
-    :Params:
+    Parameters
+    ----------
 
-        - *logger*: a :class:`~vacumm.misc.io.Logger` (or subclass) instance
-        - *sshbank*: a :class`SSHBank` instance
-        - *transfer*: automatically start the transfer after initialization
+    logger:
+        a :class:`~vacumm.misc.io.Logger` (or subclass) instance
+    sshbank:
+        a :class`SSHBank` instance
+    transfer:
+        automatically start the transfer after initialization
 
-    :Example:
+    Example
+    -------
 
     >>> wfile = InputWorkFiles('(caparmor-sftp:/home125>/home200/caparmor)toto*/data/file*.nc')
     >>> wfile.get() # update
@@ -359,7 +382,9 @@ class InputWorkFiles(WorkFile):
     def get(self, check=2, ifile=None):
         """Download remote files when needed
 
-        :Params: *check*: checks
+        Parameters
+        ----------
+        *check*: checks
 
             - ``0``: check nothing => force the transfer
             - ``1``: only check the existence of the local file
@@ -477,17 +502,23 @@ class InputWorkFiles(WorkFile):
 class OutputWorkFile(WorkFile):
     """A class to deal with an output remote file
 
-    :Params:
+    Parameters
+    ----------
 
-        - *path*: path in the form ``"<prefix>(<remote_dir>><local_dir>)<pattern>"``
+    path:
+        path in the form ``"<prefix>(<remote_dir>><local_dir>)<pattern>"``
            (see :func:`parse_path`)
 
-    :Params:
+    Parameters
+    ----------
 
-        - *logger*: a :class:`~vacumm.misc.io.Logger` (or subclass) instance
-        - *sshbank*: a :class`SSHBank` instance
+    logger:
+        a :class:`~vacumm.misc.io.Logger` (or subclass) instance
+    sshbank:
+        a :class`SSHBank` instance
 
-    :Example:
+    Example
+    -------
 
     >>> wfile = OutputWorkFile('(sftp://caparmor-sftp/home125>/home200/caparmor)toto/data/file.png')
     >>> wfile = OutputWorkFile('(/home200/caparmor>sftp://username@my.host.fr:1022/prefix)/toto/data/file.png')

@@ -55,23 +55,31 @@ class Shapes(object):
         - Polylines are interpreted as :class:`LineString`.
         - Polygons are interpreted as :class:`Polygons`.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **input**: Refers to a shapefile or is a shapes isntance ;
-          if a shapefile, it assumes that <input>.shp contains points,
-          multipoints, lines or polygons, and that <input>.dbf contains their attributes.
-        - **proj*, optional: A projection function to convert coordinates. It must accept
-          the "inverse" keyword.
-        - **m*, optional: A Basemap instance for converting for plotting.
-        - *inverse*, optional: Inverset the conversion with proj .
-        - **clip*, optional: If in the form ``(xmin,ymin,xmax,ymax)``,
-          clips to this box ; if a polygon like argument,
-          it clips to this polygon
-          (see :func:`~vacumm.misc.grid.masking.polygons()` for arguments).
-          If simply ``True`` and *m* is present, it clips to the bounds of *m*.
-        - **min_area*, optional: Minimal area to keep a polygon
-        - **samp**, optional: An integer to undersample coordinates of polygons and lines.
-        - **shapetype**, optional:
+    input:
+        Refers to a shapefile or is a shapes isntance ;
+        if a shapefile, it assumes that <input>.shp contains points,
+        multipoints, lines or polygons, and that <input>.dbf contains their attributes.
+    proj: optional
+        A projection function to convert coordinates. It must accept
+        the "inverse" keyword.
+    m: optional
+        A Basemap instance for converting for plotting.
+    inverse: optional
+        Inverset the conversion with proj .
+    clip: optional
+        If in the form ``(xmin,ymin,xmax,ymax)``,
+        clips to this box ; if a polygon like argument,
+        it clips to this polygon
+        (see :func:`~vacumm.misc.grid.masking.polygons()` for arguments).
+        If simply ``True`` and *m* is present, it clips to the bounds of *m*.
+    min_area: optional
+        Minimal area to keep a polygon
+    samp: optional
+        An integer to undersample coordinates of polygons and lines.
+    shapetype: optional
 
             - If 0, it must only deal with points ;
             - if 1, only polylines ;
@@ -104,11 +112,14 @@ class Shapes(object):
     def clip(self, zone, copy=True, sort=True, reverse=True, **kwargs):
         """Clip to zone
 
-        :Params:
+        Parameters
+        ----------
 
-            - **zone**: ``[xmin, ymin, xmax, ymax]``
-            - **copy**, optional: If ``True``, make a copy of current instance,
-              else simply rehandled the list of shapes.
+        zone:
+            ``[xmin, ymin, xmax, ymax]``
+        copy: optional
+            If ``True``, make a copy of current instance,
+            else simply rehandled the list of shapes.
             - If ``copy==True``, Other parameters are passed to the initialization
               of the new instance.
         """
@@ -169,7 +180,8 @@ class Shapes(object):
     def sort(self, reverse=True):
         """Sort shapes according to their surface or length
 
-        - *reverse*: If True, greater polygons are first [default: True]
+    reverse:
+        If True, greater polygons are first [default: True]
         """
         self._sorted = sort_shapes(self._shapes, reverse=reverse)
 
@@ -190,7 +202,8 @@ class Shapes(object):
     def is_type(self, type):
         """Check type
 
-        :Example:
+        Example
+        -------
 
             >>> self.is_type(self.POLYS)
         """
@@ -241,8 +254,10 @@ class Shapes(object):
 
         :Param:
 
-            - **key**: A slice selector applied to the list.
-            - **proj**: ``True``, or a callable to project or re-project coordinates.
+        key:
+            A slice selector applied to the list.
+        proj:
+            ``True``, or a callable to project or re-project coordinates.
         """
         # Objects to work on
         if key is None:
@@ -270,8 +285,10 @@ class Shapes(object):
 
         :Param:
 
-            - **key**: A slice selector applied to the list.
-            - **proj**: ``True``, or a callable to project or re-project coordinates.
+        key:
+            A slice selector applied to the list.
+        proj:
+            ``True``, or a callable to project or re-project coordinates.
         """
         if not len(self): return []
         # Projection
@@ -341,10 +358,10 @@ class Shapes(object):
     def resol(self, deg=True):
         """Compute the mean "resolution" of the shapes based on the first shape
 
-        - **deg**:
+    deg:
 
-            - if ``False``: return a resolution in meters has a the median distance between points
-            - if ``True``: return the median distance between points as a resolution in degrees ``(xres,yres)``
+                - if ``False``: return a resolution in meters has a the median distance between points
+                - if ``True``: return the median distance between points as a resolution in degrees ``(xres,yres)``
 
         """
         if not len(self): return 0,0
@@ -370,24 +387,36 @@ class Shapes(object):
             alpha=1, autoscale=True, title=None, **kwargs):
         """Plot shapes
 
-        :Params:
+        Parameters
+        ----------
 
-            - **select**, optional: argument for selecting shapes in the list [defaul: None].
-            - **fill**, optional: Force filling (True/False), else guessed from shpe type, ie filling for polygons only [default: None]
-            - **ax**, optional: Axes instance.
-            - **m**, optional: :class:`~vacumm.misc.core_plot.Map` instance
-              (created with :func:`~vacumm.misc.plot.map2`) or a :class:`~mpl_toolkits.basemap.Basemap` instance.
-            - **points**, optional: Plots shapes as points.
-            - **lines**, optional: Plot shapes as lines (if a of type :attr:`POINTS`).
-            - **fill_<params>**, optional: ``<param>`` is passed to
+        select: optional
+            argument for selecting shapes in the list [defaul: None].
+        fill: optional
+            Force filling (True/False), else guessed from shpe type, ie filling for polygons only [default: None]
+        ax: optional
+            Axes instance.
+        m: optional
+            :class:`~vacumm.misc.core_plot.Map` instance
+            (created with :func:`~vacumm.misc.plot.map2`) or a :class:`~mpl_toolkits.basemap.Basemap` instance.
+        points: optional
+            Plots shapes as points.
+        lines: optional
+            Plot shapes as lines (if a of type :attr:`POINTS`).
+        fill_<params>: optional
+            ``<param>`` is passed to
               :class:`~matplotlib.collections.PolyCollection`.
-            - **lines_<params>**, optional: ``<param>`` is passed to
+        lines_<params>: optional
+            ``<param>`` is passed to
               :class:`~matplotlib.collections.LineCollection` or to :class:`~matplotlib.collections.PolyCollection`.
-            - **points_<params>**, optional: ``<param>`` is passed to
+        points_<params>: optional
+            ``<param>`` is passed to
               :class:`~matplotlib.pyplot.scatter`.
-            - **m_<params>**, optional: ``<param>`` is passed to
+        m_<params>: optional
+            ``<param>`` is passed to
               :class:`~vacumm.misc.plot.map2` if ``m is True``.
-            - **autoscale**, optional: Autoscale axis limits?
+        autoscale: optional
+            Autoscale axis limits?
         """
 
         # Keywords
@@ -484,7 +513,8 @@ class GSHHSBM(Shapes):
     Initialized with a valid Basemap instance with resolution not equal to None,
     or thanks to arguments passed to :func:`create_mapplot.map`
 
-    - *input*: Basemap or Shapes instance [default: None]
+    input:
+        Basemap or Shapes instance [default: None]
 
     """
     def __init__(self, input=None, clip=None, sort=True, reverse=True, proj=False, **kwargs):
@@ -559,24 +589,29 @@ GSHHS_BM = GSHHSBM
 class XYZ(object):
     """Class to manipulate xyz data (randomly spaced)
 
-    - **xyz**: It can be either
+    xyz:
+        It can be either
 
-        - a .xyz ascii file, or a netcdf/grd file with variables ``x``, ``y`` and ``z``,
-        - a (x,y,z) tuple,
-        - a (3, npts) array,
-        - another XYZ instance.
+                - a .xyz ascii file, or a netcdf/grd file with variables ``x``, ``y`` and ``z``,
+                - a (x,y,z) tuple,
+                - a (3, npts) array,
+                - another XYZ instance.
 
-    - *long_name*: Long name
+    long_name:
+        Long name
     - *units* Units
-    - *tranform*: It can be either
+    tranform:
+        It can be either
 
-        - a factor applied to z at initialisation
-        - a fonction that takes z as the only argument to filter its data.
+                - a factor applied to z at initialisation
+                - a fonction that takes z as the only argument to filter its data.
 
-    - *exc*: Polygons to exclude data (see :meth:`exclude`).
-             Several polygons must be passed as a tuple (poly1, poly2, ...).
-    - *sel*: Polygons to select data (see :meth:`select`).
-             Several polygons must be passed as a tuple (poly1, poly2, ...).
+    exc:
+        Polygons to exclude data (see :meth:`exclude`).
+                     Several polygons must be passed as a tuple (poly1, poly2, ...).
+    sel:
+        Polygons to select data (see :meth:`select`).
+                     Several polygons must be passed as a tuple (poly1, poly2, ...).
     - load_<keywords>: keywords are passed to :func:`numpy.loadtxt`
     - rsamp_<keywords>: keywords are passed to :func:`rsamp`
     - Other keywords are set as atrributes.
@@ -887,10 +922,14 @@ class XYZ(object):
     def clip(self, zone=None, margin=None, inverse=False, mask=False, id=None, **kwargs):
         """Geographical selection of part of the data
 
-        - *zone*: (xmin,ymin,xmax,ymax) or a float/int a complex polygon (see :func:`~vacumm.misc.grid.masking.polygons`).
-        - *margin*: Margin around ``zone`` relative to the resolution (see :meth:`resol`)
-        - *inverse*: Inverse the selection.
-        - *mask*: ``zone`` must be interpreted as a mask
+    zone:
+        (xmin,ymin,xmax,ymax) or a float/int a complex polygon (see :func:`~vacumm.misc.grid.masking.polygons`).
+    margin:
+        Margin around ``zone`` relative to the resolution (see :meth:`resol`)
+    inverse:
+        Inverse the selection.
+    mask:
+        ``zone`` must be interpreted as a mask
         """
         if zone is None or zone == (None, )*4:
             return self
@@ -922,7 +961,8 @@ class XYZ(object):
     def zone(self, poly=False, mask=True):
         """Get xmin,ymin,xmax,ymax
 
-        - *poly*: if True, return zone as a Polygon instance"""
+    poly:
+        if True, return zone as a Polygon instance"""
         zone = self.get_xmin(mask), self.get_ymin(mask), self.get_xmax(mask), self.get_ymax(mask)
         if poly: return polygons([zone])[0]
         return zone
@@ -987,9 +1027,12 @@ class XYZ(object):
     def tocfg(self, cfg, section, param=None):
         """Dump one or all parameters as options to a cfg section
 
-        - **cfg**: ConfigParser object
-        - **section**: Section of cfg
-        - *param*: A single or a list of parameter names
+    cfg:
+        ConfigParser object
+    section:
+        Section of cfg
+    param:
+        A single or a list of parameter names
         """
         # List of params
         allowed = ['xmin', 'xmax', 'ymin', 'ymax','zmin','zmax', 'long_name', 'units', 'transp',
@@ -1195,16 +1238,23 @@ class XYZ(object):
     def interp(self, xyo, xyz=False, **kwargs):
         """Interpolate to (xo,yo) positions using :class:`nat.Natgrid`
 
-        :Params:
+        Parameters
+        ----------
 
-            - **xo**: Output X
-            - **yo**: Output Y
-            - *xyz*: If True, return a :class:`XYZ` instance instead of a :mod:`numpy` array
-            - **interp_<param>**, optional: ``<param>`` is passed to the
+        xo:
+            Output X
+        yo:
+            Output Y
+        xyz:
+            If True, return a :class:`XYZ` instance instead of a :mod:`numpy` array
+        interp_<param>: optional
+            ``<param>`` is passed to the
               :func:`~vacumm.misc.grid.regridding.xy2xy` interpolation routine.
             - Other params are passed to XYZ initialization for the output dataset.
 
-        :Returns: An XYZ instance
+        Returns
+        -------
+        An XYZ instance
         """
         # FIXME: Natgrid still required by this module ??
         # from nat import Natgrid
@@ -1229,7 +1279,9 @@ class XYZ(object):
     def hull(self, out='xy', mask=True):
         """Return the convex hull
 
-        :Returns: Depends on ``out``
+        Returns
+        -------
+        Depends on ``out``
 
         - ``"xy"``: (xhull, yhull)
         - ``"ind"``: indices of points
@@ -1248,7 +1300,9 @@ class XYZ(object):
         Therefore, a point in the shadow must be inside the convex hull polygon,
         and outside the exclusion polygons.
 
-        :Returns: (hull_poly, [exclusion_poly1,...])
+        Returns
+        -------
+        (hull_poly, [exclusion_poly1,...])
         """
         hull_poly = self.hull(out='poly')
         exc_polys = []
@@ -1271,7 +1325,8 @@ class XYZ(object):
     def contains(self, x, y):
         """Check if one or several points are within a the convex hull
 
-        - **x,y**: X,Y positions as floats or lists or an :mod:`numpy` arrays.
+    x,y:
+        X,Y positions as floats or lists or an :mod:`numpy` arrays.
 
         .. seealso:
 
@@ -1302,7 +1357,9 @@ class XYZ(object):
 
         Algorithm: Median distances between facets of triangles
 
-        :Returns: (xres,yres)
+        Returns
+        -------
+        (xres,yres)
 
         """
         # Coordinates
@@ -1398,15 +1455,19 @@ class XYZ(object):
     def get_grid(self, res=None, xmin=None, xmax=None, ymin=None, ymax=None, relres=.5, degres=False, id='xyz_grid'):
         """Generate a rectangular grid based on x/y positions and resolution
 
-        - *res*: Resolution. It can be:
+    res:
+        Resolution. It can be:
 
-                - a float where then ``xres=yres=res``
-                - a tuple as ``(xres,yres)``
-                - else it is guessed using :meth:`get_res` (and maybe :meth:`resol`)` and multiplied by ``relres``
+                    - a float where then ``xres=yres=res``
+                    - a tuple as ``(xres,yres)``
+                    - else it is guessed using :meth:`get_res` (and maybe :meth:`resol`)` and multiplied by ``relres``
 
-        - *relres*: Relative resolution factor applied to ``res`` when resolution is guessed (``res=None``)
-        - *degres*: When ``res`` is explicitly given, it interpreted as degrees is ``degres`` is True.
-        - *xmin,xmax,ymin,ymax*: Bounds of the grid. If not specified, bounds of the dataset are used (see :meth:`xmin`, etc).
+    relres:
+        Relative resolution factor applied to ``res`` when resolution is guessed (``res=None``)
+    degres:
+        When ``res`` is explicitly given, it interpreted as degrees is ``degres`` is True.
+    xmin,xmax,ymin,ymax:
+        Bounds of the grid. If not specified, bounds of the dataset are used (see :meth:`xmin`, etc).
 
         .. note::
 
@@ -1457,24 +1518,29 @@ class XYZ(object):
     def togrid(self, grid=None, mask=False, cgrid=False,  **kwargs):
         """Interpolate to a regular grid
 
-        - **grid**: The output grid. It can be either:
+    grid:
+        The output grid. It can be either:
 
-            - a (x,y) tuple or a grid or a :mod:`MV2` variable with a grid,
-            - ``None``, thus guessed using :meth:`grid`
+                - a (x,y) tuple or a grid or a :mod:`MV2` variable with a grid,
+                - ``None``, thus guessed using :meth:`grid`
 
-        - *mask*: It can be either:
+    mask:
+        It can be either:
 
-            - ``None``, ``False`` or ``MV2.nomask``: no masking
-            - an array: this mask array is directly applied
-            - a :class:`Shapes` instance (or :class:`~vacumm.bathy.shorelines.ShoreLine`)
-              or a single char GSHHS resolution (and optionally 's' for Histolitt)
-            - a callable fonction so that ``mask = thisfunc(mask, **kwmask)``
-            - a float: data with this value are masked
+                - ``None``, ``False`` or ``MV2.nomask``: no masking
+                - an array: this mask array is directly applied
+                - a :class:`Shapes` instance (or :class:`~vacumm.bathy.shorelines.ShoreLine`)
+                  or a single char GSHHS resolution (and optionally 's' for Histolitt)
+                - a callable fonction so that ``mask = thisfunc(mask, **kwmask)``
+                - a float: data with this value are masked
 
-        - *mask_<param>*: <param> is passed to :func:`~vacumm.misc.grid.masking.polygon_mask`
-          for evaluation of mask thanks to the polygons.
-        - *grid_<param>*: <param> is passed to :func:`grid`.
-        - *cgrid*: If ``True``, returns bathy at U- and V-points, else at T-points
+    mask_<param>:
+        <param> is passed to :func:`~vacumm.misc.grid.masking.polygon_mask`
+            for evaluation of mask thanks to the polygons.
+    grid_<param>:
+        <param> is passed to :func:`grid`.
+    cgrid:
+        If ``True``, returns bathy at U- and V-points, else at T-points
         - Other keyparam are passed to :func:`~vacumm.misc.grid.regridding.griddata`
           for regridding.
 
@@ -1542,16 +1608,19 @@ class XYZ(object):
     def toxy(self, xo, yo, mask=None, outtype='tuple'):
         """Interpolate on random points using :func:`~vacumm.misc.grid.regridding.xy2xy`
 
-        - **xo,yo**: Output positions
-        - *mask*: It can be either:
+    xo,yo:
+        Output positions
+    mask:
+        It can be either:
 
-            - ``None``, ``False`` or ``MV2.nomask``: no masking
-            - a :class:`Shapes` instance (or :class:`~vacumm.bathy.shorelines.ShoreLine`) or a single char GSHHS resolution (and optionally 's' for Histolitt)
-        - *outtype*: Define output type
+                - ``None``, ``False`` or ``MV2.nomask``: no masking
+                - a :class:`Shapes` instance (or :class:`~vacumm.bathy.shorelines.ShoreLine`) or a single char GSHHS resolution (and optionally 's' for Histolitt)
+    outtype:
+        Define output type
 
-            - ``"tuple"``: as a tuple (x, y, z)
-            - ``"xyz"``: as xyz block
-            - ``"XYZ"``: as an :class:`XYZ` (or subclass) instance
+                - ``"tuple"``: as a tuple (x, y, z)
+                - ``"xyz"``: as xyz block
+                - ``"XYZ"``: as an :class:`XYZ` (or subclass) instance
         """
 
         # Interpolate
@@ -1597,18 +1666,28 @@ class XYZ(object):
         xres=None, yres=None, **kwargs):
         """Scatter plot of bathymetry points
 
-        :Params:
+        Parameters
+        ----------
 
-            - **mode**, optional: 'valid', 'masked' or 'both'.
-            - **size**, optional: Size of markers.
-            - **color**, optional: Color of markers.
-            - **alpha**, optional: Alpha transparency of markers.
-            - **zorder**, optional: zorder of markers.
-            - **m**, optional: Use this :class:`~mpl_toolkits.basemap.Basemap` instance
-              to plot the points.
-            - **masked_size**, optional: Size of masked markers.
-            - **masked_alpha**, optional: Alpha transparency of masked markers.
-            - **masked_zorder**, optional: zorder of masked markers.
+        mode: optional
+            'valid', 'masked' or 'both'.
+        size: optional
+            Size of markers.
+        color: optional
+            Color of markers.
+        alpha: optional
+            Alpha transparency of markers.
+        zorder: optional
+            zorder of markers.
+        m: optional
+            Use this :class:`~mpl_toolkits.basemap.Basemap` instance
+            to plot the points.
+        masked_size: optional
+            Size of masked markers.
+        masked_alpha: optional
+            Alpha transparency of masked markers.
+        masked_zorder: optional
+            zorder of masked markers.
         """
 
         # Params
@@ -1733,11 +1812,12 @@ class XYZ(object):
     def save(self, xyzfile, **kwargs):
         """Save to a file
 
-        - **xyzfile**: Output file name
+    xyzfile:
+        Output file name
 
-            - write a netcdf file if it ends with ".nc" or ".grd"
-            - write a sinux file if it ends with ".snx"
-            - else write an ascii file with 3 columns
+                - write a netcdf file if it ends with ".nc" or ".grd"
+                - write a sinux file if it ends with ".snx"
+                - else write an ascii file with 3 columns
 
         - Other keywords are passed to :func:`numpy.savetxt` for ascii saving
         """
@@ -1892,24 +1972,32 @@ class XYZMerger(object):
         xmin=None, xmax=None, ymin=None, ymax=None, margin=5, xres=None, yres=None, **kwargs):
         """
 
-        - *alpha*: Alpha transparency:
+    alpha:
+        Alpha transparency:
 
-            - applied to **all** points if ``mode="cluster"``
-            - applied to **hidden** points if ``mode="data"``
+                - applied to **all** points if ``mode="cluster"``
+                - applied to **hidden** points if ``mode="data"``
 
-        - *mode*: Display mode:
+    mode:
+        Display mode:
 
-            - ``"cluster"``: Points from different datasets have different colors and markers,
-                and hidden points are transparent.
-            - ``"data"``: Points have the same marker, colors depends on Z value and hidden
-                points are masked.
+                - ``"cluster"``: Points from different datasets have different colors and markers,
+                    and hidden points are transparent.
+                - ``"data"``: Points have the same marker, colors depends on Z value and hidden
+                    points are masked.
 
-        - *marker*: Define a single or several markers to be used.
-        - *legend*: Show a legend if ``mode="cluster"``.
-        - *title*: Title of the plot.
-        - *m*: :class:`~mpl_toolkits.basemap.Basemap` instance.
-        - *m_margin*: Margin for ``m``, relative to the mean resolution (see :meth:`XYZ.resol`)
-        - *m_<keywords>*: Keywords are passed to :func:`~vacumm.misc.plot.map`.
+    marker:
+        Define a single or several markers to be used.
+    legend:
+        Show a legend if ``mode="cluster"``.
+    title:
+        Title of the plot.
+    m:
+        :class:`~mpl_toolkits.basemap.Basemap` instance.
+    m_margin:
+        Margin for ``m``, relative to the mean resolution (see :meth:`XYZ.resol`)
+    m_<keywords>:
+        Keywords are passed to :func:`~vacumm.misc.plot.map`.
         - Extra keywords are passed to :meth:`XYZ.plot`.
         """
 
@@ -2003,15 +2091,21 @@ class XYZMerger(object):
 class GriddedMerger(object):
     """Merge several gridded variables onto a grid
 
-    :Params:
+    Parameters
+    ----------
 
-        - **grid**: Output grid
-        - **id**, optional: Output id
-        - **long_name**, optional: Output long name
-        - **units**, optional: Output units
+    grid:
+        Output grid
+    id: optional
+        Output id
+    long_name: optional
+        Output long name
+    units: optional
+        Output units
         - Other keywords are set a output attributes
 
-    :Example:
+    Example
+    -------
 
         >>> gm = GriddedMerger(mygrid)
         >>> gm += var1
@@ -2118,10 +2212,13 @@ class GriddedMerger(object):
         """Merge all the variables on to a grid
 
 
-        - **grid**: Out put grid or axes.
-        - *res_ratio*: Resolution ratio for choosing between cell
-          averaging and bilinear interpolation (see: :func:`regrid_method`).
-        - *regrid_<kwparam>*: *<kwparam>* is passed to :func:`regrid2d` for interpolation.
+    grid:
+        Out put grid or axes.
+    res_ratio:
+        Resolution ratio for choosing between cell
+        averaging and bilinear interpolation (see: :func:`regrid_method`).
+    regrid_<kwparam>:
+        *<kwparam>* is passed to :func:`regrid2d` for interpolation.
         """
         assert len(self), 'You must add at least one variable to the merger'
 

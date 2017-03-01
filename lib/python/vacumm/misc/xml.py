@@ -226,13 +226,20 @@ def register(obj, attributes=None, elements=None, entries=None):
     '''
     Populate an object with data
 
-    :Params:
-        - **obj**: the object to be manipulated
-        - **attributes**, optional: dict, used with setattr on obj
-        - **elements**, optional: list, used with obj.extend
-        - **entries**, optional: dict, used with obj.update
+    Parameters
+    ----------
+    obj:
+        the object to be manipulated
+    attributes: optional
+        dict, used with setattr on obj
+    elements: optional
+        list, used with obj.extend
+    entries: optional
+        dict, used with obj.update
 
-    :Return: obj
+    Return
+    ------
+    obj
     '''
     if attributes:
         for k,v in attributes.iteritems():
@@ -284,13 +291,20 @@ def create_xml_element(name, attributes=None, childnodes=None, skipNone=True, **
     '''
     Create an xml element with given attributes and children
 
-    :Params:
-        - **name**: the element tag name
-        - **attributes**, optional: dict of attributes name:value
-        - **childnodes**, optional: list/tuple/dict of ElementTree.Element object
-        - **skipNone**, optional: skip attributes which value is None
+    Parameters
+    ----------
+    name:
+        the element tag name
+    attributes: optional
+        dict of attributes name:value
+    childnodes: optional
+        list/tuple/dict of ElementTree.Element object
+    skipNone: optional
+        skip attributes which value is None
 
-    :Return: a ElementTree.Element object
+    Return
+    ------
+    a ElementTree.Element object
     '''
     elt = ElementTree.Element(name)
     if attributes is not None:
@@ -324,11 +338,16 @@ def findchildren(elt, name):
     '''
     Find children of an element ignoring namespaces
 
-    :Params:
-        - **elt**: element to search in
-        - **name**: searched element tag name
+    Parameters
+    ----------
+    elt:
+        element to search in
+    name:
+        searched element tag name
 
-    :Return: a generator on ElementTree.Element objects
+    Return
+    ------
+    a generator on ElementTree.Element objects
     '''
     ns, name = splitns(name)
     for e in elt.getchildren():
@@ -343,12 +362,18 @@ def getattribute(elt, name, default=None):
     '''
     Get the attribute value of an element ignoring namespaces
 
-    :Params:
-        - **elt**: element to search in
-        - **name**: searched attribute name
-        - **default**, optional: default value when elt has no such attribute
+    Parameters
+    ----------
+    elt:
+        element to search in
+    name:
+        searched attribute name
+    default: optional
+        default value when elt has no such attribute
 
-    :Return: attribute value or default
+    Return
+    ------
+    attribute value or default
     '''
     ns, name = splitns(name)
     for an, av in elt.attrib.iteritems():
@@ -364,11 +389,16 @@ def hasattribute(elt, name):
     '''
     Check the presence of an element attribute ignoring namespaces
 
-    :Params:
-        - **elt**: element to search in
-        - **name**: searched attribute name
+    Parameters
+    ----------
+    elt:
+        element to search in
+    name:
+        searched attribute name
 
-    :Return: boolean
+    Return
+    ------
+    boolean
     '''
     return getattribute(elt, name, default=None) != None
 
@@ -379,22 +409,29 @@ def load_xml_attributes(elt=None, attributes=None, dst=None, create=False):
     '''
     Deserialize attributes from an element
 
-    :Params:
-        - **elt**: element to search in
-        - **attributes**: specification for attributes deserialization
+    Parameters
+    ----------
+    elt:
+        element to search in
+    attributes:
+        specification for attributes deserialization
             This may be either:
                 - **a list of attribute names**
                 - **a dict of attributes** {name:spec, ...} with name as a string and spec as:
                     - **a type function**
                     - **a list or tuple** (type function, default value)
                     - **a dict** {'type':function, 'default':value}
-        - **dst**: an object that will be populated with the attributes
-        - **create**: whether to create attributes in dst with the default value when they are not in elt
+    dst:
+        an object that will be populated with the attributes
+    create:
+        whether to create attributes in dst with the default value when they are not in elt
 
     The type must be a callable taking the attribute value as single string argument and returning the converted value
     With no type function, attributes are loaded without modification (as string)
 
-    :Return: dict of deserialized attributes
+    Return
+    ------
+    dict of deserialized attributes
     '''
     if elt is None: elt = ElementTree.Element('')
     m = Dict()
@@ -435,27 +472,42 @@ def load_xml_childnodes(elt=None, childnodes=None, dst=None, create=False):
     '''
     Deserialize children from an element
 
-    :Params:
-        - **elt**: element to search in
-        - **childnodes**: specification for children deserialization
+    Parameters
+    ----------
+    elt:
+        element to search in
+    childnodes:
+        specification for children deserialization
             This must be a dict of **object attribute** {name:spec, ...} with name as a string and spec as:
                 - **a type function**
                 - **a list or tuple** (type function, default value)
-                - **a dict with the entries**:
-                    - **type**: a XmlConfig subclass
-                    - **default**: default value, expected as instance or list or dict of XMlConfig object(s), depending on the single/key parameters
-                    - **create**: whether to create the instance or list when there are no such children in elt
-                    - **args**: positionnal arguments for XmlConfig children creation
-                    - **kwargs**: named arguments for XmlConfig children creation
-                    - **single**: whether we expect a single instance or a list of instance as result in dst (default is False). This may also be an integer specifying the child 0-based index.
-                    - **self**: whether we want to register loaded children in dst as dict entries (default is False)
-                    - **key**: which children attribute to use as key when loading with self=True
-        - **dst**: an object that will be populated with the children
-        - **create**: whether to create attributes in dst with the default value when they are not in elt
+            a dict with the entries:
+                type:
+                    a XmlConfig subclass
+                default:
+                    default value, expected as instance or list or dict of XMlConfig object(s), depending on the single/key parameters
+                create:
+                    whether to create the instance or list when there are no such children in elt
+                args:
+                    positionnal arguments for XmlConfig children creation
+                kwargs:
+                    named arguments for XmlConfig children creation
+                single:
+                    whether we expect a single instance or a list of instance as result in dst (default is False). This may also be an integer specifying the child 0-based index.
+                self:
+                    whether we want to register loaded children in dst as dict entries (default is False)
+                key:
+                    which children attribute to use as key when loading with self=True
+    dst:
+        an object that will be populated with the children
+    create:
+        whether to create attributes in dst with the default value when they are not in elt
 
     The type must be a subclass of XmlConfig which will be used to deserialize the children elements
 
-    :Return: a tuple (attributes, elements, entries) of the loaded data
+    Return
+    ------
+    a tuple (attributes, elements, entries) of the loaded data
     '''
     if elt is None: elt = ElementTree.Element(dst.__class__.__name__)
     attrs, elements, entries = Dict(), [], Dict()
@@ -511,27 +563,40 @@ def load_xml_textnodes(elt=None, textnodes=None, dst=None, create=False, xml_ele
     '''
     Deserialize text node children from an element
 
-    :Params:
-        - **elt**: element to search in
-        - **textnodes**: specification for text node children deserialization
+    Parameters
+    ----------
+    elt:
+        element to search in
+    textnodes:
+        specification for text node children deserialization
             This must be a dict of object attribute {name:spec, ...} with name as a string and spec as:
                 - **the text nodes tag name**
                 - **a list or tuple** (tag name, default value)
-                - **a dict with the entries**:
-                    - **tagName**: the text nodes tag name (default is the textnode name formatted by xml_element_name)
-                    - **type**: a factory function taking the text node content as argument
-                    - **default**: default value, expected as instance or list depending on the single parameter
-                    - **args**: positionnal arguments for children creation
-                    - **kwargs**: named arguments for children creation
-                    - **single**: whether we expect a single instance or a list of instance as result in dst (default is False). This may also be an integer specifying the child 0-based index.
-        - **dst**: an object that will be populated with the text node children
-        - **create**: whether to create attributes in dst with the default value when they are not in elt
+            a dict with the entries:
+                tagName:
+                    the text nodes tag name (default is the textnode name formatted by xml_element_name)
+                type:
+                    a factory function taking the text node content as argument
+                default:
+                    default value, expected as instance or list depending on the single parameter
+                args:
+                    positionnal arguments for children creation
+                kwargs:
+                    named arguments for children creation
+                single:
+                    whether we expect a single instance or a list of instance as result in dst (default is False). This may also be an integer specifying the child 0-based index.
+    dst:
+        an object that will be populated with the text node children
+    create:
+        whether to create attributes in dst with the default value when they are not in elt
 
     The type must be a callable taking the text node value as single string argument and returning the converted value.
 
     With no type function, text nodes are loaded without modification (as string)
 
-    :Return: None
+    Return
+    ------
+    None
     '''
     if elt is None: elt = ElementTree.Element(dst.__class__.__name__)
     for name,spec in textnodes.iteritems():
@@ -586,10 +651,14 @@ class XmlConfig(object):
     Base class for XML serializations/deserializations.
 
     Subclasses can define the following **class attributes** which define the serialization specifications:
-        - **xml_tag_name**: The corresponding xml element name (default is the class name formatted by :meth:`xml_element_name`).
-        - **xml_attributes**: Attribute specifications, see :func:`load_xml_attributes`
-        - **xml_childnodes**: Children elements specifications, see :func:`load_xml_childnodes`
-        - **xml_textnodes**: Text children elements specifications, see :func:`load_xml_textnodes`
+    xml_tag_name:
+        The corresponding xml element name (default is the class name formatted by :meth:`xml_element_name`).
+    xml_attributes:
+        Attribute specifications, see :func:`load_xml_attributes`
+    xml_childnodes:
+        Children elements specifications, see :func:`load_xml_childnodes`
+    xml_textnodes:
+        Text children elements specifications, see :func:`load_xml_textnodes`
 
     **These attributes can also be passed as named arguments to the constructor to extend or overwrite
     those declared in the class definition.**

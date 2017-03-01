@@ -178,9 +178,12 @@ class ColoredStreamHandler(logging.StreamHandler):
 
     def __init__(self, stream, *args, **kwargs):
         '''
-        :Params:
-            - **kwargs**: may contain:
-                - **colorize**: True/False: whether to colorize message if possible (curses)
+        Parameters
+        ----------
+        kwargs:
+            may contain:
+            colorize:
+                True/False: whether to colorize message if possible (curses)
         '''
         # terminal capabilities (man 5 terminfo)
         # setf: set foreground color
@@ -258,19 +261,32 @@ class Logger(logging.getLoggerClass()):
         '''
         Initialize the logger (level, formats) and its default handlers.
 
-        :Params:
-            - **name**: Logger name
-            - **level**: Initial logging level name (case insensitive) or number.
-            - **format**: logs format
-            - **date_format**: logs date format
-            - **console**: add a stream handler (see below)
-            - **colorize**: colorize terminal stream handlers if possible
-            - **logfile**: add a rotating file handler (see below)
-            - **redirect_warnings**, optional: Redirect messages issued by :mod:`warnings.warn`.
-            - **redirect_stdout**, optional: Redirect messages issued to sys.stdout.
-            - **redirect_stderr**, optional: Redirect messages issued to sys.stderr.
-            - **name_filters**: for named based configuration, see :meth:`filter_name`
-            - **config**: see :meth:`config`
+        Parameters
+        ----------
+        name:
+            Logger name
+        level:
+            Initial logging level name (case insensitive) or number.
+        format:
+            logs format
+        date_format:
+            logs date format
+        console:
+            add a stream handler (see below)
+        colorize:
+            colorize terminal stream handlers if possible
+        logfile:
+            add a rotating file handler (see below)
+        redirect_warnings: optional
+            Redirect messages issued by :mod:`warnings.warn`.
+        redirect_stdout: optional
+            Redirect messages issued to sys.stdout.
+        redirect_stderr: optional
+            Redirect messages issued to sys.stderr.
+        name_filters:
+            for named based configuration, see :meth:`filter_name`
+        config:
+            see :meth:`config`
 
         Available log levels: **debug, verbose, info, notice, warning, error, critical**.
 
@@ -726,12 +742,15 @@ class Logger(logging.getLoggerClass()):
 
         This method uses the get_* and set_* methods.
 
-        :Params:
-            - **args**: depending of the type:
+        Parameters
+        ----------
+        args:
+            depending of the type:
                 - basestring: (getter) return the corresponding value(s)
                 - Logger: (setter) use this logger's configuration
                 - dict: (setter) use this dict's configuration
-            - **kwargs**: key/value pairs of configuration which are to be set
+        kwargs:
+            key/value pairs of configuration which are to be set
 
         Getter:
 

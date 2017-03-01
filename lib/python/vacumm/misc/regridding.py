@@ -138,11 +138,14 @@ def regrid1dold(vari, axo, method='auto', axis=None, xmap=None, xmapper=None, ma
     extrap=0):
     """Interpolation along one axis
 
-    :Params:
+    Parameters
+    ----------
 
-        - **vari**: Input cdms array.
-        - **axo**: Output cdms axis.
-        - **method**:
+    vari:
+        Input cdms array.
+    axo:
+        Output cdms axis.
+    method:
 
             - ``"nearest"``: Nearest neighbor
             - ``"linear"``: Linear interpolation
@@ -150,15 +153,20 @@ def regrid1dold(vari, axo, method='auto', axis=None, xmap=None, xmapper=None, ma
             - ``"cellave"``: Cell averaging
             - ``"conserv"``: Conservative cel averaging (like ``cellave`` but with integral preserved)
 
-        - **axis**, optional: Axis (int) on which to operate. If not specified, it is guessed from the
-          input and output axis types, or set to ``0``.
-        - **xmap**, optional: Integer or tuple that specify on which axes input axis is varying.
-        - **xmapper**, optional: Array that specify values of input axis along axes specified by ``xmap``.
-          It is an array of size ``(...,len(var.getAxis(xmap[-2])), len(var.getAxis(xmap[-1])), len(var.getAxis(axis))]``.
-        - **mask_thres**, optional: Time steps when interpolated mask is greater than
-          this value are masked.
-        - **extrap**, optional: Extrapolate outside input grid when the "nearest" method
-          is used:
+    axis: optional
+        Axis (int) on which to operate. If not specified, it is guessed from the
+        input and output axis types, or set to ``0``.
+    xmap: optional
+        Integer or tuple that specify on which axes input axis is varying.
+    xmapper: optional
+        Array that specify values of input axis along axes specified by ``xmap``.
+        It is an array of size ``(...,len(var.getAxis(xmap[-2])), len(var.getAxis(xmap[-1])), len(var.getAxis(axis))]``.
+    mask_thres: optional
+        Time steps when interpolated mask is greater than
+        this value are masked.
+    extrap: optional
+        Extrapolate outside input grid when the "nearest" method
+        is used:
 
             - ``0`` or ``False``: No extrapolation.
             - ``-1`` or ``"min"``, or ``"bottom"``, or ``"lower"``, or ``"first"``:
@@ -388,11 +396,15 @@ def regrid1dold(vari, axo, method='auto', axis=None, xmap=None, xmapper=None, ma
 def _subshape_(bigshape, subshape, axis=None):
     """Get the index of a unique of occurence of subshape in bigshape or None
 
-    :Params:
+    Parameters
+    ----------
 
-        - **bigshape**: Tuple or big array.
-        - **subshape**: Tuple or smaller array.
-        - **axis**: Axis index of bigshape that is allowed to differ in subshape.
+    bigshape:
+        Tuple or big array.
+    subshape:
+        Tuple or smaller array.
+    axis:
+        Axis index of bigshape that is allowed to differ in subshape.
     """
     if hasattr(bigshape, 'shape'): bigshape = bigshape.shape
     if hasattr(subshape, 'shape'): subshape = subshape.shape
@@ -435,12 +447,17 @@ def _getiax_(vari, ax, axis):
 def _syncshapes_(axi, iaxi, axo, iaxo):
     """Resize two arrays to have the same shapes except when the second one is 1D
 
-    :Params:
+    Parameters
+    ----------
 
-        - **axi**: First numpy array.
-        - **iaxi**: Index of pivot (target axis) in first array.
-        - **axo**: Second numpy array.
-        - **iaxo**: Index of pivot (target axis) in second array.
+    axi:
+        First numpy array.
+    iaxi:
+        Index of pivot (target axis) in first array.
+    axo:
+        Second numpy array.
+    iaxo:
+        Index of pivot (target axis) in second array.
     """
     # Nothing to resize
     if axo.ndim==1:
@@ -475,12 +492,16 @@ def _syncshapes_(axi, iaxi, axo, iaxo):
 def _toright_(ar, iax):
     """Reform an array so the iax dim becomes the last
 
-    :Params:
+    Parameters
+    ----------
 
-        - **ar**: A numpy array.
-        - **iax**: Index of the dim.
+    ar:
+        A numpy array.
+    iax:
+        Index of the dim.
 
-    :Return:
+    Return
+    ------
 
         ``newar,bakmap`` such as::
 
@@ -501,11 +522,14 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
         erri=None, errl=None, geterr=False):
     """Interpolation along one axis
 
-    :Params:
+    Parameters
+    ----------
 
-        - **vari**: Input cdms array.
-        - **axo**: Output cdms axis or array. It can be of any dimensions.
-        - **method**:
+    vari:
+        Input cdms array.
+    axo:
+        Output cdms axis or array. It can be of any dimensions.
+    method:
 
             - ``"nearest"|0``: Nearest neighbor
             - ``"linear"|2``: Linear interpolation
@@ -516,18 +540,24 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
             - ``"conserv"|-1``: Conservative cel averaging
               (like ``cellave`` but with integral preserved)
 
-        - **axis**, optional: Dimension (int) on which the interpolation is performed.
-          If not specified, it is guessed from the
-          input and output axis types, or set to ``0``.
-        - **axi**, optional: Input axis. It defaults to the axis-th axis of ``vari``.
-          Like ``axo``, it can be of any dimensions.
-        - **iaxo**, optional: Dimension of ``axo`` on which the interpolation is performed
-          when ``axo`` has more than one dimension.
-        - **iaxi**, optional: Same as ``iaxo`` but for ``axi``.
-        - **mask_thres**, optional: Time steps when interpolated mask is greater than
-          this value are masked.
-        - **extrap**, optional: Extrapolate outside input grid when the "nearest" method
-          is used:
+    axis: optional
+        Dimension (int) on which the interpolation is performed.
+        If not specified, it is guessed from the
+        input and output axis types, or set to ``0``.
+    axi: optional
+        Input axis. It defaults to the axis-th axis of ``vari``.
+        Like ``axo``, it can be of any dimensions.
+    iaxo: optional
+        Dimension of ``axo`` on which the interpolation is performed
+        when ``axo`` has more than one dimension.
+    iaxi: optional
+        Same as ``iaxo`` but for ``axi``.
+    mask_thres: optional
+        Time steps when interpolated mask is greater than
+        this value are masked.
+    extrap: optional
+        Extrapolate outside input grid when the "nearest" method
+        is used:
 
             - ``0`` or ``False``: No extrapolation.
             - ``-1`` or ``"min"``, or ``"bottom"``, or ``"lower"``, or ``"first"``:
@@ -536,17 +566,21 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
               Extrapolate toward last values of the axis.
             - ``2`` or ``"both"``: Extrapolate toward both first and last values.
 
-        - **erri**, optional: Input "measurement" errors with the same shape as input
-          variable.
-        - **errl**, optional: Derivative of lag error with respect to lag.
-          Note that the lag must expressed in **days** for time axes.
-          If positive, it based on quadratic errors, else on error itself.
-          Estimate for instance it using the slope of a linear regression.
-          It is usually varying in space and constant in time.
-        - **geterr**, optional: When method is "cellerr", also return the error
-          along with the variable.
+    erri: optional
+        Input "measurement" errors with the same shape as input
+        variable.
+    errl: optional
+        Derivative of lag error with respect to lag.
+        Note that the lag must expressed in **days** for time axes.
+        If positive, it based on quadratic errors, else on error itself.
+        Estimate for instance it using the slope of a linear regression.
+        It is usually varying in space and constant in time.
+    geterr: optional
+        When method is "cellerr", also return the error
+        along with the variable.
 
-    :Examples:
+    Examples
+    --------
 
         >>> varo = regrid1d(vari, taxis, method='linear') # interpolation in time
         >>> varo = regrid1d(vari, zo, axis=1) # Z interpolation on second axis
@@ -807,11 +841,15 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
 def nearest1d(vari, axo, **kwargs):
     """Interpolation along an axes
 
-    :Params:
+    Parameters
+    ----------
 
-        - **vari**: Input cdms array
-        - **axo**: Output cdms axis
-        - **axis**, optional: Axis on wich to operate
+    vari:
+        Input cdms array
+    axo:
+        Output cdms axis
+    axis: optional
+        Axis on wich to operate
         - Other keywords are passed to :func:`regrid1d`
 
     .. note::
@@ -825,11 +863,15 @@ def interp1d(vari, axo, method='linear', **kwargs):
     """Linear or cubic interpolation along an axes
 
 
-    :Params:
+    Parameters
+    ----------
 
-        - **vari**: Input cdms array
-        - **axo**: Output cdms axis
-        - **axis**, optional: Axis on wich to operate
+    vari:
+        Input cdms array
+    axo:
+        Output cdms axis
+    axis: optional
+        Axis on wich to operate
         - Other keywords are passed to :func:`regrid1d`
 
     .. note::
@@ -843,11 +885,15 @@ def cubic1d(vari, axo, **kwargs):
     """Cubic interpolation along an axes
 
 
-    :Params:
+    Parameters
+    ----------
 
-        - **vari**: Input cdms array
-        - **axo**: Output cdms axis
-        - **axis**, optional: Axis on wich to operate
+    vari:
+        Input cdms array
+    axo:
+        Output cdms axis
+    axis: optional
+        Axis on wich to operate
         - Other keywords are passed to :func:`regrid1d`
 
     .. note::
@@ -860,12 +906,17 @@ def cubic1d(vari, axo, **kwargs):
 def cellave1d(vari, axo, conserv=False, **kwargs):
     """Cell averaging  or conservative regridding along an axis
 
-    :Params:
+    Parameters
+    ----------
 
-        - **vari**: Input cdms array
-        - **axo**: Output cdms axis
-        - **axis**, optional: Axis on wich to operate
-        - **conservative**, optional: If True, regridding is conservative
+    vari:
+        Input cdms array
+    axo:
+        Output cdms axis
+    axis: optional
+        Axis on wich to operate
+    conservative: optional
+        If True, regridding is conservative
         - Other keywords are passed to :func:`regrid1d`
 
     .. note::
@@ -885,13 +936,19 @@ def cellerr1d(vari, axo, erri, errl=None, **kwargs):
     """Cell averaing with weights based on errors
 
 
-    :Params:
+    Parameters
+    ----------
 
-        - **vari**: Input cdms array
-        - **axo**: Output cdms axis
-        - **erri**: Input measurement errors
-        - **errl**, optional: Input lag error relative to lag
-        - **axis**, optional: Axis on wich to operate
+    vari:
+        Input cdms array
+    axo:
+        Output cdms axis
+    erri:
+        Input measurement errors
+    errl: optional
+        Input lag error relative to lag
+    axis: optional
+        Axis on wich to operate
         - Other keywords are passed to :func:`regrid1d`
 
     .. note::
@@ -904,14 +961,20 @@ def cellerr1d(vari, axo, erri, errl=None, **kwargs):
 def fill1d2(vi,axis=0, k=1,padding=None,clip=False,min_padding=None, method='linear'):
     """Fill missing values of a 1D array using spline interpolation.
 
-    - **vi**: Input cdms variable
+    vi:
+        Input cdms variable
 
-    - *k*: Order of splines [default: 1 = linear]
-    - *padding*: Padding around an gap defining where on which part of the sample we must fit splines [default: max([min_padding,len(gap)*5])]
-    - *min_padding*: See padding [default: k]
-    - *method*: See :func:`interp1d` [default: linear]
+    k:
+        Order of splines [default: 1 = linear]
+    padding:
+        Padding around an gap defining where on which part of the sample we must fit splines [default: max([min_padding,len(gap)*5])]
+    min_padding:
+        See padding [default: k]
+    method:
+        See :func:`interp1d` [default: linear]
 
-    :Return:
+    Return
+    ------
         Filled :mod:`cdms2` variable
     """
 
@@ -959,18 +1022,25 @@ def fill1d2(vi,axis=0, k=1,padding=None,clip=False,min_padding=None, method='lin
 def fill1d(vari, axis=0, method='linear', maxgap=0):
     """Fill missing values of a 1D array using interpolation.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **vari**: Input :mod:`cdms2` variable
-        - *axis*: Axis number on which filling is performed
-        - *method*: Interpolation method (see :func:`interp1d`)
-        - *maxgap*: Maximal size of filled gaps (in steps)
+    vari:
+        Input :mod:`cdms2` variable
+    axis:
+        Axis number on which filling is performed
+    method:
+        Interpolation method (see :func:`interp1d`)
+    maxgap:
+        Maximal size of filled gaps (in steps)
 
-    :Example:
+    Example
+    -------
 
         >>> fill1d(vari, axis=2, method='cubic', maxgap=5)
 
-    :Return:
+    Return
+    ------
         Filled :mod:`cdms2` variable similar to input one
     """
 
@@ -1084,8 +1154,10 @@ def fill1d(vari, axis=0, method='linear', maxgap=0):
 def fill2d(var, xx=None, yy=None, mask=None, copy=True, **kwargs):
     """Fill missing value of 2D variable using inter/extrapolation
 
-    - **var**: A cdms 2D variable.
-    - *xx/yy*: Substitutes for axis coordinates [default: None]
+    var:
+        A cdms 2D variable.
+    xx/yy:
+        Substitutes for axis coordinates [default: None]
     - Other keywords are passe to :func:`griddata`
     """
     # Checkings
@@ -1153,9 +1225,11 @@ def fill2d(var, xx=None, yy=None, mask=None, copy=True, **kwargs):
 def regular(vi,dx=None,verbose=True,auto_bounds=False):
     """Fill a variable with missing values when step of first axis is increasing
 
-    - **vi**: Input array on almost regular axis
+    vi:
+        Input array on almost regular axis
 
-    - *dx*: Force grid step to this. Else, auto evaluated.
+    dx:
+        Force grid step to this. Else, auto evaluated.
 
     """
     from vacumm.misc import cp_atts
@@ -1263,25 +1337,37 @@ class GridData(object):
 
     - 2D splines using css.css.Cssgrid
 
-    :Parameters:
+    Parameters
+    ----------
 
-        - **xi**: Input 1D X positions.
-        - **yi**: Input 1D Y positions.
-        - **ggo**: Output grid. Can either (xo,yo), a cdms grid or a cdms variable with a grid.
-        - *method*: Interpolator type, either 'nat' (Natural Neighbors) or 'css' (='splines' using splines) [default: 'nat']
-        - *nl*: Nonlinear interpolator (usually gives better results) [default: False]
-        - *ext*: Extrapolate value outsite convex hull [**'nat' only**, default: False]
-        - *mask*: Mask to apply to output data [default: None]
-        - *compress*: If ``True``, interolate only unmasked data, and thus does not try guess the best mask (that's more efficient but very bad if data are masked!).
-        - *sub*: Size of blocks for subblocking [**"nat" only**]
-        - *margin*: Margin around ouput grid (or block) to select input data.
-          Value is relative to X and Y extent.
+    xi:
+        Input 1D X positions.
+    yi:
+        Input 1D Y positions.
+    ggo:
+        Output grid. Can either (xo,yo), a cdms grid or a cdms variable with a grid.
+    method:
+        Interpolator type, either 'nat' (Natural Neighbors) or 'css' (='splines' using splines) [default: 'nat']
+    nl:
+        Nonlinear interpolator (usually gives better results) [default: False]
+    ext:
+        Extrapolate value outsite convex hull [**'nat' only**, default: False]
+    mask:
+        Mask to apply to output data [default: None]
+    compress:
+        If ``True``, interolate only unmasked data, and thus does not try guess the best mask (that's more efficient but very bad if data are masked!).
+    sub:
+        Size of blocks for subblocking [**"nat" only**]
+    margin:
+        Margin around ouput grid (or block) to select input data.
+        Value is relative to X and Y extent.
         - Other keywords are set as attribute to the interpolator instance ; to get the list of parameters: ::
 
             >>> import nat ; nat.printParameterTable()
             >>> import css ; css.printParameterTable()
 
-    :Example:
+    Example
+    -------
 
     >>> r = GridData(gridi, grido, method='nat', ext=False, margin=.7)
     >>> varo1 = r(vari1)
@@ -1324,7 +1410,8 @@ class GridData(object):
     def __call__(self, zi, missing_value=None, **kwargs):
         """Interpolate zi on output grid
 
-        - **zi**: At least a 1D array.
+    zi:
+        At least a 1D array.
         """
 
         # Init
@@ -1450,12 +1537,17 @@ class GridData(object):
 def cargen(xi, yi, zi, ggo, mask=None, geo=None, compress=False, missing_value=None, **kwargs):
     """Interpolator from IFREMER
 
-    :Params:
+    Parameters
+    ----------
 
-        - **xi**: Input 1D X positions.
-        - **yi**: Input 1D Y positions.
-        - **ggo**, optional: Output grid. Can either (xo,yo), a cdms grid or a cdms variable with a grid.
-        - **mask**, optional: Mask to apply to output data [default: None]
+    xi:
+        Input 1D X positions.
+    yi:
+        Input 1D Y positions.
+    ggo: optional
+        Output grid. Can either (xo,yo), a cdms grid or a cdms variable with a grid.
+    mask: optional
+        Mask to apply to output data [default: None]
     """
     # Helper
     GDH = _GridDataHelper_(xi, yi, ggo, geo=geo, mask=mask, compress=compress)
@@ -1485,13 +1577,19 @@ krigdata = cargen
 def krig(xi, yi, zi, ggo, mask=True, geo=None, missing_value=None, **kwargs):
     """Kriging interpolator to a grid
 
-    :Params:
+    Parameters
+    ----------
 
-        - **xi**: Input 1D X positions.
-        - **yi**: Input 1D Y positions.
-        - **zi**: Input N-D with last dim as space.
-        - **ggo**, optional: Output grid. Can either (xo,yo), a cdms grid or a cdms variable with a grid.
-        - **mask**, optional: Mask to apply to output data [default: None]
+    xi:
+        Input 1D X positions.
+    yi:
+        Input 1D Y positions.
+    zi:
+        Input N-D with last dim as space.
+    ggo: optional
+        Output grid. Can either (xo,yo), a cdms grid or a cdms variable with a grid.
+    mask: optional
+        Mask to apply to output data [default: None]
     """
     # Helper
     GDH = _GridDataHelper_(xi, yi, ggo, geo=geo, mask=mask, compress=True)
@@ -1519,18 +1617,26 @@ def krig(xi, yi, zi, ggo, mask=True, geo=None, missing_value=None, **kwargs):
 def griddata(xi, yi, zi, ggo, method='carg', cgrid=False, **kwargs):
     """Interpolation in one single shot using GridData
 
-    :Params:
+    Parameters
+    ----------
 
-        - **xi**: 1D input x coordinates.
-        - **yi**: 1D input y coordinates (same length as xi).
-        - **zi**: 1D input values (same length as xi).
-        - **method**, optional: Method of interpolation,
-          within ('nat', 'css', 'carg', 'krig') [default: 'carg']
-        - **cgrid**, optional: Output on a C-grid at U- and V-points
-          deduced from ggo [default: False].
-          Not available for 'carg' and 'krig' methods.
+    xi:
+        1D input x coordinates.
+    yi:
+        1D input y coordinates (same length as xi).
+    zi:
+        1D input values (same length as xi).
+    method: optional
+        Method of interpolation,
+        within ('nat', 'css', 'carg', 'krig') [default: 'carg']
+    cgrid: optional
+        Output on a C-grid at U- and V-points
+        deduced from ggo [default: False].
+        Not available for 'carg' and 'krig' methods.
 
-    :See also: :class:`GridData` and :func:`cargen`
+    See also
+    --------
+    :class:`GridData` and :func:`cargen`
     """
     if cgrid:
         ggu, ggv = t2uvgrids(ggo)
@@ -1748,13 +1854,19 @@ def xy2grid(*args, **kwargs):
 def xy2xy(xi, yi, zi, xo, yo, nl=False, proj=True, **kwargs):
     """Interpolation between to unstructured grids using :mod:`Natgrid`
 
-    :Params:
+    Parameters
+    ----------
 
-        - **xi/yi**: 1D input positions
-        - **zi**: atleast-1D input values
-        - **xo,yo**: 1D output positions
-        - *nl*: Non linear interpolation using natural neighbours
-        - *proj*: convert positions to meters using mercator projection
+    xi/yi:
+        1D input positions
+    zi:
+        atleast-1D input values
+    xo,yo:
+        1D output positions
+    nl:
+        Non linear interpolation using natural neighbours
+    proj:
+        convert positions to meters using mercator projection
     """
     # Check input positions
     xi = N.asarray(xi, 'd')
@@ -1864,18 +1976,24 @@ def xy2xy(xi, yi, zi, xo, yo, nl=False, proj=True, **kwargs):
 def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine'):
     """Interpolate gridded data to ramdom positions
 
-    :Params:
+    Parameters
+    ----------
 
-        - **vari**: Input cdms variable on a grid
-        - **xo**: Output longitudes
-        - **yo**: Output latitudes
-        - **method**, optional: Interpolation method
+    vari:
+        Input cdms variable on a grid
+    xo:
+        Output longitudes
+    yo:
+        Output latitudes
+    method: optional
+        Interpolation method
 
             - ``nearest``: Nearest neighbor
             - ``bilinear``: Linear interpolation
             - ``nat``: Natgrid interpolation
 
-        - **outaxis**, optional: Output spatial axis
+    outaxis: optional
+        Output spatial axis
 
             - A cdms2 axis.
             - ``None`` or ``'auto'``: Longitudes or latitudes depending
@@ -1884,8 +2002,9 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
             - ``'lat'`` or ``'y'``: Latitudes.
             - ``'dist'`` or ``'d'``: Distance in km.
 
-        - **distmode**, optional: Distance computation mode.
-          See :func:`~vacumm.misc.grid.misc.get_distances`.
+    distmode: optional
+        Distance computation mode.
+        See :func:`~vacumm.misc.grid.misc.get_distances`.
 
     """
 
@@ -2011,34 +2130,44 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
         tmethod='linear', **kwargs):
     """Make a transect in a -YX variable
 
-    :Example:
+    Example
+    -------
 
         >>> tsst = transect(sst, (1,1.6), (42.,43.), subsamp=4)
         >>> tmld = transect(mld, [1.,1.,2.], [42.,43.,43.], outaxis='dist')
         >>> tprof = transect(temp, 1., 42.)
 
-    :Params:
+    Parameters
+    ----------
 
-        - **var**: MV2 array of at least rank 2 (YX).
-        - **lons/lats**: Specification of transect, either
+    var:
+        MV2 array of at least rank 2 (YX).
+    lons/lats:
+        Specification of transect, either
 
             - Coordinates of first and last point in degrees as
               tuples in the form ``(lon0,lon1)`` and ``(lat0,lat1)``.
               The array of coordinates is generated using :func:`transect_specs`.
             - Or explicit array of coordinates (as scalars, lists or arrays).
 
-        - **times**, optional: Time sequence or axis of the same length as
-          resulting coordinates. If provided, the interpolation is first done
-          in space, them onto this lagrangian time,
-          and the final space-time trajectory is returned.
-          If ``outaxis`` is None, ``taxis`` becomes the output axis.
-        - **subsamp**, optional: Subsampling with respect to grid cell
-          (only when coordinates are not explicit).
-        - **method**, optional: Interpolation method (see :func:`grid2xy`).
-        - **getcoords**, optional: Also get computed coordiantes.
-        - **outaxis**, optional: Output spatial axis (see :func:`grid2xy`).
+    times: optional
+        Time sequence or axis of the same length as
+        resulting coordinates. If provided, the interpolation is first done
+        in space, them onto this lagrangian time,
+        and the final space-time trajectory is returned.
+        If ``outaxis`` is None, ``taxis`` becomes the output axis.
+    subsamp: optional
+        Subsampling with respect to grid cell
+        (only when coordinates are not explicit).
+    method: optional
+        Interpolation method (see :func:`grid2xy`).
+    getcoords: optional
+        Also get computed coordiantes.
+    outaxis: optional
+        Output spatial axis (see :func:`grid2xy`).
 
-    :Return:
+    Return
+    ------
 
         ``tvar`` or ``tvar,tons,tlats``
 
@@ -2171,10 +2300,13 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
 def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
     """Refine a variable on a grid by a factor
 
-    :Params:
+    Parameters
+    ----------
 
-        - **vari**: 1D or 2D variable.
-        - **factor**: Refinement factor > 1
+    vari:
+        1D or 2D variable.
+    factor:
+        Refinement factor > 1
     """
 
     # No refinement
@@ -2317,11 +2449,15 @@ def regrid2dold(vari, ggo, method='auto', mask_thres=.5, ext=False,
     If the input or output grid is curvilinear and ``method`` is set to
     ``"linear"``, ``"cellave"`` or ``"conserv"``, the :class:`CDATRegridder` is used.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **vari**: Variable cdms on regular grid
-        - **ggo**: Tuple of (x,y) or a cdms grid or a cdms variable with a grid
-        - **method**, optional: One of:
+    vari:
+        Variable cdms on regular grid
+    ggo:
+        Tuple of (x,y) or a cdms grid or a cdms variable with a grid
+    method: optional
+        One of:
 
             - ``"auto"``: method guessed according to resolution of input and output grid (see :func:`regrid_method`)
             - ``"nearest"``: nearest neighbour
@@ -2333,24 +2469,32 @@ def regrid2dold(vari, ggo, method='auto', mask_thres=.5, ext=False,
             - ``"nat"`` : Natgrid interpolation (low res. to high res.) (see :class:`GridData` for more info)
             - ``"carg"`` : Interpolation with minicargen(low res. to high res.) (see :func:`cargen` for more info)
 
-        - **cdr**, optional: :class:`CDATRegridder` instance.
-        - **getcdr**, optional: Also return the computed :class:`CDATRegridder` instance.
-        - **usecdr**, optional: Force the use or not of a :class:`CDATRegridder` instance,
-          even for rectangular grids.
-        - **useoldcdr**, optional: Force the use the old CDAT regridder (rectangular grids only).
-        - **ext**, optional: Perform extrapolation when possible
-        - **bilinear_masking**: the way to handle interpolation near masked values
+    cdr: optional
+        :class:`CDATRegridder` instance.
+    getcdr: optional
+        Also return the computed :class:`CDATRegridder` instance.
+    usecdr: optional
+        Force the use or not of a :class:`CDATRegridder` instance,
+        even for rectangular grids.
+    useoldcdr: optional
+        Force the use the old CDAT regridder (rectangular grids only).
+    ext: optional
+        Perform extrapolation when possible
+    bilinear_masking:
+        the way to handle interpolation near masked values
 
             - ``"nearest"``: brut masking using nearest neighbor
             - ``"dstwgt"`` : distance weight data are used where interpolated mask is lower ``mask_thres``
 
-        - **mask_thres**, optional: Threshold for masking points for some methods (~ land fraction) for
-          **rectangular grids only**:
+    mask_thres: optional
+        Threshold for masking points for some methods (~ land fraction) for
+        **rectangular grids only**:
 
             - ``method="bilinear"`` and ``bilinear_masking="dstwght"``
             - ``method="cellave"`` or ``method="bining"``
 
-        - **ext_masking**, optional: Manual masking method when ``ext=False`` (when needed)
+    ext_masking: optional
+        Manual masking method when ``ext=False`` (when needed)
             with methods ["carg",] (see :func:`~vacumm.misc.grid.masking.grid_envelop_mask`)
             if input grid is not rectangular
 
@@ -2360,10 +2504,12 @@ def regrid2dold(vari, ggo, method='auto', mask_thres=.5, ext=False,
         - Other keywords are passed to special interpolation functions depending on method and choices :
 
             - :func:`cargen` when "nat" or "carg" method is used
-            - **mask_thres**, optional: Time steps when interpolated mask is greater than
-              this value are masked.
+        mask_thres: optional
+            Time steps when interpolated mask is greater than
+        this value are masked.
 
-    :Examples:
+    Examples
+    --------
 
         >>> regrid2d(var, (lon, lat), method='bilinear', bilinear_masking='nearest')
         >>> regrid2d(var, grid, method='cellave', mask_thres=.8)
@@ -2585,11 +2731,15 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
     If the input or output grid is curvilinear and ``method`` is set to
     ``"linear"``, ``"cellave"`` or ``"conserv"``, the :class:`CDATRegridder` is used.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **vari**: Variable cdms on regular grid
-        - **ggo**: Tuple of (x,y) or a cdms grid or a cdms variable with a grid
-        - **method**, optional: One of:
+    vari:
+        Variable cdms on regular grid
+    ggo:
+        Tuple of (x,y) or a cdms grid or a cdms variable with a grid
+    method: optional
+        One of:
 
             - ``"auto"``: method guessed between ``linear`` and ``cellave``
               according to resolution of input and output grid (see :func:`regrid_method`)
@@ -2601,7 +2751,8 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
             - ``"cellave"`` : weighted regridding based on areas of cells (high res. to low res.)
             - ``"conserv"`` : same as ``cell`` but conservative (high res. to low res.)
 
-        - **tool**, optional: Regridder. One of:
+    tool: optional
+        Regridder. One of:
 
             - ``"auto"``: tool guessed depending on the method, the first available tool
               and the grids (rectangular or curvilinear).
@@ -2609,11 +2760,13 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
             - ``"esmf"`` and ``"libcf"``: Regridders provided by UVCDAT.
             - ``"regrid2"``: Old regridder provided by CDAT (rectangular only).
 
-        - **rgdr**, optional: An already set up regridder instance to speed up regridding:
+    rgdr: optional
+        An already set up regridder instance to speed up regridding:
           :class:`CDATRegridder` instance for ``regrid2``, ``esmf`` and ``libcf`` tools,
-          else a :class;`CurvedInterpolator` instance for ``vacumm`` tool with
-          interpolation on curvilinear grids.
-        - **getrgdr**, optional: Also return the regridder instance if it applies, or None.
+        else a :class;`CurvedInterpolator` instance for ``vacumm`` tool with
+        interpolation on curvilinear grids.
+    getrgdr: optional
+        Also return the regridder instance if it applies, or None.
         - Other keywords are passed to special interpolation functions depending on method and choices :
 
             - :func:`cargen` when "nat" or "carg" method is used
@@ -2639,7 +2792,8 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
         | conserv  |        |   RECT   |  OK  |       |
         +----------+--------+----------+------+-------+
 
-    :Examples:
+    Examples
+    --------
 
         >>> regrid2d(var, (lon, lat), method='linear')
         >>> regrid2d(var, grid, method='cellave')
@@ -2979,21 +3133,28 @@ def regrid_method(gridi, grido, ratio=.55, iaxi=-1, iaxo=-1):
         xres, yres = resol(grid)
         res = (xres**2+yres**2)**.5
 
-    :Params:
+    Parameters
+    ----------
 
-        - **gridi**: Grid, tuple of axes or single axis or array.
-        - **grido**: Grid, tuple of axes or single axis or array.
-        - **ratio**, optional: Limit ratio of output grid resolution to input grid resolution.
-        - **iaxi/iaxo**, optional: Dimension on which to compute the resolution with
+    gridi:
+        Grid, tuple of axes or single axis or array.
+    grido:
+        Grid, tuple of axes or single axis or array.
+    ratio: optional
+        Limit ratio of output grid resolution to input grid resolution.
+    iaxi/iaxo: optional
+        Dimension on which to compute the resolution with
           :func:`~vacumm.misc.grid.misc.resol` when ``gridi`` and ``grido`` are single axes
-          with several dimensions.
+        with several dimensions.
 
     ..note::
 
         The resolution of the grids is checked in their attributes "_xres" and "_yres"
         before before trying to compute them.
 
-    :Returns: ``'cellave'`` OR ``'linear'``
+    Returns
+    -------
+    ``'cellave'`` OR ``'linear'``
     """
     if _isaxis_(gridi) and _isaxis_(grido): # Axes
 
@@ -3036,16 +3197,20 @@ def _shiftslicenames_(shift):
 def shift1d(var, shift=0, bmode=None, axis=-1, copy=True, shiftaxis=True, **kwargs):
     """Interpolate data on an axis shifted by an half cell size
 
-    :Params:
+    Parameters
+    ----------
 
-        - **var**: array.
-        - **shift**, optional: Shift to operate.
+    var:
+        array.
+    shift: optional
+        Shift to operate.
 
             - ``0``: No shift.
             - ``<0``: Shilt toward bottom of the axis.
             - ``>0``: Shilt toward top of the axis.
 
-        - **bmode**, optional: Boundary mode.
+    bmode: optional
+        Boundary mode.
 
             - ``None``: ``"extrap"`` if axis else ``"same"``
             - ``"linear"``: Linear extrapolation.
@@ -3053,8 +3218,10 @@ def shift1d(var, shift=0, bmode=None, axis=-1, copy=True, shiftaxis=True, **kwar
             - ``"masked"``: Mask outside data.
             - ``"cyclic"``: Cyclic extrapolation.
 
-        - **axis**, optional: Axis on which to operate.
-        - **copy**, optional: Always input copy data.
+    axis: optional
+        Axis on which to operate.
+    copy: optional
+        Always input copy data.
     """
     # Input data
     if copy:
@@ -3121,23 +3288,28 @@ def shift2d(vari, ishift=0, jshift=0, bmode=None, copy=True, **kwargs):
 
     X and Y are supposed to be the -1 and -2 axes of var.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **var**: array.
-        - **[i/j]shift**, optional: Shift to operate along X/Y.
+    var:
+        array.
+    [i/j]shift: optional
+        Shift to operate along X/Y.
 
             - ``0``: No shift.
             - ``<0``: Shilt toward bottom of the axis.
             - ``>0``: Shilt toward top of the axis.
 
-        - **bmode**, optional: Boundary mode.
+    bmode: optional
+        Boundary mode.
 
             - ``"linear"``: Linear extrapolation.
             - ``"same"``: Constant extrapolation.
             - ``"masked"``: Mask outside data.
             - ``"cyclic"``: Cyclic extrapolation.
 
-        - **copy**, optional: Always input copy data.
+    copy: optional
+        Always input copy data.
 
     """
     if copy:
@@ -3213,10 +3385,13 @@ def shift2d(vari, ishift=0, jshift=0, bmode=None, copy=True, **kwargs):
 def shiftgrid(gg, ishift=0, jshift=0, bmode='linear', **kwargs):
     """Shift a grid of an half cell
 
-    :Params:
+    Parameters
+    ----------
 
-        - **gg**: cdms2 grid.
-        - **i/jshift**: Fraction cell to shift.
+    gg:
+        cdms2 grid.
+    i/jshift:
+        Fraction cell to shift.
     """
     xx, yy = get_xy(gg)
     bmode = kwargs.get('mode', bmode)
@@ -3266,14 +3441,18 @@ def _extend_init_(var, new_shape, mode):
 def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
     """Extrapolate data on an axis
 
-    :Params:
+    Parameters
+    ----------
 
-        - **var**: Array.
-        - **ext**, optional: Size of extension. If a tuple,
-          it gives left and right extensions, else the same
-          for both.
+    var:
+        Array.
+    ext: optional
+        Size of extension. If a tuple,
+        it gives left and right extensions, else the same
+        for both.
 
-        - **mode**, optional: Interpolation mode for boundary point outside initial positions.
+    mode: optional
+        Interpolation mode for boundary point outside initial positions.
 
             - ``None``: ``"extrap"`` if axis else ``"same"``
             - ``"extrap"`` or ``"linear"``: Linear extrapolation.
@@ -3281,8 +3460,10 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
             - ``"cyclic"``: Cyclic extrapolation.
             - ``"masked"``: Masked.
 
-        - **axis**, optional: Axis on which to operate.
-        - **copy**, optional: Always input copy data.
+    axis: optional
+        Axis on which to operate.
+    copy: optional
+        Always input copy data.
     """
     # Size of extension
     if not isinstance(ext, (list, tuple)):
@@ -3383,21 +3564,26 @@ def extend2d(vari, iext=0, jext=0, mode=None, copy=False):
 
     X and Y are supposed to be the -1 and -2 axes of var.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **var**: Array.
-        - **i/jext**, optional: Size of extension along i/j.
-          If a tuple,it gives left and right extensions, else the same
-          for both.
+    var:
+        Array.
+    i/jext: optional
+        Size of extension along i/j.
+        If a tuple,it gives left and right extensions, else the same
+        for both.
 
-        - **mode**, optional: Interpolation mode for boundary point outside initial positions.
+    mode: optional
+        Interpolation mode for boundary point outside initial positions.
 
             - ``None``: ``"extrap"`` if axis else ``"same"``
             - ``"extrap"`` or ``"linear"``: Linear extrapolation.
             - ``"same"``: Constant extrapolation.
             - ``"masked"``: Masked.
 
-        - **copy**, optional: Always input copy data.
+    copy: optional
+        Always input copy data.
 
     """
     # Size of extensions
@@ -3433,11 +3619,15 @@ def extend2d(vari, iext=0, jext=0, mode=None, copy=False):
 def extendgrid(gg, iext=0, jext=0, mode='extrap'):
     """Extrapolate a grid
 
-    :Params:
+    Parameters
+    ----------
 
-        - **gg**: cdms2 grid.
-        - **i/jext**: Size of extrapolation along i/j.
-        - **mode**, optional: Interpolation mode for boundary point outside initial positions.
+    gg:
+        cdms2 grid.
+    i/jext:
+        Size of extrapolation along i/j.
+    mode: optional
+        Interpolation mode for boundary point outside initial positions.
 
             - ``"extrap"``: Linear extrapolation.
             - ``"same"``: Constant extrapolation.
@@ -3463,12 +3653,17 @@ class CDATRegridder(object):
 
     .. note:: This code is adapted from the :meth:`regrid` method of MV2 arrays.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **fromgrid**: Input grid, or variable with a grid.
-        - **togrid**: Output grid.
-        - **tool**, optional: One of ``"esmf"``, ``"libcf"`` and ``"regrid2"``.
-        - **method**, optional: One of ``"linear"``, ``"path"``, ``"conservative"`` and ``"cellave"``.
+    fromgrid:
+        Input grid, or variable with a grid.
+    togrid:
+        Output grid.
+    tool: optional
+        One of ``"esmf"``, ``"libcf"`` and ``"regrid2"``.
+    method: optional
+        One of ``"linear"``, ``"path"``, ``"conservative"`` and ``"cellave"``.
     """
 
     def __init__(self, fromgrid, togrid, missing=None, order=None, mask=None, **keywords):
@@ -3612,19 +3807,24 @@ class CDATRegridder(object):
     def regrid(self, vari, weidstfracs=None, check_mask=True, csvhack=False, **keywords):
         """Regrid the variable
 
-        :Params:
+        Parameters
+        ----------
 
-            - **vari**: Input variable.
-            - **weidstfracs**, optional: Specify how to apply weights computed using
-              destination fractions. Divide if <0, else multiply. It is not used with
-              linear and match methods.
-            - **check_mask**, optional: Mask point using masked data (the algo
-              interpolate the mask and check level 0.999). MUST BE IMPROVED!
-            - **csvhack**, optional: Hack to prevent a bug with conservative-like method
-              of the ESMF regridder. Use it if you have strange result in the output
-              most right longitude.
+        vari:
+            Input variable.
+        weidstfracs: optional
+            Specify how to apply weights computed using
+            destination fractions. Divide if <0, else multiply. It is not used with
+            linear and match methods.
+        check_mask: optional
+            Mask point using masked data (the algo
+            interpolate the mask and check level 0.999). MUST BE IMPROVED!
+        csvhack: optional
+            Hack to prevent a bug with conservative-like method
+            of the ESMF regridder. Use it if you have strange result in the output
+            most right longitude.
 
-              .. warning:: The algo mask the must right longitude of input data before
+            .. warning:: The algo mask the must right longitude of input data before
                 processing.
 
         """
@@ -3692,15 +3892,20 @@ class CDATRegridder(object):
 class CurvedInterpolator(object):
     """Interpolator from a curved grid to random points or another grid
 
-    :Params:
+    Parameters
+    ----------
 
-        - **fromgrid**: Input grid, or variable with a grid.
-        - **topts**: Output coordinates or grid. It a tuple of coordinates, it is
-          assumed that it refers to random points, and NOT a grid.
-        - **g2g**, optional: Force the interpretation of ``topts`` as a grid or axes
-          of a grid.
+    fromgrid:
+        Input grid, or variable with a grid.
+    topts:
+        Output coordinates or grid. It a tuple of coordinates, it is
+        assumed that it refers to random points, and NOT a grid.
+    g2g: optional
+        Force the interpretation of ``topts`` as a grid or axes
+        of a grid.
 
-    :Examples:
+    Examples
+    --------
 
         >>> interpolator = CurvedInterpolator(ssti.getGrid(), (lono, lato)) # lono/lato 1D
         >>> interpolator = CurvedInterpolator(ssti.getGrid(), grido) # grid
@@ -3740,10 +3945,13 @@ class CurvedInterpolator(object):
     def interp(self, vari, method='bilinear'):
         """Interpolate
 
-        :Params:
+        Parameters
+        ----------
 
-            - **vari**: Variable to interpolate.
-            - **method**, optional: Interpolation method. One of : %s.
+        vari:
+            Variable to interpolate.
+        method: optional
+            Interpolation method. One of : %s.
         """%', '.join(self.valid_methods)
         # Method and function
         method = regrid2d_method_name(method)

@@ -80,11 +80,13 @@ DEFAULT_VARIOGRAM_MODEL_TYPE = 'exponential'
 def variogram_model_type(mtype=None):
     """Check the the variogram model type
 
-    :Params:
+    Parameters
+    ----------
 
-        - **mtype**, optional: ``None``, and index or a string matching
-          an element of :data:`VARIOGRAM_MODEL_TYPES`.
-          If set to ``None``, it defaults to :data:`DEFAULT_VARIOGRAM_MODEL_TYPE`.
+    mtype: optional
+        ``None``, and index or a string matching
+        an element of :data:`VARIOGRAM_MODEL_TYPES`.
+        If set to ``None``, it defaults to :data:`DEFAULT_VARIOGRAM_MODEL_TYPE`.
     """
     if mtype is True:
         return VARIOGRAM_MODEL_TYPES
@@ -202,30 +204,40 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
         nbmin=10, distmax=None,  distfunc='simple', errfunc=None):
     """Estimate variogram from data
 
-    :Params:
+    Parameters
+    ----------
 
-        - **x/y/z**: 1D arrays of positions and data.
-        - **nmax**, optional: Above this number, size of
-          the sampe is reduced using undersampling.
-        - **binned**, optional: If set to a number,
-          data are arranged in bins to estimate
-          variogram. If set to ``None``, data are
-          arranged in bins if the number of pairs
-          of points is greater than ``nbindef*nbmin``.
-        - **nbindef**, optional: Default number
-          of bins (not used if ``binned`` is a number).
-        - **nbin0**, optional: If set to a number > 1,
-          the first bin is split into nbin0 sub-bins.
-          If set to ``None``, it is evaluated with
-          ``min(bins[1]/nbmin, nbin)``.
-        - **nbmin**, optional: Minimal number of points
-          in a bin.
-        - **distmax**, optional: Max distance to consider.
-        - **distfunc**: Function to compute distances, or a mode argument to
+    x/y/z:
+        1D arrays of positions and data.
+    nmax: optional
+        Above this number, size of
+        the sampe is reduced using undersampling.
+    binned: optional
+        If set to a number,
+        data are arranged in bins to estimate
+        variogram. If set to ``None``, data are
+        arranged in bins if the number of pairs
+        of points is greater than ``nbindef*nbmin``.
+    nbindef: optional
+        Default number
+        of bins (not used if ``binned`` is a number).
+    nbin0: optional
+        If set to a number > 1,
+        the first bin is split into nbin0 sub-bins.
+        If set to ``None``, it is evaluated with
+        ``min(bins[1]/nbmin, nbin)``.
+    nbmin: optional
+        Minimal number of points
+        in a bin.
+    distmax: optional
+        Max distance to consider.
+    distfunc:
+        Function to compute distances, or a mode argument to
           :func:`~vacumm.misc.grid.misc.get_distances`.
-        - **errfunc**, optional: Callable function to compute "errors" like square
-          root difference between to z values. It take two arguments and
-          defaults to :math:`(z1-z0)^2/2`.
+    errfunc: optional
+        Callable function to compute "errors" like square
+        root difference between to z values. It take two arguments and
+        defaults to :math:`(z1-z0)^2/2`.
 
     """
     x, y, z = _get_xyz_(x, y, z)
@@ -292,15 +304,20 @@ def variogram_fit(x, y, z, mtype=None, getall=False, getp=False, geterr=False,
         distfunc='simple', errfunc=None, **kwargs):
     """Fit a variogram model to data and return the function
 
-    :Example:
+    Example
+    -------
 
         >>> vm, errs = variogram_fit(x, y, z, 'linear', n=0, distmax=30e3, geterr=True)
 
-    :Params:
+    Parameters
+    ----------
 
-        - **x/y/z**: Position and data.
-        - **mtype**: Variogram model type (see ::`variogram_model_type`).
-        - **getall**: Get verything in a dictionary whose keys are
+    x/y/z:
+        Position and data.
+    mtype:
+        Variogram model type (see ::`variogram_model_type`).
+    getall:
+        Get verything in a dictionary whose keys are
 
             - ``"func"``: model function,
             - ``"err"``: fitting error,
@@ -309,16 +326,20 @@ def variogram_fit(x, y, z, mtype=None, getall=False, getp=False, geterr=False,
             - ``vm"``: :class:`VariogramModel` instance,
             - ``"mtype"``: variogram model type.
 
-        - **getp**, optional: Only return model parameters. Return them as
-          a `class:`dict` if equal to ``2``.
-        - **variogram_<param>**, optional: ``param`` is passed to :func:`variogram`.
-        - **distfunc**: Function to compute distances, or a mode argument to
+    getp: optional
+        Only return model parameters. Return them as
+        a `class:`dict` if equal to ``2``.
+    variogram_<param>: optional
+        ``param`` is passed to :func:`variogram`.
+    distfunc:
+        Function to compute distances, or a mode argument to
           :func:`~vacumm.misc.grid.misc.get_distances`.
-        - **errfunc**, optional: Callable function to compute "errors" like square
-          root difference between to z values. It take two arguments and
-          defaults to :math:`\sqrt(z1^2-z0^2)/2`.
+    errfunc: optional
+        Callable function to compute "errors" like square
+        root difference between to z values. It take two arguments and
+        defaults to :math:`\sqrt(z1^2-z0^2)/2`.
 
-          .. warning:: use "haversine" if input coordinates are in degrees.
+        .. warning:: use "haversine" if input coordinates are in degrees.
 
         - Extra keywords are those of :func:`variogram_model`.
           They can be used to freeze some of the parameters.
@@ -394,7 +415,9 @@ def variogram_multifit(xx, yy, zz, mtype=None, getall=False, getp=False, **kwarg
 def cloud_split(x, y, npmax=1000, getdist=True, getcent=True):
     """Split data intot cloud of points of max size npmax:
 
-    :Returns: ``None`` if ``len(x)<=npmax``
+    Returns
+    -------
+    ``None`` if ``len(x)<=npmax``
 
         Else ``indices``
         or ``(indices, global_distorsion, distortions)``.
@@ -438,11 +461,15 @@ def cloud_split(x, y, npmax=1000, getdist=True, getcent=True):
 def syminv(A):
     """Invert a symetric matrix
 
-    :Params:
+    Parameters
+    ----------
 
-        - **A**: (np+1,np+1) for variogram matrix
+    A:
+        (np+1,np+1) for variogram matrix
 
-    :Return: ``Ainv(np+1,np+1)``
+    Return
+    ------
+    ``Ainv(np+1,np+1)``
 
     :Raise: :exc:`KrigingError`
 
@@ -476,23 +503,32 @@ class CloudKriger(object):
            Weights are inversely proportional to the inverse
            of the squared error.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **x/y/z**: Input positions and data (masked array).
-        - **mtype**, optional: Variogram model type (defaults to 'exp').
-          See :func:`variogram_model_type` and :func:`variogram_model_type`.
-        - **vgf**, optional: Variogram function. If not set,
-          it is estimated using :meth:`variogram_fit`.
-        - **npmax**, optional: Maxima size of cloud.
-        - **nproc**, optional: Number of processes to use
-          to invert matrices. Set it to a number <2 to switch off
-          parallelisation.
-        - **exact**, optional: If True, variogram is exactly zero when distance is zero.
-        - **distfunc**: Function to compute distances, or a mode argument to
+    x/y/z:
+        Input positions and data (masked array).
+    mtype: optional
+        Variogram model type (defaults to 'exp').
+        See :func:`variogram_model_type` and :func:`variogram_model_type`.
+    vgf: optional
+        Variogram function. If not set,
+        it is estimated using :meth:`variogram_fit`.
+    npmax: optional
+        Maxima size of cloud.
+    nproc: optional
+        Number of processes to use
+        to invert matrices. Set it to a number <2 to switch off
+        parallelisation.
+    exact: optional
+        If True, variogram is exactly zero when distance is zero.
+    distfunc:
+        Function to compute distances, or a mode argument to
           :func:`~vacumm.misc.grid.misc.get_distances`.
-        - **errfunc**, optional: Callable function to compute "errors" like square
-          root difference between to z values. It take two arguments and
-          defaults to :math:`\sqrt(z1^2-z0^2)/2`.
+    errfunc: optional
+        Callable function to compute "errors" like square
+        root difference between to z values. It take two arguments and
+        defaults to :math:`\sqrt(z1^2-z0^2)/2`.
         - Extra keywords are  parameters to the :func:`variogram_model` that must not be
           optimized by :func:`variogram_model`. For instance ``n=0`` fix the
         - Extra keywords are the parameters to the :func:`variogram_model` that must not be
@@ -501,7 +537,9 @@ class CloudKriger(object):
           This is used only if ``vfg`` is not passed as an argument.
 
 
-    :Attributes: :attr:`x`, :attr:`y`, :attr:`z`, :attr:`np`,
+    Attributes
+    ----------
+    :attr:`x`, :attr:`y`, :attr:`z`, :attr:`np`,
         :attr:`xc`, :attr:`yc`, :attr:`zc`,  :attr:`npc`,
         :attr:`variogram_function`, :attr:`Ainv`, :attr:`npmax`, :attr:`nproc`.
 
@@ -732,12 +770,17 @@ class CloudKriger(object):
     def interp(self, xo, yo, geterr=False, blockr=None):
         """Interpolate to positions xo,yo
 
-        :Params:
+        Parameters
+        ----------
 
-            - **xo/yo**: Output positions.
-            - **geterr**, optional: Also return errors.
+        xo/yo:
+            Output positions.
+        geterr: optional
+            Also return errors.
 
-        :Return: ``zo`` or ``zo,eo``
+        Return
+        ------
+        ``zo`` or ``zo,eo``
         """
 
         # Inits

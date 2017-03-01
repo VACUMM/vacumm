@@ -70,9 +70,12 @@ __all__.sort()
 def get_coast(mask, land=True, b=True, borders=True, corners=True):
     """Get a mask integer of ocean coastal points from a 2D mask
 
-    - **mask**: Input mask with 0 on water and 1 on land.
-    - *land*: If True, coast is on land [default: True]
-    - *corners*: If True, consider borders as coastal points [default: True]
+    mask:
+        Input mask with 0 on water and 1 on land.
+    land:
+        If True, coast is on land [default: True]
+    corners:
+        If True, consider borders as coastal points [default: True]
     - *borders:* If True, consider corners as coastal points [default: True]
 
     At each point, return 0 if not coast, else an interger ranging from 1 to (2**8-1) to describe the coast point::
@@ -124,11 +127,15 @@ def get_coast(mask, land=True, b=True, borders=True, corners=True):
 def get_coastal_indices(mask, coast=None, asiijj=False, **kwargs):
     """Get indices of ocean coastal points from a 2D mask
 
-    :Params:
+    Parameters
+    ----------
 
-        - **mask**: Input mask with 0 on water and 1 on land.
-        - *boundary*: If True, consider outside boundary as land [default: True]
-        - *asiijj*: Get results as II,JJ instead of [(j0,i0),(j1,i1)...]
+    mask:
+        Input mask with 0 on water and 1 on land.
+    boundary:
+        If True, consider outside boundary as land [default: True]
+    asiijj:
+        Get results as II,JJ instead of [(j0,i0),(j1,i1)...]
     """
     if mask is N.ma.nomask: return []
     if coast is None:
@@ -142,23 +149,30 @@ def get_coastal_indices(mask, coast=None, asiijj=False, **kwargs):
 def get_dist_to_coast(grid, mask=None, proj=True):
     """Get the distance to coast on grid
 
-    :Params:
+    Parameters
+    ----------
 
-        - **grid**: (x,y), grid or variable with a grid.
-        - **mask**: Land/sea mask or variable with a mask. If not provided,
-          gets mask from ``grid`` if it is a masked variable,
-          or estimates it using :func:`polygon_mask`
-          and a GHSSC shoreline resolution given by
+    grid:
+        (x,y), grid or variable with a grid.
+    mask:
+        Land/sea mask or variable with a mask. If not provided,
+        gets mask from ``grid`` if it is a masked variable,
+        or estimates it using :func:`polygon_mask`
+        and a GHSSC shoreline resolution given by
           :func:`~vacumm.misc.grid.basemap.gshhs_autores`.
-        - **proj**: Distance are computed by converting coordinates
-          from degrees to meters.
+    proj:
+        Distance are computed by converting coordinates
+        from degrees to meters.
 
-    :Example:
+    Example
+    -------
 
         >>> dist = get_dist_to_coast(sst.getGrid(), sst.mask)
         >>> dist = get_dist_to_coast(sst)
 
-    :See also: :func:`get_coastal_indices`
+    See also
+    --------
+    :func:`get_coastal_indices`
     """
     if mask is None and N.ma.isMA(grid):
         mask = grid
@@ -209,18 +223,26 @@ def erode_coast(var, mask2d=None, copy=True, maxiter=10, corners=0., hardmask=No
         Must be used only for erodeing a thin border
         of the coast.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **var**: Atleast-2D A :mod:`MV2` variable with mask.
-        - **mask2d**, optional: Reference 2D mask.
-        - **maxiter**, optional: Maximal number of iteration for convergence loop.
-          If equal to ``None``, no check is performed.
-        - **corners**, optional: Weights of corners when calling :func:`~vacumm.misc.filters.shapiro2d`.
-        - **copy**, optional: Modify the variable in place or copy it.
-        - **hardmask**, optional: Mask always applied after an erosion step.
+    var:
+        Atleast-2D A :mod:`MV2` variable with mask.
+    mask2d: optional
+        Reference 2D mask.
+    maxiter: optional
+        Maximal number of iteration for convergence loop.
+        If equal to ``None``, no check is performed.
+    corners: optional
+        Weights of corners when calling :func:`~vacumm.misc.filters.shapiro2d`.
+    copy: optional
+        Modify the variable in place or copy it.
+    hardmask: optional
+        Mask always applied after an erosion step.
         - Other keywords are passed to :func:`~vacumm.misc.filters.shapiro2d`.
 
-    :Return:
+    Return
+    ------
 
         - A :mod:`MV2` variable
 
@@ -259,7 +281,8 @@ def erode_coast(var, mask2d=None, copy=True, maxiter=10, corners=0., hardmask=No
 class Lakes(object):
     """Find lakes in a 2D mask where 0 is water and 1 is land
 
-    :Example:
+    Example
+    -------
 
         >>> from vacumm.misc.grid import Lakes
         >>> import numpy as N
@@ -340,8 +363,10 @@ class Lakes(object):
     def indices(self, id=None, nbig=None):
         """Return a list of lake coordinates
 
-        - *id*: Select lake #<id>
-        - *nbig*: Consider the first ``nbig`` greatest lakes
+    id:
+        Select lake #<id>
+    nbig:
+        Consider the first ``nbig`` greatest lakes
         """
         if id is not None:
             return self._indices[id]
@@ -355,8 +380,10 @@ class Lakes(object):
     def lakes(self, id=None, nbig=None):
         """Return an array of same size as masks, but with points in lakes set to its lake id, and others to set to zero
 
-        - *id*: Select lake #<id>
-        - *nbig*: Consider the first ``nbig`` greatest lakes
+    id:
+        Select lake #<id>
+    nbig:
+        Consider the first ``nbig`` greatest lakes
         """
         if id is None:
             if nbig is not None:
@@ -367,10 +394,13 @@ class Lakes(object):
     def mask(self, id=None, nbig=None, **kwargs):
         """Returns a boolean land/sea mask from lakes() (land is True)
 
-        - *id*: Select lake #<id>
-        - *nmaxcells*: Do not consider lakes with number of points greater than nmaxcells
+    id:
+        Select lake #<id>
+    nmaxcells:
+        Do not consider lakes with number of points greater than nmaxcells
 
-        :Example:
+        Example
+        -------
 
         >>> mask_lake2 = GetLakes(mask).mask(2)
         """
@@ -379,7 +409,8 @@ class Lakes(object):
     def ocean(self, mask=False):
         """Get the biggest lake or its mask (integer type)
 
-        - *mask*: If True, return the mask, not the lake [default: True]
+    mask:
+        If True, return the mask, not the lake [default: True]
         """
         if mask:
             return self.mask(nbig=1)
@@ -392,24 +423,32 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
     ocean=False, fractions=0, yclean=True, premask=None, proj=False):
     """Create a mask on a regular or curvilinear grid according to a polygon list
 
-    :Params:
+    Parameters
+    ----------
 
-        - **gg**: A cdms grid or variable or a tuple of (xx,yy).
-        - **polys**: A list of polygons or GMT resolutions or Shapes instance like shorelines.
-        - **mode**, optional: Way to decide if a grid point is masked. Possible values are:
+    gg:
+        A cdms grid or variable or a tuple of (xx,yy).
+    polys:
+        A list of polygons or GMT resolutions or Shapes instance like shorelines.
+    mode: optional
+        Way to decide if a grid point is masked. Possible values are:
 
             - ``intersect``, 1, ``area`` (default): Masked if land area fraction is > ``thresholds[0]``.
               If more than one intersections, land area fraction must be > ``thresholds[1]``
               to prevent masking straits.
             - else: Masked if grid point inside polygon.
 
-        - **thresholds**, optional: See ``intersect`` mode [default: [.5, .75]]
-        - **ocean**, optional: If True, keep only the ocean (= biggest lake).
-        - **fractions**: If True or 1, return the total fraction of cells covered by the
-          polygons; if 2, returns the total area for each cell.
-        - **proj**, optional: Geographical projection function.
-          See :func:`~vacumm.misc.grid.basemap.get_proj`. Use ``False`` to not
-          convert coordinates to meters, and speed up the routine.
+    thresholds: optional
+        See ``intersect`` mode [default: [.5, .75]]
+    ocean: optional
+        If True, keep only the ocean (= biggest lake).
+    fractions:
+        If True or 1, return the total fraction of cells covered by the
+        polygons; if 2, returns the total area for each cell.
+    proj: optional
+        Geographical projection function.
+        See :func:`~vacumm.misc.grid.basemap.get_proj`. Use ``False`` to not
+        convert coordinates to meters, and speed up the routine.
 
     :Result:
 
@@ -606,12 +645,17 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
 def masked_polygon(vv, polys, copy=0, reverse=False, **kwargs):
     """Mask a variable according to a polygon list
 
-    :Params:
+    Parameters
+    ----------
 
-        - **vv**: The MV2 array.
-        - **polys**, optional: Polygons (or something like that, see :func:`polygons`).
-        - **copy**, optional: Copy data?.
-        - **reverse**, optional: Reverse the mask?
+    vv:
+        The MV2 array.
+    polys: optional
+        Polygons (or something like that, see :func:`polygons`).
+    copy: optional
+        Copy data?.
+    reverse: optional
+        Reverse the mask?
         - Other keywords are passed to :func:`polygon_mask`.
     """
     # Get mask
@@ -627,7 +671,8 @@ def masked_polygon(vv, polys, copy=0, reverse=False, **kwargs):
 def masked_ocean(vv, polys=None, **kwargs):
     """Remove lakes from a variable to keep only ocean where ocean the the biggest lake
 
-    - **vv**: The variable
+    vv:
+        The variable
     """
     pass
 
@@ -664,15 +709,22 @@ def d2m(x, y):
 def polygon_select(xx, yy, polys, zz=None, mask=False):
     """Select unstructered points that are inside polygons
 
-    :Params:
+    Parameters
+    ----------
 
-        - **xx**: Positions along X.
-        - **yy**: Positions along Y.
-        - **polys**: Polygons.
-        - **zz**, optional: Values at theses positions.
-        - **mask**, optional: Return masked positions and values of True or 1,
+    xx:
+        Positions along X.
+    yy:
+        Positions along Y.
+    polys:
+        Polygons.
+    zz: optional
+        Values at theses positions.
+    mask: optional
+        Return masked positions and values of True or 1,
 
-    :Examples:
+    Examples
+    --------
 
         >>> xs, ys = polygon_select(x, y, [poly1, poly2])
         >>> xs, ys, zs = polygon_select(x, y, [poly1, poly2], z)
@@ -732,16 +784,17 @@ def polygon_select(xx, yy, polys, zz=None, mask=False):
 def grid_envelop(gg, centers=False, poly=True):
     """Return a polygon that encloses a grid
 
-    - **gg**: A cdms grid or a tuple of (lat,lon)
-    - *centers*:
+    gg:
+        A cdms grid or a tuple of (lat,lon)
+    centers:
 
-        - ``True``: The polygon is at the cell center.
-        - ``False``: The polygon is at the cell corners.
+            - ``True``: The polygon is at the cell center.
+            - ``False``: The polygon is at the cell corners.
 
-    - *poly*:
+    poly:
 
-        - ``True``: Return as Polygon instance.
-        - ``False``: Return two 1D arrays ``xpts,ypts``
+            - ``True``: Return as Polygon instance.
+            - ``False``: Return two 1D arrays ``xpts,ypts``
     """
     # Axes
     x, y = get_xy(gg, num=True)
@@ -820,13 +873,17 @@ def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
     """Create a mask on output grid from the bounds of an input grid:
     points of output grid that are not within bounds of input grid are masked.
 
-    :Params:
+    Parameters
+    ----------
 
-        - **ggi**: Input grid or (lon,lat) or cdms variable.
-        - **ggo**: Output grid or (lon,lat) or cdms variable.
+    ggi:
+        Input grid or (lon,lat) or cdms variable.
+    ggo:
+        Output grid or (lon,lat) or cdms variable.
         - Other keywords are passed to :func:`grid_envelop`
 
-    :Returns:
+    Returns
+    -------
         A mask on output grid, where True means "outside bounds of input grid".
     """
 
@@ -861,10 +918,14 @@ def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
 def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
     """Check that islands as greater as a cell are taken into account
 
-    - **mask**: The initial mask. A cdms variable with X (longitude) and Y (latitude), or a tuple (lon, lat, mask).
-    - **polys**: Coastal polygons.
-    - *offset*: Islands whose area is > 1-offset and < 1+offset % of the mean cell area are checked [default: .95]
-    - *dcell*: dx and dy relative extension from the center of the cell in resolution units.
+    mask:
+        The initial mask. A cdms variable with X (longitude) and Y (latitude), or a tuple (lon, lat, mask).
+    polys:
+        Coastal polygons.
+    offset:
+        Islands whose area is > 1-offset and < 1+offset % of the mean cell area are checked [default: .95]
+    dcell:
+        dx and dy relative extension from the center of the cell in resolution units.
 
     .. todo:: remove check_poly_islands?
     """
@@ -921,10 +982,14 @@ def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
 def check_poly_straits(mask, polys, dcell=2, threshold=.75):
     """Check that straits are opened by counting the number of polygon intersection in each cell and the area of water
 
-    - **mask**: The initial mask. A cdms variable with X (longitude) and Y (latitude).
-    - **polys**: Coastal polygons.
-    - *dcell*: dx and dy relative extension from the center of the cell in resolution units.
-    - *threshold*: Maximal fraction of cell area that must be covered of land (> .5) [default: .25]
+    mask:
+        The initial mask. A cdms variable with X (longitude) and Y (latitude).
+    polys:
+        Coastal polygons.
+    dcell:
+        dx and dy relative extension from the center of the cell in resolution units.
+    threshold:
+        Maximal fraction of cell area that must be covered of land (> .5) [default: .25]
     """
 
     # Get mask and axes
@@ -972,12 +1037,18 @@ def check_poly_straits(mask, polys, dcell=2, threshold=.75):
 def t2uvmasks(tmask, getu=True, getv=True):
     """Compute masks at U and V points from a mask at T points on a C grid (True is land)
 
-    :Params:
-        - **tmask**: A 2D mask.
-        - *getu*: Get the mask at U-points
-        - *getv*: Get the mask at V-points
+    Parameters
+    ----------
+    tmask:
+        A 2D mask.
+    getu:
+        Get the mask at U-points
+    getv:
+        Get the mask at V-points
 
-    :Return: umask,vmask OR umask OR vmask depending on getu and getv.
+    Return
+    ------
+    umask,vmask OR umask OR vmask depending on getu and getv.
 
 
     .. todo:: TODO: t2uvmasks must mabe made generic and probably transfered
@@ -1000,11 +1071,13 @@ def maskndto2d(mask, method='and'):
 
         Mask is False on ocean
 
-    - **mask**: At least 2D mask
-    - *method*: Compression method
+    mask:
+        At least 2D mask
+    method:
+        Compression method
 
-        - ``"and"``: Only one point must be unmask to get the compressed dimension unmasked.
-        - ``"or"``: All points must be unmask to get the compressed dimension unmasked.
+            - ``"and"``: Only one point must be unmask to get the compressed dimension unmasked.
+            - ``"or"``: All points must be unmask to get the compressed dimension unmasked.
     """
     assert mask.ndim > 1, 'Mask must be at leat 2D'
     if mask.ndim == 2: return mask
@@ -1022,15 +1095,20 @@ mask2d = maskndto2d # backward compat
 def _old_rsamp_(x, y, r, z=None, rmean=.7, proj=False, getmask=False):
     """Undersample data points using a radius of proximity
 
-    - **x**: 1D x array.
-    - **y**: 1D Y array.
-    - **r**: Radius of proximity.
-    - *z*: 1D Z array.
-    - *proj*: Geographic projection instance to convert coordinates.
-    - *method*:
+    x:
+        1D x array.
+    y:
+        1D Y array.
+    r:
+        Radius of proximity.
+    z:
+        1D Z array.
+    proj:
+        Geographic projection instance to convert coordinates.
+    method:
 
-        - ``mean``: Average neighbouring points.
-        - ``pickup``: Pickup only the current point within the circle of proximity.
+            - ``mean``: Average neighbouring points.
+            - ``pickup``: Pickup only the current point within the circle of proximity.
     """
     # Need numpy arrays
     x = N.asarray(x)
@@ -1080,13 +1158,20 @@ def _old_rsamp_(x, y, r, z=None, rmean=.7, proj=False, getmask=False):
 def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
     """Undersample data points using a radius of proximity
 
-    - **x**: 1D x array.
-    - **y**: 1D Y array.
-    - **r**: Radius of proximity.
-    - *z*: 1D Z array.
-    - *proj*: Geographic projection instance to convert coordinates.
-    - *rmean*: Radius of averaging relative to ``r`` (``0<rmean<1``)
-    - *rblock*: Size of blocks relative to ``r`` for computation by blocks.
+    x:
+        1D x array.
+    y:
+        1D Y array.
+    r:
+        Radius of proximity.
+    z:
+        1D Z array.
+    proj:
+        Geographic projection instance to convert coordinates.
+    rmean:
+        Radius of averaging relative to ``r`` (``0<rmean<1``)
+    rblock:
+        Size of blocks relative to ``r`` for computation by blocks.
     """
     # Need numpy arrays
     x = N.asarray(x)
@@ -1189,11 +1274,15 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
 def zcompress(z, *xy, **kwargs):
     """Compress 1D arrays according to the mask of the first one
 
-    - **z**: Reference (masked) array
-    - *xy*: Additional arrays to be compressed
-    - *numpify*: Force convertion to numpy array
+    z:
+        Reference (masked) array
+    xy:
+        Additional arrays to be compressed
+    numpify:
+        Force convertion to numpy array
 
-    :Example:
+    Example
+    -------
 
     >>> z, x, y = zcompress(z, x, y, numpify=True)
     """
@@ -1223,9 +1312,12 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
     relres=None, scaler=None, compact=False, relmargin=.05, nauto=20):
     """Create a mask based on resolution criteria for undersampling 2D data
 
-    :Params:
-        - **grid**: A cdms array with a grid, a cdms grid or a tuple of axes.
-        - **res**, optional: Horizontal resolution of arrows
+    Parameters
+    ----------
+    grid:
+        A cdms array with a grid, a cdms grid or a tuple of axes.
+    res: optional
+        Horizontal resolution of arrows
             (in both directions) for undersampling [default: ``None``].
             If ``'auto'``, resolution is computed so as to have at max ``nauto``
             arrow in along an axis. If it is a :class:`complex` type, its imaginary part
@@ -1235,28 +1327,36 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
 
                 Use of ``res`` makes the supposition that X and y units are consistent.
 
-        - **xres**, optional: Same along X [default: ``res``]
-        - **yres**, optional: Same along Y [default: ``res``]
-        - **relres**, optional: Relative resolution
+    xres: optional
+        Same along X [default: ``res``]
+    yres: optional
+        Same along Y [default: ``res``]
+    relres: optional
+        Relative resolution
             (in both directions).
 
             - If > 0, = ``median(res)*relres``.
             - If < -1, =``min(res)*abs(relres)``.
             - If < 0 and > -1, =max(res)*abs(relres)
 
-        - **xrelres**, optional: Same along X [default: ``relres``]
-        - **yrelres**, optional: Same along Y [default: ``relres``]
-        - **scaler**, optional: A callable object that transform X and Y coordinates.
-          Transformed coordinates are used instead of original coordinates
-          if resolutions are negatives.
-          A typical scaler is for example a geographic projection that convert degrees
-          to meters (like a :class:`~mpl_toolkits.basemap.Basemap` instance).
+    xrelres: optional
+        Same along X [default: ``relres``]
+    yrelres: optional
+        Same along Y [default: ``relres``]
+    scaler: optional
+        A callable object that transform X and Y coordinates.
+        Transformed coordinates are used instead of original coordinates
+        if resolutions are negatives.
+        A typical scaler is for example a geographic projection that convert degrees
+        to meters (like a :class:`~mpl_toolkits.basemap.Basemap` instance).
 
-        - **compact**, optional: If no unsersampling is efective, returns ``False``.
+    compact: optional
+        If no unsersampling is efective, returns ``False``.
 
     .. note:: A resolution value set to ``False`` implies no undersampling.
 
-    :Example:
+    Example
+    -------
 
         >>> mask = resol_mask((x2d, y2d), relres=2.5) # sampling=2.5
         >>> mask = resol_mask(var.getGrid(), xres=2., scaler=mymap, yres=-100.) # 100m
@@ -1389,12 +1489,15 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
 def get_avail_rate(data, num=True, mode='rate'):
     """Get the availability rate of a masked array along its forst dimension
 
-    :Params:
+    Parameters
+    ----------
 
-        - **data**: Mask or masked array.
-        - **num**, optional: Get result as pure numpy array or formatted
-          as input array when possible (MV2 array).
-        - **mode**, optional:
+    data:
+        Mask or masked array.
+    num: optional
+        Get result as pure numpy array or formatted
+        as input array when possible (MV2 array).
+    mode: optional
 
             - "rate": Output is between 0 and 1.
             - "pct": Same but in percents from 0 to 100.

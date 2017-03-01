@@ -79,8 +79,10 @@ def ms2mph(ms):
 def deg2m(degrees, lat=None):
     """Convert a distance in degrees to meters
 
-    - **degrees**: Distance in degrees
-    - *lat*: optional latitude, defaults to 0.
+    degrees:
+        Distance in degrees
+    lat:
+        optional latitude, defaults to 0.
 
     Return: Distance in meters
 
@@ -99,8 +101,10 @@ def deg2m(degrees, lat=None):
 def m2deg(meters, lat=None):
     """Convert a distance in meters to degrees
 
-    - **meters**: Distance in meters
-    - *lat*: optional latitude, defaults to 0.
+    meters:
+        Distance in meters
+    lat:
+        optional latitude, defaults to 0.
 
     Return: Distance in degrees
 
@@ -119,11 +123,15 @@ def m2deg(meters, lat=None):
 def basic_proj(lon, lat, inverse=False):
     """Convert a position from degrees to meters like a geographic projection
 
-    :Params:
+    Parameters
+    ----------
 
-        - **lon**: Longitude in degrees or meters.
-        - **lat**: Latitude in degrees or meters.
-        - **inverse**, optional: Invert the projection from meters to degrees.
+    lon:
+        Longitude in degrees or meters.
+    lat:
+        Latitude in degrees or meters.
+    inverse: optional
+        Invert the projection from meters to degrees.
 
     """
     func = m2deg if inverse else deg2m
@@ -134,7 +142,8 @@ def basic_proj(lon, lat, inverse=False):
 def ms2bf(ms):
     """Convert from m/s to Beauforts (wind)
 
-    - **ms**: Wind speed in m/s.
+    ms:
+        Wind speed in m/s.
 
     .. seealso::
 
@@ -146,9 +155,12 @@ def ms2bf(ms):
 def dms2deg(d,m=0,s=0):
     """Convert from degrees/minutes/seconds to degrees
 
-    - **d**: degrees
-    - *m*: minutes [default: 0]
-    - *s*: seconds [default: 0]
+    d:
+        degrees
+    m:
+        minutes [default: 0]
+    s:
+        seconds [default: 0]
 
     .. seealso::
 
@@ -159,7 +171,8 @@ def dms2deg(d,m=0,s=0):
 def deg2dms(deg):
     """Convert from degrees to degrees/minutes/seconds
 
-    - **deg**: degrees
+    deg:
+        degrees
 
     .. seealso::
 
@@ -175,7 +188,8 @@ def deg2dms(deg):
 def kel2degc(tk):
     """Convert from degrees Kelvin to degrees Celsius
 
-    - **tk**: Temperature in Kelvin.
+    tk:
+        Temperature in Kelvin.
 
     .. seealso::
 
@@ -187,7 +201,8 @@ def kel2degc(tk):
 def degc2kel(dc):
     """Convert from degrees Celsius to degrees Kelvin
 
-    - **dc**: Temperature in degrees Celsius.
+    dc:
+        Temperature in degrees Celsius.
 
     .. seealso::
 
@@ -208,7 +223,9 @@ def degc2kel(dc):
 def tometric(units, value=1.,  munits=['m',  'm/s']):
     """Try to convert units to metric system using :mod:`~unidata.udunits.udunits`
 
-    :Return: a float or ``None`` if conversion failed.
+    Return
+    ------
+    a float or ``None`` if conversion failed.
     """
     if isinstance(munits, basestring):
         munits = [munits]
@@ -259,14 +276,20 @@ sisizeunits = {
 def strfsize(size, fmt=None, si=None):
     """Format a size in bytes using the appropriate unit multiplicator (Ko, Mo, Kio, Mio)
 
-    :Params:
+    Parameters
+    ----------
 
-        - **size**: the size in bytes
-        - **fmt**: the format to use, will receive the size and the unit as format arguments
+    size:
+        the size in bytes
+    fmt:
+        the format to use, will receive the size and the unit as format arguments
                    (None will automatically use "%.3f %s" or "%d %s")
-        - **si**: whether to use International System units (10^3, ...) or not (2**10, ...)
+    si:
+        whether to use International System units (10^3, ...) or not (2**10, ...)
 
-    :Return: a string
+    Return
+    ------
+    a string
     """
     if fmt is None:
         fmt = '%.3f %s' if float(size) % 1 else '%d %s'
@@ -284,12 +307,17 @@ _strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\
 def strpsize(size, si=True):
     """Parse a size in Ko, Mo, Kio, Mio, ...
 
-    :Params:
+    Parameters
+    ----------
 
-        - **size**: the size string
-        - **si**: whether to use International System units (10^3, ...) or not (2**10, ...)
+    size:
+        the size string
+    si:
+        whether to use International System units (10^3, ...) or not (2**10, ...)
 
-    :Return: the float number of bytes
+    Return
+    ------
+    the float number of bytes
     """
     if not isinstance(size, basestring): size = '%s'%(size)
     m = _strpsizerex.match(size)

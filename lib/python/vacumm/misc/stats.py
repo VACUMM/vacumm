@@ -52,9 +52,12 @@ __all__.sort()
 def corr_proba(r, ndata, ndataset=2, dof=False):
     """Probability of rejecting correlations
 
-    - **r**: Correlation coefficient
-    - **ndata**: Number of records use for correlations
-    - **ndataset**, optional:  Number of datasets (1 for autocorrelations, else 2) [default: 2]
+    r:
+        Correlation coefficient
+    ndata:
+        Number of records use for correlations
+    ndataset: optional
+        Number of datasets (1 for autocorrelations, else 2) [default: 2]
 
     .. todo::
 
@@ -100,12 +103,17 @@ def ensrank(obs, ens, gethist=False, getnrz=False, centered=False):
     If ``nens`` is the size of the ensemble,
     the rank may go from ``0`` to ``nens``.
 
-    - **obs**, (...): Observation array
-    - **ens**, (nens,...): Ensemble array
-    - **getrank**, optional: If True, return also the rank histogram
-    - **getnrz**, optional: If True, return also non recovery zones
-    - **centered**, optional: Center the ensemble data on the observations
-      before computing the rank
+    obs: (...)
+        Observation array
+    ens: (nens,...)
+        Ensemble array
+    getrank: optional
+        If True, return also the rank histogram
+    getnrz: optional
+        If True, return also non recovery zones
+    centered: optional
+        Center the ensemble data on the observations
+        before computing the rank
     """
     # Check
     ens = MV2.asarray(ens)
@@ -158,10 +166,13 @@ def qtminmax(var, qt=5.):
 
     This is useful for very asymmetic distributions
 
-    :Params:
+    Parameters
+    ----------
 
-        - **var**: A numeric array.
-        - **qt**, optional: Percentile used to define min and max
+    var:
+        A numeric array.
+    qt: optional
+        Percentile used to define min and max
 
             - Single number: ``qt`` -> ``[qt, 100-qt]``
             - Two elements: used directly.
@@ -178,10 +189,13 @@ def qtmin(var, qt=5.):
 
     This is useful for very asymmetic distributions
 
-    :Params:
+    Parameters
+    ----------
 
-        - **var**: A numeric array.
-        - **qt**, optional: Percentile used to define min
+    var:
+        A numeric array.
+    qt: optional
+        Percentile used to define min
     """
     if N.ma.isMA(var): var = var.compressed()
     qt = N.clip([qt], 0, 100.)
@@ -193,10 +207,13 @@ def qtmax(var, qt=95.):
 
     This is useful for very asymmetic distributions
 
-    :Params:
+    Parameters
+    ----------
 
-        - **var**: A numeric array.
-        - **qt**, optional: Percentile used to define max
+    var:
+        A numeric array.
+    qt: optional
+        Percentile used to define max
     """
     if N.ma.isMA(var): var = var.compressed()
     qt = N.clip([qt], 0, 100.)
@@ -212,22 +229,33 @@ class StatAccum(object):
 
     :Generic params:
 
-        - **t/sall**: Perform all the statistics by default.
-        - **withtime**, optional: Input does not contain a time dimension.
+    t/sall:
+        Perform all the statistics by default.
+    withtime: optional
+        Input does not contain a time dimension.
 
     :Single:
-        - **tavail/savail**: Percentage of available observations
-        - **tmean/smean**: Temporal (t) / Spatial (s) average
-        - **tstd/sstd**: Temporal (t) / Spatial (s) std
+    tavail/savail:
+        Percentage of available observations
+    tmean/smean:
+        Temporal (t) / Spatial (s) average
+    tstd/sstd:
+        Temporal (t) / Spatial (s) std
 
     :Dual:
-        - **tall**: Perform all the following statistics by default.
-        - **tbias/sbias**: Temporal (t) / Spatial (s) bias
-        - **trms/srms**: Temporal (t) / Spatial (s) RMS
-        - **tcrms/scrms**: Temporal (t) / Spatial (s) centered RMS
-        - **tcorr/scorr**: Temporal (t) / Spatial (s) Correlation
+    tall:
+        Perform all the following statistics by default.
+    tbias/sbias:
+        Temporal (t) / Spatial (s) bias
+    trms/srms:
+        Temporal (t) / Spatial (s) RMS
+    tcrms/scrms:
+        Temporal (t) / Spatial (s) centered RMS
+    tcorr/scorr:
+        Temporal (t) / Spatial (s) Correlation
 
-    :Example:
+    Example
+    -------
 
 
         >>> sa = StatAccum(tbias=True, srms=True)
@@ -717,13 +745,17 @@ class StatAccum(object):
     def load(self, restart_file=None, iterindex=None, nowtime=None):
         """Load the current instance from a netcdf file
 
-        :Params:
+        Parameters
+        ----------
 
-            - **restart_file**, optional: Netcdf restart file.
-            - **iterindex**, optional: If given, the restart file is not loaded if
-              ``iterindex`` is greater or equal to the file's ``iterindex`` attribute.
-            - **nowtime**, optional: If given, the restart file is not loaded if
-              ``nowtime`` is greater or equal to the file's ``lasttime`` attribute.
+        restart_file: optional
+            Netcdf restart file.
+        iterindex: optional
+            If given, the restart file is not loaded if
+            ``iterindex`` is greater or equal to the file's ``iterindex`` attribute.
+        nowtime: optional
+            If given, the restart file is not loaded if
+            ``nowtime`` is greater or equal to the file's ``lasttime`` attribute.
         """
 
         # File

@@ -88,16 +88,17 @@ def isoslice(var,prop,isoval=0,axis=0,masking=True):
     nonsingleton dimension.  In the case when there is more than one zero
     crossing, the results are averaged.
 
-    EXAMPLE:
+    Example
+    -------
     Assume two three dimensional variable, s (salt), z (depth), and
     u (velicity), all on the same 3D grid.  x and y are the horizontal
     positions, with the same horizontal dimensions as z (the 3D depth
     field).  Here, assume the vertical dimension, that will be projected,
-    is the first.
+    is the first
 
-    s_at_m5  = isoslice(s,z,-5);        # s at z == -5
-    h_at_s30 = isoslice(z,s,30);       # z at s == 30
-    u_at_s30 = isoslice(u,s,30);       # u at s == 30
+    >>> s_at_m5  = isoslice(s,z,-5);        # s at z == -5
+    >>> h_at_s30 = isoslice(z,s,30);       # z at s == 30
+    >>> u_at_s30 = isoslice(u,s,30);       # u at s == 30
 
     Get from OCTANT library : https://github.com/hetland/octant
     """
@@ -136,9 +137,7 @@ def isgrid(gg, curv=None):
 
     Parameters
     ----------
-
-    gg:
-        A cdms grid.
+    gg: A cdms grid.
     curv: optional
         If True, restrict to curvilinear grids.
     """
@@ -218,7 +217,6 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
 
     Parameters
     ----------
-
     xxa:
         X coordinate of the first series
     yya:
@@ -230,16 +228,16 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
     mode: optional
         distance computation mode
 
-            - ``None``: use ``"harversine"`` if longitude and latitude axes
-              else ``"direct"``
-            - ``"simple"`` or ``"euclidian"`` or ``"meters"``: simple euclidian distance with no coordinate
-              tranformation
-            - ``"harversine"`` or ``"sphere"`` or ``"degrees"``: great circle distance in meters from
-              coordinates in degrees
-            - ``"deg2m"``: euclidian distance with coordinates converted
-              from degrees to meters using :func:`~vacumm.misc.phys.units.deg2m`.
-            - A callable object like a function that directly compute distance
-              from coordinates::
+        - ``None``: use ``"harversine"`` if longitude and latitude axes
+          else ``"direct"``
+        - ``"simple"`` or ``"euclidian"`` or ``"meters"``: simple euclidian distance with no coordinate
+          tranformation
+        - ``"harversine"`` or ``"sphere"`` or ``"degrees"``: great circle distance in meters from
+          coordinates in degrees
+        - ``"deg2m"``: euclidian distance with coordinates converted
+          from degrees to meters using :func:`~vacumm.misc.phys.units.deg2m`.
+        - A callable object like a function that directly compute distance
+          from coordinates::
 
                 mode(xxa, yya, xxb, yyb)
 
@@ -249,7 +247,8 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
 
     Return
     ------
-    Distances as an ``(nb,na)`` array if pairwise if false,
+    array
+        Distances as an ``(nb,na)`` array if pairwise if false,
         else a ``(na,)`` array.
     """
     # Mode
@@ -351,7 +350,6 @@ def get_closest(xx, yy, xp, yp, distmode=None, mask=None, gridded=True, **kwargs
 
     Parameters
     ----------
-
     xx:
         1D or 2D X axis, or random positions.
     yy:
@@ -370,6 +368,7 @@ def get_closest(xx, yy, xp, yp, distmode=None, mask=None, gridded=True, **kwargs
 
     Returns
     -------
+    tuple, int
 
         - ``(i,j)`` 2-element tuple of indices along y and x for gridded data,
         - OR ``i`` if not gridded.
@@ -410,7 +409,6 @@ def get_closest_depth(zz, zp, mask=None, **kwargs):
 
     Parameters
     ----------
-
     zz:
         1D Z axis, or random positions.
     zp:
@@ -418,6 +416,7 @@ def get_closest_depth(zz, zp, mask=None, **kwargs):
 
     Returns
     -------
+    tuple, int
 
         - ``(i,)`` 1-element tuple of indices along z for gridded data,
         - OR ``i`` if not gridded.
@@ -435,19 +434,19 @@ def get_closest_depth(zz, zp, mask=None, **kwargs):
     imin = N.ma.argmin(dd)
     return imin
 
-def get_geo_area(grid,mask=None):
+def get_geo_area(grid, mask=None):
     """Compute cell areas on the a regular geographical grid.
 
     Parameters
     ----------
-
-        - **grid** The grid
-    mask:
+    grid: cdms2 grid
+    mask: array
         Force the use of this mask
 
     Returns
     -------
-    2D array of areas in m^2
+    array
+        2D array of areas in m^2
 
     .. TODO:: get_geo_area: treat 2D grid + use standard projection
     """
@@ -476,7 +475,6 @@ def isregular(axis, tol=.05, iaxis=None, dx=None):
 
     Parameters
     ----------
-
     axis:
         A :mod:`cdms2` axis or :mod:`numpy` array
     tol: optional
@@ -486,9 +484,8 @@ def isregular(axis, tol=.05, iaxis=None, dx=None):
 
     Example
     -------
-
-        >>> isregular(lon1d, dx=2., tol=.01)
-        >>> isregular(lon2d, iaxis=1)
+    >>> isregular(lon1d, dx=2., tol=.01)
+    >>> isregular(lon2d, iaxis=1)
     """
     cdaxis = isaxis(axis)
     if cdaxis:
@@ -513,13 +510,12 @@ def bounds1d(xx, cellwidth=None):
 
     Example
     -------
-
-        >>> bounds1d(xx).shape
-        360, 2
+    >>> bounds1d(xx).shape
+    360, 2
 
     Returns
     -------
-    xx(nx,2)
+    array(nx,2)
     """
 
     try:
@@ -553,18 +549,17 @@ def bounds2d(*xyaxes):
 
     Parameters
     ----------
-
     xyaxes:
         2D arrays(ny,nx) (or 2x1D arrays)
 
     Example
     -------
-
-        >>> xx_bounds,yy_bounds = bounds2d(xx,yy)
+    >>> xx_bounds,yy_bounds = bounds2d(xx,yy)
 
     Returns
     -------
-    ``xx(ny,nx,4),...``
+    xx(ny,nx,4)
+    ...
     """
 
     results = []
@@ -643,7 +638,10 @@ def meshgrid(x,y,copy=1):
 
     Return
     ------
-    ``xx(ny,nx),yy(ny,nx)``
+    array(ny,nx)
+        x positons
+    array(ny,nx)
+        y positions
     """
 
     # Be sure to have numpy arrays and make a copy
@@ -704,7 +702,10 @@ def bounds2mesh(xb, yb=None):
 
     Return
     ------
-    ``xxb(ny+1,nx+1),yyb(ny+1,nx+1)``
+    array(ny+1,nx+1)
+        x mesh bounds
+    array(ny+1,nx+1)
+        y mesh bounds
     """
     res = ()
     for xyb in xb, yb:
@@ -741,7 +742,6 @@ def meshcells(x, y=None, xwidth=None, ywidth=None):
 
     Parameters
     ----------
-
     x:
         1D or 2D array
     y:
@@ -749,9 +749,8 @@ def meshcells(x, y=None, xwidth=None, ywidth=None):
 
     Returns
     -------
-        ``xxb(nx+1)``x
-        OR
-        ``xxb(ny+1,nx+1),yyb(ny+1,nx+1)``
+    array(nx+1)[,array(ny+1,nx+1)]
+        x[,y] mesh cells arrays
 
     TODO: Add full support to meshcells for xwidth and ywidth params
     """
@@ -772,7 +771,6 @@ def meshweights(x, y=None, distmode='haversine', axis=-1, proj=None):
 
     Parameters
     ----------
-
     x:
         1D or 2D array
     y:
@@ -781,14 +779,12 @@ def meshweights(x, y=None, distmode='haversine', axis=-1, proj=None):
         Geographic projection before computing weights
         (for 2D case only with both x and y)
 
-            - ``True``: use default mercator projection (see :func:`~vacumm.misc.grid.basemap.merc`),
-            - else, directly apply projection.
+        - ``True``: use default mercator projection (see :func:`~vacumm.misc.grid.basemap.merc`),
+        - else, directly apply projection.
 
     Returns
     -------
-        ``ww(nx)``
-        OR
-        ``ww(ny,nx)``
+    array(nx) OR array(ny,nx)
 
     """
     if not isinstance(x, N.ndarray):
@@ -839,7 +835,6 @@ def cells2grid(xxb,yyb):
 
     Parameters
     ----------
-
     xxb:
         X of corners (ny+1,nx+1)
     yyb:
@@ -847,7 +842,8 @@ def cells2grid(xxb,yyb):
 
     Returns
     -------
-    ``xx(ny,nx),yy(ny,nx)``
+    array(ny,nx), array(ny,nx)
+        x and y positions
     """
     M = numod(xxb)
     xxyy = [M.zeros((nx+1,ny+1),dtype=xxb.dtype), M.zeros((nx+1,ny+1), dtype=yyb.dtype)]
@@ -877,7 +873,6 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
 
     Parameters
     ----------
-
     gg:
         A grid, a cmds variable with a grid,
         a tuple of axes or an axis.
@@ -887,11 +882,11 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
     mode: optional
         Output mode. You can pass only the first letter.
 
-            - ``"slice"``: Return a :class:`slice` object.
-            - ``"indices"``: Return a 3-element tuple as in a :class:`slice` context
-              ``(start,stop,step)``.
-            - ``"array"``: Return an array of valid indices of shape ``(2,nvalid)``,
-              where ``out[0]`` gives the X indices and ``out[1]`` gives the Y indices.
+        - ``"slice"``: Return a :class:`slice` object.
+        - ``"indices"``: Return a 3-element tuple as in a :class:`slice` context
+          ``(start,stop,step)``.
+        - ``"array"``: Return an array of valid indices of shape ``(2,nvalid)``,
+          where ``out[0]`` gives the X indices and ``out[1]`` gives the Y indices.
 
     mask: optional
         Also use this mask to get indices
@@ -903,7 +898,7 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
 
     Return
     ------
-
+    tuple(2,nvalid) OR (islice, jslice, mask) OR slice
         In array mode, it always returns an array of indices of shape ``(2,nvalid)``,
         possibly empty if not intersection if found.
 
@@ -920,13 +915,12 @@ def coord2slice(gg, lon=None, lat=None, mode='slice', mask=None, assubmask=True,
 
     Examples
     --------
-
-        >>> ijk = coord2slice(lon1d, lon=(lon0,lon1), mode='i')
-        >>> xijk, yijk, mask = coord2slice((lon1d,lat1d),
-            lon=(lon0,lon1), lat=slice(0,3), mode='i')
-        >>> islice, jslice, mask = coord2slice(gridcurv, lat=(lat0,lat0,'ccb'), mode='s')
-        >>> xijk, yijk, mask = coord2slice(lon2d, lon=(lon0,lon1), mode='i')
-        >>> ij = coord2slice(grid, lon, lat, mode='a')
+    >>> ijk = coord2slice(lon1d, lon=(lon0,lon1), mode='i')
+    >>> xijk, yijk, mask = coord2slice((lon1d,lat1d),
+        lon=(lon0,lon1), lat=slice(0,3), mode='i')
+    >>> islice, jslice, mask = coord2slice(gridcurv, lat=(lat0,lat0,'ccb'), mode='s')
+    >>> xijk, yijk, mask = coord2slice(lon2d, lon=(lon0,lon1), mode='i')
+    >>> ij = coord2slice(grid, lon, lat, mode='a')
 
     """
     # Output mode
@@ -1107,7 +1101,6 @@ def mask2ind(mask, extended=False):
 
     Parameters
     ----------
-
     mask:
         N-dimensional array of logical where
         valid points are at False.
@@ -1117,7 +1110,8 @@ def mask2ind(mask, extended=False):
 
     Return
     ------
-    array(ndim,2) of (min,max) for each dimension
+    array(ndim,2)
+        array of (min,max) for each dimension
     """
     inds = N.indices(mask.shape)
     ndim = inds.shape[0]
@@ -1149,14 +1143,14 @@ def _coord2ind2d_(cc2d, sel, mask=None, maskonly=False,
 
     Parameters
     ----------
-
-        - **cc2d**(ny,nx): Coordinates.
+    cc2d: array(ny,nx):
+        Coordinates.
     sel:
         Coordinates interval.
 
     Returns
     -------
-    ``None, None, mask`` or ``(imin,imax,istep),(jmin,jmax,jstep),mask(ny,nx)``
+    (None, None, mask) OR ((imin,imax,istep),(jmin,jmax,jstep),mask(ny,nx))
 
     """
 
@@ -1239,12 +1233,10 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
 
     Example
     -------
-
-        >>> lon2d, lat2d = create_axes2d(x2d, y2d)
+    >>> lon2d, lat2d = create_axes2d(x2d, y2d)
 
     Parameters
     ----------
-
     xaxis: optional
         1D or 2D X axis
     xaxis: optional
@@ -1276,7 +1268,8 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
 
     Return
     ------
-    ``xaxis2d,yaxis2d``
+    array(ny,nx), array(ny,nx)
+        x and y 2D axes
     """
     if x is None:
         hasx = 0
@@ -1403,23 +1396,21 @@ def get_axis(gg, iaxis=0, geo=True, strict=False):
     :meth:`getLongitude` and :meth:`getLatitude` methods
     (you can't use :meth:`getAxis` with such grid).
 
-    Examples
-    --------
-
-        >>> lon = get_axis(grid, -1)
-        >>> lat = get_axis(var, 0)
-
     Parameters
     ----------
-
     gg:
         The variable or a grid (see :func:`get_grid`)
     iaxis: optional
         The axis number [default: 0]
 
+    Examples
+    --------
+    >>> lon = get_axis(grid, -1)
+    >>> lat = get_axis(var, 0)
+
     Returns
     -------
-    The requested axis
+    cdms2 axis
     """
 
     grid = get_grid(gg, intercept=False, geo=geo, strict=strict)
@@ -1440,13 +1431,6 @@ def get_axis(gg, iaxis=0, geo=True, strict=False):
 def get_grid(gg, geo=True, intercept=False, strict=False):
     """Get a cdms grid from gg
 
-    Examples
-    --------
-
-        >>> grid = get_grid((lon, lat))
-        >>> grid = get_grid(var)
-        >>> grid = get_grid(grid) # does nothing
-
     Parameters
     ----------
 
@@ -1456,6 +1440,17 @@ def get_grid(gg, geo=True, intercept=False, strict=False):
         Output grid must have longitude and latitude
     intercept: optional
         Raise an error in case of problem
+
+    Examples
+    --------
+    >>> grid = get_grid((lon, lat))
+    >>> grid = get_grid(var)
+    >>> grid = get_grid(grid) # does nothing
+
+    Return
+    ------
+    cdms2 grid
+
     """
     # From a grid
     if isgrid(gg):
@@ -1514,7 +1509,6 @@ def set_grid(var, gg, axes=True, intercept=False):
 
     Parameters
     ----------
-
     var:
         A cdms variable with at least 2 dimensions
     gg:
@@ -1525,7 +1519,8 @@ def set_grid(var, gg, axes=True, intercept=False):
 
     Return
     ------
-    ``var``
+    array
+        The input variable
     """
     if not cdms2.isVariable(var):
         var = MV.asarray(var)
@@ -1543,7 +1538,6 @@ def get_grid_axes(gg, raw=False):
 
     Parameters
     ----------
-
     gg:
         A cdms grid or a tuple or axes (see :func:`get_grid`)
     raw: optional
@@ -1551,7 +1545,8 @@ def get_grid_axes(gg, raw=False):
 
     Return
     ------
-    ``(lon, lat)``
+    axis, axis
+       loon and lat axis
     """
     gg = get_grid(gg)
     if raw: return gg.getAxis(0), gg.getAxis(1)
@@ -1563,7 +1558,6 @@ def curv_grid(xaxis, yaxis, xatts=None, yatts=None, id=None, mask=None, **kwargs
 
     Parameters
     ----------
-
     xaxis:
         Numeric or formatted X axis
     yaxis:
@@ -1574,12 +1568,16 @@ def curv_grid(xaxis, yaxis, xatts=None, yatts=None, id=None, mask=None, **kwargs
         Attributes of Y axis
     id: optional
         Id of the grid
-        - Other keywords are passed to :func:`create_axes2d`
+    **kwargs
+        Other keywords are passed to :func:`create_axes2d`
 
     Example
     -------
+    >>> curvgrid = curv_grid(lon2d, lat2d)
 
-        >>> curvgrid = curv_grid(lon2d, lat2d)
+    Return
+    ------
+    cdms2 curved grid
 
     See also
     --------
@@ -1606,19 +1604,8 @@ def create_var2d(var, xaxis=None, yaxis=None, xatts=None, yatts=None, gid=None, 
     to a variable. This may happen with netcdf that doesn't follow CF
     conventions, as in the example bellow.
 
-    Example
-    -------
-
-        >>> f = cdms2.open('myfile.nc')
-        >>> lon2d = f('X')
-        >>> lat2d = f('Y')
-        >>> sst = f('sst')
-        >>> f.close()
-        >>> sstc = create_var2d(sst, lon2d, lat2d)
-
     Parameters
     ----------
-
     var:
         Numeric or formatted X axis
     xaxis: optional
@@ -1637,7 +1624,18 @@ def create_var2d(var, xaxis=None, yaxis=None, xatts=None, yatts=None, gid=None, 
 
     Return
     ------
-    A :mod:`MV2` array on a curvilinear grid.
+    :class:`MV2.array`
+        A :mod:`MV2` array on a curvilinear grid.
+
+    Example
+    -------
+    >>> f = cdms2.open('myfile.nc')
+    >>> lon2d = f('X')
+    >>> lat2d = f('Y')
+    >>> sst = f('sst')
+    >>> f.close()
+    >>> sstc = create_var2d(sst, lon2d, lat2d)
+
 
     See also
     --------

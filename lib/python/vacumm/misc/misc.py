@@ -2210,7 +2210,6 @@ def nduniq(data, axis=0):
 
     Example
     -------
-
     >>> import numpy as N
     >>> a = N.arange(20.).reshape((10,2))
     >>> a[5] = a[1]
