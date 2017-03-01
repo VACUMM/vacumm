@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -75,16 +75,16 @@ N = numpy
 from vacumm.misc import auto_scale, MV2_concatenate, MV2_axisConcatenate, create_selector, \
     split_selector, dict_merge, dict_check_defaults, set_atts, broadcast
 from vacumm.misc.atime import add as add_time, comptime, datetime as adatetime, Intervals, \
-    filter_time_selector
+    filter_time_selector, itv_intersect
 from vacumm.misc.axes import create_time, create_dep, create_lat, create_lon, guess_timeid, get_axis_type, isaxis
 from vacumm.misc.bases import Object
 import vacumm.misc.color as C
 from vacumm.misc.io import ncget_var, ncfind_var, ncfind_obj, ncfind_axis, list_forecast_files, ncread_files, \
     ncread_best_estimate, NcIterBestEstimate, ncget_time, ncget_lon, ncget_lat, ncget_level,  \
-    ncget_grid, ncget_axis
+    ncget_grid, ncget_axis, NcIterTimeSlice
 from vacumm.misc.grid.misc import meshweights, resol, create_grid, set_grid, \
     dz2depth, depth2dz, isdepthup, gridsel, makedepthup, curv2rect, isgrid,  \
-    coord2slice
+    coord2slice, clone_grid
 from vacumm.misc.grid.regridding import resol, interp1d, regrid1d, grid2xy, transect,  \
     shift1d, shift2d, extend1d, extend2d, regrid1dold
 from vacumm.misc.misc import is_iterable, kwfilter, squeeze_variable, dict_filter_out,  \
@@ -95,9 +95,9 @@ from vacumm.misc.axes import islon, islat, isdep
 from vacumm.data.misc.sigma import NcSigma
 from vacumm.data.misc.arakawa import ArakawaGrid, AGrid, CGrid, ARAKAWA_LOCATIONS as arakawa_locations,  \
     set_grid_type, get_grid_type, _cdms2_atts as cdms2_arakawa_atts
-from vacumm.data.cf import VAR_SPECS, AXIS_SPECS, cf2search, cf2atts, GENERIC_NAMES, \
-    GENERIC_AXIS_NAMES, GENERIC_VAR_NAMES, format_axis, format_var, get_loc, no_loc_single, \
-    DEFAULT_LOCATION, change_loc, HIDDEN_CF_ATTS, change_loc_single
+from vacumm.data.cf import (VAR_SPECS, AXIS_SPECS, cf2search, cf2atts, GENERIC_NAMES,
+    GENERIC_AXIS_NAMES, GENERIC_VAR_NAMES, format_axis, format_var, get_loc, no_loc_single,
+    DEFAULT_LOCATION, change_loc, HIDDEN_CF_ATTS, change_loc_single, format_grid)
 from vacumm import VACUMMError
 from vacumm.diag.dynamics import barotropic_geostrophic_velocity, kinetic_energy
 from vacumm.diag.thermdyn import mixed_layer_depth, density
@@ -236,7 +236,7 @@ def getvar_decmets(cls):
 
 
 #: Template for auto formatting methods that get variables (like :meth:`get_sst`)
-getvar_fmtdoc_tpl = """%(func_name)s(time=None, level=None, lat=None, lon=None, squeeze=None, order=None, asvar=None, at=None, format=None, torect=True, verbose=None, warn=None, mode=None, **kwargs)
+getvar_fmtdoc_tpl = """%(func_name)s(time=None, level=None, lat=None, lon=None, squeeze=False, order=None, asvar=None, at=None, format=None, torect=True, verbose=None, warn=None, mode=None, **kwargs)
 
     Read the %(long_name)s %(units)s
 
@@ -497,8 +497,12 @@ class Dataset(Object):
         # Load dataset
         if dataset is None: dataset = []
         self.dataset = []
+        time, level, lat, lon, squeeze = self._parse_selects_(time, level, lat, lon)
         self.selects = dict(time=time, lon=lon, lat=lat, level=level)
+        self.sselects = dict(lon=lon, lat=lat, level=level)
         self.selector = create_selector(**self.selects)
+        self.sselector = create_selector(**self.sselects)
+        self.squeeze = squeeze
         Object.__init__(self, **kwargs)
         self.load_dataset(dataset, time=time, nopat=nopat, patfreq=patfreq,
             patfmtfunc=patfmtfunc, sort=sort, check=check)
@@ -510,6 +514,9 @@ class Dataset(Object):
 
         # Load specs of variables
         self._load_ncobj_specs_(ncobj_specs)
+
+    def _parse_selects_(self, time, level, lat, lon):
+        return time, level, lat, lon, False
 
     def _load_ncobj_specs_(self, ncobj_specs=None):
         """Read the :attr:`ncobj_specs` attribute and reformat it"""
@@ -604,9 +611,9 @@ class Dataset(Object):
                 specs['select'] = specs['slices']
             del specs['slices']
 
-        # Squeeze (as a list)
-        if 'squeeze' in specs and not isinstance(specs['squeeze'], list):
-            specs['squeeze'] = [specs['squeeze']]
+#        # Squeeze (as a list)
+#        if 'squeeze' in specs and not isinstance(specs['squeeze'], list):
+#            specs['squeeze'] = [specs['squeeze']]
 
         return specs
 
@@ -634,8 +641,6 @@ class Dataset(Object):
         """
 
         # Specs from CF specs (vacumm.data.cf)
-        if varname=='bathy_w':
-            pass
         fromobj = None
         if varname in GENERIC_NAMES:
 
@@ -693,7 +698,7 @@ class Dataset(Object):
         select = create_selector()
         atts = None
         genname = None
-        squeeze = []
+        squeeze = self.squeeze
         physloc = None
         search = None
 
@@ -744,9 +749,10 @@ class Dataset(Object):
                             atts[att] = val[0]
 
             # Squeeze
-            squeeze = specs.get('squeeze', [])
-            if not isinstance(squeeze, list):
-                squeeze = [squeeze]
+            squeeze = specs.get('squeeze', False) #[])
+            squeeze = merge_squeeze_specs(self.squeeze, squeeze)
+#            if not isinstance(squeeze, list):
+#                squeeze = [squeeze]
 
             # Physical location
             physloc = specs.get('physloc')
@@ -852,8 +858,17 @@ class Dataset(Object):
     def __len__(self):
         return len(self.dataset)
 
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self.dataset[key]
+        return self.dataset[0][key]
+
+    def get_variable_names(self):
+        """Get the list of netcdf variable names of the first file"""
+        return self[0].listvariables()
+
     def get_selector(self, time=None, lon=None, lat=None, level=None,
-        merge=True, only=None, split=False, **kwargs):
+            merge=True, only=None, split=False, **kwargs):
         """Get a cdms2.selectors.Selector from specified time/lat/lon/level selection
 
         :Params:
@@ -867,28 +882,26 @@ class Dataset(Object):
         # Only on one component
         if only is not None:
 
-            # Check "only"
-            only = str(only).lower()
-            _geonames = {'x':'lon', 'y':'lat', 'z':'level', 't':'time'}
-            allowed = _geonames.keys()+_geonames.values()
-            if not only in allowed:
-                raise TypeError('Wrong selector type for "only". Please choose on of: '%', '.join(allowed))
-            if only in  _geonames.keys():
-                only = _geonames[only]
-
-            # Get and merge
+            # Init
             myselect = create_selector()
-            if merge:
-                kw = {only: self.selects[only]}
-                for key, val in kw.items():
-                    if val is None: del kw[key]
-                if kw:
-                    myselect.refine(**kw)
-            #kw = {only: time} ?
-            for key, val in kw.items():
-                if val is None: del kw[key]
-            if kw:
-                myselect.refine(**kw)
+
+            # Check "only"
+            onlies = only
+            for only in onlies:
+                only = str(only).lower()
+                _geonames = {'x':'lon', 'y':'lat', 'z':'level', 't':'time'}
+                allowed = _geonames.keys()+_geonames.values()
+                if not only in allowed:
+                    raise TypeError('Wrong selector type for "only". Please choose on of: '%', '.join(allowed))
+                if only in  _geonames.keys():
+                    only = _geonames[only]
+
+                # Get and merge
+                if merge:
+                    if self.selects[only] is not None:
+                        myselect.refine(**{only:self.selects[only]})
+                if locals()[only] is not None:
+                    myselect.refine(**{only:locals()[only]})
 
             return split_selector(myselect) if split else myselect
 
@@ -903,6 +916,19 @@ class Dataset(Object):
             myselect.refine(**kw)
 
         return split_selector(myselect) if split else myselect
+
+    def get_seltimes(self,  time=None):
+        """Get a zero to two elements time selector specifications
+
+
+        It is the addition of non global and local time selection specs
+        """
+        seltimes = []
+        if self.selects['time'] is not None:
+            seltimes.append(self.selects['time'])
+        if time is not None:
+            seltimes.append(time)
+        return seltimes
 
     def get_axis(self, name, select=None, select2=None, dataset=None, warn=True,
         getid=False, searchmode=None, format=True):
@@ -1091,7 +1117,7 @@ class Dataset(Object):
     def get_variable(self, varname, time=None, lon=None, lat=None,
             level=None, atts=None, squeeze=False, order=None, asvar=None,
             torect=True, depthup=None,verbose=None, warn=True, searchmode=None,
-            format=True, at=None, **kwargs):
+            format=True, at=None, grid=None, **kwargs):
         '''Load a variable in a best time serie fashion.
 
         :Params:
@@ -1132,8 +1158,13 @@ class Dataset(Object):
         # Specifications for searching, selecting and modifying the variable
         specs = self._get_ncobj_specs_(varname)
         if specs is None:
-            if warn: self.warning('No valid specs to search for %s', varname)
-            return None
+            if (isinstance(varname, basestring) and not varname.startswith('+')
+                    and varname in self.get_variable_names()):
+                specs = self._get_ncobj_specs_('+'+varname)  # direct from file
+            else:
+                if warn:
+                    self.warning('No valid specs to search for %s and not in file', varname)
+                return None
         genname = specs['genname']
         search = specs['search']
         select = specs['select']
@@ -1141,7 +1172,14 @@ class Dataset(Object):
         atts = specs['atts']
 
         # Refine selector
-        select.refine(self.get_selector(lon=lon, lat=lat, level=level, time=time, merge=True))
+        select.refine(self.get_selector(lon=lon, lat=lat, level=level,
+            merge=True, only='xyz'))
+        seltimes = self.get_seltimes(time=time) or [None]
+        if len(seltimes)==2 and all([isinstance(seltime, tuple) for seltime in seltimes]):
+            seltimes = [itv_intersect(*seltimes)]
+        if hasattr(select, 'squeeze') and select.squeeze:
+            squeeze = merge_squeeze_specs(base_squeeze, select.squeeze)
+
 
         # Search for the variable now
         ncvarid = self._get_cached_ncid_(genname)
@@ -1158,7 +1196,12 @@ class Dataset(Object):
         # TODO: if grid not found and specs say that there must have a grid, create it with get_lon/get_lat
 
         # Curved grid case
-        curvsel = CurvedSelector(self.dataset[0][ncvarid].getGrid(), select)
+        if grid is None:
+            grid = self.dataset[0][ncvarid].getGrid()
+        if grid is not None:
+            curvsel = CurvedSelector(grid, select)
+        else:
+            curvsel = None
 
         # Intercept kwargs before ncread_files
 
@@ -1166,12 +1209,12 @@ class Dataset(Object):
         kwncr = kwargs.copy()
         kwncr['torect'] = False
         dict_filter_out(kwncr, ['at'], copy=False, mode='start')
-        seltime = filter_time_selector(select, ids=self.get_timeid())
+#        seltime = filter_time_selector(select, ids=self.get_timeid())
         try:
             var = ncread_files(self.dataset,  #[d.id for d in self.dataset],
                 ncvarid,
+                time=seltimes[0],
                 timeid=self.get_timeid(),
-    #            time=seltime,
                 select=select, verbose=verbose if verbose is not None else self.is_debug(),
                 squeeze=base_squeeze, nibeid=self._nibeid+str(time), **kwncr)
             if var is None:
@@ -1191,6 +1234,8 @@ class Dataset(Object):
                 var.id = genname
 
             # Post process
+            if len(seltimes)>1:
+                kwargs[self.get_timeid()] = seltimes[1]
             var = self.finalize_object(var, genname=genname, format=format, atts=atts, order=order,
                 squeeze=squeeze, asvar=asvar, torect=torect, depthup=depthup, curvsel=curvsel,
                 at=at, **kwargs)
@@ -1364,19 +1409,93 @@ class Dataset(Object):
         '''Get latitude axis at F location'''
         return self.get_axis('lat_f', lat, lon, **kwargs)
 
+    def _get_grid_(self, loc='', lon=None, lat=None, format=True,
+            warn=True, dataset=None, searchmode=None):
 
-    def get_grid(self, lon=None, lat=None, format=True, warn=True):
-        '''Get grid'''
-        warn2 = max(int(warn)-1, 0)
-        axlon = self.get_lon(lon, lat, format=format, warn=warn2)
-        axlat = self.get_lat(lat, lon, format=format, warn=warn2)
-        if axlon is None or axlat is None:
-            if warn: self.warning("Can't get grid")
+        # Loc
+        loc = _at_(loc)
+        loc_ = _at_(loc, prefix='_')
+        longenname = 'lon' + loc_
+        latgenname = 'lat' + loc_
+
+        # Inits
+        self.debug('Searching for a grid that matches: ({}, {})'.format(latgenname, longenname))
+        if dataset is None and not len(self.dataset):
+            if warn: self.warning('No %s found, dataset is empty', name)
             return None
-        grid = create_grid(axlon, axlat)
+        axis = None
+        if dataset is None: dataset = self.dataset[0]
+        self.debug('Using reference dataset: %s', dataset.id)
+
+        for grid in dataset.grids.values():
+
+            valid = True
+            for name, axis in [(longenname, grid.getLongitude()), (latgenname, grid.getLatitude())]:
+
+                # Get specs
+                specs = self._get_ncobj_specs_(name, attsingle=False, searchmode=searchmode)
+                genname = specs['genname']
+                search = specs['search']
+                atts = specs['atts']
+                if 'long_names' in atts:
+                    search['long_names'] = atts['long_names']
+                if 'units' in atts and 'axis' in atts and atts['axis']!='Z':
+                    search['units'] = atts['units']
+
+                # Search
+                valid &= bool(ncfind_obj(dataset, search, regexp=True,
+                    searchmode=searchmode))
+
+            if valid:
+                break
+        else:
+            if warn:
+                msg = "Can't get grid"
+                if loc:
+                    msg = msg = 'at {} location'.format(loc.upper())
+                self.warn(msg)
+            return
+
+        # Select
+        if lon is not None or lat is not None:
+            grid = gridsel(grid, lon, lat)
+        else: # clone
+            grid = clone_grid(grid)
+
+        # Format
+        if format:
+            format_grid(grid, loc, format_subaxes=False)
+
         return grid
 
-    def get_grid_t(self, lon=None, lat=None, format=True, warn=True):
+
+    def get_grid(self, **kwargs):
+        return self._get_grid_('', **kwargs)
+
+    def get_grid_t(self, **kwargs):
+        return self._get_grid_('t', **kwargs)
+
+    def get_grid_u(self, **kwargs):
+        return self._get_grid_('u', **kwargs)
+
+    def get_grid_v(self, **kwargs):
+        return self._get_grid_('v', **kwargs)
+
+    def get_grid_f(self, **kwargs):
+        return self._get_grid_('f', **kwargs)
+
+#    def get_grid(self, lon=None, lat=None, format=True, warn=True):
+#        '''Get grid'''
+#        warn2 = max(int(warn)-1, 0)
+#        axlon = self.get_lon(lon, lat, format=format, warn=warn2)
+#        axlat = self.get_lat(lat, lon, format=format, warn=warn2)
+#        if axlon is None or axlat is None:
+#            if warn: self.warning("Can't get grid")
+#            return None
+#        grid = create_grid(axlon, axlat)
+#        return grid
+
+    def get_grid_t_old(self, lon=None, lat=None, format=True, warn=True):
         '''Get grid at T location'''
         warn2 = max(int(warn)-1, 0)
         axlon = self.get_lon_t(lon, lat, format=format, warn=warn2)
@@ -1387,7 +1506,7 @@ class Dataset(Object):
         grid = create_grid(axlon, axlat)
         return grid
 
-    def get_grid_u(self, lon=None, lat=None, format=True, warn=True):
+    def get_grid_u_old(self, lon=None, lat=None, format=True, warn=True):
         '''Get grid at U location'''
         warn2 = max(int(warn)-1, 0)
         axlon = self.get_lon_u(lon, lat, format=format, warn=warn2)
@@ -1398,7 +1517,7 @@ class Dataset(Object):
         grid = create_grid(axlon, axlat)
         return grid
 
-    def get_grid_v(self, lon=None, lat=None, format=True, warn=True):
+    def get_grid_v_old(self, lon=None, lat=None, format=True, warn=True):
         '''Get grid at V location'''
         warn2 = max(int(warn)-1, 0)
         axlon = self.get_lon_v(lon, lat, format=format, warn=warn2)
@@ -1409,7 +1528,7 @@ class Dataset(Object):
         grid = create_grid(axlon, axlat)
         return grid
 
-    def get_grid_f(self, lon=None, lat=None, format=True, warn=True):
+    def get_grid_f_old(self, lon=None, lat=None, format=True, warn=True):
         '''Get grid at F location'''
         warn2 = max(int(warn)-1, 0)
         axlon = self.get_lon_f(lon, lat, format=format, warn=warn2)
@@ -1448,8 +1567,6 @@ class Dataset(Object):
             shape += sh,
         return shape
     shape = property(fget=get_shape, doc='Generic shape of the dataset')
-
-
 
     def _get_dxy_(self, xy, at='t', lon=None, lat=None, degrees=False, mode=None,
         local=True, frompt=None, **kwargs):
@@ -1956,6 +2073,55 @@ class OceanDataset(OceanSurfaceDataset):
     auto_generic_var_names = ['temp', 'sal', 'u3d', 'v3d', 'ubt', 'vbt', 'kz', 'bathy',
         'eke', 'tke']
 
+
+
+    def _parse_selects_(self, time, level, lat, lon):
+
+        level, squeeze = self._parse_level_(level)
+
+        return time, level, lat, lon, squeeze
+
+
+
+    def _parse_level_(self, level, squeeze=False):
+
+        # Convert level argument from string
+        if isinstance(level, basestring):
+
+            # Selector
+            bottom = slice(0, 1)
+            surf = slice(-1, None)
+            if level=='surf':
+                level = surf if self._isdepthup_() else bottom
+            elif level=='bottom':
+                level = bottom if self._isdepthup_() else surf
+            elif level=='3d':
+                level = None
+            else:
+                raise DatasetError('Invalid level selector string: '+level)
+
+            # Squeeze Z dim
+            squeeze = (merge_squeeze_specs(squeeze, 'z')
+                if level is not None else False)
+
+        return level, squeeze
+
+    def get_selector(self, level=None, **kwargs):
+
+        # Argument
+        level, squeeze = self._parse_level_(level)
+
+        selector = Dataset.get_selector(self, level=level, **kwargs)
+
+        if isinstance(selector, dict):
+            selector['squeeze'] = squeeze
+        elif isinstance(selector, cdms2.selectors.Selector):
+            selector.squeeze = squeeze
+
+        return selector
+
+    get_selector.__doc__ = Dataset.get_selector.__doc__
+
     def finalize_object(self, var, squeeze=False, order=None, asvar=None, torect=True,
         depthup=None, **kwargs):
         """Finalize a variable
@@ -2074,6 +2240,15 @@ class OceanDataset(OceanSurfaceDataset):
 
     del _mode_doc
 
+
+    def get_variable(self, varname, level=None, squeeze=False, **kwargs):
+
+        level, squeeze = self._parse_level_(level, squeeze)
+
+        return Dataset.get_variable(self, varname, level=level, squeeze=squeeze, **kwargs)
+
+    get_variable.__doc__ = Dataset.get_variable.__doc__
+
     def _isdepthup_(self, depth=None):
         """Guess if depths are positive up"""
         # Cache
@@ -2114,8 +2289,8 @@ class OceanDataset(OceanSurfaceDataset):
 
 
     def _get_depth_(self, at='t', level=None, time=None, lat=None, lon=None,
-        order=None, squeeze=None, asvar=None, torect=True, warn=True, mode=None,
-        format=True, **kwargs):
+            order=None, squeeze=None, asvar=None, torect=True, warn=True, mode=None,
+            format=True, grid=None, zerolid=False, **kwargs):
 
         depth=None
         # Where?
@@ -2140,13 +2315,17 @@ class OceanDataset(OceanSurfaceDataset):
                 return self._makedepthup_(depth, depth)
 
         # Get selector for other tries
-        selector = self.get_selector(lon=lon, lat=lat, level=level, time=time, merge=True)
-        selnotime = None
+        sselector = self.get_selector(lon=lon, lat=lat, level=level, merge=True, only='xyz')
+        seltimes = self.get_seltimes(time=time) or [None]
+#        selnotime = None
         gridmet = 'get_grid'+at_xy
-        grid = getattr(self, gridmet)(False)
-        curvsel = CurvedSelector(grid, selector)
+        if grid is None:
+            grid = getattr(self, gridmet)()#False)
+        curvsel = CurvedSelector(grid, sselector)
         kwfinal['curvsel'] = curvsel
         kwfinal['genname'] = genname='depth'+at_p
+        if len(seltimes)>1:
+            kwfinal[self.get_timeid()] = seltimes[1]
         kwfinalz = kwfinal.copy()
         kwfinalz['genname'] = genname='depth'+at_z
         if at_z!=at_p: # from T or W to U, etc
@@ -2163,22 +2342,29 @@ class OceanDataset(OceanSurfaceDataset):
             if sigma_converter is not None:
                 self.debug('Found depth referring to a sigma level, processing sigma to depth conversion')
                 allvars = []
-                nib = NcIterBestEstimate(self.dataset, time=selector, id=self._nibeid+str(time))
-                for f,t in nib:
+                if seltimes[0] is None or isinstance(seltimes[0], slice):
+                    nib = NcIterTimeSlice(self.dataset, tslice=seltimes[0])
+                else:
+                    nib = NcIterBestEstimate(self.dataset, time=seltimes[0], id=self._nibeid+str(time))
+                for f, tslice in nib:
 
                     # - init
-                    if t is False: continue # and when no time??? None-> ok we continue
-                    if f!=self.dataset[0]: sigma_converter.update_file(f)
-                    sel = create_selector(time=t)
-                    if selnotime is None:
-                        selnotime = filter_time_selector(selector, ids=nib.timeid, out=True)
-                    sel.refine(selnotime)
+                    if tslice is False:
+                        continue # and when no time??? None-> ok we continue
+                    if f!=self.dataset[0]:
+                        sigma_converter.update_file(f)
+                    sel = create_selector(time=tslice)
+#                    if selnotime is None:
+#                        selnotime = filter_time_selector(selector, ids=nib.timeid, out=True)
+#                    sel.refine(selnotime)
+                    sel.refine(sselector)
                     self.debug('- dataset: %s: sigma: %s, select: %s',
                         os.path.basename(f.id), sigma_converter.__class__.__name__, sel)
 
                     # - try it
                     try:
-                        d = sigma_converter(sel, at=atz, copyaxes=True, mode='sigma')
+                        d = sigma_converter(sel, at=atz, copyaxes=True, mode='sigma',
+                            zerolid=zerolid)
                     except Exception, e:
                         if warn:
                             self.warning("Can't get depth from sigma. Error: \n"+e.message)
@@ -2484,24 +2670,28 @@ class OceanDataset(OceanSurfaceDataset):
             return
 
         # Interpolate
-        depth = -N.abs(depth)
-        zo = create_dep([depth] if N.isscalar(depth) else depth[:])
+        lvar = self._interp_at_depths_(var, vardepth, depth, **kwinterp)
+
+        # Time average
+        if timeavg and lvar.getOrder().startswith('t') and lvar.shape[0]>1:
+            lvar = MV2.average(lvar, axis=0)
+        return self.finalize_object(lvar, depthup=False, **kwargs)
+
+    @staticmethod
+    def _interp_at_depths_(var, vardepth, depths, **kwargs):
+        depths = -N.abs(depths)
+        zo = create_dep([depths] if N.isscalar(depths) else depths[:])
 
         if isinstance(vardepth,tuple):
             vardepth=vardepth[0]
         iaxi = var.getOrder().index('z')
         if len(vardepth.shape)>1:
 #            var, vardepth = grow_variables(var, vardepth)
-            kwinterp.update(axi=vardepth.filled(0.))
+            kwargs.update(axi=vardepth.filled(0.))
             iaxo = iaxi
         else:
             iaxo = 0
-        lvar = regrid1d(var, zo, iaxi = iaxi, iaxo=iaxo, **kwinterp)
-
-        # Time average
-        if timeavg and lvar.getOrder().startswith('t') and lvar.shape[0]>1:
-            lvar = MV2.average(lvar, axis=0)
-        return self.finalize_object(lvar, depthup=False, **kwargs)
+        return regrid1d(var, zo, iaxi=iaxi, iaxo=iaxo, **kwargs)
 
 
     def plot_hsection(self, varname, depth, time=None, lat=None, lon=None,
@@ -3543,11 +3733,14 @@ class GenericDataset(AtmosDataset, OceanDataset):
 class CurvedSelector(object):
     """Curved grid multiple selector"""
 
-    def __init__(self, grid, select):
+    def __init__(self, grid, select, force=True):
 
         self.geosels = self.extract_geosels(select)
         self._post_sel = False
-        if self.geosels and grid is not None and len(grid.getLongitude().shape)==2:
+        self.grid = grid
+        self.force = force
+        self.curv = len(grid.getLongitude().shape)==2
+        if self.geosels and grid is not None and (self.curv or force):
             islice, jslice, mask =  coord2slice(grid, *self.geosels[0])
             if islice is None: islice = ':'
             if jslice is None: jslice = ':'
@@ -3560,11 +3753,15 @@ class CurvedSelector(object):
 
 
     def finalize(self, var):
-        if var is None or not self._post_sel: return var
+        if var is None or not self._post_sel:
+            return var
         if self.mask.any():
             var[:] = MV2.masked_where(N.resize(self.mask, var.shape), var, copy=0)
-        if len(self.geosels)==2:
-            islice, jslice, mask =  coord2slice(var, *self.geosels[1])
+        if len(self.geosels)==2 and self.grid is not None and (self.curv or self.force):
+            assert self.grid.shape == var.getGrid().shape,  'Incomptible grids'
+            islice, jslice, mask =  coord2slice(self.grid, *self.geosels[1])
+            if islice is None: islice = ':'
+            if jslice is None: jslice = ':'
             var = var(**{self.xid:islice, self.yid:jslice})
             if self.mask.any():
                 var[:] = MV2.masked_where(N.resize(mask, var.shape), var, copy=0)
@@ -3578,7 +3775,8 @@ class CurvedSelector(object):
         lats = []
         for c in select.components():
             id = getattr(c, 'id', None)
-            if id is None: continue
+            if id is None:
+                continue
             if id=='lon':
                 lons.append(c.spec)
             if id=='lat':
@@ -3595,8 +3793,26 @@ class CurvedSelector(object):
         """Remove lon and lat component selections"""
         for c in select().components():
             id = getattr(c, 'id', None)
-            if id is None: continue
+            if id is None:
+                continue
             if id in ['lon', 'lat']:
                 select._Selector__components.remove(c)
         return select
+
+
+def merge_squeeze_specs(squeeze1, squeeze2):
+    if squeeze1==squeeze2:
+        return squeeze1
+    s1 = isinstance(squeeze1, basestring)
+    s2 = isinstance(squeeze2, basestring)
+    if (((squeeze1 or squeeze1 is None) and not s1) or
+            ((squeeze2 or squeeze2 is None) and not s2)):
+        return True
+    if s1 and s2:
+        return squeeze1 + squeeze2
+    if s1:
+        return squeeze1
+    if s2:
+        return squeeze2
+    return s1 or s2
 

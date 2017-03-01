@@ -8,10 +8,10 @@ import os
 # Commandline arguments
 parser = argparse.ArgumentParser(description="Generate the rst files for the test scripts")
 parser.add_argument("pattern", help="file patern", nargs="*", default="test_*.py")
-parser.add_argument("-d", "--testdir", 
+parser.add_argument("-d", "--testdir",
     help="Directory of test scripts [default: %(default)s]",
     default="../../../../scripts/test")
-#parser.add_argument("-c", "--noclean", action='store_true', 
+#parser.add_argument("-c", "--noclean", action='store_true',
 #    help='Do not remove unneeded rst files')
 parser.add_argument("-n", "--new", action='store_true',
     help='Only add new files (do not modify existing files)')
@@ -36,12 +36,12 @@ def check_and_write(fname, content):
             return 0
     else:
          status = 'Created'
-            
+
     # Write
     f = open(fname, 'w')
     f.write(content)
     f.close()
-    if not options.quiet: 
+    if not options.quiet:
         print status+' '+fname
     return 1 if status == 'Updated' else 2
 
@@ -51,22 +51,22 @@ scfiles = glob(os.path.join(options.testdir, options.pattern))
 scfiles.sort()
 rstfiles = []
 skipped = []
-svnadd = []
-svnrm = []
-svnci = []
+gitadd = []
+gitrm = []
+gitci = []
 for i, script_path in enumerate(scfiles):
-    
+
     # Basenames
     script_name = os.path.basename(script_path)
     script_basename, ext = os.path.splitext(script_name)
     script_basenames.append(script_basename)
-    
+
     # Output file
     rstfile = script_basename+'.rst'
     if options.new and os.path.exists(rstfile):
         skipped.append(rstfile)
         continue
-    
+
     # Title
     fi = open(script_path)
     title = fi.readline()
@@ -78,7 +78,7 @@ for i, script_path in enumerate(scfiles):
     title = ':program:`%(script_name)s` -- %(title)s'%locals()
     content = title+'\n'
     content += '='*len(title)+'\n\n\n'
-    
+
     # Figure?
     figpaths = []
     for figpat in '', '_[0-9]', '_[0-9][0-9]':
@@ -91,31 +91,31 @@ for i, script_path in enumerate(scfiles):
     figpaths.sort()
     for figpath in figpaths:
         content += '.. figure:: %(figpath)s\n\n'%locals()
-        
+
     # Code content
     content += ".. literalinclude:: %(script_path)s\n\n"%locals()
-    
-    
+
+
     # Check and write
     status = check_and_write(rstfile, content)
     rstfiles.append(rstfile)
     if status:
-        svnci.append(rstfile)
+        gitci.append(rstfile)
         if status==2:
-            svnadd.append(rstfile)
+            gitadd.append(rstfile)
 
 # Check unused rst files
 for rstfile in glob('test_*.rst'):
     if rstfile not in rstfiles+skipped:
         if options.verbose: print 'Unused: '+rstfile
-        svnrm.append(rstfile)
-svnci.extend(svnrm)
+        gitrm.append(rstfile)
+gitci.extend(gitrm)
 
-# Subversion commands
-if not options.quiet and svnci:
-    print 'Subversion commands:\n'
-    if svnadd: print "svn add "+' '.join(svnadd)
-    if svnrm: print "svn rm "+' '.join(svnrm)
-    print "svn ci "+' '.join(svnci)
-    
+# Git commands
+if not options.quiet and gitci:
+    print '\nGit commands:\n'
+    if gitadd: print "git add "+' '.join(gitadd)
+    if gitrm: print "git rm "+' '.join(gitrm)
+    print "git commit "+' '.join(gitci)
+
 

@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Conventions about data formats and names"""
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -38,9 +38,10 @@ from collections import OrderedDict
 import string
 
 import cdms2, MV2, re
-from vacumm import VACUMMError
+from vacumm import VACUMMError, vacumm_warn
 from vacumm.misc.misc import kwfilter, dict_merge
 from vacumm.misc.axes import create as create_axis, isaxis
+from vacumm.misc.color import get_cmap
 from vacumm.misc.grid import create_axes2d
 from vacumm.misc.io import ncmatch_obj
 from vacumm.data.misc.arakawa import ARAKAWA_LOCATIONS
@@ -51,7 +52,7 @@ __all__ = ['VAR_SPECS', 'AXIS_SPECS',
     'cf2atts', 'cf2search', 'cp_suffix', 'specs_def_loc', 'get_loc',
     'change_loc', 'change_loc_single', 'dupl_loc_specs', 'no_loc_single',
     'change_loc_specs', 'squeeze_loc_single', 'squeeze_loc', 'get_physloc',
-    'HIDDEN_CF_ATTS', 'set_loc'
+    'HIDDEN_CF_ATTS', 'set_loc', 'match_known_var', 'match_known_axis'
 ]
 
 ARAKAWA_SUFFIXES = [('_'+p) for p in ARAKAWA_LOCATIONS]
@@ -59,154 +60,202 @@ arakawa_suffixes = ARAKAWA_SUFFIXES # compat
 arakawa_locations = ARAKAWA_LOCATIONS
 
 #: Specifications for variables
-VAR_SPECS = OrderedDict(
+VAR_SPECS = OrderedDict([
 
     # Thermodynamics
-    temp = dict(
+    ('temp', dict(
         names = ['temp', 'temperature', 'TEMP'],
         standard_names = ['sea_water_temperature', 'sea_water_potential_temperature'],
         long_names = 'Temperature',
         units =  'degrees_celsius',
-#        axes = {'t':'time', 'x':'lon', 'y':'lat'},
-    ),
-    ptemp = dict(
+        cmap = 'thermal',
+    )),
+    ('ptemp', dict(
         names = ['ptemp'],
         standard_names = ['sea_water_potential_temperature'],
         long_names = 'Potential temperature',
         units =  'degrees_celsius',
-    ),
-    sal = dict(
+        cmap = 'thermal',
+    )),
+    ('sal', dict(
         names=['sal', 'psal', 'salinity', 'SAL'],
         standard_names='sea_water_salinity',
         long_names = 'Salinity',
         units = 'PSU',
-    ),
-    sst = dict(
+        cmap = 'haline',
+    )),
+    ('sst', dict(
         names = ['sst'],
         standard_names = 'sea_surface_temperature',
         long_names = 'Sea surface temperature',
         units = 'degrees_celsius',
-    ),
-    sss = dict(
+        cmap = 'thermal',
+    )),
+    ('sss', dict(
         names = ['sss'],
         standard_names = 'sea_surface_salinity',
         long_names = 'Sea surface salinity',
         units = 'PSU',
-    ),
-    dens = dict(
+        cmap = 'haline',
+    )),
+    ('dens', dict(
         names = ['dens'],
         standard_names = 'sea_water_density',
         long_names = 'Sea water density',
         units = 'kg m-3',
-    ),
-    sigmat = dict(
+        cmap = 'dense',
+    )),
+    ('sigmat', dict(
         names = ['sigmatheta'],
         standard_names = 'sea_water_sigma_t',
         long_names = 'Sea water density minus 1000',
         units = 'kg m-3',
-    ),
-    ndens = dict(
+        cmap = 'dense',
+    )),
+    ('ndens', dict(
         names = ['ndens'],
         standard_names = 'sea_water_neutral_density',
         long_names = 'Sea water neutral density',
         units = 'kg m-3',
-    ),
-    sigmatheta = dict(
+        cmap = 'dense',
+    )),
+    ('sigmatheta', dict(
         names = ['sigmatheta'],
         standard_names = 'sea_water_sigma_theta',
         long_names = 'Sea water potential density minus 1000',
         units = 'kg m-3',
-    ),
-    pdens = dict(
+        cmap = 'dense',
+    )),
+    ('pdens', dict(
         names = ['pdens', 'sigma0'],
         standard_names = 'sea_water_potential_density',
         long_names = 'Sea water potential density',
         units = 'kg m-3',
-    ),
-    sigma0 = dict(
-        inherit = 'pdens'
-    ),
-    sigma1 = dict(
+        cmap = 'dense',
+    )),
+    ('sigma0', dict(
+        inherit = 'pdens',
+        cmap = 'dense',
+    )),
+    ('sigma1', dict(
         names = ['sigma1'],
         standard_names = 'sea_water_potential_density',
         long_names = 'Sea water potential density with ref at 1000 dbar',
         units = 'kg m-3',
-    ),
-    sigma2 = dict(
+        cmap = 'dense',
+    )),
+    ('sigma2', dict(
         names = ['sigma2'],
         standard_names = 'sea_water_potential_density',
         long_names = 'Sea water potential density with ref at 2000 dbar',
         units = 'kg m-3',
-    ),
-    sigma3 = dict(
+        cmap = 'dense',
+    )),
+    ('sigma3', dict(
         names = ['sigma3'],
         standard_names = 'sea_water_potential_density',
         long_names = 'Sea water potential density with ref at 3000 dbar',
         units = 'kg m-3',
-    ),
-    sigma4 = dict(
+        cmap = 'dense',
+    )),
+    ('sigma4', dict(
         names = ['sigma4'],
         standard_names = 'sea_water_potential_density',
         long_names = 'Sea water potential density with ref at 4000 dbar',
         units = 'kg m-3',
-    ),
-    ssd = dict(
+        cmap = 'dense',
+    )),
+    ('ssd', dict(
         names = ['ssd'],
         standard_names = 'sea_surface_density',
         long_names = 'Sea surface density',
         units = 'PSU',
-    ),
-    conduct = dict(
+        cmap = 'dense',
+    )),
+    ('conduct', dict(
         standard_names = 'sea_water_electrical_conductivity',
         long_names = 'Sea water electrial conductivity',
         units = 'S m-1',
-    ),
-    sndspd = dict(
+    )),
+    ('sndspd', dict(
         standard_names = 'speed_of_sound_in_sea_water',
         long_names = 'Speed of sound in water',
         units = 'm s-1',
-    ),
-    mld = dict(
+    )),
+    ('mld', dict(
         standard_names = 'mixed_layer_depth',
         long_names = "Mixed layer depth",
         units = "m",
         physloc = 't',
-    ),
-    ped = dict(
+    )),
+    ('ped', dict(
         standard_names = 'potential_energy_deficit',
         long_names = "Potential energy deficit",
         units = "J m-2",
         physloc = 't',
-    ),
-    ohc = dict(
+    )),
+    ('ohc', dict(
         standard_names = 'ocean_heat_content',
         long_names = 'Ocean heat content',
         units = 'J',
         physloc = 't',
-    ),
-    osc = dict(
+        cmap = 'thermal',
+    )),
+    ('osc', dict(
         standard_names = 'ocean_salt_content',
         long_names = 'Ocean salt content',
         units = 'kg',
         physloc = 't',
-    ),
-    cp = dict(
+        cmap = 'haline',
+    )),
+    ('cp', dict(
         standard_names = 'specific_heat_capacity',
         long_names = 'Specific heat capacity',
         units = 'J K-1',
         physloc = 't',
-    ),
+        cmap = 'thermal',
+    )),
 
 
 
     # Dynamics
-    ssh = dict(
+    ('ssh', dict(
         names=['ssh', 'xe'],
         standard_names=['sea_surface_height_above_sea_level','sea_surface_height_above_geoid' ],
         long_names = 'Sea surface height',
         units = 'm',
-    ),
-    u3d = dict(
+        cmap = 'balance',
+    )),
+    ('u', dict(
+        names=['uz', 'u3d'],
+        standard_names=['sea_water_x_velocity', #'sea_water_x_velocity_at_u_location',
+            'eastward_sea_water_velocity'
+            ],
+        long_names = "Sea water velocity along X",
+        units = "m s-1",
+        atlocs = ['t', 'u', 'v'],
+        physloc = 'u',
+        cmap = 'delta',
+    )),
+    ('v', dict(
+        names=['vz', 'v3d'],
+        standard_names=['sea_water_y_velocity', #'sea_water_y_velocity_at_v_location',
+            'northward_sea_water_velocity'],
+        long_names = "Sea water velocity along Y",
+        units = "m s-1",
+        atlocs = ['t', 'u', 'v'],
+        physloc = 'v',
+        cmap = 'delta',
+    )),
+    ('w', dict(
+        names=['wz', 'w3d'],
+        standard_names=['sea_water_z_velocity_at_w_location', 'sea_water_z_velocity'],
+        long_names = "Sea water velocity along Z at W location",
+        units = "m s-1",
+        physloc = 'w',
+        cmap = 'delta',
+    )),
+    ('u3d', dict(
         names=['uz', 'u3d'],
         standard_names=['sea_water_x_velocity', #'sea_water_x_velocity_at_u_location',
             'eastward_sea_water_velocity'
@@ -216,8 +265,9 @@ VAR_SPECS = OrderedDict(
         axes = dict(x=['lon_u'], y=['lat_u']),
         atlocs = ['t', 'u', 'v'],
         physloc = 'u',
-    ),
-    v3d = dict(
+        cmap = 'delta',
+    )),
+    ('v3d', dict(
         names=['vz', 'v3d'],
         standard_names=['sea_water_y_velocity', #'sea_water_y_velocity_at_v_location',
             'northward_sea_water_velocity'],
@@ -226,34 +276,17 @@ VAR_SPECS = OrderedDict(
         axes = dict(x=['lon_v'], y=['lat_v']),
         atlocs = ['t', 'u', 'v'],
         physloc = 'v',
-    ),
-    u = dict(
-        names=['uz', 'u3d'],
-        standard_names=['sea_water_x_velocity', #'sea_water_x_velocity_at_u_location',
-            'eastward_sea_water_velocity'
-            ],
-        long_names = "Sea water velocity along X",
-        units = "m s-1",
-        atlocs = ['t', 'u', 'v'],
-        physloc = 'u',
-    ),
-    v = dict(
-        names=['vz', 'v3d'],
-        standard_names=['sea_water_y_velocity', #'sea_water_y_velocity_at_v_location',
-            'northward_sea_water_velocity'],
-        long_names = "Sea water velocity along Y",
-        units = "m s-1",
-        atlocs = ['t', 'u', 'v'],
-        physloc = 'v',
-    ),
-    w3d = dict(
+        cmap = 'delta',
+    )),
+    ('w3d', dict(
         names=['wz', 'w3d'],
         standard_names=['sea_water_z_velocity_at_w_location', 'sea_water_z_velocity'],
         long_names = "Sea water velocity along Z at W location",
         units = "m s-1",
         physloc = 'w',
-    ),
-    ubt = dict(
+        cmap = 'delta',
+    )),
+    ('ubt', dict(
         names=['ubt', 'u2d', 'u'],
         standard_names=['barotropic_sea_water_x_velocity'],
         long_names = "Sea water barotropic velocity along X",
@@ -261,8 +294,9 @@ VAR_SPECS = OrderedDict(
         axes = dict(x=['lon_u'], y=['lat_u']),
         atlocs = ['t', 'u', 'v'],
         physloc = 'u',
-    ),
-    vbt = dict(
+        cmap = 'delta',
+    )),
+    ('vbt', dict(
         names=['vbt', 'v2d', 'v'],
         standard_names=['barotropic_sea_water_y_velocity'],
         long_names = "Sea water barotropic velocity along Y",
@@ -270,8 +304,9 @@ VAR_SPECS = OrderedDict(
         axes = dict(x=['lon_v'], y=['lat_v']),
         atlocs = ['t', 'u', 'v'],
         physloc = 'v',
-    ),
-    ubc = dict(
+        cmap = 'delta',
+    )),
+    ('ubc', dict(
         names=['ubc', 'u'],
         standard_names=['baroclinic_sea_water_x_velocity'],
         long_names = "Sea water baroclinic velocity along X",
@@ -279,8 +314,9 @@ VAR_SPECS = OrderedDict(
         axes = dict(x=['lon_u'], y=['lat_u']),
         atlocs = ['t', 'u', 'v'],
         physloc = 'u',
-    ),
-    vbc = dict(
+        cmap = 'delta',
+    )),
+    ('vbc', dict(
         names=['vbc', 'v'],
         standard_names=['baroclinic_sea_water_y_velocity'],
         long_names = "Sea water baroclinic velocity along Y",
@@ -288,8 +324,9 @@ VAR_SPECS = OrderedDict(
         axes = dict(x=['lon_v'], y=['lat_v']),
         atlocs = ['t', 'u', 'v'],
         physloc = 'v',
-    ),
-    usurf = dict(
+        cmap = 'delta',
+    )),
+    ('usurf', dict(
         names = ['usurf'],
         standard_names=['sea_surface_x_velocity'],
         long_names = ["Sea surface velocity along X"],
@@ -297,8 +334,9 @@ VAR_SPECS = OrderedDict(
         axes = dict(y=['lat'], x=['lon']),
         atlocs = ['t', 'u', 'v'],
         physloc = 'u',
-    ),
-    vsurf = dict(
+        cmap = 'delta',
+    )),
+    ('vsurf', dict(
         names = ['vsurf'],
         standard_names=['sea_surface_y_velocity', 'sea_surface_y_velocity_at_y_location'],
         long_names = ["Sea surface velocity along Y", "Sea surface velocity along Y at V location"],
@@ -306,8 +344,9 @@ VAR_SPECS = OrderedDict(
         axes = dict(x=['lon_v'], y=['lat_v']),
         atlocs = ['t', 'u', 'v'],
         physloc = 'v',
-    ),
-    ugbt = dict(
+        cmap = 'delta',
+    )),
+    ('ugbt', dict(
         names=['ugbt'],
         standard_names=['barotropic_sea_water_x_geostrophic_velocity',
             'eastward_geostrophic_current_velocity'],
@@ -315,8 +354,9 @@ VAR_SPECS = OrderedDict(
         atlocs = ['t', 'u', 'v'],
         physloc = 'u',
         units = "m s-1",
-    ),
-    vgbt = dict(
+        cmap = 'delta',
+    )),
+    ('vgbt', dict(
         names=['vgbt'],
         standard_names=['barotropic_sea_water_y_geostrophic_velocity',
             'northward_geostrophic_current_velocity'],
@@ -324,8 +364,9 @@ VAR_SPECS = OrderedDict(
         atlocs = ['t', 'u', 'v'],
         physloc = 'v',
         units = "m s-1",
-    ),
-    speed = dict(
+        cmap = 'delta',
+    )),
+    ('speed', dict(
         names = ['speed'],
         standard_names=['sea_water_speed'],
         long_names = ["Sea water speed"],
@@ -333,8 +374,9 @@ VAR_SPECS = OrderedDict(
         axes = dict(y=['lat'], x=['lon']),
         atlocs = ['t', 'u', 'v'],
         physloc = 't',
-    ),
-    cdir = dict(
+        cmap = 'amp',
+    )),
+    ('cdir', dict(
         names = ['cdir'],
         standard_names=['direction_of_sea_water_velocity'],
         long_names = ["Direction of sea water velocity"],
@@ -342,241 +384,262 @@ VAR_SPECS = OrderedDict(
         axes = dict(y=['lat'], x=['lon']),
         atlocs = ['t', 'u', 'v'],
         physloc = 't',
-    ),
-    ke = dict(
+        cmap = 'phase',
+    )),
+    ('ke', dict(
         names = ['ke'],
         standard_names ='kinetic_energy',
         long_names = 'Kinetic energy',
         units = "m2 s-2",
-    ),
-    eke = dict(
+    )),
+    ('eke', dict(
         names = ['eke'],
         standard_names ='eddy_kinetic_energy',
         long_names = 'Eddy kinetic energy',
         units = "m2 s-2",
-    ),
-    tke = dict(
+    )),
+    ('tke', dict(
         names = ['tke'],
         standard_names ='turbulent_kinetic_energy',
         long_names = 'Turbulent kinetic energy',
         units = "m2 s-2",
-    ),
-    mke = dict(
+    )),
+    ('mke', dict(
         names = ['mke'],
         standard_names ='mean_kinetic_energy',
         long_names = 'Mean kinetic energy',
         units = "m2 s-2",
-    ),
-    kz = dict(
+    )),
+    ('kz', dict(
         names = ['kz', 'kzm'],
         standard_names = 'average_ocean_vertical_tracer_diffusivity',
         long_names = "Vertical diffusivity",
         units = "m2 s-1",
-    ),
+    )),
 
 
     # Bathymetry
-    bathy = dict(
+    ('bathy', dict(
         names=['bathy', 'h0'],
         standard_names=['model_sea_floor_depth_below_sea_level', 'model_sea_floor_depth_below_geoid', "sea_floor_depth_below_geoid" ],
         long_names = 'Bathymetry',
         units = 'm',
         atlocs = 't',
-    ),
-    bathy_u = dict(
+        cmap = 'deep_r',
+    )),
+    ('bathy_u', dict(
         names = ['hx'],
         standard_names = [],
         long_names =['bathymetry at u-location'],
-    ),
-    bathy_v = dict(
+        cmap = 'deep_r',
+    )),
+    ('bathy_v', dict(
         names = ['hy'],
         standard_names = [],
         long_names =['bathymetry at v-location'],
-    ),
+        cmap = 'deep_r',
+    )),
 
-    depth = dict(
+    ('depth', dict(
         names = ['depth', 'dep', 'deptht', 'depthu', 'depthv'],
         standard_names = ['ocean_layer_depth'],
         long_names =  'Depth',
         units = 'm',
         atlocs = ['t', 'u', 'v', 'w'],
-    ),
+        cmap = 'deep',
+    )),
 
     # Cell sizes
-    dx = dict(
+    ('dx', dict(
         names = ['dx'], #, 'dx_u', 'dx_v', 'dx_f'],
         standard_names = 'cell_x_size',
         long_names = "Mesh size along x",
         units = 'm',
         atlocs = ['t', 'u', 'v', 'f'],
-    ),
-    dy = dict(
+    )),
+    ('dy', dict(
         names = ['dy'], #, 'dy_u', 'dy_v', 'dy_f'],
         standard_names = 'cell_y_size',
         long_names = "Mesh size along y",
         units = 'm',
         atlocs = ['t', 'u', 'v', 'f'],
-    ),
-    dz = dict(
+    )),
+    ('dz', dict(
         names = ['dz'],
         standard_names = 'ocean_layer_thickness',
         long_names = "Ocean layer thickness",
         units = "m",
         atlocs = ['t', 'u', 'v', 'w'],
-    ),
-    dlon = dict(
+    )),
+    ('dlon', dict(
         names = ['dlon'], #, 'dlon_u', 'dlon_v', 'dlon_f'],
         standard_names = 'cell_x_size',
         long_names = "Mesh size along x",
         units = 'degrees',
         atlocs = ['t', 'u', 'v', 'f'],
-    ),
-    dlat = dict(
+    )),
+    ('dlat', dict(
         names = ['dlat'], #, 'dlat_u', 'dlat_v', 'dlat_f'],
         standard_names = 'cell_y_step',
         long_names = "Mesh step along y",
         units = 'degrees',
         atlocs = ['t', 'u', 'v', 'f'],
-    ),
+    )),
 
     # Cell volume
-    cvol = dict(
+    ('cvol', dict(
         names = ['cvol'],
         standard_names = 'cell_volume',
         long_names = "Volume of the cell",
         units = "m3",
         atlocs = ['t', 'u', 'v', 'w'],
-    ),
+    )),
 
     # Standard volume
-    vol = dict(
+    ('vol', dict(
         names = ['vol'],
         standard_names = 'seawater_volume',
         long_names = "Volume of the sea water",
         units = "m3",
         atlocs = ['t', 'u', 'v', 'w'],
-    ),
+    )),
 
     # Coriolis
-    corio = dict(
+    ('corio', dict(
         names = ['corio', 'f0'],
         standard_names = "coriolis_parameter",
         long_names = "Coriolis parameter",
         units = "s-1",
         atlocs = ['t', 'u', 'v', 'f'],
-    ),
-    beta = dict(
+    )),
+    ('beta', dict(
         names = [],
         standard_names = "meridional_derivative_of_coriolis_parameter",
         long_names = "Meridional derivative of coriolis parameter",
         units = "m-1 s-1",
-    ),
+    )),
 
     # Atmosphere
-    lwhf = dict(
+    ('lwhf', dict(
         names = [],
         standard_names = ["surface_net_downward_longwave_flux"],
         long_names = "Net longwave radiation (positive when directed downward)",
         units = "W.m-2",
-    ),
-    swhf = dict(
+        cmap = 'solar',
+    )),
+    ('swhf', dict(
         names = [],
         standard_names = ["surface_net_downward_shortwave_flux"],
         long_names = "Net shortwave radiation (positive when directed downward)",
         units = "W.m-2",
-    ),
-    lathf = dict(
+        cmap = 'solar',
+    )),
+    ('lathf', dict(
         names = [],
         standard_names = ["surface_downward_latent_heat_flux"],
         long_names = "latent heat flux (positive when directed downward)",
         units = "W.m-2",
-    ),
-    senhf = dict(
+        cmap = 'solar',
+    )),
+    ('senhf', dict(
         names = [],
         standard_names = ["surface_downward_sensible_heat_flux"],
         long_names = "sensible heat flux (positive when directed downward)",
         units = "W.m-2",
-    ),
-    evap = dict(
+        cmap = 'solar',
+    )),
+    ('evap', dict(
         names = [],
         standard_names = ["lwe_thickness_of_water_evaporation_amount"],
         long_names = "evaporation (positive when directed downward)",
         units = "m",
-    ),
-    rain = dict(
+        cmap = 'tempo',
+    )),
+    ('rain', dict(
         names = [],
         standard_names = ["lwe_thickness_of_precipitation_amount"],
         long_names = "precipitation (positive when directed downward)",
         units = "m",
-    ),
-    wspd = dict(
+        cmap = 'tempo',
+    )),
+    ('wspd', dict(
         names=[],
         standard_names = 'wind_speed',
         long_names = "Wind speed",
         units = "m s-1",
-    ),
+        cmap = 'speed',
+    )),
 
-    wdir = dict(names=[],
+    ('wdir', dict(names=[],
         standard_names = ['wind_to_direction', 'wind_from_direction'],
         long_names = "Wind direction",
         units = "degrees",
-    ),
-    wfdir = dict(names=[],
+        cmap = 'phase',
+    )),
+    ('wfdir', dict(names=[],
         standard_names = ['wind_from_direction'],
         long_names = "Wind from direction",
         units = "degrees",
-    ),
-    wtdir = dict(names=[],
+        cmap = 'phase',
+    )),
+    ('wtdir', dict(names=[],
         standard_names = ['wind_to_direction'],
         long_names = "Wind to direction",
         units = "degrees",
-    ),
-    ua = dict(
+        cmap = 'phase',
+    )),
+    ('ua', dict(
         names = [],
         standard_names = ["eastward_wind", "x_wind"],
         long_names = "Zonal wind speed (westerly)",
         units = "m s-1",
-    ),
-    va = dict(
+        cmap = 'delta',
+    )),
+    ('va', dict(
         names = [],
         standard_names = ["northward_wind", "y_wind"],
         long_names = "Meridional wind speed (northerly)",
         units = "m s-1",
-    ),
+        cmap = 'delta',
+    )),
 
     # Ocean Atmosphere interface
-    u10m = dict(
+    ('u10m', dict(
         names = [],
         standard_names = ["x_wind_at_10m","x_wind","x_wind_at_u_location",
             "x_wind_at_10m_at_u_location","eastward_wind"],
         long_names = "10-m zonal wind speed (westerly)",
         units = "m s-1",
-    ),
-    v10m = dict(
+        cmap = 'delta',
+    )),
+    ('v10m', dict(
         names = [],
         standard_names = ["y_wind_at_10m","y_wind","y_wind_at_v_location",
             "y_wind_at_10m_at_v_location","northward_wind"],
         long_names = "10-m meridional wind speed (northerly)",
         units = "m s-1",
-    ),
-    ux10m = dict(
+        cmap = 'delta',
+    )),
+    ('ux10m', dict(
         names = [],
         standard_names = ["x_wind_at_10m", "x_wind", "grid_eastward_wind",
                           "x_wind_at_u_location",
                           "x_wind_at_10m_at_u_location"],
         long_names = "10-m wind speed along X",
         units = "m s-1",
-    ),
-    vy10m = dict(
+        cmap = 'delta',
+    )),
+    ('vy10m', dict(
         names = [],
         standard_names = ["y_wind_at_10m", "y_wind", "grid_northward_wind",
                           "y_wind_at_v_location",
                           "y_wind_at_10m_at_v_location"],
         long_names = "10-m wind speed along Y",
         units = "m s-1",
-    ),
+        cmap = 'delta',
+    )),
 
-    tauu = dict(
+    ('tauu', dict(
         names = [],
         standard_names = ["surface_downward_eastward_stress",
             "surface_eastward_stress"],
@@ -584,8 +647,9 @@ VAR_SPECS = OrderedDict(
         units = "N m-2",
         axes = dict(x=['lon_u'], y=['lat_u']),
         physloc = 'u',
-    ),
-    tauv = dict(
+        cmap = 'delta',
+    )),
+    ('tauv', dict(
         names = [],
         standard_names = ["surface_downward_northward_stress",
             "surface_northward_stress"],
@@ -593,8 +657,9 @@ VAR_SPECS = OrderedDict(
         units = "N m-2",
         axes = dict(x=['lon_v'], y=['lat_v']),
         physloc = 'v',
-    ),
-    taux = dict(
+        cmap = 'delta',
+    )),
+    ('taux', dict(
         names = ['ustress'],
         standard_names = ["surface_downward_x_stress", "surface_x_stress",
                           "surface_downward_x_stress_at_u_location"],
@@ -602,8 +667,9 @@ VAR_SPECS = OrderedDict(
         units = "N m-2",
         axes = dict(x=['lon_u'], y=['lat_u']),
         physloc = 'u',
-    ),
-    tauy = dict(
+        cmap = 'delta',
+    )),
+    ('tauy', dict(
         names = ['vstress'],
         standard_names = ["surface_downward_y_stress", "surface_y_stress",
                           "surface_downward_y_stress_at_v_location"],
@@ -611,43 +677,47 @@ VAR_SPECS = OrderedDict(
         units = "N m-2",
         axes = dict(x=['lon_v'], y=['lat_v']),
         physloc = 'v',
-    ),
+        cmap = 'delta',
+    )),
 
     # Surfaces waves
-    hs = dict(
+    ('hs', dict(
         names = ['hs'],
         standard_names = ["significant_height_of_wind_and_swell_waves"],
         long_names = "Significant height of wind and swell waves",
         units = "m",
-    ),
-    fp = dict(
+        cmap = 'amp',
+    )),
+    ('fp', dict(
         names = ['fp'],
         standard_names = [],
         long_names = "Frequency of wind and swell waves at spectral peak",
         units = "s-1",
-    ),
-    th1p = dict(
+        cmap = 'tempo',
+    )),
+    ('th1p', dict(
         names = ['th1p'],
         standard_names = ["sea_surface_wave_from_direction"],
         long_names = "Mean direction of wind and swell waves at spectral peak",
         units = "degree",
-    ),
+        cmap = 'phase',
+    )),
 
 
-)
+])
 var_specs = VAR_SPECS # compat
 
 #: Specifications for axes
-AXIS_SPECS = OrderedDict(
+AXIS_SPECS = OrderedDict([
 
     # Axes
-    time = dict(
+    ('time', dict(
         names = ['time'],
         standard_names = ['time'],
         long_names = 'Time',
         axis = 'T',
-    ),
-    lon = dict(
+    )),
+    ('lon', dict(
         names = ['lon', 'longitude', 'nav_lon'],
         standard_names = ['longitude'],
         long_names = 'Longitude',
@@ -656,8 +726,8 @@ AXIS_SPECS = OrderedDict(
         iaxis = 'ni',
         jaxis = 'nj',
         atlocs=['t', 'u', 'v', 'f'],
-    ),
-    lat = dict(
+    )),
+    ('lat', dict(
         names = ['lat', 'latitude', 'nav_lat'],
         standard_names = ['latitude'],
         long_names = 'Latitude',
@@ -666,81 +736,84 @@ AXIS_SPECS = OrderedDict(
         iaxis = 'ni',
         jaxis = 'nj',
         atlocs=['t', 'u', 'v', 'f'],
-    ),
-    depth = dict(
+    )),
+    ('depth', dict(
         inherit = 'depth',
         axis = 'Z',
-    ),
-    depth_t = dict(
+    )),
+    ('depth_t', dict(
         inherit = 'depth_t',
         axis = 'Z',
-    ),
-    depth_u = dict(
+    )),
+    ('depth_u', dict(
         inherit = 'depth_u',
         axis = 'Z',
-    ),
-    depth_v = dict(
+    )),
+    ('depth_v', dict(
         inherit = 'depth_v',
         axis = 'Z',
-    ),
-    depth_w = dict(
+    )),
+    ('depth_w', dict(
         inherit = 'depth_w',
         axis = 'Z',
-    ),
-    level = dict(
+    )),
+    ('level', dict(
         names = ['level'],
         standard_names = ["model_level_number", "ocean_sigma_coordinate", "ocean_s_coordinate", "ocean_sigma_coordinate_at_w_location", "ocean_s_coordinate_at_w_location"],
         long_names = ['Model level number',  'Sigma level', 'Sigma level at W location'],
         axis='Z',
-    ),
-    level_w = dict(
+    )),
+    ('level_w', dict(
         names = ['level_w'],
         standard_names = ["ocean_sigma_coordinate_at_w_location", "ocean_s_coordinate_at_w_location"],
         long_names = ['Sigma level', 'Sigma level at W location'],
         axis='Z',
-    ),
+    )),
 
     # Subaxes
-    ni = dict(
+    ('ni', dict(
         names = ['ni'],
         standard_names =  ['x_grid_index'],
         long_names = ["x-dimension of the grid"],
         axis = 'X',
-    ),
-    nj = dict(names = ['nj'],
+        atlocs=['t', 'u', 'v', 'f'],
+    )),
+    ('nj', dict(names = ['nj'],
         standard_names =  ['y_grid_index'],
         long_names = ["y-dimension of the grid"],
         axis = 'Y',
-    ),
-    ni_u = dict(
-        names = ['ni_u'],
-        standard_names =  ['x_grid_index_at_u_location'],
-        long_names = ["x-dimension of the grid at U location"],
-        axis = 'X',
-    ),
-    nj_u = dict(names = ['nj_u'],
-        standard_names =  ['y_grid_index_at_u_location'],
-        long_names = ["y-dimension of the grid at U location"],
-        axis = 'Y',
-    ),
-    ni_v = dict(names = ['ni_v'],
-        standard_names =  ['x_grid_index_at_v_location'],
-        long_names = ["x-dimension of the grid at V location"],
-        axis = 'X',
-    ),
-    nj_v = dict(names = ['nj_v'],
-        standard_names =  ['y_grid_index_at_v_location'],
-        long_names = ["y-dimension of the grid at V location"],
-        axis = 'Y',
-    ),
+        atlocs=['t', 'u', 'v', 'f'],
+    )),
+#    ni_u', dict(
+#        names = ['ni_u'],
+#        standard_names =  ['x_grid_index_at_u_location'],
+#        long_names = ["x-dimension of the grid at U location"],
+#        axis = 'X',
+#    ),
+#    nj_u', dict(names = ['nj_u'],
+#        standard_names =  ['y_grid_index_at_u_location'],
+#        long_names = ["y-dimension of the grid at U location"],
+#        axis = 'Y',
+#    ),
+#    ni_v', dict(names = ['ni_v'],
+#        standard_names =  ['x_grid_index_at_v_location'],
+#        long_names = ["x-dimension of the grid at V location"],
+#        axis = 'X',
+#    ),
+#    nj_v', dict(names = ['nj_v'],
+#        standard_names =  ['y_grid_index_at_v_location'],
+#        long_names = ["y-dimension of the grid at V location"],
+#        axis = 'Y',
+#    ),
 
 
 
-)
+])
 axis_specs = AXIS_SPECS # compat
 
 #: Specifications for grid formating
 GRID_SPECS = {
+    '': dict(lon='lon', lat='lat', level='depth'),
     't': dict(lon='lon', lat='lat', level='depth_t'),
     'u': dict(lon='lon_u', lat='lat_u', level='depth_t'),
     'v': dict(lon='lon_v', lat='lat_v', level='depth_t'),
@@ -749,6 +822,7 @@ GRID_SPECS = {
 }
 #TODO: 't' must use lon_t and lat_t
 GRID_SPECS['r'] = GRID_SPECS['t']
+GRID_SPECS[None] = GRID_SPECS['']
 grid_specs = GRID_SPECS # compat
 
 _reloc =  OrderedDict(
@@ -1244,7 +1318,7 @@ for all_specs in VAR_SPECS, AXIS_SPECS:
         # Always lists (except for dict and some keys)
         for key, value in specs.items():
             if isinstance(value, dict): continue
-            if key in ['axis', 'inherit', 'physloc']: continue
+            if key in ['axis', 'inherit', 'physloc', 'cmap']: continue
             if isinstance(value, tuple):
                 specs[key] = list(specs[key])
             elif not isinstance(value, list):
@@ -1502,12 +1576,15 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
                 specs[sname] = [no_loc_single(specs[sname][0], stype)]
         name = specs['names'][0]
     # - id
-    if (force or var.id.startswith('variable_') or
+    if ((force is True or force in [2, 'id', 'all'])
+            or var.id.startswith('variable_') or
             (isaxis and var.id.startswith('axis_'))): # FIXME: use regexp
         var.id = name
     # - attributes
+    forceatts = (force is True or force in ['atts', 'all'] or
+        (isinstance(force, int) and force>0))
     for att, val in cf2atts(specs, **kwargs).items():
-        if force or not getattr(var, att, ''):
+        if forceatts or not getattr(var, att, ''):
             setattr(var, att, val)
     # - physical location
     loc = get_loc(var, mode='ext')
@@ -1657,8 +1734,8 @@ def format_grid(grid, pt, **kwargs):
     gs = GRID_SPECS[pt]
     lon = grid.getLongitude()
     lat = grid.getLatitude()
-    format_axis(lon, gs['lon'])
-    format_axis(lat, gs['lat'])
+    format_axis(lon, gs['lon'], **kwargs)
+    format_axis(lat, gs['lat'], **kwargs)
 
 
 #: Hidden attributes of variable useful of this module
@@ -1680,3 +1757,33 @@ def match_obj(obj, name, searchmode=None, **kwargs):
     return ncmatch_obj(obj, searchmode=searchmode, **search)
 
 match_var = match_obj
+
+def match_known_var(obj, searchmode=None, **kwargs):
+    """Check if an object matches a known variable"""
+    for name in GENERIC_VAR_NAMES:
+        if match_obj(obj, name, searchmode=searchmode):
+            return name
+    return False
+
+def match_known_axis(obj, searchmode=None, **kwargs):
+    """Check if an object matches a known axis"""
+    for name in GENERIC_AXIS_NAMES:
+        if match_obj(obj, name, searchmode=searchmode):
+            return name
+    return False
+
+def get_cf_cmap(vname):
+    """Get a cmap from a standard name
+
+    cmap may be specified for a variable with the 'cmap' key of
+    its entry in :attr:`VAR_SPECS`.
+    """
+    if hasattr(vname, 'id'):
+        vname = vname.id
+    if vname in VAR_SPECS and 'cmap' in VAR_SPECS[vname]:
+        cmap = get_cmap(VAR_SPECS[vname]['cmap'])
+        if cmap.name != VAR_SPECS[vname]['cmap']:
+            vacumm_warn("Can't get cmap '{}' for standard variable '{}'".format(
+                VAR_SPECS[vname]['cmap'], vname))
+
+    return cmap

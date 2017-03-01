@@ -7,6 +7,7 @@ class TSF(VCTestCase):
         'test_dataset_get_temp_mfs',
         'test_dataset_get_temp_menor',
         'test_dataset_get_var_seltime',
+        'test_dataset_get_variable_levelstring',
         'test_dataset_get_asvar_mfs',
         'test_dataset_get_asvar_menor',
         'test_dataset_get_at',
@@ -21,7 +22,7 @@ class TSF(VCTestCase):
         'test_dataset_plot_hsection_mfs',
         ]:
         exec(method_template.format(test_name))
-        
-        
+
+
 if __name__ == '__main__':
     unittest.main()

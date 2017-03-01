@@ -837,7 +837,7 @@ class CloudKriger(object):
             # Interpolate
             z = N.ascontiguousarray(dgemv(N.asfortranarray(W[:np].T, 'd'),
                 N.asfortranarray(self.zc[ic]-mean, 'd')))
-            if not self._simple:
+            if self._simple:
                 z += mean
 
             # Simplest case

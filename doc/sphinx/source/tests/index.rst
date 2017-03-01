@@ -36,6 +36,16 @@ Testing :mod:`~vacumm.misc.stats` module.
 
     test_stats_*
 
+Time
+-----
+
+Testing :mod:`~vacumm.misc.atime` module.
+
+.. toctree::
+    :glob:
+
+    test_atime_*
+
 Regridding
 ----------
 
@@ -66,6 +76,16 @@ Testing :mod:`~vacumm.misc.grid.masking` module.
     :glob:
 
     test_mask_*
+
+Filters
+-------
+
+Testing :mod:`~vacumm.misc.filters` module.
+
+.. toctree::
+    :glob:
+
+    test_filters_*
 
 Diagnostics
 -----------

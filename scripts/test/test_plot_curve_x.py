@@ -1,7 +1,7 @@
 """Test :func:`~vacumm.misc.plot.curve2` with a longitude axis"""
 
 # Imports
-from vcmq import MV2, code_file_name, os, code_file_name, curve2, create_lon
+from vcmq import MV2, code_file_name, os, curve2, create_lon
 
 # Init
 var = MV2.arange(5.)

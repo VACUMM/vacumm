@@ -61,11 +61,11 @@ base class.
 '''
 
 import inspect, os, pdb, pprint, sys, types
-
 from argparse import ArgumentParser
 from optparse import OptionParser
 import configobj
 
+from vacumm import vacumm_warning
 from .config import ConfigManager
 from .exception import getDetailedExceptionInfo
 from .misc import kwfilter, dict_merge
@@ -861,6 +861,7 @@ class Object(object):
         -----------------
         config:
             load a configuration (:meth:`load_config()`)
+        logger: :class:`Logger`
         logger_<param>:
             ``<param>`` is passed to the :class:`Logger` constructor.
 
@@ -870,7 +871,13 @@ class Object(object):
         if isinstance(lkw.get('config', None), Object):
             lkw['config'] = lkw['config'].get_logger()
         lkw['name_filters'] = list(lkw.get('name_filters', [])) + [self.__class__.__name__]
-        self._logger = Logger(**lkw)
+        if 'logger' in lkw:
+            self._logger = lkw['logger']
+            if not isinstance(self._logger, Logger):
+                vacumm_warning(self.__class__.__name__.split('.')[-1]+
+                    '{} is initialised with an invalid logger type')
+        else:
+            self._logger = Logger(**lkw)
         # Load passed or default configuration
         self.load_config(kwargs.get('config', None),  cfgpatch=kwargs.get('cfgpatch', None))
 

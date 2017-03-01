@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Classes for all plots"""
-# Copyright or © or Copr. Actimar/IFREMER (2012-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2012-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -63,7 +63,9 @@ from matplotlib.text import Text
 from matplotlib.ticker import (FormatStrFormatter, Formatter, Locator,
     NullLocator, AutoMinorLocator, AutoLocator)
 from matplotlib.transforms import offset_copy
-from mpl_toolkits.basemap import Basemap
+from mpl_toolkits.basemap import Basemap, _setlatlab, _setlonlab
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.collections import PolyCollection, LineCollection
 
 from vacumm import VACUMMError
 from vacumm.config import VACUMM_CFG, VACUMM_CFGSPECS, VACUMM_VDT, get_cfg_checked
@@ -78,8 +80,9 @@ from .remote import OutputWorkFile
 from .atime import mpl, comptime, strftime, is_numtime, numtime
 from .axes import (check_axes, istime, axis_type, set_order, get_order, merge_orders,
     check_order, order_match, isaxis)
-from .axes import set_order, isaxis, axis_type
-from .color import get_cmap, cmap_magic, cmap_rainbow, RGB, land, whiten, darken, RGBA
+from .color import (get_cmap, cmap_magic, cmap_rainbow, RGB, land, whiten, darken,
+    RGBA, change_luminosity, change_saturation, pastelise,
+    CMAP_POSITIVE, CMAP_NEGATIVE, CMAP_SYMETRIC, CMAP_ANOMALY)
 from .grid import meshbounds, get_axis, meshgrid, var2d
 from .basemap import create_map
 from .regridding import shift1d
@@ -96,6 +99,26 @@ __all__ = ['PlotError', 'Plot', 'Plot1D', 'Curve', 'Bar', 'Stick',
     'ScalarMappable','AutoDateFormatter2', 'AutoDateLocator2',
     'AutoDateMinorLocator', 'AutoDualDateFormatter', 'DualDateFormatter',
     'MinuteLabel', 'Section', 'twinxy']
+
+
+#: Aliases for argisimage services hosted by the arcgis server
+ARCGISIMAGE_ALIASES = dict(
+    esriimagery="ESRI_Imagery_World_2D",
+    esristreet="ESRI_StreetMap_World_2D",
+    esristreetmap="ESRI_StreetMap_World_2D",
+    natgeo="NatGeo_World_Map",
+    ngstopo="NGS_Topo_US_2D",
+    usatopo="USA_Topo_Maps",
+    ocean="Ocean_Basemap",
+    topo="World_Topo_Map",
+    shaded="World_Shaded_Relief",
+    physical="World_Physical_Map",
+    imagery="World_Imagery",
+    street="World_Street_Map",
+    streetmap="World_Street_Map",
+    terrain="World_Terrain_Base",
+)
+
 
 class PlotError(VACUMMError):
     pass
@@ -745,8 +768,8 @@ class Plot(object):
 
 
     def pre_plot(self, axes=None, figure=None, figsize=None, subplot=None, twin=None,
-        subplots_adjust=None, bgcolor=None, noframe=False, fullscreen=False,
-        verbose=False, axes_host=False, axes_xoffset=0, **kwargs):
+            subplots_adjust=None, bgcolor=None, noframe=False, fullscreen=False,
+            verbose=False, axes_host=False, axes_xoffset=0, **kwargs):
         """Initialize the plot
 
         .. rubric:: Tasks
@@ -825,9 +848,11 @@ class Plot(object):
             kwargs['axes_frameon'] = False
 
         # Figure
+        if figure == 'old':
+            figure = None
         if isinstance(figure, Figure):
             self.fig = figure
-        elif figure is True:
+        elif figure is True or figure == 'new':
             self.fig = P.figure(**kwfig)
         elif figure is not None:
             self.fig = P.figure(figure, **kwfig)
@@ -843,10 +868,17 @@ class Plot(object):
             self.fig.subplots_adjust(**subplots_adjust)
 
         # Axes
-        if axes_host and axes is None and subplot is None and not axes_rect  \
-                and twin is None:
+        if (axes_host and axes is None and subplot is None and not axes_rect
+                and twin is None):
             subplot = 111
+        if axes=="3d":
+            kwaxes['projection'] = "3d"
+            if subplot is None and not axes_rect:
+                subplot = 111
+            axes = None
         if axes is not None:
+            if axes=="3d":
+                self.fig.add_sub
             self.axes = axes
             if self.axes.get_figure() != self.fig:
                 if verbose: print 'Axes does not match figure'
@@ -887,6 +919,7 @@ class Plot(object):
             offset = (axes_xoffset, 0)
             self.axes.axis[loc] = new_fixed_axis(loc=loc, axes=self.axes, offset=offset)
             self.axes.axis[loc].toggle(all=True)
+        self.is3d = isinstance(self.axes, Axes3D)
 
         if noframe:
             self.axes.set_frame_on(False)
@@ -1266,7 +1299,7 @@ class Plot(object):
         kw = {}
         for kwtype in ['grid', 'title', 'hlitvs', 'hldays', 'dayhl', 'finalize',
             'figtext', 'key', 'savefig', 'savefigs', 'show', 'legend',
-            'tight_layout', 'param_label']:
+            'tight_layout', 'param_label', 'autoresize']:
             kw[kwtype] = kwfilter(kwargs, kwtype+'_')
             if (kwtype in self._primary_attributes+self._secondary_attributes+
                     self._special_attributes and kw[kwtype].has_key(kwtype)):
@@ -1277,7 +1310,7 @@ class Plot(object):
         kw['hlitvs'].update(kw['hldays']) # compat
 
         # Resize plot
-        autoresized = self.autoresize(autoresize)
+        autoresized = self.autoresize(autoresize, **kw['autoresize'])
 
         # Anchor
         if anchor is None and autoresized:
@@ -1599,21 +1632,46 @@ class Plot(object):
             return not self.axes.is_first_col()
         return False
 
-    def autoresize(self, autoresize):
+    def autoresize(self, autoresize=True, minaspect=None):
         """Resize figure or axes to fit to data axes"""
-        if autoresize and self.axes.get_aspect() != 'auto' and \
-            isinstance(self.axes, Subplot) and \
-            self.axes.is_first_col() and self.axes.is_first_row() and \
-            self.axes.is_last_col() and self.axes.is_last_row():
-            r = self.axes.get_aspect()
-            if r=='equal': r=1.
+        if (autoresize and self.axes.get_aspect() != 'auto' and
+                isinstance(self.axes, Subplot) and
+                self.axes.is_first_col() and self.axes.is_first_row() and
+                self.axes.is_last_col() and self.axes.is_last_row()):
+
+            r = self.axes.get_aspect() # dy/dx
+            if r=='equal':
+                r = 1.
             r *= self.axes.get_data_ratio()
     #       rect = self.axes.get_position(True)
     #       if autoresize == 2: r *= rect.width/rect.height
-            w,h = self.fig.get_size_inches()
-            a = 1.*w*h
-            W = N.sqrt(a/r)
-            H = r*W
+
+            sp = self.fig.subplotpars
+            x0 = sp.left
+            x1 = sp.right
+            y0 = sp.bottom
+            y1 = sp.top
+            Dx = x1 - x0
+            Dy = y1 - y0
+            R = r * Dx / Dy
+
+            if minaspect is not None:
+                R = N.clip(R, minaspect, 1/minaspect)
+
+
+            w, h = self.fig.get_size_inches()
+
+            if autoresize=='x': # Resize x only, change the surface
+                H = h
+                W = H / R
+            elif autoresize=='y': # Resize y only, change the surface
+                W = w
+                H = R * W
+            else: # Resize both x and y without changing the surface
+                a = 1.*w*h
+                W = N.sqrt(a / R)
+                H = r * W
+
             self.fig.set_size_inches(W, H ,forward=True)
             return True
         return False
@@ -2253,7 +2311,7 @@ class Plot(object):
 
 
     def quiverkey(self, qv, value, pos=(0.,1.02), text='%(value)g %(units)s',
-            units=None, latex_units=None, **kwargs):
+            units=None, latex_units=None, value_mode=80, **kwargs):
         """Add a quiver key to the plot
 
         Parameters
@@ -2275,7 +2333,7 @@ class Plot(object):
         """
 
         # Value
-        value = get_quiverkey_value(value)
+        value = get_quiverkey_value(value, mode=value_mode)
 
         # Text
         if units is None:
@@ -3253,12 +3311,55 @@ class Plot(object):
             delattr(target, att)
 
 
+    # ID / SHORT NAME
+
+    def get_id(self, idata=None):
+        """Get :attr:`id`"""
+        return self._get_xyattr_('d', 'id', idata=idata)
+    def set_id(self, id=None):
+        """Set :attr:`id`"""
+        self._set_xyattr_('d', 'id', id)
+    def del_id(self):
+        """Del :attr:`id`"""
+        self._del_xyattr_('d', 'id')
+    id = property(get_id, set_id,
+        del_id, 'Current long name')
+
+    def get_xid(self):
+        """Get :attr:`xid`"""
+        return self._get_xyattr_('x', 'id')
+    def set_xid(self, id=None):
+        """Set :attr:`xid`"""
+        self._set_xyattr_('x', 'id', id)
+    def del_xid(self):
+        """Del :attr:`xid`"""
+        self._del_xyattr_('x', 'id')
+    xid = property(get_xid, set_xid,
+        del_xid, 'Current id of X axis')
+
+    def get_yid(self):
+        """Get :attr:`yid`"""
+        return self._get_xyattr_('y', 'id')
+    def set_yid(self, id=None):
+        """Set :attr:`yid`"""
+        self._set_xyattr_('y', 'id', id)
+    def del_yid(self):
+        """Del :attr:`yid`"""
+        self._del_xyattr_('y', 'id')
+    yid = property(get_yid, set_yid,
+        del_yid, 'Current id of Y axis')
+
+
 
     # LONG_NAME
 
     def get_long_name(self, idata=None):
         """Get :attr:`long_name`"""
-        return self._get_xyattr_('d', 'long_name', idata=idata)
+        long_name = self._get_xyattr_('d', 'long_name', idata=idata)
+        id = self.get_id(idata=idata)
+        if long_name is None and id:
+            long_name = id.title().replace('_', ' ')
+        return long_name
     def set_long_name(self, long_name=None):
         """Set :attr:`long_name`"""
         self._set_xyattr_('d', 'long_name', long_name)
@@ -3270,7 +3371,10 @@ class Plot(object):
 
     def get_xlong_name(self):
         """Get :attr:`xlong_name`"""
-        return self._get_xyattr_('x', 'long_name')
+        long_name = self._get_xyattr_('x', 'long_name')
+        if long_name is None:
+            long_name = self.get_xid().title().replace('_', ' ')
+        return long_name
     def set_xlong_name(self, long_name=None):
         """Set :attr:`xlong_name`"""
         self._set_xyattr_('x', 'long_name', long_name)
@@ -3282,7 +3386,10 @@ class Plot(object):
 
     def get_ylong_name(self):
         """Get :attr:`ylong_name`"""
-        return self._get_xyattr_('y', 'long_name')
+        long_name = self._get_xyattr_('y', 'long_name')
+        if long_name is None:
+            long_name = self.get_yid().title().replace('_', ' ')
+        return long_name
     def set_ylong_name(self, long_name=None):
         """Set :attr:`ylong_name`"""
         self._set_xyattr_('y', 'long_name', long_name)
@@ -3675,7 +3782,8 @@ class ScalarMappable:
 
 
     """
-    _primary_attributes = Plot._primary_attributes + ['nmax', 'nmax_levels', 'levels', 'cmap', 'keepminmax',  'levels_mode']
+    _primary_attributes = Plot._primary_attributes + ['nmax', 'nmax_levels',
+        'levels_mode', 'levels', 'cmap', 'keepminmax']
     _secondary_attributes = Plot._secondary_attributes + ['cblabel']
 
     def get_nmax_levels(self):
@@ -3693,6 +3801,7 @@ class ScalarMappable:
         self.del_obj('nmax_levels')
     nmax_levels = nmax = property(get_nmax_levels, set_nmax_levels,
         del_nmax_levels, doc="Max number of :attr:`levels` for contours and colorbar ticks.")
+
 
     def get_levels(self, mode=None, keepminmax=None, nocache=False,
             autoscaling='normal', **kwargs):
@@ -3769,20 +3878,11 @@ class ScalarMappable:
         for key in 'positive', 'negative', 'symetric', 'anomaly':
             if kwargs.has_key(key) and kwargs[key]:
                 mode = key
-        if mode=='anomaly': mode = 'symetric'
-        elif mode=='smart': mode = 'auto'
-        elif mode=='basic': mode = 'normal'
         vmin = self.vmin if self.isset('vmin') else None
         vmax = self.vmax if self.isset('vmax') else None
         if mode == 'auto':
-            if self.masked:
-                mode = 'normal'
-            elif (self.vmin>=0 and self.vmax > 0) and (self.vmin<=self.vmax/3.):
-                mode = 'positive'
-            elif (self.vmin<0 and self.vmax<=0) and (self.vmax>=self.vmin/3.):
-                mode = 'negative'
-            elif (self.vmin+self.vmax)< 0.05 * (self.vmax-self.vmin):
-                mode = 'symetric'
+            mode = self.minmax2levelsmode(self.vmin, self.vmax)
+        self.levels_mode = mode
         if mode=='positive':
             vmin = 0.
         elif mode=='negative':
@@ -3790,7 +3890,6 @@ class ScalarMappable:
         elif mode=='symetric':
             vmax = max(N.abs(self.vmin), N.abs(self.vmax))
             vmin = -vmax
-        self.levels_mode = mode
 
         # Compute base levels
         assert autoscaling in ['normal', 'degrees'] or callable(autoscaling), 'Wrong autoscaling parameter'
@@ -3809,6 +3908,26 @@ class ScalarMappable:
         # Cache
         self._levels = levels
         return levels
+
+    def minmax2levelsmode(self, vmin=None, vmax=None):
+        """Get auto levels mode from min and max value
+
+        :Return: normal, symetric, positive or negative"""
+        if vmin is None:
+            vmin = self.vmin
+        if vmax is None:
+            vmax = self.vmax
+        if self.masked:
+            mode = 'normal'
+        elif (vmin>=0 and vmax > 0) and (vmin<=vmax/3.):
+            mode = 'positive'
+        elif (vmin<0 and vmax<=0) and (vmax>=vmin/3.):
+            mode = 'negative'
+        elif (vmin+vmax)< 0.05 * (vmax-vmin):
+            mode = 'symetric'
+        else:
+            mode = 'normal'
+        return mode
 
     def set_levels(self, value):
         """Set :attr:`levels`"""
@@ -3845,7 +3964,7 @@ class ScalarMappable:
             levels_mode = VACUMM_CFG['vacumm.misc.plot']['levels_mode']
         levels_mode = str(levels_mode)
         return levels_mode
-    def set_levels_mode(self, value):
+    def set_levels_mode(self, mode):
         """Set :attr:`levels_mode`"""
         if value is None:
             value = get_cfg_checked('vacumm.misc.plot', 'levels_mode', value)
@@ -3854,7 +3973,26 @@ class ScalarMappable:
         """Del :attr:`levels_mode`"""
         self.del_obj('levels_mode')
     levels_mode = property(get_levels_mode, set_levels_mode,
-        del_levels_mode, doc="The way :attr:`levels` are estimated from :attr:`vmin` and :attr:`vmax`: 'positive'/'negative' means levels starting/ending from 0, 'anomaly' or 'symetric' means symetric levels, 'auto' or 'smart' means that mode is estimated from min and max.")
+        del_levels_mode, doc="The way :attr:`levels` are estimated from "
+            ":attr:`vmin` and :attr:`vmax`: 'positive'/'negative' means levels "
+            "starting/ending from 0, 'anomaly' or 'symetric' means symetric "
+            "levels, 'auto' or 'smart' means that mode is estimated "
+            "from min and max, and 'normal' means no special treatment.")
+    def _check_levels_mode_(self, mode):
+        """Check values and aliases, and fallback to config value"""
+        mode = str(mode).lower()
+        if mode not in ['auto', 'smart', 'normal', 'basic', 'positive',
+                'negative', 'symetric', 'anomaly']:
+            oldmode = mode
+            mode = get_config_value('vacumm.misc.plot', 'levels_mode', user=False)
+            warn('Bad value for config value [vacumm.misc.plot] levels_mode: %s. Switched to default: %s'%(oldmode, mode))
+        if mode=='anomaly':
+            mode = 'symetric'
+        elif mode=='smart':
+            mode = 'auto'
+        elif mode=='basic':
+            mode = 'normal'
+        return mode
 
     def get_vmin(self, index=0, glob=False):
         """Get :attr:`vmin`"""
@@ -3884,49 +4022,116 @@ class ScalarMappable:
         Plot.del_vmax, doc="Data max to use for plot")
 
 
-    def get_cmap(self, cmap=None, nocache=False, tint=0, **kwargs):
+    @staticmethod
+    def _get_config_cmap_(key='cmap'):
+            cmap = get_config_value('vacumm.misc.plot', key)
+            if cmap is None:
+                cmap = get_config_value('vacumm.misc.plot', key, user=False)
+            if cmap is None or cmap.lower() in ['none', 'mpl', 'default',
+                'normal', 'true', 'false']:
+                cmap = None # default from matplotlib
+            return cmap
+
+    def get_cmap(self, cmap=None, nocache=False, tint=None, lum=None, sat=None,
+            pastel=False, **kwargs):
         """Get :attr:`cmap`
 
         Parameters
         ----------
         cmap: optional
-            Colormap name (see :func:`get_cmap`).
+            Colormap name (see :func:`vacumm.misc.color.get_cmap`).
             It defaults to ``"magic"``.
         nocache: optional
             Once cmap is computed, it is stored
             in cache. If ``nocache is True``, first check cache before
             trying to compute cmap.
+        lum: optional
+            Change luminosity, between -1 and 1.
+        sat: optional
+            Change saturation.
 
         """
+
+        # From cache
         cmap = self.get_obj('cmap')
-#        if not isinstance(cmap, Colormap): cmap = None
-        if cmap is None and not nocache and hasattr(self, '_cmap'):
+        if (cmap is None and not nocache and hasattr(self, '_cmap') and
+                tint is None and lum is None):
             cmap = self._cmap
-        if cmap == 'mpl': cmap = False
-        if cmap is None or cmap=='auto' or cmap is True :
-            cmap = VACUMM_CFG['vacumm.misc.plot']['cmap']
-        if cmap=='mg' or 'vacumm_magic':
+
+        # From config
+        if cmap is None or cmap is True :
+            cmap = self._get_config_cmap_()
+
+        # Aliases
+        if cmap == 'mpl':
+            cmap = False
+        elif cmap=='mg':
             cmap = 'magic'
-        elif cmap=='rb' or 'vacumm_rainbow':
+        elif cmap=='rb':
             cmap = 'rainbow'
-        if cmap=='magic' or cmap=='rainbow':
-            import color
-            mode = getattr(self, 'levels_mode', 'auto')
-            if mode=='auto': mode = 'normal'
-            if cmap=='magic': kwargs.setdefault('mode', mode)
-            kwargs.setdefault('stretcher', 'reduced_green')
-            if getattr(self, 'fill_method', None)=='contourf' or getattr(self, 'fill', '')=='contourf':
-                dict_check_defaults(kwargs, stretch=0, lstretch=0, rstretch=0)
-            cmap = getattr(color, 'cmap_'+cmap)(self.levels, **kwargs)
+        elif cmap == 'normal' or cmap is True or cmap is False:
+            cmap = None
+
+        # Adaptative choices
+        cmap_levels = ['positive', 'negative', 'symetric', 'anomaly']
+        if cmap in ['auto', 'magic', 'rainbow'] + cmap_levels:
+
+            # Levels mode
+            if cmap in cmap_levels:
+                levels_mode = self._check_levels_mode_(cmap)
+                cmap = 'auto'
+            else:
+                levels_mode = self.levels_mode
+                if levels_mode == 'auto':
+                    levels_mode = self.minmax2levelsmode(self.vmin, self.vmax)
+
+            if cmap=='auto':
+
+                if levels_mode == 'normal':
+                    cmap = None
+                elif levels_mode == 'symetric':
+                    cmap = self._get_config_cmap_('cmap_symetric')
+                    if cmap is None:
+                        cmap = CMAP_SYMETRIC
+                elif levels_mode == 'positive':
+                    cmap = self._get_config_cmap_('cmap_positive')
+                    if cmap is None:
+                        cmap = CMAP_POSITIVE
+                else:
+                    cmap = self._get_config_cmap_('cmap_negative')
+                    if cmap is None:
+                        cmap = CMAP_NEGATIVE
+                cmap = get_cmap(cmap, errmode='warn')
+
+            elif cmap=='magic' or cmap=='rainbow':
+
+                if cmap=='magic':
+                    kwargs.setdefault('mode', levels_mode)
+                kwargs.setdefault('stretcher', 'reduced_green')
+                if getattr(self, 'fill_method', None)=='contourf' or getattr(self, 'fill', '')=='contourf':
+                    dict_check_defaults(kwargs, stretch=0, lstretch=0, rstretch=0)
+                cmap = getattr(color, 'cmap_'+cmap)(self.levels, **kwargs)
+
 
         elif not isinstance(cmap, Colormap):
-            cmap = get_cmap(cmap, **kwargs)
-        if tint is None: tint = 0
-        tint = N.clip(tint, -1, 1)
-        if tint<0:
-            cmap = darken(cmap, -tint)
-        elif tint>0:
-            cmap = whiten(cmap, tint)
+
+            cmap = get_cmap(cmap, errmode='warn', **kwargs)
+
+        # Luminosity
+        if lum is None:
+            lum = .5
+        if tint is not None:
+            lum = tint*.5 + .5
+        cmap = change_luminosity(cmap, lum)
+
+        # Saturation
+        if sat is not None:
+            cmap = change_saturation(cmap, sat)
+
+        # Pastelisation
+        if pastel:
+            cmap = pastelise(cmap)
+
         self._cmap = cmap
         return cmap
     def set_cmap(self, cmap):
@@ -4368,7 +4573,7 @@ class Bar(Plot1D):
 
         # Data
         data = self.get_data()[0]
-        axis = self.get_axis_data()
+        axis = self.get_axis_data().astype('d')
         bounds = meshbounds(axis)
         widths = N.diff(bounds)
         axis += widths*(lag if lag else 0.)
@@ -4401,7 +4606,7 @@ class Bar(Plot1D):
 
 class QuiverKey:
 
-    def quiverkey(self, qv, value=None, **kwargs):
+    def quiverkey(self, qv, value=None, value_mode=80, **kwargs):
         """Add a quiver key to the plot
 
         See :meth:`Plot.quiverkey` for arguments.
@@ -4426,7 +4631,7 @@ class QuiverKey:
         # Value
         if value is None:
             m,u,v = self.get_data()
-            value = get_quiverkey_value((u, v))
+            value = get_quiverkey_value((u, v), mode=value_mode)
             del m, u, v
 
         return Plot.quiverkey(self, qv, value, **kwargs)
@@ -4998,11 +5203,10 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         fill = self.fill_method = self.get_fill(**kwargs)
         if fill == 'no': return
 
-        # Color map
-        cmap = self.get_cmap(**kwcmap)
+        # Levels
+        levels = self.get_levels(**kwlevels)
 
         # Norm
-        levels = self.get_levels(**kwlevels)
 #        from matplotlib.colors import Normalize
         if norm is None:
             from color import StepsNorm
@@ -5011,6 +5215,9 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             norm = Normalize(min(levels), max(levels))
         elif not isinstance(norm, Normalize):
             norm = None
+
+        # Color map
+        cmap = self.get_cmap(**kwcmap)
 
         # Data
         data = self.get_data(scalar=True)
@@ -5309,8 +5516,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         kwqvkey = kwfilter(kwargs, 'quiverkey')
         if zorder is not None:
             kwqv['zorder'] = zorder
-        if kwqv.has_key('width') and kwqv['width'] > .01:
-            kwqv['width'] *= 0.001
+#        if kwqv.has_key('width') and kwqv['width'] > .01:
+#            kwqv['width'] *= 0.001
         shadow = kwqv.pop('shadow', shadow)
         glow = kwqv.pop('glow', glow)
         kwsh = kwfilter(kwqv, 'shadow')
@@ -5831,7 +6038,7 @@ class Map(Plot2D):
         return self.map(lon, lat, inverse=inverse)
 
 
-    def plot(self, lowhighs=False, arcgisimage=None, **kwargs):
+    def plot(self, **kwargs):
         """Main plot
 
         It performs the following tasks:
@@ -5842,45 +6049,8 @@ class Map(Plot2D):
 
 
 
-        # Keywords
-        kwlh = kwfilter(kwargs, 'lowhighs')
-        kwag = kwfilter(kwargs, 'arcgisimage')
-
         # Generic 2D plot
         Plot2D.plot(self, **kwargs)
-
-        # Plot lows and highs
-        lowhighs = kwargs.pop('lowhigh', lowhighs)
-        if lowhighs:
-            self.add_lowhighs(**kwlh)
-
-        # Plot arcgisimage
-        if arcgisimage is True:
-            arcgisimage = "esriimagery"
-        if isinstance(arcgisimage, basestring):
-            arcgisimage = dict(
-                esriimagery="ESRI_Imagery_World_2D",
-                esristreet="ESRI_StreetMap_World_2D",
-                esristreetmap="ESRI_StreetMap_World_2D",
-                natgeo="NatGeo_World_Map",
-                ngstopo="NGS_Topo_US_2D",
-                usatopo="USA_Topo_Maps",
-                ocean="Ocean_Basemap",
-                topo="World_Topo_Map",
-                shaded="World_Shaded_Relief",
-                physical="World_Physical_Map",
-                imagery="World_Imagery",
-                street="World_Street_Map",
-                streetmap="World_Street_Map",
-                terrain="World_Terrain_Base",
-            ).get(arcgisimage, arcgisimage)
-            dict_check_defaults(kwag, service=arcgisimage, xpixels=800)
-            try:
-                self.map.arcgisimage(**kwag)
-            except Exception(e):
-                warn('Error when plotting arcgisimage: {}.\nMessage: {}'.format(
-                    arcgisimage, e.message))
-
 
         # Update map limits
         self.map.set_axes_limits(ax=self.axes)
@@ -5956,6 +6126,40 @@ class Map(Plot2D):
         del xlows, ylows, xhighs, yhighs
         return tts
 
+
+    def add_arcgisimage(self, service, **kwargs):
+        """Add an Arcgis image
+
+        Available service aliases (see :attr:`ARCGISIMAGE_ALIASES`): {}
+        """
+
+        # Alias
+        if not service:
+            return
+        if service is True:
+            service = "esriimagery"
+        if isinstance(service, basestring):
+            service = ARCGISIMAGE_ALIASES.get(service, service)
+
+        # Pixels
+        axext = self.axes.bbox.extents
+        fact = 1.3
+        xpixels = (axext[2]-axext[0])*fact
+#        ypixels = (axext[3]-axext[1])*fact
+        dpi = self.fig.dpi
+
+        # Call the basemap method
+        dict_check_defaults(kwargs, service=service,
+            xpixels=xpixels,
+#            ypixels=ypixels,
+            dpi=dpi)
+        try:
+            return self.map.arcgisimage(**kwargs)
+        except Exception, e:
+            warn('Error when plotting arcgisimage: {}.\nMessage: {}'.format(
+                service, e.message))
+
+    add_arcgisimage.__doc__.format(', '.join(ARCGISIMAGE_ALIASES.keys()))
 
     def _get_posposref_(self, pos=None, posref=None, xrel=0.1, yrel=0.1, transform='axes',
         xpad=30, ypad=None):
@@ -6227,11 +6431,15 @@ class Map(Plot2D):
 
         return ms+list(cp)
 
-    def post_plot(self, drawrivers=False, fillcontinents=True, meridional_labels=True, zonal_labels=True,
-        drawcoastlines=True, drawmapboundary=True, meridians=None, parallels=None,
-        land_color=None, ticklabel_size=None, refine=0, no_seconds=False, fullscreen=False,
-        minutes=True, mapscale=False, compass=False, mscp=False, bfdeg=None,
-         **kwargs):
+    def post_plot(self, drawrivers=False, fillcontinents=True,
+            meridional_labels=True, zonal_labels=True,
+            drawcoastlines=True, drawmapboundary=True,
+            meridians=None, parallels=None,
+            land_color=None, ticklabel_size=None, refine=0,
+            no_seconds=False, fullscreen=False,
+            minutes=True, mapscale=False, compass=False, mscp=False,
+            bfdeg=None, lowhighs=False, arcgisimage=None,
+            **kwargs):
         """Post-processing of the plot
 
         .. rubric:: Tasks
@@ -6349,19 +6557,43 @@ class Map(Plot2D):
                 kwfillcontinents = kwfilter(kwargs, 'fillcontinents_', defaults={'color':land_color})
 
                 if self.map.resolution is not None:# GSHHS
+
+                    # Draw coastlines
                     if drawcoastlines and not self.get_axobj('drawcoastlines'):
-                        self.set_axobj('drawcoastlines', self.map.drawcoastlines(**kwdrawcoastlines))
+                        o = self.map.drawcoastlines(**kwdrawcoastlines)
+                        self.set_axobj('drawcoastlines', o)
+                        if self.is3d:
+                            self.axes.add_collection3d(o)
+
+                    # Fill continents
                     fcsh = kwfillcontinents.pop('shadow', False)
                     kwfcsh = kwfilter(kwfillcontinents, 'shadow_')
                     if fillcontinents and not self.get_axobj('fillcontinents'):
-                        try:
-                            self.set_axobj('fillcontinents', self.map.fillcontinents(**kwfillcontinents))
-                        except:
-                            pass
-                        if self.get_axobj('fillcontinents') is not None and fcsh:
-                            add_shadow(self.get_axobj('fillcontinents'), **kwfcsh)
+                        if not self.is3d:
+                            try:
+                                self.set_axobj('fillcontinents', self.map.fillcontinents(**kwfillcontinents))
+                            except:
+                                pass
+                            if self.get_axobj('fillcontinents') is not None and fcsh:
+                                add_shadow(self.get_axobj('fillcontinents'), **kwfcsh)
+                        else:
+                            polys = []
+                            for polygon in self.map.landpolygons:
+                                polys.append(polygon.get_coords())
+                            kwfillcontinents['facecolor'] = kwfillcontinents.pop('color')
+                            kwfillcontinents.pop('lake_color', None)
+                            lc = PolyCollection(polys, linewidth=0, closed=False,
+                                **kwfillcontinents)
+                            del polys
+                            self.axes.add_collection3d(lc)
+
+
+                    # Draw rivers
                     if drawrivers and not self.get_axobj('drawrivers'):
-                        self.set_axobj('drawrivers', self.map.drawrivers(**kwfilter(kwargs,'drawrivers')))
+                        o = self.map.drawrivers(**kwfilter(kwargs,'drawrivers'))
+                        self.set_axobj('drawrivers', o)
+                        if self.is3d:
+                            self.axes.add_collection3d(o)
 
                 #elif m.res == 's': # SHOM
                 else:
@@ -6399,9 +6631,9 @@ class Map(Plot2D):
                 kwp['linewidth'] = kwm['linewidth'] = 0
             # - parallels
             if drawparallels:
-                if self._xyhide_('y', kwargs.get('yhide', False)):
+                if self._xyhide_('y', kwargs.get('yhide', False)) or self.is3d:
                     meridional_labels = 0
-                kwp.update(labels=[int(meridional_labels),0,0,0])
+                kwp.setdefault('labels', [int(meridional_labels),0,0,0])
 #                kwp.update(kwpm_def)
                 kwp.update(kwfilter(kwargs, 'yticklabels_'))
                 kwp = kwfilter(kwargs,'drawparallels',defaults=kwp)
@@ -6415,15 +6647,15 @@ class Map(Plot2D):
                 if minutes: kwp.setdefault('fmt',
                     MinuteLabel(parallels, zonal=False, tex=None,
                         no_seconds=no_seconds, bfdeg=bfdeg))
-                self.set_axobj('drawparallels', self.map.drawparallels(parallels,**kwp))
+#                self.set_axobj('drawparallels', self.map.drawparallels(parallels,**kwp))
                 self.parallels = parallels
             else:
                 self.parallels = None
             # - meridians
             if drawmeridians:
-                if self._xyhide_('x', kwargs.get('xhide', False)):
+                if self._xyhide_('x', kwargs.get('xhide', False)) or self.is3d:
                     zonal_labels = 0
-                kwm.update(labels=[0,0,0,int(zonal_labels)])
+                kwm.setdefault('labels', [0,0,0,int(zonal_labels)])
 #                kwm.update(kwpm_def)
                 kwm.update(kwfilter(kwargs, 'xticklabels_'))
                 kwm = kwfilter(kwargs,'drawmeridians',defaults=kwm)
@@ -6445,6 +6677,33 @@ class Map(Plot2D):
             else:
                 self.meridians = None
 
+            if self.is3d:
+                def addto3d(what, fmt='%g', labstyle=None, **kwargs):
+                    """Handle lines ans labels for 3D plots"""
+                    coords = []
+                    for value, par in self.get_axobj(what).items():
+                        for line in par[0]:
+                            xy = line.get_xydata()
+                            coords.append(xy)
+                            x = xy[0, 0]
+                            y = xy[0, 1]
+                            if what=='drawmeridians':
+                                lab = _setlatlab(fmt, value, labstyle)
+                                zdir = 'y'
+                                ha = 'left'
+                            else:
+                                lab = _setlonlab(fmt, value, labstyle)
+                                zdir = 'x'
+                                ha = 'right'
+                            self.axes.text(x, y, 0, lab, ha=ha, va='center',
+                                           zdir=zdir)
+                    if coords:
+                        self.axes.add_collection3d(LineCollection(coords,
+                            linewidths=[line.get_linewidth()],
+                            linestyles=[line.get_linestyle()],
+                            colors=[line.get_color()],
+                            ))
+
             # - bfdeg (bold face degrees) homogeneisation
             if (drawparallels and isinstance(kwp['fmt'], MinuteLabel) and
                     drawmeridians and isinstance(kwm['fmt'], MinuteLabel) and
@@ -6454,9 +6713,13 @@ class Map(Plot2D):
             # - draw
             if drawparallels:
                 self.set_axobj('drawparallels', self.map.drawparallels(parallels,**kwp))
+                if self.is3d:
+                    addto3d('drawparallels', **kwp)
             if drawmeridians:
                 # Draw
                 lonlabs = self.set_axobj('drawmeridians', self.map.drawmeridians(meridians,**kwm))
+                if self.is3d:
+                    addto3d('drawmeridians', **kwm)
                 # Remove duplicated labels
                 llfound = []
                 for ll in lonlabs.keys()[:]:
@@ -6466,7 +6729,15 @@ class Map(Plot2D):
                         lab.set_visible(False)
                     llfound.append(llm)
 
+        # Plot lows and highs
+        lowhighs = kwargs.pop('lowhigh', lowhighs)
+        if lowhighs:
+            self.add_lowhighs(**kwfilter(kwargs, 'lowhighs'))
 
+        # Plot arcgis image
+        arcgisimage = kwargs.pop('arcgisimage', arcgisimage)
+        if arcgisimage:
+            self.add_arcgisimage(arcgisimage, **kwfilter(kwargs, 'arcgisimage'))
 
         # Map scale and compass
         if mscp:
@@ -6528,12 +6799,27 @@ def get_axis_scale(axis, type=None):
         units
         #NOT FINISHED
 
-def get_quiverkey_value(data):
+def get_quiverkey_value(data, mode=80):
     """Get a decent value for a quiver key"""
+    # From components
     if isinstance(data, tuple):
         data = N.ma.sqrt(data[0]**2+data[1]**2)
-    vmax = N.ma.max(data) ; del data
-    v10 = N.ma.log10(vmax)
+
+    # Reference value
+    if mode=='max':
+        vref = N.ma.max(data)
+    elif mode=='mean':
+        vref = N.ma.mean(data)
+    else:
+        if mode=='median':
+            mode = .5
+        elif not isinstance(mode, (int, float)):
+            raise PlotError('Unkown quiverkey value mode: {}'.format(mode))
+        vref = N.percentile(data, mode)
+    del data
+
+    # Quiverkey value
+    v10 = N.ma.log10(vref)
     if ((v10+1) % 1) > (N.log10(.5) % 1):
         v10 = N.ma.ceil(v10)
     else:
@@ -7824,7 +8110,6 @@ def _asnum_(xy):
         out.append(xy)
     if single: return out[0]
     return out
-
 
 
 docfiller.scan(Plot, Plot.format_axes, Plot.load_data, Plot._check_order_,

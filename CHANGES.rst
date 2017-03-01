@@ -1,6 +1,36 @@
 Release notes
 #############
 
+Version 3.3.0
+=============
+
+- Added cmap_lum, cma_sat and cmap_pastel keyword to plots
+- Added saturate, desaturate, change_luminosity, change_saturation, pastelise
+- Added cdtime validator to ConfigManager
+- Added isempty to StatAccum
+- Added interp_clim
+- Added cylic mode support for extend1d
+- Added support of intervals to get_xy
+- Added espg support to cached_map
+- Added x/ymargin support to minimap
+- Added squarebox
+- Added SimpleCloudKriger
+- Added cellwidth support to bounds1d and meshcells
+- Added dict support to scalebox
+- Added cmocean colormaps support
+- Added add_lightshading to plot
+- Added fortran linear4dto1d
+- Fixed xmlconfig attribute type checking
+- Added zenodo DOI
+- Renamed import of time_selector to filter_time_selector
+- Fixed ncget_grid
+- Fixed axis for 1d regridding of 1d arrays
+- Fixed 360 wrap test in grid2xy
+- Fixed tsel2slice
+- Fixed template cloning in StatAccum
+- Fixed dump/load of StatAccum
+- Fixed resol_mask
+
 Version 3.2.0
 =============
 

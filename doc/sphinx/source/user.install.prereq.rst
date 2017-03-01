@@ -5,6 +5,10 @@
 Prerequisites
 =============
 
+
+.. note:: It is highly suggested to install UV-CDAT and other vacumm
+    dependencies using `conda <http://conda.pydata.org/docs/index.html>`_.
+
 .. _user.prereq.list:
 
 List of packages
@@ -57,6 +61,9 @@ useful  packages that can be install using :program:`pip` or
    * - :pypi:`xlwt`
      - Only for :func:`~vacumm.misc.misc.xls_style`.
      - Write excel files (better: :pypi:`xlutils`)
+   * - :pypi:`cmocean`
+     - Only if you want cmocean colormaps
+     - Make these colormaps available like ``cmocean_thermal``
    * - :pypi:`PIL (1.1.7)`
      - Only sometimes for :func:`~vacumm.misc.plot.add_logo`.
      - Manipulate images
@@ -98,6 +105,15 @@ These utilities are needed to fully compile the documentation.
 Install UV-CDAT
 ---------------
 
+From conda
+^^^^^^^^^^
+
+Using the `conda installer <http://conda.pydata.org/docs/index.html>`_::
+
+    $ conda install -c uvcdat uvcdat
+
+From sources
+^^^^^^^^^^^^
 
 To install UV-CDAT, follow the official `instructions <http://uv-cdat.llnl.gov/install>`_.
 It can be installed on both linux and mac, by compiling sources or using
@@ -121,6 +137,8 @@ Setup the environment
 Once the installation is done, set environment variables (bash)::
 
     $ export PATH=/path/to/uvcdat/bin:$PATH
+
+    # For install from sources
     $ export LD_LIBRARY_PATH=/path/to/uvcdat/Externals/lib:/path/to/uvcdat/lib:$LD_LIBRARY_PATH
     $ export C_INCLUDE_PATH=/path/to/uvcdat/Externals/include:$C_INCLUDE_PATH
 
@@ -135,7 +153,11 @@ Then check::
 Install other packages
 ----------------------
 
-::
+Using :program:`conda`::
+
+    $ conda install -c conda-forge configobj PIL paramiko xlutils seawater pytz cmocean
+
+Using pip::
 
     $ pip install configobj PIL paramiko xlutils seawater pytz
     $ pip install sphinxcontrib-cheeseshop sphinxcontrib-ansi sphinxcontrib-programoutput sphinx-fortran

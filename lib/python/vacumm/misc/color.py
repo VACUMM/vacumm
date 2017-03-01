@@ -43,11 +43,12 @@ import re
 import os
 import glob
 import colorsys
+from copy import deepcopy
 
 import numpy as N
 from matplotlib.cm import ScalarMappable
 from matplotlib.colors import (Colormap, Normalize, LinearSegmentedColormap,
-    ColorConverter, makeMappingArray)
+    ColorConverter, makeMappingArray, rgb_to_hsv, hsv_to_rgb)
 import pylab as P
 from matplotlib.cm import cmap_d
 import matplotlib.cbook as cbook
@@ -59,6 +60,7 @@ except:
     cmoceancm = None
 
 import vacumm
+from vacumm import vacumm_warn
 from .misc import kwfilter, broadcast, dict_check_defaults
 
 ma = N.ma
@@ -104,7 +106,10 @@ __all__ = ['cmap_custom', 'cmap_bwr', 'cmap_bwre', 'cmap_br', 'cmap_wr', 'cmap_w
     'cmap_previmer', 'cmap_rnb2_hymex','cmap_rainbow_sst_hymex','cmap_dynamic_cmyk_hymex',
     'cmap_white_centered_hymex','cmap_red_tau_hymex', 'cmap_previmer2', 'cmap_ssec',
     'cmap_ncview_rainbow', 'cmap_eke', 'cmap_rb', 'cmap_currents', 'cmaps_registered',
-    'cmap_br2','cmap_nice_gfdl', 'anamorph_cmap', 'discretize_cmap']
+    'cmap_br2','cmap_nice_gfdl', 'anamorph_cmap', 'discretise_cmap', 'to_grey',
+    'change_luminosity', 'saturate', 'desaturate', 'change_saturation',
+    'change_value', 'pastelise'
+    ]
 __all__.sort()
 
 # Color maps
@@ -2237,7 +2242,7 @@ def cmap_red_tau_hymex(name="vacumm_red_tau_hymex", **kwargs):
     return cmap
 
 
-def get_cmap(cmap=None, **kwargs):
+def get_cmap(cmap=None, errmode=None, **kwargs):
     """A simple way to get a VACUMM, GMT or MPL colormap
 
     Example
@@ -2270,7 +2275,16 @@ def get_cmap(cmap=None, **kwargs):
         elif  cmap.startswith('vacumm_') and kwargs:
             cmap = eval('cmap_'+cmap[7:])(**kwargs)
         else:
-            cmap = P.get_cmap(cmap)
+            if errmode=='raise':
+                cmap = P.get_cmap(cmap)
+            else:
+                try:
+                    cmap = P.get_cmap(cmap)
+                except:
+                    if errmode=='warn':
+                        vacumm_warn('Invalid colormap: {!s}. Switch to default one'.format(cmap))
+                    cmap = P.get_cmap()
+
     else:
         cmap = P.get_cmap()
     return cmap
@@ -2587,6 +2601,74 @@ def cmap_gmt(name, register=True, **kwargs):
     return cmap_custom(colorDict, name, register=register, **kwargs)
 
 
+
+def _generic_transform_(c, converter, channels, *args, **kwargs):
+
+    # Colormap case
+    if isinstance(c, Colormap):
+        c = deepcopy(c)
+        if not hasattr(c, '_lut'):
+            c._init()
+        c._lut[:-3, :3] = _generic_transform_(c._lut[:-3, :3], converter, channels, *args, **kwargs)
+        for att in '_under', '_over', '_bad':
+            col = getattr(c, '_rgba'+att, None)
+            if col is not None:
+                fset = getattr(c, 'set'+att)
+                fset(_generic_transform_(col, converter, channels, *args, **kwargs)+(col[3], ))
+        return c
+
+    # Get RGB
+    with_hsv = 'h' in channels or 's' in channels or 'v' in channels
+    if isinstance(c, N.ndarray): # array
+        r = c[:, 0]
+        g = c[:, 1]
+        b = c[:, 2]
+        if with_hsv:
+            hsv = rgb_to_hsv(c[:, :3])
+            h = hsv[:, 0]
+            s = hsv[:, 1]
+            v = hsv[:, 2]
+            back_to_rgb = lambda x, y, z: hsv_to_rgb(N.array([x, y, z]).T)[:, :3].T
+    else:
+        r, g, b, a = RGBA(c)
+        if with_hsv:
+            h, s, v = rgb_to_hsv((r, g, b))
+            back_to_rgb = lambda x, y, z: hsv_to_rgb((x, y, z))
+
+    # Convert channels
+    conv = lambda c: N.clip(converter(c, *args, **kwargs), 0, 1)
+    if 'r' in channels:
+        r = conv(r)
+    if 'g' in channels:
+        g = conv(g)
+    if 'b' in channels:
+        b = conv(b)
+    if with_hsv:
+        if 'h' in channels:
+            h = conv(h)
+        if 's' in channels:
+            s = conv(s)
+        if 'v' in channels:
+            v = conv(v)
+        r, g, b = back_to_rgb(h, s, v)
+    if isinstance(c, N.ndarray):
+        c = c.copy()
+        c[:, 0] = r
+        c[:, 1] = g
+        c[:, 2] = b
+        return c
+    return r, g, b
+
+
+def _pull_toward_value_(x, f, v):
+    """Move toward a value
+
+    No effect with f=0
+    Max effect with f=1
+    """
+    return v - (v-x) * (1-f)
+
+
 def darken(c, f):
     """Darken a color 'c' by a factor 'f' (max when f=1)
 
@@ -2595,7 +2677,7 @@ def darken(c, f):
     c:
         Color
     f:
-        Factor between 0 and 1
+        Factor between 0 and 1 with null impact at 0
 
     Example
     -------
@@ -2608,32 +2690,18 @@ def darken(c, f):
     --------
     :func:`whiten`
     """
-    if isinstance(c, Colormap):
-        c._init()
-        c._lut[:-3, :-1] = [darken(rgb,f) for rgb in c._lut[:-3, :-1]]
-        for att in '_under', '_over', '_bad':
-            col = getattr(c, '_rgba'+att, None)
-            if col is not None:
-                func = getattr(c, 'set'+att)
-                func(darken(col,f)+(col[3], ))
-        return c
-    r,g,b,a = RGBA(c)
-    f = 1-f
-    r = f*r
-    g = f*g
-    b = f*b
-    return r,g,b
+    converter = lambda x, f: _pull_toward_value_(x, f, 0)
+    return _generic_transform_(c, converter, 'rgb', f)
 
 def whiten(c, f):
     """Whiten a color 'c' by a factor 'f' (max when f=1)
 
     Parameters
     ----------
-
     c:
         Color
     f:
-        Factor between 0 and 1
+        Factor between 0 and 1 with null impact at 0
 
     Example
     -------
@@ -2646,22 +2714,20 @@ def whiten(c, f):
     --------
     :func:`whiten`
     """
-    if isinstance(c, Colormap):
-        c._init()
-        c._lut[:-3, :-1] = [whiten(rgb,f) for rgb in c._lut[:-3, :-1]]
-        for att in '_under', '_over', '_bad':
-            col = getattr(c, '_rgba'+att, None)
-            if col is not None:
-                func = getattr(c, 'set'+att)
-                func(whiten(col,f)+(col[3], ))
-        return c
-    r,g,b,a = RGBA(c)
-    f = 1-f
-    r = 1.-f*(1-r)
-    g = 1.-f*(1-g)
-    b = 1.-f*(1-b)
-    return r,g,b
+    converter = lambda x, f: _pull_toward_value_(x, f, 1)
+    return _generic_transform_(c, converter, 'rgb', f)
 
+def change_luminosity(c, f):
+    """Change the luminosity
+
+    :Params:
+        - **c**: color
+        - **f**: Factor between 0 and 1 with null impact at 0
+    """
+    f = 2*f-1
+    if f>0:
+        return whiten(c, f)
+    return darken(c, -f)
 
 def to_shadow(c,att=.3):
     """Return the shadow color of a color
@@ -2681,7 +2747,72 @@ def to_shadow(c,att=.3):
     """
     return darken(c, 1-att)
 
+def to_grey(c, f, g=.5):
+    """Pull a color toward a single grey vzlue
 
+    :Params:
+
+        - **c**: Color
+        - **f**: Factor between 0 and 1.
+          When max, color is converted to medium grey ("0.5").
+        - **g**: Value of the grey
+
+    :Sample:
+
+        >>> to_grey('r', 0)
+        (1.0, 0.0, 0.0)
+        >>> to_grey('r',1)
+        (0.5, 0.5, 0.5)
+
+    :See also: :func:`whiten` : :func:`darken`
+    """
+    converter = lambda x, f, g: _pull_toward_value_(x, f, g)
+    return _generic_transform_(c, converter, 'rgb', f, g)
+
+def saturate(c, f):
+    """Saturate a color or a colormap"""
+    return _generic_transform_(c, _pull_toward_value_, 's', f, 1)
+def desaturate(c, f):
+    """Desaturate a color or a colormap"""
+    return _generic_transform_(c, _pull_toward_value_, 's', f, 0)
+
+def change_saturation(c, f):
+    """Change the saturation in HSV mode
+
+    :Params:
+
+        - **c**: Color
+        - **f**: Factor between 0 and 1. Null effect at 0.5.
+    """
+    f = 2*f-1
+    if f>0:
+        return saturate(c, f)
+    return desaturate(c, -f)
+
+def change_value(c, f):
+    """Change de value in HSV mode
+
+    :Params:
+
+        - **c**: Color
+        - **f**: Factor between 0 and 1. Null effect at 0.5.
+    """
+    if f>.5:
+        return _generic_transform_(c, _pull_toward_value_, 'v', 2*(f-.5), 1)
+    return _generic_transform_(c, _pull_toward_value_, 'v', -2*(f-.5), 0)
+
+def pastelise(c, s=.25, v=.9):
+    """Make a color more pastel
+
+    Equivalent to::
+
+        >>> c = change_value(c, v)
+        >>> c = change_saturation(c, s)
+
+    """
+    c = change_value(c, v)
+    return change_saturation(c, s)
+pastelize = pastelise
 
 class StepsNorm(Normalize):
     """Normalize a given value to the 0-1 range on a stepped linear or log scale
@@ -3004,7 +3135,7 @@ def anamorph_cmap(cmap, transform, name=None):
 
     return cmapo
 
-def discretize_cmap(cmap, bounds, name=None, **kwargs):
+def discretise_cmap(cmap, bounds, name=None, **kwargs):
     """Make discret an existing colormap
 
     Parameters
@@ -3045,6 +3176,7 @@ def discretize_cmap(cmap, bounds, name=None, **kwargs):
     new_cmap = cmap_custom(data, name=name, **kwargs)
     return new_cmap
 
+discretize_cmap = discretise_cmap
 
 # Register colormaps
 # - vacumm
@@ -3088,4 +3220,18 @@ del _cmap, _name
 # - cmocean
 if cmoceancm is not None:
     for cmname in cmoceancm.cmapnames:
-        P.register_cmap('cmocean_'+cmname, getattr(cmoceancm, cmname))
+        for suffix in '', '_r':
+            cmapname = cmname + suffix
+            cmap = getattr(cmoceancm, cmapname)
+            P.register_cmap('cmocean_' + cmapname, cmap)
+            P.register_cmap(cmapname, cmap)
+
+#: Colormap for posivite data
+CMAP_POSITIVE = 'speed'
+
+#: Colormap for negative data
+CMAP_NEGATIVE = 'tempo_r'
+
+#: Colomap for anomalies / symetric data
+CMAP_SYMETRIC = 'balance'
+CMAP_ANOMALY = CMAP_SYMETRIC

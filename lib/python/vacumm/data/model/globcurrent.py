@@ -35,13 +35,6 @@
 #
 
 
-
-__author__ = 'Jonathan Wilkins'
-__email__ = 'wilkins@actimar.fr'
-__date__ = '2011-01-17'
-__doc__ = 'MARS3D model data manipulation'
-
-
 from vacumm.data.misc.dataset import OceanDataset, AtmosSurfaceDataset
 from vacumm.misc import dict_merge
 #from vacumm.data.cf import specs_def_loc

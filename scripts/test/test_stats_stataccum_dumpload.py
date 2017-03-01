@@ -5,6 +5,8 @@ from vcmq import MV2, N, code_file_name, StatAccum
 from numpy.testing import assert_array_almost_equal
 from numpy.random import seed
 
+cdms2.setAutoBounds('off')
+
 # Setup masked data
 seed(0)
 nt, ny, nx = 20, 3, 3

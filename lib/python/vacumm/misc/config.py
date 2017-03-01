@@ -64,7 +64,7 @@ except: numpy = None
 
 __all__ = ['ConfigException', 'ValidationWarning', 'ConfigManager', 'print_short_help',
     'opt2rst', 'cfg2rst', 'cfgargparse', 'cfgoptparse', 'getspec', 'get_secnames',
-    'list_options', 'option2rst',  'filter_section']
+    'list_options', 'option2rst',  'filter_section', 'register_config_validator']
 
 class ConfigException(Exception):
     pass
@@ -124,7 +124,7 @@ def _valwraplist_(validator):
 
         # Handle single value
         if not isinstance(value, (list, tuple)):
-            value = (value,)
+            value = [value]
 
         # Do list checks
         n = kwargs.pop('n', None)
@@ -207,7 +207,6 @@ def _validator_numerics_(value, default=None, min=None, max=None, type='float', 
             try:
                 val = type(val)
             except:
-                print 'eval type!!'
                 raise VdtTypeError(value)
         if min is not None and val<min:
             val = type(min)
@@ -340,12 +339,15 @@ def _validator_cdtime_(value, min=None, max=None, default=None):
     return value
 
 
-def _validator_eval_(value, default=None):
-    """Validator a string that can be evaluated"""
+def _validator_eval_(value, default=None, unchanged_if_failed=True):
+    """Validate a string that can be evaluated"""
     try:
         value = eval(str(value))
     except:
-        raise VdtTypeError(value)
+        if unchanged_if_failed:
+            return value
+        else:
+            raise VdtTypeError(value)
     return value
 
 
@@ -366,6 +368,59 @@ def _validator_color_(value, default='k', alpha=False):
 
     raise VdtTypeError(value)
 
+
+_re_funccall = re.compile(r'^\s*(\w+\(.*\))\s*$').match
+_re_acc = re.compile(r'^\s*(\{.*\})\s*$').match
+_re_set = re.compile(r'^\s*(\w+)\s*=\s*(.+)\s*$').match
+def _validator_dict_(value, default={}, vtype=None):
+    """validator for dictionaries
+
+    Examples
+    --------
+    value:
+
+        - dict(a=2, b="x")
+        - {"a":2, "b":"x"}
+        - a=2
+        - a=2, b="x"
+        - OrderedDict(b=2)
+        - dict([("a",2),("b","x")])
+    """
+    if str(value)=='None':
+        return None
+    if isinstance(value, dict):
+        return value
+    if isinstance(value, basestring):
+        value = value.strip()
+        if value=='':
+            return {}
+        m = _re_funccall(value) or _re_acc(value)
+        if not m:
+            m = _re_set(value)
+            if not m:
+                raise VdtTypeError(value)
+            value = 'dict('+value+')'
+        if m:
+            try:
+                value = eval(value)
+            except:
+                raise VdtTypeError(value)
+            if not isinstance(value, dict):
+                raise VdtTypeError(value)
+            else:
+                return value
+    if isinstance(value, list):
+        out = {}
+        for val in value:
+            m = _re_set(val)
+            if not m:
+                raise VdtTypeError(val)
+            out[m.group(1)] = eval(m.group(2))
+        return out
+    raise VdtTypeError(value)
+
+
+
 # Define additionnal specifications
 # Value should be dict for internal use of this module (iterable, opttype, ...)
 # If value is not a dict, it is supposed to be the validator function
@@ -377,6 +432,7 @@ _VALIDATOR_SPECS_ = {
         'string':validate.is_string,
         # single value
         'date':_validator_cdtime_,
+        'cdtime':_validator_cdtime_,
         'timeunits':_validator_timeunits_,
         'minmax':_validator_minmax_,
         'numerics':_validator_numerics_,
@@ -385,11 +441,13 @@ _VALIDATOR_SPECS_ = {
         'bbox':_validator_bbox_,
         'datetime':_validator_datetime_,
         'file':_validator_path_,
+        'path':_validator_path_,
         'directory':_validator_path_,
         'interval':_validator_interval_,
         'eval':_validator_eval_,
         'cmap':_validator_cmap_,
         'color':_validator_color_,
+        'dict':_validator_dict_,
         # lists validators for these scalars will be automatically generated
 }
 
@@ -426,6 +484,14 @@ VALIDATOR_TYPES = _VALIDATOR_SPECS_.keys()
 # Build the mapping suitable for Validator.functions
 _VALIDATOR_FUNCTIONS_ = dict((k, v['func']) for k,v in _VALIDATOR_SPECS_.iteritems() if 'func' in v)
 _validator_functions_ = _VALIDATOR_FUNCTIONS_
+
+def register_config_validator(**kwargs):
+    """Add a new configobj validator function
+
+    :Example:
+    >>> register_config_validator(level=is_level)
+    """
+    _VALIDATOR_FUNCTIONS_.update(**kwargs)
 
 class ConfigManager(object):
     """A configuration management class based on a configuration specification file
@@ -1287,7 +1353,7 @@ def filter_section(sec, cfgfilter, default=False):
     return sec
 
 def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
-        exc=[], extraopts=None, **kwargs):
+        exc=[], extraopts=None, args=None, **kwargs):
     """Merge configuration and commandline arguments
 
     Parameters
@@ -1326,7 +1392,7 @@ def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
     """
     return ConfigManager(cfgspecfile, **kwargs).arg_parse(
         parser, cfgfileopt=cfgfileopt, exc=exc, cfgfile=cfgfile, getargs=True,
-        extraopts=extraopts)
+        extraopts=extraopts, args=args)
 
 def cfgoptparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
     exc=[], **kwargs):

@@ -36,10 +36,9 @@ Time utilities
 #
 import os
 import re
-import time,datetime as DT
-from operator import isNumberType
-from re import compile as recompile
-from warnings import warn
+import time, datetime as DT
+from operator import isNumberType, gt, ge, lt, le
+from re import split as resplit, match, compile as recompile
 import math
 
 import numpy as N, numpy.ma as MA
@@ -50,7 +49,7 @@ import MV2
 import cdtime
 import cdutil
 
-from vacumm import VACUMMError
+from vacumm import VACUMMError, vacumm_warn
 from .misc import (cp_atts, filter_selector, kwfilter, split_selector, get_atts,
     set_atts)
 from .axes import istime, check_axes, create_time
@@ -179,7 +178,7 @@ def day_of_the_year(mytime):
     tunits = 'days since %s'%ctyear
     return ctime.torel(tunits).value+1
 
-def lindates(first, last, incr, units):
+def lindates(first, last, incr, units=None):
     """Create a list of linearly incrementing dates
 
     Parameters
@@ -191,20 +190,32 @@ def lindates(first, last, incr, units):
     incr:
         increment step
     units:
-        units like "days" (see :func:`unit_type`)
+        units like "days" (see :func:`unit_type`) or None
 
     Example
     -------
-        >>> dates = lindates('2000', '2002-05', 3, 'months')
+    >>> dates = lindates('2000', '2002-05', 3, 'months')
+    >>> dates = lindates('2000', '2002-05', 8)
 
     Return
     ------
-        - list of :func:`cdtime.comptime` dates
+    comptimes
+        list of :func:`cdtime.comptime` dates
     """
     first = comptime(first)
     last = comptime(last)
-    units = unit_type(units)
     if last<first: return []
+
+    # Fixed number of steps
+    if units is None:
+        tunits = 'days since 2000'
+        t0 = first.torel(tunits).value
+        t1 = last.torel(tunits).value
+        tt = N.linspace(t0,  t1, int(incr))
+        return [cdtime.reltime(t, tunits).tocomp() for t in tt]
+
+    # Fixed step
+    units = unit_type(units)
     dates = [first]
     while dates[-1]<last:
         dates.append(add_time(dates[-1], incr, units))
@@ -1640,7 +1651,7 @@ def hourly_exact(data,time_units=None,maxgap=None, ctlims=None):
     if maxgap is not None:
         dt = get_dt(taxis,'hour')
         if dt > maxgap:
-            warn('maxgap (%gh) is greater than your time step (%gh)'%(maxgap,dt))
+            vacumm_warn('maxgap (%gh) is greater than your time step (%gh)'%(maxgap,dt))
             maxgap = None
 
     # Create the new hourly time axis
@@ -2363,6 +2374,7 @@ def add_margin(interval, lmargin, rmargin=None):
 class Intervals(object):
     """Iterator on intervals
 
+<<<<<<< HEAD
     Parameters
     ----------
     time_range:
@@ -2380,6 +2392,10 @@ class Intervals(object):
         See :func:`add_margin`.
     innerbounds: optional
         Add bounds specs to inner intervals (like "cc").
+    roundmode: optional
+
+            - "all": Round all dates.
+            - "inner": Round only inner dates, not first and last.
 
     Example
     -------
@@ -2390,7 +2406,7 @@ class Intervals(object):
 
     """
     def __init__(self, time_range, dt, reverse=False, roundto=None, bounds=True,
-        lmargin=0, rmargin=None, innerbounds='co'):
+        lmargin=0, rmargin=None, innerbounds='co', roundmode='all'):
 
         # Global range
         if not is_interval(time_range):
@@ -2412,9 +2428,12 @@ class Intervals(object):
         # Round this range
         if roundto is True:
             roundto = dt[1]
+        assert roundmode in ['all', 'inner']
+        self._roundmode = roundmode
         self._roundto = roundto
-        start_date = self.round(start_date)
-        end_date = self.round(end_date)
+        if roundmode=='all':
+            start_date = self.round(start_date)
+            end_date = self.round(end_date)
         self.lmargin = lmargin
         self.rmargin = rmargin
 
@@ -2439,6 +2458,8 @@ class Intervals(object):
         self._dt = ([1, -1][reverse]*dt[0], dt[1])
 
     def round(self, mydate):
+#        if self._roundto and (self._roundmode=='all' or
+#                (mydate!=self._first_date and mydate!=self._last_date)):
         if self._roundto:
             return round_date(mydate, self._roundto)
         return mydate
@@ -3082,7 +3103,7 @@ def interp_clim(clim, times, method='linear', day=15):
         elif (months==11).any():
             right_extent = 1
 
-    if left_extent or right_lextent:
+    if left_extent or right_extent:
         clim = extend1d(clim, ext=(left_extent, right_extent), axis=0, mode='cylic')
         cmonths = cmonths[12-left_extent:] + cmonths + cmonths[:right_extent]
         cyears = [-1]*left_extent + cyears + [1]*right_extent
@@ -3097,9 +3118,12 @@ def interp_clim(clim, times, method='linear', day=15):
             for y, m in zip(cyears, cmonths)])
         clim.setAxis(0, year_axis)
         climo[i:j] = regrid1d(clim, taxis.subaxis(i, j), method=method, axis=0)
-    if not left_extent and not right_lextentexpand:
+    if not left_extent and not right_extent:
         clim.setAxis(0, old_clim_taxis)
-    climo.setAxis(0, taxis)
+    climo.setAxisList([taxis]+clim.getAxisList()[1:])
+    grid = clim.getGrid()
+    if grid is not None:
+        climo.setGrid(grid)
     set_atts(climo, atts)
     return climo
 

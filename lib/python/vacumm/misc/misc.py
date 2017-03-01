@@ -8,7 +8,7 @@ Misc tools
     >>> from vacumm.misc import auto_scale
 
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -40,7 +40,12 @@ Misc tools
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-import re,os
+import re
+import os
+import string
+import glob
+import fnmatch
+from collections import OrderedDict
 from copy import copy, deepcopy
 from itertools import cycle
 from types import IntType, FloatType, LongType, ComplexType, GeneratorType
@@ -67,12 +72,13 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'FileTree', 'geodir', 'main_geodir', 'intersect', 'Att', 'broadcast', 'makeiter',
     'get_svn_revision', 'dirsize', 'Cfg2Att', 'closeto', 'cp_props',
     'zoombox','scalebox','history', 'dict_check_defaults', 'is_iterable', 'squarebox',
-    'grow_variables', 'grow_depth', 'grow_lat', 'phaselab',
+    'grow_variables', 'grow_depth', 'grow_lat', 'phaselab', 'ArgTuple',
     'create_selector', 'selector2str', 'split_selector', 'squeeze_variable', 'dict_copy_items',
     "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
     'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out',
-    'kwfilterout', 'filter_selector', 'isempty', 'checkdir', 'splitidx']
-__all__.sort()
+    'kwfilterout', 'filter_selector', 'isempty', 'checkdir', 'splitidx',
+    'CaseChecker', 'check_case', 'indices2slices', 'filter_level_selector',
+    'match_atts', 'match_string']
 
 def broadcast(set, n, mode='last', **kwargs):
     """Broadcast ``set`` to the specified length ``n``
@@ -483,6 +489,52 @@ def check_def_atts(obj, **defaults):
     for att,val in defaults.items():
         if not hasattr(obj,att):
             setattr(obj,att,val)
+
+
+def match_string(ss, checks, ignorecase=True, transform=None):
+    """Check that a string verify a check list that consists of
+    a list of either strings or callables"""
+    # Nothing
+    if not ss or not checks:
+        return False
+
+    # Setup
+    ss = ss.strip()
+    if ignorecase:
+        ss = ss.lower()
+    if not isinstance(checks, (list, tuple)):
+        checks = [checks]
+
+    # Callables
+    sss = []
+    for check in checks:
+        if callable(transform) and not callable(check):
+            check = transform(check)
+        if callable(check) and check(ss):
+            return True
+        if isinstance(check, basestring):
+            sss.append(check)
+
+    # Strings
+    sss = map(str.strip, sss)
+    if ignorecase:
+        sss = map(str.lower, sss)
+    return ss in sss
+
+def match_atts(obj, checks, id=True, ignorecase=True, transform=None):
+    """Check that at least one of the attributes of an object matches check list
+
+    :Params:
+        - **obj**: An object
+        - **checks**: A dictionary of (attributes name, checklist)
+    """
+    if obj is None or checks is None:
+        return False
+    for attname, attchecks in checks.items():
+        if (hasattr(obj, attname) and match_string(getattr(obj, attname),
+                attchecks, ignorecase=ignorecase, transform=transform)):
+            return True
+    return False
 
 def _pospos_(i, n):
     if isinstance(i, int):
@@ -997,10 +1049,10 @@ def lunique(mylist):
 
 def tunique(mytuple):
     """Uniquify a tuple to a new tuple"""
-    utuple = []
+    utuple = ()
     seen = {}
     for item in mytuple:
-        if item in seen: continue
+        if item in seen.keys(): continue
         seen[item] = True
         utuple += item,
     return utuple
@@ -1828,7 +1880,7 @@ def split_selector(selector):
     ------
     a tuple of:
         - the list of positionalComponents
-        - the dict of axisComponents
+        - the :class:`~collections.OrderedDict` of axisComponents
 
     Example
     -------
@@ -1838,7 +1890,7 @@ def split_selector(selector):
 
     """
     posed = []
-    named = {}
+    named = OrderedDict()
     for c in selector.components():
         if isinstance(c, cdms2.selectors.positionalComponent):
             posed.append(c.v)
@@ -1847,7 +1899,7 @@ def split_selector(selector):
     return tuple(posed), named
 
 def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False, noslice=False):
-    """Filter a :class:`cdms2.selectors.Selector` instance to keep only a list of ids
+    """Filter a :class:`cdms2.selectors.Selector` instance to keep or remove only a list of ids
 
     Parameters
     ----------
@@ -1872,9 +1924,9 @@ def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False, nos
     ids = filter(None, ids)
     ipos = -1
     if isinstance(keeppos, int): keeppos = [keeppos]
-    for comp in selector._Selector__components:
+    for comp in list(selector._Selector__components):
 
-        # Positional
+         # Positional
         if isinstance(comp, cdms2.selectors.positionalComponent):
             ipos += 1
             if keeppos is True:
@@ -1884,7 +1936,8 @@ def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False, nos
                 continue
 
         # Named
-        elif hasattr(comp, 'id') and ((comp.id in ids and not out) or (comp.id not in ids and out)):
+        elif hasattr(comp, 'id') and ((comp.id in ids and not out) or
+                (comp.id not in ids and out)):
             continue
 
         # Remove
@@ -1898,6 +1951,14 @@ def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False, nos
 
     return selector
 
+def filter_level_selector(selector, ids=None, **kwargs):
+    """Filter a :class:`cdms2.selectors.Selector` instance to keep or remove z dimension
+    """
+    if isinstance(ids, basestring): ids = [ids]
+    ids = ids or []
+    ids.extend(cdms2.axis.level_aliases)
+    ids.extend(['lev', 'level', 'depth', 'dep'])
+    return filter_selector(selector, ids, **kwargs)
 
 def squeeze_variable(var, spec=True, asmv=False):
     """Remove singleton axes from a MV2 variable
@@ -2130,14 +2191,51 @@ class ArgList(object):
     def __init__(self, argsi):
         self.single = not isinstance(argsi, list)
         self.argsi = argsi
+
     def get(self):
         return [self.argsi] if self.single else self.argsi
+
     def put(self, argso):
         so = not isinstance(argso, list)
         if (so and self.single) or (not so and not self.single):
             return argso
         if so and not self.single:
             return [argso]
+        return argso[0]
+
+class ArgTuple(object):
+    """Utility to always manage arguments as tuple and return results as input
+
+    :Examples:
+
+        >>> a = 'a'
+        >>> al = ArgTuple(a)
+        >>> al.get() # input for function as tuple
+        ['a']
+        >>> al.put(['aa']) # output as input
+        'aa'
+
+        >>> a = ['a','b']
+        >>> al = ArgTuple(a)
+        >>> al.get()
+        ['a', 'b']
+        >>> al.put(['aa'])
+        ['aa']
+
+    """
+    def __init__(self, argsi):
+        self.single = not isinstance(argsi, tuple)
+        self.argsi = argsi
+
+    def get(self):
+        return (self.argsi, ) if self.single else self.argsi
+
+    def put(self, argso):
+        so = not isinstance(argso, tuple)
+        if (so and self.single) or (not so and not self.single):
+            return argso
+        if so and not self.single:
+            return (argso, )
         return argso[0]
 
 def set_lang(default='en_US.UTF-8', num=None):
@@ -2292,3 +2390,135 @@ def splitidx(arr, crit):
     idx = idx[(idx>0)&(idx<nx)]
     return idx.tolist()
 
+
+class CaseChecker(object):
+    """Check that a string that represents a "case" is valid"""
+
+    def __init__(self, valid_cases, errmode='raise', ic=True, casename="parameter"):
+
+        # Valid cases
+        if isinstance(valid_cases, basestring):
+            valid_cases = [valid_cases]
+        else:
+            valid_cases = list(valid_cases)
+        valid_cases = map(string.lower,valid_cases)
+        self.ic = ic
+        self.includes = []
+        self.excludes = []
+        self.iglobs = []
+        self.eglobs = []
+        for case in valid_cases:
+            if case.startswith('-'):
+                if glob.has_magic(case):
+                    self.eglobs.append(case.strip('-'))
+                else:
+                    self.excludes.append(case.strip('-'))
+            elif glob.has_magic(case):
+                self.iglobs.append(case.strip('+'))
+            else:
+                self.includes.append(case.strip('+'))
+
+#        print self.includes
+#        print self.iglobs
+#        print self.excludes
+#        print self.eglobs
+
+        # Error mode
+        assert errmode in ['raise', 'exit'] or callable(errmode), ('errmode must'
+            ' be either "raise",  "exit" or a callable')
+        self.errmode = errmode
+        self.casename = casename
+
+    @staticmethod
+    def _isvalid_single_(case, valids, globs):
+        if valids and case in valids:
+            return True
+        if globs and any([fnmatch.fnmatch(case, pattern) for pattern in globs]):
+            return True
+        return False
+
+    def isvalid(self, case):
+        """Check that case is a valid string or None"""
+        if case is None:
+            return True
+        assert isinstance(case, basestring)
+        if self.ic:
+            case = case.lower()
+
+        # Exclusion
+        if ((self.excludes+self.eglobs) and
+                self._isvalid_single_(case, self.excludes, self.eglobs)):
+            return False
+
+        # Inclusion
+        if not (self.includes+self.iglobs):
+            return True
+        return self._isvalid_single_(case, self.includes, self.iglobs)
+
+    def check(self, case):
+        """Check that case is a valid string or None and make an error if not"""
+        if not self.isvalid(case):
+            message = []
+            imessage = []
+            if self.includes:
+                imessage.append('it must be one of {self.includes}')
+            if self.iglobs:
+                imessage.append('it must match one of {self.iglobs}')
+            imessage = ' or '.join(imessage)
+            if imessage:
+                message.append(imessage)
+            emessage = []
+            if self.excludes:
+                emessage.append('it cannot be one of {self.excludes}')
+            if self.eglobs:
+                emessage.append('it cannot be one of {self.eglobs}')
+            emessage = ' or '.join(emessage)
+            if emessage:
+                message.append(emessage)
+            message = ("Invalid {self.casename} '{case}': " +
+                ' and '.join(message))
+            self.error(message.format(**locals()))
+
+    __call__ = check
+
+    def error(self, message):
+        """Exit with an error"""
+        if self.errmode=='exit':
+            sys.exit(message)
+        if callable(self.errmode):
+            self.errmode(message)
+        raise VACUMMError(message)
+
+def check_case(cases, case, **kwargs):
+    """Check that case is valid using :class:``CaseChecker` and allowed cases"""
+    return CaseChecker(cases, **kwargs)(case)
+
+
+
+def indices2slices(indices):
+    """Convert a list of indices to a list of slices"""
+    if len(indices)==1:
+        return [slice(indices[0], indices[0]+1)]
+    elif not indices:
+        return []
+    ii = N.sort(indices)
+    slices = []
+    dii = N.diff(ii)
+    iic = [-1] + (N.where(dii>1)[0]).tolist() + [-1]
+    slices = []
+    for i, ic in enumerate(iic[1:]):
+        i0 = indices[iic[i] + 1]
+        i1 = indices[ic] + 1
+        slices.append(slice(i0, i1))
+    return slices
+
+def dicttree_get(dd, *keys, **kwargs):
+    """Get value of tree of dicts"""
+    if not isinstance(dd, dict) or not keys:
+        return dd
+    default = kwargs.get('default', None)
+    if '__default__' in dd:
+        default = dd['__default__']
+    if keys[0] not in dd:
+        return default
+    return dicttree_get(dd[keys[0]], *keys[1:], **kwargs)

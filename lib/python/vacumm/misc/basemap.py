@@ -35,6 +35,7 @@
 #
 import os, cPickle, stat
 
+import os
 import numpy as N
 from mpl_toolkits.basemap import Basemap, __version__ as basemap_version
 from mpl_toolkits.basemap.proj import Proj
@@ -42,7 +43,8 @@ from matplotlib import get_configdir
 from _geoslib import Polygon
 from genutil import minmax
 
-from vacumm.config import VACUMM_CFG
+from ...__init__ import vacumm_warn
+from ...config import VACUMM_CFG
 from .misc import kwfilter, dict_check_defaults
 from .constants import EARTH_RADIUS
 from .grid import get_xy
@@ -51,8 +53,6 @@ from .poly import create_polygon
 __all__  = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_map',
     'merc', 'proj', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
     'create_map', 'RSHPERE_WGS84', 'GSHHS_RESLIST']
-__all__.sort()
-
 
 #: Earth radius of wgs84 ellipsoid
 RSHPERE_WGS84 = (6378137.0,6356752.3141)
@@ -83,10 +83,10 @@ def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
         A Basemap instance [Default: None]
     mapdir:
         Where are stored the cached maps. If ``None``,
-      :func:`matplotlib.get_configdir` is used as a parent directory,
+        :func:`matplotlib.get_configdir` is used as a parent directory,
         which is the matplotlib configuration directory
         (:file:`~/.matplotlib` undex linux), and
-      :file:`basemap/cached_maps` as the subdirectory.
+        :file:`basemap/cached_maps` as the subdirectory.
 
     Example
     -------
@@ -112,6 +112,8 @@ def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
         f.close()
         return m
     except:
+        vacumm_warn('Error while loading cached basemap instance from dir: '+
+            os.path.dirname(file))
         os.remove(file)
         return None
 
@@ -123,10 +125,15 @@ def cache_map(m, mapdir=None):
     if not os.path.exists(file):
 
         # Dump
-        f = open(file, 'wb')
-        m.ax = None
-        cPickle.dump(m, f)
-        f.close()
+        try:
+            f = open(file, 'wb')
+            m.ax = None
+            cPickle.dump(m, f)
+            f.close()
+        except:
+            vacumm_warn('Error while trying to cache basemap instance into: '+
+                os.path.dirname(file))
+            return
 
         # Access to all if not in user directory
         if not file.startswith(os.path.expanduser("~")):
@@ -160,7 +167,12 @@ def clean_cache(mapdir=None, maxsize=None):
         files.sort(cmp=lambda f1, f2: cmp(os.stat(f1)[8], os.stat(f2)[8]))
         for ff in files:
             cache_size -= os.path.getsize(ff)
-            os.remove(ff)
+            try:
+                os.remove(ff)
+            except:
+                vacumm_warn('Error while trying to clean basemap cache in: '+
+                    os.path.dirname(ff))
+                return
             if cache_size<=maxsize: break
 
 def reset_cache(mapdir=None):

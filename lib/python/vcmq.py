@@ -15,9 +15,11 @@ from traceback import format_exc
 
 # Numeric
 
-import numpy as N
-npy = N
-np = N
+import numpy
+npy = N = np = numpy
+testing = N.testing
+assert_allclose = testing.assert_allclose
+assert_raises = testing.assert_raises
 
 # CDAT
 
@@ -34,14 +36,15 @@ import matplotlib.pyplot as plt
 import pylab as P
 mp = P
 from matplotlib import use, rc, rcdefaults, rcParams
-from matplotlib.dates import DayLocator, HourLocator, WeekdayLocator, MinuteLocator,  \
-    YearLocator, MonthLocator, DateFormatter, SecondLocator
-from matplotlib.ticker import AutoLocator, MaxNLocator, FixedLocator, IndexLocator, \
-    LinearLocator, LogLocator, MultipleLocator, AutoMinorLocator
+from matplotlib.dates import (DayLocator, HourLocator, WeekdayLocator, MinuteLocator,
+    YearLocator, MonthLocator, DateFormatter, SecondLocator)
+from matplotlib.ticker import (AutoLocator, MaxNLocator, FixedLocator, IndexLocator,
+    LinearLocator, LogLocator, MultipleLocator, AutoMinorLocator)
 
 # VACUMM
 
-from vacumm import VACUMMError, VACUMMWarning, help as vchelp
+from vacumm import (VACUMMError, VACUMMWarning, help as vchelp, vacumm_warning,
+    vacumm_warn, vcwarn)
 
 
 # - config
@@ -67,8 +70,9 @@ from vacumm.misc.misc import (
     numod, deg2str, deg_from_dec, dict_filter_out, dict_copy_items, geo_scale,
     grow_depth, grow_lat, grow_variables, history, intersect, is_iterable,
     isempty, isnumber, lunique, main_geodir, selector2str, rm_html_tags,
-    tunique, split_selector, xls_style, Att, splitidx,
-    )
+    tunique, split_selector, xls_style, Att, splitidx, CaseChecker, check_case,
+    indices2slices, filter_level_selector, filter_selector, match_atts,
+    match_string, ArgTuple, dicttree_get)
 
 from vacumm.misc.axes import (
     create_lon, create_lat, create_time, create_depth,
@@ -90,7 +94,7 @@ from vacumm.misc.atime import (
     hourly, hourly_bounds, hourly_exact, monthly, tsel2slice,
     reduce, yearly, are_same_units, ascii_to_num, detrend, from_utc,
     time_selector, selector, filter_time_selector,
-    plot_dt, strtime,
+    plot_dt, strtime, interp_clim,
     datetime as adatetime,
     add,
     )
@@ -108,7 +112,7 @@ from vacumm.misc.bases import (
 from vacumm.misc.io import (
     list_forecast_files, netcdf3, netcdf4, ncread_files, ncread_var,
     ncread_axis, ncget_var, ncget_axis, ncfind_var, ncfind_axis, NcIterBestEstimate,
-    ncget_fgrid, grib2nc, grib_get_names, ncfind_obj, ncget_grid,
+    ncget_fgrid, grib2nc, grib_get_names, ncfind_obj, ncget_grid, ncget_level,
     ncget_lon, ncget_lat, ncget_time, ncget_var, ncmatch_obj, ncread_best_estimate,
     NcIterBestEstimate, NcIterBestEstimateError,
     NcFileObj, ColoredFormatter, TermColors,
@@ -128,7 +132,8 @@ from vacumm.misc.log import (Logger, ColoredStreamHandler, LoggerAdapter,
 
 from vacumm.misc.config import (ConfigManager, cfgargparse, ConfigException,
     ValidationWarning, cfg2rst, cfgoptparse, filter_section, get_secnames,
-    getspec, list_options, opt2rst, option2rst, print_short_help)
+    getspec, list_options, opt2rst, option2rst, print_short_help,
+    register_config_validator)
 
 from vacumm.misc.stats import (StatAccum, qtmax, qtmin, qtminmax, ensrank,
     corr_proba, StatAccumError)
@@ -168,12 +173,17 @@ map = map2
 hov = hov2
 stick = stick2
 section = section2
+bar = bar2
+
+from vacumm.misc.core_plot import (
+    Plot, Plot1D, Plot2D, ScalarMappable, Stick, Bar, Hov, Curve, Map, Section,
+    )
 
 from vacumm.misc.color import (
     plot_cmap, show_cmap, get_cmap, simple_colors, RGB, RGBA,
     cmap_srs, Scalar2RGB, darken, whiten, cmaps_mpl,
     cmap_gmt, cmaps_registered, cmaps_vacumm, print_cmaps_gmt, plot_cmaps,
-    anamorph_cmap, discretize_cmap, StepsNorm,
+    anamorph_cmap, discretise_cmap, StepsNorm,
     cmap_ajete, cmap_ajets, cmap_bathy, cmap_br, cmap_bwr, cmap_bwre, cmap_custom,
     cmap_chla, cmap_currents, cmap_dynamic_cmyk_hymex, cmap_eke, cmap_jet,
     cmap_jete, cmap_jets, cmap_land, cmap_linear, cmap_magic, cmap_mg,
@@ -182,7 +192,10 @@ from vacumm.misc.color import (
     cmap_regular_steps, cmap_rnb2_hymex, cmap_rs, cmap_smoothed_regular_steps,
     cmap_smoothed_steps, cmap_ss, cmap_ssec, cmap_steps, cmap_topo,
     cmap_white_centered_hymex, cmap_wjet, cmap_wjets, cmap_wr, cmap_wre,
-    to_shadow,
+    to_shadow, to_grey, saturate, desaturate, change_saturation,
+    change_luminosity, change_value, pastelise,
+    discretise_cmap as discretize_cmap,
+    pastelise as pastelize,
 
     )
 
@@ -203,7 +216,7 @@ from vacumm.misc.grid import (
     bounds2mesh, cells2grid, check_xy_shape, curv_grid, create_var2d,
     get_geo_area, get_grid_axes, get_resolution, get_zdim, isoslice, mask2ind,
     merge_axis_slice, merge_axis_slices, num2axes2d, t2uvgrids, xextend,
-    xshift,
+    xshift, clone_grid,
     )
 
 from vacumm.misc.regridding import (
@@ -226,7 +239,7 @@ from vacumm.misc.masking import (
 from vacumm.misc.kriging import (
     OrdinaryCloudKriger, variogram, variogram_fit, variogram_model,
     variogram_model_type, variogram_multifit, cloud_split,
-    KrigingError, VariogramModel, VariogramModelError,
+    KrigingError, VariogramModel, VariogramModelError, SimpleCloudKriger,
     krig as krign,
     )
 
@@ -241,6 +254,7 @@ from vacumm.data.cf import (
     format_var, format_axis, format_grid, match_var, change_loc, match_obj,
     set_loc, get_loc, GENERIC_NAMES, GENERIC_AXIS_NAMES, GENERIC_VAR_NAMES,
     AXIS_SPECS, VAR_SPECS, GRID_SPECS, ARAKAWA_SUFFIXES, HIDDEN_CF_ATTS,
+    match_known_var, match_known_axis, get_cf_cmap
     )
 
 from vacumm.data.misc.sigma import NcSigma, sigma2depths, SigmaGeneralized, SigmaStandard
