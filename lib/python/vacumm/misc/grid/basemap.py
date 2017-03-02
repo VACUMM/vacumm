@@ -38,6 +38,7 @@ __all__  = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_ma
 'create_map', 'RSHPERE_WGS84', 'GSHHS_RESLIST']
 __all__.sort()
 
+import os
 import numpy as N
 from mpl_toolkits.basemap import Basemap, __version__ as basemap_version
 from mpl_toolkits.basemap.proj import Proj
@@ -51,6 +52,7 @@ from misc import get_xy
 from ...misc.phys.constants import R as rsphere_mean
 from ...misc.misc import kwfilter, dict_check_defaults
 from vacumm.config import get_config_value
+from ...__init__ import vacumm_warn
 
 #: Earth radius of wgs84 ellipsoid
 RSHPERE_WGS84 = (6378137.0,6356752.3141)
@@ -106,6 +108,8 @@ def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
         f.close()
         return m
     except:
+        vacumm_warn('Error while loading cached basemap instance from dir: '+
+            os.path.dirname(file))
         os.remove(file)
         return None
 
@@ -117,10 +121,15 @@ def cache_map(m, mapdir=None):
     if not os.path.exists(file):
 
         # Dump
-        f = open(file, 'wb')
-        m.ax = None
-        cPickle.dump(m, f)
-        f.close()
+        try:
+            f = open(file, 'wb')
+            m.ax = None
+            cPickle.dump(m, f)
+            f.close()
+        except:
+            vacumm_warn('Error while trying to cache basemap instance into: '+
+                os.path.dirname(file))
+            return
 
         # Access to all if not in user directory
         if not file.startswith(os.path.expanduser("~")):
@@ -152,7 +161,12 @@ def clean_cache(mapdir=None, maxsize=None):
         files.sort(cmp=lambda f1, f2: cmp(os.stat(f1)[8], os.stat(f2)[8]))
         for ff in files:
             cache_size -= os.path.getsize(ff)
-            os.remove(ff)
+            try:
+                os.remove(ff)
+            except:
+                vacumm_warn('Error while trying to clean basemap cache in: '+
+                    os.path.dirname(ff))
+                return
             if cache_size<=maxsize: break
 
 def reset_cache(mapdir=None):

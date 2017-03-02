@@ -985,10 +985,10 @@ def lunique(mylist):
 
 def tunique(mytuple):
     """Uniquify a tuple to a new tuple"""
-    utuple = []
+    utuple = ()
     seen = {}
     for item in mytuple:
-        if item in seen: continue
+        if item in seen.keys(): continue
         seen[item] = True
         utuple += item,
     return utuple
@@ -2345,9 +2345,11 @@ def indices2slices(indices):
 
 def dicttree_get(dd, *keys, **kwargs):
     """Get value of tree of dicts"""
-    default = kwargs.get('default', None)
     if not isinstance(dd, dict) or not keys:
         return dd
+    default = kwargs.get('default', None)
+    if '__default__' in dd:
+        default = dd['__default__']
     if keys[0] not in dd:
         return default
     return dicttree_get(dd[keys[0]], *keys[1:], **kwargs)

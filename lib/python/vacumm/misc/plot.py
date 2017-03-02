@@ -1098,7 +1098,11 @@ def _plot_grid_(ax, xx, yy, samp, alpha, zorder, labels, **kwargs):
         oo.set_alpha(alpha)
         oo.set_zorder(zorder)
         oo.set_label(labels)
-        ax.add_collection(oo)
+        from mpl_toolkits.mplot3d import Axes3D
+        if isinstance(ax, Axes3D):
+            ax.add_collection3d(oo)
+        else:
+            ax.add_collection(oo)
 
 
 def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None,

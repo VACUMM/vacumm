@@ -20,6 +20,7 @@ class TSF(VCTestCase):
         'test_plot_taylor',
         'test_plot_add_logo',
         'test_plot_hlitvs',
+        'test_plot_map_arcgisimage',
         ]:
         exec(method_template.format(test_name))
 

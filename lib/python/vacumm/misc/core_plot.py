@@ -64,7 +64,9 @@ from matplotlib.text import Text
 from matplotlib.ticker import (FormatStrFormatter, Formatter, Locator,
     NullLocator, AutoMinorLocator, AutoLocator)
 from matplotlib.transforms import offset_copy
-from mpl_toolkits.basemap import Basemap
+from mpl_toolkits.basemap import Basemap, _setlatlab, _setlonlab
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.collections import PolyCollection, LineCollection
 
 from ._ext_plot import (DropShadowFilter, FilteredArtistList, GrowFilter,
     LightFilter)
@@ -97,6 +99,26 @@ __all__ = ['PlotError','Plot', 'Plot1D', 'Curve', 'Bar', 'Stick',
     'ScalarMappable','AutoDateFormatter2', 'AutoDateLocator2',
     'AutoDateMinorLocator', 'AutoDualDateFormatter', 'DualDateFormatter',
     'MinuteLabel', 'Section', 'twinxy']
+
+
+#: Aliases for argisimage services hosted by the arcgis server
+ARCGISIMAGE_ALIASES = dict(
+    esriimagery="ESRI_Imagery_World_2D",
+    esristreet="ESRI_StreetMap_World_2D",
+    esristreetmap="ESRI_StreetMap_World_2D",
+    natgeo="NatGeo_World_Map",
+    ngstopo="NGS_Topo_US_2D",
+    usatopo="USA_Topo_Maps",
+    ocean="Ocean_Basemap",
+    topo="World_Topo_Map",
+    shaded="World_Shaded_Relief",
+    physical="World_Physical_Map",
+    imagery="World_Imagery",
+    street="World_Street_Map",
+    streetmap="World_Street_Map",
+    terrain="World_Terrain_Base",
+)
+
 
 class PlotError(Exception):
     pass
@@ -725,8 +747,8 @@ class Plot(object):
 
 
     def pre_plot(self, axes=None, figure=None, figsize=None, subplot=None, twin=None,
-        subplots_adjust=None, bgcolor=None, noframe=False, fullscreen=False,
-        verbose=False, axes_host=False, axes_xoffset=0, **kwargs):
+            subplots_adjust=None, bgcolor=None, noframe=False, fullscreen=False,
+            verbose=False, axes_host=False, axes_xoffset=0, **kwargs):
         """Initialize the plot
 
         :Tasks:
@@ -751,7 +773,8 @@ class Plot(object):
               X or Y axes (see :func:`matplotlib.pyplot.twinx`).
               You can also provide a dictionary : ``twin=dict(x=axes1, y=axes2)``.
             - **bgcolor**, optional: Background axis color.
-            - **axes_rect**, optional: [left, bottom, width, height] in normalized (0,1) units to create axes using :func:`~matplotlib.pyplot.axes`.
+            - **axes_rect**, optional: [left, bottom, width, height]
+              in normalized (0,1) units to create axes using :func:`~matplotlib.pyplot.axes`.
             - **axes_<param>**, optional: <param> is passed to :func:`~matplotlib.pyplot.axes`.
             - **noframe**, optional: Suppress plot frames.
             - **fullscreen**, optional: Plot in full screen mode (thus, ``noframe==True``).
@@ -795,9 +818,11 @@ class Plot(object):
             kwargs['axes_frameon'] = False
 
         # Figure
+        if figure == 'old':
+            figure = None
         if isinstance(figure, Figure):
             self.fig = figure
-        elif figure is True:
+        elif figure is True or figure == 'new':
             self.fig = P.figure(**kwfig)
         elif figure is not None:
             self.fig = P.figure(figure, **kwfig)
@@ -813,10 +838,17 @@ class Plot(object):
             self.fig.subplots_adjust(**subplots_adjust)
 
         # Axes
-        if axes_host and axes is None and subplot is None and not axes_rect  \
-                and twin is None:
+        if (axes_host and axes is None and subplot is None and not axes_rect
+                and twin is None):
             subplot = 111
+        if axes=="3d":
+            kwaxes['projection'] = "3d"
+            if subplot is None and not axes_rect:
+                subplot = 111
+            axes = None
         if axes is not None:
+            if axes=="3d":
+                self.fig.add_sub
             self.axes = axes
             if self.axes.get_figure() != self.fig:
                 if verbose: print 'Axes does not match figure'
@@ -857,6 +889,7 @@ class Plot(object):
             offset = (axes_xoffset, 0)
             self.axes.axis[loc] = new_fixed_axis(loc=loc, axes=self.axes, offset=offset)
             self.axes.axis[loc].toggle(all=True)
+        self.is3d = isinstance(self.axes, Axes3D)
 
         if noframe:
             self.axes.set_frame_on(False)
@@ -3130,8 +3163,9 @@ class Plot(object):
     def get_long_name(self, idata=None):
         """Get :attr:`long_name`"""
         long_name = self._get_xyattr_('d', 'long_name', idata=idata)
-        if long_name is None:
-            long_name = self.get_id(idata=idata).title().replace('_', ' ')
+        id = self.get_id(idata=idata)
+        if long_name is None and id:
+            long_name = id.title().replace('_', ' ')
         return long_name
     def set_long_name(self, long_name=None):
         """Set :attr:`long_name`"""
@@ -5754,6 +5788,40 @@ class Map(Plot2D):
         return tts
 
 
+    def add_arcgisimage(self, service, **kwargs):
+        """Add an Arcgis image
+
+        Available service aliases (see :attr:`ARCGISIMAGE_ALIASES`): {}
+        """
+
+        # Alias
+        if not service:
+            return
+        if service is True:
+            service = "esriimagery"
+        if isinstance(service, basestring):
+            service = ARCGISIMAGE_ALIASES.get(service, service)
+
+        # Pixels
+        axext = self.axes.bbox.extents
+        fact = 1.3
+        xpixels = (axext[2]-axext[0])*fact
+#        ypixels = (axext[3]-axext[1])*fact
+        dpi = self.fig.dpi
+
+        # Call the basemap method
+        dict_check_defaults(kwargs, service=service,
+            xpixels=xpixels,
+#            ypixels=ypixels,
+            dpi=dpi)
+        try:
+            return self.map.arcgisimage(**kwargs)
+        except Exception, e:
+            warn('Error when plotting arcgisimage: {}.\nMessage: {}'.format(
+                service, e.message))
+
+    add_arcgisimage.__doc__.format(', '.join(ARCGISIMAGE_ALIASES.keys()))
+
     def _get_posposref_(self, pos=None, posref=None, xrel=0.1, yrel=0.1, transform='axes',
         xpad=30, ypad=None):
         """Get position of point and reference points in data coordinates (meters)
@@ -5990,10 +6058,14 @@ class Map(Plot2D):
 
         return ms+list(cp)
 
-    def post_plot(self, drawrivers=False, fillcontinents=True, meridional_labels=True, zonal_labels=True,
-            drawcoastlines=True, drawmapboundary=True, meridians=None, parallels=None,
-            land_color=None, ticklabel_size=None, refine=0, no_seconds=False, fullscreen=False,
-            minutes=True, mapscale=False, compass=False, mscp=False, bfdeg=None, lowhighs=False,
+    def post_plot(self, drawrivers=False, fillcontinents=True,
+            meridional_labels=True, zonal_labels=True,
+            drawcoastlines=True, drawmapboundary=True,
+            meridians=None, parallels=None,
+            land_color=None, ticklabel_size=None, refine=0,
+            no_seconds=False, fullscreen=False,
+            minutes=True, mapscale=False, compass=False, mscp=False,
+            bfdeg=None, lowhighs=False, arcgisimage=None,
             **kwargs):
         """Post-processing of the plot
 
@@ -6085,19 +6157,43 @@ class Map(Plot2D):
                 kwfillcontinents = kwfilter(kwargs, 'fillcontinents_', defaults={'color':land_color})
 
                 if self.map.resolution is not None:# GSHHS
+
+                    # Draw coastlines
                     if drawcoastlines and not self.get_axobj('drawcoastlines'):
-                        self.set_axobj('drawcoastlines', self.map.drawcoastlines(**kwdrawcoastlines))
+                        o = self.map.drawcoastlines(**kwdrawcoastlines)
+                        self.set_axobj('drawcoastlines', o)
+                        if self.is3d:
+                            self.axes.add_collection3d(o)
+
+                    # Fill continents
                     fcsh = kwfillcontinents.pop('shadow', False)
                     kwfcsh = kwfilter(kwfillcontinents, 'shadow_')
                     if fillcontinents and not self.get_axobj('fillcontinents'):
-                        try:
-                            self.set_axobj('fillcontinents', self.map.fillcontinents(**kwfillcontinents))
-                        except:
-                            pass
-                        if self.get_axobj('fillcontinents') is not None and fcsh:
-                            add_shadow(self.get_axobj('fillcontinents'), **kwfcsh)
+                        if not self.is3d:
+                            try:
+                                self.set_axobj('fillcontinents', self.map.fillcontinents(**kwfillcontinents))
+                            except:
+                                pass
+                            if self.get_axobj('fillcontinents') is not None and fcsh:
+                                add_shadow(self.get_axobj('fillcontinents'), **kwfcsh)
+                        else:
+                            polys = []
+                            for polygon in self.map.landpolygons:
+                                polys.append(polygon.get_coords())
+                            kwfillcontinents['facecolor'] = kwfillcontinents.pop('color')
+                            kwfillcontinents.pop('lake_color', None)
+                            lc = PolyCollection(polys, linewidth=0, closed=False,
+                                **kwfillcontinents)
+                            del polys
+                            self.axes.add_collection3d(lc)
+
+
+                    # Draw rivers
                     if drawrivers and not self.get_axobj('drawrivers'):
-                        self.set_axobj('drawrivers', self.map.drawrivers(**kwfilter(kwargs,'drawrivers')))
+                        o = self.map.drawrivers(**kwfilter(kwargs,'drawrivers'))
+                        self.set_axobj('drawrivers', o)
+                        if self.is3d:
+                            self.axes.add_collection3d(o)
 
                 #elif m.res == 's': # SHOM
                 else:
@@ -6135,9 +6231,9 @@ class Map(Plot2D):
                 kwp['linewidth'] = kwm['linewidth'] = 0
             # - parallels
             if drawparallels:
-                if self._xyhide_('y', kwargs.get('yhide', False)):
+                if self._xyhide_('y', kwargs.get('yhide', False)) or self.is3d:
                     meridional_labels = 0
-                kwp.update(labels=[int(meridional_labels),0,0,0])
+                kwp.setdefault('labels', [int(meridional_labels),0,0,0])
 #                kwp.update(kwpm_def)
                 kwp.update(kwfilter(kwargs, 'yticklabels_'))
                 kwp = kwfilter(kwargs,'drawparallels',defaults=kwp)
@@ -6151,15 +6247,15 @@ class Map(Plot2D):
                 if minutes: kwp.setdefault('fmt',
                     MinuteLabel(parallels, zonal=False, tex=None,
                         no_seconds=no_seconds, bfdeg=bfdeg))
-                self.set_axobj('drawparallels', self.map.drawparallels(parallels,**kwp))
+#                self.set_axobj('drawparallels', self.map.drawparallels(parallels,**kwp))
                 self.parallels = parallels
             else:
                 self.parallels = None
             # - meridians
             if drawmeridians:
-                if self._xyhide_('x', kwargs.get('xhide', False)):
+                if self._xyhide_('x', kwargs.get('xhide', False)) or self.is3d:
                     zonal_labels = 0
-                kwm.update(labels=[0,0,0,int(zonal_labels)])
+                kwm.setdefault('labels', [0,0,0,int(zonal_labels)])
 #                kwm.update(kwpm_def)
                 kwm.update(kwfilter(kwargs, 'xticklabels_'))
                 kwm = kwfilter(kwargs,'drawmeridians',defaults=kwm)
@@ -6181,6 +6277,33 @@ class Map(Plot2D):
             else:
                 self.meridians = None
 
+            if self.is3d:
+                def addto3d(what, fmt='%g', labstyle=None, **kwargs):
+                    """Handle lines ans labels for 3D plots"""
+                    coords = []
+                    for value, par in self.get_axobj(what).items():
+                        for line in par[0]:
+                            xy = line.get_xydata()
+                            coords.append(xy)
+                            x = xy[0, 0]
+                            y = xy[0, 1]
+                            if what=='drawmeridians':
+                                lab = _setlatlab(fmt, value, labstyle)
+                                zdir = 'y'
+                                ha = 'left'
+                            else:
+                                lab = _setlonlab(fmt, value, labstyle)
+                                zdir = 'x'
+                                ha = 'right'
+                            self.axes.text(x, y, 0, lab, ha=ha, va='center',
+                                           zdir=zdir)
+                    if coords:
+                        self.axes.add_collection3d(LineCollection(coords,
+                            linewidths=[line.get_linewidth()],
+                            linestyles=[line.get_linestyle()],
+                            colors=[line.get_color()],
+                            ))
+
             # - bfdeg (bold face degrees) homogeneisation
             if (drawparallels and isinstance(kwp['fmt'], MinuteLabel) and
                     drawmeridians and isinstance(kwm['fmt'], MinuteLabel) and
@@ -6190,9 +6313,13 @@ class Map(Plot2D):
             # - draw
             if drawparallels:
                 self.set_axobj('drawparallels', self.map.drawparallels(parallels,**kwp))
+                if self.is3d:
+                    addto3d('drawparallels', **kwp)
             if drawmeridians:
                 # Draw
                 lonlabs = self.set_axobj('drawmeridians', self.map.drawmeridians(meridians,**kwm))
+                if self.is3d:
+                    addto3d('drawmeridians', **kwm)
                 # Remove duplicated labels
                 llfound = []
                 for ll in lonlabs.keys()[:]:
@@ -6206,6 +6333,11 @@ class Map(Plot2D):
         lowhighs = kwargs.pop('lowhigh', lowhighs)
         if lowhighs:
             self.add_lowhighs(**kwfilter(kwargs, 'lowhighs'))
+
+        # Plot arcgis image
+        arcgisimage = kwargs.pop('arcgisimage', arcgisimage)
+        if arcgisimage:
+            self.add_arcgisimage(arcgisimage, **kwfilter(kwargs, 'arcgisimage'))
 
         # Map scale and compass
         if mscp:

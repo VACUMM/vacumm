@@ -125,7 +125,8 @@ from vacumm.misc.log import (Logger, ColoredStreamHandler, LoggerAdapter,
 
 from vacumm.misc.config import (ConfigManager, cfgargparse, ConfigException,
     ValidationWarning, cfg2rst, cfgoptparse, filter_section, get_secnames,
-    getspec, list_options, opt2rst, option2rst, print_short_help)
+    getspec, list_options, opt2rst, option2rst, print_short_help,
+    register_config_validator)
 
 from vacumm.misc.stats import (StatAccum, qtmax, qtmin, qtminmax, ensrank,
     corr_proba, StatAccumError)
@@ -167,6 +168,10 @@ stick = stick2
 section = section2
 bar = bar2
 
+from vacumm.misc.core_plot import (
+    Plot, Plot1D, Plot2D, ScalarMappable, Stick, Bar, Hov, Curve, Map, Section,
+    )
+
 from vacumm.misc.color import (
     plot_cmap, show_cmap, get_cmap, simple_colors, RGB, RGBA,
     cmap_srs, Scalar2RGB, darken, whiten, cmaps_mpl,
@@ -184,7 +189,10 @@ from vacumm.misc.color import (
     change_luminosity, change_value, pastelise,
     discretise_cmap as discretize_cmap,
     pastelise as pastelize,
-
+    bistre, land, ocean, sea,
+    land as land_color,
+    ocean as ocean_color,
+    sea as sea_color,
     )
 
 # - grid
@@ -216,7 +224,7 @@ from vacumm.misc.grid.basemap import (
 from vacumm.misc.grid.masking import (
     erode_coast, polygon_mask, GetLakes, get_coast, polygons, polygon_select, zcompress,
     envelop, get_coastal_indices, grid_envelop, create_polygon, clip_shape, proj_shape,
-    plot_polygon, merge_masks
+    plot_polygon, merge_masks, masked_polygon, mask2d, get_dist_to_coast,
     )
 
 from vacumm.misc.grid.kriging import (
