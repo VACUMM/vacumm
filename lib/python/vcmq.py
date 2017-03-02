@@ -189,7 +189,10 @@ from vacumm.misc.color import (
     change_luminosity, change_value, pastelise,
     discretise_cmap as discretize_cmap,
     pastelise as pastelize,
-
+    bistre, land, ocean, sea,
+    land as land_color,
+    ocean as ocean_color,
+    sea as sea_color,
     )
 
 # - grid
@@ -221,7 +224,7 @@ from vacumm.misc.grid.basemap import (
 from vacumm.misc.grid.masking import (
     erode_coast, polygon_mask, GetLakes, get_coast, polygons, polygon_select, zcompress,
     envelop, get_coastal_indices, grid_envelop, create_polygon, clip_shape, proj_shape,
-    plot_polygon, merge_masks
+    plot_polygon, merge_masks, masked_polygon, mask2d, get_dist_to_coast,
     )
 
 from vacumm.misc.grid.kriging import (
