@@ -826,7 +826,7 @@ GRID_SPECS[None] = GRID_SPECS['']
 grid_specs = GRID_SPECS # compat
 
 _reloc =  OrderedDict(
-    [('name',  re.compile('(_([a-z]))?$', re.I).search),
+    [('id',  re.compile('(_([a-z]))?$', re.I).search),
     ('standard_name', re.compile('(_at_([a-z])_location)?$', re.I).search),
     ('long_name',  re.compile('( at ([a-z]) location)?$', re.I).search)],
 )
@@ -836,14 +836,14 @@ DEFAULT_LOCATION = 't'
 default_location = DEFAULT_LOCATION # compat
 
 def get_loc(var, stype=None, mode='loc', default=None):
-    """Get the location testing name, standard_name or long_name and other attributes
+    """Get the location testing id, standard_name or long_name and other attributes
 
     :Params:
 
-        - **var**: Generic name of the variable or axis OR an object CDAT object
+        - **var**: Generic id of the variable or axis OR an object CDAT object
           (variable or axis). If a CDAT object, it first searches for the
           :attr:`_vacumm_cf_location` attributes.
-        - **stype**, optional: One of 'name', 'standard_name' or 'long_name'.
+        - **stype**, optional: One of 'id', 'standard_name' or 'long_name'.
           If ``None``, they are all tested.
           If ``var`` is a string, location is searched interpreting it as of type ``'stype``.
           Else if ``var`` is an object ``stype`` specifies what attribute to test.
@@ -861,7 +861,7 @@ def get_loc(var, stype=None, mode='loc', default=None):
 
         >>> loc = get_loc('toto_u')
         >>> suffix = get_loc('toto_at_u_location', stype='standard_name', mode='full')
-        >>> loc = get_loc(myvar, stype=['name','long_name'])
+        >>> loc = get_loc(myvar, stype=['id','long_name'])
 
     :Return:
 
@@ -885,9 +885,9 @@ def get_loc(var, stype=None, mode='loc', default=None):
         if getattr(var, '_vacumm_cf_location', None):
             return var._vacumm_cf_location.lower()
 
-        # Location from names
+        # Location from ids
         for stype in stypes:
-            if stype=='name':
+            if stype=='id':
                 loc = get_loc(var.id, stype, mode=mode)
             elif hasattr(var, stype):
                 loc = get_loc(getattr(var, stype), stype, mode)
@@ -904,17 +904,17 @@ def get_loc(var, stype=None, mode='loc', default=None):
             if hasattr(var, 'position'): return var.position.lower()
 
             # Physloc
-            gname = var.id if not hasattr(var, '_vacumm_cf_name') else var._vacumm_cf_name
-            gname = no_loc_single(gname, 'name')
-            if gname in VAR_SPECS:
+            gid = var.id if not hasattr(var, '_vacumm_cf_name') else var._vacumm_cf_name
+            gid = no_loc_single(gid, 'id')
+            if gid in VAR_SPECS:
 
                 # From _vacumm_cf_physloc attribute
                 if hasattr(var, '_vacumm_cf_physloc'):
                     return var._vacumm_cf_physloc
 
                 # From specs
-                if VAR_SPECS[gname].get('physloc'):
-                    return VAR_SPECS[gname]['physloc']
+                if VAR_SPECS[gid].get('physloc'):
+                    return VAR_SPECS[gid]['physloc']
 
         return default
 
@@ -924,7 +924,7 @@ def get_loc(var, stype=None, mode='loc', default=None):
 
         # From string
         group = 2 if outloc else 1
-        if stype not in _reloc: stype = 'name'
+        if stype not in _reloc: stype = 'id'
         loc = _reloc[stype](var).group(group)
         if loc and outloc: loc = loc.lower()
         if loc: return loc
@@ -933,7 +933,7 @@ def get_loc(var, stype=None, mode='loc', default=None):
         if mode=='ext':
 
             # From physloc
-            if stype=='name' and var in VAR_SPECS and VAR_SPECS[var].get('physloc'):
+            if stype=='id' and var in VAR_SPECS and VAR_SPECS[var].get('physloc'):
                 return VAR_SPECS[var].get('physloc')
 
 #            # Default location
@@ -946,8 +946,8 @@ def no_loc_single(name, stype):
 
     :Params:
 
-        - **name**: Generic ame of the variable or axis.
-        - **stype**: One of 'name', 'standard_name' or 'long_name'.
+        - **name**: String to change
+        - **stype**: One of 'id', 'standard_name' or 'long_name'.
     """
     loc = get_loc(name, stype, mode='full')
     if loc is not None:
@@ -993,13 +993,13 @@ def change_loc_single(name, stype, loc, squeeze=None):
         return basename+'_'+loc
     return basename
 
-def change_loc_specs(loc, names=None, standard_names=None, long_names=None, axes=None,
+def change_loc_specs(loc, id=None, standard_name=None, long_name=None, axes=None,
     iaxis=None, jaxis=None, squeeze=None, **kwargs):
-    """Change location specification in names, standard names, long names and axes names
+    """Change location specification in id, standard names long name and axes id
 
     :Example:
 
-        >>> specs = change_loc_specs('v', names = ['usurf_u', 'u_u'])
+        >>> specs = change_loc_specs('v', id = ['usurf_u', 'u_u'])
 
     :Return: A dictionary
     """
@@ -1007,9 +1007,8 @@ def change_loc_specs(loc, names=None, standard_names=None, long_names=None, axes
     if 'atlocs' in specs: del specs['atlocs']
 
     # Attributes
-    for stype in 'name', 'standard_name', 'long_name', 'iaxis', 'jaxis':
-        sname = stype if stype in ('iaxis', 'jaxis') else (stype+'s')
-        values = eval(sname)
+    for stype in 'id', 'standard_name', 'long_name', 'iaxis', 'jaxis':
+        values = locals()[stype]
         if values is None: continue
         if isinstance(values, list):
             values = list(values)
@@ -1021,7 +1020,7 @@ def change_loc_specs(loc, names=None, standard_names=None, long_names=None, axes
 
         else:
             values = change_loc_single(values, stype, loc, squeeze=squeeze)
-        specs[sname] = values
+        specs[stype] = values
 
     # Axes
     if axes is not None:
@@ -1031,7 +1030,7 @@ def change_loc_specs(loc, names=None, standard_names=None, long_names=None, axes
             laxes = axes[l]
             single = not isinstance(laxes, list)
             if single: laxes = [laxes] # work on lists
-            laxes = [change_loc_single(axis, 'name', loc, squeeze=DEFAULT_LOCATION) for axis in laxes]+laxes # duplicate
+            laxes = [change_loc_single(axis, 'id', loc, squeeze=DEFAULT_LOCATION) for axis in laxes]+laxes # duplicate
             lnewaxes = []
             for axis in laxes: # unique
                 if axis not in lnewaxes:
@@ -1071,18 +1070,18 @@ def change_loc(var, toloc, axes=True, squeeze=True):
     # Change attributes
     # - get
     specs = change_loc_specs(toloc, squeeze=squeeze,
-        names=var.id,
-        standard_names = getattr(var, 'standard_name', None),
-        long_names = getattr(var, 'long_name', None),
+        id=var.id,
+        standard_name = getattr(var, 'standard_name', None),
+        long_name = getattr(var, 'long_name', None),
         )
     # - set
-    var.id = specs['names']
+    var.id = specs['id']
     for att in 'standard_name', 'long_name':
-        if att+'s' in specs:
-            setattr(var, att, specs[att+'s'])
+        if att in specs:
+            setattr(var, att, specs[att])
     # - cf name
     if hasattr(var, '_vacumm_cf_name'):
-        var._vacumm_cf_name = change_loc_single(var._vacumm_cf_name, 'name', toloc,
+        var._vacumm_cf_name = change_loc_single(var._vacumm_cf_name, 'id', toloc,
             squeeze=squeeze)
 
     # Change axes and grid attributes
@@ -1190,7 +1189,7 @@ def squeeze_loc(var):
 
 def squeeze_loc_single(name, stype, physloc=None):
     """Squeeze location specs if it matches physical location"""
-    if physloc is None and stype=='name' and name in VAR_SPECS:
+    if physloc is None and stype=='id' and name in VAR_SPECS:
         physloc = VAR_SPECS[name].get('physloc')
     if physloc is None:
         physloc = DEFAULT_LOCATION
@@ -1224,11 +1223,11 @@ def dupl_loc_specs(all_specs, fromname, toloc):
         toloc = [toloc]
     tonames = []
     tomerge = []
-    fromnoloc = no_loc_single(fromname, 'name')==fromname
+    fromnoloc = no_loc_single(fromname, 'id')==fromname
     for loc in toloc:
 
         # New name (id)
-        toname = change_loc_single(fromname, 'name', loc)
+        toname = change_loc_single(fromname, 'id', loc)
         tonames.append(toname)
 
         # New specs
@@ -1236,7 +1235,7 @@ def dupl_loc_specs(all_specs, fromname, toloc):
 
         # Add a version of standard_name and long_name for T loc without location spec
         if loc=='t': # 'toto_at_t_location' -> ['toto_at_t_location','toto']
-            for spname in 'standard_names', 'long_names':
+            for spname in 'standard_name', 'long_name':
                 if spname not in tospecs: continue
                 addspecs = change_loc_specs(None, **{spname:tospecs[spname]})
                 for dd in tospecs, addspecs: # to lists
@@ -1250,7 +1249,8 @@ def dupl_loc_specs(all_specs, fromname, toloc):
 
         # Merge with old spec if existing
         if toname in all_specs:
-            tospecs = dict_merge(tospecs, all_specs[toname], mergelists=True)
+            tospecs = dict_merge(tospecs, all_specs[toname], mergelists=True,
+                                 cls=dict)
 
 #        # Default location -> add its generic version ('_t' -> + '')
 #        if loc==DEFAULT_LOCATION:
@@ -1271,7 +1271,7 @@ def dupl_loc_specs(all_specs, fromname, toloc):
         genspecs = change_loc_specs(None, **all_specs[fromname]) # remove location info
     tomerge.insert(0, genspecs)
     kw = dict(mergelists=True)
-    genname = genspecs['names'][0]
+    genname = genspecs['id'][0]
     all_specs[genname] = dict_merge(*tomerge, **kw)
 
     if single: return tonames[0]
