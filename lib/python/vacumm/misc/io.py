@@ -2084,7 +2084,7 @@ class Shapes(object):
                 fname = '%s.%s'%(input, ext)
                 assert os.path.exists(fname), fname
             try:
-                from mpl_toolkits.basemap.shapefile import Reader
+                from shapefile import Reader
                 newreader = True
                 shp = Reader(input)
                 input_type = shp.shapeType
