@@ -1,7 +1,7 @@
 """Test function :func:`~vacumm.misc.grid.resol`"""
 
 from vcmq import create_lon, create_lat, create_grid, rotate_grid, assert_allclose
-from vacumm.misc.grid.misc import resol2 as resol
+from vacumm.misc.grid.misc import resol
 
 lon1d = create_lon((0, 10., 1.))
 lat1d = create_lat((43, 50, 1.))
