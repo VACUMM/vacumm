@@ -235,7 +235,7 @@ from vacumm.misc.grid.kriging import (
 
 # - data
 
-from vacumm.data import setup_dataset, DS
+from vacumm.data import setup_dataset, DS, register_dataset
 
 from vacumm.data.cf import (
     format_var, format_axis, format_grid, match_var, change_loc, match_obj,

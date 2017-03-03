@@ -40,3 +40,10 @@ model tools
 import os as _os, locale as _locale
 _os.environ['LC_NUMERIC'] = 'en_US.UTF-8'
 _locale.setlocale(_locale.LC_NUMERIC, 'en_US.UTF-8')
+
+import cfsr
+import globcurrent
+import hycom
+import mars3d
+import nemo
+import swan

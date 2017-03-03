@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -42,8 +42,9 @@ __date__ = '2011-01-17'
 __doc__ = 'MARS3D model data manipulation'
 
 
-from vacumm.data.misc.dataset import OceanDataset, AtmosSurfaceDataset
 from vacumm.misc import dict_merge
+from vacumm.data import register_dataset
+from vacumm.data.misc.dataset import OceanDataset, AtmosSurfaceDataset
 #from vacumm.data.cf import specs_def_loc
 
 
@@ -53,6 +54,9 @@ class Mars3D(OceanDataset,AtmosSurfaceDataset):
 
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
+    name = 'mars'
+    description = "The MARS3D ocean model from IFREMER"
+
     #: Grid type
     arakawa_grid_type = 'C'
 
@@ -107,6 +111,6 @@ class Mars3D(OceanDataset,AtmosSurfaceDataset):
 #: Alias for :class:`Mars3D`
 MARS3D = Mars3D
 
-
-
+# Register the class
+register_dataset(MARS3D)
 

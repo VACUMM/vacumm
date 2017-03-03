@@ -92,6 +92,7 @@ from vacumm.misc.misc import is_iterable, kwfilter, squeeze_variable, dict_filte
 from vacumm.misc.phys.constants import GRAVITY
 from vacumm.misc.plot import map2, curve2, section2, hov2, add_map_lines
 from vacumm.misc.axes import islon, islat, isdep
+from vacumm.data import register_dataset
 from vacumm.data.misc.sigma import NcSigma
 from vacumm.data.misc.arakawa import ArakawaGrid, AGrid, CGrid, ARAKAWA_LOCATIONS as arakawa_locations,  \
     set_grid_type, get_grid_type, _cdms2_atts as cdms2_arakawa_atts
@@ -491,6 +492,9 @@ class Dataset(Object):
 
     ncobj_specs = {}
 
+    description = None
+    name = None
+
     def __init__(self, dataset=None, time=None, lon=None, lat=None, level=None,
         ncobj_specs=None, nopat=False, patfreq=None, patfmtfunc=None, sort=True, check=True, **kwargs):
 
@@ -514,6 +518,7 @@ class Dataset(Object):
 
         # Load specs of variables
         self._load_ncobj_specs_(ncobj_specs)
+
 
     def _parse_selects_(self, time, level, lat, lon):
         return time, level, lat, lon, False
@@ -2068,6 +2073,8 @@ class OceanSurfaceDataset(Dataset):
 
 @getvar_decmets
 class OceanDataset(OceanSurfaceDataset):
+    name = 'ocean'
+    description = 'Generic ocean dataset'
 
     # For auto-declaring methods
     auto_generic_var_names = ['temp', 'sal', 'u3d', 'v3d', 'ubt', 'vbt', 'kz', 'bathy',
@@ -3636,7 +3643,8 @@ class OceanDataset(OceanSurfaceDataset):
         return m,c
 
 class AtmosDataset(AtmosSurfaceDataset):
-
+    name = 'atmos'
+    description = 'Generic atmospheric dataset'
     ncobj_specs = {}
 
 
@@ -3728,7 +3736,8 @@ def _notuplist_(dd):
 
 class GenericDataset(AtmosDataset, OceanDataset):
     """Generic :class:`Dataset` class to load everything"""
-    pass
+    name = 'generic'
+    description = 'Generic dataset'
 
 class CurvedSelector(object):
     """Curved grid multiple selector"""
@@ -3816,3 +3825,7 @@ def merge_squeeze_specs(squeeze1, squeeze2):
         return squeeze2
     return s1 or s2
 
+
+# Register dataset classes
+for cls in GenericDataset, OceanDataset, AtmosDataset:
+    register_dataset(cls)

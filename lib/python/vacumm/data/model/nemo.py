@@ -42,6 +42,7 @@ __date__ = '2012-11-14'
 __doc__ = 'NEMO model data manipulation'
 
 
+from vacumm.data import register_dataset
 from vacumm.data.misc.dataset import OceanDataset
 
 
@@ -51,6 +52,8 @@ class Nemo(OceanDataset):
 
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
+    name = 'nemo'
+    description = "The NEMO ocean model"
 
 
     ncobj_specs = {
@@ -164,6 +167,12 @@ class Nemo(OceanDataset):
 
 #: Alias for :class:`Nemo`
 NEMO = Nemo
+
+# Register the class
+register_dataset(NEMO, warn=False)
+
+
+
 
 if __name__ == '__main__' :
     from vacumm.data import setup_dataset
