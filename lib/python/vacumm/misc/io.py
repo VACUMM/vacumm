@@ -2277,10 +2277,10 @@ class Shapes(object):
 
         # Projected coordinates
         xyp = self.get_xy(proj=None)
-        self.xpmin = min(self.xpmin, xyp[0].min())
-        self.xpmax = max(self.xpmax, xyp[0].max())
-        self.ypmin = min(self.ypmin, xyp[1].min())
-        self.ypmax = max(self.ypmax, xyp[1].max())
+        self.xpmin = xyp[0].min() #min(self.xpmin, xyp[0].min())
+        self.xpmax = xyp[0].max() #max(self.xpmax, xyp[0].max())
+        self.ypmin = xyp[1].min() #min(self.ypmin, xyp[1].min())
+        self.ypmax = xyp[1].max() #max(self.ypmax, xyp[1].max())
         del xyp
 
 
@@ -2296,6 +2296,12 @@ class Shapes(object):
 
     def _clip_zone_(self, clip):
         """Return a projected polygon or None"""
+        # From grid
+        if isgrid(clip):
+            lon = clip.getLongitude().getValue()
+            lat = clip.getLatitude().getValue()
+            clip = dict(lon=(lon.min(), lon.max()), lat=(lat.min(), lat.max()))
+
         # From dictionary
         if isinstance(clip, dict):
            if 'lon' in clip and 'lat' in clip:
