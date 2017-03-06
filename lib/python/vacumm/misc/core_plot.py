@@ -256,7 +256,8 @@ class Plot(object):
         'units', 'xunits', 'yunits', 'vmin', 'xmin', 'ymin', 'vmax',
         'xmax', 'ymax']
     _secondary_attributes = ['xlabel', 'ylabel', 'title']
-    _special_attributes = ['uvlat', 'uvscaler', 'anim', 'xymasked', 'xmasked', 'ymasked']
+    _special_attributes = ['uvlat', 'uvscaler', 'anim', 'xymasked',
+        'xmasked', 'ymasked']
     _plot_status_none = 0
     _plot_status_plot = 1
     _plot_status_post = 2
@@ -1086,6 +1087,9 @@ class Plot(object):
     def del_obj(self, gtype):
         self._gobjs.pop(gtype, None)
 
+    def __getitem__(self, gtype):
+        return self.get_obj(gtype)
+
     def add_axobj(self, gtype, obj, single=False, axis=None):
         """Add a object to the bank of current :class:`matplotlib.axes.Axes` instance
 
@@ -1301,7 +1305,8 @@ class Plot(object):
 
 
     def format_axes(self, tz=None, nodate=False, date_rotation=None, date_fmt=None,
-        date_locator=None, date_minor_locator=None, date_nominor=False, **kwargs):
+            date_locator=None, date_minor_locator=None, date_nominor=False,
+            log=False, **kwargs):
         """Scale and format X and Y axes
 
         :Params:
@@ -1376,6 +1381,9 @@ class Plot(object):
             props['label_kwargs'].update(kwfilter(xykwargs, 'title_', copy=1))
             props['fmt_kwargs'] = kwfilter(xykwargs, 'fmt_', copy=1)
             props['ticklabels_kwargs'] = kwfilter(xykwargs, 'ticklabels_', copy=1)
+            if props['type']=='d' and log is True:
+                props['locator'] = False
+                props['minor_locator'] = False
 
             # Axis scale
             if props['scale'] is not None:
@@ -4137,7 +4145,7 @@ class Curve(Plot1D):
         return Plot.load_data(self, *args, **kwargs)
 
     def plot(self, parg=None, nosingle=False, label=None, err=None, fill_between=False,
-            shadow=False, glow=False, **kwargs):
+            shadow=False, glow=False, log=False, **kwargs):
         """Plot of data as a curve
 
         :Params:
@@ -4206,9 +4214,18 @@ class Curve(Plot1D):
             parg = [parg]
         kwline['label'] =  self.label if label is None else label
 
+        # Plot func
+        if log:
+            if self.order[0]=='d':
+                pfunc = self.axes.semilogy
+            else:
+                pfunc = self.axes.semilogx
+        else:
+            pfunc = self.axes.plot
+
         # Plot
         # - main
-        ll = self.axes.plot(xx, yy, *parg, **kwline)
+        ll = pfunc(xx, yy, *parg, **kwline)
         self.register_obj(ll, ['curve', 'lines', 'plot'], **kwargs)
         # - fill_between
         if fill_between is not False:

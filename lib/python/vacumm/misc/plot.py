@@ -2923,7 +2923,7 @@ _fill_doc_(xdate, ydate, taylor, dtaylor)
 
 @docfill
 def curve2(*args, **kwargs):
-    """curve2(data, axis=None, title=None, savefig=None, show=True, **kwargs)
+    """curve2(data, parg=None, axis=None, title=None, savefig=None, show=True, **kwargs)
 
     Plot 1D data as a curve and return a :class:`~vacumm.misc.core_plot.Curve` object
     with properties also from :class:`~vacumm.misc.core_plot.Plot` and
