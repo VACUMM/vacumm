@@ -251,6 +251,9 @@ from vacumm.data.misc.arakawa import (
     CGrid, AGrid, ArakawaGridTransfer
     )
 
+from vacumm.data.misc.dataset import (
+    Dataset, OceanDataset, AtmosDataset, GenericDataset)
+
 # - diag
 
 from vacumm.diag.thermdyn import density, mixed_layer_depth
