@@ -2084,7 +2084,10 @@ class Shapes(object):
                 fname = '%s.%s'%(input, ext)
                 assert os.path.exists(fname), fname
             try:
-                from mpl_toolkits.basemap.shapefile import Reader
+                try:
+                    from shapefile import Reader
+                except:
+                    from mpl_toolkits.basemap.shapefile import Reader
                 newreader = True
                 shp = Reader(input)
                 input_type = shp.shapeType
@@ -2266,18 +2269,18 @@ class Shapes(object):
 
             # Normal coordinates
             xy = self.get_xy(proj=False)
-            self.xmin = min(self.xmin, xy[..., 0].min())
-            self.xmax = max(self.xmax, xy[..., 0].max())
-            self.ymin = min(self.ymin, xy[..., 1].min())
-            self.ymax = max(self.ymax, xy[..., 1].max())
+            self.xmin = xy[0].min() # min(self.xmin, xy[0].min())
+            self.xmax = xy[0].max() # max(self.xmax, xy[0].max())
+            self.ymin = xy[1].min() # min(self.ymin, xy[1].min())
+            self.ymax = xy[1].max() # max(self.ymax, xy[1].max())
             del xy
 
         # Projected coordinates
         xyp = self.get_xy(proj=None)
-        self.xpmin = min(self.xpmin, xyp[..., 0].min())
-        self.xpmax = max(self.xpmax, xyp[..., 0].max())
-        self.ypmin = min(self.ypmin, xyp[..., 1].min())
-        self.ypmax = max(self.ypmax, xyp[..., 1].max())
+        self.xpmin = min(self.xpmin, xyp[0].min())
+        self.xpmax = max(self.xpmax, xyp[0].max())
+        self.ypmin = min(self.ypmin, xyp[1].min())
+        self.ypmax = max(self.ypmax, xyp[1].max())
         del xyp
 
 
