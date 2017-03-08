@@ -1260,7 +1260,6 @@ class Plot(object):
 
         # Highlight intervals
         if kwargs.pop('hldays', hlitvs):
-            print 'ok!'
             if kwargs.pop('hldays', False):
                 kw['hlitvs'].setdefault['units'] = 'day'
             self.hlitvs(**kw['hlitvs'])
