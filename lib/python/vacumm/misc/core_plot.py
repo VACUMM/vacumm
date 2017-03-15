@@ -72,10 +72,10 @@ from ._ext_plot import (DropShadowFilter, FilteredArtistList, GrowFilter,
     LightFilter)
 from .misc import (kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts,
     auto_scale, zoombox, dict_check_defaults, basic_auto_scale, dict_copy_items,
-    dict_merge, phaselab)
+    dict_merge, phaselab, set_atts)
 from .atime import mpl, comptime, strftime, is_numtime, numtime
 from .axes import (check_axes, istime, axis_type, set_order, get_order, merge_orders,
-    check_order, order_match, isaxis)
+    check_order, order_match, isaxis, get_axis_type)
 from .color import (get_cmap, cmap_magic, cmap_rainbow, RGB, land, whiten, darken,
     RGBA, change_luminosity, change_saturation, pastelise,
     CMAP_POSITIVE, CMAP_NEGATIVE, CMAP_SYMETRIC, CMAP_ANOMALY)
@@ -405,55 +405,56 @@ class Plot(object):
         """
         self.raw_data = data
         self.data =  None
-        if data is None:
-            self._check_order_()
-            return
+#        if data is None:
+#            self._check_order_()
+#            return
 
         # Arrows
-        N.seterr(over='ignore')
-        if isinstance(data, list):
-            data = tuple(data)
-        if not isinstance(data, tuple):
-            self.data = [MV2.array(data, copy=1),]
-        elif len(data) in [1,3]: # (mod,) or (mod,u,v)
-            self.data = [MV2.array(v, copy=1) for v in data]
-        elif len(data)==2:
-            # Get vectors and modulus (u,v) -> (mod,u,v)
-            vx,vy = [MV2.array(v, copy=1) for v in data]
-            self.data = [MV2.sqrt(vx**2+vy**2),vx,vy]
-            ln = []
-            for vv in vx,vy:
-                if hasattr(vv,'units'):
-                    self.data[0].units = vv.units
-                    break
-                if hasattr(vv,'long_name'):
-                    ln.append(vv.long_name)
-            ln  = ' and '.join(ln)
-            if len(ln) == 0:
-                ln = 'Modulus'
+        if data is not None:
+            N.seterr(over='ignore')
+            if isinstance(data, list):
+                data = tuple(data)
+            if not isinstance(data, tuple):
+                self.data = [MV2.array(data, copy=1),]
+            elif len(data) in [1,3]: # (mod,) or (mod,u,v)
+                self.data = [MV2.array(v, copy=1) for v in data]
+            elif len(data)==2:
+                # Get vectors and modulus (u,v) -> (mod,u,v)
+                vx,vy = [MV2.array(v, copy=1) for v in data]
+                self.data = [MV2.sqrt(vx**2+vy**2),vx,vy]
+                ln = []
+                for vv in vx,vy:
+                    if hasattr(vv,'units'):
+                        self.data[0].units = vv.units
+                        break
+                    if hasattr(vv,'long_name'):
+                        ln.append(vv.long_name)
+                ln  = ' and '.join(ln)
+                if len(ln) == 0:
+                    ln = 'Modulus'
+                else:
+                    ln = 'Modulus of '+ln
+                self.data[0].long_name = ln
+                self.data[0].setAxisList(self.data[2].getAxisList())
+                self.data[0].setGrid(self.data[2].getGrid())
+                self.data[0].id = 'modulus'
             else:
-                ln = 'Modulus of '+ln
-            self.data[0].long_name = ln
-            self.data[0].setAxisList(self.data[2].getAxisList())
-            self.data[0].setGrid(self.data[2].getGrid())
-            self.data[0].id = 'modulus'
-        else:
-            raise PlotError('You must provide no more than 3 arrays as input for '+self.__class__.__name__)
+                raise PlotError('You must provide no more than 3 arrays as input for '+self.__class__.__name__)
 
-        # Check all variables and axes
-        units = [None]*self.rank
-        for ivar,var in enumerate(self.data):
+            # Check all variables and axes
+            units = [None]*self.rank
+            for ivar,var in enumerate(self.data):
 
-            # Check rank
-            if var.rank() != self.rank:
-                raise PlotError('Your variable must have a rank = %i (current rank is %i)' % (self.rank, var.rank()))
+                # Check rank
+                if var.rank() != self.rank:
+                    raise PlotError('Your variable must have a rank = %i (current rank is %i)' % (self.rank, var.rank()))
 
-            # Guess axis types
-            if '-' in var.getOrder():
-                check_axes(var)
+                # Guess axis types
+                if '-' in var.getOrder():
+                    check_axes(var)
 
-            # Make time axes comptatible with matplotlib
-            mpl(var, copy=True)
+                # Make time axes comptatible with matplotlib
+                mpl(var, copy=True)
 
         # Store axes in x and y
         self._set_axes_(**kwargs)
@@ -469,9 +470,11 @@ class Plot(object):
         #self.y = get_axis(self.data[0], 0) if self.order[0]!='d' else None
         #self.x = self.data[0].getAxis(-1) if self.order[1]!='d' else None
         #self.y = self.data[0].getAxis(0) if self.order[0]!='d' else None
-        self.mask = N.ma.getmaskarray(self.data[0])
+        self.mask = (N.ma.getmaskarray(self.data[0]) if self.has_data() else
+                     N.ma.nomask)
         self.masked = self.mask.all()
-        if self.masked: warn('All your data are masked')
+        if self.masked and self.has_data():
+            warn('All your data are masked')
 
         return self.data
 
@@ -486,6 +489,8 @@ class Plot(object):
 
         :attr`x` and :attr`y` must have been set _set_axes_ method.
         """
+        if not self.has_data():
+            return
         for i, xy in enumerate(['y','x']):
             axis = getattr(self, xy)
             if axis is None: continue
@@ -549,7 +554,10 @@ class Plot(object):
             if not isinstance(self._order, list):
                 self.order = self._order.lower()
             else:
-                self.order = '--'
+                self.order = ('d' if self.y is None else
+                              get_axis_type(self.y, checkaxis=False))
+                self.order = self.order + ('d' if self.x is None else
+                              get_axis_type(self.x, checkaxis=False))
         else:
 
             # Allowed orders
@@ -676,8 +684,8 @@ class Plot(object):
 
         :See also: :meth:`get_ydata` :meth:`get_data`
         """
-        # Nothing
-        if not self.has_data(): return
+#        # Nothing
+#        if not self.has_data(): return
         # Axis
         if self.x is not None:
             x = self.x[:] #.getValue()
@@ -720,8 +728,8 @@ class Plot(object):
 
         :See also: :meth:`get_xdata` :meth:`get_data`
         """
-        # Nothing
-        if not self.has_data(): return
+#        # Nothing
+#        if not self.has_data(): return
         # Axis
         if self.y is not None:
             y = self.y[:] #.getValue()
@@ -2471,7 +2479,8 @@ class Plot(object):
             - **mkdir**, optional: Make figure directory if it does not exists.
             - Other keywords are passed to :func:`matplotlib.pyplot.savefig`.
         """
-        if figfile is None: return
+        if not figfile:
+            return
 
         # List of files
         if isinstance(figfile, (list, tuple)):
@@ -3069,11 +3078,12 @@ class Plot(object):
     def _get_xyattr_(self, xy, att, idata=None):
         """Get an attribute of an X/Y axis or current data"""
 
-        # Nothing
-        if not self.has_data(): return
+#        # Nothing
+#        if not self.has_data(): return
 
         # From a variable
         if xy=='d' or getattr(self, xy+'type')=='d':
+            if not self.has_data(): return
             if idata is None:
                 idata = range(len(self.data))
             elif not isinstance(idata, (list, tuple)):
@@ -3091,8 +3101,8 @@ class Plot(object):
     def _set_xyattr_(self, xy, att, value, idata=0):
         """Set an attribute to an X/Y axis or current data"""
 
-        # Nothing
-        if not self.has_data(): return
+#        # Nothing
+#        if not self.has_data(): return
 
         # Del
         if value is False:
@@ -3100,6 +3110,8 @@ class Plot(object):
 
         # Variable or axis?
         if xy=='d' or getattr(self, xy+'type')=='d':
+            if not self.has_data():
+                return
             target = self.data[idata]
         else:
             target = getattr(self, xy)
@@ -3116,6 +3128,8 @@ class Plot(object):
 
         # To a variable
         if xy=='d' or getattr(self, xy+'type')=='d':
+            if not self.has_data():
+                return
             target = self.data[idata]
         else:
             target = getattr(self, xy)
@@ -3500,15 +3514,18 @@ class Plot1D(Plot):
         if axis is not None:
             if not isaxis(axis):
                 axis = cdms2.createAxis(axis)
-                cp_atts(self.data[0].getAxis(0), axis, overwrite=False)
-            else: # adjust order
+                if self.has_data():
+                    cp_atts(self.data[0].getAxis(0), axis, overwrite=False)
+            elif self.has_data(): # adjust order
                 orders = [var.getOrder() for var in self.data]
                 for ivar, var in enumerate(self.data):
                     c = getattr(axis, 'axis', '-').lower()
                     if c!='-' or orders[ivar][0]=='-':
                         set_order(var, c)
-        else:
+        elif self.has_data():
             axis = self.data[0].getAxis(0)
+        else:
+            raise VACUMMError('No axis data available for this plot')
 
         # Change attributes
         if axisatts is not None:
@@ -4172,7 +4189,7 @@ class Curve(Plot1D):
             - **glow_<param>**, optional: ``<param>`` is passed to
               :meth:`~vacumm.misc.core_plot.Plot.add_glow`.
         """
-        if self.masked: return
+        if not self.has_valid_data(): return
 
         # Data
         xx = self.get_xdata(scalar=0)
@@ -4327,7 +4344,7 @@ class Bar(Plot1D):
             >>> Bar(rain1).plot(width=.45, align='left', color='cyan')
             >>> Bar(rain2).plot(width=.45, lag=.5, align='left', color='b')
         """
-        if self.masked: return
+        if not self.has_valid_data(): return
 
         # Data
         data = self.get_data()[0]
@@ -4507,7 +4524,7 @@ class Stick(QuiverKey, ScalarMappable, Curve):
               meth:`~vacumm.misc.core_plot.ScalarMappable.get_levels` to tune levels.
 
         """
-        if self.masked: return
+        if not self.has_valid_data(): return
 
         # Keywords
         kwmod = kwfilter(kwargs, 'mod_')
@@ -4654,7 +4671,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
 
 
         # Get axes and adjust order
-        if xaxis is not None or yaxis is not None:
+        if (xaxis is not None or yaxis is not None) and self.has_data():
 
             # Adjust order
             for ivar, var in enumerate(self.data):
@@ -4665,18 +4682,27 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
                     if order[i]=='-' and c!='-': order[i] = c
                 set_order(self.data[ivar], order)
                 self.data[ivar]._nogridorder = True
-        xax = get_axis(self.data[0], 1, strict=True, geo=False)
+        if self.has_data():
+            xax = get_axis(self.data[0], 1, strict=True, geo=False)
+            yax = get_axis(self.data[0], 0, strict=True, geo=False)
         if xaxis is None:
-            xaxis = xax
+            if self.has_data():
+                xaxis = xax
+            else:
+                raise VACUMMError('No xaxis data available')
         elif not isaxis(xaxis):
             xaxis = MV2.array(xaxis, copy=0)
-            cp_atts(xax, xaxis, overwrite=False)
-        yax = get_axis(self.data[0], 0, strict=True, geo=False)
+            if self.has_data():
+                cp_atts(xax, xaxis, overwrite=False)
         if yaxis is None:
-            yaxis = yax
+            if self.has_data():
+                yaxis = yax
+            else:
+                raise VACUMMError('No yaxis data available')
         elif not isaxis(yaxis):
             yaxis = MV2.array(yaxis, copy=0)
-            cp_atts(yax, yaxis, overwrite=False)
+            if self.has_data():
+                cp_atts(yax, yaxis, overwrite=False)
 
         # Change attributes
         if xatts is not None:
@@ -4758,8 +4784,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
 
                 2D bounds coordinates of the Y axis data.
         """
-        # Check
-        if data is None: return
+#        # Check
+#        if data is None: return
 
         # Normal load
         Plot.load_data(self, data, **kwargs)
@@ -4895,7 +4921,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             :meth:`~ScalarMappable.get_levels` must have been previously called.
 
         """
-        if self.masked: return
+        if not self.has_valid_data(): return
 
 
 
@@ -5044,7 +5070,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             #. Calls :func:`~matplotlib.pyplot.clabel`
 
         """
-        if self.masked: return
+        if self.has_valid_data():
+            return
 
         # Keywords
 
@@ -5194,7 +5221,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             #. Calls :func:`~matplotlib.pyplot.quiverkey`
 
         """
-        if self.masked: return
+        if not self.has_valid_data(): return
 
         # Get data
         if len(self.data)!=3: return
@@ -5346,7 +5373,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             #. Calls :func:`~matplotlib.pyplot.streamplot`.
 
         """
-        if self.masked: return
+        if not self.has_valid_data(): return
 
         # Get data
         if len(self.data)!=3: return
@@ -5428,7 +5455,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             #. Calls :meth:`plot_contour`.
             #. Calls :meth:`plot_quiver` or :meth:`plot_streamplot`.
         """
-        if self.masked: return
+        if not self.has_valid_data(): return
 
         # Get levels
         kwlevels = kwfilter(kwargs, 'levels', defaults=dict(anomaly=anomaly))
@@ -5748,7 +5775,7 @@ class Map(Plot2D):
         It is typically used for adding L and H to depressions and anticyclones.
         """
 
-        if self.masked: return
+        if not self.has_valid_data(): return
 
         # Data
         data = self.get_data(scalar=True)
