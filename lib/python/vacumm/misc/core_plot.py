@@ -3525,7 +3525,7 @@ class Plot1D(Plot):
         elif self.has_data():
             axis = self.data[0].getAxis(0)
         else:
-            raise VACUMMError('No axis data available for this plot')
+            raise PlotError('No axis data available for this plot')
 
         # Change attributes
         if axisatts is not None:
@@ -4689,7 +4689,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             if self.has_data():
                 xaxis = xax
             else:
-                raise VACUMMError('No xaxis data available')
+                raise PlotError('No xaxis data available')
         elif not isaxis(xaxis):
             xaxis = MV2.array(xaxis, copy=0)
             if self.has_data():
@@ -4698,7 +4698,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             if self.has_data():
                 yaxis = yax
             else:
-                raise VACUMMError('No yaxis data available')
+                raise PlotError('No yaxis data available')
         elif not isaxis(yaxis):
             yaxis = MV2.array(yaxis, copy=0)
             if self.has_data():
@@ -5516,12 +5516,13 @@ class Map(Plot2D):
 
     def _set_axes_(self, xaxis=None, yaxis=None, xatts=None, yatts=None, **kwargs):
         Plot2D._set_axes_(self, xaxis=xaxis, yaxis=yaxis, xatts=xatts, yatts=yatts, **kwargs)
-        if xaxis is not None:
-            for var in self.data:
-                var.getAxis(1).designateLongitude()
-        if yaxis is not None:
-            for var in self.data:
-                var.getAxis(0).designateLatitude()
+        if self.has_data():
+            if xaxis is not None:
+                for var in self.data:
+                    var.getAxis(1).designateLongitude()
+            if yaxis is not None:
+                for var in self.data:
+                    var.getAxis(0).designateLatitude()
     _set_axes_.__doc__ = Plot2D._set_axes_.__doc__
 
     def format_axes(self, **kwargs):
@@ -5593,13 +5594,25 @@ class Map(Plot2D):
 
             Latitudes as a two-elements tuple or and array.
         """
-
-
+        # Default bounds
+        default_lon = N.array([-180., 180.])
+        default_lat = N.array([-90., 90.])
+        if lon is not None:
+            lon = N.asarray(lon)
+        if lat is not None:
+            lat = N.asarray(lat)
 
         # Get some keys
         self.lon = lon
         self.lat = lat
         self.order = 'yx'
+
+        # Minimal setup
+        if data is None:
+            if 'xaxis' not in kwargs:
+                kwargs['xaxis'] = lon if lon is not None else default_lon
+            if 'yaxis' not in kwargs:
+                kwargs['yaxis'] = lat if lat is not None else default_lat
 
         # Basic load
         Plot2D.load_data(self, data, **kwargs)
@@ -5607,15 +5620,13 @@ class Map(Plot2D):
         # Longitudes and latitudes
         if not self.has_data():
             if self.lon is None:
-                self.lon = [-180., 180.]
+                self.lon = default_lon
             if self.lat is None:
-                self.lat = [-180., 180.]
-            self.lon = N.asarray(self.lon)
-            self.lat = N.asarray(self.lat)
+                self.lat = default_lat
         else:
             masked = False if self.masked else None
-            self.lon = self.get_xdata(masked=masked) if self.lon is None else N.asarray(self.lon)
-            self.lat = self.get_ydata(masked=masked) if self.lat is None else N.asarray(self.lat)
+            self.lon = self.get_xdata(masked=masked) if self.lon is None else self.lon
+            self.lat = self.get_ydata(masked=masked) if self.lat is None else self.lat
 
 
     def pre_plot(self, map=None, projection='cyl', resolution='auto',
