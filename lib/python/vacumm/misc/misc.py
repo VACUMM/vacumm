@@ -76,7 +76,7 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out',
     'kwfilterout', 'filter_selector', 'isempty', 'checkdir', 'splitidx',
     'CaseChecker', 'check_case', 'indices2slices', 'filter_level_selector',
-    'match_atts', 'match_string']
+    'match_atts', 'match_string', 'dicttree_get', 'dicttree_set']
 __all__.sort()
 
 def broadcast(set, n, mode='last', **kwargs):
@@ -2353,3 +2353,31 @@ def dicttree_get(dd, *keys, **kwargs):
     if keys[0] not in dd:
         return default
     return dicttree_get(dd[keys[0]], *keys[1:], **kwargs)
+
+
+def dicttree_set(dd, *keys, **items):
+    """Set a value in a tree of dicts
+
+    Parameters
+    ----------
+    dd: dict
+        Dict of dicts to fill
+    keys: strings
+    value:
+        To set
+
+    Example
+    -------
+    >>> dd = {}
+    >>> dicttree_set(dd, 'sec', 'subsec', 'subsubsec', option=15)
+    >>> dicttree_set(dd, value1=30, value2=20)
+    """
+    assert isinstance(dd, dict), 'Input must a dict'
+    basedd = dd
+    cls = items.get('__class__', dict)
+    for key in keys:
+        if key not in dd:
+            dd[key] = cls()
+        dd = dd[key]
+    dd.update(**items)
+    return basedd
