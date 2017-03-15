@@ -65,30 +65,35 @@ BASIC_AXIS_SPECS = {
         standard_name = 'longitude',
         units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 'degreee', 'degreese'],
         long_name = 'longitude',
+        axis = 'X',
         ),
     'lat': dict(
         id = 'lat',
         standard_name = 'latitude',
         units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'],
         long_name='latitude',
+        axis = 'Y',
     ),
     'lev': dict(
         id = ['dep','lev','plev'],
         standard_name = ['depth','pressure_level'],
         unit = ['m','meters','hpa'],
         long_name = ['depth','pressure level','profondeur','pression','sigma','geopotential'],
+        axis = 'Z',
     ),
     'dep': dict(
         id = ['dep'],
         standard_name = ['depth'],
         unit = ['m','meters'],
         long_name = ['depth','profondeur'],
+        axis = 'Z',
     ),
     'time': dict(
         id = ['time','date'],
         standard_names = ['time'],
         units = None,
         long_names = ['time','temps','date'],
+        axis = 'T',
     ),
 }
 
@@ -102,29 +107,29 @@ BASIC_AXIS_DEFAULTS = {
 }
 
 
-def isaxis(axis):
-    if hasattr(axis, 'isAbstractCoordinate') and axis.isAbstractCoordinate():
+def isaxis(obj):
+    if hasattr(obj, 'isAbstractCoordinate') and obj.isAbstractCoordinate():
         return True
-    return isinstance(axis,(AbstractAxis, FileAxis, TransientAxis2D))
+    return isinstance(obj,(AbstractAxis, FileAxis, TransientAxis2D))
 
-def islon(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
-    """Check if an axis is of longitude type"""
+def islon(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+    """Check if an object is of longitude type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['lon']
     dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['lon'])
-    return is_geo_axis_type(axis, 'x', defaults=defaults, ro=ro, checkatts=checkatts,
+    return is_geo_axis_type(obj, 'x', defaults=defaults, ro=ro, checkatts=checkatts,
         checkaxis=checkaxis, **attchecks)
 
-def islat(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
-    """Check if an axis is of latitude type"""
+def islat(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+    """Check if an object is of latitude type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['lat']
     dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['lat'])
-    return is_geo_axis_type(axis, 'y', defaults=defaults, ro=ro, checkatts=checkatts,
+    return is_geo_axis_type(obj, 'y', defaults=defaults, ro=ro, checkatts=checkatts,
         checkaxis=checkaxis, **attchecks)
 
-def islev(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
-    """Check if an axis is of level type"""
+def islev(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+    """Check if an object is of level type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['lev']
     dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['lev'])
@@ -133,12 +138,12 @@ def islev(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attch
             del attchecks['units']
         if 'long_name' in attchecks:
             del attchecks['long_name']
-    return is_geo_axis_type(axis, 'z', defaults=defaults, ro=ro, checkatts=checkatts,
+    return is_geo_axis_type(obj, 'z', defaults=defaults, ro=ro, checkatts=checkatts,
         checkaxis=checkaxis, **attchecks)
 islevel = islev
 
-def isdep(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
-    """Check if an axis is of depth type"""
+def isdep(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+    """Check if an object is of depth type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['lev']
     dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['dep'])
@@ -147,12 +152,12 @@ def isdep(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attch
             del attchecks['units']
         if 'long_name' in attchecks:
             del attchecks['long_name']
-    return is_geo_axis_type(axis, 'z', defaults=defaults, ro=ro, checkatts=checkatts,
+    return is_geo_axis_type(obj, 'z', defaults=defaults, ro=ro, checkatts=checkatts,
         checkaxis=checkaxis, **attchecks)
 isdepth = isdep
 
-def istime(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
-    """Check if an axis is of time type"""
+def istime(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+    """Check if an object is of time type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['time']
     dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['time'])
@@ -162,11 +167,11 @@ def istime(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attc
     from .atime import are_good_units
     units.append(are_good_units)
     attchecks['units'] = units
-    myistime = is_geo_axis_type(axis, 't', defaults=defaults, ro=ro, checkatts=checkatts,
+    myistime = is_geo_axis_type(obj, 't', defaults=defaults, ro=ro, checkatts=checkatts,
         checkaxis=checkaxis, **attchecks)
     if myistime and not ro:
         try:
-            axis.calendar = 'gregorian'
+            obj.calendar = 'gregorian'
         except:
             pass
     return myistime
@@ -203,13 +208,13 @@ def get_checker(name):
         return istime
     raise TypeError(errmsg)
 
-def is_geo_axis_type(axis, atype, defaults=None, ro=False, checkaxis=True,
+def is_geo_axis_type(obj, atype, defaults=None, ro=False, checkaxis=True,
         checkatts=True, **attchecks):
-    """Check if an axis is of a specific type
+    """Check if an object is of a specific type
 
     :Params:
 
-        - **axis**: CDAT 1D or 2D axis.
+        - **obj**: CDAT 1D or 2D axis or other object.
         - **atype**: Axis type as one of 'x', 'y', 'z' or 'z'.
         - **ids**, optional: List od ids to check.
         - **standard_names**, optional: List of standard_names to check.
@@ -228,10 +233,10 @@ def is_geo_axis_type(axis, atype, defaults=None, ro=False, checkaxis=True,
     if checkaxis:
 
         # Is it an axis?
-        if not isaxis(axis):
+        if not isaxis(obj):
             return False
 
-        # Use for instance axis.isLongitude()
+        # Use for instance obj.isLongitude()
         if atype in ['t', 'time']:
             name = 'Time'
         elif atype in ['z', 'lev', 'dep']:
@@ -243,20 +248,20 @@ def is_geo_axis_type(axis, atype, defaults=None, ro=False, checkaxis=True,
             atype = 'x'
         else:
             False
-        if getattr(axis, 'axis', '-').lower() not in ['-', atype]:
+        if getattr(obj, 'axis', '-').lower() not in ['-', atype]:
             return False
-        isfunc = getattr(axis, 'is' + name)
+        isfunc = getattr(obj, 'is' + name)
         def valfunc():
-            getattr(axis, 'designate'+name)()
-            check_id(axis)
-            check_def_atts(axis, **defaults)
+            getattr(obj, 'designate'+name)()
+            check_id(obj)
+            check_def_atts(obj, **defaults)
         if isfunc():
             if not ro:
                 valfunc()
             return True
 
         # Check axis attribute
-        if getattr(axis,'axis','') == atype.upper():
+        if getattr(obj,'axis','') == atype.upper():
             if not ro:
                 valfunc()
             return True
@@ -265,7 +270,7 @@ def is_geo_axis_type(axis, atype, defaults=None, ro=False, checkaxis=True,
     if not checkatts:
         return False
     #TODO: merge with ncmatch_obj
-    valid = match_atts(axis, attchecks, ignorecase=True,
+    valid = match_atts(obj, attchecks, ignorecase=True,
         transform=lambda ss: (re.compile(ss, re.I).match
             if isinstance(ss, basestring) else None)) # transform=startswith
     if not valid:
