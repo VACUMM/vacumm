@@ -160,6 +160,7 @@ from vacumm.misc.plot import (
     ellipsis, get_cls, hldays, rotate_xlabels, rotate_ylabels,
     scale_xlim, scale_ylim, wedge, set_major_locator, set_minor_locator,
     xdate, ydate, get_quiverkey_value, add_lightshading,
+    add_param_label,
     )
 curve = curve2
 map = map2

@@ -53,9 +53,9 @@ from matplotlib.axes import Subplot
 from matplotlib.cm import ScalarMappable
 from matplotlib.collections import LineCollection
 from matplotlib.colors import ColorConverter,is_color_like, Normalize
-from matplotlib.dates import DateFormatter, MonthLocator, WeekdayLocator, YearLocator, \
-    DayLocator, HourLocator, MinuteLocator, SecondLocator, MONDAY, WEEKLY, YEARLY, MONTHLY, \
-    AutoDateLocator, AutoDateFormatter, MO, DAILY, HOURLY, num2date
+from matplotlib.dates import (DateFormatter, MonthLocator, WeekdayLocator, YearLocator,
+    DayLocator, HourLocator, MinuteLocator, SecondLocator, MONDAY, WEEKLY, YEARLY, MONTHLY,
+    AutoDateLocator, AutoDateFormatter, MO, DAILY, HOURLY, num2date)
 from matplotlib.patches import Wedge,Shadow,Circle, Arc
 from matplotlib.ticker import FormatStrFormatter, Formatter, FixedLocator
 import matplotlib.image as mpimg
@@ -65,13 +65,13 @@ from .atime import mpl,time,axis_add,compress,SpecialDateFormatter
 from .axes import check_axes, isaxis, istime, axis_type
 from .color import simple_colors, Scalar2RGB, get_cmap
 from .color import get_cmap, Scalar2RGB
-from .core_plot import (dict_aliases, latlab, add_shadow, get_axis, AutoDualDateFormatter,
-    AutoDateLocator2, geo_scale, kwfilter, meshgrid, m2deg, lonlab, deplab, add_glow,
+from .core_plot import (dict_aliases, latlab, get_axis, AutoDualDateFormatter,
+    AutoDateLocator2, geo_scale, kwfilter, meshgrid, m2deg, lonlab, deplab,
     DualDateFormatter, meshbounds, dict_check_defaults, auto_scale, var2d, AutoDateFormatter2,
     add_lightshading)
-from .core_plot import add_glow, add_shadow, add_agg_filter, hlitvs, AutoDateFormatter2,  \
-    AutoDateLocator2, AutoDateMinorLocator, AutoDualDateFormatter, add_compass, \
-    add_right_label, add_left_label, add_top_label, add_bottom_label
+from .core_plot import (add_glow, add_shadow, add_agg_filter, hlitvs, AutoDateFormatter2,
+    AutoDateLocator2, AutoDateMinorLocator, AutoDualDateFormatter, add_compass,
+    add_right_label, add_left_label, add_top_label, add_bottom_label)
 from .core_plot import add_param_label, get_quiverkey_value
 from .docstrings import docfill
 from .grid import regridding
