@@ -378,16 +378,12 @@ def _validator_dict_(value, default={}, vtype=None):
         - OrderedDict(b=2)
         - dict([("a",2),("b","x")])
     """
-    print value
     if str(value)=='None':
         return None
     if isinstance(value, dict):
         return value
-    if ',' in str(value):
-        pass
     if isinstance(value, list):
         value = ', '.join(value)
-#    if isinstance(value, basestring):
     value = value.strip()
     if value=='':
         return {}
@@ -405,17 +401,7 @@ def _validator_dict_(value, default={}, vtype=None):
         if not isinstance(value, dict):
             raise VdtTypeError(value)
         else:
-            if ',' in str(value):
-                print value
             return value
-#    if isinstance(value, list):
-#        out = {}
-#        for val in value:
-#            m = _re_set(val)
-#            if not m:
-#                raise VdtTypeError(val)
-#            out[m.group(1)] = eval(m.group(2))
-#        return out
     raise VdtTypeError(value)
 
 

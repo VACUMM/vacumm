@@ -104,14 +104,14 @@ class NcSigma(object):
 
     '''
     standard_names = dict(
-        dz = cf.VAR_SPECS['dz']['standard_names'],
-        dzu = cf.VAR_SPECS['dz_u']['standard_names'],
-        dzv = cf.VAR_SPECS['dz_v']['standard_names'],
-        dzw = cf.VAR_SPECS['dz_w']['standard_names'],
-        depth = cf.VAR_SPECS['bathy']['standard_names'],
-        depthu = cf.VAR_SPECS['bathy_u']['standard_names'],
-        depthv = cf.VAR_SPECS['bathy_v']['standard_names'],
-        eta = cf.VAR_SPECS['ssh']['standard_names'],
+        dz = cf.VAR_SPECS['dz']['standard_name'],
+        dzu = cf.VAR_SPECS['dz_u']['standard_name'],
+        dzv = cf.VAR_SPECS['dz_v']['standard_name'],
+        dzw = cf.VAR_SPECS['dz_w']['standard_name'],
+        depth = cf.VAR_SPECS['bathy']['standard_name'],
+        depthu = cf.VAR_SPECS['bathy_u']['standard_name'],
+        depthv = cf.VAR_SPECS['bathy_v']['standard_name'],
+        eta = cf.VAR_SPECS['ssh']['standard_name'],
 #        dz = "ocean_layer_thickness",
 #        dzu = "ocean_layer_thickness_at_u_location",
 #        dzv = "ocean_layer_thickness_at_v_location",

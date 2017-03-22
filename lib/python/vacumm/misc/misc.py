@@ -1053,10 +1053,12 @@ def dict_merge(*dd, **kwargs):
 
         # Content
         for key, val in d.iteritems():
+            if key=='standard_name':
+                pass
             if skipnones and val is None: continue
             if key not in outd or (overwriteempty and isempty(outd[key])): # Not set so we set
                 outd[key] = val
-            elif mergesubdicts and isinstance(outd[key], cls) and isinstance(val, cls): # Merge subdict
+            elif mergesubdicts and isinstance(outd[key], dict) and isinstance(val, dict): # Merge subdict
                 outd[key] = dict_merge(outd[key] , val, **kwargs)
             elif mergelists and isinstance(outd[key], list) and isinstance(val, list): # Merge lists
                 outd[key] += val
@@ -1067,16 +1069,16 @@ def dict_merge(*dd, **kwargs):
                 if unique:
                     outd[key] = tunique(outd[key])
 
-        # Comments for ConfigObj instances
-        from configobj import ConfigObj
-        if cls is ConfigObj:
-            if not outd.initial_comment and hasattr(d, 'initial_comment'):
-               outd.initial_comment = d.initial_comment
-            if not outd.final_comment and hasattr(d, 'final_comment'):
-               outd.final_comment = d.final_comment
-            if hasattr(d, 'inline_comments') and d.inline_comments:
-                outd.inline_comments = dict_merge(outd.inline_comments, d.inline_comments,
-                    overwriteempty=True)
+    # Comments for ConfigObj instances
+    from configobj import ConfigObj
+    if cls is ConfigObj:
+        if not outd.initial_comment and hasattr(d, 'initial_comment'):
+           outd.initial_comment = d.initial_comment
+        if not outd.final_comment and hasattr(d, 'final_comment'):
+           outd.final_comment = d.final_comment
+        if hasattr(d, 'inline_comments') and d.inline_comments:
+            outd.inline_comments = dict_merge(outd.inline_comments, d.inline_comments,
+                overwriteempty=True)
 
 
     return outd

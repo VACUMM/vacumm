@@ -241,7 +241,9 @@ from vacumm.data.cf import (
     format_var, format_axis, format_grid, match_var, change_loc, match_obj,
     set_loc, get_loc, GENERIC_NAMES, GENERIC_AXIS_NAMES, GENERIC_VAR_NAMES,
     AXIS_SPECS, VAR_SPECS, GRID_SPECS, ARAKAWA_SUFFIXES, HIDDEN_CF_ATTS,
-    match_known_var, match_known_axis, get_cf_cmap
+    match_known_var, match_known_axis, get_cf_cmap, CF_AXIS_SPECS, CF_VAR_SPECS,
+    register_cf_variable, register_cf_variables_from_cfg,
+    register_cf_axis, register_cf_axes_from_cfg,
     )
 
 from vacumm.data.misc.sigma import NcSigma, sigma2depths, SigmaGeneralized, SigmaStandard
