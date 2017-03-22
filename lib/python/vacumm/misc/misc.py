@@ -1053,8 +1053,6 @@ def dict_merge(*dd, **kwargs):
 
         # Content
         for key, val in d.iteritems():
-            if key=='standard_name':
-                pass
             if skipnones and val is None: continue
             if key not in outd or (overwriteempty and isempty(outd[key])): # Not set so we set
                 outd[key] = val
