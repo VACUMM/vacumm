@@ -56,6 +56,7 @@ from matplotlib import rcParams
 from MV2 import nomask
 from cdms2 import createAxis, isVariable
 from genutil import grower, minmax
+from configobj import ConfigObj, Section
 
 from ..__init__ import VACUMMError
 
@@ -1046,8 +1047,18 @@ def dict_merge(*dd, **kwargs):
                 cls = d.__class__
                 break
 
+    # Init
+    if cls is Section:
+        for d in dd:
+            if isinstance(d, Section):
+                break
+        else:
+            raise VACUMMError("Can't initialise Section for merging")
+        outd = Section(d.parent, d.depth, d.main, name=d.name)
+    else:
+        outd = cls()
+
     # Loop
-    outd = cls()
     for d in dd:
         if not isinstance(d, dict): continue
 
@@ -1068,7 +1079,6 @@ def dict_merge(*dd, **kwargs):
                     outd[key] = tunique(outd[key])
 
     # Comments for ConfigObj instances
-    from configobj import ConfigObj
     if cls is ConfigObj:
         if not outd.initial_comment and hasattr(d, 'initial_comment'):
            outd.initial_comment = d.initial_comment
