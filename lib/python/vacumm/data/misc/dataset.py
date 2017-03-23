@@ -297,9 +297,12 @@ def getvar_fmtdoc(func, **kwargs):
 
 
     # Long name and units
-    long_name = VAR_SPECS[var_name]['long_names'][0]
+    try:
+        long_name = VAR_SPECS[var_name]['long_name'][0]
+    except:
+        pass
     long_name = long_name[0].lower()+long_name[1:]
-    if 'units' in VAR_SPECS[var_name]:
+    if VAR_SPECS[var_name]['units']:
         units = " [%s]"%VAR_SPECS[var_name]['units'][0]
     else:
         units = ''
@@ -732,8 +735,8 @@ class Dataset(Object):
 
             # Search
             search = specs['search']
-            if isinstance(search['names'], list):
-                search['names'] = tuple(search['names'])
+            if isinstance(search['id'], list):
+                search['id'] = tuple(search['id'])
 
             # Selector
             vselect = specs.get('select', None)

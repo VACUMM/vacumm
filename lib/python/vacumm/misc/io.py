@@ -423,29 +423,31 @@ def list_forecast_files(filepattern, time=None, check=True,
     return files
 
 
-def ncfind_var(f, name, ignorecase=True, regexp=False, **kwargs):
+def ncfind_var(f, id, ignorecase=True, regexp=False, **kwargs):
     '''
     Find a variable in a netcdf file using :func:`ncfind_obj`
 
     '''
     nfo = NcFileObj(f)
     f = nfo.f
-    res =  ncfind_obj(f, name, ignorecase=ignorecase, regexp=regexp, ids=f.listvariables(), **kwargs)
+    res =  ncfind_obj(f, id, ignorecase=ignorecase, regexp=regexp,
+                      ids=f.listvariables(), **kwargs)
     del nfo
     return res
 
-def ncfind_axis(f, name, ignorecase=True, regexp=False, **kwargs):
+def ncfind_axis(f, id, ignorecase=True, regexp=False, **kwargs):
     '''
     Find an axis in a netcdf file using :func:`ncfind_obj`
 
     '''
     nfo = NcFileObj(f)
     f = nfo.f
-    res =  ncfind_obj(f, name, ignorecase=ignorecase, regexp=regexp, ids=f.listdimension(), **kwargs)
+    res =  ncfind_obj(f, id, ignorecase=ignorecase, regexp=regexp,
+                      ids=f.listdimension(), **kwargs)
     del nfo
     return res
 
-def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None, **kwargs):
+def ncfind_obj(f, id, ignorecase=True, regexp=False, ids=None, searchmode=None, **kwargs):
     '''
     Find a variable or an axis in netcdf file using a name, list of names
     or matching attributes such as standard_name, long_name and units.
@@ -492,34 +494,34 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
         ids = [ids]
 
     # Searched terms
-    withdict = isinstance(name, dict)
-    standard_names = long_names = units = axis = None
+    withdict = isinstance(id, dict)
+    standard_name = long_name = units = axis = None
     if withdict: # Using a dictionary
 
         # Names and standard_name
-        names = name.get("name", name.get('names', None))
-        if names is None:
-            names = name.get("id", name.get('ids', None))
-        standard_names = name.get("standard_name",  name.get('standard_names', None))
+        ids = id.get("id", id.get('ids', None))
+        if ids is None:
+            ids = id.get("name", id.get('names', None))
+        standard_name = id.get("standard_name",  id.get('standard_names', None))
 
         # Axis
-        axis = name.get("axis", None)
+        axis = id.get("axis", None)
         if axis is not None:
             axis = axis.upper()
 
         # Long_name
-        long_names = name.get("long_name", name.get("long_names", None))
-        if long_names is not None:
-            if not is_iterable(long_names):
-                long_names = [long_names]
+        long_name = id.get("long_name", id.get("long_names", None))
+        if long_name is not None:
+            if not is_iterable(long_name):
+                long_name = [long_name]
             if regexp: # Regular expression
                 flags = re.I if ignorecase else 0
-                long_names = [re.compile(ln, flags).search for ln in long_names]
+                long_name = [re.compile(ln, flags).search for ln in long_name]
 #            elif ignorecase:
 #                long_names = __builtins__['map'](str.lower, long_names)
 
         # Units
-        units = name.get("units", None)
+        units = id.get("units", None)
         if units is not None:
             if not is_iterable(units):
                 units = [units]
@@ -530,19 +532,20 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
 #                units = __builtins__['map'](str.lower, units)
 
     else: # Using a list of names
-        names = name if is_iterable(name) else [name]
+        id = id if is_iterable(id) else [id]
 #    if names is not None:
 #        names = __builtins__['map'](str.strip, names)
 #        if ignorecase:
 #            names = __builtins__['map'](str.lower, names)
 
     # Search order
-    all_keys = ['standard_names', 'names', 'long_names', 'units', 'axis']
+    all_keys = ['standard_name', 'id', 'long_name', 'units', 'axis']
     all_keys0 = [key[0] for key in all_keys]
     if searchmode is None:
-        searchmode = 'snlua'
-    if isinstance(name, OrderedDict):
-        keys = [key for key in name.keys() if key in all_keys]
+        searchmode = 'silua'
+    searchmode = searchmode.replace('n', 'i')
+    if isinstance(id, OrderedDict):
+        keys = [key for key in id.keys() if key in all_keys]
         keys = [key for key in keys if key[0] in searchmode]
     else:
         keys = []
@@ -552,25 +555,25 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None, searchmode=None
 
     # Loop on objects
     for key in keys:
-        kwsearch = {key:eval(key)}
-        for i, name in enumerate(ids):
-            v = f[name]
-            if ncmatch_obj(v, name=name, ignorecase=ignorecase, **kwsearch):
+        kwsearch = {key:locals()[key]}
+        for i, id in enumerate(ids):
+            v = f[id]
+            if ncmatch_obj(v, ignorecase=ignorecase, **kwsearch):
                 break
         else:
             continue
         break
 
     else: # Not found
-        name = None
+        id = None
 
     nfo.close()
 
-    return name
+    return id
 
 
-def ncmatch_obj(obj, name=None, standard_names=None, names=None,
-        long_names=None, units=None, axis=None, ignorecase=True, **kwargs):
+def ncmatch_obj(obj, id=None, standard_name=None,
+        long_name=None, units=None, axis=None, ignorecase=True, **kwargs):
     """Check if an MV2 object (typicaly from a netcdf file) matches names, standard_names, etc
 
 
@@ -580,23 +583,24 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
     :Params:
 
         - **obj**: A MV2 array.
-        - **name**, optional: Name (id) of this array, wich defaults to the id attribute.
-        - **standard_names**, optional: List of possible standard_names.
-        - **names**, optional: List of possible names (ids).
+        - **id**, optional: Name (id) of this array, wich defaults to the id attribute.
+        - **standard_name**, optional: List of possible standard_names.
         - **axis**, optional: Axis type, as one of 'x, 'y', 'z', 't'.
-        - **long_names**, optional: List of possible long_names or callable expression
+        - **long_name**, optional: List of possible long_names or callable expression
           (such as regular expression method).
         - **units**, optional: Same as ``long_names`` but for units.
 
     :Example:
 
-        >>> ncmatch_obj(sst, standard_names='sea_surface_temperature', names=['sst'])
+        >>> ncmatch_obj(sst, standard_name='sea_surface_temperature', id=['sst'])
         >>> import re
-        >>> ncmatch_obj(sst, long_names=re.compile('sea surface temp').match)
+        >>> ncmatch_obj(sst, long_name=re.compile('sea surface temp').match)
     """
     # Format
     search = OrderedDict()
-    for key in ('standard_names', 'names', 'long_names', 'units', 'axis'):
+    if id is None and 'name' in kwargs:
+        id = kwargs['name']
+    for key in ('standard_name', 'id', 'long_name', 'units', 'axis'):
         val = locals()[key]
         search[key] = val
         if val is None: continue
@@ -608,23 +612,12 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
 
     # Check long_name and units
     checks = OrderedDict(
-        standard_name=search['standard_names'],
-        id=search['names'],
+        standard_name=search['standard_name'],
+        id=search['id'],
         axis=search['axis'],
-        long_names=search['long_names'],
+        long_names=search['long_name'],
         units=search['units'])
     return match_atts(obj, checks, ignorecase)
-#    for refs, val in [
-#            (search['standard_names'], getattr(obj, "standard_name", None)),
-#            (search['names'], name or getattr(obj, 'id', None)),
-#            (search['axis'], getattr(obj, "axis",  None)),
-#            (search['long_names'], getattr(obj, "long_name", None)),
-#            (search['units'], getattr(obj, "units", None))]:
-#        if refs is not None and val is not None:
-#            if _isinlist_(val, refs, ignorecase):
-#                return True
-#
-#    return False
 
 
 def ncget_var(f, *args, **kwargs):

@@ -55,7 +55,9 @@ __all__ = ['VAR_SPECS', 'AXIS_SPECS',
     'change_loc', 'change_loc_single', 'dupl_loc_specs', 'no_loc_single',
     'change_loc_specs', 'squeeze_loc_single', 'squeeze_loc', 'get_physloc',
     'HIDDEN_CF_ATTS', 'set_loc', 'match_known_var', 'match_known_axis',
-    'CF_AXIS_SPECS', 'CF_VAR_SPECS'
+    'CF_AXIS_SPECS', 'CF_VAR_SPECS',
+    'register_cf_variable', 'register_cf_variables_from_cfg',
+    'register_cf_axis', 'register_cf_axes_from_cfg',
 ]
 
 ARAKAWA_SUFFIXES = [('_'+p) for p in ARAKAWA_LOCATIONS]
@@ -80,8 +82,13 @@ DICT_MERGE_KWARGS = dict(mergesubdicts=True, mergelists=True,
                          skipnones=False, skipempty=False,
                          overwriteempty=True, mergetuples=True)
 
-class _BaseSpecs_(object):
+class BaseSpecs(object):
     """Base class for loading variables and axes CF specifications"""
+    aliases = {'id': ['ids', 'name', 'names'],
+               'standard_name': ["standard_names"],
+               'long_name': ['long_names']
+              }
+    category = None
 
     def __init__(self, inherit=None):
         self._dict = OrderedDict(CF_CFG[self.category])
@@ -90,6 +97,13 @@ class _BaseSpecs_(object):
         self._inherit = inherit
         self._cfgspec = CF_CFGM._configspec[self.category]['__many__'].dict()
         self._post_process_()
+
+    @classmethod
+    def get_alias_list(cls):
+        al = []
+        for aa in cls.aliases.values():
+            al.extend(aa)
+        return al
 
     def __getitem__(self, key):
         return self._dict[key]
@@ -126,6 +140,7 @@ class _BaseSpecs_(object):
         self._from_atlocs = []
         for name in self.names:
             self._check_entry_(name)
+        self._add_aliases_()
 
     def _check_entry_(self, name):
         """Validate an entry
@@ -220,21 +235,19 @@ class _BaseSpecs_(object):
             self._from_atlocs.extend(tonames)
             specs = self._dict[name]
 
-        # Aliases
-        if name=='mld':
-            pass
-        specs['ids'] = specs['names'] = specs['name'] = specs['id']
-        specs['long_names'] = specs['long_name']
-        specs['standard_names'] = specs['standard_name']
-        pass
+
+    def _add_aliases_(self):
+        for name, specs in self._dict.items():
+            for key, aliases in self.aliases.items():
+                if key in specs:
+                    for alias in aliases:
+                        specs[alias] = specs[key]
 
 
-
-
-class VarSpecs(_BaseSpecs_):
+class VarSpecs(BaseSpecs):
     category = 'variables'
 
-class AxisSpecs(_BaseSpecs_):
+class AxisSpecs(BaseSpecs):
     category = 'axes'
 
 
@@ -733,15 +746,15 @@ GRID_SPECS[None] = GRID_SPECS['']
 grid_specs = GRID_SPECS # compat
 
 
-#: List of generic variable names
+#: List of generic variable names: DEPRECATED!!
 GENERIC_VAR_NAMES = VAR_SPECS.keys()
 generic_var_names = GENERIC_VAR_NAMES # compat
 
-#: List of generic axis names
+#: List of generic axis names: DEPRECATED!!
 GENERIC_AXIS_NAMES = AXIS_SPECS.keys()
 generic_axis_names = GENERIC_AXIS_NAMES # compat
 
-#: List of all generic names (axes and variables)
+#: List of all generic names (axes and variables): DEPRECATED!!
 GENERIC_NAMES = GENERIC_VAR_NAMES + GENERIC_AXIS_NAMES
 generic_names = GENERIC_NAMES # compat
 
@@ -806,8 +819,9 @@ def cf2search(name, mode=None, raiseerr=True, **kwargs):
 
     :Example:
 
-        >>> cf2search('sst', mode='nsu')
-        {'names':['sst'], 'standard_names':['sea_surface_temperature'],
+        >>> cf2search('sst', mode='isu')
+        {'id':['sst'], 'id':['sst'],
+        'standard_names':['sea_surface_temperature'],
         'units':['degrees_celsius']}
     """
     # Get specs
@@ -817,23 +831,23 @@ def cf2search(name, mode=None, raiseerr=True, **kwargs):
         specs = AXIS_SPECS[name]
     else:
         if raiseerr:
-            raise VACUMMError("Wrong generic name. It should be one of: "+' '.join(GENERIC_AXIS_NAMES+GENERIC_VAR_NAMES))
+            raise VACUMMError("Wrong generic name. It should be one of: "+' '.join(AXIS_SPECS.keys()+VAR_SPECS.keys()))
         else:
             return
 
     # Form search dict
-    if not isinstance(mode, basestring): mode = 'nsa'
+    if not isinstance(mode, basestring): mode = 'isa'
+    mode = mode.replace('n', 'i')
     keys = []
     for m in mode:
-        for key in ['names', 'standard_names', 'axis', 'long_names', 'units']:
+        for key in ['id', 'standard_name', 'axis', 'long_name', 'units']:
             if key.startswith(m):
                 keys.append(key)
                 break
     return OrderedDict([(k, specs[k]) for k in keys if k in specs])
 
 
-_attnames_plurals = ['standard_name', 'long_name']
-_attnames_exclude = ['name', 'atlocs', 'inherit', 'axes', 'physloc', 'iaxis', 'jaxis', 'select']
+_attnames_exclude = ['atlocs', 'inherit', 'axes', 'physloc', 'iaxis', 'jaxis', 'select']
 _attnames_firsts = ['standard_name', 'long_name', 'units', 'axis', 'valid_min', 'valid_max']
 def cf2atts(name, select=None, exclude=None, ordered=True, **extra):
     """Extract specs from :attr:`AXIS_SPECS` or :attr:`VAR_SPECS` to form
@@ -846,27 +860,22 @@ def cf2atts(name, select=None, exclude=None, ordered=True, **extra):
     elif name in AXIS_SPECS:
         specs = AXIS_SPECS[name]
     else:
-        raise VACUMMError("Wrong generic name: %s. It should be one of: "%name+' '.join(GENERIC_AXIS_NAMES+GENERIC_VAR_NAMES))
+        raise VACUMMError("Wrong generic name: %s. It should be one of: "%name+' '.join(AXIS_SPECS.keys()+VAR_SPECS.keys()))
 
     # Which attributes
     atts = OrderedDict() if ordered else {}
     if exclude is None: exclude = []
     elif isinstance(exclude, basestring): exclude = [exclude]
     exclude.extend(_attnames_exclude)
-    for attname in _attnames_firsts+specs.keys():
+    for key in _attnames_firsts+specs.keys():
 
-        # Distinction between specs key and attribute name
-        if attname in _attnames_plurals:
-            key = attname+'s'
-        elif attname[:-1] in _attnames_plurals:
-            key = attname
-            attname = attname[:-1]
-        else:
-            key = attname
+        # Skip aliases
+        if key in BaseSpecs.get_alias_list():
+            continue
 
         # Skip some attributes
-        if key not in specs or attname in exclude or attname in atts or \
-            (select is not None and attname not in select):
+        if (key not in specs or key in exclude or key in atts or
+            (select is not None and key not in select)):
             continue
 
         # No lists or tuples
@@ -877,7 +886,7 @@ def cf2atts(name, select=None, exclude=None, ordered=True, **extra):
             value = value[0]
 
         # Store it
-        atts[attname] = value
+        atts[key] = value
 
     # Extra
     for att, val in extra.items():
@@ -897,7 +906,7 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
 
         - **var**: A :mod:`numpy` or :mod:`MV2` variabe.
         - **name**: Generic name of variable. It should be one of
-          those listed by :attr:`GENERIC_VAR_NAMES`.
+          those listed by :attr:`VAR_SPECS`.
         - **force**, optional: Overwrite attributes in all cases.
         - **format_axes**, optional: Also format axes.
         - **nodef**, optional: Remove location specification when it refers to the
@@ -925,8 +934,8 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
         var = MV2.asarray(var)
 
     # Check specs
-    if name not in GENERIC_NAMES:
-        if var.id in GENERIC_NAMES:
+    if name not in VAR_SPECS or name in AXIS_SPECS:
+        if var.id in VAR_SPECS or var.id in AXIS_SPECS:
             name = var.id
         elif mode=='warn':
             warn("Generic var name not found '%s'."%name)
@@ -935,8 +944,8 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
             return var
         else:
             raise KeyError("Generic var name not found '%s'. Please choose one of: %s"%(
-                name, ', '.join(GENERIC_NAMES)))
-    isaxis = name in GENERIC_AXIS_NAMES
+                name, ', '.join(VAR_SPECS.keys()+AXIS_SPECS.keys())))
+    isaxis = name in AXIS_SPECS
     if isaxis:
         specs = AXIS_SPECS[name].copy()
         if 'axis' in specs:
@@ -1025,7 +1034,7 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True,
 
         - **var**: A :mod:`numpy` or :mod:`MV2` variabe.
         - **name**: Single or list of generic axis names. It should be one of
-          those listed by :attr:`GENERIC_AXIS_NAMES`.
+          those listed by :attr:`AXIS_SPECS`.
         - **force**, optional: Overwrite attributes in all cases.
         - **nodef**, optional: Remove location specification when it refers to the
           default location (:attr:`DEFAULT_LOCATION`).
@@ -1052,9 +1061,9 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True,
                 break
 
     # Check specs
-    if name not in GENERIC_AXIS_NAMES:
+    if name not in AXIS_SPECS:
         raise KeyError("Generic axis name not found '%s'. Please choose one of: %s"%(
-            name, ', '.join(GENERIC_AXIS_NAMES)))
+            name, ', '.join(AXIS_SPECS.keys())))
     specs = AXIS_SPECS[name]
     # - merge kwargs and specs
     for key, val in kwargs.items():
@@ -1108,8 +1117,8 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True,
 
     # Sub-axes for 2D axes
     if axis2d and format_subaxes:
-        format_axis(axis.getAxis(-1), specs['iaxis'][0])
-        format_axis(axis.getAxis(-2), specs['jaxis'][0])
+        format_axis(axis.getAxis(-1), specs['iaxis'])
+        format_axis(axis.getAxis(-2), specs['jaxis'])
 
     return axis
 
@@ -1146,14 +1155,14 @@ match_var = match_obj
 
 def match_known_var(obj, searchmode=None, **kwargs):
     """Check if an object matches a known variable"""
-    for name in GENERIC_VAR_NAMES:
+    for name in VAR_SPECS:
         if match_obj(obj, name, searchmode=searchmode):
             return name
     return False
 
 def match_known_axis(obj, searchmode=None, **kwargs):
     """Check if an object matches a known axis"""
-    for name in GENERIC_AXIS_NAMES:
+    for name in AXIS_SPECS:
         if match_obj(obj, name, searchmode=searchmode):
             return name
     return False
