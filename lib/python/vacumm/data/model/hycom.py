@@ -54,10 +54,10 @@ class HYCOM(OceanDataset,AtmosSurfaceDataset):
     ncobj_specs = {
 
         # Time
-        'time':{'search':{'names':['mt']}},
+        'time':{'search':{'id':['mt']}},
 
         # salinity
-        'kz':{'search':{'names':['kzm']}},
+        'kz':{'search':{'id':['kzm']}},
 
         # Sea surface temperature
         'sst':{
@@ -75,12 +75,12 @@ class HYCOM(OceanDataset,AtmosSurfaceDataset):
 
         # Zonal velocity
         'u3d':{
-            'names': 'u'
+            'id': 'u'
         },
 
         # Meridional velocity
         'v3d':{
-            'names': 'v'
+            'id': 'v'
         },
 
         # Sea surface zonal velocity

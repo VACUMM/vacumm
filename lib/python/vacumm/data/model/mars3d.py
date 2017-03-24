@@ -69,7 +69,7 @@ class Mars3D(OceanDataset,AtmosSurfaceDataset):
     ncobj_specs = {
 
         # salinity
-        'kz':{'search':{'names':['kzm']}},
+        'kz':{'search':{'id':['kzm']}},
 
         # sea surface temperature
         'sst':{

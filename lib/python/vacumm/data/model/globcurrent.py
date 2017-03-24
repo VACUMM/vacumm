@@ -52,8 +52,8 @@ class GlobCurrent(OceanDataset,AtmosSurfaceDataset):
     # Local specs
     ncobj_specs = {
 
-        'ugbt': {'search': {'names': ['eastward_geostrophic_current_velocity']}},
-        'vgbt': {'search': {'names': ['northward_geostrophic_current_velocity']}},
+        'ugbt': {'search': {'id': ['eastward_geostrophic_current_velocity']}},
+        'vgbt': {'search': {'id': ['northward_geostrophic_current_velocity']}},
     }
 
 
