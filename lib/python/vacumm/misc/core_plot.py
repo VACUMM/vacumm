@@ -757,7 +757,8 @@ class Plot(object):
 
     def pre_plot(self, axes=None, figure=None, figsize=None, subplot=None, twin=None,
             subplots_adjust=None, bgcolor=None, noframe=False, fullscreen=False,
-            verbose=False, axes_host=False, axes_xoffset=0, **kwargs):
+            verbose=False, axes_host=False, axes_xoffset=0, elev=None, azim=None,
+            **kwargs):
         """Initialize the plot
 
         :Tasks:
@@ -856,8 +857,6 @@ class Plot(object):
                 subplot = 111
             axes = None
         if axes is not None:
-            if axes=="3d":
-                self.fig.add_sub
             self.axes = axes
             if self.axes.get_figure() != self.fig:
                 if verbose: print 'Axes does not match figure'
@@ -899,7 +898,8 @@ class Plot(object):
             self.axes.axis[loc] = new_fixed_axis(loc=loc, axes=self.axes, offset=offset)
             self.axes.axis[loc].toggle(all=True)
         self.is3d = isinstance(self.axes, Axes3D)
-
+        if self.is3d:
+            self.axes.view_init(elev=elev, azim=azim)
         if noframe:
             self.axes.set_frame_on(False)
         if bgcolor is not None:
