@@ -1387,6 +1387,7 @@ class Plot(object):
             props['label_kwargs'] = kwfilter(xykwargs, 'label_', copy=1)
             props['label_kwargs'].update(kwfilter(xykwargs, 'title_', copy=1))
             props['fmt_kwargs'] = kwfilter(xykwargs, 'fmt_', copy=1)
+            props['locator_kwargs'] = kwfilter(xykwargs, 'locator_', copy=1)
             props['ticklabels_kwargs'] = kwfilter(xykwargs, 'ticklabels_', copy=1)
             if props['type']=='d' and log is True:
                 props['locator'] = False
@@ -1509,7 +1510,9 @@ class Plot(object):
                 # Numeric format
                     axis.set_major_formatter(FormatStrFormatter(props['fmt']))
             if props['locator']:
-                axis.set_major_locator(props['locator'])
+                locator = axis.set_major_locator(props['locator'])
+                if props['locator_kwargs']:
+                   locator.set_params(**props['locator_kwargs'])
             if props['minor_locator'] is not False and props['type'] not in 'xyzt':
                 props['minor_locator'] = AutoMinorLocator()
             if props['minor_locator']:
