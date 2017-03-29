@@ -2374,7 +2374,7 @@ def dicttree_set(dd, *keys, **items):
     """
     assert isinstance(dd, dict), 'Input must a dict'
     basedd = dd
-    cls = items.get('__class__', dict)
+    cls = items.pop('__class__', dict)
     for key in keys:
         if key not in dd:
             dd[key] = cls()
