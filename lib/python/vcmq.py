@@ -1,4 +1,4 @@
-"""Module for quickly loading VACUMM essentials"""
+"""Module for quickly loading VACUMM content"""
 
 # System
 
@@ -65,7 +65,7 @@ from vacumm.misc.misc import (
     isempty, isnumber, lunique, main_geodir, selector2str, rm_html_tags,
     tunique, split_selector, xls_style, Att, splitidx, CaseChecker, check_case,
     indices2slices, filter_level_selector, filter_selector, match_atts,
-    match_string, ArgTuple, dicttree_get)
+    match_string, ArgTuple, dicttree_get, dicttree_set)
 
 from vacumm.misc.axes import (
     create_lon, create_lat, create_time, create_depth,
@@ -160,6 +160,7 @@ from vacumm.misc.plot import (
     ellipsis, get_cls, hldays, rotate_xlabels, rotate_ylabels,
     scale_xlim, scale_ylim, wedge, set_major_locator, set_minor_locator,
     xdate, ydate, get_quiverkey_value, add_lightshading,
+    add_param_label,
     )
 curve = curve2
 map = map2
@@ -213,7 +214,7 @@ from vacumm.misc.grid.regridding import (
     regrid1d, regrid2d, interp1d, interp2d, cellave1d, cellave2d, cellerr1d,
     cargen, xy2xy, shift1d, shift2d, extend1d, extend2d, regrid_method,
     transect, griddata, CDATRegridder, grid2xy, cubic1d,
-    nearest1d, shiftgrid, extendgrid, fill1d, fill2d
+    nearest1d, shiftgrid, extendgrid, fill1d, fill2d, CurvedInterpolator,
     )
 
 from vacumm.misc.grid.basemap import (
@@ -235,7 +236,7 @@ from vacumm.misc.grid.kriging import (
 
 # - data
 
-from vacumm.data import setup_dataset, DS
+from vacumm.data import setup_dataset, DS, register_dataset
 
 from vacumm.data.cf import (
     format_var, format_axis, format_grid, match_var, change_loc, match_obj,
@@ -252,6 +253,9 @@ from vacumm.data.misc.arakawa import (
     ArakawaGrid, ARAKAWA_LOCATIONS as arakawa_locations,
     CGrid, AGrid, ArakawaGridTransfer
     )
+
+from vacumm.data.misc.dataset import (
+    Dataset, OceanDataset, AtmosDataset, GenericDataset)
 
 # - diag
 

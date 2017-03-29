@@ -80,8 +80,10 @@ From sources::
 
 Using `conda <http://conda.pydata.org/docs/index.html>`_::
 
-    $ conda install -c vacumm vacumm
+    $ conda install -c vacumm -c uvcdat -c conda-forge  vacumm
 
+For more information, please go to this:
+http://www.ifremer.fr/vacumm/user.install.installations.html
 
 Release notes
 -------------
