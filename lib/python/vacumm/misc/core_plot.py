@@ -5073,7 +5073,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             #. Calls :func:`~matplotlib.pyplot.clabel`
 
         """
-        if self.has_valid_data():
+        if not self.has_valid_data():
             return
 
         # Keywords
