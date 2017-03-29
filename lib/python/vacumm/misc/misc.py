@@ -2356,14 +2356,14 @@ def dicttree_get(dd, *keys, **kwargs):
 
 
 def dicttree_set(dd, *keys, **items):
-    """Set a value in a tree of dicts
+    """Set values in a tree of dicts
 
     Parameters
     ----------
     dd: dict
         Dict of dicts to fill
     keys: strings
-    value:
+    items: dict
         To set
 
     Example
@@ -2374,7 +2374,7 @@ def dicttree_set(dd, *keys, **items):
     """
     assert isinstance(dd, dict), 'Input must a dict'
     basedd = dd
-    cls = items.pop('__class__', dict)
+    cls = items.pop('__class__', dd.__class__)
     for key in keys:
         if key not in dd:
             dd[key] = cls()
