@@ -964,13 +964,11 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
         del kwargs[key]
     # - remove default location
     if nodef:
-        refloc = specs.get('physloc', DEFAULT_LOCATION)
-        for stype in 'name', 'long_name', 'standard_name':
-            sname = stype+'s'
-            if sname not in specs: continue
-            if get_loc(specs[sname], stype)==refloc:
-                specs[sname] = [no_loc_single(specs[sname][0], stype)]
-        name = specs['names'][0]
+        refloc = specs.get('physloc', None) or DEFAULT_LOCATION
+        for att in 'id', 'long_name', 'standard_name':
+            if get_loc(specs[att], att)==refloc:
+                specs[att] = [no_loc_single(specs[att][0], att)]
+        name = specs['id'][0]
     # - id
     if ((force is True or force in [2, 'id', 'all'])
             or var.id.startswith('variable_') or
@@ -987,7 +985,7 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
     if not loc and 'physloc' in specs:
         loc = specs['physloc']
     if loc:
-        if 'physloc' in specs and loc in specs['physloc']:
+        if 'physloc' in specs and loc == specs['physloc']:
             var._vacumm_cf_physloc = loc.lower()
         set_loc(var, loc)
     # - store cf name
