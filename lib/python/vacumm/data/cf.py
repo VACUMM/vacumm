@@ -49,7 +49,6 @@ from vacumm.misc.config import ConfigManager
 from vacumm.data.misc.arakawa import ARAKAWA_LOCATIONS
 
 __all__ = ['VAR_SPECS', 'AXIS_SPECS',
-    'GENERIC_AXIS_NAMES', 'GENERIC_VAR_NAMES', 'GENERIC_NAMES',
     'format_var', 'format_axis', 'format_grid', 'match_obj',
     'cf2atts', 'cf2search', 'cp_suffix', 'specs_def_loc', 'get_loc',
     'change_loc', 'change_loc_single', 'dupl_loc_specs', 'no_loc_single',
@@ -58,6 +57,7 @@ __all__ = ['VAR_SPECS', 'AXIS_SPECS',
     'CF_AXIS_SPECS', 'CF_VAR_SPECS',
     'register_cf_variable', 'register_cf_variables_from_cfg',
     'register_cf_axis', 'register_cf_axes_from_cfg',
+    'CF_DICT_MERGE_KWARGS',
 ]
 
 ARAKAWA_SUFFIXES = [('_'+p) for p in ARAKAWA_LOCATIONS]
@@ -78,7 +78,7 @@ CF_CFG_CFGFILE = os.path.join(THISDIR, 'cf.cfg')
 #: Base config object for CF specifications
 CF_CFG = CF_CFGM.load(CF_CFG_CFGFILE)
 
-DICT_MERGE_KWARGS = dict(mergesubdicts=True, mergelists=True,
+CF_DICT_MERGE_KWARGS = dict(mergesubdicts=True, mergelists=True,
                          skipnones=False, skipempty=False,
                          overwriteempty=True, mergetuples=True)
 
@@ -133,7 +133,7 @@ class BaseSpecs(object):
         or a config file"""
         local_cfg = CF_CFGM.load(cfg)[self.category]
         self._dict = dict_merge(self._dict, local_cfg,
-            cls=OrderedDict, **DICT_MERGE_KWARGS)
+            cls=OrderedDict, **CF_DICT_MERGE_KWARGS)
         self._post_process_()
 
     def _post_process_(self):
@@ -211,7 +211,7 @@ class BaseSpecs(object):
 
                     # Merge
                     self._dict[name] = specs = dict_merge(specs, from_specs[from_name],
-                        cls=dict, **DICT_MERGE_KWARGS)
+                        cls=dict, **CF_DICT_MERGE_KWARGS)
 
                     # Validate
 #                    if from_specs is not self:
@@ -697,7 +697,7 @@ def dupl_loc_specs(all_specs, fromname, toloc):
         genspecs = change_loc_specs(None, **all_specs[fromname]) # remove location info
     tomerge.insert(0, genspecs)
     genname = genspecs['id'][0]
-    all_specs[genname] = dict_merge(*tomerge, **DICT_MERGE_KWARGS)
+    all_specs[genname] = dict_merge(*tomerge, **CF_DICT_MERGE_KWARGS)
 
     if single: return tonames[0]
     return tonames
@@ -797,7 +797,7 @@ def register_cf_axes_from_cfg(cfg):
     CF_AXIS_SPECS.register_from_cfg(cfg)
 
 
-def cf2search(name, mode=None, raiseerr=True, **kwargs):
+def cf2search(name, mode='sia', raiseerr=True, **kwargs):
     """Extract specs from :attr:`CF_AXIS_SPECS` or :attr:`CFVAR_SPECS`
     to form a search dictionary
 
@@ -836,7 +836,8 @@ def cf2search(name, mode=None, raiseerr=True, **kwargs):
             return
 
     # Form search dict
-    if not isinstance(mode, basestring): mode = 'isa'
+    if not isinstance(mode, basestring):
+        mode = 'sia'
     mode = mode.replace('n', 'i')
     keys = []
     for m in mode:

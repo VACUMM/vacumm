@@ -6,6 +6,7 @@
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
+# with the ultimate goal of validating the MARS model from IFREMER.
 #
 # This software is governed by the CeCILL license under French law and
 # abiding by the rules of distribution of free software.  You can  use,
@@ -96,9 +97,10 @@ from vacumm.data import register_dataset
 from vacumm.data.misc.sigma import NcSigma
 from vacumm.data.misc.arakawa import ArakawaGrid, AGrid, CGrid, ARAKAWA_LOCATIONS as arakawa_locations,  \
     set_grid_type, get_grid_type, _cdms2_atts as cdms2_arakawa_atts
-from vacumm.data.cf import (VAR_SPECS, AXIS_SPECS, cf2search, cf2atts, GENERIC_NAMES,
-    GENERIC_AXIS_NAMES, GENERIC_VAR_NAMES, format_axis, format_var, get_loc, no_loc_single,
-    DEFAULT_LOCATION, change_loc, HIDDEN_CF_ATTS, change_loc_single, format_grid)
+from vacumm.data.cf import (VAR_SPECS, AXIS_SPECS, cf2search, cf2atts,
+    CF_AXIS_SPECS, CF_VAR_SPECS, format_axis, format_var, get_loc, no_loc_single,
+    DEFAULT_LOCATION, change_loc, HIDDEN_CF_ATTS, change_loc_single, format_grid,
+    CF_DICT_MERGE_KWARGS)
 from vacumm import VACUMMError
 from vacumm.diag.dynamics import barotropic_geostrophic_velocity, kinetic_energy
 from vacumm.diag.thermdyn import mixed_layer_depth, density
@@ -187,7 +189,7 @@ def getvar_decmets(cls):
     """Generate methods such as :meth:`get_sst` based on the :attr:`auto_generic_var_names`
     attributes that provides a list of generic names of variables
 
-    These generic names must be listed in :mod:`vacumm.data.cf.GENERIC_VAR_NAMES`.
+    These generic names must be the keys of :mod:`vacumm.data.cf.GENERIC_VAR_SPECS`.
     The docstring of the each method is formatted using :func:`getvar_fmtdoc`.
 
     Methods that already exist are not overwritten.
@@ -209,7 +211,7 @@ def getvar_decmets(cls):
         names.append(name)
         for p in arakawa_locations: #'u', 'v', 'w', 'f':
             namep = name+'_'+p
-            if namep in GENERIC_VAR_NAMES:
+            if namep in CF_VAR_SPECS:
                 names.append(namep)
 
     # Declarations
@@ -272,8 +274,8 @@ def getvar_fmtdoc(func, **kwargs):
     :Params:
 
         - **func**: Method (or function) name that must be in the form ``get_<name>``,
-          where ``<name>`` must be a generic var names listed in
-          :attr:`vacumm.data.cf.GENERIC_VAR_NAMES`.
+          where ``<name>`` must be a generic var names in
+          :attr:`vacumm.data.cf.GENERIC_VAR_SPECS`.
         - Extra keywords define extra options in the docstring.
           Keys must correspond to a keyword name, and values correspond to a keyword
           description.
@@ -292,9 +294,11 @@ def getvar_fmtdoc(func, **kwargs):
     """
     kwargs_params = kwargs.get('_kwargs', "Other keywords are passed to :func:`~vacumm.misc.io.ncread_files`.")
     func_name = func.__name__
-    if not func_name.startswith('get_'): return func
+    if not func_name.startswith('get_'):
+        return func
     var_name = func_name[4:]
-    if not var_name in GENERIC_VAR_NAMES: return func
+    if not var_name in CF_VAR_SPECS:
+        return func
 
 
     # Long name and units
@@ -417,7 +421,7 @@ class Dataset(Object):
 
             ncobj_specs = {
                 'u10m':dict(
-                    search=dict(names=['u', 'u10', 'uwind', '.*u.*']),
+                    search=dict(id=['u', 'u10', 'uwind', '.*u.*']),
                     select=(Ellipsis, 0)),
                 'sst':dict(
                     search=dict(standard_name="sea_surface_temperature"),
@@ -531,7 +535,8 @@ class Dataset(Object):
         # Get specs
         if ncobj_specs is None:
             ncobj_specs = self.ncobj_specs # local
-            ncobj_specs = dict_merge(ncobj_specs, self._inherited_ncobj_specs_()) # inherited
+            ncobj_specs = dict_merge(ncobj_specs, self._inherited_ncobj_specs_(),
+                                     **CF_DICT_MERGE_KWARGS) # inherited
         self.ncobj_specs = ncobj_specs # set it
 
         # Loop on variables to format their specs
@@ -544,7 +549,8 @@ class Dataset(Object):
         ncobj_specs = {}
         for c in cls.__bases__:
             if hasattr(c, 'ncobj_specs'):
-                ncobj_specs = dict_merge(ncobj_specs, c._inherited_ncobj_specs_(), mergelists=True)
+                ncobj_specs = dict_merge(ncobj_specs, c._inherited_ncobj_specs_(),
+                                         **CF_DICT_MERGE_KWARGS)
         return ncobj_specs
 
     def _format_single_ncobj_specs_(self, specs, name=None):
@@ -555,9 +561,9 @@ class Dataset(Object):
             - **specs**: Dictionary of the following possible form::
 
                 {'search': {
-                    'names':[name1,...],
-                    'standard_names': [standard_name1,...],
-                    'long_names': [long_name1,...]
+                    'id':[name1,...],
+                    'standard_name': [standard_name1,...],
+                    'long_name': [long_name1,...]
                     },
                  'atts': {'units':units,...},
                  'select': select,
@@ -582,25 +588,26 @@ class Dataset(Object):
         # Search specs
         search = specs.get("search", {})
         specs["search"] = search
-        # - names (as a list, and with name as its first element)
-        names = search.get("names", [])
-        if isinstance(names, tuple):
-            names = list(names)
-        elif not isinstance(names, list):
-            names = [name]
+        # - id (as a list, and with name as its first element)
+        ids = search.get("id", [])
+        if isinstance(ids, tuple):
+            ids = list(ids)
+        elif not isinstance(ids, list):
+            ids = [name]
         if name is not None:
-            if name in names: names.remove(name)
-        names.insert(0, name)
-        search["names"] = names
-        # - standard_names (as a list)
-        if 'standard_names' in search and not isinstance(search['standard_names'], list):
-            if isinstance(search['standard_names'], tuple):
-                search['standard_names'] = list(search['standard_names'])
+            if name in ids:
+                ids.remove(name)
+        ids.insert(0, name)
+        search["id"] = ids
+        # - standard_name (as a list)
+        if 'standard_name' in search and not isinstance(search['standard_name'], list):
+            if isinstance(search['standard_name'], tuple):
+                search['standard_name'] = list(search['standard_name'])
             else:
-                search['standard_names'] = [search['standard_names']]
+                search['standard_name'] = [search['standard_name']]
         # - removes everything else
-        for key in search:
-            if key not in ['names', 'standard_names']:
+        for key in search.keys():
+            if key not in ['id', 'standard_name']:
                 del search[key]
 
         # Attributes
@@ -610,8 +617,8 @@ class Dataset(Object):
         if name is not None:
             atts['id'] = name
         # - put standard_name
-        if 'standard_names' in search:
-            atts.setdefault('standard_name', search['standard_names'][0])
+        if 'standard_name' in search:
+            atts.setdefault('standard_name', search['standard_name'][0])
 
         # Selection (slices -> select)
         if 'slices' in specs:
@@ -650,7 +657,7 @@ class Dataset(Object):
 
         # Specs from CF specs (vacumm.data.cf)
         fromobj = None
-        if varname in GENERIC_NAMES:
+        if varname in CF_VAR_SPECS or varname in CF_AXIS_SPECS:
 
             # Search and atts
             cf_specs = dict(
@@ -659,7 +666,7 @@ class Dataset(Object):
                 )
 
             # Get 'physloc'
-            axvar_specs = (VAR_SPECS if varname in GENERIC_VAR_NAMES else AXIS_SPECS)[varname]
+            axvar_specs = (VAR_SPECS if varname in CF_VAR_SPECS else AXIS_SPECS)[varname]
             for prop in ['physloc']:
                 if prop in axvar_specs:
                     cf_specs[prop] = axvar_specs[prop]
@@ -685,8 +692,11 @@ class Dataset(Object):
 
         # Merge
         if from_specs is not None and cf_specs is None and local_specs is None:
-            raise DatasetError('Generic var/axis name "%s" has no specification defined in current class or module vacumm.data.cf'%varname)
-        specs = dict_merge(cf_specs, local_specs, from_specs, mergelists=True, mergedicts=True)
+            raise DatasetError(('Generic var/axis name "{}" has no '
+                                'specification defined in current class or '
+                                'module vacumm.data.cf').format(varname))
+        specs = dict_merge(cf_specs, local_specs, from_specs,
+                           **CF_DICT_MERGE_KWARGS)
 
         # Final check
         if specs is not None and 'search' not in specs:
@@ -723,7 +733,7 @@ class Dataset(Object):
             if 'fromobj' in specs:
                 from_specs = self._get_ncobj_merged_specs_(specs['fromobj'],
                     searchmode=searchmode)
-                specs = dict_merge(specs, from_specs)
+                specs = dict_merge(specs, from_specs, **CF_DICT_MERGE_KWARGS)
 
 
         # Single (+varname) or list of netcdf names
@@ -972,8 +982,8 @@ class Dataset(Object):
         genname = specs['genname']
         search = specs['search']
         atts = specs['atts']
-        if 'long_names' in atts:
-            search['long_names'] = atts['long_names']
+        if 'long_name' in atts:
+            search['long_name'] = atts['long_name']
         if 'units' in atts and 'axis' in atts and atts['axis']!='Z':
             search['units'] = atts['units']
 
@@ -1124,13 +1134,13 @@ class Dataset(Object):
 
     def get_variable(self, varname, time=None, lon=None, lat=None,
             level=None, atts=None, squeeze=False, order=None, asvar=None,
-            torect=True, depthup=None,verbose=None, warn=True, searchmode=None,
+            torect=True, depthup=None,verbose=None, warn=True, searchmode='si',
             format=True, at=None, grid=None, **kwargs):
         '''Load a variable in a best time serie fashion.
 
         :Params:
           - **varname**: Either a generic variable name listed in
-            :attr:`~vacumm.data.cf.GENERIC_VAR_NAMES`, a netcdf name with a '+' a prefix,
+            :attr:`~vacumm.data.cf.CF_VAR_SPECS`, a netcdf name with a '+' a prefix,
             a tuple of netcdf variable names
             or dictionnary of specification names with a search argument of
             :func:`~vacumm.misc.io.ncfind_var` (tuple of netcdf names
@@ -1154,7 +1164,7 @@ class Dataset(Object):
 
             >>> get_variable('ssh', lon=(-10,0))
             >>> get_variable('+xe')
-            >>> get_variable(dict(search={'standard_names':'sea_surface_height_above_sea_level'}))
+            >>> get_variable(dict(search={'standard_name':'sea_surface_height_above_sea_level'}))
 
         '''
         selstring = 'time: %(time)s, level: %(level)s, lat: %(lat)s, lon: %(lon)s'%locals()
@@ -1164,7 +1174,7 @@ class Dataset(Object):
             return None
 
         # Specifications for searching, selecting and modifying the variable
-        specs = self._get_ncobj_specs_(varname)
+        specs = self._get_ncobj_specs_(varname, searchmode=searchmode)
         if specs is None:
             if (isinstance(varname, basestring) and not varname.startswith('+')
                     and varname in self.get_variable_names()):
@@ -1445,8 +1455,8 @@ class Dataset(Object):
                 genname = specs['genname']
                 search = specs['search']
                 atts = specs['atts']
-                if 'long_names' in atts:
-                    search['long_names'] = atts['long_names']
+                if 'long_name' in atts:
+                    search['long_name'] = atts['long_name']
                 if 'units' in atts and 'axis' in atts and atts['axis']!='Z':
                     search['units'] = atts['units']
 
@@ -1963,7 +1973,7 @@ class Dataset(Object):
                 var = curvsel.finalize(var)
 
             # Format
-            if format and (genname is not None or var.id in GENERIC_VAR_NAMES):
+            if format and (genname is not None or var.id in CF_VAR_SPECS):
                 format_var(var, genname, **atts)
             elif atts:
                 set_atts(var, **atts)
@@ -1987,7 +1997,7 @@ class Dataset(Object):
                 kwat['copy'] = False
                 var = self.toloc(var, at, **kwat)
 
-        elif format and (genname is not None or var.id in GENERIC_VAR_NAMES):
+        elif format and (genname is not None or var.id in CF_VAR_SPECS):
             format_axis(var, genname, **atts)
         elif atts:
             set_atts(var, **atts)
