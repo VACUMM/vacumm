@@ -3154,7 +3154,7 @@ class Plot(object):
         """Del :attr:`id`"""
         self._del_xyattr_('d', 'id')
     id = property(get_id, set_id,
-        del_id, 'Current long name')
+        del_id, 'Current data id')
 
     def get_xid(self):
         """Get :attr:`xid`"""
@@ -3932,7 +3932,8 @@ class ScalarMappable:
             lum = .5
         if tint is not None:
             lum = tint*.5 + .5
-        cmap = change_luminosity(cmap, lum)
+        if lum != 0.5:
+            cmap = change_luminosity(cmap, lum)
 
         # Saturation
         if sat is not None:

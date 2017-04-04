@@ -2656,8 +2656,10 @@ def change_luminosity(c, f):
 
     :Params:
         - **c**: color
-        - **f**: Factor between 0 and 1 with null impact at 0
+        - **f**: Factor between 0 and 1 with null impact at 0.5
     """
+    if f==0.5:
+        return c
     f = 2*f-1
     if f>0:
         return whiten(c, f)
