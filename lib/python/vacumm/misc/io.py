@@ -435,19 +435,19 @@ def ncfind_var(f, id, ignorecase=True, regexp=False, **kwargs):
     del nfo
     return res
 
-def ncfind_axis(f, id, ignorecase=True, regexp=False, **kwargs):
+def ncfind_axis(f, specs, ignorecase=True, regexp=False, **kwargs):
     '''
     Find an axis in a netcdf file using :func:`ncfind_obj`
 
     '''
     nfo = NcFileObj(f)
     f = nfo.f
-    res =  ncfind_obj(f, id, ignorecase=ignorecase, regexp=regexp,
+    res =  ncfind_obj(f, specs, ignorecase=ignorecase, regexp=regexp,
                       ids=f.listdimension(), **kwargs)
     del nfo
     return res
 
-def ncfind_obj(f, id, ignorecase=True, regexp=False, ids=None, searchmode=None, **kwargs):
+def ncfind_obj(f, specs, ignorecase=True, regexp=False, ids=None, searchmode=None, **kwargs):
     '''
     Find a variable or an axis in netcdf file using a name, list of names
     or matching attributes such as standard_name, long_name and units.
@@ -473,7 +473,7 @@ def ncfind_obj(f, id, ignorecase=True, regexp=False, ids=None, searchmode=None, 
         - **ignorecase**, optional: Ignore name case when searching variable.
         - **regexp**, optional: Interpret long_names and units as regular expressions
           that must be compiled.
-        - **searchmode**, optional: Search order when ``name`` is a dictionary
+        - **searchmode**, optional: Search order when ``specs`` is a dictionary
           and not a OrderedDict. It defaults
           to ``None`` or ``'snlua'`` which means:
           *standard_name -> name -> long_name -> units -> axis* (first letters).
@@ -487,83 +487,80 @@ def ncfind_obj(f, id, ignorecase=True, regexp=False, ids=None, searchmode=None, 
     nfo = NcFileObj(f)
     f = nfo.f
 
-    # Targets
+    # Searched terms
+    withdict = isinstance(specs, dict)
+    standard_name = long_name = units = axis = None
+    def check_list(refname):
+        if refname in specs and not is_iterable(specs[refname]):
+            specs[refname] = [specs[refname]]
+    if withdict: # Using a dictionary
+
+        specs = specs.copy()
+
+        # Useful functions
+        def check_aliases(refname, *aliases):
+            for alias in aliases:
+                if alias in specs:
+                    if refname not in specs:
+                        specs[refname] = specs[alias]
+                    del specs[alias]
+        re_flag = re.I if ignorecase else 0
+        def check_regexp(refname):
+            if refname in specs and regexp: # Regular expression
+                specs[refname] = [re.compile(x, re_flag).search
+                                  for x in specs[refname] if x is not None]
+
+        # Id
+        check_aliases('id', 'ids', 'name', 'names')
+        check_list('id')
+
+        # Standard name
+        check_aliases('standard_name', 'standard_names')
+        check_list('standard_name')
+
+        # Axis
+        if 'axis' in specs:
+            specs['axis'] = specs['axis'].upper()
+
+        # Long_name
+        check_aliases('long_name', 'long_names')
+        check_list('long_name')
+        check_regexp('long_name')
+
+        # Units
+        check_list('units')
+        check_regexp('units')
+
+    else: # Using a list of ids
+        specs = {"id": specs}
+        check_list('id')
+
+    # Order the search
+    # - get order
+    all_keys = ['standard_name', 'id', 'long_name', 'units', 'axis']
+    all_keys0 = [key[0] for key in all_keys]
+    if searchmode is None:
+        if isinstance(specs, OrderedDict):
+            searchmode = ''.join([key[0] for key in specs.keys()])
+        else:
+            searchmode = ''.join(all_keys0)
+    searchmode = searchmode.replace('n', 'i')
+    keys = []
+    for key0 in searchmode:
+        key = all_keys[all_keys0.index(key0)]
+        if key0 in all_keys0 and key in specs:
+            keys.append(key)
+    # - reorder specs
+    specs = OrderedDict([(key, specs[key]) for key in keys])
+
+    # Loop on targets to match attributes
     if ids is None:
         ids = f.listvariables()+f.listdimension()
     elif isinstance(ids, basestring):
         ids = [ids]
-
-    # Searched terms
-    withdict = isinstance(id, dict)
-    standard_name = long_name = units = axis = None
-    if withdict: # Using a dictionary
-
-        # Names and standard_name
-        ids = id.get("id", id.get('ids', None))
-        if ids is None:
-            ids = id.get("name", id.get('names', None))
-        standard_name = id.get("standard_name",  id.get('standard_names', None))
-
-        # Axis
-        axis = id.get("axis", None)
-        if axis is not None:
-            axis = axis.upper()
-
-        # Long_name
-        long_name = id.get("long_name", id.get("long_names", None))
-        if long_name is not None:
-            if not is_iterable(long_name):
-                long_name = [long_name]
-            if regexp: # Regular expression
-                flags = re.I if ignorecase else 0
-                long_name = [re.compile(ln, flags).search for ln in long_name]
-#            elif ignorecase:
-#                long_names = __builtins__['map'](str.lower, long_names)
-
-        # Units
-        units = id.get("units", None)
-        if units is not None:
-            if not is_iterable(units):
-                units = [units]
-            if regexp: # Regular expression
-                flags = re.I if ignorecase else 0
-                units = [re.compile(u, flags).search for u in units]
-#            elif ignorecase:
-#                units = __builtins__['map'](str.lower, units)
-
-    else: # Using a list of names
-        id = id if is_iterable(id) else [id]
-#    if names is not None:
-#        names = __builtins__['map'](str.strip, names)
-#        if ignorecase:
-#            names = __builtins__['map'](str.lower, names)
-
-    # Search order
-    all_keys = ['standard_name', 'id', 'long_name', 'units', 'axis']
-    all_keys0 = [key[0] for key in all_keys]
-    if searchmode is None:
-        searchmode = 'silua'
-    searchmode = searchmode.replace('n', 'i')
-    if isinstance(id, OrderedDict):
-        keys = [key for key in id.keys() if key in all_keys]
-        keys = [key for key in keys if key[0] in searchmode]
-    else:
-        keys = []
-        for key0 in searchmode:
-            if key0 in all_keys0:
-                keys.append(all_keys[all_keys0.index(key0)])
-
-    # Loop on objects
-    for key in keys:
-        kwsearch = {key:locals()[key]}
-        for i, id in enumerate(ids):
-            v = f[id]
-            if ncmatch_obj(v, ignorecase=ignorecase, **kwsearch):
-                break
-        else:
-            continue
-        break
-
+    for id in ids: # Loop on targets
+        if match_atts(f[id], specs, id=True, ignorecase=ignorecase):
+            break
     else: # Not found
         id = None
 
@@ -583,8 +580,8 @@ def ncmatch_obj(obj, id=None, standard_name=None,
     :Params:
 
         - **obj**: A MV2 array.
-        - **id**, optional: Name (id) of this array, wich defaults to the id attribute.
         - **standard_name**, optional: List of possible standard_names.
+        - **id**, optional: Name (id) of this array, wich defaults to the id attribute.
         - **axis**, optional: Axis type, as one of 'x, 'y', 'z', 't'.
         - **long_name**, optional: List of possible long_names or callable expression
           (such as regular expression method).
@@ -600,24 +597,18 @@ def ncmatch_obj(obj, id=None, standard_name=None,
     search = OrderedDict()
     if id is None and 'name' in kwargs:
         id = kwargs['name']
-    for key in ('standard_name', 'id', 'long_name', 'units', 'axis'):
+    for key in ('standard_name', 'id', 'axis', 'long_name', 'units'):
         val = locals()[key]
+        if val is None:
+            continue
         search[key] = val
-        if val is None: continue
         if key=='axis':
             search[key] = val if not isinstance(key, list) else val[0]
             continue
-        if not is_iterable(val): val = [val]
         search[key] = val
 
-    # Check long_name and units
-    checks = OrderedDict(
-        standard_name=search['standard_name'],
-        id=search['id'],
-        axis=search['axis'],
-        long_names=search['long_name'],
-        units=search['units'])
-    return match_atts(obj, checks, ignorecase)
+    # Check attributes
+    return match_atts(obj, search, ignorecase)
 
 
 def ncget_var(f, *args, **kwargs):
