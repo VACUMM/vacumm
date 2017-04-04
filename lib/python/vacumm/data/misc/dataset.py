@@ -2088,6 +2088,7 @@ class OceanSurfaceDataset(Dataset):
 class OceanDataset(OceanSurfaceDataset):
     name = 'ocean'
     description = 'Generic ocean dataset'
+    default_depth_search_mode = None
 
     # For auto-declaring methods
     auto_generic_var_names = ['temp', 'sal', 'u3d', 'v3d', 'ubt', 'vbt', 'kz', 'bathy',
@@ -2313,6 +2314,9 @@ class OceanDataset(OceanSurfaceDataset):
             format=True, grid=None, zerolid=False, **kwargs):
 
         depth=None
+        if mode is None:
+            mode  = self.default_depth_search_mode
+
         # Where?
         at_p = _at_(at, squeezet=True, prefix=True)
         atz = _at_(at, prefix=False, focus='ver')
@@ -2405,17 +2409,19 @@ class OceanDataset(OceanSurfaceDataset):
         if check_mode('dz', mode):
 
             if atz=='t': # at T-location
-                bathy = self.get_bathy(**kwvar)
                 dzw = self.get_dz_w(mode=None, **kwvarnoat)
-                if bathy is not None and dzw is not None:
-                    depth = dz2depth(dzw, bathy, refloc="bottom")
+                if dzw is not None:
+                    bathy = self.get_bathy(**kwvar)
+                    if bathy is not None and dzw is not None:
+                        depth = dz2depth(dzw, bathy, refloc="bottom")
 
             elif atz=='w': # at W-location
 
-                ssh = self.get_ssh(**kwvar)
                 dzt = self.get_dz_t(mode=None, **kwvarnoat)
-                if ssh is not None and dzt is not None:
-                    depth = dz2depth(dzt, ssh, refloc="top")
+                if dzt is not None:
+                    ssh = self.get_ssh(**kwvar)
+                    if ssh is not None and dzt is not None:
+                        depth = dz2depth(dzt, ssh, refloc="top")
 
             if depth is not None or check_mode('dz', mode, strict=True):
                 return self.finalize_object(depth, depthup=False, **kwfinalz)
