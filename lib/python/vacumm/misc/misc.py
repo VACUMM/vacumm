@@ -472,8 +472,9 @@ def match_string(ss, checks, ignorecase=True, transform=None):
     ss = ss.strip()
     if ignorecase:
         ss = ss.lower()
-    if not isinstance(checks, (list, tuple)):
+    if not is_iterable(checks):
         checks = [checks]
+    checks = filter(lambda x: x is not None, checks)
 
     # Callables
     sss = []
