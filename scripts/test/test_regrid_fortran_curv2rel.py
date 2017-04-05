@@ -21,8 +21,8 @@ xxbi, yybi = meshbounds(xxi, yyi)
 relpos2index = lambda fi, fj: fj * nyi + fi
 ii, jj = N.meshgrid(N.arange(nxi)+.5, N.arange(nyi)+.5)
 iib, jjb = meshbounds(ii, jj)
-zzi = relpos2index(ii, jj)
-zzbi = relpos2index(iib, jjb)
+zzi = jj * nyi + ii #relpos2index(ii, jj)
+zzbi = jjb * nyi + iib # ny+1? relpos2index(iib, jjb)
 
 # Input random points
 N.random.seed(0)
@@ -36,7 +36,7 @@ np = xxo.size
 # Convert to relative indices
 pp, qq = curv2rel(xxbi, yybi, xxo, yyo)
 bad = pp<0
-zzo = relpos2index(pp-1, qq-1)
+zzo = (qq-1) * nyi + pp-1 #relpos2index(pp-1, qq-1)
 zzo[bad] = -1
 
 # Plot

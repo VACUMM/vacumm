@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """In/Output tools"""
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -537,7 +537,7 @@ def ncfind_obj(f, specs, ignorecase=True, regexp=False, ids=None, searchmode=Non
 
     # Order the search
     # - get order
-    all_keys = ['standard_name', 'id', 'long_name', 'units', 'axis']
+    all_keys = ['id', 'standard_name', 'long_name', 'units', 'axis']
     all_keys0 = [key[0] for key in all_keys]
     if searchmode is None:
         if isinstance(specs, OrderedDict):
@@ -558,9 +558,13 @@ def ncfind_obj(f, specs, ignorecase=True, regexp=False, ids=None, searchmode=Non
         ids = f.listvariables()+f.listdimension()
     elif isinstance(ids, basestring):
         ids = [ids]
-    for id in ids: # Loop on targets
-        if match_atts(f[id], specs, id=True, ignorecase=ignorecase):
-            break
+    for att, val in specs.items(): # loop on attribute types
+        for id in ids: # Loop on targets
+            if match_atts(f[id], {att:val}, id=True, ignorecase=ignorecase):
+                break
+        else:
+            continue
+        break
     else: # Not found
         id = None
 

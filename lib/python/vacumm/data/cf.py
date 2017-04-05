@@ -57,7 +57,7 @@ __all__ = ['VAR_SPECS', 'AXIS_SPECS',
     'CF_AXIS_SPECS', 'CF_VAR_SPECS',
     'register_cf_variable', 'register_cf_variables_from_cfg',
     'register_cf_axis', 'register_cf_axes_from_cfg',
-    'CF_DICT_MERGE_KWARGS',
+    'CF_DICT_MERGE_KWARGS', 'get_cf_cmap',
 ]
 
 ARAKAWA_SUFFIXES = [('_'+p) for p in ARAKAWA_LOCATIONS]
@@ -797,7 +797,7 @@ def register_cf_axes_from_cfg(cfg):
     CF_AXIS_SPECS.register_from_cfg(cfg)
 
 
-def cf2search(name, mode='sia', raiseerr=True, **kwargs):
+def cf2search(name, mode='isa', raiseerr=True, **kwargs):
     """Extract specs from :attr:`CF_AXIS_SPECS` or :attr:`CFVAR_SPECS`
     to form a search dictionary
 
@@ -837,7 +837,7 @@ def cf2search(name, mode='sia', raiseerr=True, **kwargs):
 
     # Form search dict
     if not isinstance(mode, basestring):
-        mode = 'sia'
+        mode = 'isa'
     mode = mode.replace('n', 'i')
     keys = []
     for m in mode:

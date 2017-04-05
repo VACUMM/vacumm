@@ -1134,7 +1134,7 @@ class Dataset(Object):
 
     def get_variable(self, varname, time=None, lon=None, lat=None,
             level=None, atts=None, squeeze=False, order=None, asvar=None,
-            torect=True, depthup=None,verbose=None, warn=True, searchmode='si',
+            torect=True, depthup=None,verbose=None, warn=True, searchmode='is',
             format=True, at=None, grid=None, **kwargs):
         '''Load a variable in a best time serie fashion.
 

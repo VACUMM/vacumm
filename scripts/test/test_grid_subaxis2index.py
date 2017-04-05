@@ -15,6 +15,6 @@ def subaxis2slice(cdaxis, values):
 cdaxis = create_axis(N.linspace(0, 11., 17))
 subaxis = cdaxis[2:7]
 
-print subaxis2slice(cdaxis, subaxis)
+res = subaxis2slice(cdaxis, subaxis)
 
 
