@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Classes for all plots"""
-# Copyright or © or Copr. Actimar/IFREMER (2012-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2012-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -1476,8 +1476,13 @@ class Plot(object):
                 if callable(props['fmt']):
                     lab_func = props['fmt']
                     props['fmt'] = None
-                props['ticks'] = None
+                props['ticks'] = None #FIXME: bad choice (due to labels?)
                 axis.set_ticks(lab_val)
+                if not self.has_data(): # set min/max from ticks when no data available
+                    if axmin is None :
+                        axmin = lab_val[0]
+                    if axmax is None:
+                        axmax = lab_val[-1]
 #                kwtf = {}
                 if props['fmt'] is not None:
                     axis.set_ticklabels([props['fmt']%l for l in lab_val], **props['ticklabels_kwargs'])
@@ -1527,6 +1532,11 @@ class Plot(object):
             if nodate: props['type'] = '-'
             if props['ticks'] is not None:
                 axis.set_ticks(props['ticks'])
+                if not self.has_data(): # set min/max from ticks when no data available
+                    if axmin is None :
+                        axmin = props['ticks'][0]
+                    if axmax is None:
+                        axmax = props['ticks'][-1]
             if props['ticklabels'] is not None:
                 if props['ticklabels'] is False:
                     props['ticklabels'] = []
@@ -5862,7 +5872,7 @@ class Map(Plot2D):
 
         # Pixels
         axext = self.axes.bbox.extents
-        fact = 1.3
+        fact = 1.
         xpixels = (axext[2]-axext[0])*fact
 #        ypixels = (axext[3]-axext[1])*fact
         dpi = self.fig.dpi
