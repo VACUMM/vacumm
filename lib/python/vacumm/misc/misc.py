@@ -77,7 +77,8 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out',
     'kwfilterout', 'filter_selector', 'isempty', 'checkdir', 'splitidx',
     'CaseChecker', 'check_case', 'indices2slices', 'filter_level_selector',
-    'match_atts', 'match_string', 'dicttree_get', 'dicttree_set']
+    'match_atts', 'match_string', 'dicttree_get', 'dicttree_set',
+    'minbox']
 __all__.sort()
 
 def broadcast(set, n, mode='last', **kwargs):
@@ -1705,7 +1706,21 @@ def squarebox(box, scale=1):
     newbox = scalebox([lonmin, latmin, lonmax, latmax], scale, square=False)
     return _returnbox_(box, newbox)
 
-
+def minbox(box, dxmin=None, dymin=None):
+    """Ensure that a box as minimal extents"""
+    if dxmin is None and dymin is None:
+        return box
+    xmin, ymin, xmax, ymax = _box2xyminmax_(box)
+    if dxmin is not None and (xmax-xmin) < dxmin:
+        xmean = 0.5 * (xmin + xmax)
+        xmin = xmean - 0.5 * dx
+        xmax = xmean + 0.5 * dx
+    if dymin is not None and (ymax-ymin) < dymin:
+        ymean = 0.5 * (ymin + ymax)
+        ymin = ymean - 0.5 * dymin
+        ymax = ymean + 0.5 * dymin
+    newbox = xmin, ymin, xmax, ymax
+    return _returnbox_(box, newbox)
 
 def history(nbcommand=None):
     """Display the command history for the interactive python."""

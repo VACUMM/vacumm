@@ -65,7 +65,7 @@ from vacumm.misc.misc import (
     isempty, isnumber, lunique, main_geodir, selector2str, rm_html_tags,
     tunique, split_selector, xls_style, Att, splitidx, CaseChecker, check_case,
     indices2slices, filter_level_selector, filter_selector, match_atts,
-    match_string, ArgTuple, dicttree_get, dicttree_set)
+    match_string, ArgTuple, dicttree_get, dicttree_set, minbox)
 
 from vacumm.misc.axes import (
     create_lon, create_lat, create_time, create_depth,
@@ -160,7 +160,7 @@ from vacumm.misc.plot import (
     ellipsis, get_cls, hldays, rotate_xlabels, rotate_ylabels,
     scale_xlim, scale_ylim, wedge, set_major_locator, set_minor_locator,
     xdate, ydate, get_quiverkey_value, add_lightshading,
-    add_param_label,
+    add_param_label, add_map_box
     )
 curve = curve2
 map = map2
