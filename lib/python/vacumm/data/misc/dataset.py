@@ -2347,12 +2347,12 @@ class OceanDataset(OceanSurfaceDataset):
             grid = getattr(self, gridmet)()#False)
         curvsel = CurvedSelector(grid, sselector)
         kwfinal['curvsel'] = curvsel
-        kwfinal['genname'] = genname='depth'+at_p
+        kwfinal['genname'] = genname = 'depth' + at_p
         if len(seltimes)>1:
             kwfinal[self.get_timeid()] = seltimes[1]
         kwfinalz = kwfinal.copy()
-        kwfinalz['genname'] = genname='depth'+at_z
-        if at_z!=at_p: # from T or W to U, etc
+        if at_p and at_z!=at_p: # from T or W to U, etc
+            kwfinalz['genname'] = genname = 'depth' + at_z
             kwfinalz.setdefault('at', at)
 
         # Second, try from sigma-like coordinates at W and T points only (for now)
