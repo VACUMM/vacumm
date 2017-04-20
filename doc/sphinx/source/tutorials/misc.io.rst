@@ -11,7 +11,6 @@ See :mod:`~vacumm.misc.io` module.
     misc.io.grib
     misc.io.ascii
     misc.io.xyz
-    misc.io.fortran
     misc.io.xls
     misc.io.config
     misc.io.snx

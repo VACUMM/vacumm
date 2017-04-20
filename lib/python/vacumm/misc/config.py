@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -49,10 +49,14 @@ It is based on :mod:`configobj` and :mod:`validate` modules.
 '''
 
 import copy, datetime, inspect, os, operator, re, sys, shutil, traceback
-from optparse import OptionParser, OptionGroup, OptionContainer, Option,  OptionValueError, IndentedHelpFormatter, _
-from argparse import (ArgumentParser, _ArgumentGroup, HelpFormatter as ArgHelpFormatter,
-    _StoreTrueAction as AP_StoreTrueAction,
-    _HelpAction, Action as AP_Action, SUPPRESS as AP_SUPPRESS)
+from collections import OrderedDict
+from optparse import (OptionParser, OptionGroup, OptionContainer, Option,
+                      OptionValueError, IndentedHelpFormatter, _)
+from argparse import (ArgumentParser, _ArgumentGroup,
+                      HelpFormatter as ArgHelpFormatter,
+                      _StoreTrueAction as AP_StoreTrueAction,
+                      Action as AP_Action,
+                      _HelpAction, Action as AP_Action, SUPPRESS as AP_SUPPRESS)
 from warnings import warn
 
 from configobj import ConfigObj, flatten_errors
@@ -63,8 +67,9 @@ try: import numpy
 except: numpy = None
 
 __all__ = ['ConfigException', 'ValidationWarning', 'ConfigManager', 'print_short_help',
-    'opt2rst', 'cfg2rst', 'cfgargparse', 'cfgoptparse', 'getspec', 'get_secnames',
-    'list_options', 'option2rst',  'filter_section', 'register_config_validator']
+    'opt2rst', 'cfg2rst', 'cfgargparse', 'cfgoptparse', 'get_spec', 'get_secnames',
+    'list_options', 'option2rst',  'filter_section', 'register_config_validator',
+    'get_validator']
 
 class ConfigException(Exception):
     pass
@@ -439,35 +444,55 @@ _VALIDATOR_SPECS_ = {
 # 1. Fix specs dicts
 # 2. Generate list validators
 for k, v in _VALIDATOR_SPECS_.items():
+
     # Check type of spec
     if not isinstance(v, dict):
         v = dict(func=v)
         # Update specs mapping
         _VALIDATOR_SPECS_[k] = v
+
     # Check minimum settings
     v.setdefault('func', validate.is_string)
     v['func'] = _valwrap_(v['func'])
     v.setdefault('iterable', False)
     v.setdefault('opttype', k)
     v.setdefault('argtype', v['func'])
+
     # Add plural forms and validators to handle list values
-    if k.endswith('y'): nk = k[:-1]+'ies'
-    elif k.endswith('x'): nk = k+'es'
-    else: nk = k+'s'
+    if k.endswith('y'):
+        nk = k[:-1]+'ies'
+    elif k.endswith('x'):
+        nk = k+'es'
+    else:
+        nk = k+'s'
     if nk not in _VALIDATOR_SPECS_:
         nv = v.copy()
         nv['func'] = _valwraplist_(v['func'])
         nv['iterable'] = True
+
         # OptionParser will check each value, not the list thus we provide the value validator
         nv['opttype'] = nk
         _VALIDATOR_SPECS_[nk] = nv
 _validator_specs_ = _VALIDATOR_SPECS_
+_VALIDATOR_FUNCTIONS_ = {}
 
 #: Available VACUMM :mod:`configobj` validators
-VALIDATOR_TYPES = _VALIDATOR_SPECS_.keys()
+VALIDATOR_TYPES = []
+
+def _update_registry_():
+    while VALIDATOR_TYPES:
+        del VALIDATOR_TYPES[0]
+    VALIDATOR_TYPES.extend(_VALIDATOR_SPECS_.keys())
+
+    for key in _VALIDATOR_FUNCTIONS_.keys():
+        del _VALIDATOR_FUNCTIONS_[key]
+    _VALIDATOR_FUNCTIONS_.update(dict((k, v['func'])
+        for k,v in _VALIDATOR_SPECS_.items() if 'func' in v))
+
+_update_registry_()
 
 # Build the mapping suitable for Validator.functions
-_VALIDATOR_FUNCTIONS_ = dict((k, v['func']) for k,v in _VALIDATOR_SPECS_.iteritems() if 'func' in v)
+#_VALIDATOR_FUNCTIONS_ = dict((k, v['func']) for k,v in _VALIDATOR_SPECS_.iteritems() if 'func' in v)
 _validator_functions_ = _VALIDATOR_FUNCTIONS_
 
 def register_config_validator(**kwargs):
@@ -477,6 +502,7 @@ def register_config_validator(**kwargs):
     >>> register_config_validator(level=is_level)
     """
     _VALIDATOR_FUNCTIONS_.update(**kwargs)
+    _update_registry_()
 
 class ConfigManager(object):
     """A configuration management class based on a configuration specification file
@@ -496,7 +522,8 @@ class ConfigManager(object):
             cfgfilter_default=False):
         '''
         :Params:
-            - **cfgspecfile**, optional: The specification file to be used with this.
+            - **cfgspecfile**, optional: The specification file, file object,
+              or list of strings, to be used with this.
             - **validator**, optional: A custom :class:`validate.Validator`
               to use or a mapping dict of validator functions.
             - **interpolation**, optional: See :class:`configobj.ConfigObj`.
@@ -505,40 +532,36 @@ class ConfigManager(object):
               components separated by ':'.
         '''
         # Specifications
+        # - load
         self._encoding = encoding
-        if (cfgspecfile is not None and isinstance(cfgspecfile, basestring) and
-                not os.path.exists(cfgspecfile) and not hasattr(cfgspecfile,  'read')):
-            raise ConfigException('Specification file not found: %s'%cfgspecfile)
-        self._configspecfile = cfgspecfile
+#        if (cfgspecfile is not None and isinstance(cfgspecfile, basestring) and
+#                not os.path.exists(cfgspecfile) and not hasattr(cfgspecfile,  'read')):
+#            raise ConfigException('Specification file not found: %s'%cfgspecfile)
+#        self._configspecfile = cfgspecfile
         if isinstance(cfgspecfile, ConfigObj):
             self._configspec = cfgspecfile
         else:
             self._configspec = ConfigObj(cfgspecfile, list_values=False,
-                interpolation=False, encoding=encoding, raise_errors=True)
+                interpolation=False, encoding=encoding, raise_errors=True,
+                file_error=True)
+        if not self._configspec:
+            warn('Empty Config specifications')
+        self._configspecfile = self._configspec.filename
+        # - filter
         if isinstance(cfgfilter, dict):
             filter_section(self._configspec, cfgfilter, cfgfilter_default)
         else:
             self._cfgfilter = None
         self._cfgfilter = cfgfilter
         self._cfgfilter_default = cfgfilter_default
+        if not self._configspec:
+            warn('Empty Config specifications after filtering')
 
         # Validator
         if isinstance(validator, Validator):
             self._validator = validator
         else:
-            self._validator = Validator()
-        # Wrap default functions to handle none and extra args
-        for k, v in self._validator.functions.items():
-            self._validator.functions[k] = _valwrap_(v)
-        # This modules's validator functions are already wrapped
-        self._validator.functions.update(_VALIDATOR_FUNCTIONS_)
-        # If the passed validator is a function mapping
-        if isinstance(validator, dict):
-            # Also wrap this mapping functions
-            validator = validator.copy()
-            for k, v in validator.items():
-                validator[k] = _valwrap_(v)
-            self._validator.functions.update(validator)
+            self._validator = get_validator(functions=validator)
 
         # Makes sure that booleans have a default value
         self._boolean_false = boolean_false
@@ -547,17 +570,30 @@ class ConfigManager(object):
                 validator=self._validator)
 
         # Interpolation
-        if interpolation is True: interpolation='template'
+        if interpolation is True:
+            interpolation='template'
         self._interpolation = interpolation
 
-    def get_spec(self, sec, key):
+    @property
+    def specs(self):
+        return self._configspec
+
+    cfgspecs = configspecs = specs
+
+    @property
+    def validator(self):
+        return self._validator
+
+    def get_spec(self, sec, key, **kwargs):
         '''
-        See :func:`getspec`
+        See :func:`get_spec`
 
         If sec is a basestring, use configspec[sec][key]
         Otherwise use sec as a configspec, sec[key]
         '''
-        return getspec((self._configspec[sec] if isinstance(sec, basestring) else sec)[key], validator=self._validator)
+        return get_spec((self._configspec[sec]
+                         if isinstance(sec, basestring) else sec)[key],
+                         validator=self._validator)
     getspec = get_spec
 
     def defaults(self, nocomments=False, interpolation=None):
@@ -752,7 +788,7 @@ class ConfigManager(object):
             cfgpatch.interpolation = False
         cfgpatch.walk(_walker_patch_, cfg=cfg)
         if validate and cfg.configspec is not None:
-            cfg.validate(self.validator())
+            cfg.validate(self.validator)
         #cfg.interpolation = 'template'
         return cfg
 
@@ -830,6 +866,8 @@ class ConfigManager(object):
             help='show a reduced help and exit')
         parser.add_argument('--long-help', action=_HelpAction,
             help='show an extended help and exit')
+        parser.add_argument('--short-help', action=AP_VeryShortHelpAction,
+            help='show a very reduced help and exit')
         parser._optionals.conflict_handler = old_conflict_handler
 
         # Add extra options first
@@ -1199,6 +1237,7 @@ class ConfigManager(object):
         parser = ArgumentParser(usage=usage, description=description, add_help=False )
         parser.add_argument('-h','--help', action='store_true', help='show a reduced help')
         parser.add_argument('--long-help', action='store_true', help='show an extended help')
+        parser.add_argument('--short-help', action='store_true', help='show a very reduced help')
 
         # Configuration options
         self.arg_parse(parser, parse=False)
@@ -1221,9 +1260,9 @@ class ConfigManager(object):
 
         return shelp
 
-    def get_rst(self):
+    def get_rst(self, mode='specs', **kwargs):
         """Convert the default configuration to rst declarations with :func:`cfg2rst`"""
-        return cfg2rst(self)
+        return cfg2rst(self, mode=mode, **kwargs)
 
 def filter_section(sec, cfgfilter, default=False):
     """Recursively filter a section according to a dict of specifications
@@ -1433,7 +1472,7 @@ class _attdict_(dict):
         if name in self.__dict__: return object.__getattribute__(self, name)
         else: return self[name]
 
-def getspec(spec, validator=None):
+def get_spec(spec, validator=None):
         '''
         Get an option specification.
 
@@ -1459,19 +1498,43 @@ def getspec(spec, validator=None):
         [section]
             option = integer(default=0, min=-10, max=10)
 
-        Would return: (integer, [], {'min': '-10', 'max': '10'}, 0)
+        Would return: ``{'funcname': integer, 'args': [],
+                         'kwargs': {'min': '-10', 'max': '10'}, 'default:' 0,
+                         'opttype': 'int', 'argtype': int,
+                         'func':is_integer, 'iterable': None}
 
         This can be usefull when you added extraneous named arguments into your
         specification file for your own use.
 
         '''
         if not validator:
-            validator = Validator()
-            validator.functions.update(_VALIDATOR_FUNCTIONS_)
+            validator = get_validator()
         funcname, args, kwargs, default = validator._parse_with_caching(spec)
         spec = _VALIDATOR_SPECS_.get(funcname, dict(func=None, iterable=None, opttype=None, argtype=None)).copy()
         spec.update(dict(funcname=funcname, args=args, kwargs=kwargs, default=default))
         return _attdict_(spec)
+
+getspec = get_spec
+
+def get_validator(functions=None):
+    """Get a default validator"""
+
+    # Init
+    validator = Validator()
+
+    # User defined functions
+    if functions:
+        validator.functions.update(functions)
+
+    # Wrap default functions to handle none and extra args
+    for k, v in validator.functions.items():
+        validator.functions[k] = _valwrap_(v)
+
+    # This modules's validator functions are already wrapped
+    validator.functions.update(_VALIDATOR_FUNCTIONS_)
+
+
+    return validator
 
 def _walker_remove_all_comments_(sec, key):
     sec.comments[key] = ''
@@ -1582,6 +1645,8 @@ def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding
 
     # Check exceptions
     if key in exc: return
+    if sec.configspec is None or key not in sec.configspec:
+        return
     spec = _VALIDATOR_SPECS_.get(sec.configspec[key].split('(', 1)[0], {})
 
     # Define the wrapping function for argparse argument types which also handle list values
@@ -1689,33 +1754,6 @@ def _walker_patch_(patch_sec, patch_key, cfg):
         pass
     sec[patch_key] = patch_sec[patch_key]
 
-def _walker_cfg2rst_(cfg, key, lines):
-
-    # Name
-    secnames = get_secnames(cfg)
-    if key in cfg.sections:
-        secnames.append(key)
-        name = '[%s]'%(']['.join(secnames), )
-        conftype = 'confsec'
-    else:
-        if secnames:
-            name = '[%s] %s'%(']['.join(secnames), key)
-        else:
-            name = key
-        conftype = 'confopt'
-
-    # Description
-    desc = cfg.inline_comments.get(key)
-    if desc is None: desc = ''
-    desc = desc.strip('#').strip()
-
-    # Formatting
-    desc = redent(desc, 1)
-    text = '.. %(conftype)s:: %(name)s\n\n%(desc)s\n'%locals()
-    text = redent(text, cfg.depth)
-    lines.append(text)
-
-
 def _walker_set_boolean_false_by_default_(sec, key, validator=None):
     if validator is None: return
     check = sec[key]
@@ -1767,7 +1805,7 @@ def list_options(sec, optlist=None, parents=None, values=False, sections=False):
             values=values, sections=subsections)
     return optlist
 
-def option2rst(option, optrole='cfgopt',  secrole='cfgsec'):
+def option2rst(option, optrole='confopt',  secrole='confsec'):
     """Format a tuple or ``(parents, optname)`` to a rst inline declaration"""
     seclist, optname = option[:2]
     parents = '['+']['.join(seclist)+']'
@@ -1781,7 +1819,7 @@ def redent(text, n=1, indent='    '):
     return '\n'.join(lines)
 
 
-def cfg2rst(cfg):
+def cfg2rst(cfg, mode='basic', optrole='confopt',  secrole='confsec', **kwargs):
     """Convert a configuration to rst format
 
     Configuration sections are declared with the rst directive
@@ -1835,13 +1873,87 @@ def cfg2rst(cfg):
     """
     out = ''
     if isinstance(cfg, ConfigManager):
-        cfg = cfg.defaults()
+        if mode=='specs':
+            cfg = cfg.specs
+        else:
+            cfg = cfg.defaults()
     lines = []
-    cfg.walk(_walker_cfg2rst_, call_on_sections=True, lines=lines)
+    cfg.walk(_walker_cfg2rst_, call_on_sections=True, lines=lines,
+             optrole=optrole, secrole=secrole, mode=mode,
+             **kwargs)
     return '\n'.join(lines)
 
+def _walker_cfg2rst_(cfg, key, lines, optrole='cfgopt', secrole='cfgsec',
+                     mode='basic', validator=None,
+                     dir_fmt='.. {conftype}:: {name}\n\n{desc}\n',
+                     desc_fmt_desc_item="| {key}: ``{val}``\n",
+#                     desc_fmt_values='| Default value: ``{value}``\n| {desc}',
+#                     desc_fmt_specs=('| Default value: ``{value}``\n'
+#                                     '| Type: ``{type}``\n| {desc}'),
+                                     ):
 
-def print_short_help(parser, formatter=None):
+    assert mode in ('basic', 'values', 'specs')
+
+    # Name, values and type
+    secnames = get_secnames(cfg)
+    specs = OrderedDict()
+    if key in cfg.sections: # section
+
+        secnames.append(key)
+        name = '[%s]'%(']['.join(secnames), )
+        conftype = secrole
+
+    else: # option
+
+        if secnames:
+            name = '[%s] %s'%(']['.join(secnames), key)
+        else:
+            name = key
+        conftype = optrole
+
+        if mode == 'values':
+
+            specs['default'] = cfg[key]
+
+        elif mode=='specs':
+
+            spec = get_spec(cfg[key], validator=validator)
+            specs['default'] = spec['default']
+            specs['type'] = spec['funcname']
+            if spec['args']:
+                skey = 'possible choices' if name=='choice' else 'args'
+                specs[skey] = spec['args']
+            if spec['kwargs']:
+                specs.update(spec['kwargs'])
+    if specs: # join lists
+        for k, v in specs.items():
+            if isinstance(v, list):
+                specs[k] = ', '.join(map(str, v))
+
+    # Description
+    desc = cfg.inline_comments.get(key)
+    if desc is None:
+        desc = ''
+    desc = desc.strip('#').strip().capitalize()
+
+    # Formatting
+    # - description with specs
+    if specs:
+        sdesc = ''
+        for key, val in specs.items():
+            if val=='':
+                val = ' '
+            sdesc = sdesc + desc_fmt_desc_item.format(**locals())
+        desc = sdesc + '\n' + desc
+    # - directive
+    desc = redent(desc, 1)
+    text = dir_fmt.format(**locals())
+    text = redent(text, cfg.depth)
+    lines.append(text)
+
+
+
+def print_short_help(parser, formatter=None, compressed=False):
     """Print all help of an :class:`~optparse.OptionParser` instance but those of groups."""
     if isinstance(parser, OptionParser):
         # - top
@@ -1870,7 +1982,24 @@ def print_short_help(parser, formatter=None):
             formatter = parser._get_formatter()
 
         # usage
-        formatter.add_usage(parser.usage, parser._actions,
+        if compressed is True:
+            compressed = ['-h', '-help', '--long-help', '--short-help',
+                          '--cfgfile']
+        elif compressed and isinstance(compressed, str):
+            compressed = [compressed]
+        if compressed:
+            fake_action = AP_Action(['other-options'], dest='')
+            def valid_option(opt):
+                if not opt.option_strings:
+                    return True
+                for optstr in opt.option_strings:
+                    if optstr in compressed:
+                        return True
+            actions = filter(valid_option, parser._actions)
+            actions.append(fake_action)
+        else:
+            actions = parser._actions
+        formatter.add_usage(parser.usage, actions,
                             parser._mutually_exclusive_groups)
 
         # description
@@ -1897,6 +2026,11 @@ class AP_ShortHelpAction(_HelpAction):
         print_short_help(parser)
         parser.exit()
 
+class AP_VeryShortHelpAction(_HelpAction):
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        print_short_help(parser, compressed=True)
+        parser.exit()
 
 
 if __name__=='__main__':
