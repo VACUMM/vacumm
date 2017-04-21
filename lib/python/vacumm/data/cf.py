@@ -58,6 +58,7 @@ __all__ = ['VAR_SPECS', 'AXIS_SPECS',
     'register_cf_variable', 'register_cf_variables_from_cfg',
     'register_cf_axis', 'register_cf_axes_from_cfg',
     'CF_DICT_MERGE_KWARGS', 'get_cf_cmap',
+    'VarSpecs', 'AxisSpecs'
 ]
 
 ARAKAWA_SUFFIXES = [('_'+p) for p in ARAKAWA_LOCATIONS]
@@ -131,6 +132,8 @@ class BaseSpecs(object):
     def register_from_cfg(self, cfg):
         """"Register new elements from a :class:`ConfigObj` instance
         or a config file"""
+        if isinstance(cfg, dict) and self.category not in cfg.keys():
+            cfg = {self.category:cfg}
         local_cfg = CF_CFGM.load(cfg)[self.category]
         self._dict = dict_merge(self._dict, local_cfg,
             cls=OrderedDict, **CF_DICT_MERGE_KWARGS)

@@ -40,5 +40,7 @@ def configuration(parent_package='',top_path=None):
     config.add_subpackage('satellite')
     config.add_subpackage('misc')
     config.add_subpackage('in_situ')
+    config.add_data_files('cf.cfg')
+    config.add_data_files('cf.ini')
     return config
 
