@@ -10,8 +10,8 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a
-  - conda config --add channels uvcdat
   - conda config --add channels conda-forge
+  - conda config --add channels uvcdat
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION uvcdat configobj paramiko xlutils seawater pytz cmocean basemap-data-hires conda-build
   - source activate test-environment
   - python setup.py install
