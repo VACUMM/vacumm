@@ -17,3 +17,4 @@ install:
   - python setup.py install
 
 
+script: cd test && make

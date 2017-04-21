@@ -116,6 +116,12 @@ test-install: clean-build clean-test-install
 	python $(SETUP_FILE_NAME) install -O1 --prefix=$(TEST_SETUP_INST_DIR)
 	PYTHONPATH=$(TEST_SETUP_INST_DIR)/lib/python$(PYTHON_VERSION)/site-packages python -c "import "$(PYTHON_PACKAGE_NAME)"; "$(PYTHON_PACKAGE_NAME)".info()"
 
+test-unittests:
+	cd test
+	make
+
+unittests: test-unittests
+
 test-rpm-info:
 	@echo -e "====\nInfo\n===="
 	rpm -qip $(RPM_FILE_PATH)
@@ -135,7 +141,7 @@ test-rpm-update: rpm
 test-rpm-erase:
 	rpm --dbpath $(TEST_RPM_INST_DIR)/var/lib/rpm -e $(RPM_NAME)
 
-test: test-install test-rpm-install
+test: test-install test-rpm-install test-unittests
 
 ################################################################################
 # CLEAN
