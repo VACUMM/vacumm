@@ -3778,7 +3778,8 @@ def plot2d(*args, **kwargs):
 
 
 def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., xmargin=None, ymargin=None,
-        lon=None, lat=None, square=False, bgcolor=(0, .8, 1.), fig=None, alpha=1, **kwargs):
+            lon=None, lat=None, square=False, bgcolor=(0, .8, 1.), fig=None,
+            alpha=1, **kwargs):
     """Create a minimap with :func:`map2`
 
     A minimap is small and generally in a corner of the figure,
