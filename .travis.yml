@@ -20,4 +20,4 @@ install:
 
 
 
-script: cd test && python test_misc.py
+script: cd test && make
