@@ -16,6 +16,8 @@ install:
   - source activate test-environment
   - python setup.py install
   - python setup.py build_ext --inplace
+  - export UVCDAT_ANONYMOUS_LOG=no
 
 
-script: cd test && make
+
+script: cd test && python test_misc.py
