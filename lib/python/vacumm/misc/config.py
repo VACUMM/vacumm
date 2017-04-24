@@ -414,7 +414,9 @@ def _validator_dict_(value, default={}, vtype=None):
 # Define additionnal specifications
 # Value should be dict for internal use of this module (iterable, opttype, ...)
 # If value is not a dict, it is supposed to be the validator function
-_VALIDATOR_SPECS_ = {
+
+#: Available VACUMM :mod:`configobj` validator specifications
+VALIDATOR_SPECS = {
         # copy of some validate.Validator.functions to later build plural forms
         'integer':validate.is_integer,
         'float':validate.is_float,
@@ -441,59 +443,66 @@ _VALIDATOR_SPECS_ = {
         # lists validators for these scalars will be automatically generated
 }
 
-# 1. Fix specs dicts
-# 2. Generate list validators
-for k, v in _VALIDATOR_SPECS_.items():
+#: Available VACUMM :mod:`configobj` validator functions as dict useful for :class:`validate.Validator`
+VALIDATOR_FUNCTIONS = {}
 
-    # Check type of spec
-    if not isinstance(v, dict):
-        v = dict(func=v)
-        # Update specs mapping
-        _VALIDATOR_SPECS_[k] = v
-
-    # Check minimum settings
-    v.setdefault('func', validate.is_string)
-    v['func'] = _valwrap_(v['func'])
-    v.setdefault('iterable', False)
-    v.setdefault('opttype', k)
-    v.setdefault('argtype', v['func'])
-
-    # Add plural forms and validators to handle list values
-    if k.endswith('y'):
-        nk = k[:-1]+'ies'
-    elif k.endswith('x'):
-        nk = k+'es'
-    else:
-        nk = k+'s'
-    if nk not in _VALIDATOR_SPECS_:
-        nv = v.copy()
-        nv['func'] = _valwraplist_(v['func'])
-        nv['iterable'] = True
-
-        # OptionParser will check each value, not the list thus we provide the value validator
-        nv['opttype'] = nk
-        _VALIDATOR_SPECS_[nk] = nv
-_validator_specs_ = _VALIDATOR_SPECS_
-_VALIDATOR_FUNCTIONS_ = {}
-
-#: Available VACUMM :mod:`configobj` validators
+#: Available VACUMM :mod:`configobj` validator type names
 VALIDATOR_TYPES = []
 
+# Aliases for backward compat
+_validator_specs_ = _VALIDATOR_SPECS_ = VALIDATOR_SPECS
+_validator_functions_ = _VALIDATOR_FUNCTIONS_ = VALIDATOR_FUNCTIONS
+
 def _update_registry_():
+
+    # 1. Fix specs dicts
+    # 2. Generate list validators
+    for k, v in VALIDATOR_SPECS.items():
+
+        # Check type of spec
+        if not isinstance(v, dict):
+            v = dict(func=v)
+            # Update specs mapping
+            VALIDATOR_SPECS[k] = v
+
+        # Check minimum settings
+        v.setdefault('func', validate.is_string)
+        v['func'] = _valwrap_(v['func'])
+        v.setdefault('iterable', False)
+        v.setdefault('opttype', k)
+        v.setdefault('argtype', v['func'])
+
+        # Add plural forms and validators to handle list values
+        if k.endswith('y'):
+            nk = k[:-1]+'ies'
+        elif k.endswith('x'):
+            nk = k+'es'
+        else:
+            nk = k+'s'
+        if nk not in VALIDATOR_SPECS:
+            nv = v.copy()
+            nv['func'] = _valwraplist_(v['func'])
+            nv['iterable'] = True
+
+            # OptionParser will check each value, not the list thus we provide the value validator
+            nv['opttype'] = nk
+            VALIDATOR_SPECS[nk] = nv
+
+    # List of names
     while VALIDATOR_TYPES:
         del VALIDATOR_TYPES[0]
-    VALIDATOR_TYPES.extend(_VALIDATOR_SPECS_.keys())
+    VALIDATOR_TYPES.extend(VALIDATOR_SPECS.keys())
 
+    # Dict of functions
     for key in _VALIDATOR_FUNCTIONS_.keys():
         del _VALIDATOR_FUNCTIONS_[key]
-    _VALIDATOR_FUNCTIONS_.update(dict((k, v['func'])
-        for k,v in _VALIDATOR_SPECS_.items() if 'func' in v))
+    VALIDATOR_FUNCTIONS.update(dict((k, v['func'])
+        for k,v in VALIDATOR_SPECS.items() if 'func' in v))
 
 _update_registry_()
 
 # Build the mapping suitable for Validator.functions
-#_VALIDATOR_FUNCTIONS_ = dict((k, v['func']) for k,v in _VALIDATOR_SPECS_.iteritems() if 'func' in v)
-_validator_functions_ = _VALIDATOR_FUNCTIONS_
+#VALIDATOR_FUNCTIONS = dict((k, v['func']) for k,v in VALIDATOR_SPECS.iteritems() if 'func' in v)
 
 def register_config_validator(**kwargs):
     """Add a new configobj validator function
@@ -501,8 +510,9 @@ def register_config_validator(**kwargs):
     :Example:
     >>> register_config_validator(level=is_level)
     """
-    _VALIDATOR_FUNCTIONS_.update(**kwargs)
+    VALIDATOR_SPECS.update(**kwargs)
     _update_registry_()
+    pass
 
 class ConfigManager(object):
     """A configuration management class based on a configuration specification file
@@ -971,9 +981,11 @@ class ConfigManager(object):
                 self.patch(cfg, self.load(options.cfgfile))
 
 
-            if not getparser and not getargs: return cfg
+            if not getparser and not getargs:
+                return cfg
             out = cfg,
-            if getparser: out += parser,
+            if getparser:
+                out += parser,
             if getargs:
                 options.vacumm_cfg = cfg
                 out += options,
@@ -1081,7 +1093,7 @@ class ConfigManager(object):
         for name,func in self._validator.functions.items():
             if name in option_class.TYPE_CHECKER:
                 pass # warn('Overriding Option type checker %s'%(name))
-            islist = _VALIDATOR_SPECS_.get(name, {}).get('iterable', None)
+            islist = VALIDATOR_SPECS.get(name, {}).get('iterable', None)
             option_class.TYPE_CHECKER[name] = wrap_option_type_checker(func, islist)
         # Replace the parser Option class
         parser.option_class = option_class
@@ -1510,7 +1522,7 @@ def get_spec(spec, validator=None):
         if not validator:
             validator = get_validator()
         funcname, args, kwargs, default = validator._parse_with_caching(spec)
-        spec = _VALIDATOR_SPECS_.get(funcname, dict(func=None, iterable=None, opttype=None, argtype=None)).copy()
+        spec = VALIDATOR_SPECS.get(funcname, dict(func=None, iterable=None, opttype=None, argtype=None)).copy()
         spec.update(dict(funcname=funcname, args=args, kwargs=kwargs, default=default))
         return _attdict_(spec)
 
@@ -1531,7 +1543,7 @@ def get_validator(functions=None):
         validator.functions[k] = _valwrap_(v)
 
     # This modules's validator functions are already wrapped
-    validator.functions.update(_VALIDATOR_FUNCTIONS_)
+    validator.functions.update(VALIDATOR_FUNCTIONS)
 
 
     return validator
@@ -1594,7 +1606,7 @@ def _walker_optcfg_setopt_(sec, key, group=None, exc=None, nested=None, boolean_
     if key in exc: return
 
     # Add option to group
-    spec = _VALIDATOR_SPECS_.get(sec.configspec[key].split('(', 1)[0], {})
+    spec = VALIDATOR_SPECS.get(sec.configspec[key].split('(', 1)[0], {})
     type = spec.get('opttype', 'string')
     if boolean_false and type=='boolean':
         default = sec[key]
@@ -1647,7 +1659,7 @@ def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding
     if key in exc: return
     if sec.configspec is None or key not in sec.configspec:
         return
-    spec = _VALIDATOR_SPECS_.get(sec.configspec[key].split('(', 1)[0], {})
+    spec = VALIDATOR_SPECS.get(sec.configspec[key].split('(', 1)[0], {})
 
     # Define the wrapping function for argparse argument types which also handle list values
     def wrap_argparse_type(func, islist):
