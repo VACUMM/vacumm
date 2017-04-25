@@ -88,7 +88,8 @@ def _valwrap_(validator):
     validator._parse_with_caching(configspec[section][option])
     '''
     # Already wrapped
-    if validator.func_name.startswith('validator_wrapper-'):
+    if (validator.func_name.startswith('validator_wrapper-') or
+        validator.func_name.startswith('list_validator_wrapper-')):
         return validator
 
     # Wrapper
@@ -127,7 +128,8 @@ def _valwraplist_(validator):
     # Wrapper
     def list_validator_wrapper(value, *args, **kwargs):
         # Handle None and default
-        if str(value) == 'None': return None
+        if str(value) == 'None':
+            return None
         default = args[0] if len(args) else kwargs.get('default', ())
         if value == '': value = default
 
@@ -164,8 +166,10 @@ def _valwraplist_(validator):
                         raise VdtSizeError('Incorrect shape: %s, %s shape expected'%(vshape, shape))
                 except Exception, e:
                     raise ValidateError('Cannot test value shape, this may be caused by an irregular array-like shape. Error was:\n%s'%traceback.format_exc())
+
         # Preserve tuple type
         istuple = isinstance(value, tuple)
+
         # Validate each values
         value = map(lambda v: validator(v, *args[1:], **kwargs), value)
         return tuple(value) if istuple else value
