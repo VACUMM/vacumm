@@ -87,6 +87,11 @@ def _valwrap_(validator):
     this is usefull when getting specification with
     validator._parse_with_caching(configspec[section][option])
     '''
+    # Already wrapped
+    if validator.func_name.startswith('validator_wrapper-'):
+        return validator
+
+    # Wrapper
     def validator_wrapper(value, *args, **kwargs):
         # Handle None and default
 #        if str(value) == 'None': return None
@@ -99,6 +104,7 @@ def _valwrap_(validator):
             if k not in argspec.args:
                 kwargs.pop(k)
         return validator(value, *args, **kwargs)
+
     validator_wrapper.__name__ += '-'+validator.__name__
     return validator_wrapper
 
@@ -114,6 +120,11 @@ def _valwraplist_(validator):
         - **even**: number of elements must be even
         - **shape**: check value shape (requires numpy)
     '''
+    # Already wrapped
+    if validator.func_name.startswith('list_validator_wrapper-'):
+        return validator
+
+    # Wrapper
     def list_validator_wrapper(value, *args, **kwargs):
         # Handle None and default
         if str(value) == 'None': return None
@@ -158,6 +169,7 @@ def _valwraplist_(validator):
         # Validate each values
         value = map(lambda v: validator(v, *args[1:], **kwargs), value)
         return tuple(value) if istuple else value
+
     list_validator_wrapper.__name__ += '-'+validator.__name__
     return list_validator_wrapper
 
@@ -529,7 +541,7 @@ class ConfigManager(object):
     """
     def __init__(self, cfgspecfile=None, validator=None, interpolation='template',
             encoding=None, boolean_false=True, splitsecdesc=False, cfgfilter=None,
-            cfgfilter_default=False):
+            cfgfilter_default=False, warn_empty_specs=False):
         '''
         :Params:
             - **cfgspecfile**, optional: The specification file, file object,
@@ -555,17 +567,19 @@ class ConfigManager(object):
                 interpolation=False, encoding=encoding, raise_errors=True,
                 file_error=True)
         if not self._configspec:
-            warn('Empty Config specifications')
-        self._configspecfile = self._configspec.filename
-        # - filter
-        if isinstance(cfgfilter, dict):
-            filter_section(self._configspec, cfgfilter, cfgfilter_default)
+            if warn_empty_specs:
+                warn('Empty Config specifications')
         else:
-            self._cfgfilter = None
+            # - filter
+            if isinstance(cfgfilter, dict):
+                filter_section(self._configspec, cfgfilter, cfgfilter_default)
+            else:
+                self._cfgfilter = None
+            if not self._configspec and warn_empty_specs:
+                warn('Empty Config specifications after filtering')
         self._cfgfilter = cfgfilter
         self._cfgfilter_default = cfgfilter_default
-        if not self._configspec:
-            warn('Empty Config specifications after filtering')
+        self._configspecfile = self._configspec.filename
 
         # Validator
         if isinstance(validator, Validator):
