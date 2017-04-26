@@ -1140,11 +1140,11 @@ def format_axis(axis, name=None, force=True, recreate=False, format_subaxes=True
         del kwargs[key]
     # - remove default location
     if nodef:
-        for stype in 'id', 'long_name', 'standard_name':
+        for att in 'id', 'long_name', 'standard_name':
 #            sname = stype+'s'
-            if sname not in specs: continue
-            if get_loc(specs[sname], stype)==DEFAULT_LOCATION:
-                specs[sname] = [no_loc_single(specs[sname][0], stype)]
+            if att not in specs: continue
+            if get_loc(specs[att], att)==DEFAULT_LOCATION:
+                specs[att] = [no_loc_single(specs[att][0], att)]
     # - id
     if force or axis.id.startswith('variable_') or axis.id.startswith('axis_'):
         axis.id = specs['id'][0]
