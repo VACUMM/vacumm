@@ -44,7 +44,7 @@ Configuration management with validation capabilities and commandline interactio
 It is based on :mod:`configobj` and :mod:`validate` modules.
 
 
-.. todo:: Add the list of available validators and how to use them
+List of builtin validators for :mod:`validate`, along with their plural form: {}
 
 '''
 
@@ -69,7 +69,12 @@ except: numpy = None
 __all__ = ['ConfigException', 'ValidationWarning', 'ConfigManager', 'print_short_help',
     'opt2rst', 'cfg2rst', 'cfgargparse', 'cfgoptparse', 'get_spec', 'get_secnames',
     'list_options', 'option2rst',  'filter_section', 'register_config_validator',
-    'get_validator']
+    'get_validator',
+    'validator_bbox', 'validator_cdtime', 'validator_cmap', 'validator_color',
+    'validator_datetime', 'validator_dict', 'validator_eval',
+    'validator_figsize', 'validator_interval', 'validator_minmax',
+    'validator_numerics', 'validator_path', 'validator_timeunits',
+    'validator_workdir']
 
 class ConfigException(Exception):
     pass
@@ -177,7 +182,7 @@ def _valwraplist_(validator):
     list_validator_wrapper.__name__ += '-'+validator.__name__
     return list_validator_wrapper
 
-def _validator_bbox_(value, default=None):
+def validator_bbox(value, default=None):
     '''Parse bbox coordinates with value format: x1,y1,x2,y2'''
     if str(value) == 'None': return None
     if value == '': value = default
@@ -188,7 +193,7 @@ def _validator_bbox_(value, default=None):
     return map(float, c)
 
 
-def _validator_numerics_(value, default=None, min=None, max=None, type='float', n=None):
+def validator_numerics(value, default=None, min=None, max=None, type='float', n=None):
     """Validator of a tuple of numeric values"""
     if isinstance(value, basestring):
         value = value.strip('()[] ')
@@ -229,9 +234,9 @@ def _validator_numerics_(value, default=None, min=None, max=None, type='float', 
         out += val,
     return out
 
-def _validator_minmax_(value, min=None, max=None, default=(0, 100), type='float'):
+def validator_minmax(value, min=None, max=None, default=(0, 100), type='float'):
     """Validator of a min,max pair"""
-    value = _validator_numerics_(value, min=min, max=max, default=default,
+    value = validator_numerics(value, min=min, max=max, default=default,
         type=type, n=2)
     if value is not None:
         out = list(value)
@@ -239,14 +244,14 @@ def _validator_minmax_(value, min=None, max=None, default=(0, 100), type='float'
         value = tuple(value)
     return value
 
-def _validator_figsize_(value, default=(6, 6), min=0, max=20):
+def validator_figsize(value, default=(6, 6), min=0, max=20):
     """Validator of a figure size (xsize,ysize)"""
-    return _validator_numerics_(value, default=default, min=min, max=max,
+    return validator_numerics(value, default=default, min=min, max=max,
         type='float', n=2)
 
 
 
-def _validator_interval_(value, default=None):
+def validator_interval(value, default=None):
     """Validator of an interval of coordinates (min, max [,bounds])"""
     if isinstance(value, basestring):
         value = value.strip('()[] ')
@@ -273,7 +278,7 @@ def _validator_interval_(value, default=None):
         out += m.group(1),
     return out
 
-def _validator_cmap_(value, default=None):
+def validator_cmap(value, default=None):
     """Validator for colormaps"""
     if str(value) == 'None': return None
     if isinstance(value, basestring) and value.startswith('['):
@@ -287,7 +292,7 @@ def _validator_cmap_(value, default=None):
 class VdtDateTimeError(ValidateError):
     pass
 
-def _validator_datetime_(value, default=None, fmt='%Y-%m-%dT%H:%M:%S'):
+def validator_datetime(value, default=None, fmt='%Y-%m-%dT%H:%M:%S'):
     '''Parse value as a traditionnal python datetime object'''
     if str(value) == 'None': return None
     if value == '': value = default
@@ -297,7 +302,7 @@ def _validator_datetime_(value, default=None, fmt='%Y-%m-%dT%H:%M:%S'):
 _re_validator_workdir_split_ = re.compile('\s*>\s*').split
 _re_validator_workdir_start_ =  re.compile('^[\[(]').search
 _re_validator_workdir_stop_ =  re.compile('[\])]').search
-def _validator_workdir_(value, default=''):
+def validator_workdir(value, default=''):
     if str(value) == 'None': return ''
     value = value.strip()
     start = _re_validator_workdir_start_(value) is not None
@@ -312,7 +317,7 @@ def _validator_workdir_(value, default=''):
     return svalue[0]
 
 # TODO: fix interpolation and expand !
-def _validator_path_(value, default='', expand=None):
+def validator_path(value, default='', expand=None):
     '''
     Parse a value as a path
     :Params:
@@ -326,7 +331,7 @@ def _validator_path_(value, default='', expand=None):
         return os.path.expandvars(os.path.expanduser(value))
     return value
 
-def _validator_timeunits_(value, default='days since 1950-01-01'):
+def validator_timeunits(value, default='days since 1950-01-01'):
     """Validator of standard time units"""
     from .atime import are_valid_units
     value = str(value)
@@ -337,7 +342,7 @@ def _validator_timeunits_(value, default='days since 1950-01-01'):
     return value
 
 
-def _validator_cdtime_(value, min=None, max=None, default=None):
+def validator_cdtime(value, min=None, max=None, default=None):
     """Validator of a date (compatible with :func:`cdtime.s2c`)"""
     import cdtime
     value = str(value).strip()
@@ -352,7 +357,7 @@ def _validator_cdtime_(value, min=None, max=None, default=None):
     return value
 
 
-def _validator_eval_(value, default=None, unchanged_if_failed=True):
+def validator_eval(value, default=None, unchanged_if_failed=True):
     """Validate a string that can be evaluated"""
     try:
         value = eval(str(value))
@@ -364,7 +369,7 @@ def _validator_eval_(value, default=None, unchanged_if_failed=True):
     return value
 
 
-def _validator_color_(value, default='k', alpha=False):
+def validator_color(value, default='k', alpha=False):
     if str(value) == 'None': return None
     if alpha:
         from .color import RGBA as CC
@@ -385,7 +390,7 @@ def _validator_color_(value, default='k', alpha=False):
 _re_funccall = re.compile(r'^\s*(\w+\(.*\))\s*$').match # func(...)
 _re_acc = re.compile(r'^\s*(\{.*\})\s*$').match # {...}
 _re_set = re.compile(r'^\s*(\w+)\s*=\s*(.+)\s*$').match # a=b
-def _validator_dict_(value, default={}, vtype=None):
+def validator_dict(value, default={}, vtype=None):
     """validator for dictionaries
 
     Examples
@@ -439,23 +444,23 @@ VALIDATOR_SPECS = {
         'boolean':validate.is_boolean,
         'string':validate.is_string,
         # single value
-        'date':_validator_cdtime_,
-        'cdtime':_validator_cdtime_,
-        'timeunits':_validator_timeunits_,
-        'minmax':_validator_minmax_,
-        'numerics':_validator_numerics_,
-        'figsize':_validator_figsize_,
-        'workdir':_validator_workdir_,
-        'bbox':_validator_bbox_,
-        'datetime':_validator_datetime_,
-        'file':_validator_path_,
-        'path':_validator_path_,
-        'directory':_validator_path_,
-        'interval':_validator_interval_,
-        'eval':_validator_eval_,
-        'cmap':_validator_cmap_,
-        'color':_validator_color_,
-        'dict':_validator_dict_,
+        'date':validator_cdtime,
+        'cdtime':validator_cdtime,
+        'timeunits':validator_timeunits,
+        'minmax':validator_minmax,
+        'numerics':validator_numerics,
+        'figsize':validator_figsize,
+        'workdir':validator_workdir,
+        'bbox':validator_bbox,
+        'datetime':validator_datetime,
+        'file':validator_path,
+        'path':validator_path,
+        'directory':validator_path,
+        'interval':validator_interval,
+        'eval':validator_eval,
+        'cmap':validator_cmap,
+        'color':validator_color,
+        'dict':validator_dict,
         # lists validators for these scalars will be automatically generated
 }
 
@@ -483,6 +488,7 @@ def _update_registry_():
 
         # Check minimum settings
         v.setdefault('func', validate.is_string)
+        v.setdefault('base_func', v['func'])
         v['func'] = _valwrap_(v['func'])
         v.setdefault('iterable', False)
         v.setdefault('opttype', k)
@@ -508,14 +514,26 @@ def _update_registry_():
     while VALIDATOR_TYPES:
         del VALIDATOR_TYPES[0]
     VALIDATOR_TYPES.extend(VALIDATOR_SPECS.keys())
+    VALIDATOR_TYPES.sort()
 
     # Dict of functions
-    for key in _VALIDATOR_FUNCTIONS_.keys():
-        del _VALIDATOR_FUNCTIONS_[key]
+    for key in VALIDATOR_FUNCTIONS.keys():
+        del VALIDATOR_FUNCTIONS[key]
     VALIDATOR_FUNCTIONS.update(dict((k, v['func'])
         for k,v in VALIDATOR_SPECS.items() if 'func' in v))
 
 _update_registry_()
+
+_for_doc = []
+for key in VALIDATOR_TYPES:
+    spec = VALIDATOR_SPECS[key]
+    if not spec['func'].func_name.startswith('list_validator_wrapper'):
+        val = ':func:`{} <{}>`'.format(key, spec['base_func'].func_name)
+    else:
+        val = ':func:`{}`'.format(key)
+    _for_doc.append(val)
+
+__doc__ = __doc__.format(' '.join(_for_doc))
 
 # Build the mapping suitable for Validator.functions
 #VALIDATOR_FUNCTIONS = dict((k, v['func']) for k,v in VALIDATOR_SPECS.iteritems() if 'func' in v)
