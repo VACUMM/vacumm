@@ -57,8 +57,8 @@ __all__ = ['VAR_SPECS', 'AXIS_SPECS',
     'CF_AXIS_SPECS', 'CF_VAR_SPECS',
     'register_cf_variable', 'register_cf_variables_from_cfg',
     'register_cf_axis', 'register_cf_axes_from_cfg',
-    'CF_DICT_MERGE_KWARGS', 'get_cf_cmap',
-    'VarSpecs', 'AxisSpecs'
+    'CF_DICT_MERGE_KWARGS', 'get_cf_cmap', 'is_cf_known',
+    'VarSpecs', 'AxisSpecs', 'CF_VAR_NAMES', 'CF_AXIS_NAMES',
 ]
 
 ARAKAWA_SUFFIXES = [('_'+p) for p in ARAKAWA_LOCATIONS]
@@ -91,10 +91,11 @@ class BaseSpecs(object):
               }
     category = None
 
-    def __init__(self, inherit=None):
+    def __init__(self, inherit=None, names=None):
         self._dict = OrderedDict(CF_CFG[self.category])
         for name, spec in self._dict.items():
             self._dict[name] = self._dict[name].dict()
+        self._names = names
         self._inherit = inherit
         self._cfgspec = CF_CFGM._configspec[self.category]['__many__'].dict()
         self._post_process_()
@@ -144,6 +145,7 @@ class BaseSpecs(object):
         for name in self.names:
             self._check_entry_(name)
         self._add_aliases_()
+        self._update_names_()
 
     def _check_entry_(self, name):
         """Validate an entry
@@ -245,6 +247,12 @@ class BaseSpecs(object):
                 if key in specs:
                     for alias in aliases:
                         specs[alias] = specs[key]
+
+    def _update_names_(self):
+        if self._names is not None:
+            while self._names:
+                del self._names[0]
+            self._names.extend(self.names)
 
 
 class VarSpecs(BaseSpecs):
@@ -728,11 +736,21 @@ def cp_suffix(idref, id, suffixes=ARAKAWA_SUFFIXES):
     return id+m.group(1)
 
 
+#: List of generic variable names
+CF_VAR_NAMES = []
+generic_var_names = GENERIC_VAR_NAMES = GENERIC_CF_VAR_NAMES = CF_VAR_NAMES # compat
+
+#: List of generic axis names
+CF_AXIS_NAMES = []
+generic_axis_names = GENERIC_AXIS_NAMES = GENERIC_CF_AXIS_NAMES = CF_AXIS_NAMES # compat
+
 #: Specifications for variables
-CF_VAR_SPECS = VAR_SPECS = var_specs = VarSpecs()
+CF_VAR_SPECS = VAR_SPECS = var_specs = VarSpecs(names=CF_VAR_NAMES)
 
 #: Specifications for axes
-CF_AXIS_SPECS = AXIS_SPECS = axis_specs = AxisSpecs(inherit=CF_VAR_SPECS)
+CF_AXIS_SPECS = AXIS_SPECS = axis_specs = AxisSpecs(inherit=CF_VAR_SPECS,
+                                                    names=CF_AXIS_NAMES)
+
 
 #: Specifications for grid formating
 GRID_SPECS = {
@@ -749,17 +767,9 @@ GRID_SPECS[None] = GRID_SPECS['']
 grid_specs = GRID_SPECS # compat
 
 
-#: List of generic variable names: DEPRECATED!!
-GENERIC_VAR_NAMES = CF_VAR_SPECS.keys()
-generic_var_names = GENERIC_VAR_NAMES # compat
-
-#: List of generic axis names: DEPRECATED!!
-GENERIC_AXIS_NAMES = CF_AXIS_SPECS.keys()
-generic_axis_names = GENERIC_AXIS_NAMES # compat
-
 #: List of all generic names (axes and variables): DEPRECATED!!
-GENERIC_NAMES = GENERIC_VAR_NAMES + GENERIC_AXIS_NAMES
-generic_names = GENERIC_NAMES # compat
+CF_NAMES = CF_VAR_NAMES + CF_AXIS_NAMES
+generic_names = GENERIC_NAMES  = CF_NAMES# compat
 
 def register_cf_variable(name, **specs):
     """Register a new CF variable given its generic name and its specs
@@ -901,7 +911,7 @@ def cf2atts(name, select=None, exclude=None, ordered=True, **extra):
 
 
 # Format a variable
-def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
+def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=True,
         mode='warn', **kwargs):
     """Format a MV2 variable according to its generic name
 
@@ -910,7 +920,8 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
 
         - **var**: A :mod:`numpy` or :mod:`MV2` variabe.
         - **name**: Generic name of variable. It should be one of
-          those listed by :attr:`CF_VAR_SPECS`.
+          those listed by :attr:`CF_VAR_SPECS`. If None, it is guessed
+          with :func:`match_known_var`.
         - **force**, optional: Overwrite attributes in all cases.
         - **format_axes**, optional: Also format axes.
         - **nodef**, optional: Remove location specification when it refers to the
@@ -938,7 +949,17 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
         var = MV2.asarray(var)
 
     # Check specs
-    if name not in CF_VAR_SPECS and name not in CF_AXIS_SPECS:
+    if name is None: # guess it
+        name = match_known_var(var)
+        if not name:
+            if mode=='warn':
+                warn("Can't guess cf name")
+                return var
+            elif mode=='silent':
+                return var
+            else:
+                raise KeyError("Variable does not match any CF var")
+    elif name not in CF_VAR_SPECS and name not in CF_AXIS_SPECS:
         if var.id in CF_VAR_SPECS or var.id in CF_AXIS_SPECS:
             name = var.id
         elif mode=='warn':
@@ -1027,16 +1048,17 @@ def format_var(var, name, force=True, format_axes=True, order=None, nodef=True,
     return var
 
 # Format an axis
-def format_axis(axis, name, force=True, recreate=False, format_subaxes=True,
-        nodef=True, **kwargs):
+def format_axis(axis, name=None, force=True, recreate=False, format_subaxes=True,
+        nodef=True, mode='warn', **kwargs):
     """Format a MV2 axis according to its generic name
 
 
     :Params:
 
-        - **var**: A :mod:`numpy` or :mod:`MV2` variabe.
+        - **axis**: A :mod:`numpy` or :mod:`MV2` variabe.
         - **name**: Single or list of generic axis names. It should be one of
-          those listed by :attr:`CF_AXIS_SPECS`.
+          those listed by :attr:`CF_AXIS_SPECS`.If None, it is guessed
+          with :func:`match_known_axis`.
         - **force**, optional: Overwrite attributes in all cases.
         - **nodef**, optional: Remove location specification when it refers to the
           default location (:attr:`DEFAULT_LOCATION`).
@@ -1063,9 +1085,25 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True,
                 break
 
     # Check specs
-    if name not in CF_AXIS_SPECS:
-        raise KeyError("Generic axis name not found '%s'. Please choose one of: %s"%(
-            name, ', '.join(CF_AXIS_SPECS.keys())))
+    if name is None: # guess it
+        name = match_known_axis(axis)
+        if not name:
+            if mode=='warn':
+                warn("Can't guess CF axis name")
+                return axis
+            elif mode=='silent':
+                return axis
+            else:
+                raise KeyError("Variable does not match any CF axis")
+    elif name not in CF_AXIS_SPECS:
+        if mode=='warn':
+            warn("Generic axis name not found '%s'."%name)
+            return axis
+        elif mode=='silent':
+            return axis
+        else:
+            raise KeyError("Generic axis name not found '%s'. Please choose one of: %s"%(
+                name, ', '.join(CF_AXIS_SPECS.keys())))
     specs = CF_AXIS_SPECS[name]
     # - merge kwargs and specs
     for key, val in kwargs.items():
@@ -1102,14 +1140,14 @@ def format_axis(axis, name, force=True, recreate=False, format_subaxes=True,
         del kwargs[key]
     # - remove default location
     if nodef:
-        for stype in 'name', 'long_name', 'standard_name':
-            sname = stype+'s'
+        for stype in 'id', 'long_name', 'standard_name':
+#            sname = stype+'s'
             if sname not in specs: continue
             if get_loc(specs[sname], stype)==DEFAULT_LOCATION:
                 specs[sname] = [no_loc_single(specs[sname][0], stype)]
     # - id
     if force or axis.id.startswith('variable_') or axis.id.startswith('axis_'):
-        axis.id = specs['names'][0]
+        axis.id = specs['id'][0]
     # - attributes
     for att, val in cf2atts(specs, exclude=['axis'] if axis2d else None, **kwargs).items():
         if force or not getattr(axis, att, ''):
@@ -1168,6 +1206,19 @@ def match_known_axis(obj, searchmode=None, **kwargs):
         if match_obj(obj, name, searchmode=searchmode):
             return name
     return False
+
+def is_cf_known(name, type=None):
+    """Is this names registered in :attr:`CF_VAR_SPECS` or
+    :attr:`CF_AXIS_SPECS`"""
+    assert type is None or type in ('var', 'axis')
+    if type is None:
+        names = CF_AXIS_NAMES + CF_VAR_NAMES
+    elif type=='var':
+        names = CF_VAR_NAMES
+    else:
+        names = CF_AXIS_NAMES
+    return name in names
+
 
 def get_cf_cmap(vname):
     """Get a cmap from a standard name

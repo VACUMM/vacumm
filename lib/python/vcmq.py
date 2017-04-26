@@ -246,6 +246,7 @@ from vacumm.data.cf import (
     match_known_var, match_known_axis, get_cf_cmap, CF_AXIS_SPECS, CF_VAR_SPECS,
     register_cf_variable, register_cf_variables_from_cfg,
     register_cf_axis, register_cf_axes_from_cfg,
+    CF_VAR_NAMES, CF_AXIS_NAMES, is_cf_known,
     )
 
 from vacumm.data.misc.sigma import NcSigma, sigma2depths, SigmaGeneralized, SigmaStandard
