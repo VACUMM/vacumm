@@ -832,10 +832,14 @@ class ConfigManager(object):
                 encoding=self._encoding)
         else:
             cfgpatch.interpolation = False
-        cfgpatch.walk(_walker_patch_, cfg=cfg)
+
+#        cfgpatch.walk(_walker_patch_, cfg=cfg)
+        self.cfgspecs.walk(_walker_patch_, cfg=cfg, cfgpatch=cfgpatch)
+
         if validate and cfg.configspec is not None:
             cfg.validate(self.validator)
         #cfg.interpolation = 'template'
+
         return cfg
 
     def arg_parse(
@@ -1493,7 +1497,7 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
         else:
 
             indent = ''
-            if secname==descname:
+            if secname and secname==descname:
                 indent += '\t'
             rhelp.append(indent+line)
             multiline = False
@@ -1789,18 +1793,25 @@ def _parent_list_(sec, names=True):
         sec = sec.parent
     return parents
 
-def _walker_patch_(patch_sec, patch_key, cfg):
+def _walker_patch_(sec, patch_key, cfg, cfgpatch):
     """Walk through the patch to apply it"""
-    sec = cfg
-    for key in _parent_list_(patch_sec):
-        if not sec.has_key(key):
-            sec[key] = {}
-        sec = sec[key]
-    try:
-        patch_sec[patch_key] = type(sec[patch_key])(patch_sec[patch_key])
-    except:
-        pass
-    sec[patch_key] = patch_sec[patch_key]
+    psec = cfgpatch
+    csec = cfg
+    for key in _parent_list_(sec):
+        if not key in psec.sections: # nothing to patch
+            return
+        if not key in csec.sections:
+            csec[key] = {}
+        csec = csec[key]
+        psec = psec[key]
+    if patch_key not in psec: # nothing to patch
+        return
+    if patch_key in csec:
+        try:
+            psec[patch_key] = type(csec[patch_key])(psec[patch_key])
+        except:
+            pass
+    csec[patch_key] = psec[patch_key]
 
 def _walker_set_boolean_false_by_default_(sec, key, validator=None):
     if validator is None: return

@@ -21,6 +21,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -58,9 +59,6 @@ instance/
 # Scrapy stuff:
 .scrapy
 
-# Sphinx documentation
-docs/_build/
-
 # PyBuilder
 target/
 
@@ -88,21 +86,33 @@ ENV/
 
 # Eric4
 .eric4project/
-SONAT.e4p
+*.e4p
 
 # Misc
 *~
 *.bak
 *.bak2
 my/
+scripts/bugs/
+scripts/perso/
+lib/python/vacumm/misc/grid/interp.o
+setup.cfg
 
 # Sphinx
-doc/source/generated
-doc/source/images
-doc/source/samples
+doc/sphinx/build/
+doc/sphinx/source/bin/*.txt
+doc/sphinx/source/library/misc-color-*.png
+doc/sphinx/source/vacumm.cfg
 
-# Tests
-test/*.png
+# Scripts results
+scripts/test/test_*.png
+scripts/test/test_*.nc
+scripts/test/test_*.cfg
+scripts/test/test_*.pdf
+scripts/tutorials/*.png
+scripts/tutorials/*.pdf
+scripts/tutorials/*.xyz
+scripts/tutorials/*.nc
 test/*.nc
 test/OBS/
 test/ENS/
