@@ -37,8 +37,14 @@ Data tools
 #
 
 import os as _os, locale as _locale
-_os.environ['LC_NUMERIC'] = 'en_US.UTF-8'
-_locale.setlocale(_locale.LC_NUMERIC, 'en_US.UTF-8')
+try:
+    _os.environ['LC_NUMERIC'] = 'en_US.UTF-8'
+except:
+    pass
+try:
+    _locale.setlocale(_locale.LC_NUMERIC, 'en_US.UTF-8')
+except:
+    pass
 
 from vacumm import VACUMMError
 import satellite
