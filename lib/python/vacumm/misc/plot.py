@@ -61,24 +61,25 @@ from matplotlib.ticker import FormatStrFormatter, Formatter, FixedLocator
 import matplotlib.image as mpimg
 from mpl_toolkits.basemap import Basemap
 
-from .atime import mpl,time,axis_add,compress,SpecialDateFormatter
+from .misc import (dict_aliases, latlab, lonlab, deplab, 
+    geo_scale, kwfilter, dict_check_defaults, auto_scale)
+from .atime import (mpl, time, axis_add, compress, SpecialDateFormatter, 
+    )
 from .axes import check_axes, isaxis, istime, axis_type
 from .color import simple_colors, Scalar2RGB, get_cmap
 from .color import get_cmap, Scalar2RGB
-from .core_plot import (dict_aliases, latlab, get_axis, AutoDualDateFormatter,
-    AutoDateLocator2, geo_scale, kwfilter, meshgrid, m2deg, lonlab, deplab,
-    DualDateFormatter, meshbounds, dict_check_defaults, auto_scale, var2d, AutoDateFormatter2,
-    add_lightshading)
-from .core_plot import (add_glow, add_shadow, add_agg_filter, hlitvs, AutoDateFormatter2,
+from .core_plot import (add_glow, add_shadow, add_agg_filter, hlitvs, 
+    AutoDateFormatter2,  DualDateFormatter, add_lightshading, 
     AutoDateLocator2, AutoDateMinorLocator, AutoDualDateFormatter, add_compass,
-    add_right_label, add_left_label, add_top_label, add_bottom_label)
-from .core_plot import add_param_label, get_quiverkey_value
+    add_right_label, add_left_label, add_top_label, add_bottom_label, 
+    add_lightshading, add_param_label, get_quiverkey_value)
 from .docstrings import docfill
+from .grid.misc import (meshgrid, meshbounds, var2d)
 from .grid import regridding
 from .grid.basemap import gshhs_reslist, gshhs_autores, cache_map, cached_map
 from .grid.misc import get_xy
 from .misc import is_iterable, broadcast, squarebox, zoombox
-from .phys.units import deg2m
+from .phys.units import deg2m, m2deg
 from ..__init__ import VACUMMError
 
 
@@ -96,7 +97,7 @@ __all__ = [ 'traj', 'ellipsis',
     'add_glow', 'add_shadow', 'add_agg_filter', 'plot2d', 'hlitvs',
     'add_compass', 'add_param_label', 'dtarget', 'add_map_places',
     'add_right_label', 'add_left_label', 'add_top_label', 'add_bottom_label',
-    'get_quiverkey_value']
+    'get_quiverkey_value', 'add_lightshading']
 __all__.sort()
 
 

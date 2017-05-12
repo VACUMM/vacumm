@@ -1174,7 +1174,7 @@ class Gaps(cdms.tvariable.TransientVariable):
             print 'No gaps to print'
             return
         from .io import col_printer
-        cp = io.col_printer([['LENGTH',7,'%i'],['START',22,'%s'],['END',22,'%s']],**kwargs)
+        cp = col_printer([['LENGTH',7,'%i'],['START',22,'%s'],['END',22,'%s']],**kwargs)
         for igap in xrange(self.ngap):
             cp(self._gaps[igap],self._ctime[igap*2],self._ctime[igap*2+1])
         del cp

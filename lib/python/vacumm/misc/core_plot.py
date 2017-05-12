@@ -37,18 +37,16 @@
 
 import os
 import re
-from collections import OrderedDict
 from operator import isNumberType
 from warnings import warn
 
-import matplotlib.cm as cm
 import matplotlib.dates
 import matplotlib.pyplot as P
 import matplotlib.transforms as mtransforms
 import numpy as N, MV2, cdms2
 from matplotlib.artist import Artist
 from matplotlib.axes import Subplot, Axes
-from matplotlib.axis import Axis, XAxis, YAxis
+from matplotlib.axis import YAxis
 from matplotlib.colors import Colormap, Normalize
 from matplotlib.dates import (DateFormatter, MonthLocator, WeekdayLocator,
     YearLocator,DayLocator, HourLocator, MinuteLocator, SecondLocator,
@@ -60,7 +58,6 @@ from matplotlib.patches import Patch
 from matplotlib.path import Path
 from matplotlib.patheffects import Normal
 from matplotlib.text import Text
-from matplotlib.text import Text
 from matplotlib.ticker import (FormatStrFormatter, Formatter, Locator,
     NullLocator, AutoMinorLocator, AutoLocator)
 from matplotlib.transforms import offset_copy
@@ -71,17 +68,17 @@ from matplotlib.collections import PolyCollection, LineCollection
 from ._ext_plot import (DropShadowFilter, FilteredArtistList, GrowFilter,
     LightFilter)
 from .misc import (kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts,
-    auto_scale, zoombox, dict_check_defaults, basic_auto_scale, dict_copy_items,
+    auto_scale, dict_check_defaults, basic_auto_scale, dict_copy_items,
     dict_merge, phaselab, set_atts)
-from .atime import mpl, comptime, strftime, is_numtime, numtime
-from .axes import (check_axes, istime, axis_type, set_order, get_order, merge_orders,
+from .atime import mpl, strftime, is_numtime, numtime
+from .axes import (check_axes, axis_type, set_order, merge_orders,
     check_order, order_match, isaxis, get_axis_type)
-from .color import (get_cmap, cmap_magic, cmap_rainbow, RGB, land, whiten, darken,
+from .color import (get_cmap, RGB, land, 
     RGBA, change_luminosity, change_saturation, pastelise,
-    CMAP_POSITIVE, CMAP_NEGATIVE, CMAP_SYMETRIC, CMAP_ANOMALY)
+    CMAP_POSITIVE, CMAP_NEGATIVE, CMAP_SYMETRIC)
 from .docstrings import docfiller
 from .filters import generic2d
-from .grid import get_axis, meshbounds, meshgrid, var2d
+from .grid import get_axis, meshbounds, meshgrid
 from .grid.masking import resol_mask
 from .grid.regridding import shift1d
 from .phys.units import deg2m, tometric, m2deg
@@ -98,7 +95,8 @@ __all__ = ['PlotError','Plot', 'Plot1D', 'Curve', 'Bar', 'Stick',
     'Plot2D', 'Map', 'Hov', 'QuiverKey',
     'ScalarMappable','AutoDateFormatter2', 'AutoDateLocator2',
     'AutoDateMinorLocator', 'AutoDualDateFormatter', 'DualDateFormatter',
-    'MinuteLabel', 'Section', 'twinxy']
+    'MinuteLabel', 'Section', 'twinxy', 'DepthFormatter', 
+    'AutoDegreesMinutesFormatter', 'AutoDegreesMinutesLocator']
 
 
 #: Aliases for argisimage services hosted by the arcgis server
@@ -6210,7 +6208,7 @@ class Map(Plot2D):
 
 
             # Map boundaries
-            if drawmapboundary:
+            if drawmapboundary and not self.is3d:
                 try:
                     self.set_axobj('drawmapboundary', self.map.drawmapboundary(**kwfilter(kwargs,'drawmapboundary')))
                 except:

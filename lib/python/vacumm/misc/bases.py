@@ -59,7 +59,7 @@ base class.
 
 
 '''
-
+ 
 import inspect, os, pdb, pprint, sys, types
 
 import configobj
