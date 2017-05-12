@@ -1,6 +1,12 @@
 Release notes
 #############
 
+
+Version 3.4.1
+=============
+
+- Fix 3d map plots
+
 Version 3.4.0
 =============
 
