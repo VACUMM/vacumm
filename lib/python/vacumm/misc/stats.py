@@ -220,6 +220,7 @@ class StatAccum(object):
         - **withtime**, optional: Input does not contain a time dimension.
 
     :Single:
+        - **tcount/scount**: Number of observations taken into account
         - **tavail/savail**: Percentage of available observations
         - **tmean/smean**: Temporal (t) / Spatial (s) average
         - **tstd/sstd**: Temporal (t) / Spatial (s) std
@@ -243,16 +244,16 @@ class StatAccum(object):
     """
 
     single_stats = 'mean', 'std', 'hist', 'min', 'max'
-    dual_stats = 'bias', 'rms', 'crms', 'corr', 'avail'
+    dual_stats = 'bias', 'rms', 'crms', 'corr', 'avail', 'count'
     all_stats = single_stats + dual_stats
     _single_accums = 'sum', 'sqr', 'min', 'max', 'hist'
     _dual_accums = 'prod',
     default_restart_file = 'stataccum_restart.nc'
     def __init__(self,
         tall=False, tavail=None, tmean=None, tstd=None, smax=None, smin=None,
-        tbias=None, trms=None, tcrms=None, tcorr=None, shist=None,
+        tbias=None, trms=None, tcrms=None, tcorr=None, shist=None, tcount=None,
         sall=False, savail=None, smean=None, sstd=None, tmax=None, tmin=None,
-        sbias=None, srms=None, scrms=None, scorr=None, thist=None,
+        sbias=None, srms=None, scrms=None, scorr=None, thist=None, scount=None,
         bins=None, restart_file=None, restart=False,
         withtime=None):
 
@@ -295,6 +296,9 @@ class StatAccum(object):
             self.restart_file = None
             self.ns = self.nt = -1
 
+    def __len__(self):
+        return self.iterindex
+
     def append(self, *items):
         """Append data to the accumulator"""
         # Initialization
@@ -312,10 +316,12 @@ class StatAccum(object):
             if not self.dual:
                 self.tbias = self.trms = self.tcrms = self.tcorr = False
                 self.sbias = self.srms = self.scrms = self.scorr = False
-            self.tstats = self.tmean or self.tstd or self.tbias or self.trms or \
-                self.tcrms or self.tavail or self.tmin or self.tmax or self.thist
-            self.sstats = self.smean or self.sstd or self.sbias or self.srms or \
-                self.scrms or self.savail or self.smin or self.smax or self.shist
+            self.tstats = (self.tmean or self.tstd or self.tbias or self.trms or
+                self.tcrms or self.tavail or self.tmin or self.tmax or self.thist or
+                self.tcount)
+            self.sstats = (self.smean or self.sstd or self.sbias or self.srms or
+                self.scrms or self.savail or self.smin or self.smax or self.shist or
+                self.scount)
             self.tsum = self.tmean or self.tbias or self.tstd or self.tcrms or self.tcorr
             self.tsqr = self.tstd or self.trms or self.tcrms or self.tcorr
             self.tprod = self.trms or self.tcrms or self.tcorr
@@ -329,7 +335,7 @@ class StatAccum(object):
             if self.sstats and items[0].ndim<2:
                 self.sstats = self.smean = self.sstd = self.sbias = self.srms = \
                     self.scrms = self.scorr = self.savail = self.smin = self.smax = \
-                    self.shist = False
+                    self.shist = self.scount = False
 
             # Init template for output temporal statistics
             if self.tstats:
@@ -529,7 +535,8 @@ class StatAccum(object):
                 ssqr if self.ssqr else None, sprod if self.sprod else None,
                 smin if self.smin else None, smax if self.smax else None,
                 shist if self.shist else None,
-                self.smean, self.sstd, self.sbias, self.srms, self.scrms, self.scorr, self.savail,
+                self.smean, self.sstd, self.sbias, self.srms, self.scrms,
+                self.scorr, self.savail, self.scount,
                 self.smin, self.smax, self.shist)
             for key, val in sstats.iteritems():
 #                self._sstats[key].append(val)
@@ -878,14 +885,15 @@ class StatAccum(object):
 
     @staticmethod
     def _base2stats_(size, count, sum, sqr, prod, vmin, vmax, hist,
-            domean, dostd, dobias, dorms, docrms, docorr, doavail, domin, domax,
+            domean, dostd, dobias, dorms, docrms, docorr, doavail,
+            docount, domin, domax,
             dohist):
 
         # Denominators
         if isinstance(count, N.ndarray):
             bad = count==0
-            count = N.where(bad, 1, count)
-            countd =  N.where(bad, 0., 1./count)
+            count_ = N.where(bad, 1, count)
+            countd =  N.where(bad, 0., 1./count_)
 #            bad = count<2
 #            count = N.where(bad, 2, count)
 #            countdm1 =  N.where(bad, 0., 1./(count-1))
@@ -909,6 +917,10 @@ class StatAccum(object):
 
         # Init
         results = {}
+
+        # Count
+        if docount:
+            results['count'] = count
 
         # Availability
         if doavail:
@@ -993,7 +1005,7 @@ class StatAccum(object):
         for key in stats:
             if key in ['mean', 'bias']:
                 masks[key] = mask0
-            elif key in ['avail']:
+            elif key in ['avail', 'count']:
                 masks[key] = None
             else:
                 masks[key] = mask0
@@ -1004,8 +1016,7 @@ class StatAccum(object):
     @staticmethod
     def _format_var_(vv, name, mask=None, prefix=True, suffix=True, templates=None,
         htemplates=None, attributes=None, single=True, **kwargs):
-        if name=='tstd':
-            pass
+
         # Some inits
         ist = name.startswith('t')
         name = name[1:]
@@ -1040,6 +1051,8 @@ class StatAccum(object):
         long_name = prefix
         if name=='avail':
             long_name += 'availability'
+        if name=='count':
+            long_name += 'count'
         elif name=='mean':
             long_name += 'average'
         elif name=='std':
@@ -1144,19 +1157,8 @@ class StatAccum(object):
             self._tmin if self.tmin else None, self._tmax if self.tmax else None,
             self._thist if self.thist else None,
             self.tmean, self.tstd, self.tbias,
-            self.trms, self.tcrms, self.tcorr, self.tavail,
+            self.trms, self.tcrms, self.tcorr, self.tavail, self.tcount,
             self.tmin, self.tmax, self.thist)
-
-#        # Availability
-#        if self.tavail:
-##            if self.tmask is not None:
-##                if isinstance(self.tmask , N.ndarray):
-##                    maxcount =  (~self.tmask).astype('l').sum()
-##                else:
-##                    maxcount = self.tmask
-##            else:
-##                maxcount = self._tcount.max()
-#            tstats['avail'] = self._tcount*1./self.nt
 
         # Masks
         masks = self._get_masks_(tstats, self._tcount)
@@ -1175,6 +1177,11 @@ class StatAccum(object):
         """Get the temporal availability"""
         self._checkstat_('tavail')
         return self.get_tstats()['avail']
+
+    def get_tcount(self, **kwargs):
+        """Get the temporal count"""
+        self._checkstat_('tcount')
+        return self.get_tstats()['count']
 
     def get_tmean(self, **kwargs):
         """Get the temporal standard deviation"""
@@ -1258,6 +1265,11 @@ class StatAccum(object):
         """Get the spatial availability"""
         self._checkstat_('savail')
         return self.get_sstats()['avail']
+
+    def get_scount(self, **kwargs):
+        """Get the spatial count"""
+        self._checkstat_('scount')
+        return self.get_sstats()['count']
 
     def get_smean(self, **kwargs):
         """Get the spatial standard deviation"""
