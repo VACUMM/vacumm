@@ -348,7 +348,7 @@ def validator_cdtime(value, min=None, max=None, default=None):
     value = str(value).strip()
     if not value[0].isdigit(): return value.upper()
     try:
-        val = cdtime.s2c(value)
+        value = cdtime.s2c(value)
     except:
         raise VdtTypeError(value)
     #not re.match('^\d+(-\d+(-\d+( \d+:(\d+(:\d+(\.(\d+)?)?)?)?)?)?)?$', value):
