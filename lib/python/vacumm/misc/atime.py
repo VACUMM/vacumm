@@ -78,7 +78,7 @@ __all__ = ['STR_UNIT_TYPES','RE_SPLIT_DATE','now', 'add', 'axis_add', 'add_time'
     'hourly_bounds', 'time_split', 'time_split_nmax', 'add_margin', 'fixcomptime',
     'is_interval', 'has_time_pattern', 'tsel2slice', 'tic', 'toc',
     'filter_time_selector','time_selector', 'selector',
-    'julday']
+    'julday', 'interp_clim']
 
 __all__.sort()
 
@@ -2927,7 +2927,7 @@ def toc(stime=0.):
 
 
 def interp_clim(clim, times, method='linear', day=15):
-    """Interpolate a bathymetry at specified dates"""
+    """Interpolate a climatology at specified dates"""
     from .grid.regridding import regrid1d, extend1d
     assert method in ('linear', 'cubic')
     taxis = create_time(times)

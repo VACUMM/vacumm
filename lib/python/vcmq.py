@@ -208,7 +208,7 @@ from vacumm.misc.grid.misc import (
     bounds2mesh, cells2grid, check_xy_shape, curv_grid, create_var2d,
     get_geo_area, get_grid_axes, get_resolution, get_zdim, isoslice, mask2ind,
     merge_axis_slice, merge_axis_slices, num2axes2d, t2uvgrids, xextend,
-    xshift, clone_grid,
+    xshift, clone_grid, haversine, 
     )
 
 from vacumm.misc.grid.regridding import (
