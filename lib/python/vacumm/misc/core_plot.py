@@ -73,7 +73,7 @@ from .misc import (kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp
 from .atime import mpl, strftime, is_numtime, numtime
 from .axes import (check_axes, axis_type, set_order, merge_orders,
     check_order, order_match, isaxis, get_axis_type)
-from .color import (get_cmap, RGB, land, 
+from .color import (get_cmap, RGB, land,
     RGBA, change_luminosity, change_saturation, pastelise,
     CMAP_POSITIVE, CMAP_NEGATIVE, CMAP_SYMETRIC)
 from .docstrings import docfiller
@@ -95,7 +95,7 @@ __all__ = ['PlotError','Plot', 'Plot1D', 'Curve', 'Bar', 'Stick',
     'Plot2D', 'Map', 'Hov', 'QuiverKey',
     'ScalarMappable','AutoDateFormatter2', 'AutoDateLocator2',
     'AutoDateMinorLocator', 'AutoDualDateFormatter', 'DualDateFormatter',
-    'MinuteLabel', 'Section', 'twinxy', 'DepthFormatter', 
+    'MinuteLabel', 'Section', 'twinxy', 'DepthFormatter',
     'AutoDegreesMinutesFormatter', 'AutoDegreesMinutesLocator']
 
 
@@ -3643,6 +3643,7 @@ class ScalarMappable:
               If not specified, it it taken from the config section
               ``[vacumm.misc.plot]`` and config option ``levels_mode``.
 
+                - ``"normal"``: Min and max are not preprocessed.
                 - ``"symetric"``: Min and max are set opposite.
                 - ``"positive"``: Min is set to 0.
                 - ``"negative"``: Max is set to 0.
@@ -4252,9 +4253,11 @@ class Curve(Plot1D):
             pfunc = self.axes.plot
 
         # Plot
+
         # - main
         ll = pfunc(xx, yy, *parg, **kwline)
         self.register_obj(ll, ['curve', 'lines', 'plot'], **kwargs)
+
         # - fill_between
         if fill_between is not False:
             kwfb.setdefault('zorder', ll[0].get_zorder()-0.01)
@@ -4273,13 +4276,17 @@ class Curve(Plot1D):
                 ff = self.axes.fill_betweenx(yy, b0, b1, **kwfb)
             self.add_obj('fill_between', ff)
             self.register_obj(ff, 'fill_between', **kwargs)
+
         # - error
         if err is not None:
             kwerr.setdefault('ecolor', ll[0].get_color())
             kwerr.setdefault('elinewidth', ll[0].get_linewidth())
+            if kwerr.get('zorder', None) and kwerr['zorder']<0:
+                kwerr['zorder'] = ll[0].get_zorder() - kwerr['zorder']
             ee = self.axes.errorbar(xx.compress(egood), yy.compress(egood),
                 err.compress(egood, axis=-1), fmt='none', **kwerr)
             self.register_obj(ee, 'error', **kwargs)
+
         # - filters
         if shadow:
             self.add_shadow(ll, 'lines_shadow', **kwsh) # 'lines_shadow'
