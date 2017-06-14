@@ -34,7 +34,7 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 __all__  = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_map',
-'GSHHS_BM', 'merc', 'proj', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
+'GSHHS_BM', 'merc', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
 'create_map', 'RSHPERE_WGS84', 'GSHHS_RESLIST']
 __all__.sort()
 
@@ -43,14 +43,12 @@ import numpy as N
 from mpl_toolkits.basemap import Basemap, __version__ as basemap_version
 from mpl_toolkits.basemap.proj import Proj
 from matplotlib import get_configdir
-import os, cPickle, stat
-from _geoslib import Polygon
+import cPickle, stat
 #FIXME:imports
-from genutil import minmax
 from ...misc.io import Shapes
 from misc import get_xy
 from ...misc.phys.constants import R as rsphere_mean
-from ...misc.misc import kwfilter, dict_check_defaults
+from ...misc.misc import kwfilter, dict_check_defaults,  zoombox
 from vacumm.config import get_config_value
 from ...__init__ import vacumm_warn
 
