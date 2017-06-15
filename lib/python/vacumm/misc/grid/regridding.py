@@ -49,7 +49,7 @@ from cdms2.axis import TransientAxis
 import genutil
 from _geoslib import Point, Polygon
 
-from ...__init__ import VACUMMError, VACUMMWarning
+from ...__init__ import VACUMMError, VACUMMWarning, vacumm_warn
 from .kriging import krig as _krig_
 from .misc import (axis1d_from_bounds, get_xy, isgrid, t2uvgrids, get_grid,
     set_grid, bounds1d, bounds2d, get_axis,
@@ -1859,7 +1859,8 @@ def xy2xy(xi, yi, zi, xo, yo, nl=False, proj=True, **kwargs):
 
 
 
-def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine'):
+def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=None,
+            distmode='haversine'):
     """Interpolate gridded data to ramdom positions
 
     :Params:
@@ -1870,8 +1871,7 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
         - **method**, optional: Interpolation method
 
             - ``nearest``: Nearest neighbor
-            - ``bilinear``: Linear interpolation
-            - ``nat``: Natgrid interpolation
+            - ``linear``: Linear interpolation
 
         - **outaxis**, optional: Output spatial axis
 
@@ -1892,50 +1892,130 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
     grid = curv2rect(grid, mode=False)
 
     # Format
+
     # - input
     xi, yi = get_xy(grid, num=True)
     rect = xi.ndim==1
     mv = vari.getMissing()
     if mv is None:
-        mv = 1.e20
-        vari.setMissing(mv)
-    zi = vari.filled().astype('d').reshape((-1,)+vari.shape[-2:])
-    nz = zi.shape[0]
+        mv = vari.getMissing()
+    order = vari.getOrder()
+    vi = vari.filled(mv).astype('d')
+    extra_dims = []
+    if 'z' not in order and zo is not None:
+        zo = None
+    if 't' not in order and to is not None:
+        to = None
+    univ = to is not None or zo is not None
+    na = 2 # interpolation dims
+    extra_axes = []
+    if zo is not None:
+        if zi is None:
+            zi = zo.getLevel().getValue()
+        elif hasattr(zi, 'getValue'):
+            zi = zi.getValue()
+    if univ:
+        if method=='nat':
+            vacumm_warn('"nat" method not available with time or depth'
+                        ' interpolation. Switching to linear')
+            method = 'linear'
+
+        if 'z' not in order and zo is None: # not requested and not present
+            vi = vi.reshape(vi.shape[:-2]+(1, )+vi.shape[-2])
+        elif zo is not None: # requested and present
+            na += 1
+            if zi.ndim<3: # no xy assumed
+                zi = zi.reshape(zi.shape+(1, 1))
+            if zi.ndim < vari.ndim:
+                zi = zi.reshape((1, )*(vari.ndim-zi.ndim)+zi.shape)
+        else: # present but not requested
+            if 't' in order:
+                vi = N.moveaxis(vi, -3, -4)
+            extra_axes.append(vari.getLevel())
+
+        if 't' not in order and to is None: # not requested and not present
+            vi = vi.reshape(vi.shape[:-3]+(1, )+vi.shape[-3])
+        elif to is not None: # requested and present
+            na += 1
+            taxis = vari.getTime()
+            ti = taxis[:]
+        else: # present but not requested
+            if ne==1: # z already there
+                vi = N.moveaxis(vi, -4, -5)
+            ne += 1
+            extra_axes.insert(0, vari.getTime())
+
+        zi = zi.reshape((-1, )+zi.shape[-4:])
+        if xi.ndim==1:
+            xi = xi[None, :]
+        if yi.ndim==1:
+            yi = yi[:, None]
+
+        extra_axes = ([ax for o, ax in zip(vari.getAxisList(), order) if o=='-']
+                      + extra_axes)
+
+    else:
+
+        na = 2
+        ne = vi.ndim - 2
+    vi = vi.reshape((-1,)+vari.shape[-na:])
+
     if vari.mask is not MV2.nomask:
-        mi = vari.mask.astype('d').reshape(zi.shape)
+        mi = vari.mask.astype('d').reshape(vi.shape)
     else:
         mi = None
+
     # - output
     isscalar = N.isscalar(xo)
     xo = N.atleast_1d(N.asarray(xo, dtype='d'))
     yo = N.atleast_1d(N.asarray(yo, dtype='d'))
+    assert xo.ndim==1 and yo.shape==xo.shape, ('xo and yo must be scalars 1d or arrays'
+                                               ' of equal lengths')
     if abs(xi.min()-xo.min())>180.:
         if xi.min()<xo.min():
             xi = xi + 360.
         else:
             xi = xi - 360.
+    if zo is not None:
+        zo = N.atleast_1d(zo[:])
+        assert zo.shape== xo.shape,  ('zo must have the same shape as xo and yo')
+    if to is not None:
+        to = A.create_time(to)
+        to.toRelativeTime(taxis.units)
+        to = to[:]
+        assert to.shape== xo.shape,  ('"to" must have the same shape as xo and yo')
+
 
     # Interpolate
     if method is None:
-        method = 'bilinear'
+        method = 'linear'
     else:
         method = str(method)
-    if method == 'nearest': # or mi is not None:
+    if method == 'nearest' or (method=='nat' and mi is not None):
 
-        func = _nearest2dto1d_ if rect else _nearest2dto1dc_
-        zo = func(xi, yi, zi, xo, yo, mv)
+        if univ:
+            zo = _nearest4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, to, mv)
+        else:
+            func = _nearest2dto1d_ if rect else _nearest2dto1dc_
+            zo = func(xi, yi, zi, xo, yo, mv)
+            if method=='nat' and mi is not None:
+                vonear = zo
 
-    elif 'linear' in method:
+    if 'linear' in method:
 
-        func = _bilin2dto1d_ if rect else _bilin2dto1dc_
-        zo = func(xi, yi, zi, xo, yo, mv)
+        if univ:
+            zo = _linear4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, to, mv)
+        else:
+            func = _bilin2dto1d_ if rect else _bilin2dto1dc_
+            zo = func(xi, yi, zi, xo, yo, mv)
 
 
     elif method.startswith('nat'):
 
         # Build regridder
         from nat import Natgrid
-        zo = N.zeros((nz, len(xo)))+mv
+        nz = vi.shape[0]
+        vo = N.zeros((nz, len(xo)))+mv
         if xi.ndim==1:
             xxi, yyi = xi, yi
         else:
@@ -1948,23 +2028,25 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
         for iz in xrange(nz):
 
             # Base
-            zo[iz] = r.rgrd(zi[iz].ravel())
+            vo[iz] = r.rgrd(vi[iz].ravel())
 
             # Mask
             if mi is not None:
                 mo[:] = r.rgrd(mi[iz].ravel())
-                zo[iz] = N.where(mo!=0., zonear[iz], zo[iz])
+                vo[iz] = N.where(mo!=0., vonear[iz], vo[iz])
 
-        if mi is not None: del mi, mo
+        if mi is not None:
+            del mi, mo, vonear
 
     else:
         raise NotImplementedError, 'Method yet not implemented: '+method
 
     # Output
-    zo.shape = vari.shape[:-2]+(zo.shape[-1], )
-    varo = MV2.masked_values(zo, mv, copy=0)
+    vo.shape = [len(ax) for ax in extra_axes] + (vo.shape[-1], )
+    varo = MV2.masked_values(vo, mv, copy=0)
     cp_atts(vari, varo, id=True)
-    if outaxis=='auto': outaxis = None
+    if outaxis=='auto':
+        outaxis = None
     if outaxis is None or outaxis in ['m', 'pos', 'd', 'dist']:
         if len(xo)>1:
             #xom, yom = get_proj((xo, yo))(xo, yo)
@@ -1983,6 +2065,10 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
         outaxis = A.create_lon(xo)
     elif outaxis in ['y', 'lat']:
         outaxis = A.create_lat(yo)
+    elif to is not None and outaxis in ['t', 'time']:
+        outaxis = A.create_time(to)
+    elif zo is not None and outaxis in ['z', 'dep', 'depth']:
+        outaxis = A.create_dep(zo)
     elif outaxis in ['m', 'd', 'pos', 'dist']:
         dist = N.concatenate(([0], get_distances(xo[1:], yo[1:], xo[:-1], yo[:-1],
             pairwise=True, mode=distmode))).cumsum()*0.001
@@ -1994,7 +2080,7 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
     if outaxis is not None and not A.isaxis(outaxis):
         outaxis = cdms2.createAxis(outaxis, id='position')
         outaxis.long_name = 'Position along transect'
-    axes = vari.getAxisList()[:-2]
+    axes = extra_axes
     if outaxis is not None:
         axes.append(outaxis)
     else:

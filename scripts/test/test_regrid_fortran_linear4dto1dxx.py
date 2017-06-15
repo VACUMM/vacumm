@@ -20,28 +20,28 @@ tti, zzi, yyi, xxi = N.mgrid[0:nti-1:nti*1j, 0:nzi-1:nzi*1j,
     0:nyi-1:nyi*1j, 0:nxi-1:nxi*1j]
 
 
-## Pure 1D axes
-#
-#xi = xxi[0, 0, 0:1, :] # (nyix=1,nxi)
-#yi = yyi[0, 0, :, 0:1] # (nyi,nxiy=1)
-#zi = zzi[0:1, :, 0:1, 0:1] # (ntiz=1,nzi,nyiz=1,nxiz=1)
-#ti = tti[:, 0, 0, 0] # (nti)
-#vi = vfunc(tti, zzi, yyi, xxi)
-#vi = N.resize(vi, (2, )+vi.shape) # (nex=2,nti,nzi,nyi,nxi)
-#
-#N.random.seed(0)
-#xyztomin = -0.5
-#xo = N.random.uniform(xyztomin, nxi-1.5, no)
-#yo = N.random.uniform(xyztomin, nyi-1.5, no)
-#zo = N.random.uniform(xyztomin, nzi-1.5, no)
-#to = N.random.uniform(xyztomin, nti-1.5, no)
-#vo_truth = N.ma.array(vfunc(to, zo, yo, xo))
-#
-#mv = 1e20
-#vo_interp = linear4dto1dxx(xi,yi,zi,ti,vi,xo,yo,zo,to,mv=mv)
-#vo_interp = N.ma.masked_values(vo_interp, mv)
-#
-#N.testing.assert_almost_equal(vo_interp[0], vo_truth)
+# Pure 1D axes
+
+xi = xxi[0, 0, 0:1, :] # (nyix=1,nxi)
+yi = yyi[0, 0, :, 0:1] # (nyi,nxiy=1)
+zi = zzi[0:1, :, 0:1, 0:1] # (ntiz=1,nzi,nyiz=1,nxiz=1)
+ti = tti[:, 0, 0, 0] # (nti)
+vi = vfunc(tti, zzi, yyi, xxi)
+vi = N.resize(vi, (2, )+vi.shape) # (nex=2,nti,nzi,nyi,nxi)
+
+N.random.seed(0)
+xyztomin = -0.5
+xo = N.random.uniform(xyztomin, nxi-1.5, no)
+yo = N.random.uniform(xyztomin, nyi-1.5, no)
+zo = N.random.uniform(xyztomin, nzi-1.5, no)
+to = N.random.uniform(xyztomin, nti-1.5, no)
+vo_truth = N.ma.array(vfunc(to, zo, yo, xo))
+
+mv = 1e20
+vo_interp = linear4dto1dxx(xi,yi,zi,ti,vi,xo,yo,zo,to,mv=mv)
+vo_interp = N.ma.masked_values(vo_interp, mv)
+
+N.testing.assert_almost_equal(vo_interp[0], vo_truth)
 
 
 # Single point in space
@@ -68,28 +68,28 @@ vo_interp = N.ma.masked_values(vo_interp, mv)
 N.testing.assert_almost_equal(vo_interp[0], vo_truth)
 
 
-## Constant time
-#
-#xi = xxi[0, 0, 0:1, :] # (nyix=1,nxi)
-#yi = yyi[0, 0, :, 0:1] # (nyi,nxiy=1)
-#zi = zzi[0:1, :, 0:1, 0:1] # (ntiz=1,nzi,nyiz=1,nxiz=1)
-#ti = tti[:1, 0, 0, 0] # (1)
-#vi = vfunc(tti[:1], zzi[:1], yyi[:1], xxi[:1])
-#vi = N.resize(vi, (2, )+vi.shape) # (nex=2,nti,nzi,nyi,nxi)
-#
-#N.random.seed(0)
-#xyztomin = -0.5
-#xo = N.random.uniform(xyztomin, nxi-1.5, no)
-#yo = N.random.uniform(xyztomin, nyi-1.5, no)
-#zo = N.random.uniform(xyztomin, nzi-1.5, no)
-#to = N.random.uniform(xyztomin, nti-1.5, no)
-#vo_truth = N.ma.array(vfunc(ti, zo, yo, xo))
-#
-#mv = 1e20
-#vo_interp = linear4dto1dxx(xi,yi,zi,ti,vi,xo,yo,zo,to,mv=mv)
-#vo_interp = N.ma.masked_values(vo_interp, mv)
-#
-#N.testing.assert_almost_equal(vo_interp[0], vo_truth)
+# Constant time
+
+xi = xxi[0, 0, 0:1, :] # (nyix=1,nxi)
+yi = yyi[0, 0, :, 0:1] # (nyi,nxiy=1)
+zi = zzi[0:1, :, 0:1, 0:1] # (ntiz=1,nzi,nyiz=1,nxiz=1)
+ti = tti[:1, 0, 0, 0] # (1)
+vi = vfunc(tti[:1], zzi[:1], yyi[:1], xxi[:1])
+vi = N.resize(vi, (2, )+vi.shape) # (nex=2,nti,nzi,nyi,nxi)
+
+N.random.seed(0)
+xyztomin = -0.5
+xo = N.random.uniform(xyztomin, nxi-1.5, no)
+yo = N.random.uniform(xyztomin, nyi-1.5, no)
+zo = N.random.uniform(xyztomin, nzi-1.5, no)
+to = N.random.uniform(xyztomin, nti-1.5, no)
+vo_truth = N.ma.array(vfunc(ti, zo, yo, xo))
+
+mv = 1e20
+vo_interp = linear4dto1dxx(xi,yi,zi,ti,vi,xo,yo,zo,to,mv=mv)
+vo_interp = N.ma.masked_values(vo_interp, mv)
+
+N.testing.assert_almost_equal(vo_interp[0], vo_truth)
 
 
 
