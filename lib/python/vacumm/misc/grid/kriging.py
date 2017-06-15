@@ -648,7 +648,7 @@ class CloudKriger(object):
             return self.variogram_fitting_results['params']['s']
         return vgf(1e60)
 
-    sill = propery(fget=get_sill, doc="Sill")
+    sill = property(fget=get_sill, doc="Sill")
 
     def set_variogram_func(self, vgf):
         """Set the variogram function"""
