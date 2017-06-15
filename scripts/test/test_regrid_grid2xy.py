@@ -5,7 +5,7 @@ np = 100
 nx = 20
 ny = 15
 nz = 10
-nz = 5
+nt = 5
 lon0 = -5.4
 lon1 = -4.7
 lat0 = 48.1
@@ -19,23 +19,27 @@ ne = 3
 
 
 # Imports
-from vcmq import (N, code_file_name, os, P, create_lon, create_lat, create_dep,
-                  create_time)
+from vcmq import (N, MV2, code_file_name, os, P, create_lon, create_lat, create_dep,
+                  create_time, lindates, create_axis, reltime, grid2xy,
+                  comptime)
 
 # Rectangular xyzt with 1d z
 # - data
 lon = create_lon(N.linspace(lon0, lon1, nx))
 lat = create_lat(N.linspace(lat0, lat1, ny))
 dep = create_dep(N.linspace(dep0, dep1, nz))
-time = create_time(N.linspace(time0, time1, nt))
+time = create_time(lindates(time0, time1, nt))
 extra = create_axis(N.arange(ne), id='member')
-vi = MV2.asarray(N.arange(nx*ny*nz*nt*ne).reshape(ne, nt, nz, nt, nx),
-                 axes=[extra, time, dep, lat, lon])
+vi = MV2.array(N.arange(nx*ny*nz*nt*ne, dtype='d').reshape(ne, nt, nz, ny, nx),
+                 axes=[extra, time, dep, lat, lon], copy=False,
+                 fill_value=1e20)
 N.random.seed(0)
 xo = N.random.uniform(lon0, lon1, np)
 yo = N.random.uniform(lat0, lat1, np)
 zo = N.random.uniform(dep0, dep1, np)
-to = N.random.uniform(time0, time1, np)
+to = comptime(N.random.uniform(reltime(time0, time.units).value,
+                      reltime(time1, time.units).value, np),
+                      time.units)
 # - interpolation
 vo = grid2xy(vi, xo=xo, yo=yo, zo=zo, to=to, method='linear')
 

@@ -82,7 +82,7 @@ from vacumm.misc.atime import (
     mpl, tic, toc, pat2freq, pat2glob, has_time_pattern,
     is_interval, is_time, is_axistime, is_cdtime, is_datetime, is_in_time_interval,
     is_numtime, is_strtime, itv_intersect, itv_union, julday, reltime,
-    are_valid_units, SpecialDateFormatter, check_range,
+    are_valid_units, SpecialDateFormatter, check_range, numtime,
     daily, daily_bounds, day_of_the_year, unit_type, toc,
     hourly, hourly_bounds, hourly_exact, monthly, tsel2slice,
     reduce, yearly, are_same_units, ascii_to_num, detrend, from_utc,
@@ -208,7 +208,7 @@ from vacumm.misc.grid.misc import (
     bounds2mesh, cells2grid, check_xy_shape, curv_grid, create_var2d,
     get_geo_area, get_grid_axes, get_resolution, get_zdim, isoslice, mask2ind,
     merge_axis_slice, merge_axis_slices, num2axes2d, t2uvgrids, xextend,
-    xshift, clone_grid, haversine, 
+    xshift, clone_grid, haversine,
     )
 
 from vacumm.misc.grid.regridding import (

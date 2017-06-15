@@ -84,7 +84,7 @@ _interp_funcs = ['interp1d', 'interp1dx', 'interp1dxx',
     'nearest2dto1d', 'nearest2dto1dc', 'nearest2dto1dc_reduc',
     'bilin2dto1d', 'bilin2dto1dc', 'bilin2dto1dc_reduc',
     'dstwgt2dto1d', 'dstwgt2dto1dc', 'dstwgt2dto1dc_reduc',
-    'cellerr1d', 'cellerr1dx', 'cellerr1dxx',
+    'cellerr1d', 'cellerr1dx', 'cellerr1dxx', 'linear4dto1dxx',
     ]
 
 # Load fortran
@@ -1911,9 +1911,8 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
     extra_axes = []
     if zo is not None:
         if zi is None:
-            zi = zo.getLevel().getValue()
-        elif hasattr(zi, 'getValue'):
-            zi = zi.getValue()
+            zi = vari.getLevel()
+        zi = zi[:]
     if univ:
         if method=='nat':
             vacumm_warn('"nat" method not available with time or depth'
@@ -1994,7 +1993,7 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
     if method == 'nearest' or (method=='nat' and mi is not None):
 
         if univ:
-            zo = _nearest4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, to, mv)
+            zo = _nearest4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, zo, to, mv)
         else:
             func = _nearest2dto1d_ if rect else _nearest2dto1dc_
             zo = func(xi, yi, zi, xo, yo, mv)
@@ -2004,7 +2003,7 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
     if 'linear' in method:
 
         if univ:
-            zo = _linear4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, to, mv)
+            zo = _linear4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, zo, to, mv)
         else:
             func = _bilin2dto1d_ if rect else _bilin2dto1dc_
             zo = func(xi, yi, zi, xo, yo, mv)
