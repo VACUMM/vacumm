@@ -1941,7 +1941,6 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
         else: # present but not requested
             if ne==1: # z already there
                 vi = N.moveaxis(vi, -4, -5)
-            ne += 1
             extra_axes.insert(0, vari.getTime())
 
         zi = zi.reshape((-1, )+zi.shape[-4:])
@@ -1949,6 +1948,7 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
             xi = xi[None, :]
         if yi.ndim==1:
             yi = yi[:, None]
+
 
         extra_axes = ([ax for o, ax in zip(vari.getAxisList(), order) if o=='-']
                       + extra_axes)
@@ -1958,6 +1958,9 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
         na = 2
         ne = vi.ndim - 2
     vi = vi.reshape((-1,)+vari.shape[-na:])
+    if zi.shape[0] != vi.shape[0]:
+        zi = N.resize(zi, vi.shape[:1] + zi.shape[1:])
+
 
     if vari.mask is not MV2.nomask:
         mi = vari.mask.astype('d').reshape(vi.shape)

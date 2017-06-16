@@ -2219,13 +2219,13 @@ subroutine linear4dto1dx(xi,yi,zi,ti,vi,xo,yo,zo,to,vo,mv,nex,nxi,nyi,nzi,nti,no
 end subroutine linear4dto1dx
 
 subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
-        nxi,nyi,nyix,nxiy, nyiz,nxiz,nzi, nti,ntiz, no,nex)
+        nxi,nyi,nyix,nxiy, nyiz,nxiz,nzi, nti,ntiz, no,nex,nexz)
     ! linear interpolation of gridded data to random positions
 
     implicit none
 
-    integer,intent(in) :: nxi,nyi,nyix,nxiy, nyiz,nxiz,nzi, nti,ntiz, no,nex
-    real(kind=8),intent(in) :: xxi(nyix,nxi), yyi(nyi,nxiy), zzi(ntiz,nzi,nyiz,nxiz), ti(nti)
+    integer,intent(in) :: nxi,nyi,nyix,nxiy, nyiz,nxiz,nzi, nti,ntiz, no,nex,nexz
+    real(kind=8),intent(in) :: xxi(nyix,nxi), yyi(nyi,nxiy), zzi(nexz,ntiz,nzi,nyiz,nxiz), ti(nti)
     real(kind=8),intent(in) :: xo(no), yo(no), zo(no), to(no)
     real(kind=8),intent(in) :: vi(nex,nti,nzi,nyi,nxi), mv
     real(kind=8),intent(out) :: vo(nex,no)
