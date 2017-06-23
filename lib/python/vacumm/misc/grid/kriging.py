@@ -126,7 +126,7 @@ def variogram_model(mtype, n, s, r, nrelmax=0.2):
         return lambda h: n + (s-n) * (1 - N.exp(-3*h/r))
 
     if mtype=='spherical':
-        return lambda h: n + (s-n)*((1.5*h/r - 0.5*(h/r)**3)*int(h<=r) + int(h>r))
+        return lambda h: n + (s-n)*((1.5*h/r - 0.5*(h/r)**3)*(h<=r) + 1*(h>r))
 
     if mtype=='gaussian':
         return lambda h: n + (s-n)*(1-N.exp(-3*h**2/r**2))

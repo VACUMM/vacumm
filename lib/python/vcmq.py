@@ -208,7 +208,7 @@ from vacumm.misc.grid.misc import (
     bounds2mesh, cells2grid, check_xy_shape, curv_grid, create_var2d,
     get_geo_area, get_grid_axes, get_resolution, get_zdim, isoslice, mask2ind,
     merge_axis_slice, merge_axis_slices, num2axes2d, t2uvgrids, xextend,
-    xshift, clone_grid, haversine, 
+    xshift, clone_grid, haversine,
     )
 
 from vacumm.misc.grid.regridding import (
@@ -233,6 +233,7 @@ from vacumm.misc.grid.kriging import (
     OrdinaryCloudKriger, variogram, variogram_fit, variogram_model,
     variogram_model_type, variogram_multifit, cloud_split,
     KrigingError, VariogramModel, VariogramModelError, SimpleCloudKriger,
+    VARIOGRAM_MODEL_TYPES, DEFAULT_VARIOGRAM_MODEL_TYPE,
     )
 
 # - data
