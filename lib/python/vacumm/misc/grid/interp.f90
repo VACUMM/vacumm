@@ -2230,11 +2230,11 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
     real(kind=8),intent(in) :: vi(nex,nti,nzi,nyi,nxi), mv
     real(kind=8),intent(out) :: vo(nex,no)
 
-    real(kind=8) :: a , b, c, d, p, q, zi(nzi), az, bz, dz
+    real(kind=8) :: a , b, c(nexz), d, p, q, zi(nexz,nzi), az, bz, dz
     real(kind=8) :: ximin, yimin, zimin, timin, ximax, yimax, zimax, timax
     logical :: bmask(nex,nti,nzi,nyi,nxi), curved
-    integer :: io, i, j, k, l, ii, jj, kk, ll, npi, npj, npk, npl, &
-        & npiz, npjz, nplz, iz, jz, lz
+    integer :: io, i, j, k(nexz), l, ii, jj, kk, ll, npi, npj, npk(nexz), npl, &
+        & npiz, npjz, nplz, iz, jz, lz, iez, ieb, ie0, ie1
 
     vo = mv
     bmask = abs(vi-mv)<abs(mv*epsilon(1d0)*1.1)
@@ -2386,7 +2386,7 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                 do ii=0,npiz-1
                     do jj=0,npjz-1
                         do ll=0,nplz-1
-                            zi = zi + zzi(lz+ll, :, jz+jj, iz+ii) * &
+                            zi = zi + zzi(:, lz+ll, :, jz+jj, iz+ii) * &
                                 & ((1-az) * (1-ii) + az * ii)* &
                                 & ((1-bz) * (1-jj) + bz * jj)* &
                                 & ((1-dz) * (1-ll) + dz * ll)
@@ -2395,22 +2395,26 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                 enddo
                 print*,'zi',zi
 
-                ! Normal stuff
-                if(zi(nzi)==zo(io))then
-                    k = nzi
-                    c = 0d0
-                    npk = 1
-                else
-                    k = minloc(zi, dim=1, mask=zi>zo(io))-1
-                    if(zi(k+1)==zi(k))then
-                        c = 0d0
-                        npk = 1
+                ! Normal stuff (c(nexz),zi(nexz,nzi),k(nexz)
+                do iez = 1, nexz ! extra dim
+                    if(zi(iez,nzi)==zo(io))then
+                        k(iez) = nzi
+                        c(iez) = 0d0
+                        npk(iez) = 1
                     else
-                        c = (zo(io)-zi(k)) / (zi(k+1)-zi(k))
-                        npk = 2
-                    print*,'zzi',zo(io),zi(k),zi(k+1)
+                        k(iez) = minloc(zi(iez,:), dim=1, mask=zi(iez,:)>zo(io))-1
+                        if(zi(iez,k(iez)+1)==zi(iez,k(iez)))then
+                            c(iez) = 0d0
+                            npk(iez) = 1
+                        else
+                            c(iez) = (zo(io)-zi(iez,k(iez))) / (zi(iez,k(iez)+1)-zi(iez,k(iez)))
+                            npk(iez) = 2
+                        print*,'zzi',zo(io),zi(iez,k(iez)),zi(iez,k(iez)+1)
+                        endif
                     endif
-                endif
+                enddo
+
+
             endif
 
             print*,'X i a npi',i,a,npi
@@ -2421,24 +2425,37 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
 
             ! Interpolate
             vo(:,io) = 0d0
-            do ii=0,npi-1
-                do jj=0,npj-1
-                    do kk=0,npk-1
-                        do ll=0,npl-1
-                            vo(:,io) = vo(:,io) +vi(:,l+ll, k+kk, j+jj, i+ii) * &
-                                & ((1-a) * (1-ii) + a * ii)* &
-                                & ((1-b) * (1-jj) + b * jj)* &
-                                & ((1-c) * (1-kk) + c * kk)* &
-                                & ((1-d) * (1-ll) + d * ll)
-                        enddo
-                    enddo
-                enddo
-            enddo
+            do ieb = 1, nex/nexz
 
-            ! Mask
-            vo(:,io) = merge(mv, vo(:,io), &
-                & any(reshape(bmask(:,l:l+npl-1, k:k+npk-1, j:j+npj-1, i:i+npi-1), &
-                &   (/nex, npl*npk*npj*npi/)), dim=2))
+                ie0 = 1+(ieb-1)*nexz
+!                ie1 = ie0+nexz-1
+
+                do iez=0,nexz-1
+                    if(any(bmask(:,l:l+npl-1, k(iez):k(iez)+npk(iez)-1, j:j+npj-1, i:i+npi-1)))then
+                        vo(ie0+iez,io) = mv ! masked
+                    else
+                        do ii=0,npi-1
+                            do jj=0,npj-1
+                                do kk=0,npk(iez)-1
+                                    do ll=0,npl-1
+                                        vo(ie0+iez,io) = vo(ie0+iez,io) +vi(ie0+iez,l+ll, k(iez)+kk, j+jj, i+ii) * &
+                                            & ((1-a) * (1-ii) + a * ii)* &
+                                            & ((1-b) * (1-jj) + b * jj)* &
+                                            & ((1-c(iez)) * (1-kk) + c(iez) * kk)* &
+                                            & ((1-d) * (1-ll) + d * ll)
+                                    enddo
+                                enddo
+                            enddo
+                        enddo
+                    endif
+                enddo
+
+            end do
+
+!            ! Mask
+!            vo(:,io) = merge(mv, vo(:,io), &
+!                & any(reshape(bmask(:,l:l+npl-1, k:k+npk-1, j:j+npj-1, i:i+npi-1), &
+!                &   (/nex, npl*npk*npj*npi/)), dim=2))
 
         endif
     enddo

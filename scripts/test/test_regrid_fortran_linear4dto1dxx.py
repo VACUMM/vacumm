@@ -6,6 +6,8 @@ from vacumm.misc.grid._interp_ import linear4dto1dxx
 
 # Bases
 
+nex = 4
+nexz = 2
 nxi = 7
 nyi = 6
 nzi = 5
@@ -19,15 +21,17 @@ vfunc = lambda t, z, y, x: (1*x + 2.35*y + 3.24*z -0.65*t)
 tti, zzi, yyi, xxi = N.mgrid[0:nti-1:nti*1j, 0:nzi-1:nzi*1j,
     0:nyi-1:nyi*1j, 0:nxi-1:nxi*1j]
 
+zzi = zzi[None]
+zzi = N.repeat(zzi, nexz, axis=0)
 
 # Pure 1D axes
 
 xi = xxi[0, 0, 0:1, :] # (nyix=1,nxi)
 yi = yyi[0, 0, :, 0:1] # (nyi,nxiy=1)
-zi = zzi[0:1, :, 0:1, 0:1] # (ntiz=1,nzi,nyiz=1,nxiz=1)
+zi = zzi[0:1, 0:1, :, 0:1, 0:1] # (nexz=1,ntiz=1,nzi,nyiz=1,nxiz=1)
 ti = tti[:, 0, 0, 0] # (nti)
 vi = vfunc(tti, zzi, yyi, xxi)
-vi = N.resize(vi, (2, )+vi.shape) # (nex=2,nti,nzi,nyi,nxi)
+vi = N.resize(vi, (nex, )+vi.shape[1:]) # (nex,nti,nzi,nyi,nxi)
 
 N.random.seed(0)
 xyztomin = -0.5
