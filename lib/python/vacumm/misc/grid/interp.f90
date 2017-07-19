@@ -2258,8 +2258,8 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
     print*,'zzi',zzi
 
 
-    !$OMP PARALLEL DO PRIVATE(io,i,j,k,l,ii,jj,kk,ll,p,q)
-    !$& SHARED(xi,yi,zi,ti,vi,xo,yo,zo,vo,nei,nxi,nyi,nzi,nti,no,bmask)
+    !xx$OMP PARALLEL DO PRIVATE(io,i,j,k,l,ii,jj,kk,ll,p,q)
+    !xx$& SHARED(xi,yi,zi,ti,vi,xo,yo,zo,vo,nei,nxi,nyi,nzi,nti,no,bmask)
     do io = 1, no
         if(       (nxi==1 .or. (xo(io)>=ximin.and.xo(io)<=ximax)) .and.&
                 & (nyi==1 .or. (yo(io)>=yimin.and.yo(io)<=yimax)) .and.&
@@ -2295,7 +2295,7 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                     a = xo(io)-xxi(1,i)
                     if(abs(a)>180d0)a=360d0-180d0
                     a = a/(xxi(1,i+1)-xxi(1,i))
-            print*,'xxi',xo(io),xxi(1,i+1),xxi(1,i)
+            print*,'xo2i',xo(io),xxi(1,i),xxi(1,i+1)
                 endif
 
                 ! - Y
@@ -2311,7 +2311,7 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                     j = minloc(yyi(:,1), dim=1, mask=yyi(:,1)>yo(io)) - 1
                     b = (yo(io)-yyi(j,1))/(yyi(j+1,1)-yyi(j,1))
                     npj = 2
-            print*,'yyi',yo(io),yyi(j,1),yyi(j+1,1)
+            print*,'yo2i',yo(io),yyi(j,1),yyi(j+1,1)
                 endif
 
             endif
@@ -2369,7 +2369,7 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                     jz = j
                 endif
 
-                 if(ntiz==1)then
+                if(ntiz==1)then
                     nplz = 1
                     dz = 0
                     lz = 1
@@ -2383,9 +2383,9 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                 print*,'nplz dz',nplz,dz
 
                 zi = 0d0
-                do ii=0,npiz-1
+                do ll=0,nplz-1
                     do jj=0,npjz-1
-                        do ll=0,nplz-1
+                        do ii=0,npiz-1
                             zi = zi + zzi(:, lz+ll, :, jz+jj, iz+ii) * &
                                 & ((1-az) * (1-ii) + az * ii)* &
                                 & ((1-bz) * (1-jj) + bz * jj)* &
@@ -2409,7 +2409,7 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                         else
                             c(iez) = (zo(io)-zi(iez,k(iez))) / (zi(iez,k(iez)+1)-zi(iez,k(iez)))
                             npk(iez) = 2
-                        print*,'zzi',zo(io),zi(iez,k(iez)),zi(iez,k(iez)+1)
+                        print*,'zo2i',zo(io),zi(iez,k(iez)),zi(iez,k(iez)+1)
                         endif
                     endif
                 enddo
@@ -2425,28 +2425,41 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
 
             ! Interpolate
             vo(:,io) = 0d0
+!            print*,'nex/nexz',nex/nexz
             do ieb = 1, nex/nexz
+!                print*,'ieb',ieb
 
                 ie0 = 1+(ieb-1)*nexz
 !                ie1 = ie0+nexz-1
 
                 do iez=0,nexz-1
-                    if(any(bmask(:,l:l+npl-1, k(iez):k(iez)+npk(iez)-1, j:j+npj-1, i:i+npi-1)))then
+!                    print*,'iez',iez
+!                    print*,'bmask',bmask(:,l:l+npl-1, k(iez+1):k(iez+1)+npk(iez+1)-1, j:j+npj-1, i:i+npi-1)
+!                    print*, l,l+npl-1
+!                    print*, k(iez+1),k(iez+1)+npk(iez+1)-1
+!                    print*, j,j+npj-1
+!                    print*, i,i+npi-1
+!                    print*,'so'
+                    if(any(bmask(:,l:l+npl-1, k(iez+1):k(iez+1)+npk(iez+1)-1, j:j+npj-1, i:i+npi-1)))then
                         vo(ie0+iez,io) = mv ! masked
                     else
-                        do ii=0,npi-1
-                            do jj=0,npj-1
-                                do kk=0,npk(iez)-1
-                                    do ll=0,npl-1
-                                        vo(ie0+iez,io) = vo(ie0+iez,io) +vi(ie0+iez,l+ll, k(iez)+kk, j+jj, i+ii) * &
+                        do ll=0,npl-1
+                            do kk=0,npk(iez+1)-1
+                                do jj=0,npj-1
+                                    do ii=0,npi-1
+!                                        print*,'one'
+                                        vo(ie0+iez,io) = vo(ie0+iez,io) +vi(ie0+iez,l+ll, k(iez+1)+kk, j+jj, i+ii) * &
                                             & ((1-a) * (1-ii) + a * ii)* &
                                             & ((1-b) * (1-jj) + b * jj)* &
-                                            & ((1-c(iez)) * (1-kk) + c(iez) * kk)* &
+                                            & ((1-c(iez+1)) * (1-kk) + c(iez+1) * kk)* &
                                             & ((1-d) * (1-ll) + d * ll)
+!                                        print*,vo
                                     enddo
                                 enddo
                             enddo
                         enddo
+!                        print*,'vo',vo
+
                     endif
                 enddo
 
@@ -2459,7 +2472,7 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
 
         endif
     enddo
-    !$OMP END PARALLEL DO
+    !xx$OMP END PARALLEL DO
 
 end subroutine linear4dto1dxx
 
