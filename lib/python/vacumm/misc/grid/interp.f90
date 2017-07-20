@@ -2252,14 +2252,15 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
     if(nyiz/=1 .and. nyiz/=nyi)stop "linear4dto1: Invalid nyiz dimension"
     if(ntiz/=1 .and. ntiz/=nti)stop "linear4dto1: Invalid ntiz dimension"
 
-    print*,'xxi',xxi
-    print*,'yyi',yyi
-    print*,'ti',ti
-    print*,'zzi',zzi
+!    print*,'xxi',xxi
+!    print*,'yyi',yyi
+!    print*,'ti',ti
+!    print*,'zzi',zzi
 
 
-    !xx$OMP PARALLEL DO PRIVATE(io,i,j,k,l,ii,jj,kk,ll,p,q)
-    !xx$& SHARED(xi,yi,zi,ti,vi,xo,yo,zo,vo,nei,nxi,nyi,nzi,nti,no,bmask)
+    !$OMP PARALLEL DO DEFAULT(SHARED) &
+    !$OMP PRIVATE(io,i,j,k,l,a,b,c,d,ii,jj,kk,ll,p,q,npi,npj,npk,npl) &
+    !$OMP PRIVATE(npiz,npjz,nplz,iz,jz,lz,az,bz,dz,ieb,ie0,iez,zi)
     do io = 1, no
         if(       (nxi==1 .or. (xo(io)>=ximin.and.xo(io)<=ximax)) .and.&
                 & (nyi==1 .or. (yo(io)>=yimin.and.yo(io)<=yimax)) .and.&
@@ -2290,12 +2291,12 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                     a = 0d0
                 else
                     i = minloc(xxi(1,:), dim=1, mask=xxi(1,:)>xo(io))-1
-                    print*,'i',i
+!                    print*,'i',i
                     npi = 2
                     a = xo(io)-xxi(1,i)
                     if(abs(a)>180d0)a=360d0-180d0
                     a = a/(xxi(1,i+1)-xxi(1,i))
-            print*,'xo2i',xo(io),xxi(1,i),xxi(1,i+1)
+!            print*,'xo2i',xo(io),xxi(1,i),xxi(1,i+1)
                 endif
 
                 ! - Y
@@ -2311,13 +2312,13 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                     j = minloc(yyi(:,1), dim=1, mask=yyi(:,1)>yo(io)) - 1
                     b = (yo(io)-yyi(j,1))/(yyi(j+1,1)-yyi(j,1))
                     npj = 2
-            print*,'yo2i',yo(io),yyi(j,1),yyi(j+1,1)
+!            print*,'yo2i',yo(io),yyi(j,1),yyi(j+1,1)
                 endif
 
             endif
 
             ! - T
-            print*,'nti',nti
+!            print*,'nti',nti
             if(nti==1)then
                 l = 1
                 d = 0d0
@@ -2328,17 +2329,17 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                 npl = 1
             else
                 l = minloc(ti, dim=1, mask=ti>to(io))-1
-                    print*,'l',l
+!                    print*,'l',l
                 if(ti(l+1)==ti(l))then
                     d = 0d0
                     npl = 1
                 else
                     d = (to(io)-ti(l))/(ti(l+1)-ti(l))
                     npl = 2
-                    print*,'tti',to(io),ti(l),ti(l+1)
+!                    print*,'tti',to(io),ti(l),ti(l+1)
                 endif
             endif
-            print*,'d',d
+!            print*,'d',d
 
             ! - Z
             if(nzi==1)then
@@ -2378,9 +2379,9 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                     dz = d
                     lz = l
                 endif
-                print*,'npiz az',npiz,az
-                print*,'npjz bz',npjz,bz
-                print*,'nplz dz',nplz,dz
+!                print*,'npiz az',npiz,az
+!                print*,'npjz bz',npjz,bz
+!                print*,'nplz dz',nplz,dz
 
                 zi = 0d0
                 do ll=0,nplz-1
@@ -2393,7 +2394,7 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                         enddo
                     enddo
                 enddo
-                print*,'zi',zi
+!                print*,'zi',zi
 
                 ! Normal stuff (c(nexz),zi(nexz,nzi),k(nexz)
                 do iez = 1, nexz ! extra dim
@@ -2409,7 +2410,7 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                         else
                             c(iez) = (zo(io)-zi(iez,k(iez))) / (zi(iez,k(iez)+1)-zi(iez,k(iez)))
                             npk(iez) = 2
-                        print*,'zo2i',zo(io),zi(iez,k(iez)),zi(iez,k(iez)+1)
+!                        print*,'zo2i',zo(io),zi(iez,k(iez)),zi(iez,k(iez)+1)
                         endif
                     endif
                 enddo
@@ -2417,11 +2418,11 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
 
             endif
 
-            print*,'X i a npi',i,a,npi
-            print*,'Y j b npj',j,b,npj
-            print*,'Z k c npk',k,c,npk
-            print*,'T l d npl',l,d,npl
-            print*,'nzi',nzi
+!            print*,'X i a npi',i,a,npi
+!            print*,'Y j b npj',j,b,npj
+!            print*,'Z k c npk',k,c,npk
+!            print*,'T l d npl',l,d,npl
+!            print*,'nzi',nzi
 
             ! Interpolate
             vo(:,io) = 0d0
@@ -2472,7 +2473,7 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
 
         endif
     enddo
-    !xx$OMP END PARALLEL DO
+    !$OMP END PARALLEL DO
 
 end subroutine linear4dto1dxx
 

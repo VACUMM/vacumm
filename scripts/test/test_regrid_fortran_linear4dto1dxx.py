@@ -13,7 +13,7 @@ nyi = 6
 nzi = 5
 nti = 4
 mv = 1.e20
-no = 100
+no = 1
 #no = 1
 
 vfunc = lambda t, z, y, x: (1*x + 2.35*y + 3.24*z -0.65*t)
@@ -52,10 +52,10 @@ N.testing.assert_almost_equal(vo_interp[0], vo_truth)
 
 xi = xxi[0, 0, 0:1, :1] # (nyix=1,nxi)
 yi = yyi[0, 0, :1, 0:1] # (nyi,nxiy=1)
-zi = zzi[0:1, :, 0:1, 0:1] # (ntiz=1,nzi,nyiz=1,nxiz=1)
+zi = zzi[0:1, 0:1, :, 0:1, 0:1] # (nexz=1,ntiz=1,nzi,nyiz=1,nxiz=1)
 ti = tti[:, 0, 0, 0] # (nti)
-vi = vfunc(tti, zzi, yyi, xxi)[:, :, :1, :1]
-vi = N.resize(vi, (2, )+vi.shape) # (nex=2,nti,nzi,nyi,nxi)
+vi = vfunc(tti, zzi, yyi, xxi)[:, :, :, :1, :1]
+vi = N.resize(vi, (nex, )+vi.shape[1:]) # (nex,nti,nzi,1,1)
 
 N.random.seed(0)
 xyztomin = -0.5
@@ -76,10 +76,10 @@ N.testing.assert_almost_equal(vo_interp[0], vo_truth)
 
 xi = xxi[0, 0, 0:1, :] # (nyix=1,nxi)
 yi = yyi[0, 0, :, 0:1] # (nyi,nxiy=1)
-zi = zzi[0:1, :, 0:1, 0:1] # (ntiz=1,nzi,nyiz=1,nxiz=1)
+zi = zzi[0:1, 0:1, :, 0:1, 0:1] # (ntiz=1,nzi,nyiz=1,nxiz=1)
 ti = tti[:1, 0, 0, 0] # (1)
-vi = vfunc(tti[:1], zzi[:1], yyi[:1], xxi[:1])
-vi = N.resize(vi, (2, )+vi.shape) # (nex=2,nti,nzi,nyi,nxi)
+vi = vfunc(tti, zzi, yyi, xxi)[:, :1, :, :, :]
+vi = N.resize(vi, (nex, )+vi.shape[1:]) # (nex,1,nzi,nyi,nxi)
 
 N.random.seed(0)
 xyztomin = -0.5

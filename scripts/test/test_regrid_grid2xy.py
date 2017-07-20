@@ -30,7 +30,10 @@ lat = create_lat(N.linspace(lat0, lat1, ny))
 dep = create_dep(N.linspace(dep0, dep1, nz))
 time = create_time(lindates(time0, time1, nt))
 extra = create_axis(N.arange(ne), id='member')
-vi = MV2.array(N.arange(nx*ny*nz*nt*ne, dtype='d').reshape(ne, nt, nz, ny, nx),
+data = N.resize(lat[:], (ne, nt, nz, nx, ny)) # function of y
+data = N.moveaxis(data, -1, -2)
+#data = N.arange(nx*ny*nz*nt*ne, dtype='d').reshape(ne, nt, nz, ny, nx)
+vi = MV2.array(data,
                  axes=[extra, time, dep, lat, lon], copy=False,
                  fill_value=1e20)
 N.random.seed(0)
@@ -42,19 +45,40 @@ to = comptime(N.random.uniform(reltime(time0, time.units).value,
                       time.units)
 # - interpolation
 vo = grid2xy(vi, xo=xo, yo=yo, zo=zo, to=to, method='linear')
+assert vo.shape==(ne, np)
+try:
+    N.testing.assert_allclose(vo[0], yo)
+except:
+    pass
+    xxxx
+# - plot
+P.figure()
+P.scatter(yo, vo[0])
+#P.scatter(yo, vo[2])
+P.xlabel('y')
+P.ylabel('vo')
+P.title('grid2xy: rectangular XYZT with 1d Z = f(Y)')
+P.savefig(code_file_name(ext='.rxyzt.png'))
 
-P.scatter(xo, vo[0])
-P.scatter(xo, vo[2])
-p.show()
+# Rectangular xyt only
+vi_xyt = vi[:, :, 0]
+vo = grid2xy(vi_xyt, xo=xo, yo=yo, to=to, method='linear')
+assert vo.shape==(ne, np)
+N.testing.assert_allclose(vo[0], yo)
+# - plot
+P.figure()
+P.scatter(yo, vo[0])
+#P.scatter(yo, vo[2])
+P.xlabel('y')
+P.ylabel('vo')
+P.title('grid2xy: rectangular XYT = f(Y)')
+P.savefig(code_file_name(ext='rxzt.png'))
 
-## Plot along time
-#s = stick2(tu, tv, figsize=(8,3), title='Space-time transect of speed',
-#    show=False, top=0.85, quiver_width=0.002)
-#
-## Add a small map to show the transect positions
-#add_map_lines(u.getGrid(), tlons, tlats, map_zoom=0.5)
-#
-## Save
-#figfile = code_file_name(ext='png')
-#if os.path.exists(figfile): os.remove(figfile)
-#s.savefig(figfile, pdf=True)
+# Zo present but not requested
+vo = grid2xy(vi, xo=xo, yo=yo, to=to, method='linear')
+assert vo.shape==(ne, nz, np)
+N.testing.assert_allclose(vo[0, 0], yo)
+
+#P.show()
+P.close()
+
