@@ -552,9 +552,9 @@ def load_xml_textnodes(elt=None, textnodes=None, dst=None, create=False, xml_ele
         childElements = [c for c in findchildren(elt, tagName)]
         if childElements:
             if single:
-                setattr(dst, name, factory(childElements[isingle].text))
+                setattr(dst, name, factory(childElements[isingle].text if childElements[isingle].text else ''))
             else:
-                setattr(dst, name, [factory(c.text) for c in childElements])
+                setattr(dst, name, [factory(c.text if c.text else '') for c in childElements])
         elif default is not _no_default:
             setattr(dst, name, default)
         elif create:
