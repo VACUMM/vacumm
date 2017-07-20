@@ -23,7 +23,7 @@ from vcmq import (N, MV2, code_file_name, os, P, create_lon, create_lat, create_
                   create_time, lindates, create_axis, reltime, grid2xy,
                   comptime)
 
-# Rectangular xyzt with 1d z
+# Rectangular xyzt with 1d z data and coords
 # - data
 lon = create_lon(N.linspace(lon0, lon1, nx))
 lat = create_lat(N.linspace(lat0, lat1, ny))
@@ -43,42 +43,33 @@ zo = N.random.uniform(dep0, dep1, np)
 to = comptime(N.random.uniform(reltime(time0, time.units).value,
                       reltime(time1, time.units).value, np),
                       time.units)
-# - interpolation
+
+# Rectangular xyzt with 1d z
 vo = grid2xy(vi, xo=xo, yo=yo, zo=zo, to=to, method='linear')
 assert vo.shape==(ne, np)
-try:
-    N.testing.assert_allclose(vo[0], yo)
-except:
-    pass
-    xxxx
-# - plot
-P.figure()
-P.scatter(yo, vo[0])
-#P.scatter(yo, vo[2])
-P.xlabel('y')
-P.ylabel('vo')
-P.title('grid2xy: rectangular XYZT with 1d Z = f(Y)')
-P.savefig(code_file_name(ext='.rxyzt.png'))
+N.testing.assert_allclose(vo[0], yo)
 
 # Rectangular xyt only
 vi_xyt = vi[:, :, 0]
 vo = grid2xy(vi_xyt, xo=xo, yo=yo, to=to, method='linear')
 assert vo.shape==(ne, np)
 N.testing.assert_allclose(vo[0], yo)
-# - plot
-P.figure()
-P.scatter(yo, vo[0])
-#P.scatter(yo, vo[2])
-P.xlabel('y')
-P.ylabel('vo')
-P.title('grid2xy: rectangular XYT = f(Y)')
-P.savefig(code_file_name(ext='rxzt.png'))
 
-# Zo present but not requested
+# Rectangular xy only
+vi_xy = vi[:, 0, 0]
+vo = grid2xy(vi_xy, xo=xo, yo=yo, method='linear')
+assert vo.shape==(ne, np)
+N.testing.assert_allclose(vo[0], yo)
+
+# Zi present but not requested
 vo = grid2xy(vi, xo=xo, yo=yo, to=to, method='linear')
 assert vo.shape==(ne, nz, np)
 N.testing.assert_allclose(vo[0, 0], yo)
 
+# Zi and Ti present but not requested
+vo = grid2xy(vi, xo=xo, yo=yo, method='linear')
+assert vo.shape==(ne, nt, nz, np)
+N.testing.assert_allclose(vo[0, 0, 0], yo)
 #P.show()
 P.close()
 

@@ -1906,7 +1906,7 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
         zo = None
     if 't' not in order and to is not None:
         to = None
-    univ = to is not None or zo is not None
+    univ = to is not None or zo is not None or True # FIXME: univ
     na = 2 # interpolation dims
     extra_axes = []
     if zo is not None:
@@ -1919,14 +1919,15 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
                         ' interpolation. Switching to linear')
             method = 'linear'
 
+        it = 2 + ('z' in order)
         if 't' not in order and to is None: # not requested and not present
-            vi = vi.reshape(vi.shape[:-3]+(1, )+vi.shape[-3:]) # insert fake dim
+            vi = vi.reshape(vi.shape[:-it]+(1, )+vi.shape[-it:]) # insert fake dim
         elif to is not None: # requested and present
             na += 1
             taxis = vari.getTime()
             ti = taxis[:]
         else: # present but not requested
-            vi = vi.reshape(vi.shape[:-3]+(1, )+vi.shape[-3:]) # insert fake dim
+            vi = vi.reshape(vi.shape[:-it]+(1, )+vi.shape[-it:]) # insert fake dim
             extra_axes.insert(0, vari.getTime())
 
         if 'z' not in order and zo is None: # not requested and not present
@@ -1939,7 +1940,9 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
                 zi = zi.reshape((1, )*(vari.ndim-zi.ndim)+zi.shape)
         else: # present but not requested
             vi = vi.reshape(vi.shape[:-2]+(1, )+vi.shape[-2:]) # insert fake dim
-            if not extra_axes: # t not as extra
+            if extra_axes: # t as extra: ET1Z1YX -> ETZ11YX
+                vi = vi.reshape(vi.shape[:-5]+vi.shape[-4:-3]+(1, 1)+vi.shape[-2:])
+            else: # ETZ1YX -> EZT1YX
                 vi = N.moveaxis(vi, -4, -5)
             extra_axes.append(vari.getLevel())
 
@@ -2018,7 +2021,10 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
     if 'linear' in method:
 
         if univ:
-            vo = _linear4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, zo, to, mv)
+            try:
+                vo = _linear4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, zo, to, mv)
+            except:
+                pass
         else:
             func = _bilin2dto1d_ if rect else _bilin2dto1dc_
             vo = func(xi, yi, vi, xo, yo, mv)
