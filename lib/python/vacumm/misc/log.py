@@ -248,8 +248,8 @@ class Logger(logging.getLoggerClass()):
     instances = WeakSet()
 
     def __init__(self,
-            name=None, level=default_level,
-            format=default_format, date_format=default_date_format,
+            name=None, level=None,
+            format=None, date_format=None,
             console=True, colorize=True,
             logfile=None,
             redirect_warnings=False, redirect_stdout=False, redirect_stderr=False,
@@ -309,6 +309,9 @@ class Logger(logging.getLoggerClass()):
 
         '''
         if name is None: name = '%s(%s)'%(self.__class__.__name__, id(self))
+        if level is None: level = self.get_default_level()
+        if format is None: format = self.get_default_format()
+        if date_format is None: date_format = self.get_default_date_format()
         if name_filters is None: name_filters = []
         self.__name_filters = name_filters
         self.__logger_class = logging.getLoggerClass()
@@ -319,6 +322,8 @@ class Logger(logging.getLoggerClass()):
 
         self.__format = format.get('default', self.default_format['default']) if isinstance(format, dict) else format
         self.__date_format = date_format.get('default', self.default_date_format['default']) if isinstance(date_format, dict) else date_format
+        
+        self.skipCaller((self.log, self.verbose, self.notice))
 
         # Setup stream handler (console)?
         self.console_handler = None
@@ -513,8 +518,6 @@ class Logger(logging.getLoggerClass()):
 
     @classmethod
     def set_handler_formats(cls, handler, format=None, date_format=None):
-        #print 'set_handler_formats(%r, %r, %r)'%(handler, format, date_format)
-        #import pdb; pdb.set_trace()
         f = cls.new_formatter(format=format, date_format=date_format, formatter=handler.formatter)
         handler.setFormatter(f)
         return f
@@ -596,6 +599,61 @@ class Logger(logging.getLoggerClass()):
     def log(self, level, msg, *args, **kwargs):
         level = get_int_level(level)
         return self.__logger_class.log(self, level, msg, *args, **kwargs)
+
+    # redefine findCaller to ignore certain callers,
+    # used to support the new levels (verbose/notice)
+    def findCaller(self):
+        """
+        Find the stack frame of the caller so that we can note the source
+        file name, line number and function name.
+        """
+        f = logging.currentframe()
+        #On some versions of IronPython, currentframe() returns None if
+        #IronPython isn't run with -X:Frames.
+        if f is not None:
+            f = f.f_back
+        rv = "(unknown file)", 0, "(unknown function)"
+        skipCallers = getattr(self, '_skipCallers', set())
+        while hasattr(f, "f_code"):
+            co = f.f_code
+            filename = os.path.normcase(co.co_filename)
+            skip = False
+            if f.f_code in skipCallers:
+                skip = True
+            if filename == logging._srcfile:
+                skip = True
+            if skip:
+                f = f.f_back
+                continue
+            rv = (co.co_filename, f.f_lineno, co.co_name)
+            break
+        return rv
+     
+    def skipCaller(self, caller=None, skip=True):
+        '''
+        Register a function, method, code or set/list/tuple of codes to be skipped by findCaller
+        '''
+        skipCallers = getattr(self, '_skipCallers', set())
+        if caller is None:
+            return skipCallers
+        elif isinstance(caller, (set, list, tuple)):
+            for c in caller:
+                self.skipCaller(c, skip)
+            return
+        import types
+        if isinstance(caller, types.CodeType):
+            func_code = caller
+        elif isinstance(caller, types.FunctionType):
+            func_code = caller.func_code
+        elif isinstance(caller, types.MethodType):
+            func_code = caller.__func__.func_code
+        else:
+            raise TypeError('skipCaller accept only function or method types, found %s'%type(caller))
+        if skip:
+            skipCallers.add(func_code)
+        else:
+            skipCallers.remove(func_code)
+        setattr(self, '_skipCallers', skipCallers)
 
     @classmethod
     def set_default_level(cls, level, filter=False):
@@ -833,7 +891,6 @@ class LoggerAdapter(_LoggerAdapter):
         kwargs['extra'].update(extra)
         return msg, kwargs
 
-    # TODO: fix funcName
     def verbose(self, msg, *args, **kwargs):
         """
         Delegate a log call to the underlying logger, after adding
