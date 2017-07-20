@@ -797,7 +797,7 @@ class ConfigManager(object):
                         for k in keys:
 
                             vdef = secd.get(k, None)
-                            sys.stderr.write(msg+'\nSetting it to default value: %s\n'%vdef)#,ValidationWarning)
+                            sys.stderr.write(msg+'\nSetting it to default value: %s\n'%(vdef,))#,ValidationWarning)
 
                             # Reset to default
                             if validate=='fix':
