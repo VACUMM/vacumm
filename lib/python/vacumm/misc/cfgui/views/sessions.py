@@ -38,7 +38,7 @@ class SessionsDialog(QtObject, Ui_SessionsDialog, QtGui.QDialog):
 		self.update_combo_name()
 	
 	def get_session(self):
-		session = Session(
+		session = self.controller.application.create_session(
 			name=unicode(self.combo_name.currentText()),
 			specification_file=unicode(self.line_specification.text()),
 			configuration_file=unicode(self.line_configuration.text())
@@ -61,7 +61,7 @@ class SessionsDialog(QtObject, Ui_SessionsDialog, QtGui.QDialog):
 			self.combo_name.setCurrentIndex(items.index(session.name))
 	
 	def on_button_new(self):
-		self.set_session(Session(name='New session'))
+		self.set_session(self.controller.application.create_session(name='New session'))
 	
 	def on_button_save(self):
 		session = self.get_session()
@@ -71,7 +71,7 @@ class SessionsDialog(QtObject, Ui_SessionsDialog, QtGui.QDialog):
 	
 	def on_button_open(self):
 		self.hide()
-		self.controller.load_session(self.get_session())
+		self.controller.application.load_session(self.get_session())
 	
 	def on_button_delete(self):
 		name = unicode(self.combo_name.currentText())
@@ -79,7 +79,7 @@ class SessionsDialog(QtObject, Ui_SessionsDialog, QtGui.QDialog):
 			self.controller.delete_session(name)
 			self.controller.save_sessions()
 			self.update_combo_name()
-			self.set_session(Session())
+			self.set_session(self.controller.application.create_session())
 	
 	def on_button_close(self):
 		#QtGui.QDialog.reject(self)

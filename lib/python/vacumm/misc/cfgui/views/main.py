@@ -7,7 +7,7 @@ from PyQt4 import QtCore, QtGui
 
 import configobj
 
-from vacumm.misc.config import ConfigManager, _shelp_
+from vacumm.misc.config import ConfigManager, _shelp_, pathname
 
 from vacumm.misc.cfgui import QtObject
 from vacumm.misc.cfgui.models.sessions import Session
@@ -16,14 +16,9 @@ from vacumm.misc.cfgui.utils.ui import confirm_dialog, create_widget, get_widget
 
 
 class ConfigWidgetDict(dict):
-#class ConfigWidgetDict(collections.MutableMapping, dict):
 	def __init__(self, *args, **kwargs):
-		
-		#collections.MutableMapping.__init__(self, *args, **kwargs)
 		dict.__init__(self, *args, **kwargs)
-		
 		self.parent = None # parent ConfigWidgetDict
-		
 		#self.item_parent = item_parent
 		#self.item_key = item_key
 		#self.item_value = item_value
@@ -31,9 +26,7 @@ class ConfigWidgetDict(dict):
 	def __setitem__(self, key, value):
 		value.parent = self
 		return dict.__setitem__(self, key, value)
-	
-	#def __repr__(self):
-		#return '%s(parent=<%s>%s, item_parent=<%s>%s, items=%s)'%(self.__class__.__name__, self.parent.__class__.__name__, id(self.parent), self.item_parent.__class__.__name__, id(self.item_parent), dict.__repr__(self))
+
 
 class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 	
@@ -144,10 +137,12 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 		self.treeview_config.expandAll()
 	
 	def update_session_status(self):
-		if self.controller.session:
-			self.setWindowTitle('%s - %s - %s'%(self.default_title, self.controller.session.name, self.controller.session.configuration_file))
-		else:
-			self.setWindowTitle(self.default_title)
+		title = self.default_title
+		if self.controller.session.name:
+			title += ' - ' + self.controller.session.name
+		if self.controller.session.configuration_file:
+			title += ' - ' + os.path.abspath(self.controller.session.configuration_file)
+		self.setWindowTitle(title)
 	
 	
 	def get_tree_label(self, label):
@@ -174,11 +169,19 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 		self.model_config.clear()
 		self.model_config.setHorizontalHeaderLabels(('Key', 'Value'))
 		
+		self.treeview_config.header().setMovable(False)
+		#self.treeview_config.header().setResizeMode(0, QtGui.QHeaderView.ResizeToContents)
+		#self.treeview_config.header().setResizeMode(1, QtGui.QHeaderView.ResizeToContents)
+		
 		cfgspec = cfgman._configspec
 		cfgdef = cfgman.defaults()
 		
-		section_name = '%s - %s'%(self.controller.session.name, os.path.basename(cfgman._configspecfile))
-		
+		section_name = ''
+		if self.controller.session.name:
+			section_name += self.controller.session.name
+		if cfgman._configspecfile:
+			section_name += ' - ' + os.path.basename(cfgman._configspecfile)
+			
 		self.config_widget = ConfigWidgetDict()
 		
 		self.add_section(self.model_config, section_name, cfgman, cfgspec, cfgdef, self.config_widget)
@@ -190,9 +193,8 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 	
 	
 	def add_section(self, item_parent, section_name, cfgman, cfgspec, cfgdef, config_widget, can_rename=False, can_remove=False):
-		indent = '  ' * cfgdef.depth
 		
-		self.verbose('%(indent)s+ section %(section_name)r', locals())
+		self.verbose('section %s', pathname(cfgspec, section_name))
 		
 		item_key = QtGui.QStandardItem()
 		item_key.setEditable(False)
@@ -290,11 +292,11 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 		# Build options
 		for option_name in cfgspec.scalars:
 			try:
-				self.verbose('%(indent)s- option %(option_name)r', locals())
+				self.verbose('option %s', pathname(cfgspec, option_name))
 				
 				# Retrieve this option specification (type, default, doc and other properties, ...)
 				optspec = cfgman.getspec(cfgspec, option_name)
-				self.debug('%s  specification:\n%s', indent, optspec)
+				self.debug('specification:\n%s', optspec)
 				
 				if option_name in ('__many__', '___many___'):
 					
@@ -305,7 +307,7 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 					self.add_option(item_key, option_name, optspec, config_widget)
 				
 			except:
-				self.exception('Error creating section %(section_name)r, option %(option_name)r', locals())
+				self.exception('Error creating option %s', pathname(cfgspec, option_name))
 			
 		# Build subsections
 		for section_name in cfgspec.sections:
@@ -356,7 +358,7 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 	def add_option(self, item_parent, option_name, optspec, config_widget, can_rename=False, can_remove=False):
 		
 		if not optspec.funcname:
-			self.warning('option: %r: unsupported option specification:\n%s', option_name, pprint.pformat(optspec))
+			self.warning('option %s: unsupported option specification:\n%s', option_name, pprint.pformat(optspec))
 		
 		help = ''
 		try:
@@ -504,27 +506,26 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 	
 	def set_configuration(self, cfgman, config):
 		
-		self.verbose('set configuration', locals())
+		self.verbose('set configuration')
 		
 		self.debug('config:\n%s', pprint.pformat(config.dict()))
 		
 		self.debug('begin ui widgets:\n%s', pprint.pformat(self.config_widget))
 		
 		def set_section(cfgspec, config, config_widget):
-			indent = '  ' * config.depth
 			
 			section_name = cfgspec.name
-			self.verbose('%(indent)s+ section %(section_name)r', locals())
+			self.verbose('section %s', pathname(cfgspec, section_name))
 			
 			#self.debug('spec:\n%s', pprint.pformat(cfgspec.dict()))
 			#self.debug('config:\n%s', pprint.pformat(config.dict()))
 			#self.debug('ui widgets:\n%s', pprint.pformat(config_widget))
 			
 			# Remove any many option/section
-			self.logger.debug('%s  clean many options/sections', indent)
+			self.logger.debug('clean many options/sections')
 			for name, dict_or_widget in config_widget.items():
 				if name not in cfgspec.scalars and name not in cfgspec.sections:
-					self.logger.debug('%s    remove many %s %r', indent, 'section' if isinstance(dict_or_widget, dict) else 'option', name)
+					self.logger.debug('remove many %s %r', 'section' if isinstance(dict_or_widget, dict) else 'option', name)
 					dict_or_widget.item_key.parent().removeRow(dict_or_widget.item_key.row())
 					config_widget.pop(name)
 			
@@ -535,24 +536,24 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 					if option_name in ('__many__', '___many___'):
 						continue
 					
-					self.verbose('%(indent)s- set option %(option_name)r', locals())
+					self.verbose('set option %s', pathname(cfgspec, option_name))
 					
 					if option_name not in config_widget:
-						self.error('option %(option_name)r not found in view', locals())
+						self.error('option %s not found in view', pathname(cfgspec, option_name))
 						continue
 					if option_name not in config:
-						self.error('option %(option_name)r not found in configuration', locals())
+						self.error('option %s not found in configuration', pathname(cfgspec, option_name))
 						continue
 					
 					optspec = cfgman.getspec(cfgspec, option_name)
 					optionvalue = config.get(option_name, optspec.default)
 					optiontype = optionvalue.__class__.__name__
 					
-					self.debug('%(indent)s  option %(option_name)r = %(optionvalue)r (%(optiontype)s)', locals())
+					self.debug('option %s = %r (%s)', pathname(cfgspec, option_name), optionvalue, optiontype)
 					set_widget(optspec, config_widget[option_name], optionvalue)
 					
 				except:
-					self.exception('Error setting section %(section_name)r, option %(option_name)r', locals())
+					self.exception('Error setting option %s', pathname(cfgspec, option_name))
 			
 			# Process regular sections
 			for section_name in cfgspec.sections:
@@ -561,10 +562,10 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 					continue
 				
 				if section_name not in config_widget:
-					self.error('section %(section_name)r not found in view', locals())
+					self.error('section %s not found in view', pathname(cfspec, section_name))
 					continue
 				if section_name not in config:
-					self.error('section %(section_name)r not found in configuration', locals())
+					self.error('section %s not found in configuration', pathname(cfspec, section_name))
 					continue
 				
 				set_section(cfgspec[section_name], config[section_name], config_widget[section_name])
@@ -572,44 +573,50 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 			# Process many options
 			for option_name in config.scalars:
 				
+				# If present in cfgspec.scalars, it means this is not a many option
 				if option_name in cfgspec.scalars:
 					continue
-				if option_name in ('__many__', '___many___'):
-					continue
+				#if option_name in ('__many__', '___many___'):
+					#continue
 				
-				self.verbose('%(indent)s- add many option %(option_name)r', locals())
+				self.verbose('add many option %s', pathname(config, option_name))
 				
 				for manyname in ('__many__', '___many___'):
 					if not isinstance(cfgspec.get(manyname, None), (dict, type(None))):
 						optspec = cfgman.getspec(cfgspec, manyname)
 						break
 				else:
-					self.error('cannot add many option %r, specification not found', option_name)
+					self.error('cannot add many option %s, specification not found', pathname(config, option_name))
 					continue
 				
 				optionvalue = config.get(option_name, optspec.default)
 				optiontype = optionvalue.__class__.__name__
 				
-				self.debug('%(indent)s  option %(option_name)r = %(optionvalue)r (%(optiontype)s)', locals())
+				self.debug('option %s = %r (%s)', pathname(config, option_name), optionvalue, optiontype)
 				self.add_option(config_widget.item_key, option_name, optspec, config_widget, can_rename=True, can_remove=True)
 				set_widget(optspec, config_widget[option_name], config[option_name])
 			
 			# Process many sections
 			for section_name in config.sections:
 				
+				# If present in cfgspec.sections, it means this is not a many section
 				if section_name in cfgspec.sections:
 					continue
-				if section_name in ('__many__', '___many___'):
+				# When using ConfigObj(unrepr=False), which is the default, an option with a dict value will
+				# causes this option to appear in config.sections, so we check it is not present in cfgspec.scalars
+				if section_name in cfgspec.scalars:
 					continue
+				#if section_name in ('__many__', '___many___'):
+					#continue
 				
-				self.verbose('%(indent)s- add many section %(section_name)r', locals())
+				self.verbose('add many section %s', pathname(config, section_name))
 				
 				for manyname in ('__many__', '___many___'):
 					if isinstance(cfgspec.get(manyname, None), (configobj.ConfigObj, configobj.Section)):
 						secspec = cfgspec[manyname]
 						break
 				else:
-					self.error('cannot add many section %r, specification not found', section_name)
+					self.error('cannot add many section %s, specification not found', pathname(config, section_name))
 					continue
 				
 				config_widget[section_name] = ConfigWidgetDict()
@@ -630,7 +637,7 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 	
 	def get_configuration(self, cfgman):
 		
-		self.verbose('get configuration', locals())
+		self.verbose('get configuration')
 		
 		self.debug('ui widgets:\n%s', pprint.pformat(self.config_widget))
 		
@@ -639,17 +646,16 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 		main_config = configobj.ConfigObj()
 		
 		def get_section(cfgspec, config, config_widget):
-			indent = '  ' * config.depth
 			
 			section_name = cfgspec.name
-			self.verbose('%(indent)s+ section %(section_name)r', locals())
+			self.verbose('section %s', pathname(cfgspec))
 			
 			for name, dict_or_widget in config_widget.items():
 				
 				if not isinstance(dict_or_widget, dict):
 					
 					option_name = name
-					self.verbose('%(indent)s- option %(option_name)r', locals())
+					self.verbose('option %s', pathname(cfgspec, option_name))
 					
 					if option_name not in cfgspec:
 						for manyname in ('__many__', '___many___'):
@@ -657,7 +663,7 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 								optspec = cfgman.getspec(cfgspec, manyname)
 								break
 						else:
-							self.error('cannot add many option %r, specification not found', option_name)
+							self.error('cannot add many option %s, specification not found', pathname(cfgspec, option_name))
 							continue
 					else:
 						optspec = cfgman.getspec(cfgspec, option_name)
@@ -666,7 +672,7 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 					config[option_name] = optionvalue
 					
 					optiontype = optionvalue.__class__.__name__
-					self.debug('%(indent)s  option %(option_name)r = %(optionvalue)r (%(optiontype)s)', locals())
+					self.debug('option %s = %r (%s)', pathname(cfgspec, option_name), optionvalue, optiontype)
 				
 				else:
 					section_name = name
@@ -677,7 +683,7 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
 								secspec = cfgspec[manyname]
 								break
 						else:
-							self.error('cannot get many section %r, specification not found', section_name)
+							self.error('cannot get many section %s, specification not found', pathname(cfgspec, section_name))
 							continue
 					else:
 						secspec = cfgspec[section_name]

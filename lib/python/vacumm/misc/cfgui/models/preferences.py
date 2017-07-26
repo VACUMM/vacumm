@@ -15,16 +15,11 @@ class Preferences(XmlConfigObject):
 	'''
 	
 	xml_textnodes = {
-		'language':{'single':True, 'default':'english'},
-		'save_defaults':{'single':True, 'default':False, 'type':bool},
+		'save_defaults':{'single':True, 'default':True, 'type':bool},
 		'save_comments':{'single':True, 'default':True, 'type':bool},
-		'backup_count':{'single':True, 'default':3, 'type':int},
+		'backup_count':{'single':True, 'default':0, 'type':int},
 	}
 	
 	def __init__(self, *args, **kwargs):
 		XmlConfigObject.__init__(self, *args, **kwargs)
 	
-	@property
-	def languages(self):
-		return ('english', 'french')
-

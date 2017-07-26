@@ -30,31 +30,66 @@ class Application(Object):
 		sys.excepthook = self.excepthook
 		self.setup_signals()
 		
+		# Hold the session currently in use
+		self.session = None
+		
 		# Create controllers
 		self.preferences_controller = PreferencesController(self)
 		self.sessions_controller = SessionsController(self)
 		self.main_controller = MainController(self)
+		
+		# Setup plugins
+		for name, plugin in self.plugins.items():
+			self.verbose('Enabling plugin %s', name)
+			plugin.enable()
 		
 		# Start the gui
 		self.main_controller.show_main_window()
 		
 		try:
 			if args.session:
-				self.main_controller.load_session(args.session)
+				self.load_session(args.session)
 			elif args.spcfile:
-				self.main_controller.load_session(Session(specification_file=args.spcfile, configuration_file=args.cfgfile))
+				self.load_session(Session(specification_file=args.spcfile, configuration_file=args.cfgfile))
+			else:
+				self.load_session(self.create_session())
 		except Exception, e:
 			msg = 'Error loading session: %s'%e
 			self.exception(msg)
 			error_dialog(msg, detail=traceback.format_exc(e))
 		
-		for name, plugin in self.plugins.items():
-			self.verbose('Enabling plugin %r (%r)', name, plugin)
-			plugin.enable()
-		
 		res = self.qapplication.exec_()
 		
 		return res
+	
+	def create_session(self, *args, **kwargs):
+		self.info('Create session with args: %s, kwargs: %s', args, kwargs)
+		session = Session(*args, **kwargs)
+		self.info('Created session:\n%s', session.to_xml_str())
+		for name, plugin in self.plugins.items():
+			if plugin.enabled:
+				plugin.session_created(session)
+			else:
+				self.debug('Ignore disabled plugin %s', name)
+		return session
+	
+	def load_session(self, session):
+		self.notice('Loading session %r', session)
+		if isinstance(session, basestring):
+			session = self.sessions_controller.get_session(session)
+		self.session = session
+		if self.session.specification_file and not os.path.exists(self.session.specification_file):
+			error_dialog('Specification file does not exists: %r'%(self.session.specification_file,))
+		if self.session.configuration_file and not os.path.exists(self.session.configuration_file):
+			error_dialog('Configuration file does not exists: %r'%(self.session.configuration_file,))
+		self.session.initialize()
+		self.main_controller.main_window.set_specification(self.session.session_config_manager)
+		if self.session.session_config:
+			self.main_controller.main_window.set_configuration(self.session.session_config_manager, self.session.session_config)
+		self.main_controller.main_window.update_session_status()
+	
+	def register_plugin(self, plugin_class):
+		self.plugins[plugin_class.__name__] = plugin_class(self)
 	
 	def quit(self):
 		self.qapplication.quit()
@@ -97,15 +132,19 @@ class Application(Object):
 	@classmethod
 	def get_argparser(cls):
 		parser = argparse.ArgumentParser(description='Configuration editor')
+		cls.populate_argparser(parser)
+		return parser
+	
+	@classmethod
+	def populate_argparser(cls, parser):
 		parser.add_argument('-s', '--spcfile', help='Specification file to use at startup')
 		parser.add_argument('-c', '--cfgfile', help='Configuration file to use at startup')
-		parser.add_argument('-S', '--session', help='Name of the session to use at startup')
-		return parser
-		
+		parser.add_argument('-n', '--session', help='Name of the session to use at startup')
+		Logger.add_argparser_options(parser=parser)
+	
 	@classinstancemethod
 	def main(obj, cls, args=()):
 		parser = cls.get_argparser()
-		Logger.add_argparser_options(parser=parser)
 		args = parser.parse_args(args)
 		Logger.apply_class_argparser_options(args)
 		
@@ -115,10 +154,6 @@ class Application(Object):
 			app = obj
 		
 		return 1 if app.run(args) else 0
-	
-	
-	def register_plugin(self, plugin_class):
-		self.plugins[plugin_class.__class__.__name__] = plugin_class(self)
 
 
 class Plugin(Object):
@@ -126,9 +161,16 @@ class Plugin(Object):
 	def __init__(self, application, **kwargs):
 		Object.__init__(self, **kwargs)
 		self.application = application
+		self.enabled = None
 	
 	def enable(self):
-		raise NotImplementedError('')
+		self.info('Enabling %s', self.__class__.__name__)
+		self.enabled = True
 	
 	def disable(self):
-		raise NotImplementedError('')
+		self.info('Disabling %s', self.__class__.__name__)
+		self.enabled = False
+	
+	def session_created(self, session):
+		pass
+

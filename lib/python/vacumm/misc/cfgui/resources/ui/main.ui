@@ -35,6 +35,9 @@
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
            <widget class="QTreeView" name="treeview_config">
+            <property name="acceptDrops">
+             <bool>false</bool>
+            </property>
             <property name="dragEnabled">
              <bool>false</bool>
             </property>
@@ -54,7 +57,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_file">
@@ -86,17 +89,9 @@
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="menu_help_user_guide"/>
-    <addaction name="menu_help_about"/>
-   </widget>
-   <widget class="QMenu" name="menu_tools">
-    <property name="title">
-     <string>Tools</string>
-    </property>
    </widget>
    <addaction name="menu_file"/>
    <addaction name="menu_edit"/>
-   <addaction name="menu_tools"/>
    <addaction name="menu_help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -183,29 +178,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
-   </property>
-  </action>
-  <action name="menu_help_user_guide">
-   <property name="icon">
-    <iconset theme="help-contents">
-     <normaloff/>
-    </iconset>
-   </property>
-   <property name="text">
-    <string>User's guide</string>
-   </property>
-   <property name="shortcut">
-    <string>F1</string>
-   </property>
-  </action>
-  <action name="menu_help_about">
-   <property name="icon">
-    <iconset theme="help-about">
-     <normaloff/>
-    </iconset>
-   </property>
-   <property name="text">
-    <string>About</string>
    </property>
   </action>
   <action name="menu_edit_reload">
@@ -433,38 +405,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>menu_help_user_guide</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>on_menu_help_user_guide()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>menu_help_about</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>on_menu_help_about()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>menu_edit_collapse_all</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
@@ -507,8 +447,6 @@
   <slot>on_menu_file_quit()</slot>
   <slot>on_menu_edit_reload()</slot>
   <slot>on_menu_edit_load_default()</slot>
-  <slot>on_menu_help_user_guide()</slot>
-  <slot>on_menu_help_about()</slot>
   <slot>on_menu_edit_collapse_all()</slot>
   <slot>on_menu_edit_expand_all()</slot>
  </slots>

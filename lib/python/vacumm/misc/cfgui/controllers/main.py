@@ -35,9 +35,10 @@ class MainController(Object):
 		self.main_window = MainWindow(self)
 		
 		self.logger.addHandler(StatusBarLogHandler(self.main_window))
-		
-		# Hold the session currently in use
-		self.session = Session()
+	
+	@property
+	def session(self):
+		return self.application.session
 	
 	def show_main_window(self):
 		# Center window
@@ -55,17 +56,6 @@ class MainController(Object):
 	
 	def quit(self):
 		self.application.quit()
-	
-	def load_session(self, session):
-		self.notice('Loading session %r', session)
-		if isinstance(session, basestring):
-			session = self.application.sessions_controller.get_session(session)
-		self.session = session
-		self.session.initialize()
-		self.main_window.set_specification(self.session.session_config_manager)
-		if self.session.session_config:
-			self.main_window.set_configuration(self.session.session_config_manager, self.session.session_config)
-		self.main_window.update_session_status()
 	
 	def new_configuration(self):
 		self.notice('Loading new configuration')

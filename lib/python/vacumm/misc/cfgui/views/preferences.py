@@ -29,18 +29,18 @@ class PreferencesDialog(QtObject, Ui_PreferencesDialog, QtGui.QDialog):
 		# XXX
 	
 	def set_preferences(self, preferences):
-		self.combo_language.clear()
-		self.combo_language.addItems(preferences.languages)
-		if preferences.language in preferences.languages:
-			language_index = preferences.languages.index(preferences.language)
-			self.combo_language.setCurrentIndex(language_index)
+		#self.combo_language.clear()
+		#self.combo_language.addItems(preferences.languages)
+		#if preferences.language in preferences.languages:
+			#language_index = preferences.languages.index(preferences.language)
+			#self.combo_language.setCurrentIndex(language_index)
 		self.checkbox_save_defaults.setCheckState(preferences.save_defaults)
 		self.checkbox_save_comments.setCheckState(preferences.save_comments)
 		self.spinbox_backup_count.setValue(preferences.backup_count)
 	
 	def get_preferences(self):
 		return Preferences(
-			language=unicode(self.combo_language.currentText()),
+			#language=unicode(self.combo_language.currentText()),
 			save_defaults=self.checkbox_save_defaults.isChecked(),
 			save_comments=self.checkbox_save_comments.isChecked(),
 			backup_count=self.spinbox_backup_count.value()

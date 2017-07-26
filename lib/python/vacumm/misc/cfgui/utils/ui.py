@@ -208,7 +208,7 @@ def set_widget(spec, widget, value):
 		widget.setText('' if value is None else value)
 	
 	elif isinstance(widget, QtGui.QDateTimeEdit):
-		if value is None:
+		if value in (None, 'None'):
 			value = datetime.datetime.fromtimestamp(0)
 		if not isinstance(value, datetime.datetime):
 			fmt = spec.kwargs.get('fmt', '%Y-%m-%d %H:%M:%S')

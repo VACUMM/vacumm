@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-print __name__
+
 import os, sys
 from PyQt4 import QtCore, QtGui
 
