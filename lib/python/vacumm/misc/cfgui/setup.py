@@ -1,6 +1,7 @@
-# -*- coding: utf8 -*-
-"""Installation script"""
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
