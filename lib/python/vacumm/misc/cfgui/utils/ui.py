@@ -40,6 +40,7 @@ from PyQt4.QtGui import QMessageBox
 
 from vacumm.misc.cfgui import logger
 
+
 def dialog(text=None, title=None, info=None, detail=None, icon=None, buttons=None, default_button=None, escape_button=None):
     '''
         text: string
@@ -61,6 +62,7 @@ def dialog(text=None, title=None, info=None, detail=None, icon=None, buttons=Non
     if escape_button: msg.setDefaultButton(escape_button)
     res = msg.exec_()
     return res
+
 
 def info_dialog(*args, **kwargs):
     kwargs.update(dict(icon=QMessageBox.Information))
@@ -207,13 +209,16 @@ def create_widget(spec, parent=None, getframe=False):
     
     return widget
 
+
 def create_treeview_widget(spec, treeview, item):
     frame, widget = create_widget(spec, parent=treeview, getframe=True)
+    widget.frame = frame
     if frame:
         treeview.setIndexWidget(item.index(), frame)
     else:
         treeview.setIndexWidget(item.index(), widget)
     return widget
+
 
 def set_widget(spec, widget, value):
     
@@ -250,6 +255,7 @@ def set_widget(spec, widget, value):
     
     else:
         raise TypeError("Failed to set widget value, unexpected type: %s"%type(widget))
+
 
 def get_widget(spec, widget):
     

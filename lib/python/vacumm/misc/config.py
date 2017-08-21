@@ -503,14 +503,14 @@ def _update_registry_():
         else:
             nk = k+'s'
         for nk in (nk, k+'_list'):
-			if nk not in VALIDATOR_SPECS:
-				nv = v.copy()
-				nv['func'] = _valwraplist_(v['func'])
-				nv['iterable'] = True
-				# OptionParser will check each value, not the list thus we provide the value validator
-				# TODO: check how this is treated, add argtype ?
-				nv['opttype'] = nk
-				VALIDATOR_SPECS[nk] = nv
+            if nk not in VALIDATOR_SPECS:
+                nv = v.copy()
+                nv['func'] = _valwraplist_(v['func'])
+                nv['iterable'] = True
+                # OptionParser will check each value, not the list thus we provide the value validator
+                # TODO: check how this is treated, add argtype ?
+                nv['opttype'] = nk
+                VALIDATOR_SPECS[nk] = nv
 
     # List of names
     while VALIDATOR_TYPES:

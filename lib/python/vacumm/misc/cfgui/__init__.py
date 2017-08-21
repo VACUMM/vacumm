@@ -43,11 +43,6 @@ from vacumm.misc.xml import XmlConfig, XmlConfigDict
 from vacumm.misc.log import logger # for use as default logger (e.g. in utils)
 
 
-config_dir = os.path.join(os.path.expanduser('~'), '.cfgui')
-preferences_configuration_file = os.path.join(config_dir, 'preferences.xml')
-sessions_configuration_file = os.path.join(config_dir, 'sessions.xml')
-
-
 class Object(_Object):
     def __init__(self, *args, **kwargs):
         _Object.__init__(self, *args, **kwargs)
