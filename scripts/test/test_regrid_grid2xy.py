@@ -22,7 +22,7 @@ nez = 2
 # Imports
 from vcmq import (N, MV2, code_file_name, os, P, create_lon, create_lat, create_dep,
                   create_time, lindates, create_axis, reltime, grid2xy,
-                  comptime, create_grid, set_grid, rotate_grid)
+                  comptime, set_grid, rotate_grid)
 
 # Rectangular xyzt with 1d z data and coords
 # - data

@@ -59,7 +59,7 @@ from .misc import (axis1d_from_bounds, get_xy, isgrid, t2uvgrids, get_grid,
 from .. import axes as A
 from ...misc.misc import (cp_atts, intersect, kwfilter, get_atts, set_atts, closeto,
     splitidx, MV2_concatenate)
-from ...misc.atime import are_same_units, ch_units, time_split
+from ...misc.atime import are_same_units, ch_units, time_split, lindates
 from .basemap import get_proj
 
 MV=MV2
@@ -2110,9 +2110,8 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
     return varo
 
 
-def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
-        getcoords=False, outaxis=None, split=None,
-        tmethod='linear', **kwargs):
+def transect(var, lons, lats, depths=None, times=None, method='linear',
+        subsamp=3, getcoords=False, outaxis=None, depth=None, **kwargs):
     """Make a transect in a -YX variable
 
     :Example:
@@ -2131,11 +2130,14 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
               The array of coordinates is generated using :func:`transect_specs`.
             - Or explicit array of coordinates (as scalars, lists or arrays).
 
-        - **times**, optional: Time sequence or axis of the same length as
+        - **depths**, optional: Output depths. If not a tuple, it must have
+          the same size as lons and lats.
+        - **times**, optional: Tuple, or time sequence or axis of the same length as
           resulting coordinates. If provided, the interpolation is first done
           in space, them onto this lagrangian time,
           and the final space-time trajectory is returned.
           If ``outaxis`` is None, ``taxis`` becomes the output axis.
+
         - **subsamp**, optional: Subsampling with respect to grid cell
           (only when coordinates are not explicit).
         - **method**, optional: Interpolation method (see :func:`grid2xy`).
@@ -2148,129 +2150,51 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
 
     """
     # Output coordinates
-    time = kwargs.get('time', times) # backward compat
+    times = kwargs.get('time', times) # backward compat
     if isinstance(lons, tuple): # Find coordinates
         lon0, lon1 = lons
         lat0, lat1 = lats
         lons, lats = transect_specs(var, lon0, lat0, lon1, lat1, subsamp=subsamp)
         single = False
-    elif times is None and cdms2.isVariable(lons) and lons.getTime() is not None:
-        times = lons.getTime()
     else: # explicit coordinates
         single = N.isscalar(lons) and N.isscalar(lats)
         lons = N.atleast_1d(lons)
         lats = N.atleast_1d(lats)
-
-    # Split transect to limit memory usage
-    if split:
-        if isinstance(split, (int, list)):
-            idx = splitidx(lons, split)
+    if depths is not None:
+        if isinstance(depths, tuple):
+            depths = N.linspace(depths[0], depths[1], len(lons))
         else:
-            assert times is not None, ('Such transect splitting cannot be operated'
-                'without the "times" argument')
-            times = A.create_time(times)
-            if isinstance(split, float):
-                idx = splitidx(times, split)
-            else:
-                idx = []
-                for itv in time_split(times, split)[:-1]:
-                    ijk = times.mapIntervalExt(itv[:2]+('co', ))
-                    if ijk is None: continue
-                    idx.append(ijk[0])
-        idx.append(len(lons))
-
-        vv = []
-        lastj = None
-        lastdist = 0
-        for i, i0 in enumerate(idx[:-1]):
-            i1 = idx[i+1]+1
-            slons = lons[i0:i1]
-            slats = lats[i0:i1]
-            if times is not None:
-                if A.isaxis(times):
-                    stimes = times.subaxis(i0, i1)
-                else:
-                    stimes = times[i0:i1]
-            else:
-                stimes = None
-            svar = transect(var, slons, slats, times=stimes, method=method,
-                getcoords=False)
-            for oaxis, soutaxis in enumerate(svar.getAxisList()): # find the outaxis
-                if hasattr(soutaxis, '_vacumm_transect'):
-                    break
-            if not A.isaxis(outaxis):
-                if soutaxis.id.startswith('dist'):
-                    soutaxis[:] += lastdist
-                    lastdist = soutaxis[-1]
-            if i!=len(idx)-2:
-                sel = [slice(None)]*svar.ndim
-                sel[oaxis] = slice(None, -1)
-                svar = svar[tuple(sel)]
-            vv.append(svar)
-        var = MV2_concatenate(vv, axis=oaxis)
-        if A.isaxis(outaxis):
-            var.setAxis(-1, outaxis)
-
-    else:
-
-        # Spatial interpolation
-        if outaxis=='time':
-            outaxis = None
-            ko = False
+            depths = N.atleast_1d(depths)
+            if len(depths)!=len(lons):
+                raise VACUMMError('Your depths axis must have a length of: %i (!=%i'%(
+                    len(depths), len(lons)))
+    if times is None and cdms2.isVariable(lons) and lons.getTime() is not None:
+            times = lons.getTime()
+    if times is not None:
+        if isinstance(times, tuple):
+            times = lindates(times[0], times[1], len(lons))
         else:
-            ko = outaxis is not None
-        var = grid2xy(var, lons, lats, outaxis=outaxis, method=method)
-        var.getAxis(-1)._vacumm_transect = True
-
-        # Interpolate to a lagrangian time axis
-        if (times is not None and var.getTime() is not None and
-                var.getTime() is not outaxis):
-
-            if ko: outaxis = var.getAxis(-1)
-
-            # Time axis
             if not A.istime(times):
                 times = A.create_time(times)
             if len(times)!=len(lons):
-                raise VACUMMError('Your time axis must have a length of: %i (!=%i'%(
+                raise VACUMMError('Your times must have a length of: %i (!=%i'%(
                     len(times), len(lons)))
 
-            # Interpolate
-            var_square = regrid1d(var, times, method=tmethod) # (nl,nz,nl)
-
-            # Init out
-            iaxis = var.getOrder().index('t')
-            sel = [slice(None)]*var_square.ndim
-            if outaxis is None: # time -> (nt=nl,nz)
-                sel[-1] = 0
-                oaxis = iaxis
-            else: # space -> (nz,nd=nl)
-                sel[iaxis] = 0
-                oaxis = -1
-            var = var_square[tuple(sel)].clone() # fixme: scalar cases
-
-            # Select the diagnonal the ~square matrix and fill var
-            varsm = var_square.asma()
-            del var_square
-            ii = N.arange(len(times))
-            sel = [slice(None)]*varsm.ndim
-            sel[iaxis] = sel[-1] = ii
-            varsm = varsm[tuple(sel)] # (nd,nz)
-            if oaxis==-1:
-                oaxis = varsm.ndim - 1
-            if oaxis!=0:
-                varsm = N.rollaxis(varsm, 0, oaxis+1)
-            var[:] = varsm
-            del varsm
-            outaxis = var.getAxis(oaxis)
-            outaxis._vacumm_transect = True
-
+    # Interpolation
+    var = grid2xy(var, lons, lats, zo=depths, to=times, zi=depth,
+        method=method, outaxis=outaxis)
 
     # Single point
     if single: var = var[...,0]
 
-    if not getcoords: return var
-    return var, lons, lats
+    if not getcoords:
+        return var
+    coords = lons, lats
+    if depths is not None:
+        coords += depths,
+    if times is not None:
+        coords += times,
+    return (var,) + coords
 
 def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
     """Refine a variable on a grid by a factor
