@@ -1873,6 +1873,10 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
             - ``nearest``: Nearest neighbor
             - ``linear``: Linear interpolation
 
+        - **zo**, optional: Output depths (negative in the ocean).
+        - **to**, optional: Output times.
+        - **zi**, optional: Input depths when variable in space.
+
         - **outaxis**, optional: Output spatial axis
 
             - A cdms2 axis.
@@ -2112,7 +2116,11 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
 
 def transect(var, lons, lats, depths=None, times=None, method='linear',
         subsamp=3, getcoords=False, outaxis=None, depth=None, **kwargs):
-    """Make a transect in a -YX variable
+    """Make a transect in a -[T][Z]YX variable
+
+    It calls :func:`~vacumm.misc.grid.transect_specs` to compute transect
+    coordinates when not explictly specified, and :func:`grid2xy` to perform
+    4D interpolations.
 
     :Example:
 

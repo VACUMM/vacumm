@@ -14,7 +14,7 @@ from vacumm.misc.plot import add_map_lines
 # Read data
 ds = DS(data_sample(ncfile), 'mars', logger_level='critical')
 temp = ds.get_temp(squeeze=True)
-dens = ds.get_dens(squeeze=True)
+dens = ds.get_dens(squeeze=True, potential=True)
 depth = ds.get_depth(squeeze=True)
 
 # Compute MLD
