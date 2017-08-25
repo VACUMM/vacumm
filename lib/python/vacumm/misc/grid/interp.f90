@@ -2269,9 +2269,10 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
 
             ! Weights
             if(curved)then
-
+!print*,'curved'
                 call curv2rel_single(xxi, yyi, xo(io), yo(io), p, q, nxi, nyi)
                 if(p<1 .or. p>nxi .or. q<1 .or. q>nyi) continue
+!                print*,'not masked'
                 i = int(p)
                 j = int(q)
                 a = p - i
@@ -2379,9 +2380,9 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                     dz = d
                     lz = l
                 endif
-!                print*,'npiz az',npiz,az
-!                print*,'npjz bz',npjz,bz
-!                print*,'nplz dz',nplz,dz
+!                print*,'npiz az,iz',npiz,az,iz
+!                print*,'npjz bz,jz',npjz,bz,jz
+!                print*,'nplz dz,lz',nplz,dz,lz
 
                 zi = 0d0
                 do ll=0,nplz-1
