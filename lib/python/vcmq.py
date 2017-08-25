@@ -233,6 +233,7 @@ from vacumm.misc.grid.kriging import (
     OrdinaryCloudKriger, variogram, variogram_fit, variogram_model,
     variogram_model_type, variogram_multifit, cloud_split,
     KrigingError, VariogramModel, VariogramModelError, SimpleCloudKriger,
+    VARIOGRAM_MODEL_TYPES, DEFAULT_VARIOGRAM_MODEL_TYPE,
     )
 
 # - data
