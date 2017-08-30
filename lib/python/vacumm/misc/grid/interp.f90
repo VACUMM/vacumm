@@ -1986,19 +1986,29 @@ subroutine linear4dto1d(xi,yi,zi,ti,vi,xo,yo,zo,to,vo,mv,nxi,nyi,nzi,nti,no)
     real(kind=8),intent(out) :: vo(no)
 
     real(kind=8) :: a , b, c, d
+    real(kind=8) :: ximin, yimin, zimin, timin, ximax, yimax, zimax, timax
     logical :: bmask(nti,nzi,nyi,nxi)
     integer :: io, i, j, k, l, ii, jj, kk, ll, npi, npj, npk, npl
 
     vo = mv
     bmask = abs(vi-mv)<abs(mv*epsilon(1d0)*1.1)
+    ximin = minval(xi)
+    ximax = maxval(xi)
+    yimin = minval(yi)
+    yimax = maxval(yi)
+    zimin = minval(zi)
+    zimax = maxval(zi)
+    timin = minval(ti)
+    timax = maxval(ti)
 
-    !$OMP PARALLEL DO PRIVATE(io,i,j,k,l,ii,jj,kk,ll)
-    !$& SHARED(xi,yi,zi,ti,vi,xo,yo,zo,vo,nxi,nyi,nzi,nti,no,bmask)
+    !$OMP PARALLEL DO DEFAULT(SHARED) &
+    !$OMP PRIVATE(io,i,j,k,l,ii,jj,kk,ll,a,b,c,d)&
+    !$OMP PRIVATE(npi,npj,npl,npk)
     do io = 1, no
-        if((nxi==1 .or. (xo(io)>=xi(1).and.xo(io)<=xi(nxi))) .and.&
-                & (nyi==1 .or. (yo(io)>=yi(1).and.yo(io)<=yi(nyi))) .and.&
-                & (nzi==1 .or. (zo(io)>=zi(1).and.zo(io)<=zi(nzi))) .and.&
-                & (nti==1 .or. (to(io)>=ti(1).and.to(io)<=ti(nti))))then
+        if(       (nxi==1 .or. (xo(io)>=ximin.and.xo(io)<=ximax)) .and.&
+                & (nyi==1 .or. (yo(io)>=yimin.and.yo(io)<=yimax)) .and.&
+                & (nzi==1 .or. (zo(io)>=zimin.and.zo(io)<=zimax)) .and.&
+                & (nti==1 .or. (to(io)>=timin.and.to(io)<=timax)))then
 
             ! Weights
             ! - X
@@ -2014,7 +2024,7 @@ subroutine linear4dto1d(xi,yi,zi,ti,vi,xo,yo,zo,to,vo,mv,nxi,nyi,nzi,nti,no)
                 i = minloc(xi,dim=1,mask=xi>xo(io))-1
                 npi = 2
                 a = abs(xo(io)-xi(i))
-                if(a>180d0)a=360d0-180d0
+                if(a>180d0)a=a-180d0
                 a = a/(xi(i+1)-xi(i))
             endif
             ! - Y
@@ -2069,16 +2079,19 @@ subroutine linear4dto1d(xi,yi,zi,ti,vi,xo,yo,zo,to,vo,mv,nxi,nyi,nzi,nti,no)
                     npl = 2
                 endif
             endif
+!            print*,'ijkl',i,j,k,l
+!            print*,'abcd',a,b,c,d
+!            print*,'np',npi,npj,npk,npl
 
             ! Interpolate
             if(any(bmask(l:l+npl-1, k:k+npk-1, j:j+npj-1, i:i+npi-1)))then ! masked
                 vo(io) = mv
             else
                 vo(io) = 0d0
-                do ii=0,npi-1
-                    do jj=0,npj-1
-                        do kk=0,npk-1
-                            do ll=0,npl-1
+                do ll=0,npl-1
+                    do kk=0,npk-1
+                        do jj=0,npj-1
+                            do ii=0,npi-1
                                 vo(io) = vo(io) +vi(l+ll, k+kk, j+jj, i+ii) * &
                                     & ((1-a) * (1-ii) + a * ii)* &
                                     & ((1-b) * (1-jj) + b * jj)* &
