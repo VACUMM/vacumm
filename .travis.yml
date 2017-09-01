@@ -2,7 +2,6 @@ language: python
 python:
   - "2.7"
 install:
-  - travis_wait 30 mvn install
   - sudo apt-get update
   - wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
@@ -13,7 +12,7 @@ install:
   - conda info -a
   - conda config --add channels conda-forge
   - conda config --add channels uvcdat
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION gcc>=4.7.0 uvcdat configobj paramiko xlutils seawater pytz cmocean basemap-data-hires
+  - travis_wait 30 conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION gcc>=4.7.0 uvcdat configobj paramiko xlutils seawater pytz cmocean basemap-data-hires
   - source activate test-environment
   - python setup.py install
   - python setup.py build_ext --inplace
