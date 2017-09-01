@@ -49,7 +49,7 @@ This module provides various file related features:
 '''
 
 
-import fnmatch, os, re, shutil
+import datetime, fnmatch, os, re, shutil
 
 
 def mkdirs(d):
