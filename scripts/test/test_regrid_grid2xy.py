@@ -22,7 +22,7 @@ nez = 2
 # Imports
 from vcmq import (N, MV2, code_file_name, os, P, create_lon, create_lat, create_dep,
                   create_time, lindates, create_axis, reltime, grid2xy,
-                  comptime, set_grid, rotate_grid)
+                  comptime, set_grid, rotate_grid, add_grid)
 
 # Rectangular xyzt with 1d z data and coords
 # - data
@@ -47,8 +47,29 @@ to = comptime(N.random.uniform(reltime(time0, time.units).value,
 
 # Rectangular xyzt with 1d z
 vo = grid2xy(vi, xo=xo, yo=yo, zo=zo, to=to, method='linear')
+von = grid2xy(vi, xo=xo, yo=yo, zo=zo, to=to, method='nearest')
 assert vo.shape==(ne, np)
 N.testing.assert_allclose(vo[0], yo)
+kwp = dict(vmin=vi.min(), vmax=vi.max())
+P.figure(figsize=(6, 3))
+P.subplot(121)
+P.scatter(xo, yo, c=vo[0],  cmap='prism', **kwp)
+add_grid(vi.getGrid())
+P.title('linear4d')
+P.subplot(122)
+P.scatter(xo, yo, c=von[0], cmap='prism', **kwp)
+add_grid(vi.getGrid())
+P.title('nearest4d')
+P.figtext(.5, .98, 'grid2xy in 4D', va='top', ha='center', weight='bold')
+P.tight_layout()
+P.savefig(code_file_name(ext='.png'))
+P.close()
+
+# Reversed z and y
+vi_revz = vi[:, :, ::-1, ::-1, :]
+vo = grid2xy(vi_revz, xo=xo, yo=yo, zo=zo, to=to, method='linear')
+N.testing.assert_allclose(vo[0], yo)
+
 
 # Rectangular xyt only
 vi_xyt = vi[:, :, 0]
@@ -69,6 +90,11 @@ vo = grid2xy(vi, zi=zi_5d, xo=xo, yo=yo, zo=zo, to=to, method='linear')
 assert vo.shape==(ne, np)
 N.testing.assert_allclose(vo[0], yo)
 
+# Reversed 5d z
+zi_5d_rev = zi_5d[:, :, ::-1, :, :]
+vo = grid2xy(vi_revz, zi=zi_5d_rev, xo=xo, yo=yo, zo=zo, to=to, method='linear')
+N.testing.assert_allclose(vo[0], yo)
+
 # Zi present but not requested
 vo = grid2xy(vi, xo=xo, yo=yo, to=to, method='linear')
 assert vo.shape==(ne, nz, np)
@@ -78,8 +104,6 @@ N.testing.assert_allclose(vo[0, 0], yo)
 vo = grid2xy(vi, xo=xo, yo=yo, method='linear')
 assert vo.shape==(ne, nt, nz, np)
 N.testing.assert_allclose(vo[0, 0, 0], yo)
-#P.show()
-P.close()
 
 # Curvilinear xy only
 vi_xyc = vi[:, 0, 0]

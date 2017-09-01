@@ -2308,7 +2308,7 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
 !                    print*,'i',i
                     npi = 2
                     a = xo(io)-xxi(1,i)
-                    if(abs(a)>180d0)a=360d0-180d0
+                    if(abs(a)>180d0)a=a-180d0 ! FIXME: linear4dto1dxx: abs(a)>180d0
                     a = a/(xxi(1,i+1)-xxi(1,i))
 !            print*,'xo2i',xo(io),xxi(1,i),xxi(1,i+1)
                 endif
@@ -2491,6 +2491,141 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
 
 end subroutine linear4dto1dxx
 
+subroutine nearest4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
+        nxi,nyi,nyix,nxiy, nyiz,nxiz,nzi, nti,ntiz, no,nex,nexz)
+    ! linear interpolation of gridded data to random positions
+
+    implicit none
+
+    integer,intent(in) :: nxi,nyi,nyix,nxiy, nyiz,nxiz,nzi, nti,ntiz, no,nex,nexz
+    real(kind=8),intent(in) :: xxi(nyix,nxi), yyi(nyi,nxiy), zzi(nexz,ntiz,nzi,nyiz,nxiz), ti(nti)
+    real(kind=8),intent(in) :: xo(no), yo(no), zo(no), to(no)
+    real(kind=8),intent(in) :: vi(nex,nti,nzi,nyi,nxi), mv
+    real(kind=8),intent(out) :: vo(nex,no)
+
+    real(kind=8) :: p, q, zi(nexz,nzi), dx(nxi)
+    logical ::  curved
+    integer :: io, i, j, k(nexz), l, iz, jz, lz, iez, ieb, ie0, ie1
+
+    vo = mv
+    curved = nyix/=1
+    if(curved .and. nxi/=nxiy .and. nyi/=nyix)stop "linear4dto1: Invalid curved dimensions"
+    if(nxiz/=1 .and. nxiz/=nxi)stop "linear4dto1: Invalid nxiz dimension"
+    if(nyiz/=1 .and. nyiz/=nyi)stop "linear4dto1: Invalid nyiz dimension"
+    if(ntiz/=1 .and. ntiz/=nti)stop "linear4dto1: Invalid ntiz dimension"
+
+!    print*,'xxi',xxi
+!    print*,'yyi',yyi
+!    print*,'ti',ti
+!    print*,'zzi',zzi
+
+
+    !$OMP PARALLEL DO DEFAULT(SHARED) &
+    !$OMP PRIVATE(io,i,j,k,l,p,q) &
+    !$OMP PRIVATE(iz,jz,lz,ieb,ie0,iez,zi)
+    do io = 1, no
+
+            ! Weights
+            if(curved)then
+!print*,'curved'
+                call curv2rel_single(xxi, yyi, xo(io), yo(io), p, q, nxi, nyi)
+                p = max(p, 1d0)
+                p = min(p, dble(nxi))
+                q = max(q, 1d0)
+                q = min(q, dble(nyi))
+                i = int(p)
+                j = int(q)
+                if(p-i>.5)i = i + .5
+                if(q-j>.5)j = j + .5
+
+            else
+                ! - X
+                if(nxi==1)then
+                    i = 1
+                else
+                    dx = abs(xo(io)-xxi(1,:))
+                    where(dx>180.)dx=360.-dx
+                    i = minloc(dx, dim=1)
+                endif
+
+                ! - Y
+                if(nyi==1)then
+                    j = 1
+                else
+                    j = minloc(abs(yo(io)-yyi(:,1)), dim=1)
+                endif
+
+            endif
+
+            ! - T
+!            print*,'nti',nti
+            if(nti==1)then
+                l = 1
+            else
+                l = minloc(abs(to(io)-ti), dim=1)
+            endif
+
+            ! - Z
+            if(nzi==1)then
+                k = 1
+            else
+
+                ! Local zi
+
+                if(nxiz==1)then
+                    iz = 1
+                else
+                    iz = i
+                endif
+
+                if(nyiz==1)then
+                    jz = 1
+                else
+                    jz = j
+                endif
+
+                if(ntiz==1)then
+                    lz = 1
+                else
+                    lz = l
+                endif
+
+                zi = zzi(:, lz, :, jz, iz)
+!                print*,'zi',zi
+
+                ! Normal stuff zi(nexz,nzi),k(nexz)
+                do iez = 1, nexz ! extra dim
+                    k(iez) = minloc(abs(zo(io)-zi(iez,:)), dim=1)
+                enddo
+
+
+            endif
+
+!            print*,'X i',i
+!            print*,'Y j',j
+!            print*,'Z k',k
+!            print*,'T l',l
+
+            ! Interpolate
+            vo(:,io) = 0d0
+!            print*,'nex/nexz',nex/nexz
+            do ieb = 1, nex/nexz
+!                print*,'ieb',ieb
+
+                ie0 = 1+(ieb-1)*nexz
+!                ie1 = ie0+nexz-1
+
+                do iez=0,nexz-1
+                    vo(ie0+iez,io) = vi(ie0+iez,l, k(iez+1), j, i)
+                enddo
+
+            end do
+
+
+    enddo
+    !$OMP END PARALLEL DO
+
+end subroutine nearest4dto1dxx
 
 
 subroutine nearest4dto1d(xi,yi,zi,ti,vi,xo,yo,zo,to,vo,mv,nxi,nyi,nzi,nti,no)

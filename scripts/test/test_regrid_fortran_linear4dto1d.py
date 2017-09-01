@@ -19,10 +19,7 @@ zi = zzi[0, :, 0, 0]
 ti = tti[:, 0, 0, 0]
 vi = vfunc(tti, zzi, yyi, xxi)
 
-#for i in range(10):
-#print '-'*80
-#print i
-N.random.seed(1)
+N.random.seed(0)
 xyztomin = -0.5
 xo = N.random.uniform(xyztomin, nxi-1.5, no)
 yo = N.random.uniform(xyztomin, nyi-1.5, no)

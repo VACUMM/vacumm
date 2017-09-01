@@ -85,6 +85,7 @@ _interp_funcs = ['interp1d', 'interp1dx', 'interp1dxx',
     'bilin2dto1d', 'bilin2dto1dc', 'bilin2dto1dc_reduc',
     'dstwgt2dto1d', 'dstwgt2dto1dc', 'dstwgt2dto1dc_reduc',
     'cellerr1d', 'cellerr1dx', 'cellerr1dxx', 'linear4dto1dxx',
+    'nearest4dto1dxx',
     ]
 
 # Load fortran
@@ -2006,18 +2007,28 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
         to = N.zeros(no, 'd')
         ti = N.zeros(1, 'd')
 
-
     # Interpolate
     if method is None:
         method = 'linear'
     else:
         method = str(method)
+    if univ:
+            targets = [-4, -3]
+            if rect:
+                targets.extend([-2, -1])
+            subdims = {-3:-3, -2:-2, -1:-1}
     if method == 'nearest' or (method=='nat' and mi is not None):
 
         if univ:
+            vi, [ti, zi, yi, xi] = _monotonise_(vi, [ti, zi, yi, xi],
+                targets=targets, subdims=subdims)
             vo = _nearest4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, zo, to, mv)
         else:
-            func = _nearest2dto1d_ if rect else _nearest2dto1dc_
+            if rect:
+                func = _nearest2dto1d_
+                vi, [yi, xi] = _monotonise_(vi, [yi, xi])
+            else:
+                func = _nearest2dto1dc_
             vo = func(xi, yi, vi, xo, yo, mv)
             if method=='nat' and mi is not None:
                 vonear = vo
@@ -2025,12 +2036,16 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
     if 'linear' in method:
 
         if univ:
-            try:
-                vo = _linear4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, zo, to, mv)
-            except:
-                pass
+            vi, [ti, zi, yi, xi] = _monotonise_(vi, [ti, zi, yi, xi],
+                targets=targets, subdims=subdims)
+            vo = _linear4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, zo, to, mv)
         else:
-            func = _bilin2dto1d_ if rect else _bilin2dto1dc_
+            if rect:
+                func = _bilin2dto1d_
+                vi, [yi, xi] = _monotonise_(vi, [yi, xi])
+            else:
+                func = _bilin2dto1dc_
+            vi, [yi, xi] = _monotonise_(vi, [yi, xi])
             vo = func(xi, yi, vi, xo, yo, mv)
 
 
@@ -2062,7 +2077,7 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
         if mi is not None:
             del mi, mo, vonear
 
-    else:
+    elif method != 'nearest':
         raise NotImplementedError, 'Method yet not implemented: '+method
 
     # Output
@@ -4039,6 +4054,54 @@ class CurvedInterpolator(object):
         return varo
 
     regrid = __call__ = interp
+
+def _monotonise_(vari, axes, targets=None, back=False, subdims=None):
+    if targets is None:
+        targets = range(-len(axes), 0)
+    if not isinstance(targets, list):
+        targets = [targets]
+    if not targets:
+        if back:
+            return vari
+        return vari, axes
+    n = vari.ndim
+    targets = [(t if t < 0 else t-n) for t in targets]
+    axes = [ax[:] for ax in axes]
+    if not back:
+        oaxes = list(axes)
+    varo = vari
+    for tg in targets:
+        ax = axes[tg]
+
+#        # 2D case
+#        #FIXME: add case when ax is 2d but not curvilinear like variable depths
+#        ash = ax.shape
+#        if len(ash)==2:
+#            if min(ash)>1:
+#                continue
+#            ax = ax.ravel()
+
+        if ax.size>1:
+            subdim = (subdims[tg] if isinstance(subdims, dict)
+                and tg in subdims else -1)
+            if (N.ma.diff(ax, axis=subdim)<0).any():
+                sel = varo.ndim*[slice(None)]
+                sel[tg] = slice(None, None, -1)
+                varo = varo[tuple(sel)]
+                if not back:
+                    sel = ax.ndim*[slice(None)]
+                    sel[subdim] = slice(None, None, -1)
+                    oaxes[tg] = ax[tuple(sel)]
+#USE SUBDIM
+
+#        ax.shape = ash
+
+    if back:
+        return varo
+    return varo, oaxes
+
+
+
 
 ######################################################################
 ######################################################################
