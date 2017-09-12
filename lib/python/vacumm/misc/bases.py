@@ -360,6 +360,13 @@ def add_logging_proxies(cls):
         wrapper.__name__ = cfunc
         wrapper.__doc__ = '''Wrapper to the %(lfunc)r method of this object logger (see :meth:`Logger.%(lfunc)s` )'''%vars()
         setattr(cls, cfunc, wrapper)
+        
+        # Register code to be skipped when logging
+        cls.get_logger().skipCaller(wrapper.func)
+        # XXX because _classinstancemethod_wrapper is created on classinstancemethod.__get__(),
+        # we directly use _classinstancemethod_wrapper.__call__
+        cls.get_logger().skipCaller(_classinstancemethod_wrapper.__call__.__func__.__code__)
+        
     for args in _logging_proxies:
         wrap_logging_function(cls, *args)
 add_logging_proxies.__doc__ %= ('\n        - '.join(map(lambda f: '%s => %s'%f, _logging_proxies)),)
@@ -716,6 +723,23 @@ class Object(object):
                 self.__class__, sec, nested, config, '\n  '.join(self._config.write()))
         return self._config
 
+    def save_config(self, outfile=None, nested=None):
+        if isinstance(outfile, basestring):
+            outfile, close = file(outfile, 'w'), True
+        else:
+            close = False
+        config = configobj.ConfigObj(self._config)
+        if nested:
+            if isinstance(nested, basestring):
+                sec = nested 
+            else:
+                sec = self.get_config_section_name()
+            # XXX config.dict() is required, otherwise section will not be correctly written ([] missing)
+            config = configobj.ConfigObj({sec:config.dict()})
+        r = config.write(outfile)
+        if close:
+            outfile.close()
+        return r
 
     def get_options(self):
         """Get :attr:`options`"""
@@ -833,6 +857,7 @@ class Object(object):
                     '{} is initialised with an invalid logger type')
         else:
             self._logger = Logger(**lkw)
+        self._logger.skipCaller(self.get_class_logger().skipCaller())
         # Load passed or default configuration
         self.load_config(kwargs.get('config', None),  cfgpatch=kwargs.get('cfgpatch', None))
 

@@ -1,6 +1,7 @@
-# -*- coding: utf8 -*-
-"""Installation script"""
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -32,20 +33,3 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-def configuration(parent_package='',top_path=None):
-    from numpy.distutils.misc_util import Configuration
-    config = Configuration('misc', parent_package, top_path)
-#    config.add_data_files('logo_vacumm.gif')
-    config.add_subpackage('grid')
-    config.add_subpackage('phys')
-    config.add_subpackage('axml')
-    config.add_subpackage('cfgui')
-#   config.add_subpackage('easyPypar')
-    config.add_data_files('vacumm.cfg')
-    config.add_data_files('cpt/*')
-    return config
-
-if __name__ == '__main__':
-    from numpy.distutils.core import setup
-    setup(configuration=configuration)
-
