@@ -2494,7 +2494,7 @@ class OceanDataset(OceanSurfaceDataset):
         'depth_<param>':'Passed to :meth:`get_depth`',
         'mode':_mode_doc}
 
-    def get_dens(self, mode=None, warn=True, **kwargs):
+    def get_dens(self, mode=None, warn=True, potential=False, **kwargs):
         '''Get 4D density'''
 
 
@@ -2504,6 +2504,7 @@ class OceanDataset(OceanSurfaceDataset):
         kwdens = kwfilter(kwargs, 'dens_')
         kwdepth = kwfilter(kwargs, 'depth_')
         kwdepth.update(kwvar)
+        kwdens['potential'] = potential
 
         # First, try to find a dens variable
         if check_mode('var', mode):
@@ -2515,7 +2516,7 @@ class OceanDataset(OceanSurfaceDataset):
         if check_mode('tempsal', mode):
             temp = self.get_temp(**kwvar)
             sal = self.get_sal(**kwvar)
-            depth = self.get_depth(**kwdepth)
+            depth = None if potential else self.get_depth(**kwdepth)
             if temp is not None and sal is not None:
                 dens = density(temp, sal, depth=depth, format_axes=True, **kwdens)
             if dens is not None or check_mode('tempsal', mode, strict=True):
@@ -3202,6 +3203,7 @@ class OceanDataset(OceanSurfaceDataset):
         kwvar['warn'] = fwarn
         kwdens = kwfilter(kwargs, 'dens_')
         kwdens.update(kwvar)
+        kwdens['potential'] = True
         kwdepth = kwfilter(kwargs, 'depth_')
         kwdepth.update(kwvar)
         kwfinal = kwargs.copy()

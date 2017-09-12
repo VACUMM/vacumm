@@ -50,6 +50,7 @@ from collections import OrderedDict
 from copy import copy, deepcopy
 from itertools import cycle
 from types import IntType, FloatType, LongType, ComplexType
+import operator
 
 import numpy as N, MV2, cdms2
 from matplotlib import rcParams

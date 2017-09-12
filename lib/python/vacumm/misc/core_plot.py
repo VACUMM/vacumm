@@ -3944,6 +3944,7 @@ class ScalarMappable:
         if lum != 0.5:
             cmap = change_luminosity(cmap, lum)
 
+
         # Saturation
         if sat is not None:
             cmap = change_saturation(cmap, sat)

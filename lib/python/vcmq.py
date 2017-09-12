@@ -65,7 +65,8 @@ from vacumm.misc.misc import (
     isempty, isnumber, lunique, main_geodir, selector2str, rm_html_tags,
     tunique, split_selector, xls_style, Att, splitidx, CaseChecker, check_case,
     indices2slices, filter_level_selector, filter_selector, match_atts,
-    match_string, ArgTuple, dicttree_get, dicttree_set, minbox)
+    match_string, ArgTuple, dicttree_get, dicttree_set, minbox,
+    bound_ops)
 
 from vacumm.misc.axes import (
     create_lon, create_lat, create_time, create_depth,
@@ -82,7 +83,7 @@ from vacumm.misc.atime import (
     mpl, tic, toc, pat2freq, pat2glob, has_time_pattern,
     is_interval, is_time, is_axistime, is_cdtime, is_datetime, is_in_time_interval,
     is_numtime, is_strtime, itv_intersect, itv_union, julday, reltime,
-    are_valid_units, SpecialDateFormatter, check_range,
+    are_valid_units, SpecialDateFormatter, check_range, numtime,
     daily, daily_bounds, day_of_the_year, unit_type, toc,
     hourly, hourly_bounds, hourly_exact, monthly, tsel2slice,
     reduce, yearly, are_same_units, ascii_to_num, detrend, from_utc,

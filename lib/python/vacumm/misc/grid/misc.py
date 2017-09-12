@@ -2607,7 +2607,8 @@ def isrect(gg, tol=1.e-2, mode="real", f=None, nocache=False):
     return res
 
 
-def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=False):
+def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False,
+        m=None, getmap=False, **kwargs):
     """Get specs for a transect given a grid and starting and ending points
 
     :Params:
@@ -2615,7 +2616,8 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=F
         - **lon/lat0/1**: Coordinates of first and last point in degrees.
         - **subsamp**, optional: Subsampling with respect to grid cell.
         - **getxy**, optional: Also return projected coordinates.
-        - **getproj**, optional: Also return projection map.
+        - **m**, optional: Basemap map used to compute great circle points.
+        - **getmap**, optional: Also return projection map.
 
     :Return: lons, lats[, xx, yy][, proj]
 
@@ -2624,7 +2626,8 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=F
 
     # Bounds and resolution
     dx, dy = resol(gg, proj='merc')
-    m = get_map(gg, resol=None, proj='merc')
+    if m is None:
+        m = get_map(gg, resol=None, proj='merc')
     x0, y0 = m(lon0, lat0)
     x1, y1 = m(lon1, lat1)
     Dx = N.abs(x1-x0)
@@ -2642,8 +2645,12 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=F
     xx, yy = m.gcpoints(lon0, lat0, lon1, lat1, npts)
     lons, lats = m(xx, yy, inverse=True)
     ret = N.array(lons), N.array(lats)
-    if getxy: ret += N.array(xx), N.array(yy)
-    if getproj: ret += m
+    if getxy:
+        ret += N.array(xx), N.array(yy)
+    if 'getproj' in kwargs:
+        getmap = kwargs['getproj']
+    if getmap:
+        ret += m
     return ret
 
 

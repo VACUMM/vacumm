@@ -49,7 +49,7 @@ from cdms2.axis import TransientAxis
 import genutil
 from _geoslib import Point, Polygon
 
-from ...__init__ import VACUMMError, VACUMMWarning
+from ...__init__ import VACUMMError, VACUMMWarning, vacumm_warn
 from .kriging import krig as _krig_
 from .misc import (axis1d_from_bounds, get_xy, isgrid, t2uvgrids, get_grid,
     set_grid, bounds1d, bounds2d, get_axis,
@@ -59,7 +59,7 @@ from .misc import (axis1d_from_bounds, get_xy, isgrid, t2uvgrids, get_grid,
 from .. import axes as A
 from ...misc.misc import (cp_atts, intersect, kwfilter, get_atts, set_atts, closeto,
     splitidx, MV2_concatenate)
-from ...misc.atime import are_same_units, ch_units, time_split
+from ...misc.atime import are_same_units, ch_units, time_split, lindates
 from .basemap import get_proj
 
 MV=MV2
@@ -84,7 +84,8 @@ _interp_funcs = ['interp1d', 'interp1dx', 'interp1dxx',
     'nearest2dto1d', 'nearest2dto1dc', 'nearest2dto1dc_reduc',
     'bilin2dto1d', 'bilin2dto1dc', 'bilin2dto1dc_reduc',
     'dstwgt2dto1d', 'dstwgt2dto1dc', 'dstwgt2dto1dc_reduc',
-    'cellerr1d', 'cellerr1dx', 'cellerr1dxx',
+    'cellerr1d', 'cellerr1dx', 'cellerr1dxx', 'linear4dto1dxx',
+    'nearest4dto1dxx',
     ]
 
 # Load fortran
@@ -1859,7 +1860,8 @@ def xy2xy(xi, yi, zi, xo, yo, nl=False, proj=True, **kwargs):
 
 
 
-def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine'):
+def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=None,
+            distmode='haversine'):
     """Interpolate gridded data to ramdom positions
 
     :Params:
@@ -1870,8 +1872,11 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
         - **method**, optional: Interpolation method
 
             - ``nearest``: Nearest neighbor
-            - ``bilinear``: Linear interpolation
-            - ``nat``: Natgrid interpolation
+            - ``linear``: Linear interpolation
+
+        - **zo**, optional: Output depths (negative in the ocean).
+        - **to**, optional: Output times.
+        - **zi**, optional: Input depths when variable in space.
 
         - **outaxis**, optional: Output spatial axis
 
@@ -1892,50 +1897,164 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
     grid = curv2rect(grid, mode=False)
 
     # Format
-    # - input
+
+    # - input data and coordinates
     xi, yi = get_xy(grid, num=True)
     rect = xi.ndim==1
     mv = vari.getMissing()
     if mv is None:
-        mv = 1.e20
-        vari.setMissing(mv)
-    zi = vari.filled().astype('d').reshape((-1,)+vari.shape[-2:])
-    nz = zi.shape[0]
+        mv = vari.getMissing()
+    order = vari.getOrder()
+    vi = vari.filled(mv).astype('d')
+    extra_dims = []
+    if 'z' not in order and zo is not None:
+        zo = None
+    if 't' not in order and to is not None:
+        to = None
+    univ = to is not None or zo is not None or True # FIXME: univ
+    na = 2 # interpolation dims
+    extra_axes = []
+    if zo is not None:
+        if zi is None:
+            zi = vari.getLevel()
+        zi = zi[:]
+    if univ:
+        if method=='nat':
+            vacumm_warn('"nat" method not available with time or depth'
+                        ' interpolation. Switching to linear')
+            method = 'linear'
+
+        it = 2 + ('z' in order)
+        if 't' not in order and to is None: # not requested and not present
+            vi = vi.reshape(vi.shape[:-it]+(1, )+vi.shape[-it:]) # insert fake dim
+        elif to is not None: # requested and present
+            na += 1
+            taxis = vari.getTime()
+            ti = taxis[:]
+        else: # present but not requested
+            vi = vi.reshape(vi.shape[:-it]+(1, )+vi.shape[-it:]) # insert fake dim
+            extra_axes.insert(0, vari.getTime())
+
+        if 'z' not in order and zo is None: # not requested and not present
+            vi = vi.reshape(vi.shape[:-2]+(1, )+vi.shape[-2:]) # insert fake dim
+        elif zo is not None: # requested and present
+            na += 1
+            if zi.ndim<3: # no xy assumed
+                zi = zi.reshape(zi.shape+(1, 1))
+            if zi.ndim < vari.ndim: # with xy: left pad with ones
+                zi = zi.reshape((1, )*(vari.ndim-zi.ndim)+zi.shape)
+        else: # present but not requested
+            vi = vi.reshape(vi.shape[:-2]+(1, )+vi.shape[-2:]) # insert fake dim
+            if extra_axes: # t as extra: ET1Z1YX -> ETZ11YX
+                vi = vi.reshape(vi.shape[:-5]+vi.shape[-4:-3]+(1, 1)+vi.shape[-2:])
+            else: # ETZ1YX -> EZT1YX
+                vi = N.moveaxis(vi, -4, -5)
+            extra_axes.append(vari.getLevel())
+
+#        if zo is not None:
+#            zi = zi.reshape((-1, )+zi.shape[-4:])
+        if xi.ndim==1:
+            xi = xi[None, :]
+        if yi.ndim==1:
+            yi = yi[:, None]
+
+
+        extra_axes = ([ax for ax, o in zip(vari.getAxisList(), order) if o=='-']
+                      + extra_axes)
+
+    else:
+
+        na = 2
+        ne = vi.ndim - 2
+    vi = vi.reshape((-1,)+vi.shape[-4:])
+#    if zi.shape[0] != vi.shape[0]:
+#        zi = N.resize(zi, vi.shape[:1] + zi.shape[1:])
+
+
     if vari.mask is not MV2.nomask:
-        mi = vari.mask.astype('d').reshape(zi.shape)
+        mi = vari.mask.astype('d').reshape(vi.shape)
     else:
         mi = None
-    # - output
+
+    # - output coordinates
     isscalar = N.isscalar(xo)
     xo = N.atleast_1d(N.asarray(xo, dtype='d'))
     yo = N.atleast_1d(N.asarray(yo, dtype='d'))
+    no = max(xo.size, yo.size)
+    if zo is not None:
+        no = max(zo.size, no)
+    if to is not None:
+        no = max(len(to), no)
+    assert xo.ndim==1 and yo.shape==xo.shape, ('xo and yo must be scalars 1d or arrays'
+                                               ' of equal lengths')
     if abs(xi.min()-xo.min())>180.:
         if xi.min()<xo.min():
             xi = xi + 360.
         else:
             xi = xi - 360.
+    if zo is not None:
+        zo = N.atleast_1d(zo[:])
+        assert zo.shape==xo.shape,  ('zo must have the same shape as xo and yo')
+    else:
+        zo = N.zeros(no, 'd')
+        zi = N.zeros([1]*5, 'd')
+    if to is not None:
+        to = A.create_time(to)
+        to.toRelativeTime(taxis.units)
+        to = to[:]
+        assert to.shape== xo.shape,  ('"to" must have the same shape as xo and yo')
+    else:
+        to = N.zeros(no, 'd')
+        ti = N.zeros(1, 'd')
 
     # Interpolate
     if method is None:
-        method = 'bilinear'
+        method = 'linear'
     else:
         method = str(method)
-    if method == 'nearest': # or mi is not None:
+    if univ:
+            targets = [-4, -3]
+            if rect:
+                targets.extend([-2, -1])
+            subdims = {-3:-3, -2:-2, -1:-1}
+    if method == 'nearest' or (method=='nat' and mi is not None):
 
-        func = _nearest2dto1d_ if rect else _nearest2dto1dc_
-        zo = func(xi, yi, zi, xo, yo, mv)
+        if univ:
+            vi, [ti, zi, yi, xi] = _monotonise_(vi, [ti, zi, yi, xi],
+                targets=targets, subdims=subdims)
+            vo = _nearest4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, zo, to, mv)
+        else:
+            if rect:
+                func = _nearest2dto1d_
+                vi, [yi, xi] = _monotonise_(vi, [yi, xi])
+            else:
+                func = _nearest2dto1dc_
+            vo = func(xi, yi, vi, xo, yo, mv)
+            if method=='nat' and mi is not None:
+                vonear = vo
 
-    elif 'linear' in method:
+    if 'linear' in method:
 
-        func = _bilin2dto1d_ if rect else _bilin2dto1dc_
-        zo = func(xi, yi, zi, xo, yo, mv)
+        if univ:
+            vi, [ti, zi, yi, xi] = _monotonise_(vi, [ti, zi, yi, xi],
+                targets=targets, subdims=subdims)
+            vo = _linear4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, zo, to, mv)
+        else:
+            if rect:
+                func = _bilin2dto1d_
+                vi, [yi, xi] = _monotonise_(vi, [yi, xi])
+            else:
+                func = _bilin2dto1dc_
+            vi, [yi, xi] = _monotonise_(vi, [yi, xi])
+            vo = func(xi, yi, vi, xo, yo, mv)
 
 
     elif method.startswith('nat'):
 
         # Build regridder
         from nat import Natgrid
-        zo = N.zeros((nz, len(xo)))+mv
+        nz = vi.shape[0]
+        vo = N.zeros((nz, len(xo)))+mv
         if xi.ndim==1:
             xxi, yyi = xi, yi
         else:
@@ -1948,23 +2067,25 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
         for iz in xrange(nz):
 
             # Base
-            zo[iz] = r.rgrd(zi[iz].ravel())
+            vo[iz] = r.rgrd(vi[iz].ravel())
 
             # Mask
             if mi is not None:
                 mo[:] = r.rgrd(mi[iz].ravel())
-                zo[iz] = N.where(mo!=0., zonear[iz], zo[iz])
+                vo[iz] = N.where(mo!=0., vonear[iz], vo[iz])
 
-        if mi is not None: del mi, mo
+        if mi is not None:
+            del mi, mo, vonear
 
-    else:
+    elif method != 'nearest':
         raise NotImplementedError, 'Method yet not implemented: '+method
 
     # Output
-    zo.shape = vari.shape[:-2]+(zo.shape[-1], )
-    varo = MV2.masked_values(zo, mv, copy=0)
+    vo.shape = tuple([len(ax) for ax in extra_axes]) + (vo.shape[-1], )
+    varo = MV2.masked_values(vo, mv, copy=0)
     cp_atts(vari, varo, id=True)
-    if outaxis=='auto': outaxis = None
+    if outaxis=='auto':
+        outaxis = None
     if outaxis is None or outaxis in ['m', 'pos', 'd', 'dist']:
         if len(xo)>1:
             #xom, yom = get_proj((xo, yo))(xo, yo)
@@ -1983,6 +2104,10 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
         outaxis = A.create_lon(xo)
     elif outaxis in ['y', 'lat']:
         outaxis = A.create_lat(yo)
+    elif to is not None and outaxis in ['t', 'time']:
+        outaxis = A.create_time(to)
+    elif zo is not None and outaxis in ['z', 'dep', 'depth']:
+        outaxis = A.create_dep(zo)
     elif outaxis in ['m', 'd', 'pos', 'dist']:
         dist = N.concatenate(([0], get_distances(xo[1:], yo[1:], xo[:-1], yo[:-1],
             pairwise=True, mode=distmode))).cumsum()*0.001
@@ -1994,7 +2119,7 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
     if outaxis is not None and not A.isaxis(outaxis):
         outaxis = cdms2.createAxis(outaxis, id='position')
         outaxis.long_name = 'Position along transect'
-    axes = vari.getAxisList()[:-2]
+    axes = extra_axes
     if outaxis is not None:
         axes.append(outaxis)
     else:
@@ -2004,10 +2129,13 @@ def grid2xy(vari, xo, yo, method='bilinear', outaxis=None, distmode='haversine')
     return varo
 
 
-def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
-        getcoords=False, outaxis=None, split=None,
-        tmethod='linear', **kwargs):
-    """Make a transect in a -YX variable
+def transect(var, lons, lats, depths=None, times=None, method='linear',
+        subsamp=3, getcoords=False, outaxis=None, depth=None, **kwargs):
+    """Make a transect in a -[T][Z]YX variable
+
+    It calls :func:`~vacumm.misc.grid.transect_specs` to compute transect
+    coordinates when not explictly specified, and :func:`grid2xy` to perform
+    4D interpolations.
 
     :Example:
 
@@ -2025,11 +2153,14 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
               The array of coordinates is generated using :func:`transect_specs`.
             - Or explicit array of coordinates (as scalars, lists or arrays).
 
-        - **times**, optional: Time sequence or axis of the same length as
+        - **depths**, optional: Output depths. If not a tuple, it must have
+          the same size as lons and lats.
+        - **times**, optional: Tuple, or time sequence or axis of the same length as
           resulting coordinates. If provided, the interpolation is first done
           in space, them onto this lagrangian time,
           and the final space-time trajectory is returned.
           If ``outaxis`` is None, ``taxis`` becomes the output axis.
+
         - **subsamp**, optional: Subsampling with respect to grid cell
           (only when coordinates are not explicit).
         - **method**, optional: Interpolation method (see :func:`grid2xy`).
@@ -2042,129 +2173,51 @@ def transect(var, lons, lats, times=None, method='bilinear', subsamp=3,
 
     """
     # Output coordinates
-    time = kwargs.get('time', times) # backward compat
+    times = kwargs.get('time', times) # backward compat
     if isinstance(lons, tuple): # Find coordinates
         lon0, lon1 = lons
         lat0, lat1 = lats
         lons, lats = transect_specs(var, lon0, lat0, lon1, lat1, subsamp=subsamp)
         single = False
-    elif times is None and cdms2.isVariable(lons) and lons.getTime() is not None:
-        times = lons.getTime()
     else: # explicit coordinates
         single = N.isscalar(lons) and N.isscalar(lats)
         lons = N.atleast_1d(lons)
         lats = N.atleast_1d(lats)
-
-    # Split transect to limit memory usage
-    if split:
-        if isinstance(split, (int, list)):
-            idx = splitidx(lons, split)
+    if depths is not None:
+        if isinstance(depths, tuple):
+            depths = N.linspace(depths[0], depths[1], len(lons))
         else:
-            assert times is not None, ('Such transect splitting cannot be operated'
-                'without the "times" argument')
-            times = A.create_time(times)
-            if isinstance(split, float):
-                idx = splitidx(times, split)
-            else:
-                idx = []
-                for itv in time_split(times, split)[:-1]:
-                    ijk = times.mapIntervalExt(itv[:2]+('co', ))
-                    if ijk is None: continue
-                    idx.append(ijk[0])
-        idx.append(len(lons))
-
-        vv = []
-        lastj = None
-        lastdist = 0
-        for i, i0 in enumerate(idx[:-1]):
-            i1 = idx[i+1]+1
-            slons = lons[i0:i1]
-            slats = lats[i0:i1]
-            if times is not None:
-                if A.isaxis(times):
-                    stimes = times.subaxis(i0, i1)
-                else:
-                    stimes = times[i0:i1]
-            else:
-                stimes = None
-            svar = transect(var, slons, slats, times=stimes, method=method,
-                getcoords=False)
-            for oaxis, soutaxis in enumerate(svar.getAxisList()): # find the outaxis
-                if hasattr(soutaxis, '_vacumm_transect'):
-                    break
-            if not A.isaxis(outaxis):
-                if soutaxis.id.startswith('dist'):
-                    soutaxis[:] += lastdist
-                    lastdist = soutaxis[-1]
-            if i!=len(idx)-2:
-                sel = [slice(None)]*svar.ndim
-                sel[oaxis] = slice(None, -1)
-                svar = svar[tuple(sel)]
-            vv.append(svar)
-        var = MV2_concatenate(vv, axis=oaxis)
-        if A.isaxis(outaxis):
-            var.setAxis(-1, outaxis)
-
-    else:
-
-        # Spatial interpolation
-        if outaxis=='time':
-            outaxis = None
-            ko = False
+            depths = N.atleast_1d(depths)
+            if len(depths)!=len(lons):
+                raise VACUMMError('Your depths axis must have a length of: %i (!=%i'%(
+                    len(depths), len(lons)))
+    if times is None and cdms2.isVariable(lons) and lons.getTime() is not None:
+            times = lons.getTime()
+    if times is not None:
+        if isinstance(times, tuple):
+            times = lindates(times[0], times[1], len(lons))
         else:
-            ko = outaxis is not None
-        var = grid2xy(var, lons, lats, outaxis=outaxis, method=method)
-        var.getAxis(-1)._vacumm_transect = True
-
-        # Interpolate to a lagrangian time axis
-        if (times is not None and var.getTime() is not None and
-                var.getTime() is not outaxis):
-
-            if ko: outaxis = var.getAxis(-1)
-
-            # Time axis
             if not A.istime(times):
                 times = A.create_time(times)
             if len(times)!=len(lons):
-                raise VACUMMError('Your time axis must have a length of: %i (!=%i'%(
+                raise VACUMMError('Your times must have a length of: %i (!=%i'%(
                     len(times), len(lons)))
 
-            # Interpolate
-            var_square = regrid1d(var, times, method=tmethod) # (nl,nz,nl)
-
-            # Init out
-            iaxis = var.getOrder().index('t')
-            sel = [slice(None)]*var_square.ndim
-            if outaxis is None: # time -> (nt=nl,nz)
-                sel[-1] = 0
-                oaxis = iaxis
-            else: # space -> (nz,nd=nl)
-                sel[iaxis] = 0
-                oaxis = -1
-            var = var_square[tuple(sel)].clone() # fixme: scalar cases
-
-            # Select the diagnonal the ~square matrix and fill var
-            varsm = var_square.asma()
-            del var_square
-            ii = N.arange(len(times))
-            sel = [slice(None)]*varsm.ndim
-            sel[iaxis] = sel[-1] = ii
-            varsm = varsm[tuple(sel)] # (nd,nz)
-            if oaxis==-1:
-                oaxis = varsm.ndim - 1
-            if oaxis!=0:
-                varsm = N.rollaxis(varsm, 0, oaxis+1)
-            var[:] = varsm
-            del varsm
-            outaxis = var.getAxis(oaxis)
-            outaxis._vacumm_transect = True
-
+    # Interpolation
+    var = grid2xy(var, lons, lats, zo=depths, to=times, zi=depth,
+        method=method, outaxis=outaxis)
 
     # Single point
     if single: var = var[...,0]
 
-    if not getcoords: return var
-    return var, lons, lats
+    if not getcoords:
+        return var
+    coords = lons, lats
+    if depths is not None:
+        coords += depths,
+    if times is not None:
+        coords += times,
+    return (var,) + coords
 
 def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
     """Refine a variable on a grid by a factor
@@ -4001,6 +4054,54 @@ class CurvedInterpolator(object):
         return varo
 
     regrid = __call__ = interp
+
+def _monotonise_(vari, axes, targets=None, back=False, subdims=None):
+    if targets is None:
+        targets = range(-len(axes), 0)
+    if not isinstance(targets, list):
+        targets = [targets]
+    if not targets:
+        if back:
+            return vari
+        return vari, axes
+    n = vari.ndim
+    targets = [(t if t < 0 else t-n) for t in targets]
+    axes = [ax[:] for ax in axes]
+    if not back:
+        oaxes = list(axes)
+    varo = vari
+    for tg in targets:
+        ax = axes[tg]
+
+#        # 2D case
+#        #FIXME: add case when ax is 2d but not curvilinear like variable depths
+#        ash = ax.shape
+#        if len(ash)==2:
+#            if min(ash)>1:
+#                continue
+#            ax = ax.ravel()
+
+        if ax.size>1:
+            subdim = (subdims[tg] if isinstance(subdims, dict)
+                and tg in subdims else -1)
+            if (N.ma.diff(ax, axis=subdim)<0).any():
+                sel = varo.ndim*[slice(None)]
+                sel[tg] = slice(None, None, -1)
+                varo = varo[tuple(sel)]
+                if not back:
+                    sel = ax.ndim*[slice(None)]
+                    sel[subdim] = slice(None, None, -1)
+                    oaxes[tg] = ax[tuple(sel)]
+#USE SUBDIM
+
+#        ax.shape = ash
+
+    if back:
+        return varo
+    return varo, oaxes
+
+
+
 
 ######################################################################
 ######################################################################
