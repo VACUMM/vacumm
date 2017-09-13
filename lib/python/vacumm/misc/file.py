@@ -34,6 +34,9 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from __future__ import absolute_import
+import fnmatch, math, os, re, shutil
+
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
 __doc__ = '''
@@ -47,9 +50,6 @@ This module provides various file related features:
     - size parsing and formatting
     - directory creation without error on existing directory
 '''
-
-
-import fnmatch, os, re, shutil
 
 
 def mkdirs(d):
@@ -130,25 +130,25 @@ def rollover(filepath, count=1, suffix='.%d', keep=True, verbose=False):
 
 _sort_size_dict = lambda sd: sorted(sd.items(), lambda a, b: cmp(a[1],b[1]))
 
-# 1 kilooctet (ko) = 10**3 octets = 1 000 octets
+# Binary units : 1 kibioctet (Kio) = 2^10 = 1024
 _size_units = {
-    'K':10**3, 'M':10**6, 'G':10**9,
-    'T':10**12, 'P':10**15, 'E':10**18,
-    'Z':10**21, 'Y':10**24,
-}
-_sorted_size_units = _sort_size_dict(_size_units)
-
-# 1 kibioctet (Kio) = 2**10 octets = 1 024 octets
-_si_size_units = {
     'K':2**10, 'M':2**20, 'G':2**30,
     'T':2**40, 'P':2**50, 'E':2**60,
     'Z':2**70, 'Y':2**80,
+}
+_sorted_size_units = _sort_size_dict(_size_units)
+
+# SI units : 1 kilooctet (Ko) = 10^3 = 1000
+_si_size_units = {
+    'K':10**3, 'M':10**6, 'G':10**9,
+    'T':10**12, 'P':10**15, 'E':10**18,
+    'Z':10**21, 'Y':10**24,
 }
 _sorted_si_size_units = _sort_size_dict(_si_size_units)
 
 _strfsize_doc_sorted_units = ', '.join(map(lambda s:s[0], _sorted_size_units))
 
-def strfsize(size, fmt=None, unit=None, si=False):
+def strfsize(size, fmt=None, unit=None, si=False, suffix=True):
     '''
     Format a size in bytes using the appropriate unit multiplicator (Ko, Mo, Kio, Mio)
     
@@ -169,7 +169,7 @@ def strfsize(size, fmt=None, unit=None, si=False):
     
     units_dict = _si_size_units if si else _size_units
     units = reversed(_sorted_si_size_units if si else _sorted_size_units)
-    unit_suffix = 'io' if si else 'o'
+    unit_suffix = 'o' if si else 'io'
     size = float(size)
     
     fmt_unit, fmt_ratio = '', 1
@@ -187,19 +187,22 @@ def strfsize(size, fmt=None, unit=None, si=False):
     fmt_size = size / fmt_ratio
     if fmt is None:
         fmt = '%(size).3f %(unit)s' if float(fmt_size) % 1 else '%(size)d %(unit)s'
-    return fmt%{'size':fmt_size, 'unit':fmt_unit + unit_suffix}
+    if suffix:
+        fmt_unit += unit_suffix
+    return fmt%{'size':fmt_size, 'unit':fmt_unit}
 
 strfsize.__doc__ %= _strfsize_doc_sorted_units
 
 _strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?'%('|'.join(_size_units.keys())), re.IGNORECASE)
 
-def strpsize(size, si=True):
+def strpsize(size, si=False):
     """Parse a size in Ko, Mo, Kio, Mio, ...
 
     :Params:
 
-        - **size**: the size string (eg. "1Ko", "2 Mo", " 10 Go"
-        - **si**: whether to use International System units (10^3, ...) or CEI units (2**10, ...)
+        - **size**: the size string (eg. "1Ko", "1Kio", "2 Mo", " 10 Go"
+        - **si**: when unit does not ends with 'io' force interpretation as 
+                  International System units (10^3, ...) instead of binary units (2^10, ...)
 
     :Return: the float number of bytes
     """
@@ -211,10 +214,15 @@ def strpsize(size, si=True):
         u = (d.get('unit') or '').upper()
         s = (d.get('usfx') or '').lower()
         if u:
-            if s == 'io': return n * _si_size_units[u]
-            elif si: return n * _si_size_units[u]
-            else: return n * _size_units[u]
-        else: return n
+            if s == 'io':
+                r = n * _size_units[u]
+            elif si:
+                r = n * _si_size_units[u]
+            else:
+                r = n * _si_size_units[u]
+        else:
+            r = n
+        return int(math.ceil(r))
     raise ValueError('Cannot parse size: %s'%(size))
 
 
