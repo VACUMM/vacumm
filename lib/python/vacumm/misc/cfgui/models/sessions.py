@@ -93,13 +93,13 @@ class Session(XmlConfigObject):
         if reloadcfg is None: reloadcfg = reload
         self.logger.verbose('Initialize, reloadspc: %(reloadspc)s, reloadcfg: %(reloadcfg)s, patch: %(patch)s', locals())
 
-        if not self.session_config_manager or (self.specification_file != self._prevspcfile and reloadspc):
+        if not self.session_config_manager or reloadspc:
             self.logger.verbose('Loading specification: %r', self.specification_file)
             self.session_config_manager = ConfigManager(self.specification_file, interpolation=False)
             self._prevspcfile = self.specification_file
         self.logger.debug('Specification (%r):\n%s\n', self.specification_file, self.pformat(self.session_configspec.dict()))
 
-        if not self.session_config or (self.configuration_file != self._prevcfgfile and reloadcfg):
+        if not self.session_config or reloadcfg:
             self.logger.verbose('Loading configuration: %r', self.configuration_file)
             if self.configuration_file:
                 if not os.path.exists(self.configuration_file):

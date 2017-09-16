@@ -112,17 +112,15 @@ class MainController(Object):
         self.main_window.set_specification(self.session.session_config_manager)
 
 
-    def load_configuration(self, filepath=None, ascurrentfile=True):
+    def load_configuration(self, filepath=None):
         if filepath:
             self.notice('Loading configuration from %r', filepath)
         else:
             filepath = self.session.configuration_file
             self.notice('Reloading configuration from %r', filepath)
 
-        if ascurrentfile:
-            self.session.configuration_file = filepath
-
-        self.session.session_config = self.session.session_config_manager.load(filepath)
+        self.session.configuration_file = filepath
+        self.session.initialize(reloadcfg=True)
         self.info('Configuration:\n%s', self.pformat(self.session.session_config.dict()))
 
         self.main_window.set_configuration(

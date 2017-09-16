@@ -430,6 +430,7 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
         layout = QtGui.QHBoxLayout(frame)
 
         def bound_enable(state):
+            self.debug('option %s enabled: %s', option_name, state)
             if config_widget[option_name].frame:
                 config_widget[option_name].frame.setEnabled(state)
             config_widget[option_name].setEnabled(state)
@@ -444,7 +445,7 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
             checkbox.setTristate(False)
             checkbox.setToolTip('Enable or disable this option. When disabled, the option will not appear in the output configuration file unless "Save defaults" is enabled in preferences.')
             def stateChanged():
-                bound_enable(checkbox.checkState())
+                bound_enable(not not checkbox.checkState())
             checkbox.stateChanged.connect(stateChanged)
 
         bound_dict_line_to_name = {}
@@ -603,6 +604,7 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
                         continue
 
                     enabled = config_raw is not None and option_name in config_raw
+                    
                     config_widget[option_name].enable(enabled)
 
                     if option_name not in config:
