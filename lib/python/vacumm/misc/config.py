@@ -833,8 +833,12 @@ class ConfigManager(object):
         else:
             cfgpatch.interpolation = False
 
-#        cfgpatch.walk(_walker_patch_, cfg=cfg)
+        # Merging based on specs with type check
         self.cfgspecs.walk(_walker_patch_, cfg=cfg, cfgpatch=cfgpatch)
+
+        # Merging of missing stuff
+        cfgpatch.walk(_walker_patch_, cfg=cfg, cfgpatch=cfgpatch)
+
 
         if validate and cfg.configspec is not None:
             cfg.validate(self.validator)
@@ -1010,7 +1014,7 @@ class ConfigManager(object):
 
             # Feed config with cfgfile before command line options
             if cfgfilepatch == 'before' and getattr(options, 'cfgfile', None):
-                self.patch(cfg, self.load(options.cfgfile))
+                cfg = self.patch(cfg, self.load(options.cfgfile))
 
             # Feed config with command line options
             defaults.walk(_walker_argcfg_setcfg_, raise_errors=True,
@@ -1018,7 +1022,7 @@ class ConfigManager(object):
 
             # Feed config with cfgfile after command line options
             if cfgfilepatch == 'after' and getattr(options, 'cfgfile', None):
-                self.patch(cfg, self.load(options.cfgfile))
+                cfg = self.patch(cfg, self.load(options.cfgfile))
 
 
             if not getparser and not getargs:
