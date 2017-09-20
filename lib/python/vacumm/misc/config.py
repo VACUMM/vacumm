@@ -495,20 +495,22 @@ def _update_registry_():
         v.setdefault('argtype', v['func'])
 
         # Add plural forms and validators to handle list values
+        # TODO: we should remove this plural form which is not really correct
         if k.endswith('y'):
             nk = k[:-1]+'ies'
         elif k.endswith('x'):
             nk = k+'es'
         else:
             nk = k+'s'
-        if nk not in VALIDATOR_SPECS:
-            nv = v.copy()
-            nv['func'] = _valwraplist_(v['func'])
-            nv['iterable'] = True
-
-            # OptionParser will check each value, not the list thus we provide the value validator
-            nv['opttype'] = nk
-            VALIDATOR_SPECS[nk] = nv
+        for nk in (nk, k+'_list'):
+            if nk not in VALIDATOR_SPECS:
+                nv = v.copy()
+                nv['func'] = _valwraplist_(v['func'])
+                nv['iterable'] = True
+                # OptionParser will check each value, not the list thus we provide the value validator
+                # TODO: check how this is treated, add argtype ?
+                nv['opttype'] = nk
+                VALIDATOR_SPECS[nk] = nv
 
     # List of names
     while VALIDATOR_TYPES:
@@ -797,7 +799,7 @@ class ConfigManager(object):
                         for k in keys:
 
                             vdef = secd.get(k, None)
-                            sys.stderr.write(msg+'\nSetting it to default value: %s\n'%vdef)#,ValidationWarning)
+                            sys.stderr.write(msg+'\nSetting it to default value: %s\n'%(vdef,))#,ValidationWarning)
 
                             # Reset to default
                             if validate=='fix':
@@ -1836,6 +1838,27 @@ def get_secnames(cfg):
         cfg = cfg.parent
         secnames.append(cfg.name)
     return secnames[::-1]
+
+def pathname(cfg, entry=None):
+	'''
+	Get a string representing the path of ConfigObj and optionally an entry in it.
+		>>> c=configobj.ConfigObj({'a':{'b':{'c':'d'}}})
+		>>> cfgpath(c['a']['b'])
+		'a.b'
+		>>> cfgpath(c['a'], 'b')
+		'a.b'
+		>>> cfgpath(c['a']['b'], 'c')
+		'a.b.c'
+		
+	'''
+	ancestors = []
+	if entry is not None:
+		ancestors.append(entry)
+	curcfg = cfg
+	while curcfg.depth > 0 and curcfg.parent is not curcfg:
+		ancestors.append(curcfg.name)
+		curcfg = curcfg.parent
+	return '.'.join(reversed(ancestors))
 
 def list_options(sec, optlist=None, parents=None, values=False, sections=False):
     """Get the list of options of section tree
