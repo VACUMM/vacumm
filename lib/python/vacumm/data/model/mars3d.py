@@ -69,10 +69,22 @@ class Mars3D(OceanDataset,AtmosSurfaceDataset):
     #: Positive up?
     positive = 'up'
 
+    #: Name of time axis
+    taxis_name = 'time'
+
+    #: Name of vertical axis
+    zaxis_name = 'levels'
+
+    #: Name of meridional / j axis
+    yaxis_name = 'nj'
+
+    #: Name of zonal / i axis
+    xaxis_name = 'ni'
+
     # Local specs
     ncobj_specs = {
 
-        # salinity
+        # diffusivity
         'kz':{'search':{'id':['kzm']}},
 
         # sea surface temperature
