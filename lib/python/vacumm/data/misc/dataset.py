@@ -2075,14 +2075,22 @@ class Dataset(Object):
 class AtmosSurfaceDataset(Dataset):
 
     # For auto-declaring methods
-    auto_generic_var_names = ['senhf', 'lathf', 'lhf', 'swhf', 'lwhf', 'evap', 'rain',
-        'taux', 'tauy', 'u10m', 'v10m']
+    auto_generic_var_names = ['nethf', 'senhf', 'hfsen', 'lathf', 'hflat', 'swhf', 'lwhf', 'evap', 'rain',
+        'taux', 'tauy', 'u10m', 'v10m', 't2m', 'hu2m', 'z0a', 'cda', 'cha', 'cea']
 
 @getvar_decmets
 class OceanSurfaceDataset(Dataset):
 
     # For auto-declaring methods
-    auto_generic_var_names = ['sst', 'sss', 'ssh', 'usurf', 'vsurf', 'hs']
+    auto_generic_var_names = ['sst', 'sss', 'ssh', 'usurf', 'vsurf']
+
+@getvar_decmets
+class WaveSurfaceDataset(Dataset):
+    # For auto-declaring methods
+    auto_generic_var_names = ['hs','mss','mssx','mssy','mss','dir','fp','t0m1','lm',
+        'ubot','uubr','vubr','bhd','foc','utwo','vtwo','utaw','vtaw','uuss','vuss','utus','vtus',
+        'fbb','utbb','vtbb','mapsta','bathy','wlv','ucur','vcur','uwnd','vwnd','dp','cha','utaw','vtaw']
+
 
 @getvar_decmets
 class OceanDataset(OceanSurfaceDataset):
@@ -3663,11 +3671,15 @@ class OceanDataset(OceanSurfaceDataset):
         m.post_plot(**plotkw)
         return m,c
 
+@getvar_decmets
 class AtmosDataset(AtmosSurfaceDataset):
     name = 'atmos'
     description = 'Generic atmospheric dataset'
-    ncobj_specs = {}
+    default_depth_search_mode = None
 
+    # For auto-declaring methods
+    auto_generic_var_names = ['oro','wdir','wspd','ua','va','wa','tair','pa',
+        'tkea']
 
 def _at_(at, squeezet=False, focus=None, prefix=False):
     """Convert location letters"""

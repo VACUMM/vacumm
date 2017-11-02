@@ -207,7 +207,7 @@ def kinetic_energy(sshuv, gravity=default_gravity, format_axes=None, dxy=None):
     vf = v.filled(0.)
     ke[..., 1:, :] =  uf[..., 1:,  :]**2
     ke[..., 1:, :] += uf[..., :-1, :]**2
-    ke[..., 1:]    += vf[..., :-1]**2
+    ke[..., 1:]    += vf[..., 1:]**2
     ke[..., 1:]    += vf[..., :-1]**2
 
     # Weight and mask
