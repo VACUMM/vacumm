@@ -346,7 +346,7 @@ def generic2d(data, weights, mask='same', copy=True):
 
     # Filter
     kwf = dict(mode='same', boundary='fill', fillvalue=0.)
-    for i in xrange(datan.shape[0]):
+    for i in xrange(datan.shape[0]): # TODO: multiproc filter2d
         datan[i] = scipy.signal.convolve2d(datan[i], weights, **kwf)
         if data.mask is MV2.nomask:
             ww[i] = scipy.signal.convolve2d(one2d, weights, **kwf)

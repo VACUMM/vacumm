@@ -89,12 +89,13 @@ from vacumm.misc.atime import (
     reduce, yearly, are_same_units, ascii_to_num, detrend, from_utc,
     time_selector, selector, filter_time_selector,
     plot_dt, strtime, interp_clim,
-    datetime as adatetime,
+    datetime as adatetime, compress as compress,
     add,
     )
 datetime_ = adatetime
 add_time = add
 is_time_interval = is_interval
+tcompress = compress
 
 from vacumm.misc.bases import (
     psinfo, code_base_name, code_file_name, code_dir_name, describe, Class, Object,
