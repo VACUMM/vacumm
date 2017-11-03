@@ -1,6 +1,27 @@
 Release notes
 #############
 
+Version 3.5.0
+=============
+
+- Added new classes for MesoNh, Symp張onie and WW3 models
+- Added cfgui: graphical user interface to ConfigMgr
+- Added support for 4D interpolation to grid2xy
+- Added linear4dto1dxx
+- Add tcompress, bound_ops and haversine to vcmq
+- Rename check.py to runcheck
+- Fix kinetic_energy: bad indexes
+- Fix cfgm merging
+- Fix vacumm.misc.file.strfsize
+- Fix OceanDataset.get_mld density issue
+- Fix missing datetime import for tfind
+- Fix ConfigManager warning when default value is not scalar
+- Fix fix xml text nodes load
+- Fix Logger defaults
+- Fix Object class logging funcName
+- Fix spherical variogram
+- Fix imports in basemap
+- Fix cdtime validator in config
 
 Version 3.4.1
 =============

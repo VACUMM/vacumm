@@ -20,13 +20,13 @@ vo = grid2xy(v, xo, yo, method='bilinear')
 # Plot
 # - variable interpolee
 from vacumm.misc.plot import hov2 as hov, savefigs, map2 as map
-hov(vo, cmap='jet', show=False,  top=.9, date_fmt='%H', 
+hov(vo, cmap='jet', show=False,  top=.9, date_fmt='%H',
     colorbar_shrink=.5,  left=.13)
 # - carte + diagonal
 import pylab as P
-m = map(v[0],  xhide=True, yhide=True, contour=False, 
-    title=False, autoresize=0, cmap='cmap_bwr', 
+m = map(v[0],  xhide=True, yhide=True, contour=False,
+    title=False, autoresize=0, cmap='cmap_bwr',
     colorbar=False, axes_rect=[.78, .78, .2, .2], show=False)
 m.map.plot(xo, yo, 'r-', lw=2)
 savefigs(__file__)
-
+P.close()

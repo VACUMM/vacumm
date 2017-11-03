@@ -151,9 +151,9 @@ _strfsize_doc_sorted_units = ', '.join(map(lambda s:s[0], _sorted_size_units))
 def strfsize(size, fmt=None, unit=None, si=False, suffix=True):
     '''
     Format a size in bytes using the appropriate unit multiplicator (Ko, Mo, Kio, Mio)
-    
+
     :Params:
-    
+
         * **size**:
             the size in bytes
         * **fmt**:
@@ -163,15 +163,15 @@ def strfsize(size, fmt=None, unit=None, si=False, suffix=True):
             use an auto determinated unit if None, or the given one among %s
         * **si**:
             whether to use SI (International System) units (10^3, ...) or binary units (2^10, ...)
-    
+
     :Return: a string
     '''
-    
+
     units_dict = _si_size_units if si else _size_units
     units = reversed(_sorted_si_size_units if si else _sorted_size_units)
     unit_suffix = 'o' if si else 'io'
     size = float(size)
-    
+
     fmt_unit, fmt_ratio = '', 1
     if unit is None:
         for unit, threshold in units:
@@ -183,7 +183,7 @@ def strfsize(size, fmt=None, unit=None, si=False, suffix=True):
         if unit not in units_dict:
             raise ValueError('Invalid unit, must be one of: %s'%(_strfsize_doc_sorted_units))
         fmt_unit, fmt_ratio = unit, units_dict[unit]
-    
+
     fmt_size = size / fmt_ratio
     if fmt is None:
         fmt = '%(size).3f %(unit)s' if float(fmt_size) % 1 else '%(size)d %(unit)s'
@@ -201,7 +201,7 @@ def strpsize(size, si=False):
     :Params:
 
         - **size**: the size string (eg. "1Ko", "1Kio", "2 Mo", " 10 Go"
-        - **si**: when unit does not ends with 'io' force interpretation as 
+        - **si**: when unit does not ends with 'io' force interpretation as
                   International System units (10^3, ...) instead of binary units (2^10, ...)
 
     :Return: the float number of bytes

@@ -36,4 +36,4 @@ add_grid((t.getLongitude(), depths[:]), linewidth=.3)
 section2(tr, subplot=212, **kwplot)
 add_grid((tr.getLongitude(), dep[:]), linewidth=.3)
 savefigs(__file__)
-
+P.close()

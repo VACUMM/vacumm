@@ -24,14 +24,15 @@ import pylab as P
 P.figure(figsize=(5.5, 8))
 P.subplots_adjust(left=.12, top=.96, right=1, bottom=.06)
 P.subplot(211)
-xyz.plot(title='Mer celtique', units='m', m=True, 
-    show=False, size=2, cmap='cmap_bathy') 
+xyz.plot(title='Mer celtique', units='m', m=True,
+    show=False, size=2, cmap='cmap_bathy')
 
 # Zoom
 xyz_zoom = xyz.clip((-6, 51.5, -4, 52.5), long_name='Zoom')
 P.subplot(212)
-xyz_zoom.plot(m=True, savefigs=__file__, size=7, 
+xyz_zoom.plot(m=True, savefigs=__file__, size=7,
     show=False, cmap='cmap_bathy')
+P.close()
 
 # Sauvegarde
 xyz_zoom.save('zoom.xyz')
