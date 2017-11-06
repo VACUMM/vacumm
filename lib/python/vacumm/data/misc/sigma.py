@@ -859,7 +859,7 @@ class  NcSigmaGeneralized(NcSigma):
 #        return self._load_sigma_('s', selector)
 
     def sigma_to_depths(self, selector=None, at='t', mode=None, copyaxes=True,
-            eta=None, zerolid=False):
+            eta=None, zerolid=False, depth=None, depth_c=None):
         """Get depths for the current state
 
         :Params:
@@ -888,8 +888,10 @@ class  NcSigmaGeneralized(NcSigma):
                     eta = self.get_eta(selector, mode='noerr')
                 elif eta is False:
                     eta = None
-                depth = self.get_depth(selector)
-                depth_c = self.get_depth_c(selector)
+                if depth is None:
+                    depth = self.get_depth(selector)
+                if depth_c is None:
+                    depth_c = self.get_depth_c(selector)
 
                 # Force sigma reload to allow level selection
                 self.load_sigma(selector)
