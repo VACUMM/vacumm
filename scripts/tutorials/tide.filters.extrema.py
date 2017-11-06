@@ -16,5 +16,5 @@ from vacumm.misc.plot import curve2 as curve
 curve(sea_level, 'ko', markersize=3, figsize=(6, 4), show=False)
 curve(zz, 'go', linewidth=0, show=False, xstrict=False)
 curve(pm, 'ro', linewidth=0, show=False, xstrict=False)
-curve(bm, 'bo', linewidth=0, xstrict=False, title="Niveau de la mer", 
-   savefigs=__file__, savefigs_pdf=True, show=False)
+curve(bm, 'bo', linewidth=0, xstrict=False, title="Niveau de la mer",
+   savefigs=__file__, savefigs_pdf=True, show=False, close=True)

@@ -1906,7 +1906,6 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
         mv = vari.getMissing()
     order = vari.getOrder()
     vi = vari.filled(mv).astype('d')
-    extra_dims = []
     if 'z' not in order and zo is not None:
         zo = None
     if 't' not in order and to is not None:
@@ -2662,7 +2661,7 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
 
         - **rgdr**, optional: An already set up regridder instance to speed up regridding:
           :class:`CDATRegridder` instance for ``regrid2``, ``esmf`` and ``libcf`` tools,
-          else a :class;`CurvedInterpolator` instance for ``vacumm`` tool with
+          else a :class:`CurvedInterpolator` instance for ``vacumm`` tool with
           interpolation on curvilinear grids.
         - **getrgdr**, optional: Also return the regridder instance if it applies, or None.
         - Other keywords are passed to special interpolation functions depending on method and choices :
@@ -2740,9 +2739,9 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
     for ttype in 'r2r', 'r2c', 'c2r', 'c2c':
         if ttype not in tools: continue
         if  (ttype=='r2r' and not curved) or \
-            (ttype=='c2r' and curvedi and not curvedo) or \
-            (ttype=='r2c' and curvedo and not curvedi) or \
-            ttype=='c2c': # Fall back | and curved):
+                (ttype=='c2r' and curvedi and not curvedo) or \
+                (ttype=='r2c' and curvedo and not curvedi) or \
+                ttype=='c2c': # Fall back | and curved):
             if tool=='auto':
                 tool = tools[ttype][0] # First available
             elif tool not in tools[ttype]:
@@ -3890,7 +3889,7 @@ class CDATRegridder(object):
                             **keywords)
             self._kwargs = keywords
 
-    def regrid(self, vari, weidstfracs=None, check_mask=True, csvhack=False, **keywords):
+    def regrid(self, vari, weidstfracs=None, check_mask=None, csvhack=False, **keywords):
         """Regrid the variable
 
         :Params:
@@ -3901,6 +3900,7 @@ class CDATRegridder(object):
               linear and match methods.
             - **check_mask**, optional: Mask point using masked data (the algo
               interpolate the mask and check level 0.999). MUST BE IMPROVED!
+              If None, mask is checked if tool!='regrid2'
             - **csvhack**, optional: Hack to prevent a bug with conservative-like method
               of the ESMF regridder. Use it if you have strange result in the output
               most right longitude.
@@ -3953,6 +3953,8 @@ class CDATRegridder(object):
             del wo, mask
 
         # Check mask
+        if check_mask is None:
+            check_mask = self.tool != 'regrid2'
         if check_mask:
             good = vari.clone()
             good[:] = 1-N.ma.getmaskarray(vari)

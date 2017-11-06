@@ -67,7 +67,7 @@ gridded_manual = xyz.togrid(grid_manual, mask='h')
 # Extraction d'une sous-zone (xmin,ymin...) avec marge
 xyz_up = xyz.clip(zone=(None, None, None, 48.3), margin=2)
 # - si None, valeurs limites internes (i.e xyz.xmin(), ...)
-# - margin : marge relative en unite de resolution 
+# - margin : marge relative en unite de resolution
 #   -> ici : ymax = 48.3 + xyz.resol()[1]*2
 
 # Sauvegarde
@@ -82,10 +82,10 @@ print 'Plots'
 P.figure(figsize=(4.5, 8))
 P.rc('font', size=8)
 P.subplots_adjust(top=.95, hspace=.25, left=.1, bottom=.05, right=.98)
-m = map2(lon=(xc-xr, xc+xr), lat=(yc-yr, yc+yr), proj='merc', 
-    subplot=311, autoresize=0, resolution='f', show=False, drawmeridians_rotation=45, 
+m = map2(lon=(xc-xr, xc+xr), lat=(yc-yr, yc+yr), proj='merc',
+    subplot=311, autoresize=0, resolution='f', show=False, drawmeridians_rotation=45,
     ticklabel_size=9, xhide=True)
-kwplot = dict(vmin=xyz.get_zmin(False), vmax=xyz.get_zmax(False), 
+kwplot = dict(vmin=xyz.get_zmin(False), vmax=xyz.get_zmax(False),
     m=m, show=False, colorbar=False)
 # - xyz
 xyz.plot(size=10, mode='both', masked_alpha=.1, **kwplot)
@@ -93,6 +93,7 @@ xyz.plot(size=10, mode='both', masked_alpha=.1, **kwplot)
 kwplot.update(autoresize=0, ticklabel_size=9)
 map2(gridded_manual, subplot=312, xhide=True, title='Sur grille manuelle', **kwplot)
 # - interpole auto
-map2(gridded_auto, subplot=313, title='Sur grille auto', savefigs=__file__, **kwplot)
+map2(gridded_auto, subplot=313, title='Sur grille auto', savefigs=__file__,
+    close=True, **kwplot)
 #P.show()
 

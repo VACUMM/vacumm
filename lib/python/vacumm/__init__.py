@@ -37,9 +37,9 @@
 from warnings import warn
 
 __project__ = 'vacumm'
-__version__ = '3.4.1'
+__version__ = '3.5.0'
 __release__ = '1'
-__date__ = '2017-05-12'
+__date__ = '2017-11-03'
 __author__ = u'Stéphane Raynaud, Jonathan Wilkins, Guillaume Charria'
 __email__ = 'raynaud@actimar.fr, wilkins@actimar.fr, charria@ifremer.fr'
 __copyright__ = 'Copyright (c) 2010-2016 Actimar/IFREMER'

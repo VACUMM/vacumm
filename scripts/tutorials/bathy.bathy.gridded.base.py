@@ -1,4 +1,7 @@
 # -*- coding: utf8 -*-
+
+import pylab as P
+
 # Récupération d'une bathy sous la forme d'une variable cdat
 import cdms2
 cdms2.axis.latitude_aliases.append('y')
@@ -35,8 +38,8 @@ interp_bathy_orig_masked = GriddedBathy(interp_bathy_orig, shoreline='f').bathy(
 
 # Plots
 from matplotlib import rc ; rc('font', size=9);rc('axes', titlesize=9)
-kwplot = dict(resolution=None, show=False, colorbar=False, contour=False, 
-    top=.97, hspace=.25, bottom=.03, right=.98, 
+kwplot = dict(resolution=None, show=False, colorbar=False, contour=False,
+    top=.97, hspace=.25, bottom=.03, right=.98,
     autoresize=False, vmax=bathy_orig.max(), vmin=bathy_orig.min())
 # - colormap
 from vacumm.misc.color import auto_cmap_topo, land
@@ -52,3 +55,4 @@ plot_bathy(interp_bathy_orig_masked, title='Interpolated->Masked', subplot=414, 
 # - sauvegarde
 from vacumm.misc.plot import savefigs
 savefigs(__file__)
+P.close()

@@ -19,7 +19,7 @@ zo = xy2xy(xi, yi, zi, xo, yo)
 # Plots
 import pylab as P
 from vacumm.misc.plot import savefigs
-P.figure(figsize=(5, 7)) 
+P.figure(figsize=(5, 7))
 P.subplot(211)
 P.title('Original')
 P.scatter(xi, yi, c=zi, s=50, vmin=zi.min(), vmax=zi.max())
@@ -32,3 +32,4 @@ P.scatter(xo[zo.mask], yo[zo.mask], s=50, c='.5', label='Missing')
 P.legend().legendPatch.set_alpha(.5)
 P.axis(axlims)
 savefigs(__file__, pdf=True)
+P.close()

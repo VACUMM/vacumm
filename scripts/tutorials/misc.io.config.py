@@ -2,6 +2,7 @@
 # On charge le fichier
 from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
+import os;print os.getcwd()
 config.read('misc.io.config.in.ini')
 
 # List des sections

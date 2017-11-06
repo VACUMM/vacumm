@@ -14,9 +14,9 @@ gmt.plot(fill=False, color='k', linewidth=1.5, zorder=10, label='GSHHS',
     m='auto', show=False)
 
 # Fin de plot
-from pylab import show, legend, title
+from pylab import show, legend, title, close
 from vacumm.misc.plot import savefigs
 legend()
 title("Ushant shorelines")
 savefigs(__file__, pdf=True)
-
+close()

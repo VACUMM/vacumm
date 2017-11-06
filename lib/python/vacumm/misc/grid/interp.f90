@@ -2449,13 +2449,13 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
 
                 do iez=0,nexz-1
 !                    print*,'iez',iez
-!                    print*,'bmask',bmask(:,l:l+npl-1, k(iez+1):k(iez+1)+npk(iez+1)-1, j:j+npj-1, i:i+npi-1)
+!                    print*,'bmask',bmask(ie0:ie0+iez,l:l+npl-1, k(iez+1):k(iez+1)+npk(iez+1)-1, j:j+npj-1, i:i+npi-1)
 !                    print*, l,l+npl-1
 !                    print*, k(iez+1),k(iez+1)+npk(iez+1)-1
 !                    print*, j,j+npj-1
 !                    print*, i,i+npi-1
 !                    print*,'so'
-                    if(any(bmask(:,l:l+npl-1, k(iez+1):k(iez+1)+npk(iez+1)-1, j:j+npj-1, i:i+npi-1)))then
+                    if(any(bmask(ie0:ie0+iez,l:l+npl-1, k(iez+1):k(iez+1)+npk(iez+1)-1, j:j+npj-1, i:i+npi-1)))then
                         vo(ie0+iez,io) = mv ! masked
                     else
                         do ll=0,npl-1

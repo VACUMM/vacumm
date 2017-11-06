@@ -1,8 +1,18 @@
 #!/bin/env python
 """Sample executable script using config"""
 
+# FORCE COMMANDLINE ARGUMENTS FOR THE EXAMPLE
+from vcmq import data_sample, code_file_name
+ARGUMENTS = "--var=temp --zoom-lat-min=48 "+data_sample('mars3d.xy.nc')
+import sys
+sys.argv = sys.argv[:1] + ARGUMENTS.split()
+
+############################################################################
+############################################################################
+############################################################################
+
 # Init commandline parser
-import sys, os
+import os
 from argparse import ArgumentParser
 parser = ArgumentParser(description="Script to plot a 2D netcdf variable")
 parser.add_argument('ncfile', help='input netcdf file')
@@ -24,5 +34,6 @@ f.close()
 # - plot
 from vacumm.misc.plot import map2
 long_name = var.long_name
-map2(var, title=cfg['title']%locals(), savefigs=__file__, show=False)
+map2(var, title=cfg['title']%locals(), savefigs=code_file_name(), show=False,
+    close=True)
 

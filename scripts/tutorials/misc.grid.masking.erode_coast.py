@@ -33,6 +33,7 @@ P.subplot(313)
 P.pcolormesh(vare.asma())
 P.title('With coastal erosion') ; add_key(3, color='w')
 savefigs(__file__)
+P.close()
 
 
 
