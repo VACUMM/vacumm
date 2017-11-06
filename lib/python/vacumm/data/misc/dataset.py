@@ -3675,11 +3675,239 @@ class OceanDataset(OceanSurfaceDataset):
 class AtmosDataset(AtmosSurfaceDataset):
     name = 'atmos'
     description = 'Generic atmospheric dataset'
-    default_depth_search_mode = None
+    default_altitude_search_mode = None
 
     # For auto-declaring methods
     auto_generic_var_names = ['oro','wdir','wspd','ua','va','wa','tair','pa',
         'tkea']
+
+    def _parse_selects_(self, time, level, lat, lon):
+
+        level, squeeze = self._parse_level_(level)
+
+        return time, level, lat, lon, squeeze
+
+    def _parse_level_(self, level, squeeze=False):
+
+        # Convert level argument from string
+        if isinstance(level, basestring):
+
+            # Selector
+            top = slice(-2, -1)
+            surf = slice(1, 2)
+            if level=='surf':
+                level = surf if self._isdepthup_() else top
+            elif level=='top':
+                level = top if self._isdepthup_() else surf
+            elif level=='3d':
+                level = None
+            else:
+                raise DatasetError('Invalid level selector string: '+level)
+
+            # Squeeze Z dim
+            squeeze = (merge_squeeze_specs(squeeze, 'z')
+                if level is not None else False)
+
+        return level, squeeze
+
+    def get_selector(self, level=None, **kwargs):
+
+        # Argument
+        level, squeeze = self._parse_level_(level)
+
+        selector = Dataset.get_selector(self, level=level, **kwargs)
+
+        if isinstance(selector, dict):
+            selector['squeeze'] = squeeze
+        elif isinstance(selector, cdms2.selectors.Selector):
+            selector.squeeze = squeeze
+
+        return selector
+
+    get_selector.__doc__ = Dataset.get_selector.__doc__
+
+    def get_variable(self, varname, level=None, squeeze=False, **kwargs):
+
+        level, squeeze = self._parse_level_(level, squeeze)
+
+        return Dataset.get_variable(self, varname, level=level, squeeze=squeeze, **kwargs)
+
+    get_variable.__doc__ = Dataset.get_variable.__doc__
+
+    def _isdepthup_(self, depth=None):
+        """Guess if depths are positive up"""
+        # Cache
+        if getattr(self, 'positive', None) is not None:
+            return self.positive=='up'
+
+        # Get depth
+        if depth is None:
+            depth = self.get_depth(time=slice(0, 1), warn=False, format=False)
+        if depth is None: # no depth = no problem
+            self.positive = 'up'
+            return True
+
+        # Guess
+        axis = 0 if len(depth.shape)==1 else 1
+        isup = isdepthup(depth, ro=False, axis=axis)
+        self.positive = 'up' if isup else 'down'
+        return isup
+
+    def _makealtitudeup_(self, var, altitude=None):
+        """Make altitudes positive up"""
+        if altitude is None:
+            if cdms2.isVariable(var):
+                altitude = var.getLevel()
+            elif isdep(var):
+                altitude = var
+        if altitude is None:
+            return var
+        isup = self._isdepthup_(altitude)
+        if isup:
+            return var
+        if isdep(var):
+            return makedepthup(var, depth=False, strict=True)
+        axis = var.getOrder().find('z')
+        if axis<0:
+            return var
+        return makedepthup(var, depth=False, axis=axis, strict=True)
+
+
+    def _get_altitude_(self, at='t', level=None, time=None, lat=None, lon=None,
+            order=None, squeeze=None, asvar=None, torect=True, warn=True, mode=None,
+            format=True, grid=None, zerolid=False, **kwargs):
+
+        altitude=None
+        if mode is None:
+            mode  = self.default_altitude_search_mode
+
+        # Where?
+        at_p = _at_(at, squeezet=True, prefix=True)
+        atz = _at_(at, prefix=False, focus='ver')
+        at_z = _at_(at, prefix=True, focus='ver')
+        at_xy = _at_(at, squeezet=True, prefix=True, focus='hor')
+
+        # Setup keywords
+        fwarn = max(int(warn)-1, 0)
+        kwfinal = dict(order=order, squeeze=squeeze, asvar=asvar, torect=torect,
+            format=format, at=at)
+        kwvar = dict(level=level, time=time, lat=lat, lon=lon, warn=fwarn)
+        kwvar.update(kwfinal)
+        kwvarnoat = kwvar.copy()
+        kwvarnoat.pop('at')
+
+        # First, try to find a altitude variable
+        if check_mode('var', mode):
+            altitude = self.get_variable('altitude'+at_p, **kwvar)
+            if altitude is not None or check_mode('var', mode, strict=True):
+                return self._makealtitudeup_(altitude, altitude)
+
+        # Get selector for other tries
+        sselector = self.get_selector(lon=lon, lat=lat, level=level, merge=True, only='xyz')
+        seltimes = self.get_seltimes(time=time) or [None]
+#        selnotime = None
+        gridmet = 'get_grid'+at_xy
+        if grid is None:
+            grid = getattr(self, gridmet)()#False)
+        curvsel = CurvedSelector(grid, sselector)
+        kwfinal['curvsel'] = curvsel
+        kwfinal['genname'] = genname = 'depth' + at_p
+        if len(seltimes)>1:
+            kwfinal[self.get_timeid()] = seltimes[1]
+        kwfinalz = kwfinal.copy()
+        if at_p and at_z!=at_p: # from T or W to U, etc
+            kwfinalz['genname'] = genname = 'altitude' + at_z
+            kwfinalz.setdefault('at', at)
+
+        # Second, try from sigma-like coordinates at W and T points only (for now)
+        sigma_converter = NcSigma.factory(self.dataset[0])
+
+        if check_mode('sigma', mode):
+
+            if sigma_converter is not None and sigma_converter.stype is None:
+                sigma_converter.close()
+                sigma_converter = None
+
+            if sigma_converter is not None:
+                self.debug('Found depth referring to a sigma level, processing sigma to depth conversion')
+                allvars = []
+                if seltimes[0] is None or isinstance(seltimes[0], slice):
+                    nib = NcIterTimeSlice(self.dataset, tslice=seltimes[0])
+                else:
+                    nib = NcIterBestEstimate(self.dataset, time=seltimes[0], id=self._nibeid+str(time))
+                for f, tslice in nib:
+
+                    # - init
+                    if tslice is False:
+                        continue # and when no time??? None-> ok we continue
+                    if f!=self.dataset[0]:
+                        sigma_converter.update_file(f)
+                    sel = create_selector(time=tslice)
+#                    if selnotime is None:
+#                        selnotime = filter_time_selector(selector, ids=nib.timeid, out=True)
+#                    sel.refine(selnotime)
+                    sel.refine(sselector)
+                    self.debug('- dataset: %s: sigma: %s, select: %s',
+                        os.path.basename(f.id), sigma_converter.__class__.__name__, sel)
+
+                    # - try it
+                    try:
+                        d = sigma_converter(sel, at=atz, copyaxes=True, mode='sigma',
+                            zerolid=zerolid)
+                    except Exception, e:
+                        if warn:
+                            self.warning("Can't get altitude from sigma. Error: \n"+e.message)
+                        break
+                    self.debug('Sigma to altitude result: %s', self.describe(d))
+                    allvars.append(d)
+
+                # Concatenate loaded depth
+                if allvars:
+                    var = MV2_concatenate(allvars)
+                    return self.finalize_object(var, depthup=var, **kwfinalz)
+
+                if check_mode('sigma', mode, strict=True): return
+
+        if warn:
+            self.warning('Found no way to estimate depths at %s location'%at.upper())
+
+    _mode_doc = """Computing mode
+
+          - ``None``: Try all modes, in the following order.
+          - ``"var"``: Read it from a variable.
+          - ``"sigma"``: Estimate from sigma coordinates.
+          #not yet- ``"dz"``: Estimate from layer thinknesses (see :meth:`get_dz`)
+          #not yet- ``"axis"``: Read it from an axis (if not sigma coordinates)
+
+          #You can specifiy a list of them: ``['dz', 'sigma']``
+          #You can also negate the search with
+          #a '-' sigme before: ``"-dz"``."""
+
+    def get_altitude(self, *args, **kwargs):
+        """Get layer altitude testing all locations"""
+        warn = kwargs.pop('warn', True)
+        fwarn = max(int(warn)-1, 0)
+        kwargs['warn'] = fwarn
+        locs = kwargs.pop('at', 'tuvw')
+        for loc in locs:
+            altitude = self._get_altitude_(loc, *args, **kwargs)
+            if altitude is not None:
+                return altitude
+            else:
+                if warn: self.warning("Can't get altitude at location "+loc)
+        return self._get_altitude_('t', *args, **kwargs)
+    getvar_fmtdoc(get_altitude, mode=_mode_doc)
+
+    def get_altitude_t(self, *args, **kwargs):
+        """Get altitude at T location"""
+        return self._get_altitude_('t', *args, **kwargs)
+    getvar_fmtdoc(get_altitude_t, mode=_mode_doc)
+
+    def get_altitude_w(self, *args, **kwargs):
+        """Get altitude at W location"""
+        return self._get_altitude_('w', *args, **kwargs)
+    getvar_fmtdoc(get_altitude_w, mode=_mode_doc)
+
 
 def _at_(at, squeezet=False, focus=None, prefix=False):
     """Convert location letters"""
