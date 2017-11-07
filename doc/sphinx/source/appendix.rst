@@ -12,4 +12,5 @@ Appendix
     appendix.license
     appendix.biblio
     courses/index
+    auto_sg_tests/index
 
