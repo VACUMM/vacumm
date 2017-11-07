@@ -1,13 +1,13 @@
 """Testing CDAT regridding from curvilinear grid to rectangular grid"""
 
 config = {
-    #'esmf':['conserv'], 
+    #'esmf':['conserv'],
    'esmf':[
-        'linear', 
-        'patch', 
-        'conserv', 
-   ], 
-   'libcf':['linear'], 
+        'linear',
+        'patch',
+        'conserv',
+   ],
+   'libcf':['linear'],
 }
 ncfile = 'swan.four.nc'
 ncvar = 'HS'
@@ -68,7 +68,7 @@ nyo,nxo = grido.shape
 #print 'rank',rank
 basefile = code_file_name(ext=False)
 repfile = basefile+'.nt%(nt)s-nz%(nz)s-nyi%(nyi)s-nxi%(nxi)s.log'%locals()
-if rank==0: 
+if rank==0:
     if os.path.exists(repfile): os.remove(repfile)
     f = open(repfile, 'w')
     if size:
@@ -83,20 +83,20 @@ vmin = vari.min()
 vmax = vari.max()
 for tool, methods in config.items():
     for method in methods:
-        if rank==0: 
+        if rank==0:
             t0 = time()
-            print >>f, tool.upper(), method, ':' 
+            print >>f, tool.upper(), method, ':'
             diag = {'dstAreaFractions': None}
         else: diag = None
         try:
             varo = vari.regrid(grido, tool=tool, method=method, diag=diag)
             if rank==0: print >>f, ' ok'
         except:
-            if rank==0: 
+            if rank==0:
                 print >>f, ' failed'
                 print >>f, format_exc()
             continue
-        if rank==0: 
+        if rank==0:
             print >>f, tool.upper(), method, ':', '%5.1f'%(time()-t0), 'seconds', psinfo()
             frac = diag['dstAreaFractions']
             if frac is not None:
@@ -108,7 +108,7 @@ for tool, methods in config.items():
                 varo[:] = MV2.masked_where(mask, varo, copy=0)
 #        del r
         gc.collect()
-        if rank==0: 
+        if rank==0:
             print >>f, ' plot'
             P.figure(figsize=(12, 6))
             P.subplots_adjust(right=0.9)
@@ -122,10 +122,6 @@ for tool, methods in config.items():
             P.axis([xmin, xmax, ymin, ymax])
             P.title(tool.upper()+' / '+method.upper())
             P.colorbar(extend='min')#cax=P.axes([0.92, 0.3, 0.02, 0.6]))
-            figfile = basefile+'_%(tool)s_%(method)s.png'%vars()
-            if os.path.exists(figfile): os.remove(figfile)
-            P.savefig(figfile)
-            P.close()
         del varo
 if rank==0:print >>f, 'Done'
 f.close()
