@@ -271,12 +271,12 @@ class Plot(object):
         self._post_plotted = False
         self._finalize = []
 
-        # Load attributes: for current instance
-        self.load_attributes(kwargs)
-
         # Load data
         if load_data :
             self.load_data(data, **kwargs)
+
+        # Load attributes: for current instance
+        self.load_attributes(kwargs)
 
         # Initialize plot
         self.pre_plot(**kwargs)
@@ -3126,7 +3126,7 @@ class Plot(object):
             target = self.data[idata]
         else:
             target = getattr(self, xy)
-            setattr(self.data[idata], att, value)
+#            setattr(self.data[idata], att, value)
 
         # Set
         setattr(target, att, value)

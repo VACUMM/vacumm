@@ -1,5 +1,5 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*- 
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Plot the MPI domain decomposition"""
 
 # source: /work/mdussauz/MARS/RUN_MARS/VILAGR/VILAGR-r1023/rank_1
@@ -39,7 +39,7 @@ bathy = ds.get_bathy().asma()
 bathy[:] = N.ma.masked_less(bathy, -30., copy=False)
 mask = N.ma.getmaskarray(bathy) #; del bathy
 valid = ~mask
-mask = mask.astype('i') 
+mask = mask.astype('i')
 ny, nx = mask.shape
 
 # Read the MPI file
@@ -72,7 +72,7 @@ if not options.quiet:
         print 'Found no inactive ocean points'
     else:
         print 'Found a total of %i inactive ocean point(s) in %i MPI block(s): '%((mask==2).sum(), nbb)
-    
+
 # Indices of MPI blocks
 iib = N.empty((nby+1, nbx+1))
 iib[:nby, :nbx] = mpi2d.imin[:, :nbx]-.5
@@ -85,17 +85,17 @@ jjb[:, -1] = jjb[:, -2]
 jj, ii = N.indices((nby, nbx))
 
 # Plot model mask
-P.imshow(mask, origin='lower', interpolation='none', aspect=1, 
+P.imshow(mask, origin='lower', interpolation='none', aspect=1,
     cmap='jet', vmin=0, vmax=2)
 
 # Plot MPI blocks
-P.pcolor(iib, jjb, N.clip(mpi2d.actif, 0, 1), 
-    shading='faceteded', edgecolors='k', linewidths=.8, 
+P.pcolor(iib, jjb, N.clip(mpi2d.actif, 0, 1),
+    shading='faceteded', edgecolors='k', linewidths=.8,
     alpha=options.alpha, cmap='gray', vmin=0, vmax=1)
 if badblocks.any(): # Highlight suspect blocks
     for i, j in zip(ii[badblocks], jj[badblocks]):
-        P.plot([iib[i, j], iib[i+1, j], iib[i+1, j+1], iib[i, j+1], iib[i, j]], 
-            [jjb[i, j], jjb[i+1, j], jjb[i+1, j+1], jjb[i, j+1], jjb[i, j]], 
+        P.plot([iib[i, j], iib[i+1, j], iib[i+1, j+1], iib[i, j+1], iib[i, j]],
+            [jjb[i, j], jjb[i+1, j], jjb[i+1, j+1], jjb[i, j+1], jjb[i, j]],
             '-', color=(1, 0, 0), lw=2)
 P.grid('off')
 P.xlabel('Grid indices along X')
