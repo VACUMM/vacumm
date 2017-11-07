@@ -66,12 +66,21 @@ logger.addHandler(file)
 logger.addHandler(console)
 
 # Warnings
-import warnings, matplotlib, numpy
-warnings.simplefilter('ignore', matplotlib.cbook.MatplotlibDeprecationWarning)
-warnings.simplefilter('ignore', numpy.VisibleDeprecationWarning)
-warnings.simplefilter('ignore', numpy.ma.core.MaskedArrayFutureWarning)
-warnings.filterwarnings('ignore', r'converting a masked element to nan.*')
-warnings.filterwarnings('ignore', r'comparison to `None` will result.*')
+import warnings
+for message in [
+        r'The ishold function was deprecated',
+        r'setting an item on a masked array which has a shared mask',
+        r'The set_axis_bgcolor function was deprecated',
+        r'The get_axis_bgcolor function was deprecated',
+        r'axes.hold is deprecated',
+        r'converting a masked element to nan',
+        r'comparison to `None` will result',
+        r'using a non-integer number instead of an integer',
+        r'The matplotlib.delaunay module was deprecated in version',
+        r'Warning: converting a masked element to nan',
+        r'get_axes has been deprecated in ',
+        ]:
+    warnings.filterwarnings('ignore', message)
 
 # Redirections
 class Redirector(object):
