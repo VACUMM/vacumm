@@ -333,14 +333,26 @@ class NcSigma(object):
                 if name in ft:
                     self.names[name] = self.formula_terms[at][name]
 
-    def _get_from_cache_(self, name, selector=None):
+    @staticmethod
+    def _serialize_selector_(selector=None, lons=None, lats=None, times=None):
+        selector = as_selector(selector)
+        ss = selector2str(selector)
+        if lons is not None and lats is not None:
+            ss += str(hash(str(N.asarray(lons).data)))
+            ss += str(hash(str(N.asarray(lats).data)))
+            if times is not None:
+                ss += str(hash(str(N.asarray(create_time(times)).data)))
+        return ss
+
+    def _get_from_cache_(self, name, selector=None, lons=None, lats=None, times=None):
         """Get a variable either from the cache or
         by reading it with :func:`_get_from_name_`"""
         # Check the cache
         name = name.lower()
         if not hasattr(self, '_cache'): self._cache = {}
         selector = as_selector(selector)
-        ss = selector2str(selector)
+        ss = self._serialize_selector_(selector=selector,
+            lons=lons, lats=lats, times=times)
         if not self._cache.has_key(name):
             self._cache[name] = [None,None]
         if self._cache[name][0] is ss and self._cache[name][0] is not None:
@@ -348,7 +360,7 @@ class NcSigma(object):
         del self._cache[name]
 
         # Read it
-        var = self._get_from_name_(name, selector)
+        var = self._get_from_name_(name, selector, lons, lats)
         self._cache[name] = [ss, var]
         return var
 
@@ -366,7 +378,7 @@ class NcSigma(object):
             ncname = self.names[name]
         return ncname
 
-    def _get_from_name_(self, name, selector=None):
+    def _get_from_name_(self, name, selector=None, lons=None, lats=None, times=None):
         """Load axis or variable from its generic name
 
         .. note:: Tests against generic names are case insensitives.
@@ -380,7 +392,7 @@ class NcSigma(object):
         if ncname is None: return
         selector = as_selector(selector)
 
-        # Axes
+        # Axis
         var = ncread_axis(self.f, ncname, mode=None)
         if var is not None:
 
@@ -395,14 +407,19 @@ class NcSigma(object):
                     var = var.subaxis(*ijk)
             return var
 
-        # Variables
+        # Variable
         args = [ncname]
         if selector: args.append(selector)
         kwargs = {'mode':None}
         var = ncread_var(self.f, *args, **kwargs)
-        if var is None: return
+        if var is None:
+            return
         if hasattr(self.f[ncname], '_FillValue') and cdms2.isVariable(var):
             var[:] = MV2.masked_values(var, self.f[ncname]._FillValue, copy=0)
+
+        # Transect
+        if lons is not None and lats is not None:
+            var = grid2xy(var, xo=lons, yo=lons, to=times, outaxis=False)
         return var
 
 
@@ -441,19 +458,21 @@ class NcSigma(object):
         """Check if W sigma coordinates are available"""
         return 't' in self.sigma
 
-    def get_depth(self, selector=None, at='t', mode='error'):
+    def get_depth(self, selector=None, lons=None, lats=None, times=None, at='t', mode='error'):
         """Read bottom depth at T, U or V points"""
         at = self._at_(at, squeezet=True)
         if at=="w": at = 't'
-        var = self._get_from_cache_('depth'+at, selector)
+        var = self._get_from_cache_('depth'+at, selector,
+            lons=lons, lats=lats, times=times)
         if var is None and mode=='error':
             raise SigmaError('Depth variable at %-points not found for %s coordinates: %s'(self.sigma_name, at, 'depth'+at))
         return var
 
 
-    def get_eta(self, selector=None, mode='error'):
+    def get_eta(self, selector=None, lons=None, lats=None, times=None, mode='error'):
         """Scan variables to find eta and read it"""
-        var = self._get_from_cache_('eta', selector)
+        var = self._get_from_cache_('eta', selector,
+            lons=lons, lats=lats, times=times)
         if var is None and mode=='error':
             raise SigmaError('Eta variable not found for %s coordinates'%self.sigma_name)
         return var
@@ -472,7 +491,7 @@ class NcSigma(object):
 #            standard_name = sef.standard_names["dz"+at]
 #            self.names["dz"+at] = self._get_from_standard_name_(standard_name, mode='id')
 
-    def get_dz(self, selector=None, at='t'):
+    def get_dz(self, selector=None, lons=None, lats=None, times=None, at='t'):
         """Load thickness at T or W if availables
 
         :Params:
@@ -483,7 +502,8 @@ class NcSigma(object):
         :Return: The variable if available or None
         """
         at = self._at_(at, focus='ver', squeezet=True)
-        return self._get_from_cache_("dz"+at, selector)
+        return self._get_from_cache_("dz"+at, selector,
+            lons=lons, lats=lats, times=times)
 
 
 
@@ -519,7 +539,7 @@ class NcSigma(object):
         return at
 
 
-    def _get_dz2d_config_(self, at, selector=None):
+    def _get_dz2d_config_(self, at, selector=None, lons=None, lats=None, times=None):
         """Get what is needed to generate depths from layer thicknesses
 
         :Params:
@@ -534,7 +554,8 @@ class NcSigma(object):
         if at not in 'tw': return
 
         # Check config already existing
-        ss = selector2str(as_selector(selector))
+        ss = self._serialize_selector_(selector=selector,
+            lons=lons, lats=lats, times=times)
         if not hasattr(self, '_dz2d_config'): self._dz2d_config={}
         if at in self._dz2d_config and ss in self._dz2d_config[at]:
             return self._dz2d_config[at][ss]
@@ -560,14 +581,16 @@ class NcSigma(object):
         self._dz2d_config[at][ss] = config
         return config
 
-    def dz_to_depths(self, selector=None, at='t', copyaxes=True, zerolid=False):
+    def dz_to_depths(self, selector=None, at='t', copyaxes=True, zerolid=False,
+            lons=None, lats=None, times=None):
         """Get depths from layer thicknesses
 
         :Params:
         """
         # Get config
         at = self._at_(at, focus='z')
-        config = self._get_dz2d_config_(at, selector)
+        config = self._get_dz2d_config_(at, selector,
+            lons=lons, lats=lats, times=times)
         msg = "Can't compute depths from layer thicknesses at %s"%at
         if config is None:
             raise SigmaError(msg+": no config available")
@@ -649,6 +672,7 @@ class NcSigmaStandard(NcSigma):
         if mode is None: mode = 'auto'
         at = self._at_(at)
         atz = self._at_(at, focus='z')
+        kwsel = dict(selector=selector, lons=lons, lats=lats, times=times)
 
         # From sigma
         if mode=='auto' or mode=='sigma':
@@ -658,10 +682,10 @@ class NcSigmaStandard(NcSigma):
 
                 # Read variables
                 if eta is None:
-                    eta = self.get_eta(selector, mode='noerr')
+                    eta = self.get_eta(mode='noerr', **kwsel)
                 elif eta is False:
                     eta = None
-                depth = self.get_depth(selector)
+                depth = self.get_depth(**kwsel)
 
                 # Force sigma reload to allow level selection
                 self.load_sigma(selector)
@@ -684,8 +708,8 @@ class NcSigmaStandard(NcSigma):
 
         # From dz
         try:
-            return self.dz_to_depths(selector=selector, at=at, copyaxes=copyaxes,
-                zerolid=zerolid)
+            return self.dz_to_depths(at=at, copyaxes=copyaxes,
+                zerolid=zerolid, **kwsel)
         except SigmaError, e:
             if mode=='auto':
                 raise SigmaError("Can't compute depths from layer thicknesses or sigma coordinates")
@@ -844,7 +868,9 @@ class  NcSigmaGeneralized(NcSigma):
             self.cs[at] = var
 
 
-    def get_depth_c(self, selector, mode='error'):
+    def get_depth_c(self, selector=None,
+            lons=None, lats=None, times=None,
+            mode='error'):
         """Scan file for limit depth and read it"""
         var = self._get_from_cache_('depth_c', selector)
         if var is None and mode=='error':
@@ -858,7 +884,9 @@ class  NcSigmaGeneralized(NcSigma):
 #        """
 #        return self._load_sigma_('s', selector)
 
-    def sigma_to_depths(self, selector=None, at='t', mode=None, copyaxes=True,
+    def sigma_to_depths(self, selector=None,
+            lons=None, lats=None, times=None,
+            at='t', mode=None, copyaxes=True,
             eta=None, zerolid=False):
         """Get depths for the current state
 
@@ -876,6 +904,7 @@ class  NcSigmaGeneralized(NcSigma):
         if mode is None: mode = 'auto'
         at = self._at_(at)
         atz = self._at_(at, focus='z')
+        kwsel = dict(selector=selector, lons=lons, lats=lats, times=times)
 
         # From sigma
         if mode=='auto' or mode=='sigma':
@@ -885,11 +914,11 @@ class  NcSigmaGeneralized(NcSigma):
                 # Read variables
 #cval revoir le selector ici
                 if eta is None:
-                    eta = self.get_eta(selector, mode='noerr')
+                    eta = self.get_eta(mode='noerr', **kwsel)
                 elif eta is False:
                     eta = None
-                depth = self.get_depth(selector)
-                depth_c = self.get_depth_c(selector)
+                depth = self.get_depth(**kwsel)
+                depth_c = self.get_depth_c(**kwsel)
 
                 # Force sigma reload to allow level selection
                 self.load_sigma(selector)
@@ -913,8 +942,8 @@ class  NcSigmaGeneralized(NcSigma):
 
         # From dz
         try:
-            return self.dz_to_depths(selector=selector, at=at, copyaxes=copyaxes,
-                zerolid=zerolid)
+            return self.dz_to_depths(at=at, copyaxes=copyaxes,
+                zerolid=zerolid, **kwsel)
         except SigmaError, e:
             if mode=='auto':
                 raise SigmaError("Can't compute depths from layer thicknesses or sigma coordinates")
