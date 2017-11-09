@@ -1,8 +1,10 @@
 import unittest
 import os
 from glob import glob
-from matplotlib import use ; use('Agg')
+from matplotlib import use, rcdefaults ; use('Agg')
 from vcmq import *
+
+rcdefaults()
 
 cur_dir = os.path.abspath(os.path.dirname(__file__))
 test_dir = os.path.realpath(os.path.join(cur_dir,'../scripts/test'))
@@ -12,6 +14,7 @@ method_template = """def {0}(self):
     execfile(self.get_path('{0}'))
     self.save_figs('{0}')
     self.handle_result(locals().get('result',None))
+    P.rcdefaults()
 """
 
 class VCTestCase(unittest.TestCase):

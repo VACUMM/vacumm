@@ -259,9 +259,9 @@ extlinks = {
 # Sphinx-gallery
 sphinx_gallery_conf = {
     # path to your examples scripts
-    'examples_dirs' : '../../../scripts/sg/test',
+    'examples_dirs' : ['../../../scripts/sg/simple'], #, '../../../scripts/sg/test'],
     # path where to save gallery generated examples
-    'gallery_dirs'  : 'auto_sg_tests',
+    'gallery_dirs'  : ['auto_sg_tests/simple'], #, 'auto_sg_tests/test'],
 #    'filename_pattern': '/test_plot_',
     'filename_pattern': '/test_',
     'backreferences_dir': False,
