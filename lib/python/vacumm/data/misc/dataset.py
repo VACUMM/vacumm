@@ -80,9 +80,10 @@ from vacumm.misc.atime import add as add_time, comptime, datetime as adatetime, 
 from vacumm.misc.axes import create_time, create_dep, create_lat, create_lon, guess_timeid, get_axis_type, isaxis
 from vacumm.misc.bases import Object
 import vacumm.misc.color as C
-from vacumm.misc.io import ncget_var, ncfind_var, ncfind_obj, ncfind_axis, list_forecast_files, ncread_files, \
-    ncread_best_estimate, NcIterBestEstimate, ncget_time, ncget_lon, ncget_lat, ncget_level,  \
-    ncget_grid, ncget_axis, NcIterTimeSlice
+from vacumm.misc.io import (ncget_var, ncfind_var, ncfind_obj, ncfind_axis,
+    list_forecast_files, ncread_files, ncmatch_obj,
+    ncread_best_estimate, NcIterBestEstimate, ncget_time, ncget_lon, ncget_lat, ncget_level,
+    ncget_grid, ncget_axis, NcIterTimeSlice)
 from vacumm.misc.grid.misc import meshweights, resol, create_grid, set_grid, \
     dz2depth, depth2dz, isdepthup, gridsel, makedepthup, curv2rect, isgrid,  \
     coord2slice, clone_grid
@@ -1214,10 +1215,15 @@ class Dataset(Object):
         # TODO: if grid not found and specs say that there must have a grid, create it with get_lon/get_lat
 
         # Curved grid case
-        if grid is None:
-            grid = self.dataset[0][ncvarid].getGrid()
+        if len(self.dataset[0][ncvarid].shape)>2:
+            var_grid = self.dataset[0][ncvarid].getGrid()
+            if grid is None:
+                grid = var_grid
+                kwg = {}
+            elif var_grid is not None:
+                kwg = dict(xid=var_grid.getAxis(1).id, yid=var_grid.getAxis(0).id)
         if grid is not None:
-            curvsel = CurvedSelector(grid, select)
+            curvsel = CurvedSelector(grid, select, **kwg)
         else:
             curvsel = None
 
@@ -1428,13 +1434,26 @@ class Dataset(Object):
         return self.get_axis('lat_f', lat, lon, **kwargs)
 
     def _get_grid_(self, loc='', lon=None, lat=None, format=True,
-            warn=True, dataset=None, searchmode=None):
+            warn=True, dataset=None, searchmode='si'):
 
         # Loc
         loc = _at_(loc)
         loc_ = _at_(loc, prefix='_')
         longenname = 'lon' + loc_
         latgenname = 'lat' + loc_
+
+        # Search specs
+        searches = {}
+        for name in longenname, latgenname:
+            specs = self._get_ncobj_specs_(name, attsingle=False, searchmode=searchmode)
+#            genname = specs['genname']
+            searches[name] = specs['search']
+            atts = specs['atts']
+            if 'long_name' in atts:
+                searches[name]['long_name'] = atts['long_name']
+            if 'units' in atts and 'axis' in atts and atts['axis']!='Z':
+                searches[name]['units'] = atts['units']
+
 
         # Inits
         self.debug('Searching for a grid that matches: ({}, {})'.format(latgenname, longenname))
@@ -1448,21 +1467,13 @@ class Dataset(Object):
         for grid in dataset.grids.values():
 
             valid = True
-            for name, axis in [(longenname, grid.getLongitude()), (latgenname, grid.getLatitude())]:
+            for name, axis in [(longenname, grid.getLongitude()),
+                    (latgenname, grid.getLatitude())]:
 
-                # Get specs
-                specs = self._get_ncobj_specs_(name, attsingle=False, searchmode=searchmode)
-                genname = specs['genname']
-                search = specs['search']
-                atts = specs['atts']
-                if 'long_name' in atts:
-                    search['long_name'] = atts['long_name']
-                if 'units' in atts and 'axis' in atts and atts['axis']!='Z':
-                    search['units'] = atts['units']
-
-                # Search
-                valid &= bool(ncfind_obj(dataset, search, regexp=True,
-                    searchmode=searchmode))
+                valid &= ncmatch_obj(axis, searchmode=searchmode,
+                    **searches[name])
+#                bool(ncfind_obj(dataset, search, regexp=True,
+#                    searchmode=searchmode))
 
             if valid:
                 break
@@ -2073,6 +2084,7 @@ class Dataset(Object):
 
 @getvar_decmets
 class AtmosSurfaceDataset(Dataset):
+    name = 'atmossurface'
 
     # For auto-declaring methods
     auto_generic_var_names = ['nethf', 'senhf', 'hfsen', 'lathf', 'hflat', 'swhf', 'lwhf', 'evap', 'rain',
@@ -2080,12 +2092,15 @@ class AtmosSurfaceDataset(Dataset):
 
 @getvar_decmets
 class OceanSurfaceDataset(Dataset):
+    name = 'oceansurface'
 
     # For auto-declaring methods
     auto_generic_var_names = ['sst', 'sss', 'ssh', 'usurf', 'vsurf']
 
 @getvar_decmets
 class WaveSurfaceDataset(Dataset):
+    name = 'wave'
+
     # For auto-declaring methods
     auto_generic_var_names = ['hs','mss','mssx','mssy','mss','dir','fp','t0m1','lm',
         'ubot','uubr','vubr','bhd','foc','utwo','vtwo','utaw','vtaw','uuss','vuss','utus','vtus',
@@ -2319,7 +2334,8 @@ class OceanDataset(OceanSurfaceDataset):
 
     def _get_depth_(self, at='t', level=None, time=None, lat=None, lon=None,
             order=None, squeeze=None, asvar=None, torect=True, warn=True, mode=None,
-            format=True, grid=None, zerolid=False, **kwargs):
+            format=True, grid=None, zerolid=False,
+            formula_terms=None, **kwargs):
 
         depth=None
         if mode is None:
@@ -2364,7 +2380,9 @@ class OceanDataset(OceanSurfaceDataset):
             kwfinalz.setdefault('at', at)
 
         # Second, try from sigma-like coordinates at W and T points only (for now)
-        sigma_converter = NcSigma.factory(self.dataset[0])
+        if formula_terms is None:
+            formula_terms = getattr(self, 'formula_terms', None)
+        sigma_converter = NcSigma.factory(self.dataset[0], formula_terms=formula_terms)
         if check_mode('sigma', mode):
 
             if sigma_converter is not None and sigma_converter.stype is None:
@@ -3775,9 +3793,10 @@ class GenericDataset(AtmosDataset, OceanDataset):
 class CurvedSelector(object):
     """Curved grid multiple selector"""
 
-    def __init__(self, grid, select, force=True):
+    def __init__(self, grid, select, force=True, xid=None, yid=None):
 
         self.geosels = self.extract_geosels(select)
+        self.id = str(self.geosels)
         self._post_sel = False
         self.grid = grid
         self.force = force
@@ -3787,17 +3806,26 @@ class CurvedSelector(object):
             if islice is None: islice = ':'
             if jslice is None: jslice = ':'
             self.remove_geosels(select)
-            self.xid = grid.getAxis(1).id
-            self.yid = grid.getAxis(0).id
+            self.xid = xid or grid.getAxis(1).id
+            self.yid = yid or grid.getAxis(0).id
             select.refine(**{self.xid:islice, self.yid:jslice})
             self._post_sel = True
             self.mask = mask
+        self.select = select
 
+
+    def togrid(self, grid):
+        """Make a copy and put it on another grid with new xid and yid"""
+        cs = copy(self)
+        if hasattr(cs, 'xid'):
+            cs.xid = xid or grid.getAxis(1).id
+            cs.yid = yid or grid.getAxis(0).id
+        return cs
 
     def finalize(self, var):
         if var is None or not self._post_sel:
             return var
-        if self.mask.any():
+        if self.mask is not None and self.mask.any():
             var[:] = MV2.masked_where(N.resize(self.mask, var.shape), var, copy=0)
         if len(self.geosels)==2 and self.grid is not None and (self.curv or self.force):
             assert self.grid.shape == var.getGrid().shape,  'Incomptible grids'
@@ -3860,5 +3888,6 @@ def merge_squeeze_specs(squeeze1, squeeze2):
 
 
 # Register dataset classes
-for cls in GenericDataset, OceanDataset, AtmosDataset:
+for cls in (GenericDataset, OceanDataset, AtmosDataset, AtmosSurfaceDataset,
+        OceanSurfaceDataset, WaveSurfaceDataset):
     register_dataset(cls)
