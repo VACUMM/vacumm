@@ -43,8 +43,9 @@ import re, math, numpy as N, cdms2, MV2
 from traceback import format_exc
 from warnings import warn
 from cdms2.selectors import Selector
+from vacumm import vcwarn
 from vacumm.misc import (selector2str, create_selector, split_selector,
-    filter_level_selector)
+    filter_level_selector, dict_merge)
 import vacumm.data.cf as cf
 from vacumm.misc.axes import axis_type
 from vacumm.misc.grid import dz2depth as dz2depths
@@ -297,41 +298,67 @@ class NcSigma(object):
 
     def load_formula_terms(self, formula_terms=None, at=None, mode='noerr'):
         """Read formula terms at T and W points and store them in
-        the dictionary attribute :attr:`formula_terms` whose keys are 't' and 'w'"""
-        # Get formula
-        if formula_terms is None:
-            formula_terms = {}
-            for at, levelvar in self.levelvars.items():
-                try:
-                    formula_terms[at] = levelvar.formula_terms
-                except:
-                    if mode!='noerr':
-                        raise SigmaError('Error when reading formula_term attribute of netcdf variable or axis: '+levelvar.id)
-        else:
-            for at in 'wt':
-                if at in formula_terms: break
-            else:
-                formula_terms = {'t':formula_terms}
+        the dictionary attribute :attr:`formula_terms` whose keys are 't' and 'w'
+        """
+
+        # String from file
+        formula_terms_from_file = {}
+        for at_, levelvar in self.levelvars.items():
+            if at and at!=at_:
+                continue
+            formula_terms_from_file[at_] = getattr(levelvar, "formula_terms", {})
+
+        # Specified
+        if not formula_terms:
+           formula_terms = {}
+        elif (isinstance(formula_terms, (str, list, tuple)) or
+                (isinstance(formula_terms, dict) and
+                    't' not in formula_terms and 'w' not in formula_terms)):
+            formula_terms = {'t':formula_terms}
 
         # Scan formulas
         self.formula_terms = {}
-        for at in 'wt':
-            self.formula_terms[at] = {}
-            ft = formula_terms.get(at, None)
-            if not ft: continue
-            if not isinstance(ft, (list,tuple)):
-                ft = re.split('[\W]+', ft)
-            self.formula_terms[at] = {}
-            for i in xrange(len(ft)/2):
-                try:
-                    self.formula_terms[at][ft[i*2]] = ft[i*2+1]
-                except:
-                    raise SigmaError('Error while scaning formula terms')
+        for at_ in 'wt':
+
+            # Check position
+            if at and at!=at_:
+                continue
+
+            # To dicts
+            file_formula_terms = self._ft_to_dict_(formula_terms.get(at_, {}))
+            spec_formula_terms = self._ft_to_dict_(formula_terms_from_file.get(at_, {}))
+
+            # Merge
+            self.formula_terms[at_] = dict_merge(spec_formula_terms, file_formula_terms)
+
+            # Check if empty when required
+            if at and not self.formula_terms[at_]:
+                vcwarn('No formula term for {} position'.format(at_))
 
             # Patch names for eta and depth into self.names
             for name in self.horiz_terms:
-                if name in ft:
-                    self.names[name] = self.formula_terms[at][name]
+                if name in self.formula_terms[at_]:
+                    self.names[name] = self.formula_terms[at_][name]
+
+        # Final check
+        if (not self.formula_terms or
+                not any([bool(ct) for ct in self.formula_terms.values()])):
+            vcwarn('No formula term currently loaded')
+
+    @staticmethod
+    def _ft_to_dict_(formula_terms):
+        if isinstance(formula_terms, dict):
+            return formula_terms
+        if not isinstance(formula_terms, (list,tuple)):
+            formula_terms = re.split('[\W]+', formula_terms)
+        ft = {}
+        for i in xrange(len(formula_terms)/2):
+            try:
+                ft[formula_terms[i*2]] = formula_terms[i*2+1]
+            except:
+                raise SigmaError('Error while scaning formula terms')
+        return ft
+
 
     @staticmethod
     def _serialize_selector_(selector=None, lons=None, lats=None, times=None):
@@ -408,20 +435,25 @@ class NcSigma(object):
             return var
 
         # Variable
-        args = [ncname]
-        if selector: args.append(selector)
-        kwargs = {'mode':None}
-        var = ncread_var(self.f, *args, **kwargs)
-        if var is None:
-            return
-        if hasattr(self.f[ncname], '_FillValue') and cdms2.isVariable(var):
-            var[:] = MV2.masked_values(var, self.f[ncname]._FillValue, copy=0)
+        if ncname in self.f.variables:
+            not_scalar = self.f[ncname].shape
+            args = [ncname]
+            if selector and not_scalar:
+                args.append(selector)
+            kwargs = {'mode':None}
+            var = ncread_var(self.f, *args, **kwargs)
+            if var is None:
+                return
+            if not_scalar and hasattr(self.f[ncname], '_FillValue') and cdms2.isVariable(var):
+                var[:] = MV2.masked_values(var, self.f[ncname]._FillValue, copy=0)
 
-        # Transect
-        if lons is not None and lats is not None:
-            var = grid2xy(var, xo=lons, yo=lons, to=times, outaxis=False)
-        return var
+            # Transect
+            if not_scalar and lons is not None and lats is not None:
+                var = grid2xy(var, xo=lons, yo=lons, to=times, outaxis=False)
+            return var
 
+        # Attribute
+        return self.f.attributes.get(ncname, None)
 
     def load_sigma(self, selector=None, at=None):
         """Scan variables to find sigma (or s), and set :attr:`sigma` (or :attr:`s`) attributes"""
@@ -554,8 +586,8 @@ class NcSigma(object):
         if at not in 'tw': return
 
         # Check config already existing
-        ss = self._serialize_selector_(selector=selector,
-            lons=lons, lats=lats, times=times)
+        kwsel = dict(selector=selector, lons=lons, lats=lats, times=times)
+        ss = self._serialize_selector_(**kwsel)
         if not hasattr(self, '_dz2d_config'): self._dz2d_config={}
         if at in self._dz2d_config and ss in self._dz2d_config[at]:
             return self._dz2d_config[at][ss]
@@ -565,15 +597,15 @@ class NcSigma(object):
         if at=='t' and 'depth' in self.names and 'dzw' in self.names:
 
             config = ('dzw/depth',
-                self._get_from_cache_('dzw', selector),
-                self._get_from_cache_('depth', selector),
+                self._get_from_cache_('dzw', **kwsel),
+                self._get_from_cache_('depth', **kwsel),
             )
 
         elif at=='w' and 'eta' in self.names and 'dz' in self.names:
 
             config = ('dz/eta',
-                self._get_from_cache_('dz', selector),
-                self._get_from_cache_('eta', selector),
+                self._get_from_cache_('dz', **kwsel),
+                self._get_from_cache_('eta', **kwsel),
             )
 
         if at not in self._dz2d_config:
@@ -857,7 +889,7 @@ class  NcSigmaGeneralized(NcSigma):
             setattr(self, term, var)
 
     def load_stretchings(self):
-        """Load stretching at mid and top layer and store them in :attr:`csu`"""
+        """Load stretching at mid and top layer and store them in :attr:`cs` dict"""
         self.cs = {}
         for at in 'w', 't':
             csname = "cs"+at
