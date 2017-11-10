@@ -70,13 +70,13 @@ from traceback import format_exc
 from collections import OrderedDict
 
 import cdms2, MV2, numpy, pylab, seawater
-from matplotlib.pyplot import colorbar
+from matplotlib.pyplot import colorbar, tight_layout
 N = numpy
 
 from vacumm.misc import auto_scale, MV2_concatenate, MV2_axisConcatenate, create_selector, \
     split_selector, dict_merge, dict_check_defaults, set_atts, broadcast
 from vacumm.misc.atime import add as add_time, comptime, datetime as adatetime, Intervals, \
-    filter_time_selector, itv_intersect
+    filter_time_selector, itv_intersect, strftime
 from vacumm.misc.axes import create_time, create_dep, create_lat, create_lon, guess_timeid, get_axis_type, isaxis
 from vacumm.misc.bases import Object
 import vacumm.misc.color as C
@@ -1829,7 +1829,7 @@ class Dataset(Object):
             - **subsamp**, optional: Subsampling with respect to grid cell.
             - **method**, optional: Interpolation method
               (see :func:`~vacumm.misc.grid.regridding.grid2xy`).
-            - **getcoords**, optional: Also get computed coordiantes.
+            - **getcoords**, optional: Also get computed coordinates.
             - **outaxis**, optional: Output axis.
 
                 - A cdms2 axis.
@@ -2704,13 +2704,26 @@ class OceanDataset(OceanSurfaceDataset):
             if warn: self.warning('Cannot get var or depths for hsection')
             return
 
+        # Get time information
+        ctime = None
+        try:
+            time = var.getTime().asComponentTime()
+            ct0 = strftime('%Y-%m-%d %H:%M:%S',time[0])
+            if timeavg and var.getOrder().startswith('t') and var.shape[0]>1:
+                ct0 = strftime('%Y-%m-%d',time[0])
+                ct1 = strftime('%Y-%m-%d',time[-1])
+                ctime = "%s / %s period" %(ct0,ct1)
+            else: ctime = ct0
+        except Exception, e:
+            self.warning("Can't get time information. Error: \n"+e.message)
+
         # Interpolate
         lvar = self._interp_at_depths_(var, vardepth, depth, **kwinterp)
 
         # Time average
         if timeavg and lvar.getOrder().startswith('t') and lvar.shape[0]>1:
             lvar = MV2.average(lvar, axis=0)
-        return self.finalize_object(lvar, depthup=False, **kwargs)
+        return self.finalize_object(lvar, depthup=False, **kwargs), ctime
 
     @staticmethod
     def _interp_at_depths_(var, vardepth, depths, **kwargs):
@@ -2747,12 +2760,13 @@ class OceanDataset(OceanSurfaceDataset):
         """
         # Get section
         depth = -N.abs(depth)
-        var = self.get_hsection(varname, depth, time=time, lat=lat, lon=lon,
+        var, ctime = self.get_hsection(varname, depth, time=time, lat=lat, lon=lon,
             timeavg=timeavg, squeeze=True)
 
         # Plot it
         long_name = getattr(var, 'long_name', '')
         units = getattr(var, 'units', '')
+        title = "\n".join((title,ctime))
         dict_check_defaults(kwargs, bgcolor='0.5')
         return map2(var, title=title%locals(), **kwargs)
 
@@ -2767,7 +2781,7 @@ class OceanDataset(OceanSurfaceDataset):
             '\n  variable:  %s'
             '\n  depth:      %s'
             '\n  timeavg:      %s', varname, depth, timeavg)
-        var =  self.get_hsection(varname, depth, timeavg=True, **kwargs)
+        var, ctime =  self.get_hsection(varname, depth, timeavg=True, **kwargs)
         self.logdesc(var, title='out: ')
         return var
 
@@ -2801,6 +2815,18 @@ class OceanDataset(OceanSurfaceDataset):
             times=times, **kwargs)
         var, lons, lats = self.get_transect(varname, lons, lats,
             getcoords=True, **kwts)
+        try:
+            time = var.getTime().asComponentTime()
+            ct0 = strftime('%Y-%m-%d %H:%M:%S',time[0])
+            if timeavg or var.ndim==3:
+                ct0 = strftime('%Y-%m-%d',time[0])
+                ct1 = strftime('%Y-%m-%d',time[-1])
+                title = "\n".join((title,"%s / %s period" %(ct0,ct1)))
+            else:
+                title = "\n".join((title,ct0))
+        except Exception, e:
+            self.warning("Can't get time information. Error: \n"+e.message)
+            
         if var is None:
             self.error("Can't get transect on variable")
             return
@@ -2850,6 +2876,7 @@ class OceanDataset(OceanSurfaceDataset):
         del kwargs['title']
         if post_plot:
             p.post_plot(**kwargs)
+        #tight_layout()
         return p
 
 
@@ -3010,6 +3037,8 @@ class OceanDataset(OceanSurfaceDataset):
 
             - **select**: selector (should at least restrict to one level)
 
+                - select=dict(level=slice(-1,None),time=slice(0,2))
+
         :Return: A list containing in order:
 
             - var(time,position): loaded variable  data
@@ -3028,14 +3057,21 @@ class OceanDataset(OceanSurfaceDataset):
             '\n  meridional:  %s'
             '\n  extrema:     %s'
             '\n  select:      %s',varname, xorymin, xorymax, xory, meridional, extrema, select)
-        var, lat, lon = self.get_hovmoller(varname, xorymin, xorymax, xory, meridional, select)
+        #var, lat, lon = self.get_hovmoller(varname, xorymin, xorymax, xory, meridional, select)
+        kwvar = {}
+        if select is not None:
+            kwvar = kwfilter(select, ['level','time','times'])
+        var, lon, lat = self.get_transect(varname, (xorymin, xorymax), (xory,xory), getcoords=True, subsamp=1, **kwvar)
+        if var.shape > 2:
+                self.debug('Squeezing variable: %s', self.describe(var))
+                var = squeeze_variable(var)
 
         ex = extrema.strip().lower()
         exfunc = getattr(numpy.ma, 'arg%s'%(ex), None)
         if ex not in ['min','max'] or exfunc is None:
             raise ValueError('Invalid extrema: %s'%(extrema))
 
-        # Position of extema along time with masked values
+        # Position of extrema along time with masked values
         #iex = exfunc(var, axis=1, fill_value=-1)
         iex = exfunc(var, axis=1)
         #bad = iex == -1
@@ -3086,6 +3122,8 @@ class OceanDataset(OceanSurfaceDataset):
 
             - **select**: selector (should at least restrict to one level)
 
+                - select=dict(level=slice(-1,None),time=slice(0,2))
+
         :Return: A list containing in order:
             - var(time,position): loaded variable  data
             - latitude(position): latitude corresponding to var's position
@@ -3103,7 +3141,14 @@ class OceanDataset(OceanSurfaceDataset):
             '\n  meridional:  %s'
             '\n  operation:   %s'
             '\n  select:      %s',varname, xorymin, xorymax, xory, meridional, operation, select)
-        var, lat, lon = self.get_hovmoller(varname, xorymin, xorymax, xory, meridional, select)
+        #var, lat, lon = self.get_hovmoller(varname, xorymin, xorymax, xory, meridional, select)
+        kwvar = {}
+        if select is not None:
+            kwvar = kwfilter(select, ['level','time','times'])
+        var, lon, lat = self.get_transect(varname, (xorymin, xorymax), (xory,xory), getcoords=True, subsamp=1, **kwvar)
+        if var.shape > 2:
+                self.debug('Squeezing variable: %s', self.describe(var))
+                var = squeeze_variable(var)
         op = operation.strip().lower()
         if op in ('mean','avg'):
             op = 'average'
@@ -3366,7 +3411,7 @@ class OceanDataset(OceanSurfaceDataset):
         '''
 
         varname=kwargs.pop('varname', None)
-        grid = self.get_grid(varname)
+        grid = self.get_grid(**kwargs)
         glob_lon, glob_lat = grid.getLongitude(), grid.getLatitude()
         mapkw = kwfilter(kwargs, 'map',
             defaults=dict(
@@ -3487,9 +3532,26 @@ class OceanDataset(OceanSurfaceDataset):
             - **plot_[show|close|savefig|savefigs]**: are passed to the post plotting function :func:`~vacumm.misc.core_plot.Plot.post_plot` at end of plotting operations
 
         '''
-        datakw  = kwfilter(kwargs, 'data')
+        # Get data
+        try:
+            level = select['level']
+        except:
+            level = None
+        try:
+            time = select['time']
+        except:
+            time = None
         # Get section data
-        var, lat, lon = self.get_hovmoller(varname, xorymin, xorymax, xory, meridional, select, **datakw)
+        if meridional:
+            var, lon, lat = self.get_transect(varname, (xory,xory), (xorymin, xorymax), getcoords=True, subsamp=1, level=level, time=time)
+        else:
+            var, lon, lat = self.get_transect(varname, (xorymin, xorymax), (xory,xory), getcoords=True, subsamp=1, level=level, time=time)
+        if var is None:
+            self.error("Can't get transect on variable")
+            return
+        if var.shape > 2:
+                self.debug('Squeezing variable: %s', self.describe(var))
+                var = squeeze_variable(var)
         # Compute scaling/informationnal data
         vmin,vmax = numpy.min(var), numpy.max(var)
         vstep = abs(vmax-vmin)/10.
@@ -3521,8 +3583,18 @@ class OceanDataset(OceanSurfaceDataset):
         else:
             hovtype = 'Zonal'
             lonlat = 'lon: %s to %s, lat: %s'%(xorymin, xorymax, xory)
-        plotkw.setdefault('title', '%s Hovmoller of %s\ntime: %s\n%s'%(hovtype, var.id, select['time'], lonlat))
+        ctime = None
+        try:
+            time = var.getTime().asComponentTime()
+            ct0 = strftime('%Y-%m-%d',time[0])
+            ct1 = strftime('%Y-%m-%d',time[-1])
+            ctime = "%s / %s period" %(ct0,ct1)
+        except Exception, e:
+            self.warning("Can't get time information. Error: \n"+e.message)
+
+        plotkw.setdefault('title', '%s Hovmoller of %s\ntime: %s\n%s'%(hovtype, var.id, ' / '.join((ct0,ct1)), lonlat))
         hv.post_plot(**plotkw)
+        #tight_layout()
 
 
     def plot_extrema_location(self, varname, xorymin, xorymax, xory, meridional=False, extrema='min', pmap=True, select=None, **kwargs):
@@ -3559,6 +3631,7 @@ class OceanDataset(OceanSurfaceDataset):
         # Plot the location curve
         curkw.update(order='td', show=False)
         cur = curve2(var, **curkw)
+        mp = None
         if pmap:
             mp = self.plot_trajectory_map(lon, lat, **mapkw)
         # Post plotting
@@ -3568,8 +3641,12 @@ class OceanDataset(OceanSurfaceDataset):
         else:
             curtype = 'Zonal'
             lonlat = 'lon: %s to %s, lat: %s'%(xorymin, xorymax, xory)
-        plotkw.setdefault('title', '%s location of %s %s\ntime: %s\n%s'%(curtype, extrema, var.id, select['time'], lonlat))
+        time = var.getTime().asComponentTime()
+        ct0 = strftime('%Y-%m-%d',time[0])
+        ct1 = strftime('%Y-%m-%d',time[-1])
+        plotkw.setdefault('title', '%s location of %s %s\ntime: %s\n%s'%(curtype, extrema, var.id, ' / '.join((ct0,ct1)), lonlat))
         cur.post_plot(**plotkw)
+        #tight_layout()
         return cur, var, lat, lon
 
 
@@ -3615,7 +3692,10 @@ class OceanDataset(OceanSurfaceDataset):
         else:
             curtype = 'Zonal'
             lonlat = 'lon: %s to %s, lat: %s'%(xorymin, xorymax, xory)
-        plotkw.setdefault('title', '%s %s of %s\ntime: %s\n%s'%(curtype, operation, var.id, select['time'], lonlat))
+        time = var.getTime().asComponentTime()
+        ct0 = strftime('%Y-%m-%d',time[0])
+        ct1 = strftime('%Y-%m-%d',time[-1])
+        plotkw.setdefault('title', '%s %s of %s\ntime: %s\n%s'%(curtype, operation, var.id, ' / '.join((ct0,ct1)), lonlat))
         cur.post_plot(**plotkw)
         return cur, var, lat, lon
 
