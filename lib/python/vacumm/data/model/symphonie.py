@@ -56,7 +56,6 @@ class Symphonie(OceanDataset):
     """
 
     name = 'symphonie'
-    typemodel='ocean'
     description = "The Symphonie ocean model from Laboratoire d'Aerologie"    
     
     ncobj_specs = {

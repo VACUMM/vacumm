@@ -55,7 +55,6 @@ class Mars3D(OceanDataset,AtmosSurfaceDataset):
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
     name = 'mars'
-    typemodel='ocean'
     description = "The MARS3D ocean model from IFREMER"
 
     #: Grid type

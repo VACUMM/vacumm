@@ -53,7 +53,6 @@ class Nemo(OceanDataset):
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
     name = 'nemo'
-    typemodel='ocean'
     description = "The NEMO ocean model"
 
 

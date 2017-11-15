@@ -56,7 +56,6 @@ class WW3(WaveSurfaceDataset):
     """
 
     name = 'ww3'
-    typemodel='wave'
     description = "The WW3 wave model from NOAA/NCEP and IFREMER"
     
     ncobj_specs = {

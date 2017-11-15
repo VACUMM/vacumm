@@ -53,7 +53,6 @@ class CFSR(AtmosDataset):
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
     name = 'cfsr'
-    typemodel='atmosphere'
     description = "The CFSR atmospheric model"
     ncobj_specs = {
 
