@@ -1876,6 +1876,104 @@ class Dataset(Object):
         if getcoords: return (tvar, )+res[1:]
         return tvar
 
+    def plot_transect(self, varname, lons, lats, times=None,
+        method='bilinear', timeavg=False, subsamp=3, outaxis=None,
+        time=None, lon=None, lat=None, level=None,
+        title='%(long_name)s along transect', minimap=None, **kwargs):
+        """Plot a transect between two points
+
+        :Params:
+
+            - **varname**: Generic var name.
+            - **lons/lats/times**: Specification of transect (see :meth:`get_transect`).
+            - **title**, optional: Title of the figure.
+            - **minimap**, optional: If True, add a minimap showing the transect
+              on a map; if False, display nothing; if None, display if no minimap
+              already displayed.
+            - **minimap_<param>**, optional: Passed to :func:`~vacumm.misc.plot.add_map_lines`.
+            - Some params are passed to :meth:`get_transect`.
+            - Other params are passed to the plot function :func:`~vacumm.misc.plot.curve2`
+              for 1D plots and, :func:`~vacumm.misc.plot.hov2` or
+              :func:`~vacumm.misc.plot.section2` for 2D plots.
+
+        """
+
+        # Get data
+        kwts = dict(method=method, subsamp=subsamp, timeavg=timeavg,
+            outaxis=outaxis, time=time, lon=lon, lat=lat, level=level,
+            times=times, **kwargs)
+        var, lons, lats = self.get_transect(varname, lons, lats,
+            getcoords=True, **kwts)
+        try:
+            time = var.getTime().asComponentTime()
+            ct0 = strftime('%Y-%m-%d %H:%M:%S',time[0])
+            if timeavg or var.ndim==3:
+                ct0 = strftime('%Y-%m-%d',time[0])
+                ct1 = strftime('%Y-%m-%d',time[-1])
+                title = "\n".join((title,"%s / %s period" %(ct0,ct1)))
+            else:
+                title = "\n".join((title,ct0))
+        except Exception, e:
+            self.warning("Can't get time information. Error: \n"+e.message)
+        var = squeeze_variable(var)
+
+        if var is None:
+            self.error("Can't get transect on variable")
+            return
+        if var.getLevel() is not None:
+            if self.domain=="ocean":
+                depth = self.get_transect('depth', lons, lats, squeeze=True, **kwts)
+            elif self.domain=="atmos":
+                depth = self.get_transect('altitude', lons, lats, squeeze=True, **kwts)
+            if isaxis(depth): depth = None
+        else:
+            depth = None
+
+        # Check dimension
+        if var.ndim==3:
+            self.warning('Forcing time average to have a 2D transect')
+            var = MV2.average(var, axis=0)
+            if depth is not None and depth.getTime() is not None:
+                depth = MV2.average(depth, axis=0)
+        # Main plot
+        kwmap = kwfilter(kwargs, 'minimap_')
+        post_plot = kwargs.get('post_plot', True)
+        kwargs.update(post_plot=False, title=title)
+        kwargs.setdefault('bgcolor', '0.5')
+        kwargs.setdefault('ymax', 0)
+        # - 1D
+        if var.ndim==1:
+
+            p = curve2(var, **kwargs)
+
+        # - T-
+        elif 't' in var.getOrder():
+
+            p = hov2(var, **kwargs)
+
+        # - Z-
+        else:
+        # - Modif GC: Masked depth converted to 0.
+            if N.ma.isMA(depth):
+                depth[:] = depth.filled(0.)
+            kwargs.setdefault('fill', 'contourf')
+            p = section2(var, yaxis=depth, **kwargs)
+
+        # Minimap
+        if minimap=='auto': minimap = None
+        if minimap is True or (minimap is None and not getattr(p.axes, '_minimap', False)):
+            kwmap.setdefault('map_zoom', 0.5)
+            m = add_map_lines(((lons[0],lons[-1]),(lats[0], lats[-1])), lons, lats, **kwmap)
+            p.axes._minimap = True
+
+        del kwargs['title']
+        if post_plot:
+            if self.domain=="atmos": p.show()
+            else: p.post_plot(**kwargs)
+        #tight_layout()
+        return p
+
+
     @classmethod
     def squeeze_variable(cls, var, spec=True):
         '''Squeeze a variable, preserving remaining axis
@@ -2095,6 +2193,7 @@ class WaveSurfaceDataset(Dataset):
 @getvar_decmets
 class OceanDataset(OceanSurfaceDataset):
     name = 'ocean'
+    domain = 'ocean'
     description = 'Generic ocean dataset'
     default_depth_search_mode = None
 
@@ -2785,99 +2884,6 @@ class OceanDataset(OceanSurfaceDataset):
         self.logdesc(var, title='out: ')
         return var
 
-
-
-    def plot_transect(self, varname, lons, lats, times=None,
-        method='bilinear', timeavg=False, subsamp=3, outaxis=None,
-        time=None, lon=None, lat=None, level=None,
-        title='%(long_name)s along transect', minimap=None, **kwargs):
-        """Plot a transect between two points
-
-        :Params:
-
-            - **varname**: Generic var name.
-            - **lons/lats/times**: Specification of transect (see :meth:`get_transect`).
-            - **title**, optional: Title of the figure.
-            - **minimap**, optional: If True, add a minimap showing the transect
-              on a map; if False, display nothing; if None, display if no minimap
-              already displayed.
-            - **minimap_<param>**, optional: Passed to :func:`~vacumm.misc.plot.add_map_lines`.
-            - Some params are passed to :meth:`get_transect`.
-            - Other params are passed to the plot function :func:`~vacumm.misc.plot.curve2`
-              for 1D plots and, :func:`~vacumm.misc.plot.hov2` or
-              :func:`~vacumm.misc.plot.section2` for 2D plots.
-
-        """
-
-        # Get data
-        kwts = dict(method=method, subsamp=subsamp, timeavg=timeavg,
-            outaxis=outaxis, time=time, lon=lon, lat=lat, level=level,
-            times=times, **kwargs)
-        var, lons, lats = self.get_transect(varname, lons, lats,
-            getcoords=True, **kwts)
-        try:
-            time = var.getTime().asComponentTime()
-            ct0 = strftime('%Y-%m-%d %H:%M:%S',time[0])
-            if timeavg or var.ndim==3:
-                ct0 = strftime('%Y-%m-%d',time[0])
-                ct1 = strftime('%Y-%m-%d',time[-1])
-                title = "\n".join((title,"%s / %s period" %(ct0,ct1)))
-            else:
-                title = "\n".join((title,ct0))
-        except Exception, e:
-            self.warning("Can't get time information. Error: \n"+e.message)
-            
-        if var is None:
-            self.error("Can't get transect on variable")
-            return
-        if var.getLevel() is not None:
-            depth = self.get_transect('depth', lons, lats, **kwts)
-            if isaxis(depth): depth = None
-        else:
-            depth = None
-
-        # Check dimension
-        if var.ndim==3:
-            self.warning('Forcing time average to have a 2D transect')
-            var = MV2.average(var, axis=0)
-            if depth is not None and depth.getTime() is not None:
-                depth = MV2.average(depth, axis=0)
-        # Main plot
-        kwmap = kwfilter(kwargs, 'minimap_')
-        post_plot = kwargs.get('post_plot', True)
-        kwargs.update(post_plot=False, title=title)
-        kwargs.setdefault('bgcolor', '0.5')
-        kwargs.setdefault('ymax', 0)
-        # - 1D
-        if var.ndim==1:
-
-            p = curve2(var, **kwargs)
-
-        # - T-
-        elif 't' in var.getOrder():
-
-            p = hov2(var, **kwargs)
-
-        # - Z-
-        else:
-        # - Modif GC: Masked depth converted to 0.
-            if N.ma.isMA(depth):
-                depth[:] = depth.filled(0.)
-            kwargs.setdefault('fill', 'contourf')
-            p = section2(var, yaxis=depth, **kwargs)
-
-        # Minimap
-        if minimap=='auto': minimap = None
-        if minimap is True or (minimap is None and not getattr(p.axes, '_minimap', False)):
-            kwmap.setdefault('map_zoom', 0.5)
-            m = add_map_lines((lons, lats), lons, lats, **kwmap)
-            p.axes._minimap = True
-
-        del kwargs['title']
-        if post_plot:
-            p.post_plot(**kwargs)
-        #tight_layout()
-        return p
 
 
     def get_section(self, varname, xmin, ymin, xmax, ymax, timeavg=True, **kwargs):
@@ -3754,11 +3760,12 @@ class OceanDataset(OceanSurfaceDataset):
 @getvar_decmets
 class AtmosDataset(AtmosSurfaceDataset):
     name = 'atmos'
+    domain = 'atmos'
     description = 'Generic atmospheric dataset'
     default_altitude_search_mode = None
 
     # For auto-declaring methods
-    auto_generic_var_names = ['oro','wdir','wspd','ua','va','wa','tair','pa',
+    auto_generic_var_names = ['oro','wdir','wspd','uair','vair','wair','tair','pa',
         'tkea']
 
     def _parse_selects_(self, time, level, lat, lon):
@@ -3806,6 +3813,38 @@ class AtmosDataset(AtmosSurfaceDataset):
 
     get_selector.__doc__ = Dataset.get_selector.__doc__
 
+    def finalize_object(self, var, squeeze=False, order=None, asvar=None, torect=True,
+        depthup=None, **kwargs):
+        """Finalize a variable
+
+        :Params:
+
+            - **squeeze**, optional: If not False, squeeze singletons axes using
+              :func:`~vacumm.misc.misc.squeeze_variable`.
+            - **order**, optional: If not None, change the axes order of the variable.
+              It must contains letters like 'txyz-'.
+            - **asvar**, optional: Grow variable to match the ``asvar`` variable,
+              using :func:`~vacumm.misc.misc.grow_variables`.
+            - **asvar_<param>**: Param passed to :func:`~vacumm.misc.misc.grow_variables`.
+            - **torect**, optinal: Try to convert curvilinear grid to rectangular
+              grid using :func:`~vacumm.misc.grid.misc.curv2rect`.
+            - **depthup**, optional: If not False, try the make depth positive up
+              using :func:`~vacumm.misc.grid.misc.makedepthup`.
+        """
+        if var is None: return
+
+        # Make depth positive up
+        if isinstance(var,tuple):
+            var=var[0]
+        if depthup is not False:
+            self._makealtitudeup_(var, altitude=depthup)
+
+        # Generic stuff
+        var = Dataset.finalize_object(self, var, squeeze=squeeze, order=order,
+            torect=torect, asvar=asvar, **kwargs)
+
+        return var
+
     def get_variable(self, varname, level=None, squeeze=False, **kwargs):
 
         level, squeeze = self._parse_level_(level, squeeze)
@@ -3846,11 +3885,11 @@ class AtmosDataset(AtmosSurfaceDataset):
         if isup:
             return var
         if isdep(var):
-            return makedepthup(var, depth=False, strict=True)
+            return makealtitudeup(var, depth=False, strict=True)
         axis = var.getOrder().find('z')
         if axis<0:
             return var
-        return makedepthup(var, depth=False, axis=axis, strict=True)
+        return makealtitudeup(var, depth=False, axis=axis, strict=True)
 
 
     def _get_altitude_(self, at='t', level=None, time=None, lat=None, lon=None,

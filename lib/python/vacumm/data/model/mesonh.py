@@ -56,7 +56,7 @@ class MesoNH(AtmosDataset,OceanSurfaceDataset):
     """
 
     name = 'mesonh'
-    domain = 'atmosphere'
+    domain = 'atmos'
     description = "The MesoNH non-hydrostatic mesoscale atmospheric model of the French research community"
   
 
