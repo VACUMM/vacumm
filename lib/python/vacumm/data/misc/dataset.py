@@ -1974,6 +1974,123 @@ class Dataset(Object):
         return p
 
 
+    def get_hsection(self, varname, depth, time=None, lat=None, lon=None,
+        timeavg=False, warn=True, **kwargs):
+        """Get a horizontal section of a variable for a specified depth
+
+        :Params:
+
+            - **varname**: Generic var name.
+            - **depth**: Target depth.
+            - **timeavg**, optional: Time average of results.
+            - **depth_<param>**, optional: Param is passed to :meth:`get_depth`.
+            - **interp_<param>**, optional: Param is passed to
+              :meth:`~vacumm.misc.grid.regridding.interp1d`.
+        """
+
+        # Params
+        kwargs.pop('level', None)
+        kwvar = dict(time=time, lat=lat, lon=lon, torect=kwargs.pop('torect', True),
+            warn=max(int(warn)-1, 0))
+        kwdepth = kwfilter(kwargs, 'depth_')
+        kwdepth.update(kwvar)
+        kwinterp = kwfilter(kwargs, 'interp_', axis=1)
+        kwinterp.setdefault('method', 'linear')
+
+        # Get data
+        var = self.get(varname, **kwvar)
+        if self.domain=="ocean":
+            vardepth = self.get_depth(**kwdepth)
+        elif self.domain=="atmos":
+            vardepth = self.get_altitude(**kwdepth)
+        if var is None or vardepth is None:
+            if warn: self.warning('Cannot get var or depths for hsection')
+            return
+
+        # Get time information
+        ctime = None
+        try:
+            time = var.getTime().asComponentTime()
+            ct0 = strftime('%Y-%m-%d %H:%M:%S',time[0])
+            if timeavg and var.getOrder().startswith('t') and var.shape[0]>1:
+                ct0 = strftime('%Y-%m-%d',time[0])
+                ct1 = strftime('%Y-%m-%d',time[-1])
+                ctime = "%s / %s period" %(ct0,ct1)
+            else: ctime = ct0
+        except Exception, e:
+            self.warning("Can't get time information. Error: \n"+e.message)
+
+        # Interpolate
+        lvar = self._interp_at_depths_(var, vardepth, depth, domain=self.domain, **kwinterp)
+
+        # Time average
+        if timeavg and lvar.getOrder().startswith('t') and lvar.shape[0]>1:
+            lvar = MV2.average(lvar, axis=0)
+        return self.finalize_object(lvar, depthup=False, **kwargs), ctime
+
+
+    @staticmethod
+    def _interp_at_depths_(var, vardepth, depths, domain="ocean", **kwargs):
+        if domain=="ocean": depths = -N.abs(depths)
+        elif domain == "atmos": depths = N.abs(depths)
+        zo = create_dep([depths] if N.isscalar(depths) else depths[:])
+
+        if isinstance(vardepth, tuple):
+            vardepth = vardepth[0]
+        iaxi = var.getOrder().index('z')
+        if len(vardepth.shape) > 1:
+            #            var, vardepth = grow_variables(var, vardepth)
+            kwargs.update(axi=vardepth.filled(0.))
+            iaxo = iaxi
+        else:
+            iaxo = 0
+        return regrid1d(var, zo, iaxi=iaxi, iaxo=iaxo, **kwargs)
+
+
+    def plot_hsection(self, varname, depth, time=None, lat=None, lon=None,
+        timeavg=False, title='%(long_name)s at %(depth)im', mask_land=False, **kwargs):
+        """Plot a horizontal section of a variable for a specified depth
+
+        Section is computed with :meth:`get_hsection`.
+
+        :Params:
+
+            - **varname**: Generic var name.
+            - **depth**: Target depth.
+            - **timeavg**, optional: Time average of results.
+            - **depth_<param>**, optional: Param is passed to :meth:`get_depth`.
+            - **interp_<param>**, optional: Param is passed to
+              :meth:`~vacumm.misc.grid.regridding.interp1d`.
+            - Other arguments are passed to :func:`~vacumm.misc.plot.map2`.
+        """
+        # Get section
+        interp2depth = isinstance(depth,(int, float, list, N.ndarray, N.generic) )
+        if interp2depth:
+            depth = -N.abs(depth)
+            var, ctime = self.get_hsection(varname, depth, time=time, lat=lat, lon=lon,
+                timeavg=timeavg, squeeze=True)
+        else:
+            var = self.get_variable(varname, level=depth, time=time, lat=lat, lon=lon)
+            ctime = strftime( '%Y-%m-%d %H:%M:%S', var.getTime().asComponentTime()[0] )
+            var = squeeze_variable(var)
+            title = ' '.join(("%(long_name)s at level ",str(depth.start)))
+
+        # Atmosphere : Mask fields to remove contours on land
+        if mask_land and self.domain=="atmos":
+            land = self.get_oro(lat=lat, lon=lon, time=slice(0,1),squeeze=True)
+            mask = land > 0.
+            var[:] = MV2.masked_where(N.resize(land > 0., var.shape), var, copy=0)
+
+
+
+        # Plot it
+        long_name = getattr(var, 'long_name', '')
+        units = getattr(var, 'units', '')
+        title = "\n".join((title,ctime))
+        dict_check_defaults(kwargs, bgcolor='0.5')
+        return map2(var, title=title%locals(), **kwargs)
+
+
     @classmethod
     def squeeze_variable(cls, var, spec=True):
         '''Squeeze a variable, preserving remaining axis
@@ -2772,102 +2889,6 @@ class OceanDataset(OceanSurfaceDataset):
 
 
     ############################################################################
-
-    def get_hsection(self, varname, depth, time=None, lat=None, lon=None,
-        timeavg=False, warn=True, **kwargs):
-        """Get a horizontal section of a variable for a specified depth
-
-        :Params:
-
-            - **varname**: Generic var name.
-            - **depth**: Target depth.
-            - **timeavg**, optional: Time average of results.
-            - **depth_<param>**, optional: Param is passed to :meth:`get_depth`.
-            - **interp_<param>**, optional: Param is passed to
-              :meth:`~vacumm.misc.grid.regridding.interp1d`.
-        """
-
-        # Params
-        kwargs.pop('level', None)
-        kwvar = dict(time=time, lat=lat, lon=lon, torect=kwargs.pop('torect', True),
-            warn=max(int(warn)-1, 0))
-        kwdepth = kwfilter(kwargs, 'depth_')
-        kwdepth.update(kwvar)
-        kwinterp = kwfilter(kwargs, 'interp_', axis=1)
-        kwinterp.setdefault('method', 'linear')
-
-        # Get data
-        var = self.get(varname, **kwvar)
-        vardepth = self.get_depth(**kwdepth)
-        if var is None or vardepth is None:
-            if warn: self.warning('Cannot get var or depths for hsection')
-            return
-
-        # Get time information
-        ctime = None
-        try:
-            time = var.getTime().asComponentTime()
-            ct0 = strftime('%Y-%m-%d %H:%M:%S',time[0])
-            if timeavg and var.getOrder().startswith('t') and var.shape[0]>1:
-                ct0 = strftime('%Y-%m-%d',time[0])
-                ct1 = strftime('%Y-%m-%d',time[-1])
-                ctime = "%s / %s period" %(ct0,ct1)
-            else: ctime = ct0
-        except Exception, e:
-            self.warning("Can't get time information. Error: \n"+e.message)
-
-        # Interpolate
-        lvar = self._interp_at_depths_(var, vardepth, depth, **kwinterp)
-
-        # Time average
-        if timeavg and lvar.getOrder().startswith('t') and lvar.shape[0]>1:
-            lvar = MV2.average(lvar, axis=0)
-        return self.finalize_object(lvar, depthup=False, **kwargs), ctime
-
-    @staticmethod
-    def _interp_at_depths_(var, vardepth, depths, **kwargs):
-        depths = -N.abs(depths)
-        zo = create_dep([depths] if N.isscalar(depths) else depths[:])
-
-        if isinstance(vardepth,tuple):
-            vardepth=vardepth[0]
-        iaxi = var.getOrder().index('z')
-        if len(vardepth.shape)>1:
-#            var, vardepth = grow_variables(var, vardepth)
-            kwargs.update(axi=vardepth.filled(0.))
-            iaxo = iaxi
-        else:
-            iaxo = 0
-        return regrid1d(var, zo, iaxi=iaxi, iaxo=iaxo, **kwargs)
-
-
-    def plot_hsection(self, varname, depth, time=None, lat=None, lon=None,
-        timeavg=False, title='%(long_name)s at %(depth)im', **kwargs):
-        """Plot a horizontal section of a variable for a specified depth
-
-        Section is computed with :meth:`get_hsection`.
-
-        :Params:
-
-            - **varname**: Generic var name.
-            - **depth**: Target depth.
-            - **timeavg**, optional: Time average of results.
-            - **depth_<param>**, optional: Param is passed to :meth:`get_depth`.
-            - **interp_<param>**, optional: Param is passed to
-              :meth:`~vacumm.misc.grid.regridding.interp1d`.
-            - Other arguments are passed to :func:`~vacumm.misc.plot.map2`.
-        """
-        # Get section
-        depth = -N.abs(depth)
-        var, ctime = self.get_hsection(varname, depth, time=time, lat=lat, lon=lon,
-            timeavg=timeavg, squeeze=True)
-
-        # Plot it
-        long_name = getattr(var, 'long_name', '')
-        units = getattr(var, 'units', '')
-        title = "\n".join((title,ctime))
-        dict_check_defaults(kwargs, bgcolor='0.5')
-        return map2(var, title=title%locals(), **kwargs)
 
 
     def get_layer(self, varname, depth, timeavg=True, **kwargs):
