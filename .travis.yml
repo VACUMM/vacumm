@@ -12,7 +12,8 @@ install:
   - conda info -a
   - conda config --add channels uvcdat
   - conda config --add channels conda-forge
-  - travis_wait 30 conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION gcc>=4.7.0 uvcdat configobj paramiko xlutils seawater pytz cmocean basemap-data-hires
+  - conda config --add channels cdoutriaux1
+  - travis_wait 30 conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION gcc>=4.7.0 uvcdat configobj paramiko xlutils seawater pytz cmocean basemap-data-hires matplotlib>=2.0
   - source activate test-environment
   - python setup.py install
   - python setup.py build_ext --inplace

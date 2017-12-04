@@ -66,7 +66,7 @@ from vacumm.misc.misc import (
     tunique, split_selector, xls_style, Att, splitidx, CaseChecker, check_case,
     indices2slices, filter_level_selector, filter_selector, match_atts,
     match_string, ArgTuple, dicttree_get, dicttree_set, minbox,
-    bound_ops)
+    bound_ops, squarebox)
 
 from vacumm.misc.axes import (
     create_lon, create_lat, create_time, create_depth,
@@ -174,6 +174,7 @@ bar = bar2
 
 from vacumm.misc.core_plot import (
     Plot, Plot1D, Plot2D, ScalarMappable, Stick, Bar, Hov, Curve, Map, Section,
+    loc2align, loc2tuple, loc2offset, best_loc_map,
     )
 
 from vacumm.misc.color import (
