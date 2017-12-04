@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Wed Jul 26 10:05:58 2017
+# Created: Mon Dec  4 17:31:58 2017
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -48,7 +48,13 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.treeview_config)
         self.tabs.addTab(self.tab_config, _fromUtf8(""))
         self.gridLayout_2.addWidget(self.tabs, 0, 0, 1, 1)
-        self.gridLayout.addLayout(self.gridLayout_2, 0, 0, 1, 1)
+        self.gridLayout.addLayout(self.gridLayout_2, 0, 1, 1, 1)
+        self.frame_left = QtGui.QFrame(self.centralwidget)
+        self.frame_left.setMinimumSize(QtCore.QSize(200, 0))
+        self.frame_left.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.frame_left.setFrameShadow(QtGui.QFrame.Raised)
+        self.frame_left.setObjectName(_fromUtf8("frame_left"))
+        self.gridLayout.addWidget(self.frame_left, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
