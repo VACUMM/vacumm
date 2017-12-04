@@ -47,6 +47,7 @@ class SWAN(OceanSurfaceDataset):
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
     name = 'swan'
+    domain='wave'
     description = "SWAN wave model"
 
     ncobj_specs = {

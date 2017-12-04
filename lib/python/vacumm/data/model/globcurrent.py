@@ -48,6 +48,7 @@ class GlobCurrent(OceanDataset,AtmosSurfaceDataset):
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
     name = 'globcurrent'
+    domain='ocean'
     description = 'The GlobCurrent currents dataset (http://www.globcurrent.org/)'
 
     #: Grid type

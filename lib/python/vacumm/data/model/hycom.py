@@ -53,6 +53,7 @@ class HYCOMZ(OceanDataset,AtmosSurfaceDataset):
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
     name = 'hycomz'
+    domain='ocean'
     description = 'HYCOM ocean model in Z coordinates (from http://www.hycom.org)'
 
     ncobj_specs = {
