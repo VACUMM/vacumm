@@ -267,16 +267,16 @@ class Plot(object):
         # First inits
         self._gobjs = {}
         self.data = self.axes = None
-        self._kwargs = kwargs
+#        self._kwargs = kwargs
         self._post_plotted = False
         self._finalize = []
-
-        # Load attributes: for current instance
-        self.load_attributes(kwargs)
 
         # Load data
         if load_data :
             self.load_data(data, **kwargs)
+
+        # Load attributes: for current instance
+        self.load_attributes(kwargs)
 
         # Initialize plot
         self.pre_plot(**kwargs)
@@ -303,25 +303,25 @@ class Plot(object):
             return self._plot_status_post
         return self._plot_status_plot
 
-    def update(self, status=None, glob=True):
-        """Update what is needed of the plot"""
-        # Guess the status
-        if status is None: status = self.plot_status()
-        if not status: return
-
-        # Update
-        if glob: # Global update (all plotters)
-
-            for plotter in self.get_brothers():
-                plotter.update(status=status, glob=False)
-
-        else: # Update this plotter only
-
-            if status>=self._plot_status_plot: # Re-plot
-                self.plot(*self._pargs, **self._kwargs)
-
-                if status==self._plot_status_post: # Re-post_plot
-                    self.post_plot(**self._kwargs)
+#    def update(self, status=None, glob=True):
+#        """Update what is needed of the plot"""
+#        # Guess the status
+#        if status is None: status = self.plot_status()
+#        if not status: return
+#
+#        # Update
+#        if glob: # Global update (all plotters)
+#
+#            for plotter in self.get_brothers():
+#                plotter.update(status=status, glob=False)
+#
+#        else: # Update this plotter only
+#
+#            if status>=self._plot_status_plot: # Re-plot
+#                self.plot(*self._pargs, **self._kwargs)
+#
+#                if status==self._plot_status_post: # Re-post_plot
+#                    self.post_plot(**self._kwargs)
 
     def is_plotted(self):
         return self.plot_status()>=self._plot_status_plot
@@ -901,7 +901,10 @@ class Plot(object):
         if noframe:
             self.axes.set_frame_on(False)
         if bgcolor is not None:
-            self.axes.set_axis_bgcolor(bgcolor)
+            try:
+                self.axes.set_face_color(bgcolor)
+            except:
+                self.axes.set_axis_bgcolor(bgcolor)
 
     def plot(self, **kwargs):
         """The main plot"""
@@ -1876,9 +1879,9 @@ class Plot(object):
         return add_param_label(text, **kwargs)
 
     def add_annotation(self, x, y, xtext, ytext, text='', xycoords='data',
-        textcoords='offset points', arrowprops='->',
-        shadow=False, glow=False,
-        xyscaler=None, strip=True, **kwargs):
+            textcoords='offset points', arrowprops='->',
+            shadow=False, glow=False,
+            xyscaler=None, strip=True, **kwargs):
         """Add an annotation to the plot axes using :func:`matplotlib.pyplot.annotate`
 
         :Params:
@@ -1916,7 +1919,7 @@ class Plot(object):
             textcoords = self._transform_(textcoords, 'offset points')
         if not isinstance(textcoords, basestring) and \
                 textcoords not in [self.axes.transAxes, self.fig.transFigure]:
-            xtext, ytext = self.get_xy(xtext, ytext, xycoords, xyscaler=xyscaler)
+            xtext, ytext = self.get_xy(xtext, ytext, textcoords, xyscaler=xyscaler)
 
         # Arrow properties
         if isinstance(arrowprops, basestring):
@@ -3126,7 +3129,7 @@ class Plot(object):
             target = self.data[idata]
         else:
             target = getattr(self, xy)
-            setattr(self.data[idata], att, value)
+#            setattr(self.data[idata], att, value)
 
         # Set
         setattr(target, att, value)
@@ -5372,9 +5375,9 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
                   linewidth of ``streamplot_lwmod``.
                 - Else, passed directly to :func:`~matplotlib.pyplot.streamplot`
 
-            - **streamplot_lwmodmin**, optional: Min linewidth used when ``streamplot_linewidth`
+            - **streamplot_lwmodmin**, optional: Min linewidth used when ``streamplot_linewidth``
               is set to ``"modulus"``.
-            - **streamplot_lwmodmax**, optional: Max linewidth used when ``streamplot_linewidth`
+            - **streamplot_lwmodmax**, optional: Max linewidth used when ``streamplot_linewidth``
               is set to ``"modulus"``.
             - **streamplot_<param>**, optional: ``<param>`` is passed to
               :func:`~matplotlib.pyplot.streamplot`.

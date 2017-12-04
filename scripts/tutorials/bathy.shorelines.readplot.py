@@ -4,7 +4,7 @@ from vacumm.misc.color import ocean, land
 from vcmq import code_base_name
 
 m = map2(lat=(48.41, 48.49), lon=(-5.15, -5), show=False,
-    fillcontinents=False, drawcoastlines=False, figsize=(5.5, 4), 
+    fillcontinents=False, drawcoastlines=False, figsize=(5.5, 4),
      bgcolor=ocean, left=.12, top=.9)
 
 # Fichier au 1/25000eme avec selection de la zone de la carte
@@ -28,8 +28,9 @@ for poly in island.intersection(select):
     xx, yy = poly.boundary.transpose() # coordonnees
     P.fill(xx, yy, alpha=.5, facecolor='g', linewidth=0) # coloriage
 
-# Fin du trace 
-from pylab import show, title
+# Fin du trace
+from pylab import show, title, close
 from vacumm.misc.plot import savefigs
 title('Trait de cote SHOM/IGN 1/25000')
 savefigs(code_base_name(ext='png'), pdf=True)
+close()

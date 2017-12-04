@@ -10,4 +10,4 @@ f.close()
 m = map(sst, title='SST in the Iroise Sea', linewidth=.7,
     fill='pcolormesh', cmap='cmocean_thermal', clabel=True,
     vmin=9, top=.9, figsize=(6, 5), clabel_glow=True, clabel_glow_alpha=.4,
-    colorbar_shrink=.8, show=False, savefigs=__file__)
+    colorbar_shrink=.8, show=False, savefigs=__file__, close=True)

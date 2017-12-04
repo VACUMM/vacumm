@@ -24,7 +24,7 @@ xyz = xyz1 + xyz2 + xyz3 + xyz4 + fxyz5
 import pylab as P ; P.figure(figsize=(5., 8.5)) ; P.subplot(311)
 P.rcParams['font.size'] = 9
 P.subplots_adjust(bottom=.03, top=.97, hspace=.25)
-kwplot = dict(show=False, colorbar=False,map_res=None, margin=0., map_autoresize=0, 
+kwplot = dict(show=False, colorbar=False,map_res=None, margin=0., map_autoresize=0,
     xmin=xyz.xmin, xmax=xyz.xmax, ymin=xyz.ymin, ymax=xyz.ymax)
 xyz.plot(title='Fusion directe', **kwplot)
 
@@ -53,13 +53,13 @@ P.subplot(312)
 merger.plot(mode='value', title='Merger : valeurs', **kwplot)
 # - cluster
 P.subplot(313)
-merger.plot(mode='cluster', size=10, title='Merger : cluster', marker='o', 
+merger.plot(mode='cluster', size=10, title='Merger : cluster', marker='o',
     legend_loc='upper left', savefigs=__file__, savefigs_pdf=True, **kwplot)
-    
+
 # On recupere le tout dans un xyz
 merged_xyz = merger.get_xyz(long_name='Merged')
 
 # On peut donc le sauvegarder
 merged_xyz.save(__file__[:-2]+'merged.xyz')
-
+P.close()
 

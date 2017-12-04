@@ -66,7 +66,7 @@ __all__ = ['isoslice','isgrid', 'get_resolution', 'get_distances', 'get_closest'
     'deg2xy', 'set_grid', 'check_xy_shape', 'axes2d', 'meshgrid','meshbounds', 'meshweights',
     't2uvgrids', 'meshcells', 'cells2grid', 'curv_grid', 'bounds2mesh', 'resol',
     'create_grid', 'rotate_grid', 'isregular', 'monotonic', 'transect_specs',
-    'depth2dz', 'isdepthup', 'makedepthup', 'dz2depth', 'get_axis_slices',
+    'depth2dz', 'isdepthup', 'makedepthup', 'makealtitudeup', 'dz2depth', 'get_axis_slices',
     'xextend', 'xshift', 'curv2rect',  'isrect', 'create_grid2d', 'create_var2d', 'create_axes2d',
     'merge_axis_slice', 'merge_axis_slices', 'get_zdim', 'coord2slice', 'mask2ind',
     'varsel', 'haversine', 'clone_grid']
@@ -2947,7 +2947,7 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
         isup = isdepthup(depth, axis=axis, ro=ro)
 
         # Revert depths
-        if not isup and getdeth:
+        if not isup and getdepth:
             depth[:] *= -1
             if isaxis(depth):
                 depth.assignValue(-depth[::-1])
@@ -2967,6 +2967,73 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
                 var[:] = var.take(range(var.shape[axis]-1, -1, -1), axis=axis)
                 depaxis = var.getAxis(axis)
                 depaxis.assignValue(-depaxis[::-1])
+
+    vv = vv[0] if single else vv
+    if getdepth: return vv, depth
+    return vv
+
+
+def makealtitudeup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
+    """Make depth and variables positive up
+
+    :Params:
+
+        - **vv**: A single variable or a list of them.
+        - **depth**, optional: Explicit depths to not guess
+          it with :meth:`getLevel`. If True or False, simply revert along Z
+          dimension.
+        - **axis**, optional: Z dimension (else guessed with :func:`get_zdim`).
+
+    """
+    # A list of variables
+    single = not isinstance(vv, (list,tuple))
+    if single: vv = [vv]
+
+    # Get depth
+    getdepth = isaxis(depth) or isinstance(depth, N.ndarray)
+    if depth is None:
+        if isaxis(vv[0]):
+            depth = depth
+        else:
+            depth = vv[0].getLevel()
+    if axis is None and isaxis(depth):
+        axis = depth
+    if isinstance(depth, bool):
+        isup = depth
+    else:
+
+        axis = get_zdim(vv[0], axis, default=default, strict=strict)
+
+        # No depth found
+        if axis is None:
+            vv = vv[0] if single else vv
+            if getdepth: return vv, depth
+            return vv
+
+        # Positive up?
+        isup = isdepthup(depth, axis=axis, ro=ro)
+
+        # Revert depths
+        if not isup and getdepth:
+#            depth[:] *= -1
+            if isaxis(depth):
+                depth.assignValue(depth[::-1])
+                depth.positive = 'up'
+            else:
+                depth[:] = depth.take(range(depth.shape[axis]-1, -1, -1), axis=axis)
+
+    # Revert variables or depths
+    if not isup:
+        for ivar, var in enumerate(vv):
+            if isaxis(var):
+                var.assignValue(var[::-1])
+                var.positive = 'up'
+            else:
+                axis = get_zdim(var, axis=axis)
+                if axis is None: continue
+                var[:] = var.take(range(var.shape[axis]-1, -1, -1), axis=axis)
+                depaxis = var.getAxis(axis)
+                depaxis.assignValue(depaxis[::-1])
 
     vv = vv[0] if single else vv
     if getdepth: return vv, depth

@@ -1,4 +1,4 @@
 all: checks
 
-checks: check.py
-	python check.py
+checks: runcheck
+	python runcheck

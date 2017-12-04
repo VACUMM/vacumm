@@ -1,4 +1,6 @@
 # -*- coding: utf8 -*-
+import pylab as P
+
 # Création de bathymétries fictives à partir de Smith and Sandwell
 import cdms2
 from vacumm.config import data_sample
@@ -44,4 +46,4 @@ kwgrid = dict(linewidth=.5, alpha=.5, samp=2)
 add_grid(grid_large, color='r', **kwgrid)
 add_grid(var_small.getGrid(), color='#00ff00', **kwgrid)
 savefigs(__file__)
-
+P.close()

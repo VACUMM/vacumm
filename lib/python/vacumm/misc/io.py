@@ -535,23 +535,8 @@ def ncfind_obj(f, specs, ignorecase=True, regexp=False, ids=None, searchmode=Non
         specs = {"id": specs}
         check_list('id')
 
-    # Order the search
-    # - get order
-    all_keys = ['id', 'standard_name', 'long_name', 'units', 'axis']
-    all_keys0 = [key[0] for key in all_keys]
-    if searchmode is None:
-        if isinstance(specs, OrderedDict):
-            searchmode = ''.join([key[0] for key in specs.keys()])
-        else:
-            searchmode = ''.join(all_keys0)
-    searchmode = searchmode.replace('n', 'i')
-    keys = []
-    for key0 in searchmode:
-        key = all_keys[all_keys0.index(key0)]
-        if key0 in all_keys0 and key in specs:
-            keys.append(key)
-    # - reorder specs
-    specs = OrderedDict([(key, specs[key]) for key in keys])
+    # Order and filter the search
+    specs = filter_search(specs, searchmode)
 
     # Loop on targets to match attributes
     if ids is None:
@@ -572,9 +557,28 @@ def ncfind_obj(f, specs, ignorecase=True, regexp=False, ids=None, searchmode=Non
 
     return id
 
+def filter_search(specs, searchmode=None):
+    """Order and filter the search"""
+    # - get order
+    all_keys = ['id', 'standard_name', 'long_name', 'units', 'axis']
+    all_keys0 = [key[0] for key in all_keys]
+    if searchmode is None:
+        if isinstance(specs, OrderedDict):
+            searchmode = ''.join([key[0] for key in specs.keys()])
+        else:
+            searchmode = ''.join(all_keys0)
+    searchmode = searchmode.replace('n', 'i')
+    keys = []
+    for key0 in searchmode:
+        key = all_keys[all_keys0.index(key0)]
+        if key0 in all_keys0 and key in specs:
+            keys.append(key)
+    # - reorder specs
+    return OrderedDict([(key, specs[key]) for key in keys])
 
 def ncmatch_obj(obj, id=None, standard_name=None,
-        long_name=None, units=None, axis=None, ignorecase=True, **kwargs):
+        long_name=None, units=None, axis=None, ignorecase=True,
+        searchmode=None, **kwargs):
     """Check if an MV2 object (typicaly from a netcdf file) matches names, standard_names, etc
 
 
@@ -610,6 +614,9 @@ def ncmatch_obj(obj, id=None, standard_name=None,
             search[key] = val if not isinstance(key, list) else val[0]
             continue
         search[key] = val
+
+    # Order and filter the search
+    search = filter_search(search, searchmode)
 
     # Check attributes
     return match_atts(obj, search, ignorecase)

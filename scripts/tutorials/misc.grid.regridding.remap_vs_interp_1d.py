@@ -44,4 +44,5 @@ for ilh,resdst  in enumerate(['basse', 'haute']):
     if not ilh: P.legend(loc='lower left').legendPatch.set_alpha(.6)
 
 savefigs(__file__, pdf=True)
+P.close()
 
