@@ -19,7 +19,7 @@ Miniconda is a mini installer it is good to start with.
 
 Then, you can install vacumm and its dependecies::
 
-    $ conda install -c vacumm -c uvcdat -c conda-forge vacumm
+    $ conda install -c conda-forge -c uvcdat -c vacumm -c acme vacumm
 
 For more option, please read the conda documentation.
 
