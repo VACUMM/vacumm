@@ -72,7 +72,7 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
         self.setupUi(self)
 
         self.default_title = self.windowTitle()
-
+        
         self.tabs.tabBar().tabButton(self.tabs.indexOf(self.tab_config), QtGui.QTabBar.RightSide).hide()
 
         self.model_config = QtGui.QStandardItemModel()
@@ -105,6 +105,14 @@ class MainWindow(QtObject, Ui_MainWindow, QtGui.QMainWindow):
         self.config_name_validator = QtGui.QRegExpValidator(QtCore.QRegExp('[a-zA-Z_][a-zA-Z_0-9]*'))
 
         QtGui.QShortcut(QtGui.QKeySequence('ctrl+i'), self, self.log_info)
+
+
+    def set_application_logo(self, path):
+        logo = QtGui.QLabel()
+        logo.setPixmap(QtGui.QPixmap(path))
+        logo.setAlignment(QtCore.Qt.AlignTop)
+        layout = QtGui.QVBoxLayout(self.frame_left)
+        layout.addWidget(logo)
 
 
     def log_info(self):
