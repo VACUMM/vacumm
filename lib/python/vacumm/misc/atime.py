@@ -1985,12 +1985,12 @@ def is_interval(interval):
 
 
 def round_date(mydate, round_type, mode='round'):
-    """Round a date to year, month, day, hour, minute or second
+    """Round a date to a step in year, month, day, hour, minute or second
 
     :Params:
 
         - **mydate**: A date compatible with :func:`comptime`.
-        - **round_type**: A string like "year".
+        - **round_type**: A string like "year" or a tuple like (3, "year").
         - **mode**, optional: Rounding mode
 
             - ``"ceil"``: Choose the upper time.
@@ -1998,18 +1998,26 @@ def round_date(mydate, round_type, mode='round'):
             - Else choose the nearest.
 
     """
+    if isinstance(round_type, tuple):
+        step, round_type = round_type
+    else:
+        step = 1
+    step = max(int(step), 1)
     if not isNumberType(round_type):
         round_type = STR_UNIT_TYPES.index(unit_type(round_type, string_type=True))
     stype = STR_UNIT_TYPES[round_type]
     ct = comptime(mydate)
     sdate = str(ct)
-    ct0 = cdtime.comptime(*[int(float(ss)) for ss in RE_SPLIT_DATE.split(sdate) if ss != ''][:round_type+1])
-    ct1 = ct0 if ct==ct0 else add_time(ct0, 1, stype)
+    values = [int(float(ss)) for ss in RE_SPLIT_DATE.split(sdate) if ss != ''][:round_type+1]
+    rectif = values[-1] % step
+    ct0 = add_time(cdtime.comptime(*values), -rectif, stype)
+    ct1 = ct0 if ct==ct0 else add_time(ct0, step, stype)
     units = 'days since '+sdate
     t = ct.torel(units).value
-    if mode not in ['floor', 'ceil']: mode = 'round'
+    if mode not in ['floor', 'ceil']:
+        mode = 'round'
     if mode=='round':
-        mode = 'ceil' if (t-ct0.torel(units).value > ct1.torel(units).value-t) else 'flood'
+        mode = 'ceil' if (t-ct0.torel(units).value > ct1.torel(units).value-t) else 'floor'
     if mode=='ceil':
         return ct1
     return ct0
