@@ -369,23 +369,31 @@ def validator_eval(value, default=None, unchanged_if_failed=True):
     return value
 
 
-def validator_color(value, default='k', alpha=False):
+def validator_color(value, default='k', alpha=False, as256=None):
     if str(value) == 'None': return None
     if alpha:
         from .color import RGBA as CC
     else:
         from .color import RGB as CC
     try:
-        return CC(value)
+        return CC(_check256_(value, as256=as256))
     except:
         if isinstance(value, str):
             try:
-                return CC(eval(value))
+                return CC(_check256_(eval(value), as256=as256))
             except:
                 raise VdtTypeError(value)
 
     raise VdtTypeError(value)
 
+def _check256_(val, as256=None):
+    if isinstance(val, str):
+        return val
+    if as256 is None:
+        as256 = any([v>1 for v in val[:3]])
+    if as256:
+        val = tuple([v/256. for v in val[:3]]) + tuple(val[3:])
+    return val
 
 _re_funccall = re.compile(r'^\s*(\w+\(.*\))\s*$').match # func(...)
 _re_acc = re.compile(r'^\s*(\{.*\})\s*$').match # {...}
@@ -1840,25 +1848,25 @@ def get_secnames(cfg):
     return secnames[::-1]
 
 def pathname(cfg, entry=None):
-	'''
-	Get a string representing the path of ConfigObj and optionally an entry in it.
-		>>> c=configobj.ConfigObj({'a':{'b':{'c':'d'}}})
-		>>> cfgpath(c['a']['b'])
-		'a.b'
-		>>> cfgpath(c['a'], 'b')
-		'a.b'
-		>>> cfgpath(c['a']['b'], 'c')
-		'a.b.c'
-		
-	'''
-	ancestors = []
-	if entry is not None:
-		ancestors.append(entry)
-	curcfg = cfg
-	while curcfg.depth > 0 and curcfg.parent is not curcfg:
-		ancestors.append(curcfg.name)
-		curcfg = curcfg.parent
-	return '.'.join(reversed(ancestors))
+    '''
+    Get a string representing the path of ConfigObj and optionally an entry in it.
+        >>> c=configobj.ConfigObj({'a':{'b':{'c':'d'}}})
+        >>> cfgpath(c['a']['b'])
+        'a.b'
+        >>> cfgpath(c['a'], 'b')
+        'a.b'
+        >>> cfgpath(c['a']['b'], 'c')
+        'a.b.c'
+
+    '''
+    ancestors = []
+    if entry is not None:
+        ancestors.append(entry)
+    curcfg = cfg
+    while curcfg.depth > 0 and curcfg.parent is not curcfg:
+        ancestors.append(curcfg.name)
+        curcfg = curcfg.parent
+    return '.'.join(reversed(ancestors))
 
 def list_options(sec, optlist=None, parents=None, values=False, sections=False):
     """Get the list of options of section tree
