@@ -78,7 +78,7 @@ __all__ = ['STR_UNIT_TYPES','RE_SPLIT_DATE','now', 'add', 'axis_add', 'add_time'
     'hourly_bounds', 'time_split', 'time_split_nmax', 'add_margin', 'fixcomptime',
     'is_interval', 'has_time_pattern', 'tsel2slice', 'tic', 'toc',
     'filter_time_selector','time_selector', 'selector',
-    'julday', 'interp_clim']
+    'julday', 'interp_clim', 'round_interval']
 
 __all__.sort()
 
@@ -2009,7 +2009,8 @@ def round_date(mydate, round_type, mode='round'):
     ct = comptime(mydate)
     sdate = str(ct)
     values = [int(float(ss)) for ss in RE_SPLIT_DATE.split(sdate) if ss != ''][:round_type+1]
-    rectif = values[-1] % step
+    base = [0, 1, 1, 0, 0, 0][round_type] # [year, month, ...]
+    rectif = (values[-1]-base) % step
     ct0 = add_time(cdtime.comptime(*values), -rectif, stype)
     ct1 = ct0 if ct==ct0 else add_time(ct0, step, stype)
     units = 'days since '+sdate
@@ -2021,6 +2022,34 @@ def round_date(mydate, round_type, mode='round'):
     if mode=='ceil':
         return ct1
     return ct0
+
+def round_interval(time, round_type, mode='inner'):
+    """Round an time interval using :func:`round_date`
+
+    :Params:
+
+        - **time**: A time interval like ``(time0, time1, 'cce')``
+        - **round_type**: A string like "year" or a tuple like (3, "year").
+        - **mode**, optional: Rounding mode
+
+            - ``"inner"``: Upper for the lower bound and lower for the upper bound.
+            - ``"outer"``: Opposite to "inner"
+            - tuple: first is applied to lower bound, second to upper bound.
+            - Else, passed to :func:`round_date` and applied to both bounds.
+
+    """
+    # Mode
+    if mode=='inner':
+        modes = 'upper', 'lower'
+    elif mode=='outer':
+        modes = 'lower', 'upper'
+    elif isinstance(mode, tuple):
+        modes = mode
+    else:
+        mode = mode, mode
+
+    return (round_date(time[0], round_type, modes[0]),
+        round_date(time[1], round_type, modes[1])) + time[2:]
 
 def midnight_date(mydate):
     """Round a date to the closest midnight

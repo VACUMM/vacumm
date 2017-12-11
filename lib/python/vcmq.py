@@ -88,7 +88,7 @@ from vacumm.misc.atime import (
     hourly, hourly_bounds, hourly_exact, monthly, tsel2slice,
     reduce, yearly, are_same_units, ascii_to_num, detrend, from_utc,
     time_selector, selector, filter_time_selector,
-    plot_dt, strtime, interp_clim,
+    plot_dt, strtime, interp_clim, round_interval,
     datetime as adatetime, compress as compress,
     add,
     )
@@ -96,6 +96,8 @@ datetime_ = adatetime
 add_time = add
 is_time_interval = is_interval
 tcompress = compress
+round_time_interval = round_interval
+round_time = round_date
 
 from vacumm.misc.bases import (
     psinfo, code_base_name, code_file_name, code_dir_name, describe, Class, Object,
