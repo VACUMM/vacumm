@@ -1,27 +1,41 @@
 Release notes
 #############
 
+Version 3.5.1
+=============
+
+- Added round_interval
+- Added step support to round_date
+- Added 256-based color to config color validator
+- Added left frame to application logo in cfgui
+- Added get_transect to Atmosphere
+- Added domain attribute to Dataset classes
+- Added flexibility to NcSigma
+- Fixed Map memory issue
+- Fixed some old Dataset methods
+- Fixed runcheck
+
 Version 3.5.0
 =============
 
-- Added new classes for MesoNh, Symp張onie and WW3 models
+- Added new classes for MesoNh, Symphonie and WW3 models
 - Added cfgui: graphical user interface to ConfigMgr
 - Added support for 4D interpolation to grid2xy
 - Added linear4dto1dxx
-- Add tcompress, bound_ops and haversine to vcmq
-- Rename check.py to runcheck
-- Fix kinetic_energy: bad indexes
-- Fix cfgm merging
-- Fix vacumm.misc.file.strfsize
-- Fix OceanDataset.get_mld density issue
-- Fix missing datetime import for tfind
-- Fix ConfigManager warning when default value is not scalar
-- Fix fix xml text nodes load
-- Fix Logger defaults
-- Fix Object class logging funcName
-- Fix spherical variogram
-- Fix imports in basemap
-- Fix cdtime validator in config
+- Added tcompress, bound_ops and haversine to vcmq
+- Renamed check.py to runcheck
+- Fixed kinetic_energy: bad indexes
+- Fixed cfgm merging
+- Fixed vacumm.misc.file.strfsize
+- Fixed OceanDataset.get_mld density issue
+- Fixed missing datetime import for tfind
+- Fixed ConfigManager warning when default value is not scalar
+- Fixed fix xml text nodes load
+- Fixed Logger defaults
+- Fixed Object class logging funcName
+- Fixed spherical variogram
+- Fixed imports in basemap
+- Fixed cdtime validator in config
 
 Version 3.4.1
 =============
