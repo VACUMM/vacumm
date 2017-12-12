@@ -518,15 +518,16 @@ class NcSigma(object):
             raise SigmaError('Eta variable not found for %s coordinates'%self.sigma_name)
         return var
 
-    def get_oro(self, selector=None, mode='error'):
+    def get_oro(self, selector=None, lons=None, lats=None, times=None, mode='error'):
         """Scan variables to find oro and read it"""
-        var = self._get_from_cache_('oro', selector)
+        var = self._get_from_cache_('oro', selector,
+            lons=lons, lats=lats, times=times)
         if var is None and mode=='error':
             raise SigmaError('Oro variable not found for %s coordinates'%self.sigma_name)
         return var
 
     def get_height(self, mode='error'):
-        """Scan variables to find oro and read it"""
+        """Scan variables to find height and read it"""
         var = self._get_from_cache_('height')
         if var is None and mode=='error':
             raise SigmaError('Height variable not found for %s coordinates'%self.sigma_name)
@@ -713,7 +714,9 @@ class NcSigmaStandard(NcSigma):
 #        return NcSigma._load_sigma_('sigma', selector)
 
 
-    def sigma_to_depths(self, selector=None, at='t', mode=None, copyaxes=True,
+    def sigma_to_depths(self, selector=None,
+            lons=None, lats=None, times=None,
+            at='t', mode=None, copyaxes=True,
             eta=None, zerolid=None, depth=None):
         """Get depths for the current state
 
@@ -999,7 +1002,8 @@ class  NcSigmaGeneralized(NcSigma):
             lons=None, lats=None, times=None,
             mode='error'):
         """Scan file for limit depth and read it"""
-        var = self._get_from_cache_('depth_c', selector)
+        var = self._get_from_cache_('depth_c', selector,
+            lons=lons, lats=lats, times=times)
         if var is None and mode=='error':
             raise SigmaError('Depth_c variable not found for %s coordinates: '%(self.sigma_name, varname))
         return var
