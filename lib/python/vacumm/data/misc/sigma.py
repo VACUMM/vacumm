@@ -39,7 +39,7 @@ __email__ = 'raynaud@actimar.fr'
 
 '''This module defines a class for all sigma coordinates systems'''
 
-import re, math, numpy as N, cdms2, MV2
+import re, math, string, numpy as N, cdms2, MV2
 from traceback import format_exc
 from warnings import warn
 from cdms2.selectors import Selector
@@ -445,7 +445,10 @@ class NcSigma(object):
             return var
 
         # Variable
-        if ncname in self.f.variables:
+        Variables = self.f.variables.keys()
+        variables = map(string.lower, Variables)
+        if ncname.lower() in variables:
+            ncname = Variables[variables.index(ncname.lower())]
             not_scalar = self.f[ncname].shape
             args = [ncname]
             if selector and not_scalar:
@@ -463,6 +466,10 @@ class NcSigma(object):
             return var
 
         # Attribute
+        Attributes = self.f.attributes.keys()
+        attributes = map(string.lower, Attributes)
+        if ncname.lower() in attributes:
+            ncname = Attributes[attributes.index(ncname.lower())]
         return self.f.attributes.get(ncname, None)
 
     def load_sigma(self, selector=None, at=None):
