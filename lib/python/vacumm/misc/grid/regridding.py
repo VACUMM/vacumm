@@ -2123,7 +2123,7 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
         axes.append(outaxis)
     else:
         varo = varo[...,0]
-    if not N.isscalar(varo):
+    if N.ndim(varo):
         varo.setAxisList(axes)
     return varo
 
