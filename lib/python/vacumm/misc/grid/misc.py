@@ -1172,7 +1172,7 @@ def _coord2ind2d_(cc2d, sel, mask=None, maskonly=False,
         return mask if maskonly else (None, None, mask)
 
     # Indices
-    [(jmin, jmax), (imin, imax)] = mask2ind(mask, 'n' in e)
+    [(jmin, jmax), (imin, imax)] = mask2ind(mask, 'e' in e)
     return [(imin, imax+1, 1), (jmin, jmax+1, 1), mask]
 
 
