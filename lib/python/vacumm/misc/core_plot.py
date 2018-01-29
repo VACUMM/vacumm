@@ -839,6 +839,8 @@ class Plot(object):
         if figsize is not None:
             if not isinstance(figsize, tuple):
                 figsize = (figsize, figsize)
+            else:
+                figsize = tuple(figsize)
             self.fig.set_size_inches(figsize, forward=True)
         if noframe:
             self.fig.set_frameon(False)
@@ -2367,7 +2369,8 @@ class Plot(object):
 
         return o
 
-    def add_place(self, x, y, text, zorder=150, shadow=False, glow=False,
+    def add_place(self, x, y, text, zorder=150, color='k',
+            shadow=False, glow=False,
             text_offset=(0, 10), ha='center', va='center', **kwargs):
         """Place a point using :meth:`add_point` and a label using :meth:`add_text`
 
@@ -2389,9 +2392,9 @@ class Plot(object):
         """
         kwpoint = kwfilter(kwargs, 'point_')
         kwtext = kwfilter(kwargs, 'text_')
-        dict_check_defaults(kwpoint, zorder=zorder, shadow=shadow, glow=glow)
-        dict_check_defaults(kwtext, zorder=zorder, shadow=shadow, glow=glow,
-            ha=ha, va=va, weight='bold')
+        kwcom = dict(zorder=zorder, shadow=shadow, glow=glow, color=color)
+        dict_check_defaults(kwpoint, **kwcom)
+        dict_check_defaults(kwtext, ha=ha, va=va, weight='bold', **kwcom)
         tha = kwtext['ha']
         tva = kwtext['va']
         if tha=='auto':
@@ -5647,9 +5650,9 @@ class Map(Plot2D):
             if self.lat is None:
                 self.lat = default_lat
         else:
-            masked = False if self.masked else None
-            self.lon = self.get_xdata(masked=masked) if self.lon is None else self.lon
-            self.lat = self.get_ydata(masked=masked) if self.lat is None else self.lat
+#            masked = False if self.masked else None
+            self.lon = self.get_xdata(masked=True) if self.lon is None else self.lon
+            self.lat = self.get_ydata(masked=True) if self.lat is None else self.lat
 
 
     def pre_plot(self, map=None, projection='cyl', resolution='auto',
@@ -5741,10 +5744,16 @@ class Map(Plot2D):
 
             kwmap = kwfilter(kwargs, 'basemap')
             kwmap.update(kwfilter(kwargs, 'map_'))
-            if lon_min is None: lon_min = self.lon.min()
-            if lon_max is None: lon_max = self.lon.max()
-            if lat_min is None: lat_min = self.lat.min()
-            if lat_max is None: lat_max = self.lat.max()
+            lon = self.lon if self.xmasked else N.ma.getdata(self.lon)
+            lat = self.lat if self.ymasked else N.ma.getdata(self.lat)
+            if lon_min is None:
+                lon_min = lon.min()
+            if lon_max is None:
+                lon_max = lon.max()
+            if lat_min is None:
+                lat_min = lat.min()
+            if lat_max is None:
+                lat_max = lat.max()
             projection = kwargs.pop('proj', projection)
             from vacumm.misc.grid.basemap import create_map
             resolution = kwargs.pop('res', resolution)
