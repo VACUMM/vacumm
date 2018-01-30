@@ -782,7 +782,7 @@ def lonlab(longitudes, **kwargs):
 
     :See also:
 
-        :func:`latlab` :func:`deplab`
+        :func:`phaselab` :func:`latlab` :func:`deplab`
     """
     kwargs['label'] = 'lon'
     return phaselab(longitudes, **kwargs)
@@ -799,7 +799,7 @@ def latlab(latitudes,**kwargs):
 
     :See also:
 
-        :func:`lonlab` :func:`deplab`
+        :func:`phaselab` :func:`lonlab` :func:`deplab`
     """
     kwargs['label'] = 'lat'
     return phaselab(latitudes, **kwargs)

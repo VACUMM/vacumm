@@ -3581,7 +3581,9 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
 
     # Get slice specs
     ss = get_axis_slices(var, axis, extinner=slice(ext[0], -ext[1]),
-        extleft=slice(0, ext[0]), extright=slice(-ext[1], None))
+        extleft=slice(0, ext[0]), extright_for_left=slice(-ext[0], None),
+        extright=slice(-ext[1], None), extleft_for_right=slice(0, ext[1]),
+    )
 
     # Unchanged data
     varf[ss['extinner']] = varm
@@ -3591,7 +3593,7 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
         if mode=='masked':
             varf[ss['extleft']] = N.ma.masked
         elif mode=='cylic':
-            varf[ss['extleft']] = varm[ss['extright']]
+            varf[ss['extleft']] = varm[ss['extright_for_left']]
         else:
             if mode=='extrap':
                 dv = varm[ss['first']]-varm[ss['firstp1']]
@@ -3606,7 +3608,7 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
         if mode=='masked':
             varf[ss['extright']] = N.ma.masked
         elif mode=='cylic':
-            varf[ss['extright']] = varm[ss['extleft']]
+            varf[ss['extright']] = varm[ss['extleft_for_right']]
         else:
             if mode=='extrap':
                 dv = varm[ss['last']]-varm[ss['lastm1']]
