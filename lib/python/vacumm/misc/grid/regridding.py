@@ -3580,7 +3580,7 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
     varm, varf, datatype, mode = _extend_init_(var, varo_shape, mode)
 
     # Get slice specs
-    ss = get_axis_slices(var, axis, extinner=slice(ext[0], -ext[1]),
+    ss = get_axis_slices(var, axis, extinner=slice(ext[0], -ext[1] or None),
         extleft=slice(0, ext[0]), extright_for_left=slice(-ext[0], None),
         extright=slice(-ext[1], None), extleft_for_right=slice(0, ext[1]),
     )
