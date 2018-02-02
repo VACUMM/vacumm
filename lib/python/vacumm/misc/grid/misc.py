@@ -6,7 +6,7 @@ It deals with bounds, areas, interpolations...
 
 See: :ref:`user.tut.misc.grid`.
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -69,7 +69,7 @@ __all__ = ['isoslice','isgrid', 'get_resolution', 'get_distances', 'get_closest'
     'depth2dz', 'isdepthup', 'makedepthup', 'makealtitudeup', 'dz2depth', 'get_axis_slices',
     'xextend', 'xshift', 'curv2rect',  'isrect', 'create_grid2d', 'create_var2d', 'create_axes2d',
     'merge_axis_slice', 'merge_axis_slices', 'get_zdim', 'coord2slice', 'mask2ind',
-    'varsel', 'haversine', 'clone_grid']
+    'varsel', 'haversine', 'clone_grid', 'are_same_grids']
 __all__.sort()
 
 
@@ -3166,7 +3166,20 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge',
     return depths
 
 
-
+def are_same_grids(grid0, grid1):
+    """Check if two grids are similars"""
+    if grid0.shape != grid1.shape:
+        return False
+    lon0 = grid0.getLongitude()[:]
+    lat0 = grid0.getLatitude()[:]
+    lon1 = grid1.getLongitude()[:]
+    lat1 = grid1.getLatitude()[:]
+    if (lon0.shape!=lon1.shape) or (lat0.shape!=lat0.shape):
+        return False
+    for a0, a1 in [(lon0, lon1), (lat0, lat1)]:
+        if not N.ma.allclose(a0, a1):
+            return False
+    return True
 
 
 ######################################################################
