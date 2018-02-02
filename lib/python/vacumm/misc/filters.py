@@ -507,7 +507,7 @@ def gaussian2d(data, nxw, nyw=None, sxw=1/3., syw=1/3., rmax=3., **kwargs):
     assert nxw % 2 == 1 and nyw % 2 == 1, 'nxw and nyw must be odd numbers'
     assert sxw > 0 and syw > 0,  'sxw and syw must be positive'
 
-    xx,yy = meshgrid(N.arange(nxw)-nxw/2, N.arange(nyw)-nxw/2)
+    xx,yy = meshgrid(N.arange(nxw)-nxw/2, N.arange(nyw)-nyw/2)
 
     if sxw < 1:
         sxw *= nxw/2
