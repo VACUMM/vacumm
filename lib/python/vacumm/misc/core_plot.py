@@ -2069,7 +2069,8 @@ class Plot(object):
         return box
 
 
-    def add_box(self, box, zorder=150, shadow=False, glow=False, color='r', npts=10, xyscaler=None, **kwargs):
+    def add_box(self, box, zorder=150, shadow=False, glow=False, color='r',
+            npts=10, xyscaler=None, fill=False, **kwargs):
         """Add a box to the plot using :meth:`matplotlib.pyplots.plot`
 
         :Params:
@@ -2105,7 +2106,9 @@ class Plot(object):
             xmax, ymax = xyscaler(xmax, ymax)
 
         # Params
-        kwargs.update(color=color, zorder=zorder)
+        kwargs.update(ec=color, zorder=zorder)
+        if not fill:
+            kwargs.update(fc='none')
         kwsh = kwfilter(kwargs, 'shadow')
         kwgl = kwfilter(kwargs, 'glow')
         kwsh.setdefault('zorder', zorder)
@@ -2123,7 +2126,7 @@ class Plot(object):
         Y += N.linspace(ymax, ymin, npts),
 
         # Plot
-        o = self.axes.plot(N.concatenate(X), N.concatenate(Y), **kwargs)
+        o = self.axes.fill(N.concatenate(X), N.concatenate(Y), **kwargs)
         self.register_obj(o, **kwargs)
 
         # Effects
