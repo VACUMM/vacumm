@@ -1083,9 +1083,9 @@ subroutine cellerr1d(vari, yi, varo, yo, mv, errm, errl, erro, yob, nx, nxb, nyi
                 where(goodi(ix0:ix1,iyi))
 
                     varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + &
-                        & vari(ix0:ix1,iyi) / (errm(:, iyi)**2 + zerrl)
+                        & vari(ix0:ix1,iyi) / (errm(ix0:ix1, iyi)**2 + zerrl)
                     erro(ix0:ix1,iyo) = erro(ix0:ix1,iyo) + &
-                        & 1d0 / (errm(:, iyi)**2 + zerrl)
+                        & 1d0 / (errm(ix0:ix1, iyi)**2 + zerrl)
 
                 endwhere
             enddo
@@ -1209,7 +1209,7 @@ subroutine cellerr1dx(vari, yi, varo, yo, mv, errm, errl, erro, yob, nx, nxb, ny
                 where(goodi(ix0:ix1))
 
                     varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + &
-                        & vari(ix0:ix1,iyi) / (errm(:, iyi)**2 + zerrl)
+                        & vari(ix0:ix1,iyi) / (errm(ix0:ix1, iyi)**2 + zerrl)
                     erro(ix0:ix1,iyo) = erro(ix0:ix1,iyo) + &
                         & 1d0 / (errm(:, iyi)**2 + zerrl)
 
@@ -1331,7 +1331,7 @@ subroutine cellerr1dxx(vari, yi, varo, yo, mv, errm, errl, erro, yob, nx, nxb, n
                 where(goodi(ix0:ix1))
 
                     varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + &
-                        & vari(ix0:ix1,iyi) / (errm(:, iyi)**2 + zerrl)
+                        & vari(ix0:ix1,iyi) / (errm(ix0:ix1, iyi)**2 + zerrl)
                     erro(ix0:ix1,iyo) = erro(ix0:ix1,iyo) + &
                         & 1d0 / (errm(:, iyi)**2 + zerrl)
 
