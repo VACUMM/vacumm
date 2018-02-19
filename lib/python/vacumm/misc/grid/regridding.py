@@ -2872,7 +2872,7 @@ _regrid2d_bilinear_ = _regrid2d_bilinear_r2r_
 def _regrid2d_bilinear_r2c_(vari3d, xi, yi, xxo, yyo, mv):
     """Wrapper to fortran _bilin2dto1d_"""
     if N.ma.isMA(vari3d): vari3d = vari3d.filled(mv)
-    varo3d =  N.ascontiguousarray(_bilin2dto1d_(xi, yi, vari3d, xxo.ravel(), yo.ravel(), mv))
+    varo3d =  N.ascontiguousarray(_bilin2dto1d_(xi, yi, vari3d, xxo.ravel(), yyo.ravel(), mv))
     varo3d.shape = varo3d[:-1]+xxo.shape
     return varo3d
 
@@ -2893,7 +2893,7 @@ _regrid2d_dstwgt_ = _regrid2d_dstwgt_r2r_
 def _regrid2d_dstwgt_r2c_(vari3d, xi, yi, xxo, yyo, mv):
     """Wrapper to fortran _bilin2dto1d_"""
     if N.ma.isMA(vari3d): vari3d = vari3d.filled(mv)
-    varo3d =  N.ascontiguousarray(_dstwgt2dto1d_(xi, yi, vari3d, xxo.ravel(), yo.ravel(), mv))
+    varo3d =  N.ascontiguousarray(_dstwgt2dto1d_(xi, yi, vari3d, xxo.ravel(), yyo.ravel(), mv))
     varo3d.shape = varo3d[:-1]+xxo.shape
     return varo3d
 
