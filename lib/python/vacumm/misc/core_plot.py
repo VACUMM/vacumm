@@ -6394,7 +6394,8 @@ class Map(Plot2D):
                             ))
 
             # - bfdeg (bold face degrees) homogeneisation
-            if (drawparallels and isinstance(kwp['fmt'], MinuteLabel) and
+            if minutes:
+                if (drawparallels and isinstance(kwp['fmt'], MinuteLabel) and
                     drawmeridians and isinstance(kwm['fmt'], MinuteLabel) and
                     bfdeg is None and
                     (kwp['fmt'].kwargs['bfdeg'] or kwm['fmt'].kwargs['bfdeg'])):

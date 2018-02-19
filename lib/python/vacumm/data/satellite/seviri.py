@@ -543,6 +543,48 @@ class Seviri(Sst) :
         self.data.units = "degree_Celsius"
         self.data.standard_name = "satellite_sea_surface_temperature"
         self.data.long_name = "Satellite Sea Surface Temperature - SEVIRI"            
+    def read_long(self,cfg=None):
+        """ Lecture des fichiers NetCDF de SST SEVIRI formatte pour runs longs """
+        import cdms2,sys,os, glob
+        import numpy,MV2
+        import cdtime
+        from vacumm.misc.io import list_forecast_files
+        from vacumm.misc.phys.units import kel2degc
+        
+        lomin = cfg['Domain']['lomin']
+        lomax = cfg['Domain']['lomax']
+        lamin = cfg['Domain']['lamin']
+        lamax = cfg['Domain']['lamax']
+        obsdir = cfg['Observations']['obsdir']
+        fln = cfg['Observations']['filename']
+        
+        # -- Lecture du fichier filename
+        self.data=[]
+        flist = list_forecast_files(os.path.join(obsdir,fln),(str(cfg['Time Period']['andeb'])+'-'+str(cfg['Time Period']['mdeb'])+'-'+str(cfg['Time Period']['jdeb']),str(cfg['Time Period']['anfin'])+'-'+str(cfg['Time Period']['mfin'])+'-'+str(cfg['Time Period']['jfin']),'co'))  
+        print flist
+        for fil in flist:                      
+            f = cdms2.open(fil)
+            temp = f('sst', lon=(lomin,lomax), lat=(lamin,lamax),  time=(self.ctdeb, self.ctfin))     
+            f.close()
+            
+            if len(flist) > 1:
+                self.data += temp,   
+            else:
+                self.data = temp          
+            
+        if len(flist) > 1:
+            # -- MV2.concatenate pour concatener les informations dans self.data (entre autre construit l'axe temporel)
+            self.data = MV2.concatenate(self.data)
+        
+        
+        # -- Change unit
+        self.data = kel2degc(self.data)
+            
+        # -- Informations sur le dataset
+        #self.data.name = "SEVIRI_SST"
+        self.data.units = "degree_Celsius"
+        self.data.standard_name = "satellite_sea_surface_temperature"
+        self.data.long_name = "Satellite Sea Surface Temperature - SEVIRI"            
         
         #-- Fin de lecture des donnees
         #----------------------------------------------------
