@@ -1,3 +1,4 @@
+include Makefile
 include test/Makefile
 include CHANGES.rst
 include setup.cfg.*
