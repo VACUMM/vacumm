@@ -39,7 +39,6 @@ import os
 import numpy as N,numpy.ma as MA,MV2
 import cdms2
 import cdtime
-from genutil.salstat import betai,_gammaln
 from genutil.statistics import percentiles
 
 from vacumm import VACUMMError
@@ -64,6 +63,8 @@ def corr_proba(r, ndata, ndataset=2, dof=False):
 
         This must be rewritten using :mod:`scipy.stats`
     """
+    # TODO: use scipy for betai and _gamma?
+    from genutil.salstat import betai,_gammaln
 
     # Basic tests
     ndata = MA.masked_equal(ndata,0,copy=0)
