@@ -39,17 +39,16 @@ instead of vacumm.misc.misc.*.
 #
 from __future__ import absolute_import
 from . import misc
+from . import axes
 from . import units
 from . import constants
 from . import math
 from . import color
-from . import atime
 from . import poly
-from . import axes
-from . import grid
-from . import io
 from . import grid
 from . import basemap
+from . import atime
+from . import io
 from . import masking
 from . import regridding
 from . import kriging

@@ -44,4 +44,5 @@ def configuration(parent_package='',top_path=None):
     config.add_subpackage('tide')
     config.add_subpackage('validator')
     config.add_data_files('vacumm.cfg')
+    config.add_data_files('vacumm.ini')
     return config

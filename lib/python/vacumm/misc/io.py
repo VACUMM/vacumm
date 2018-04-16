@@ -50,13 +50,13 @@ from _geoslib import Point, LineString, Polygon
 
 from vacumm import VACUMMError
 from .misc import (split_selector, kwfilter, squeeze_variable, is_iterable, 
-    itv_union, match_atts, set_atts, broadcast, create_selector, 
+    match_atts, set_atts, broadcast, create_selector, 
     MV2_concatenate, checkdir)
 from .poly import create_polygon, clip_shape, sort_shapes
 from .axes import (get_checker, islon, islat, istime, islevel, 
     create_lat, create_lon)
 from .atime import (has_time_pattern, is_time, round_date, add_margin, 
-    strptime, comptime, are_same_units, ch_units, 
+    strptime, comptime, are_same_units, itv_union, ch_units, 
     create_time, tsel2slice)
 from .grid import curv2rect, isgrid, create_grid, set_grid
 

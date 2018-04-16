@@ -42,7 +42,7 @@ from __future__ import absolute_import
 import re
 from re import match
 from numbers import Number
-from collection import Sequence
+from collections import Sequence
 from warnings import warn
 import six
 from six.moves import range

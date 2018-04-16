@@ -80,7 +80,6 @@ from numpy.distutils.core import setup
 from numpy.distutils.misc_util import Configuration
 from glob import glob
 def configuration(parent_package='',top_path=None):
-    from numpy.distutils.misc_util import Configuration
 
     # Initialize
     config = Configuration(None,

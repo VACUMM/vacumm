@@ -62,7 +62,7 @@ from vacumm import VACUMMError, vacumm_warn
 from .misc import (cp_atts, filter_selector, kwfilter, split_selector, get_atts,
     set_atts)
 from .axes import istime, check_axes, create_time
-from .grid.misc import set_grid, bounds1d
+from .grid import set_grid, bounds1d
 
 
 # Attributes

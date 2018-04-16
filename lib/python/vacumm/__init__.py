@@ -105,6 +105,6 @@ vcwarn = vacumm_warning = vacumm_warn
 
 #: Current VACUMM configuration (default+common+user)
 VACUMM_CFG = CFG = None
-from .config import load_cfg
-load_cfg('com')
-load_cfg('user')
+import config
+config.load_cfg('com')
+config.load_cfg('user')

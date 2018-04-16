@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Utilities to manage VACUMM basic configuration of modules"""
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -34,14 +34,14 @@
 #
 
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os, sys
-import re
-import glob
 import subprocess,  shlex
-import StringIO
 from warnings import warn
-
-import numpy.distutils
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
+import six
+from six.moves import input
 
 from configobj import ConfigObj
 from validate import Validator, VdtMissingValue
@@ -158,7 +158,7 @@ def get_scripts_dir(subdir=None, raiseerr=False):
         return ''
 
     # Subdir
-    if subdir and isinstance(subdir, basestring):
+    if subdir and isinstance(subdir, six.string_types):
         scripts_dir = os.path.join(scripts_dir, subdir)
         if not os.path.exists(scripts_dir):
             raise VACUMMError("Invalid subdirectory of the scripts directory: "+subdir)
@@ -296,7 +296,7 @@ def get_dl_dir(suggest=None, filedesc=None, quiet=False):
             return suggest
 
     # Already chosen?
-    dl_dir = VACUMM_CFG['vacumm'].get('dl_dir')
+    dl_dir = vacumm.VACUMM_CFG['vacumm'].get('dl_dir')
     if dl_dir and os.path.exists(dl_dir): return dl_dir
 
     # Download
@@ -325,14 +325,14 @@ def get_dl_dir(suggest=None, filedesc=None, quiet=False):
         # Ask choice
         choice = None
         while True: #in range(1, len(dl_dirs)+1):
-            choice = raw_input(msg).strip()
+            choice = input(msg).strip()
             if len(choice)==0:
                 choice = '1'
-                print '1'
+                print('1')
             if len(choice)==1 and choice.isdigit(): # choose within the list of dirs
                 choice = int(choice)
                 if choice<1 or choice>nc:
-                    print "Wrong choice: %i"%choice
+                    print("Wrong choice: %i"%choice)
                     continue
                 break
             elif choice: # specifiy dir
@@ -340,10 +340,10 @@ def get_dl_dir(suggest=None, filedesc=None, quiet=False):
                     try:
                         os.makedirs(choice)
                     except:
-                        print "Can't create directory: "+choice
+                        print("Can't create directory: "+choice)
                         continue
                 if not os.access(choice, os.W_OK|os.R_OK|os.X_OK): # no access
-                    print "No write access to directory: "+choice
+                    print("No write access to directory: "+choice)
                     continue
                 break
         if isinstance(choice, int):
@@ -352,10 +352,10 @@ def get_dl_dir(suggest=None, filedesc=None, quiet=False):
             dl_dir = choice
 
     # Remember it
-    VACUMM_CFG['vacumm']['dl_dir'] = dl_dir
-    rem = raw_input('Remember this choice? [Y/n] ').strip()
+    vacumm.VACUMM_CFG['vacumm']['dl_dir'] = dl_dir
+    rem = input('Remember this choice? [Y/n] ').strip()
     if not rem.lower().startswith('n'):
-        save_config_value(VACUMM_CFG['vacumm'], 'dl_dir', dl_dir)
+        save_config_value(vacumm.VACUMM_CFG['vacumm'], 'dl_dir', dl_dir)
 
     return dl_dir
 
@@ -399,7 +399,7 @@ class VCValidator(Validator):
             return self._check_value(value, fun_name, fun_args, fun_kwargs)
         try:
             return self._check_value(value, fun_name, fun_args, fun_kwargs)
-        except Exception,  e:
+        except Exception as  e:
             if default is None:
                 raise VdtMissingValue()
             error = e.message
@@ -453,8 +453,8 @@ def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
         cfgfile = False
     if cfgfile is None:
         cfgfile = get_user_conf_file()
-    if (not isinstance(cfgfile, ConfigObj)  or not isinstance(cfg, str) or
-            not os.path.exists(fgfile)):
+    if (not isinstance(cfgfile, ConfigObj)  or not isinstance(cfgfile, str) or
+            not os.path.exists(cfgfile)):
         cfgfile = ""
 #        warn('Invalid cfgfile passed to load_cfg. Skipping.')
     cfg = ConfigObj(cfgfile, configspec=VACUMM_CFGSPECS, interpolation='template')
@@ -505,7 +505,7 @@ def _get_sections_(sec):
         sec = [sec]
     if isinstance(sec, list):
         sections = sec
-        sec = VACUMM_CFG
+        sec = vacumm.VACUMM_CFG
         for secname in sections:
             sec = sec[secname]
     else:
@@ -594,9 +594,9 @@ def get_cfg_path(sec, option, expand=True):
     return path
 
 def _print_header_(text, nc):
-    print '#'*nc
-    print '##  {:nc-4}'.format(text)
-    print '#'*nc
+    print('#'*nc)
+    print('##  {:nc-4}'.format(text))
+    print('#'*nc)
 
 def print_config(section=None, system=True, direc=True, config=True, packages=True,
         extended=False, user=True, headers=True):
@@ -616,26 +616,27 @@ def print_config(section=None, system=True, direc=True, config=True, packages=Tr
 
     """
     nc = 70
-    if extended: base = config = packages = True
+    if extended: 
+        config = packages = True
     if user:
         if headers: _print_header_('System', nc)
-        print 'Python executable: '+sys.executable
-        print 'Python version: '+' '.join(sys.version.splitlines())
-        print 'Platform: '+sys.platform
+        print('Python executable: '+sys.executable)
+        print('Python version: '+' '.join(sys.version.splitlines()))
+        print('Platform: '+sys.platform)
     if direc:
         if headers: _print_header_('VACUMM directories', nc)
         for dd in get_dir_dict().items():
-            print '%s: %s'%dd
+            print('%s: %s'%dd)
     if config:
         if headers: _print_header_('VACUMM configuration', nc)
-        cfg = VACUMM_CFG
-        if section and section in VACUMM_CFG:
-            cfg = VACUMM_CFG[section]
-        print cfg
+        cfg = vacumm.VACUMM_CFG
+        if section and section in vacumm.VACUMM_CFG:
+            cfg = vacumm.VACUMM_CFG[section]
+        print(cfg)
     if packages:
         if headers: _print_header_('Versions', nc)
-        from __init__ import __version__
-        print 'VACUMM: '+__version__
+        from .__init__ import __version__
+        print('VACUMM: '+__version__)
         for mname in 'numpy', 'matplotlib', ('mpl_toolkits.basemap', 'basemap'), 'scipy':
             try:
                 if isinstance(mname, tuple):
@@ -643,10 +644,10 @@ def print_config(section=None, system=True, direc=True, config=True, packages=Tr
                 else:
                     m = __import__(mname)
                 v = m.__version__
-            except ImportError, e:
+            except ImportError as e:
                 v = 'ERROR: '+e.message
             if isinstance(mname, tuple): mname = mname[0]
-            print '%s: %s'%(mname.split('.')[-1], v)
+            print('%s: %s'%(mname.split('.')[-1], v))
 
 
 def get_default_config():
@@ -656,7 +657,7 @@ def get_default_config():
         load_cfg(cfgfile=False, merge=False, live=False)
 
     """
-    cfg = load_cfg(cfgfile=get_com_conf_file(), merge=False, live=True)
+    return load_cfg(cfgfile=get_com_conf_file(), merge=False, live=True)
 
 def write_default_config(cfgfile):
     """Write the defaults config (see :func:`get_default_config`) to a file"""
@@ -727,7 +728,7 @@ def check_data_file(section,
             paths.append(check_data_file(section, quiet=quiet, suffix=suf,
                 check_license=i==0))
         return paths
-    elif not isinstance(suffix, basestring):
+    elif not isinstance(suffix, six.string_types):
         suffix = ''
 
     # Get local and remote file names
@@ -746,12 +747,12 @@ def check_data_file(section,
 
     # Ask for this path
     if not quiet:
-        print "Can't find data file: "+path
-        guessed = raw_input("If you know what is this file and where it is on your system,\n"
+        print("Can't find data file: "+path)
+        guessed = input("If you know what is this file and where it is on your system,\n"
             "please enter its name here, or leave it empty: \n").strip()
         if guessed:
             if not os.path.exists(guessed):
-                print 'File not found'
+                print('File not found')
             else:
                 save_config_value(section, 'file', path[:len(path)-len(suffix)])
                 return guessed
@@ -767,13 +768,13 @@ def check_data_file(section,
         lic = '#'*nc+'\n'
         lic += '# %s #\n'%license
         lic += '#'*nc
-        print "VACUMM is about to download this data file: %s\n"%url + \
+        print("VACUMM is about to download this data file: %s\n"%url + \
             "We suppose you have requested the authorization and are not responsible for your choice.\n" + \
             "If you're not sure you are allowed to do it, please abort.\n" + \
-            "For more information about this data file and associated distribution license, check this:\n"+lic
+            "For more information about this data file and associated distribution license, check this:\n"+lic)
         while True:
             try:
-                c = raw_input("Would you like to download it? [y/N]\n")
+                c = input("Would you like to download it? [y/N]\n")
             except:
                 c = 'n'
             if not c: c='n'
@@ -843,16 +844,16 @@ class URLLibProgressBar:
         sys.stdout.write("\r%s"%prog)
         if end: sys.stdout.write("\n")
 
-import urllib, sys
+
 
 def download_file(url, locfile, quiet=False):
     """Download a file with a progress bar using :func:`urllib.urlretrieve`"""
     locfile = os.path.realpath(locfile)
     if not quiet:
-        print 'Downloading %s to %s'%(url, locfile)
+        print('Downloading %s to %s'%(url, locfile))
     dl_dir = os.path.dirname(locfile)
     if not os.path.exists(dl_dir): os.makedirs(dl_dir)
-    urllib.urlretrieve(url, locfile, reporthook=URLLibProgressBar() if not quiet else None)
+    six.moves.urllib.request.urlretrieve(url, locfile, reporthook=URLLibProgressBar() if not quiet else None)
     return locfile
 
 
@@ -876,10 +877,10 @@ def edit_file(fname, editor=None, verbose=True):
         editor = os.environ.get("VISUAL") or os.environ.get("EDITOR", "vi")
 
     # Run editor
-    if verbose: print 'Editing user configuration file: '+fname
+    if verbose: print('Editing user configuration file: '+fname)
     if subprocess.call(shlex.split("%s \"%s\"" % (editor, fname))):
         raise VACUMMError("Error editing file: "+fname)
-    if verbose: print 'End of file edition'
+    if verbose: print('End of file edition')
 
 def edit_user_conf_file(fname='vacumm.cfg', editor=None, verbose=True):
     """Edit the user configuration file
@@ -919,9 +920,4 @@ def handle_edit_args(args):
 
 
 
-if __name__=='__main__':
-#    print_config()
-
-
-    import vacumm.config2;reload( vacumm.config2); print vacumm.config2.get_config_value('vacumm.bathy.bathy','cfgfile_gridded')
 

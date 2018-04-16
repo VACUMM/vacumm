@@ -5,7 +5,7 @@
 
     Tutorials: :ref:`user.tut.misc.grid.masking`, :ref:`user.tut.misc.grid.polygons`
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -56,7 +56,7 @@ from .grid import (get_xy, set_grid, isgrid, bounds2d, meshcells, curv2rect,
     meshbounds, bounds1d, get_grid, resol, meshgrid, curv_grid)
 from .units import deg2m
 from .poly import convex_hull, polygons # compat only
-from .masking import get_proj
+from .basemap import get_proj
 
 envelop = convex_hull
 

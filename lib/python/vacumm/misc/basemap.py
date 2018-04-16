@@ -43,8 +43,7 @@ from mpl_toolkits.basemap import Basemap, __version__ as basemap_version
 from mpl_toolkits.basemap.proj import Proj
 from matplotlib import get_configdir
 
-from ...__init__ import vacumm_warn
-from ...config import VACUMM_CFG
+from vacumm import vacumm_warn, VACUMM_CFG
 from .misc import kwfilter, dict_check_defaults, dirsize, zoombox
 from .constants import EARTH_RADIUS
 from .grid import get_xy
