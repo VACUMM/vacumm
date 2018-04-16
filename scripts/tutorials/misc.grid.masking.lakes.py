@@ -47,4 +47,4 @@ print (ocean==lakes[0]).all()
 
 # Save
 savefigs(__file__, pdf=True)
-
+P.close()

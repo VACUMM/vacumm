@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2013-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2013-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -36,6 +36,7 @@
 
 
 
+from vacumm.data import register_dataset
 from vacumm.data.misc.dataset import OceanSurfaceDataset
 
 
@@ -45,10 +46,16 @@ class SWAN(OceanSurfaceDataset):
 
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
+    name = 'swan'
+    domain='wave'
+    description = "SWAN wave model"
 
     ncobj_specs = {
 
     }
+
+# Register the class
+register_dataset(SWAN, warn=False)
 
 
 

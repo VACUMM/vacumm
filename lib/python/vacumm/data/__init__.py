@@ -36,57 +36,26 @@ Data tools
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
-import satellite
-import model
 import os as _os, locale as _locale
-_os.environ['LC_NUMERIC'] = 'en_US.UTF-8'
-_locale.setlocale(_locale.LC_NUMERIC, 'en_US.UTF-8')
+try:
+    _os.environ['LC_NUMERIC'] = 'en_US.UTF-8'
+except:
+    pass
+try:
+    _locale.setlocale(_locale.LC_NUMERIC, 'en_US.UTF-8')
+except:
+    pass
+
 from vacumm import VACUMMError
+import satellite
 
 #: Specifications of available dataset types
-DATASET_SPECS = dict(
-    generic = dict(
-        cls = 'vacumm.data.misc.dataset.GenericDataset',
-        desc = 'Generic dataset'
-    ),
-    ocean = dict(
-        cls = 'vacumm.data.misc.dataset.OceanDataset',
-        desc = 'Generic ocean dataset'
-    ),
-    atmos = dict(
-        cls = 'vacumm.data.misc.dataset.Atmos.Dataset',
-        desc = 'Generic atmospheric dataset'
-    ),
-    mars = dict(
-        cls = 'vacumm.data.model.mars3d.Mars3D',
-        desc = 'MARS3D ocean model'
-    ),
-    nemo = dict(
-        cls = 'vacumm.data.model.nemo.Nemo',
-        desc = 'NEMO ocean model'
-    ),
-    hycom = dict(
-        cls = 'vacumm.data.model.hycom.HYCOM',
-        desc = 'HYCOM ocean model'
-   ),
-    globcurrent = dict(
-        cls = 'vacumm.data.model.globcurrent.GlobCurrent',
-        desc = 'GlobCurrent satellite-derived currents'
-   ),
-    swan = dict(
-        cls = 'vacumm.data.model.swan.SWAN',
-        desc = 'SWAN wave model'
-   ),
-    cfsr = dict(
-        cls = 'vacumm.data.model.cfsr.CFSR',
-        desc = 'CFSR atmospheric model'
-   ),
-)
+DATASET_SPECS = {}
 dataset_specs = DATASET_SPECS # compat
 
-#: List of available dataset types
-DATASET_NAMES = DATASET_SPECS.keys()
-dataset_names = DATASET_NAMES # compat
+##: List of available dataset types
+#DATASET_NAMES = DATASET_SPECS.keys()
+#dataset_names = DATASET_NAMES # compat
 
 def DS(ncfile, clsname='generic', *args, **kwargs):
     """Load a specialized :class:`vacumm.data.misc.dataset.Dataset` instance
@@ -119,20 +88,26 @@ def DS(ncfile, clsname='generic', *args, **kwargs):
     :See also: :ref:`user.desc.dataset`.
 
     """
-    if clsname is None:clsname = 'generic'
+    # Register builtin datasets
+    import vacumm.data.misc.dataset
+    import vacumm.data.model
+
+    # Class name
+    if clsname is None:
+        clsname = 'generic'
     clsname = clsname.lower()
-    if clsname in DATASET_NAMES:
-        modname, Clsname = _os.path.splitext(DATASET_SPECS[clsname]['cls'])
-        Clsname = Clsname[1:]
-        mod = __import__(modname, fromlist=[Clsname])
-        cls = getattr(mod, Clsname)
+
+    # Class
+    if clsname in DATASET_SPECS:
+        cls = DATASET_SPECS[clsname]
     else:
         raise VACUMMError('Wrong name of dataset type: %s. '
             ' Please choose one of the following: %s'%(clsname, ', '.join(DATASET_NAMES)))
 
+    # Instantiate
     return cls(ncfile, *args, **kwargs)
 
-DS.__doc__ = DS.__doc__%', '.join(DATASET_NAMES)
+DS.__doc__ = DS.__doc__%', '.join(DATASET_SPECS.keys())
 
 def setup_dataset(clsname, ncfile=None, *args, **kwargs):
     """Alias for ``DS(ncfile,  clsname, *args, **kwargs)``
@@ -142,3 +117,50 @@ def setup_dataset(clsname, ncfile=None, *args, **kwargs):
     This function is here mainly for backward compatibility.
     """
     return DS(ncfile,  clsname, *args, **kwargs)
+
+def register_dataset(cls, clsname=None, warn=True, force=True):
+    """Register a new :class:`~vacumm.data.misc.dataset.Dataset` class
+    that can be loaded with :func:`DS`
+    """
+    # Get the class when a path is given
+    if isinstance(cls, str):
+        modname, Clsname = _os.path.splitext(cls)
+        Clsname = Clsname[1:]
+        mod = __import__(modname, fromlist=[Clsname])
+        cls = getattr(mod, Clsname)
+
+    # Check inheritance
+    from vacumm.data.misc.dataset import Dataset
+    if not issubclass(cls, Dataset):
+        raise VACUMMError('cls must be a Dataset subclass')
+
+    # Get the name
+    if clsname is None:
+        clsname = cls.name
+        if clsname is None:
+            clsname = cls.__name__.lower()
+    clsname = clsname.lower()
+    if cls.name is None:
+        cls.name = clsname
+
+    # Already registered?
+    if clsname in DATASET_SPECS:
+        if warn:
+            if force:
+                ms = 'Overwriting it...'
+            else:
+                ms = 'Skipping...'
+            sonat_warn('Dataset class "{}" is already registered. '+ms)
+        if not force:
+            return
+
+    # Register
+    DATASET_SPECS[clsname] = cls
+    return cls
+
+def print_registered_datasets():
+    """Print all registered datasets"""
+    for clsname, cls in DATASET_SPECS.items():
+        print clsname + ':'
+        print '  description: {}'.format(cls.description or '')
+        print '  class: ' + cls.__name__

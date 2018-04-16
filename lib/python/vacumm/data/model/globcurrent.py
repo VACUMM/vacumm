@@ -35,6 +35,7 @@
 #
 
 
+from vacumm.data import register_dataset
 from vacumm.data.misc.dataset import OceanDataset, AtmosSurfaceDataset
 from vacumm.misc import dict_merge
 #from vacumm.data.cf import specs_def_loc
@@ -46,16 +47,22 @@ class GlobCurrent(OceanDataset,AtmosSurfaceDataset):
 
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
+    name = 'globcurrent'
+    domain='ocean'
+    description = 'The GlobCurrent currents dataset (http://www.globcurrent.org/)'
+
     #: Grid type
     arakawa_grid_type = 'A'
 
     # Local specs
     ncobj_specs = {
 
-        'ugbt': {'search': {'names': ['eastward_geostrophic_current_velocity']}},
-        'vgbt': {'search': {'names': ['northward_geostrophic_current_velocity']}},
+        'ugbt': {'search': {'id': ['eastward_geostrophic_current_velocity']}},
+        'vgbt': {'search': {'id': ['northward_geostrophic_current_velocity']}},
     }
 
+# Register the class
+register_dataset(GlobCurrent, warn=False)
 
 
 

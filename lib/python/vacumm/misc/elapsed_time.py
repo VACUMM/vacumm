@@ -1,13 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-# File: parcalls.py
-# Date : 06/2008
-# Authors: Guillaume SICOT, Nicolas THOMAS (Actimar)
-# Desc: Contains tools to annotate functions with elapsed execution time, number of calls...
-# Usefull for performance testing.
-# Actimar: http://www.vacumm.fr
 
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -45,26 +39,28 @@ Tools to annotate functions with elapsed execution time, number of calls...
 Usefull for performance testing.
 Actimar: http://www.vacumm.fr
 
-######################
-#Usage example
-######################
+.. rubric:: Usage example
 
-#Create a test function
-def timeme():
-    time.sleep(1)
+::
 
-#Annotate the function
-timeme = timeit(timeme)
-
-#Call the function
-for i in range(5):
-    timeme()
-
-#Print annotations
-print_functimes(timeme,no_call=True)
+    #Create a test function
+    def timeme():
+        time.sleep(1)
+    
+    #Annotate the function
+    timeme = timeit(timeme)
+    
+    #Call the function
+    for i in range(5):
+        timeme()
+    
+    #Print annotations
+    print_functimes(timeme,no_call=True)
 
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 import time
 import resource
@@ -72,10 +68,16 @@ import resource
 
 def timeit(f):
     """ Annotate a function with its elapsed execution time, number of calls...
-    @param f : function to annotate
-    @type f : Function
-    @return : Annotated function
-    @rtype : Function
+    
+    Parameters
+    ----------
+    f: function
+        function to annotate
+        
+    Return
+    ------
+    function
+        Annotated function
     """
 
     #Create the annotated function
@@ -98,9 +100,9 @@ def timeit(f):
         #Annotate f :
         timed_f.fct_name=f.__name__
         timed_f.func_maxtime = max(dt, getattr(timed_f, 'func_maxtime', 0))
-        timed_f.func_mintime = min(dt, getattr(timed_f, 'func_mintime',sys.maxint))
+        timed_f.func_mintime = min(dt, getattr(timed_f, 'func_mintime',sys.maxsize))
         timed_f.user_maxtime = max(duser, getattr(timed_f, 'user_maxtime', 0))
-        timed_f.user_mintime = min(duser, getattr(timed_f, 'user_mintime',sys.maxint))
+        timed_f.user_mintime = min(duser, getattr(timed_f, 'user_mintime',sys.maxsize))
         timed_f.func_numcalls = getattr(timed_f, 'func_numcalls',0)+1
         timed_f.func_avgtime = ((dt+((timed_f.func_numcalls-1) * getattr(timed_f, 'func_avgtime',0))) / timed_f.func_numcalls)
         timed_f.user_avgtime = ((duser+((timed_f.func_numcalls-1) * getattr(timed_f, 'user_avgtime',0))) / timed_f.func_numcalls)
@@ -117,9 +119,14 @@ def timeit(f):
 
 def print_functimes(f,no_call=False):
     """ Write to stdout timed function annotations
-    @param f : Annotated function
-    @type f : Function
-    @keyparam no_call : if "True" write  'Function not called' if f has not been called (else write nothing),[Default : False]
+    
+    Parameters
+    ----------
+    f: function
+        Annotated function
+    no_call: bool, optional
+        If "True" write  'Function not called',
+        if f has not been called (else write nothing)
     """
     #Format header
     if f.func_numcalls>1:
@@ -138,27 +145,27 @@ def print_functimes(f,no_call=False):
     #Format results
     if f.func_numcalls==0:
         if no_call:
-            print sep_line
-            print header
-            print 'Function not called'
-            print sep_line
+            print(sep_line)
+            print(header)
+            print('Function not called')
+            print(sep_line)
     elif f.func_numcalls==1:
-        print sep_line
-        print header
-        print 'Running time: %.3f secs' % f.func_avgtime
-        print 'Running user time: %.3f secs' % f.user_avgtime
-        print sep_line
+        print(sep_line)
+        print(header)
+        print('Running time: %.3f secs' % f.func_avgtime)
+        print('Running user time: %.3f secs' % f.user_avgtime)
+        print(sep_line)
     else:
-        print sep_line
-        print header
-        print 'Avg running time: %.3f secs' % f.func_avgtime
-        print 'Max running time: %.3f secs' % f.func_maxtime
-        print 'Min running time: %.3f secs' % f.func_mintime
-        print 'Avg running user time: %.3f secs' % f.user_avgtime
-        print 'Max running user time: %.3f secs' % f.user_maxtime
-        print 'Min running user time: %.3f secs' % f.user_mintime
-        print 'Number of calls: %d' % f.func_numcalls
-        print sep_line
+        print(sep_line)
+        print(header)
+        print('Avg running time: %.3f secs' % f.func_avgtime)
+        print('Max running time: %.3f secs' % f.func_maxtime)
+        print('Min running time: %.3f secs' % f.func_mintime)
+        print('Avg running user time: %.3f secs' % f.user_avgtime)
+        print('Max running user time: %.3f secs' % f.user_maxtime)
+        print('Min running user time: %.3f secs' % f.user_mintime)
+        print('Number of calls: %d' % f.func_numcalls)
+        print(sep_line)
 
 def __user_time__():
     """Get the current user processing time"""

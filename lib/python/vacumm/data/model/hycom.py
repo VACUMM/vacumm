@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2012-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2012-2017)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -42,22 +42,27 @@ __date__ = '2012-02-12'
 __doc__ = 'HYCOM model data manipulation'
 
 
+from vacumm.data import register_dataset
 from vacumm.data.misc.dataset import OceanDataset, AtmosSurfaceDataset
 
 
-class HYCOM(OceanDataset,AtmosSurfaceDataset):
+class HYCOMZ(OceanDataset,AtmosSurfaceDataset):
     """:class:`~vacumm.data.misc.dataset.Dataset` class to read the
     HYCOM ocean model outputs
 
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
+    name = 'hycomz'
+    domain='ocean'
+    description = 'HYCOM ocean model in Z coordinates (from http://www.hycom.org)'
+
     ncobj_specs = {
 
         # Time
-        'time':{'search':{'names':['mt']}},
+        'time':{'search':{'id':['mt']}},
 
         # salinity
-        'kz':{'search':{'names':['kzm']}},
+        'kz':{'search':{'id':['kzm']}},
 
         # Sea surface temperature
         'sst':{
@@ -75,12 +80,12 @@ class HYCOM(OceanDataset,AtmosSurfaceDataset):
 
         # Zonal velocity
         'u3d':{
-            'names': 'u'
+            'id': 'u'
         },
 
         # Meridional velocity
         'v3d':{
-            'names': 'v'
+            'id': 'v'
         },
 
         # Sea surface zonal velocity
@@ -101,4 +106,7 @@ class HYCOM(OceanDataset,AtmosSurfaceDataset):
 
     positive = 'down'
 
+# Register the class
+register_dataset(HYCOMZ)
+register_dataset(HYCOMZ, 'hycom') # backward compat for the moment
 

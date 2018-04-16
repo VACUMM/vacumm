@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -34,6 +34,10 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from __future__ import absolute_import
+from __future__ import print_function
+import six
+from six.moves import map
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
 __doc__ = 'Logging features'
@@ -46,10 +50,10 @@ try:
 except ImportError:
     # separately installed
     #warnings.warn('Cannot import weakref.WeakSet, trying weakrefset.WeakSet')
-    from weakrefset import WeakSet
+    from .weakrefset import WeakSet
     # in debugging mode, show which weakrefset module is in use
     if '--debug' in sys.argv:
-        import weakrefset
+        from . import weakrefset
         warnings.warn('Using %s'%(weakrefset.__file__))
 
 try:
@@ -79,9 +83,9 @@ class LogLevelError(Exception):
         Exception.__init__(self, 'Invalid log level: "%s", available are: %s'%(level, ', '.join(get_str_levels())))
 
 def check_level(level):
-    if isinstance(level, basestring):
+    if isinstance(level, six.string_types):
         level = level.strip().upper()
-    if level not in logging._levelNames.keys():
+    if level not in list(logging._levelNames.keys()):
         raise LogLevelError(level)
     return level
 
@@ -89,21 +93,21 @@ def convert_level(level):
     '''
     Convert a level from int/str to str/int
     '''
-    if isinstance(level, basestring):
+    if isinstance(level, six.string_types):
         level = level.strip().upper()
     return logging._levelNames[check_level(level)]
 
 def get_int_levels():
-    return sorted(filter(lambda l: isinstance(l, int), logging._levelNames.keys()))
+    return sorted([l for l in list(logging._levelNames.keys()) if isinstance(l, int)])
 
 def get_str_levels():
-    return map(lambda l: get_str_level(l), get_int_levels())
+    return [get_str_level(l) for l in get_int_levels()]
 
 def get_int_level(level):
     '''
     Get the int level for the given int/str level
     '''
-    if isinstance(level, basestring):
+    if isinstance(level, six.string_types):
         return convert_level(level)
     elif isinstance(level, int):
         return check_level(level)
@@ -114,7 +118,7 @@ def get_str_level(level):
     '''
     Get the str level for the given int/str level
     '''
-    if isinstance(level, basestring):
+    if isinstance(level, six.string_types):
         return check_level(level)
     elif isinstance(level, int):
         return convert_level(level)
@@ -124,8 +128,8 @@ def get_str_level(level):
 def filter_name(names, value, default):
     if not isinstance(names, (list,tuple)):
         names = (names,)
-    names = map(lambda n: unicode(n).lower().strip(), names)
-    svalue = unicode(value)
+    names = [six.text_type(n).lower().strip() for n in names]
+    svalue = six.text_type(value)
     if '=' in svalue:
         for v in svalue.split(','):
             n, v = v.split('=', 1)
@@ -251,8 +255,8 @@ class Logger(logging.getLoggerClass()):
     instances = WeakSet()
 
     def __init__(self,
-            name=None, level=default_level,
-            format=default_format, date_format=default_date_format,
+            name=None, level=None,
+            format=None, date_format=None,
             console=True, colorize=True,
             logfile=None,
             redirect_warnings=False, redirect_stdout=False, redirect_stderr=False,
@@ -325,6 +329,9 @@ class Logger(logging.getLoggerClass()):
 
         '''
         if name is None: name = '%s(%s)'%(self.__class__.__name__, id(self))
+        if level is None: level = self.get_default_level()
+        if format is None: format = self.get_default_format()
+        if date_format is None: date_format = self.get_default_date_format()
         if name_filters is None: name_filters = []
         self.__name_filters = name_filters
         self.__logger_class = logging.getLoggerClass()
@@ -335,6 +342,8 @@ class Logger(logging.getLoggerClass()):
 
         self.__format = format.get('default', self.default_format['default']) if isinstance(format, dict) else format
         self.__date_format = date_format.get('default', self.default_date_format['default']) if isinstance(date_format, dict) else date_format
+        
+        self.skipCaller((self.log, self.verbose, self.notice))
 
         # Setup stream handler (console)?
         self.console_handler = None
@@ -363,7 +372,7 @@ class Logger(logging.getLoggerClass()):
             elif isinstance(logfile, (list, tuple)):
                 self.file_handler = self.new_rotating_file_handler(*logfile)
             else:
-                if isinstance(logfile, basestring):
+                if isinstance(logfile, six.string_types):
                     logfile = {'filePath': logfile}
                 if not isinstance(logfile, dict):
                     logfile = {}
@@ -529,8 +538,6 @@ class Logger(logging.getLoggerClass()):
 
     @classmethod
     def set_handler_formats(cls, handler, format=None, date_format=None):
-        #print 'set_handler_formats(%r, %r, %r)'%(handler, format, date_format)
-        #import pdb; pdb.set_trace()
         f = cls.new_formatter(format=format, date_format=date_format, formatter=handler.formatter)
         handler.setFormatter(f)
         return f
@@ -551,9 +558,9 @@ class Logger(logging.getLoggerClass()):
 
     def remove_handler(self, hdlr):
         try: hdlr.close()
-        except: print>>sys.stderr, traceback.format_exc()
+        except: print(traceback.format_exc(), file=sys.stderr)
         try: self.__logger_class.removeHandler(self, hdlr)
-        except: print>>sys.stderr, traceback.format_exc()
+        except: print(traceback.format_exc(), file=sys.stderr)
     removeHandler = remove_handler # do not delete, redefinition of logging.Logger.removeHandler
 
     def clean(self):
@@ -573,7 +580,7 @@ class Logger(logging.getLoggerClass()):
         return handler
 
     def colorize(self, active=None):
-        if self.console_handler and isisntance(self.console_handler, ColoredStreamHandler):
+        if self.console_handler and isinstance(self.console_handler, ColoredStreamHandler):
             if active is not None: self.console_handler.colorize = bool(active)
             return self.console_handler.colorize
 
@@ -613,6 +620,61 @@ class Logger(logging.getLoggerClass()):
         level = get_int_level(level)
         return self.__logger_class.log(self, level, msg, *args, **kwargs)
 
+    # redefine findCaller to ignore certain callers,
+    # used to support the new levels (verbose/notice)
+    def findCaller(self):
+        """
+        Find the stack frame of the caller so that we can note the source
+        file name, line number and function name.
+        """
+        f = logging.currentframe()
+        #On some versions of IronPython, currentframe() returns None if
+        #IronPython isn't run with -X:Frames.
+        if f is not None:
+            f = f.f_back
+        rv = "(unknown file)", 0, "(unknown function)"
+        skipCallers = getattr(self, '_skipCallers', set())
+        while hasattr(f, "f_code"):
+            co = f.f_code
+            filename = os.path.normcase(co.co_filename)
+            skip = False
+            if f.f_code in skipCallers:
+                skip = True
+            if filename == logging._srcfile:
+                skip = True
+            if skip:
+                f = f.f_back
+                continue
+            rv = (co.co_filename, f.f_lineno, co.co_name)
+            break
+        return rv
+     
+    def skipCaller(self, caller=None, skip=True):
+        '''
+        Register a function, method, code or set/list/tuple of codes to be skipped by findCaller
+        '''
+        skipCallers = getattr(self, '_skipCallers', set())
+        if caller is None:
+            return skipCallers
+        elif isinstance(caller, (set, list, tuple)):
+            for c in caller:
+                self.skipCaller(c, skip)
+            return
+        import types
+        if isinstance(caller, types.CodeType):
+            func_code = caller
+        elif isinstance(caller, types.FunctionType):
+            func_code = caller.__code__
+        elif isinstance(caller, types.MethodType):
+            func_code = caller.__func__.__code__
+        else:
+            raise TypeError('skipCaller accept only function or method types, found %s'%type(caller))
+        if skip:
+            skipCallers.add(func_code)
+        else:
+            skipCallers.remove(func_code)
+        setattr(self, '_skipCallers', skipCallers)
+
     @classmethod
     def set_default_level(cls, level, filter=False):
         if filter: level = filter_name(cls.__name__, level, cls.get_default_level())
@@ -629,7 +691,7 @@ class Logger(logging.getLoggerClass()):
         If target is None, all default formats are changed.
         '''%(', '.join(cls.default_format))
         if filter: format = filter_name(cls.__name__, format, cls.get_default_format(target)) # warn: '=' character in fmt are then not allowed ...
-        if target is None: target = cls.default_format.keys()
+        if target is None: target = list(cls.default_format.keys())
         if not isinstance(target, (list, tuple)): target = (target,)
         for k in target: cls.default_format[k] = format
 
@@ -646,7 +708,7 @@ class Logger(logging.getLoggerClass()):
         If target is None, all default date formats are changed.
         '''%(', '.join(cls.default_date_format))
         if filter: format = filter_name(cls.__name__, format, cls.get_default_date_format(target)) # warn: '=' character in fmt are then not allowed ...
-        if target is None: target = cls.default_date_format.keys()
+        if target is None: target = list(cls.default_date_format.keys())
         if not isinstance(target, (list, tuple)): target = (target,)
         for k in target: cls.default_date_format[k] = format
 
@@ -777,10 +839,10 @@ class Logger(logging.getLoggerClass()):
             args = ['level', 'format', 'date_format']
         c = {}
         for arg in args:
-            if isinstance(arg, basestring):
+            if isinstance(arg, six.string_types):
                 c[arg] = getattr(self, 'get_'+arg)()
             elif isinstance(arg, dict):
-                for k,v in arg.iteritems():
+                for k,v in six.iteritems(arg):
                     getattr(self, 'set_'+k)(v)
             elif isinstance(arg, Logger):
                 self.config(arg.config())
@@ -792,7 +854,7 @@ class Logger(logging.getLoggerClass()):
     def load_config(self, cfgo=None, nested=True):
         if cfgo is None: return
         if nested:
-            cfgo = cfgo.get(isinstance(nested, basestring) and nested or self.__class__.__name__, cfgo)
+            cfgo = cfgo.get(isinstance(nested, six.string_types) and nested or self.__class__.__name__, cfgo)
         if cfgo.get('level', None): self.set_level(cfgo['level'])
         if cfgo.get('format', None): self.set_format(cfgo['format'])
         if cfgo.get('date_format', None): self.set_date_format(cfgo['date_format'])
@@ -852,7 +914,6 @@ class LoggerAdapter(_LoggerAdapter):
         kwargs['extra'].update(extra)
         return msg, kwargs
 
-    # TODO: fix funcName
     def verbose(self, msg, *args, **kwargs):
         """
         Delegate a log call to the underlying logger, after adding
@@ -909,10 +970,10 @@ exception = default.exception
 def _testLog():
 
     levels = []
-    for i in sorted(filter(lambda l: isinstance(l, int), logging._levelNames.keys())):
+    for i in sorted([l for l in list(logging._levelNames.keys()) if isinstance(l, int)]):
         levels.append(i)
         levels.append(get_str_level(i))
-    funcs = filter(lambda l: isinstance(l, basestring) and l != 'NOTSET', levels)
+    funcs = [l for l in levels if isinstance(l, six.string_types) and l != 'NOTSET']
     for lvl in levels:
         log = Logger(name='Logger(level=%s)'%lvl, level=lvl, format='%(name)-30s : message sent with level %(levelname)-10s: %(message)s')
         for f in funcs:
@@ -927,7 +988,7 @@ def _testLog():
     class B(Logger):
         def __init__(self, **kwargs):
             pfx = 'log_'
-            lkw = dict(map(lambda (k,v): (k[len(pfx):],v) , filter(lambda (k,v): k.startswith(pfx), kwargs.iteritems())))
+            lkw = dict([(k_v1[0][len(pfx):],k_v1[1]) for k_v1 in [k_v for k_v in six.iteritems(kwargs) if k_v[0].startswith(pfx)]])
             Logger.__init__(self, **lkw)
     B(log_level='notset').debug('Hello')
     B(log_level='info').debug('Hello')

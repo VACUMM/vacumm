@@ -6,6 +6,7 @@
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
 # with the ultimate goal of validating the MARS model from IFREMER.
+# with the ultimate goal of validating the MARS model from IFREMER.
 #
 # This software is governed by the CeCILL license under French law and
 # abiding by the rules of distribution of free software.  You can  use,
@@ -69,19 +70,20 @@ from traceback import format_exc
 from collections import OrderedDict
 
 import cdms2, MV2, numpy, pylab, seawater
-from matplotlib.pyplot import colorbar
+from matplotlib.pyplot import colorbar, tight_layout
 N = numpy
 
 from vacumm.misc import auto_scale, MV2_concatenate, MV2_axisConcatenate, create_selector, \
     split_selector, dict_merge, dict_check_defaults, set_atts, broadcast
 from vacumm.misc.atime import add as add_time, comptime, datetime as adatetime, Intervals, \
-    filter_time_selector, itv_intersect
+    filter_time_selector, itv_intersect, strftime
 from vacumm.misc.axes import create_time, create_dep, create_lat, create_lon, guess_timeid, get_axis_type, isaxis
 from vacumm.misc.bases import Object
 import vacumm.misc.color as C
-from vacumm.misc.io import ncget_var, ncfind_var, ncfind_obj, ncfind_axis, list_forecast_files, ncread_files, \
-    ncread_best_estimate, NcIterBestEstimate, ncget_time, ncget_lon, ncget_lat, ncget_level,  \
-    ncget_grid, ncget_axis, NcIterTimeSlice
+from vacumm.misc.io import (ncget_var, ncfind_var, ncfind_obj, ncfind_axis,
+    list_forecast_files, ncread_files, ncmatch_obj,
+    ncread_best_estimate, NcIterBestEstimate, ncget_time, ncget_lon, ncget_lat, ncget_level,
+    ncget_grid, ncget_axis, NcIterTimeSlice)
 from vacumm.misc.grid.misc import meshweights, resol, create_grid, set_grid, \
     dz2depth, depth2dz, isdepthup, gridsel, makedepthup, curv2rect, isgrid,  \
     coord2slice, clone_grid
@@ -92,12 +94,14 @@ from vacumm.misc.misc import is_iterable, kwfilter, squeeze_variable, dict_filte
 from vacumm.misc.phys.constants import GRAVITY
 from vacumm.misc.plot import map2, curve2, section2, hov2, add_map_lines
 from vacumm.misc.axes import islon, islat, isdep
+from vacumm.data import register_dataset
 from vacumm.data.misc.sigma import NcSigma
 from vacumm.data.misc.arakawa import ArakawaGrid, AGrid, CGrid, ARAKAWA_LOCATIONS as arakawa_locations,  \
     set_grid_type, get_grid_type, _cdms2_atts as cdms2_arakawa_atts
-from vacumm.data.cf import (VAR_SPECS, AXIS_SPECS, cf2search, cf2atts, GENERIC_NAMES,
-    GENERIC_AXIS_NAMES, GENERIC_VAR_NAMES, format_axis, format_var, get_loc, no_loc_single,
-    DEFAULT_LOCATION, change_loc, HIDDEN_CF_ATTS, change_loc_single, format_grid)
+from vacumm.data.cf import (VAR_SPECS, AXIS_SPECS, cf2search, cf2atts,
+    CF_AXIS_SPECS, CF_VAR_SPECS, format_axis, format_var, get_loc, no_loc_single,
+    DEFAULT_LOCATION, change_loc, HIDDEN_CF_ATTS, change_loc_single, format_grid,
+    CF_DICT_MERGE_KWARGS)
 from vacumm import VACUMMError
 from vacumm.diag.dynamics import barotropic_geostrophic_velocity, kinetic_energy
 from vacumm.diag.thermdyn import mixed_layer_depth, density
@@ -186,7 +190,7 @@ def getvar_decmets(cls):
     """Generate methods such as :meth:`get_sst` based on the :attr:`auto_generic_var_names`
     attributes that provides a list of generic names of variables
 
-    These generic names must be listed in :mod:`vacumm.data.cf.GENERIC_VAR_NAMES`.
+    These generic names must be the keys of :mod:`vacumm.data.cf.GENERIC_VAR_SPECS`.
     The docstring of the each method is formatted using :func:`getvar_fmtdoc`.
 
     Methods that already exist are not overwritten.
@@ -208,7 +212,7 @@ def getvar_decmets(cls):
         names.append(name)
         for p in arakawa_locations: #'u', 'v', 'w', 'f':
             namep = name+'_'+p
-            if namep in GENERIC_VAR_NAMES:
+            if namep in CF_VAR_SPECS:
                 names.append(namep)
 
     # Declarations
@@ -271,8 +275,8 @@ def getvar_fmtdoc(func, **kwargs):
     :Params:
 
         - **func**: Method (or function) name that must be in the form ``get_<name>``,
-          where ``<name>`` must be a generic var names listed in
-          :attr:`vacumm.data.cf.GENERIC_VAR_NAMES`.
+          where ``<name>`` must be a generic var names in
+          :attr:`vacumm.data.cf.GENERIC_VAR_SPECS`.
         - Extra keywords define extra options in the docstring.
           Keys must correspond to a keyword name, and values correspond to a keyword
           description.
@@ -291,15 +295,20 @@ def getvar_fmtdoc(func, **kwargs):
     """
     kwargs_params = kwargs.get('_kwargs', "Other keywords are passed to :func:`~vacumm.misc.io.ncread_files`.")
     func_name = func.__name__
-    if not func_name.startswith('get_'): return func
+    if not func_name.startswith('get_'):
+        return func
     var_name = func_name[4:]
-    if not var_name in GENERIC_VAR_NAMES: return func
+    if not var_name in CF_VAR_SPECS:
+        return func
 
 
     # Long name and units
-    long_name = VAR_SPECS[var_name]['long_names'][0]
+    try:
+        long_name = VAR_SPECS[var_name]['long_name'][0]
+    except:
+        pass
     long_name = long_name[0].lower()+long_name[1:]
-    if 'units' in VAR_SPECS[var_name]:
+    if VAR_SPECS[var_name]['units']:
         units = " [%s]"%VAR_SPECS[var_name]['units'][0]
     else:
         units = ''
@@ -413,7 +422,7 @@ class Dataset(Object):
 
             ncobj_specs = {
                 'u10m':dict(
-                    search=dict(names=['u', 'u10', 'uwind', '.*u.*']),
+                    search=dict(id=['u', 'u10', 'uwind', '.*u.*']),
                     select=(Ellipsis, 0)),
                 'sst':dict(
                     search=dict(standard_name="sea_surface_temperature"),
@@ -491,6 +500,9 @@ class Dataset(Object):
 
     ncobj_specs = {}
 
+    description = None
+    name = None
+
     def __init__(self, dataset=None, time=None, lon=None, lat=None, level=None,
         ncobj_specs=None, nopat=False, patfreq=None, patfmtfunc=None, sort=True, check=True, **kwargs):
 
@@ -515,6 +527,7 @@ class Dataset(Object):
         # Load specs of variables
         self._load_ncobj_specs_(ncobj_specs)
 
+
     def _parse_selects_(self, time, level, lat, lon):
         return time, level, lat, lon, False
 
@@ -523,7 +536,8 @@ class Dataset(Object):
         # Get specs
         if ncobj_specs is None:
             ncobj_specs = self.ncobj_specs # local
-            ncobj_specs = dict_merge(ncobj_specs, self._inherited_ncobj_specs_()) # inherited
+            ncobj_specs = dict_merge(ncobj_specs, self._inherited_ncobj_specs_(),
+                                     **CF_DICT_MERGE_KWARGS) # inherited
         self.ncobj_specs = ncobj_specs # set it
 
         # Loop on variables to format their specs
@@ -536,7 +550,8 @@ class Dataset(Object):
         ncobj_specs = {}
         for c in cls.__bases__:
             if hasattr(c, 'ncobj_specs'):
-                ncobj_specs = dict_merge(ncobj_specs, c._inherited_ncobj_specs_(), mergelists=True)
+                ncobj_specs = dict_merge(ncobj_specs, c._inherited_ncobj_specs_(),
+                                         **CF_DICT_MERGE_KWARGS)
         return ncobj_specs
 
     def _format_single_ncobj_specs_(self, specs, name=None):
@@ -547,9 +562,9 @@ class Dataset(Object):
             - **specs**: Dictionary of the following possible form::
 
                 {'search': {
-                    'names':[name1,...],
-                    'standard_names': [standard_name1,...],
-                    'long_names': [long_name1,...]
+                    'id':[name1,...],
+                    'standard_name': [standard_name1,...],
+                    'long_name': [long_name1,...]
                     },
                  'atts': {'units':units,...},
                  'select': select,
@@ -574,25 +589,26 @@ class Dataset(Object):
         # Search specs
         search = specs.get("search", {})
         specs["search"] = search
-        # - names (as a list, and with name as its first element)
-        names = search.get("names", [])
-        if isinstance(names, tuple):
-            names = list(names)
-        elif not isinstance(names, list):
-            names = [name]
+        # - id (as a list, and with name as its first element)
+        ids = search.get("id", [])
+        if isinstance(ids, tuple):
+            ids = list(ids)
+        elif not isinstance(ids, list):
+            ids = [name]
         if name is not None:
-            if name in names: names.remove(name)
-        names.insert(0, name)
-        search["names"] = names
-        # - standard_names (as a list)
-        if 'standard_names' in search and not isinstance(search['standard_names'], list):
-            if isinstance(search['standard_names'], tuple):
-                search['standard_names'] = list(search['standard_names'])
+            if name in ids:
+                ids.remove(name)
+        ids.insert(0, name)
+        search["id"] = ids
+        # - standard_name (as a list)
+        if 'standard_name' in search and not isinstance(search['standard_name'], list):
+            if isinstance(search['standard_name'], tuple):
+                search['standard_name'] = list(search['standard_name'])
             else:
-                search['standard_names'] = [search['standard_names']]
+                search['standard_name'] = [search['standard_name']]
         # - removes everything else
-        for key in search:
-            if key not in ['names', 'standard_names']:
+        for key in search.keys():
+            if key not in ['id', 'standard_name']:
                 del search[key]
 
         # Attributes
@@ -602,8 +618,8 @@ class Dataset(Object):
         if name is not None:
             atts['id'] = name
         # - put standard_name
-        if 'standard_names' in search:
-            atts.setdefault('standard_name', search['standard_names'][0])
+        if 'standard_name' in search:
+            atts.setdefault('standard_name', search['standard_name'][0])
 
         # Selection (slices -> select)
         if 'slices' in specs:
@@ -642,7 +658,7 @@ class Dataset(Object):
 
         # Specs from CF specs (vacumm.data.cf)
         fromobj = None
-        if varname in GENERIC_NAMES:
+        if varname in CF_VAR_SPECS or varname in CF_AXIS_SPECS:
 
             # Search and atts
             cf_specs = dict(
@@ -651,7 +667,7 @@ class Dataset(Object):
                 )
 
             # Get 'physloc'
-            axvar_specs = (VAR_SPECS if varname in GENERIC_VAR_NAMES else AXIS_SPECS)[varname]
+            axvar_specs = (VAR_SPECS if varname in CF_VAR_SPECS else AXIS_SPECS)[varname]
             for prop in ['physloc']:
                 if prop in axvar_specs:
                     cf_specs[prop] = axvar_specs[prop]
@@ -677,8 +693,11 @@ class Dataset(Object):
 
         # Merge
         if from_specs is not None and cf_specs is None and local_specs is None:
-            raise DatasetError('Generic var/axis name "%s" has no specification defined in current class or module vacumm.data.cf'%varname)
-        specs = dict_merge(cf_specs, local_specs, from_specs, mergelists=True, mergedicts=True)
+            raise DatasetError(('Generic var/axis name "{}" has no '
+                                'specification defined in current class or '
+                                'module vacumm.data.cf').format(varname))
+        specs = dict_merge(cf_specs, local_specs, from_specs,
+                           **CF_DICT_MERGE_KWARGS)
 
         # Final check
         if specs is not None and 'search' not in specs:
@@ -715,7 +734,7 @@ class Dataset(Object):
             if 'fromobj' in specs:
                 from_specs = self._get_ncobj_merged_specs_(specs['fromobj'],
                     searchmode=searchmode)
-                specs = dict_merge(specs, from_specs)
+                specs = dict_merge(specs, from_specs, **CF_DICT_MERGE_KWARGS)
 
 
         # Single (+varname) or list of netcdf names
@@ -732,8 +751,8 @@ class Dataset(Object):
 
             # Search
             search = specs['search']
-            if isinstance(search['names'], list):
-                search['names'] = tuple(search['names'])
+            if isinstance(search['id'], list):
+                search['id'] = tuple(search['id'])
 
             # Selector
             vselect = specs.get('select', None)
@@ -964,8 +983,8 @@ class Dataset(Object):
         genname = specs['genname']
         search = specs['search']
         atts = specs['atts']
-        if 'long_names' in atts:
-            search['long_names'] = atts['long_names']
+        if 'long_name' in atts:
+            search['long_name'] = atts['long_name']
         if 'units' in atts and 'axis' in atts and atts['axis']!='Z':
             search['units'] = atts['units']
 
@@ -1116,13 +1135,13 @@ class Dataset(Object):
 
     def get_variable(self, varname, time=None, lon=None, lat=None,
             level=None, atts=None, squeeze=False, order=None, asvar=None,
-            torect=True, depthup=None,verbose=None, warn=True, searchmode=None,
+            torect=True, depthup=None,verbose=None, warn=True, searchmode='is',
             format=True, at=None, grid=None, **kwargs):
         '''Load a variable in a best time serie fashion.
 
         :Params:
           - **varname**: Either a generic variable name listed in
-            :attr:`~vacumm.data.cf.GENERIC_VAR_NAMES`, a netcdf name with a '+' a prefix,
+            :attr:`~vacumm.data.cf.CF_VAR_SPECS`, a netcdf name with a '+' a prefix,
             a tuple of netcdf variable names
             or dictionnary of specification names with a search argument of
             :func:`~vacumm.misc.io.ncfind_var` (tuple of netcdf names
@@ -1146,7 +1165,7 @@ class Dataset(Object):
 
             >>> get_variable('ssh', lon=(-10,0))
             >>> get_variable('+xe')
-            >>> get_variable(dict(search={'standard_names':'sea_surface_height_above_sea_level'}))
+            >>> get_variable(dict(search={'standard_name':'sea_surface_height_above_sea_level'}))
 
         '''
         selstring = 'time: %(time)s, level: %(level)s, lat: %(lat)s, lon: %(lon)s'%locals()
@@ -1156,7 +1175,7 @@ class Dataset(Object):
             return None
 
         # Specifications for searching, selecting and modifying the variable
-        specs = self._get_ncobj_specs_(varname)
+        specs = self._get_ncobj_specs_(varname, searchmode=searchmode)
         if specs is None:
             if (isinstance(varname, basestring) and not varname.startswith('+')
                     and varname in self.get_variable_names()):
@@ -1196,10 +1215,15 @@ class Dataset(Object):
         # TODO: if grid not found and specs say that there must have a grid, create it with get_lon/get_lat
 
         # Curved grid case
-        if grid is None:
-            grid = self.dataset[0][ncvarid].getGrid()
+        if len(self.dataset[0][ncvarid].shape)>2:
+            var_grid = self.dataset[0][ncvarid].getGrid()
+            if grid is None:
+                grid = var_grid
+                kwg = {}
+            elif var_grid is not None:
+                kwg = dict(xid=var_grid.getAxis(1).id, yid=var_grid.getAxis(0).id)
         if grid is not None:
-            curvsel = CurvedSelector(grid, select)
+            curvsel = CurvedSelector(grid, select, **kwg)
         else:
             curvsel = None
 
@@ -1410,13 +1434,26 @@ class Dataset(Object):
         return self.get_axis('lat_f', lat, lon, **kwargs)
 
     def _get_grid_(self, loc='', lon=None, lat=None, format=True,
-            warn=True, dataset=None, searchmode=None):
+            warn=True, dataset=None, searchmode='si'):
 
         # Loc
         loc = _at_(loc)
         loc_ = _at_(loc, prefix='_')
         longenname = 'lon' + loc_
         latgenname = 'lat' + loc_
+
+        # Search specs
+        searches = {}
+        for name in longenname, latgenname:
+            specs = self._get_ncobj_specs_(name, attsingle=False, searchmode=searchmode)
+#            genname = specs['genname']
+            searches[name] = specs['search']
+            atts = specs['atts']
+            if 'long_name' in atts:
+                searches[name]['long_name'] = atts['long_name']
+            if 'units' in atts and 'axis' in atts and atts['axis']!='Z':
+                searches[name]['units'] = atts['units']
+
 
         # Inits
         self.debug('Searching for a grid that matches: ({}, {})'.format(latgenname, longenname))
@@ -1430,21 +1467,13 @@ class Dataset(Object):
         for grid in dataset.grids.values():
 
             valid = True
-            for name, axis in [(longenname, grid.getLongitude()), (latgenname, grid.getLatitude())]:
+            for name, axis in [(longenname, grid.getLongitude()),
+                    (latgenname, grid.getLatitude())]:
 
-                # Get specs
-                specs = self._get_ncobj_specs_(name, attsingle=False, searchmode=searchmode)
-                genname = specs['genname']
-                search = specs['search']
-                atts = specs['atts']
-                if 'long_names' in atts:
-                    search['long_names'] = atts['long_names']
-                if 'units' in atts and 'axis' in atts and atts['axis']!='Z':
-                    search['units'] = atts['units']
-
-                # Search
-                valid &= bool(ncfind_obj(dataset, search, regexp=True,
-                    searchmode=searchmode))
+                valid &= ncmatch_obj(axis, searchmode=searchmode,
+                    **searches[name])
+#                bool(ncfind_obj(dataset, search, regexp=True,
+#                    searchmode=searchmode))
 
             if valid:
                 break
@@ -1811,7 +1840,7 @@ class Dataset(Object):
             - **subsamp**, optional: Subsampling with respect to grid cell.
             - **method**, optional: Interpolation method
               (see :func:`~vacumm.misc.grid.regridding.grid2xy`).
-            - **getcoords**, optional: Also get computed coordiantes.
+            - **getcoords**, optional: Also get computed coordinates.
             - **outaxis**, optional: Output axis.
 
                 - A cdms2 axis.
@@ -1857,6 +1886,221 @@ class Dataset(Object):
         tvar =  self.finalize_object(tvar, **kwargs)
         if getcoords: return (tvar, )+res[1:]
         return tvar
+
+    def plot_transect(self, varname, lons, lats, times=None,
+        method='bilinear', timeavg=False, subsamp=3, outaxis=None,
+        time=None, lon=None, lat=None, level=None,
+        title='%(long_name)s along transect', minimap=None, **kwargs):
+        """Plot a transect between two points
+
+        :Params:
+
+            - **varname**: Generic var name.
+            - **lons/lats/times**: Specification of transect (see :meth:`get_transect`).
+            - **title**, optional: Title of the figure.
+            - **minimap**, optional: If True, add a minimap showing the transect
+              on a map; if False, display nothing; if None, display if no minimap
+              already displayed.
+            - **minimap_<param>**, optional: Passed to :func:`~vacumm.misc.plot.add_map_lines`.
+            - Some params are passed to :meth:`get_transect`.
+            - Other params are passed to the plot function :func:`~vacumm.misc.plot.curve2`
+              for 1D plots and, :func:`~vacumm.misc.plot.hov2` or
+              :func:`~vacumm.misc.plot.section2` for 2D plots.
+
+        """
+
+        # Get data
+        kwts = dict(method=method, subsamp=subsamp, timeavg=timeavg,
+            outaxis=outaxis, time=time, lon=lon, lat=lat, level=level,
+            times=times, **kwargs)
+        var, lons, lats = self.get_transect(varname, lons, lats,
+            getcoords=True, **kwts)
+        try:
+            time = var.getTime().asComponentTime()
+            ct0 = strftime('%Y-%m-%d %H:%M:%S',time[0])
+            if timeavg or var.ndim==3:
+                ct0 = strftime('%Y-%m-%d',time[0])
+                ct1 = strftime('%Y-%m-%d',time[-1])
+                title = "\n".join((title,"%s / %s period" %(ct0,ct1)))
+            else:
+                title = "\n".join((title,ct0))
+        except Exception, e:
+            self.warning("Can't get time information. Error: \n"+e.message)
+        var = squeeze_variable(var)
+
+        if var is None:
+            self.error("Can't get transect on variable")
+            return
+        if var.getLevel() is not None:
+            if self.domain=="ocean":
+                depth = self.get_transect('depth', lons, lats, squeeze=True, **kwts)
+            elif self.domain=="atmos":
+                depth = self.get_transect('altitude', lons, lats, squeeze=True, **kwts)
+            if isaxis(depth): depth = None
+        else:
+            depth = None
+
+        # Check dimension
+        if var.ndim==3:
+            self.warning('Forcing time average to have a 2D transect')
+            var = MV2.average(var, axis=0)
+            if depth is not None and depth.getTime() is not None:
+                depth = MV2.average(depth, axis=0)
+        # Main plot
+        kwmap = kwfilter(kwargs, 'minimap_')
+        post_plot = kwargs.get('post_plot', True)
+        kwargs.update(post_plot=False, title=title)
+        kwargs.setdefault('bgcolor', '0.5')
+        kwargs.setdefault('ymax', 0)
+        # - 1D
+        if var.ndim==1:
+
+            p = curve2(var, **kwargs)
+
+        # - T-
+        elif 't' in var.getOrder():
+
+            p = hov2(var, **kwargs)
+
+        # - Z-
+        else:
+        # - Modif GC: Masked depth converted to 0.
+            if N.ma.isMA(depth):
+                depth[:] = depth.filled(0.)
+            kwargs.setdefault('fill', 'contourf')
+            p = section2(var, yaxis=depth, **kwargs)
+
+        # Minimap
+        if minimap=='auto': minimap = None
+        if minimap is True or (minimap is None and not getattr(p.axes, '_minimap', False)):
+            kwmap.setdefault('map_zoom', 0.5)
+            m = add_map_lines(((lons[0],lons[-1]),(lats[0], lats[-1])), lons, lats, **kwmap)
+            p.axes._minimap = True
+
+        del kwargs['title']
+        if post_plot:
+            if self.domain=="atmos": p.show()
+            else: p.post_plot(**kwargs)
+        #tight_layout()
+        return p
+
+
+    def get_hsection(self, varname, depth, time=None, lat=None, lon=None,
+        timeavg=False, warn=True, **kwargs):
+        """Get a horizontal section of a variable for a specified depth
+
+        :Params:
+
+            - **varname**: Generic var name.
+            - **depth**: Target depth.
+            - **timeavg**, optional: Time average of results.
+            - **depth_<param>**, optional: Param is passed to :meth:`get_depth`.
+            - **interp_<param>**, optional: Param is passed to
+              :meth:`~vacumm.misc.grid.regridding.interp1d`.
+        """
+
+        # Params
+        kwargs.pop('level', None)
+        kwvar = dict(time=time, lat=lat, lon=lon, torect=kwargs.pop('torect', True),
+            warn=max(int(warn)-1, 0))
+        kwdepth = kwfilter(kwargs, 'depth_')
+        kwdepth.update(kwvar)
+        kwinterp = kwfilter(kwargs, 'interp_', axis=1)
+        kwinterp.setdefault('method', 'linear')
+
+        # Get data
+        var = self.get(varname, **kwvar)
+        if self.domain=="ocean":
+            vardepth = self.get_depth(**kwdepth)
+        elif self.domain=="atmos":
+            vardepth = self.get_altitude(**kwdepth)
+        if var is None or vardepth is None:
+            if warn: self.warning('Cannot get var or depths for hsection')
+            return
+
+        # Get time information
+        ctime = None
+        try:
+            time = var.getTime().asComponentTime()
+            ct0 = strftime('%Y-%m-%d %H:%M:%S',time[0])
+            if timeavg and var.getOrder().startswith('t') and var.shape[0]>1:
+                ct0 = strftime('%Y-%m-%d',time[0])
+                ct1 = strftime('%Y-%m-%d',time[-1])
+                ctime = "%s / %s period" %(ct0,ct1)
+            else: ctime = ct0
+        except Exception, e:
+            self.warning("Can't get time information. Error: \n"+e.message)
+
+        # Interpolate
+        lvar = self._interp_at_depths_(var, vardepth, depth, domain=self.domain, **kwinterp)
+
+        # Time average
+        if timeavg and lvar.getOrder().startswith('t') and lvar.shape[0]>1:
+            lvar = MV2.average(lvar, axis=0)
+        return self.finalize_object(lvar, depthup=False, **kwargs), ctime
+
+
+    @staticmethod
+    def _interp_at_depths_(var, vardepth, depths, domain="ocean", **kwargs):
+        if domain=="ocean": depths = -N.abs(depths)
+        elif domain == "atmos": depths = N.abs(depths)
+        zo = create_dep([depths] if N.isscalar(depths) else depths[:])
+
+        if isinstance(vardepth, tuple):
+            vardepth = vardepth[0]
+        iaxi = var.getOrder().index('z')
+        if len(vardepth.shape) > 1:
+            #            var, vardepth = grow_variables(var, vardepth)
+            kwargs.update(axi=vardepth.filled(0.))
+            iaxo = iaxi
+        else:
+            iaxo = 0
+        return regrid1d(var, zo, iaxi=iaxi, iaxo=iaxo, **kwargs)
+
+
+    def plot_hsection(self, varname, depth, time=None, lat=None, lon=None,
+        timeavg=False, title='%(long_name)s at %(depth)im', mask_land=False, **kwargs):
+        """Plot a horizontal section of a variable for a specified depth
+
+        Section is computed with :meth:`get_hsection`.
+
+        :Params:
+
+            - **varname**: Generic var name.
+            - **depth**: Target depth.
+            - **timeavg**, optional: Time average of results.
+            - **depth_<param>**, optional: Param is passed to :meth:`get_depth`.
+            - **interp_<param>**, optional: Param is passed to
+              :meth:`~vacumm.misc.grid.regridding.interp1d`.
+            - Other arguments are passed to :func:`~vacumm.misc.plot.map2`.
+        """
+        # Get section
+        interp2depth = isinstance(depth,(int, float, list, N.ndarray, N.generic) )
+        if interp2depth:
+            depth = -N.abs(depth)
+            var, ctime = self.get_hsection(varname, depth, time=time, lat=lat, lon=lon,
+                timeavg=timeavg, squeeze=True)
+        else:
+            var = self.get_variable(varname, level=depth, time=time, lat=lat, lon=lon)
+            ctime = strftime( '%Y-%m-%d %H:%M:%S', var.getTime().asComponentTime()[0] )
+            var = squeeze_variable(var)
+            title = ' '.join(("%(long_name)s at level ",str(depth.start)))
+
+        # Atmosphere : Mask fields to remove contours on land
+        if mask_land and self.domain=="atmos":
+            land = self.get_oro(lat=lat, lon=lon, time=slice(0,1),squeeze=True)
+            mask = land > 0.
+            var[:] = MV2.masked_where(N.resize(land > 0., var.shape), var, copy=0)
+
+
+
+        # Plot it
+        long_name = getattr(var, 'long_name', '')
+        units = getattr(var, 'units', '')
+        title = "\n".join((title,ctime))
+        dict_check_defaults(kwargs, bgcolor='0.5')
+        return map2(var, title=title%locals(), **kwargs)
+
 
     @classmethod
     def squeeze_variable(cls, var, spec=True):
@@ -1955,7 +2199,7 @@ class Dataset(Object):
                 var = curvsel.finalize(var)
 
             # Format
-            if format and (genname is not None or var.id in GENERIC_VAR_NAMES):
+            if format and (genname is not None or var.id in CF_VAR_SPECS):
                 format_var(var, genname, **atts)
             elif atts:
                 set_atts(var, **atts)
@@ -1979,7 +2223,7 @@ class Dataset(Object):
                 kwat['copy'] = False
                 var = self.toloc(var, at, **kwat)
 
-        elif format and (genname is not None or var.id in GENERIC_VAR_NAMES):
+        elif format and (genname is not None or var.id in CF_VAR_SPECS):
             format_axis(var, genname, **atts)
         elif atts:
             set_atts(var, **atts)
@@ -2055,19 +2299,35 @@ class Dataset(Object):
 
 @getvar_decmets
 class AtmosSurfaceDataset(Dataset):
+    name = 'atmossurface'
 
     # For auto-declaring methods
-    auto_generic_var_names = ['senhf', 'lathf', 'lhf', 'swhf', 'lwhf', 'evap', 'rain',
-        'taux', 'tauy', 'u10m', 'v10m']
+    auto_generic_var_names = ['nethf', 'senhf', 'hfsen', 'lathf', 'hflat', 'swhf', 'lwhf', 'evap', 'rain',
+        'taux', 'tauy', 'u10m', 'v10m', 't2m', 'hu2m', 'z0a', 'cda', 'cha', 'cea']
 
 @getvar_decmets
 class OceanSurfaceDataset(Dataset):
+    name = 'oceansurface'
 
     # For auto-declaring methods
-    auto_generic_var_names = ['sst', 'sss', 'ssh', 'usurf', 'vsurf', 'hs']
+    auto_generic_var_names = ['sst', 'sss', 'ssh', 'usurf', 'vsurf']
+
+@getvar_decmets
+class WaveSurfaceDataset(Dataset):
+    name = 'wave'
+
+    # For auto-declaring methods
+    auto_generic_var_names = ['hs','mss','mssx','mssy','mss','dir','fp','t0m1','lm',
+        'ubot','uubr','vubr','bhd','foc','utwo','vtwo','utaw','vtaw','uuss','vuss','utus','vtus',
+        'fbb','utbb','vtbb','mapsta','bathy','wlv','ucur','vcur','uwnd','vwnd','dp','cha','utaw','vtaw']
+
 
 @getvar_decmets
 class OceanDataset(OceanSurfaceDataset):
+    name = 'ocean'
+    domain = 'ocean'
+    description = 'Generic ocean dataset'
+    default_depth_search_mode = None
 
     # For auto-declaring methods
     auto_generic_var_names = ['temp', 'sal', 'u3d', 'v3d', 'ubt', 'vbt', 'kz', 'bathy',
@@ -2290,9 +2550,13 @@ class OceanDataset(OceanSurfaceDataset):
 
     def _get_depth_(self, at='t', level=None, time=None, lat=None, lon=None,
             order=None, squeeze=None, asvar=None, torect=True, warn=True, mode=None,
-            format=True, grid=None, zerolid=False, **kwargs):
+            format=True, grid=None, zerolid=False,
+            formula_terms=None, **kwargs):
 
         depth=None
+        if mode is None:
+            mode  = self.default_depth_search_mode
+
         # Where?
         at_p = _at_(at, squeezet=True, prefix=True)
         atz = _at_(at, prefix=False, focus='ver')
@@ -2323,16 +2587,18 @@ class OceanDataset(OceanSurfaceDataset):
             grid = getattr(self, gridmet)()#False)
         curvsel = CurvedSelector(grid, sselector)
         kwfinal['curvsel'] = curvsel
-        kwfinal['genname'] = genname='depth'+at_p
+        kwfinal['genname'] = genname = 'depth' + at_p
         if len(seltimes)>1:
             kwfinal[self.get_timeid()] = seltimes[1]
         kwfinalz = kwfinal.copy()
-        kwfinalz['genname'] = genname='depth'+at_z
-        if at_z!=at_p: # from T or W to U, etc
+        if at_p and at_z!=at_p: # from T or W to U, etc
+            kwfinalz['genname'] = genname = 'depth' + at_z
             kwfinalz.setdefault('at', at)
 
         # Second, try from sigma-like coordinates at W and T points only (for now)
-        sigma_converter = NcSigma.factory(self.dataset[0])
+        if formula_terms is None:
+            formula_terms = getattr(self, 'formula_terms', None)
+        sigma_converter = NcSigma.factory(self.dataset[0], formula_terms=formula_terms)
         if check_mode('sigma', mode):
 
             if sigma_converter is not None and sigma_converter.stype is None:
@@ -2385,17 +2651,19 @@ class OceanDataset(OceanSurfaceDataset):
         if check_mode('dz', mode):
 
             if atz=='t': # at T-location
-                bathy = self.get_bathy(**kwvar)
                 dzw = self.get_dz_w(mode=None, **kwvarnoat)
-                if bathy is not None and dzw is not None:
-                    depth = dz2depth(dzw, bathy, refloc="bottom")
+                if dzw is not None:
+                    bathy = self.get_bathy(**kwvar)
+                    if bathy is not None and dzw is not None:
+                        depth = dz2depth(dzw, bathy, refloc="bottom")
 
             elif atz=='w': # at W-location
 
-                ssh = self.get_ssh(**kwvar)
                 dzt = self.get_dz_t(mode=None, **kwvarnoat)
-                if ssh is not None and dzt is not None:
-                    depth = dz2depth(dzt, ssh, refloc="top")
+                if dzt is not None:
+                    ssh = self.get_ssh(**kwvar)
+                    if ssh is not None and dzt is not None:
+                        depth = dz2depth(dzt, ssh, refloc="top")
 
             if depth is not None or check_mode('dz', mode, strict=True):
                 return self.finalize_object(depth, depthup=False, **kwfinalz)
@@ -2468,7 +2736,7 @@ class OceanDataset(OceanSurfaceDataset):
         'depth_<param>':'Passed to :meth:`get_depth`',
         'mode':_mode_doc}
 
-    def get_dens(self, mode=None, warn=True, **kwargs):
+    def get_dens(self, mode=None, warn=True, potential=False, **kwargs):
         '''Get 4D density'''
 
 
@@ -2478,6 +2746,7 @@ class OceanDataset(OceanSurfaceDataset):
         kwdens = kwfilter(kwargs, 'dens_')
         kwdepth = kwfilter(kwargs, 'depth_')
         kwdepth.update(kwvar)
+        kwdens['potential'] = potential
 
         # First, try to find a dens variable
         if check_mode('var', mode):
@@ -2489,7 +2758,7 @@ class OceanDataset(OceanSurfaceDataset):
         if check_mode('tempsal', mode):
             temp = self.get_temp(**kwvar)
             sal = self.get_sal(**kwvar)
-            depth = self.get_depth(**kwdepth)
+            depth = None if potential else self.get_depth(**kwdepth)
             if temp is not None and sal is not None:
                 dens = density(temp, sal, depth=depth, format_axes=True, **kwdens)
             if dens is not None or check_mode('tempsal', mode, strict=True):
@@ -2639,88 +2908,6 @@ class OceanDataset(OceanSurfaceDataset):
 
     ############################################################################
 
-    def get_hsection(self, varname, depth, time=None, lat=None, lon=None,
-        timeavg=False, warn=True, **kwargs):
-        """Get a horizontal section of a variable for a specified depth
-
-        :Params:
-
-            - **varname**: Generic var name.
-            - **depth**: Target depth.
-            - **timeavg**, optional: Time average of results.
-            - **depth_<param>**, optional: Param is passed to :meth:`get_depth`.
-            - **interp_<param>**, optional: Param is passed to
-              :meth:`~vacumm.misc.grid.regridding.interp1d`.
-        """
-
-        # Params
-        kwargs.pop('level', None)
-        kwvar = dict(time=time, lat=lat, lon=lon, torect=kwargs.pop('torect', True),
-            warn=max(int(warn)-1, 0))
-        kwdepth = kwfilter(kwargs, 'depth_')
-        kwdepth.update(kwvar)
-        kwinterp = kwfilter(kwargs, 'interp_', axis=1)
-        kwinterp.setdefault('method', 'linear')
-
-        # Get data
-        var = self.get(varname, **kwvar)
-        vardepth = self.get_depth(**kwdepth)
-        if var is None or vardepth is None:
-            if warn: self.warning('Cannot get var or depths for hsection')
-            return
-
-        # Interpolate
-        lvar = self._interp_at_depths_(var, vardepth, depth, **kwinterp)
-
-        # Time average
-        if timeavg and lvar.getOrder().startswith('t') and lvar.shape[0]>1:
-            lvar = MV2.average(lvar, axis=0)
-        return self.finalize_object(lvar, depthup=False, **kwargs)
-
-    @staticmethod
-    def _interp_at_depths_(var, vardepth, depths, **kwargs):
-        depths = -N.abs(depths)
-        zo = create_dep([depths] if N.isscalar(depths) else depths[:])
-
-        if isinstance(vardepth,tuple):
-            vardepth=vardepth[0]
-        iaxi = var.getOrder().index('z')
-        if len(vardepth.shape)>1:
-#            var, vardepth = grow_variables(var, vardepth)
-            kwargs.update(axi=vardepth.filled(0.))
-            iaxo = iaxi
-        else:
-            iaxo = 0
-        return regrid1d(var, zo, iaxi=iaxi, iaxo=iaxo, **kwargs)
-
-
-    def plot_hsection(self, varname, depth, time=None, lat=None, lon=None,
-        timeavg=False, title='%(long_name)s at %(depth)im', **kwargs):
-        """Plot a horizontal section of a variable for a specified depth
-
-        Section is computed with :meth:`get_hsection`.
-
-        :Params:
-
-            - **varname**: Generic var name.
-            - **depth**: Target depth.
-            - **timeavg**, optional: Time average of results.
-            - **depth_<param>**, optional: Param is passed to :meth:`get_depth`.
-            - **interp_<param>**, optional: Param is passed to
-              :meth:`~vacumm.misc.grid.regridding.interp1d`.
-            - Other arguments are passed to :func:`~vacumm.misc.plot.map2`.
-        """
-        # Get section
-        depth = -N.abs(depth)
-        var = self.get_hsection(varname, depth, time=time, lat=lat, lon=lon,
-            timeavg=timeavg, squeeze=True)
-
-        # Plot it
-        long_name = getattr(var, 'long_name', '')
-        units = getattr(var, 'units', '')
-        dict_check_defaults(kwargs, bgcolor='0.5')
-        return map2(var, title=title%locals(), **kwargs)
-
 
     def get_layer(self, varname, depth, timeavg=True, **kwargs):
         """Get an horizontal section of a variable at a specified depth
@@ -2732,90 +2919,10 @@ class OceanDataset(OceanSurfaceDataset):
             '\n  variable:  %s'
             '\n  depth:      %s'
             '\n  timeavg:      %s', varname, depth, timeavg)
-        var =  self.get_hsection(varname, depth, timeavg=True, **kwargs)
+        var, ctime =  self.get_hsection(varname, depth, timeavg=True, **kwargs)
         self.logdesc(var, title='out: ')
         return var
 
-
-
-    def plot_transect(self, varname, lons, lats, times=None,
-        method='bilinear', timeavg=False, subsamp=3, outaxis=None,
-        time=None, lon=None, lat=None, level=None,
-        title='%(long_name)s along transect', minimap=None, **kwargs):
-        """Plot a transect between two points
-
-        :Params:
-
-            - **varname**: Generic var name.
-            - **lons/lats/times**: Specification of transect (see :meth:`get_transect`).
-            - **title**, optional: Title of the figure.
-            - **minimap**, optional: If True, add a minimap showing the transect
-              on a map; if False, display nothing; if None, display if no minimap
-              already displayed.
-            - **minimap_<param>**, optional: Passed to :func:`~vacumm.misc.plot.add_map_lines`.
-            - Some params are passed to :meth:`get_transect`.
-            - Other params are passed to the plot function :func:`~vacumm.misc.plot.curve2`
-              for 1D plots and, :func:`~vacumm.misc.plot.hov2` or
-              :func:`~vacumm.misc.plot.section2` for 2D plots.
-
-        """
-
-        # Get data
-        kwts = dict(method=method, subsamp=subsamp, timeavg=timeavg,
-            outaxis=outaxis, time=time, lon=lon, lat=lat, level=level,
-            times=times, **kwargs)
-        var, lons, lats = self.get_transect(varname, lons, lats,
-            getcoords=True, **kwts)
-        if var is None:
-            self.error("Can't get transect on variable")
-            return
-        if var.getLevel() is not None:
-            depth = self.get_transect('depth', lons, lats, **kwts)
-            if isaxis(depth): depth = None
-        else:
-            depth = None
-
-        # Check dimension
-        if var.ndim==3:
-            self.warning('Forcing time average to have a 2D transect')
-            var = MV2.average(var, axis=0)
-            if depth is not None and depth.getTime() is not None:
-                depth = MV2.average(depth, axis=0)
-        # Main plot
-        kwmap = kwfilter(kwargs, 'minimap_')
-        post_plot = kwargs.get('post_plot', True)
-        kwargs.update(post_plot=False, title=title)
-        kwargs.setdefault('bgcolor', '0.5')
-        kwargs.setdefault('ymax', 0)
-        # - 1D
-        if var.ndim==1:
-
-            p = curve2(var, **kwargs)
-
-        # - T-
-        elif 't' in var.getOrder():
-
-            p = hov2(var, **kwargs)
-
-        # - Z-
-        else:
-        # - Modif GC: Masked depth converted to 0.
-            if N.ma.isMA(depth):
-                depth[:] = depth.filled(0.)
-            kwargs.setdefault('fill', 'contourf')
-            p = section2(var, yaxis=depth, **kwargs)
-
-        # Minimap
-        if minimap=='auto': minimap = None
-        if minimap is True or (minimap is None and not getattr(p.axes, '_minimap', False)):
-            kwmap.setdefault('map_zoom', 0.5)
-            m = add_map_lines((lons, lats), lons, lats, **kwmap)
-            p.axes._minimap = True
-
-        del kwargs['title']
-        if post_plot:
-            p.post_plot(**kwargs)
-        return p
 
 
     def get_section(self, varname, xmin, ymin, xmax, ymax, timeavg=True, **kwargs):
@@ -2975,6 +3082,8 @@ class OceanDataset(OceanSurfaceDataset):
 
             - **select**: selector (should at least restrict to one level)
 
+                - select=dict(level=slice(-1,None),time=slice(0,2))
+
         :Return: A list containing in order:
 
             - var(time,position): loaded variable  data
@@ -2993,14 +3102,21 @@ class OceanDataset(OceanSurfaceDataset):
             '\n  meridional:  %s'
             '\n  extrema:     %s'
             '\n  select:      %s',varname, xorymin, xorymax, xory, meridional, extrema, select)
-        var, lat, lon = self.get_hovmoller(varname, xorymin, xorymax, xory, meridional, select)
+        #var, lat, lon = self.get_hovmoller(varname, xorymin, xorymax, xory, meridional, select)
+        kwvar = {}
+        if select is not None:
+            kwvar = kwfilter(select, ['level','time','times'])
+        var, lon, lat = self.get_transect(varname, (xorymin, xorymax), (xory,xory), getcoords=True, subsamp=1, **kwvar)
+        if var.shape > 2:
+                self.debug('Squeezing variable: %s', self.describe(var))
+                var = squeeze_variable(var)
 
         ex = extrema.strip().lower()
         exfunc = getattr(numpy.ma, 'arg%s'%(ex), None)
         if ex not in ['min','max'] or exfunc is None:
             raise ValueError('Invalid extrema: %s'%(extrema))
 
-        # Position of extema along time with masked values
+        # Position of extrema along time with masked values
         #iex = exfunc(var, axis=1, fill_value=-1)
         iex = exfunc(var, axis=1)
         #bad = iex == -1
@@ -3051,6 +3167,8 @@ class OceanDataset(OceanSurfaceDataset):
 
             - **select**: selector (should at least restrict to one level)
 
+                - select=dict(level=slice(-1,None),time=slice(0,2))
+
         :Return: A list containing in order:
             - var(time,position): loaded variable  data
             - latitude(position): latitude corresponding to var's position
@@ -3068,7 +3186,14 @@ class OceanDataset(OceanSurfaceDataset):
             '\n  meridional:  %s'
             '\n  operation:   %s'
             '\n  select:      %s',varname, xorymin, xorymax, xory, meridional, operation, select)
-        var, lat, lon = self.get_hovmoller(varname, xorymin, xorymax, xory, meridional, select)
+        #var, lat, lon = self.get_hovmoller(varname, xorymin, xorymax, xory, meridional, select)
+        kwvar = {}
+        if select is not None:
+            kwvar = kwfilter(select, ['level','time','times'])
+        var, lon, lat = self.get_transect(varname, (xorymin, xorymax), (xory,xory), getcoords=True, subsamp=1, **kwvar)
+        if var.shape > 2:
+                self.debug('Squeezing variable: %s', self.describe(var))
+                var = squeeze_variable(var)
         op = operation.strip().lower()
         if op in ('mean','avg'):
             op = 'average'
@@ -3176,6 +3301,7 @@ class OceanDataset(OceanSurfaceDataset):
         kwvar['warn'] = fwarn
         kwdens = kwfilter(kwargs, 'dens_')
         kwdens.update(kwvar)
+        kwdens['potential'] = True
         kwdepth = kwfilter(kwargs, 'depth_')
         kwdepth.update(kwvar)
         kwfinal = kwargs.copy()
@@ -3330,7 +3456,7 @@ class OceanDataset(OceanSurfaceDataset):
         '''
 
         varname=kwargs.pop('varname', None)
-        grid = self.get_grid(varname)
+        grid = self.get_grid(**kwargs)
         glob_lon, glob_lat = grid.getLongitude(), grid.getLatitude()
         mapkw = kwfilter(kwargs, 'map',
             defaults=dict(
@@ -3451,9 +3577,26 @@ class OceanDataset(OceanSurfaceDataset):
             - **plot_[show|close|savefig|savefigs]**: are passed to the post plotting function :func:`~vacumm.misc.core_plot.Plot.post_plot` at end of plotting operations
 
         '''
-        datakw  = kwfilter(kwargs, 'data')
+        # Get data
+        try:
+            level = select['level']
+        except:
+            level = None
+        try:
+            time = select['time']
+        except:
+            time = None
         # Get section data
-        var, lat, lon = self.get_hovmoller(varname, xorymin, xorymax, xory, meridional, select, **datakw)
+        if meridional:
+            var, lon, lat = self.get_transect(varname, (xory,xory), (xorymin, xorymax), getcoords=True, subsamp=1, level=level, time=time)
+        else:
+            var, lon, lat = self.get_transect(varname, (xorymin, xorymax), (xory,xory), getcoords=True, subsamp=1, level=level, time=time)
+        if var is None:
+            self.error("Can't get transect on variable")
+            return
+        if var.shape > 2:
+                self.debug('Squeezing variable: %s', self.describe(var))
+                var = squeeze_variable(var)
         # Compute scaling/informationnal data
         vmin,vmax = numpy.min(var), numpy.max(var)
         vstep = abs(vmax-vmin)/10.
@@ -3485,8 +3628,18 @@ class OceanDataset(OceanSurfaceDataset):
         else:
             hovtype = 'Zonal'
             lonlat = 'lon: %s to %s, lat: %s'%(xorymin, xorymax, xory)
-        plotkw.setdefault('title', '%s Hovmoller of %s\ntime: %s\n%s'%(hovtype, var.id, select['time'], lonlat))
+        ctime = None
+        try:
+            time = var.getTime().asComponentTime()
+            ct0 = strftime('%Y-%m-%d',time[0])
+            ct1 = strftime('%Y-%m-%d',time[-1])
+            ctime = "%s / %s period" %(ct0,ct1)
+        except Exception, e:
+            self.warning("Can't get time information. Error: \n"+e.message)
+
+        plotkw.setdefault('title', '%s Hovmoller of %s\ntime: %s\n%s'%(hovtype, var.id, ' / '.join((ct0,ct1)), lonlat))
         hv.post_plot(**plotkw)
+        #tight_layout()
 
 
     def plot_extrema_location(self, varname, xorymin, xorymax, xory, meridional=False, extrema='min', pmap=True, select=None, **kwargs):
@@ -3523,6 +3676,7 @@ class OceanDataset(OceanSurfaceDataset):
         # Plot the location curve
         curkw.update(order='td', show=False)
         cur = curve2(var, **curkw)
+        mp = None
         if pmap:
             mp = self.plot_trajectory_map(lon, lat, **mapkw)
         # Post plotting
@@ -3532,8 +3686,12 @@ class OceanDataset(OceanSurfaceDataset):
         else:
             curtype = 'Zonal'
             lonlat = 'lon: %s to %s, lat: %s'%(xorymin, xorymax, xory)
-        plotkw.setdefault('title', '%s location of %s %s\ntime: %s\n%s'%(curtype, extrema, var.id, select['time'], lonlat))
+        time = var.getTime().asComponentTime()
+        ct0 = strftime('%Y-%m-%d',time[0])
+        ct1 = strftime('%Y-%m-%d',time[-1])
+        plotkw.setdefault('title', '%s location of %s %s\ntime: %s\n%s'%(curtype, extrema, var.id, ' / '.join((ct0,ct1)), lonlat))
         cur.post_plot(**plotkw)
+        #tight_layout()
         return cur, var, lat, lon
 
 
@@ -3579,7 +3737,10 @@ class OceanDataset(OceanSurfaceDataset):
         else:
             curtype = 'Zonal'
             lonlat = 'lon: %s to %s, lat: %s'%(xorymin, xorymax, xory)
-        plotkw.setdefault('title', '%s %s of %s\ntime: %s\n%s'%(curtype, operation, var.id, select['time'], lonlat))
+        time = var.getTime().asComponentTime()
+        ct0 = strftime('%Y-%m-%d',time[0])
+        ct1 = strftime('%Y-%m-%d',time[-1])
+        plotkw.setdefault('title', '%s %s of %s\ntime: %s\n%s'%(curtype, operation, var.id, ' / '.join((ct0,ct1)), lonlat))
         cur.post_plot(**plotkw)
         return cur, var, lat, lon
 
@@ -3635,9 +3796,275 @@ class OceanDataset(OceanSurfaceDataset):
         m.post_plot(**plotkw)
         return m,c
 
+@getvar_decmets
 class AtmosDataset(AtmosSurfaceDataset):
+    name = 'atmos'
+    domain = 'atmos'
+    description = 'Generic atmospheric dataset'
+    default_altitude_search_mode = None
 
-    ncobj_specs = {}
+    # For auto-declaring methods
+    auto_generic_var_names = ['oro','wdir','wspd','uair','vair','wair','tair','pa',
+        'tkea']
+
+    def _parse_selects_(self, time, level, lat, lon):
+
+        level, squeeze = self._parse_level_(level)
+
+        return time, level, lat, lon, squeeze
+
+    def _parse_level_(self, level, squeeze=False):
+
+        # Convert level argument from string
+        if isinstance(level, basestring):
+
+            # Selector
+            top = slice(-2, -1)
+            surf = slice(1, 2)
+            if level=='surf':
+                level = surf if self._isdepthup_() else top
+            elif level=='top':
+                level = top if self._isdepthup_() else surf
+            elif level=='3d':
+                level = None
+            else:
+                raise DatasetError('Invalid level selector string: '+level)
+
+            # Squeeze Z dim
+            squeeze = (merge_squeeze_specs(squeeze, 'z')
+                if level is not None else False)
+
+        return level, squeeze
+
+    def get_selector(self, level=None, **kwargs):
+
+        # Argument
+        level, squeeze = self._parse_level_(level)
+
+        selector = Dataset.get_selector(self, level=level, **kwargs)
+
+        if isinstance(selector, dict):
+            selector['squeeze'] = squeeze
+        elif isinstance(selector, cdms2.selectors.Selector):
+            selector.squeeze = squeeze
+
+        return selector
+
+    get_selector.__doc__ = Dataset.get_selector.__doc__
+
+    def finalize_object(self, var, squeeze=False, order=None, asvar=None, torect=True,
+        depthup=None, **kwargs):
+        """Finalize a variable
+
+        :Params:
+
+            - **squeeze**, optional: If not False, squeeze singletons axes using
+              :func:`~vacumm.misc.misc.squeeze_variable`.
+            - **order**, optional: If not None, change the axes order of the variable.
+              It must contains letters like 'txyz-'.
+            - **asvar**, optional: Grow variable to match the ``asvar`` variable,
+              using :func:`~vacumm.misc.misc.grow_variables`.
+            - **asvar_<param>**: Param passed to :func:`~vacumm.misc.misc.grow_variables`.
+            - **torect**, optinal: Try to convert curvilinear grid to rectangular
+              grid using :func:`~vacumm.misc.grid.misc.curv2rect`.
+            - **depthup**, optional: If not False, try the make depth positive up
+              using :func:`~vacumm.misc.grid.misc.makedepthup`.
+        """
+        if var is None: return
+
+        # Make depth positive up
+        if isinstance(var,tuple):
+            var=var[0]
+        if depthup is not False:
+            self._makealtitudeup_(var, altitude=depthup)
+
+        # Generic stuff
+        var = Dataset.finalize_object(self, var, squeeze=squeeze, order=order,
+            torect=torect, asvar=asvar, **kwargs)
+
+        return var
+
+    def get_variable(self, varname, level=None, squeeze=False, **kwargs):
+
+        level, squeeze = self._parse_level_(level, squeeze)
+
+        return Dataset.get_variable(self, varname, level=level, squeeze=squeeze, **kwargs)
+
+    get_variable.__doc__ = Dataset.get_variable.__doc__
+
+    def _isdepthup_(self, depth=None):
+        """Guess if depths are positive up"""
+        # Cache
+        if getattr(self, 'positive', None) is not None:
+            return self.positive=='up'
+
+        # Get depth
+        if depth is None:
+            depth = self.get_depth(time=slice(0, 1), warn=False, format=False)
+        if depth is None: # no depth = no problem
+            self.positive = 'up'
+            return True
+
+        # Guess
+        axis = 0 if len(depth.shape)==1 else 1
+        isup = isdepthup(depth, ro=False, axis=axis)
+        self.positive = 'up' if isup else 'down'
+        return isup
+
+    def _makealtitudeup_(self, var, altitude=None):
+        """Make altitudes positive up"""
+        if altitude is None:
+            if cdms2.isVariable(var):
+                altitude = var.getLevel()
+            elif isdep(var):
+                altitude = var
+        if altitude is None:
+            return var
+        isup = self._isdepthup_(altitude)
+        if isup:
+            return var
+        if isdep(var):
+            return makealtitudeup(var, depth=False, strict=True)
+        axis = var.getOrder().find('z')
+        if axis<0:
+            return var
+        return makealtitudeup(var, depth=False, axis=axis, strict=True)
+
+
+    def _get_altitude_(self, at='t', level=None, time=None, lat=None, lon=None,
+            order=None, squeeze=None, asvar=None, torect=True, warn=True, mode=None,
+            format=True, grid=None, zerolid=False, **kwargs):
+
+        altitude=None
+        if mode is None:
+            mode  = self.default_altitude_search_mode
+
+        # Where?
+        at_p = _at_(at, squeezet=True, prefix=True)
+        atz = _at_(at, prefix=False, focus='ver')
+        at_z = _at_(at, prefix=True, focus='ver')
+        at_xy = _at_(at, squeezet=True, prefix=True, focus='hor')
+
+        # Setup keywords
+        fwarn = max(int(warn)-1, 0)
+        kwfinal = dict(order=order, squeeze=squeeze, asvar=asvar, torect=torect,
+            format=format, at=at)
+        kwvar = dict(level=level, time=time, lat=lat, lon=lon, warn=fwarn)
+        kwvar.update(kwfinal)
+        kwvarnoat = kwvar.copy()
+        kwvarnoat.pop('at')
+
+        # First, try to find a altitude variable
+        if check_mode('var', mode):
+            altitude = self.get_variable('altitude'+at_p, **kwvar)
+            if altitude is not None or check_mode('var', mode, strict=True):
+                return self._makealtitudeup_(altitude, altitude)
+
+        # Get selector for other tries
+        sselector = self.get_selector(lon=lon, lat=lat, level=level, merge=True, only='xyz')
+        seltimes = self.get_seltimes(time=time) or [None]
+#        selnotime = None
+        gridmet = 'get_grid'+at_xy
+        if grid is None:
+            grid = getattr(self, gridmet)()#False)
+        curvsel = CurvedSelector(grid, sselector)
+        kwfinal['curvsel'] = curvsel
+        kwfinal['genname'] = genname = 'depth' + at_p
+        if len(seltimes)>1:
+            kwfinal[self.get_timeid()] = seltimes[1]
+        kwfinalz = kwfinal.copy()
+        if at_p and at_z!=at_p: # from T or W to U, etc
+            kwfinalz['genname'] = genname = 'altitude' + at_z
+            kwfinalz.setdefault('at', at)
+
+        # Second, try from sigma-like coordinates at W and T points only (for now)
+        sigma_converter = NcSigma.factory(self.dataset[0])
+
+        if check_mode('sigma', mode):
+
+            if sigma_converter is not None and sigma_converter.stype is None:
+                sigma_converter.close()
+                sigma_converter = None
+
+            if sigma_converter is not None:
+                self.debug('Found depth referring to a sigma level, processing sigma to depth conversion')
+                allvars = []
+                if seltimes[0] is None or isinstance(seltimes[0], slice):
+                    nib = NcIterTimeSlice(self.dataset, tslice=seltimes[0])
+                else:
+                    nib = NcIterBestEstimate(self.dataset, time=seltimes[0], id=self._nibeid+str(time))
+                for f, tslice in nib:
+
+                    # - init
+                    if tslice is False:
+                        continue # and when no time??? None-> ok we continue
+                    if f!=self.dataset[0]:
+                        sigma_converter.update_file(f)
+                    sel = create_selector(time=tslice)
+#                    if selnotime is None:
+#                        selnotime = filter_time_selector(selector, ids=nib.timeid, out=True)
+#                    sel.refine(selnotime)
+                    sel.refine(sselector)
+                    self.debug('- dataset: %s: sigma: %s, select: %s',
+                        os.path.basename(f.id), sigma_converter.__class__.__name__, sel)
+
+                    # - try it
+                    try:
+                        d = sigma_converter(sel, at=atz, copyaxes=True, mode='sigma',
+                            zerolid=zerolid)
+                    except Exception, e:
+                        if warn:
+                            self.warning("Can't get altitude from sigma. Error: \n"+e.message)
+                        break
+                    self.debug('Sigma to altitude result: %s', self.describe(d))
+                    allvars.append(d)
+
+                # Concatenate loaded depth
+                if allvars:
+                    var = MV2_concatenate(allvars)
+                    return self.finalize_object(var, depthup=var, **kwfinalz)
+
+                if check_mode('sigma', mode, strict=True): return
+
+        if warn:
+            self.warning('Found no way to estimate depths at %s location'%at.upper())
+
+    _mode_doc = """Computing mode
+
+          - ``None``: Try all modes, in the following order.
+          - ``"var"``: Read it from a variable.
+          - ``"sigma"``: Estimate from sigma coordinates.
+          #not yet- ``"dz"``: Estimate from layer thinknesses (see :meth:`get_dz`)
+          #not yet- ``"axis"``: Read it from an axis (if not sigma coordinates)
+
+          #You can specifiy a list of them: ``['dz', 'sigma']``
+          #You can also negate the search with
+          #a '-' sigme before: ``"-dz"``."""
+
+    def get_altitude(self, *args, **kwargs):
+        """Get layer altitude testing all locations"""
+        warn = kwargs.pop('warn', True)
+        fwarn = max(int(warn)-1, 0)
+        kwargs['warn'] = fwarn
+        locs = kwargs.pop('at', 'tuvw')
+        for loc in locs:
+            altitude = self._get_altitude_(loc, *args, **kwargs)
+            if altitude is not None:
+                return altitude
+            else:
+                if warn: self.warning("Can't get altitude at location "+loc)
+        return self._get_altitude_('t', *args, **kwargs)
+    getvar_fmtdoc(get_altitude, mode=_mode_doc)
+
+    def get_altitude_t(self, *args, **kwargs):
+        """Get altitude at T location"""
+        return self._get_altitude_('t', *args, **kwargs)
+    getvar_fmtdoc(get_altitude_t, mode=_mode_doc)
+
+    def get_altitude_w(self, *args, **kwargs):
+        """Get altitude at W location"""
+        return self._get_altitude_('w', *args, **kwargs)
+    getvar_fmtdoc(get_altitude_w, mode=_mode_doc)
 
 
 def _at_(at, squeezet=False, focus=None, prefix=False):
@@ -3728,14 +4155,16 @@ def _notuplist_(dd):
 
 class GenericDataset(AtmosDataset, OceanDataset):
     """Generic :class:`Dataset` class to load everything"""
-    pass
+    name = 'generic'
+    description = 'Generic dataset'
 
 class CurvedSelector(object):
     """Curved grid multiple selector"""
 
-    def __init__(self, grid, select, force=True):
+    def __init__(self, grid, select, force=True, xid=None, yid=None):
 
         self.geosels = self.extract_geosels(select)
+        self.id = str(self.geosels)
         self._post_sel = False
         self.grid = grid
         self.force = force
@@ -3745,17 +4174,26 @@ class CurvedSelector(object):
             if islice is None: islice = ':'
             if jslice is None: jslice = ':'
             self.remove_geosels(select)
-            self.xid = grid.getAxis(1).id
-            self.yid = grid.getAxis(0).id
+            self.xid = xid or grid.getAxis(1).id
+            self.yid = yid or grid.getAxis(0).id
             select.refine(**{self.xid:islice, self.yid:jslice})
             self._post_sel = True
             self.mask = mask
+        self.select = select
 
+
+    def togrid(self, grid):
+        """Make a copy and put it on another grid with new xid and yid"""
+        cs = copy(self)
+        if hasattr(cs, 'xid'):
+            cs.xid = xid or grid.getAxis(1).id
+            cs.yid = yid or grid.getAxis(0).id
+        return cs
 
     def finalize(self, var):
         if var is None or not self._post_sel:
             return var
-        if self.mask.any():
+        if self.mask is not None and self.mask.any():
             var[:] = MV2.masked_where(N.resize(self.mask, var.shape), var, copy=0)
         if len(self.geosels)==2 and self.grid is not None and (self.curv or self.force):
             assert self.grid.shape == var.getGrid().shape,  'Incomptible grids'
@@ -3816,3 +4254,8 @@ def merge_squeeze_specs(squeeze1, squeeze2):
         return squeeze2
     return s1 or s2
 
+
+# Register dataset classes
+for cls in (GenericDataset, OceanDataset, AtmosDataset, AtmosSurfaceDataset,
+        OceanSurfaceDataset, WaveSurfaceDataset):
+    register_dataset(cls)

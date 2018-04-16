@@ -20,7 +20,7 @@ mg.set_tide_filter('demerliac') # On peut aussi choisir 'godin'
 cotes = mg.cotes()
 
 # Calcul des pleines et basses mers
-ref = 'mean' 
+ref = 'mean'
 highs = mg.highs(ref=ref)
 lows = mg.lows(ref=ref)
 zeros = mg.zeros(ref=ref)
@@ -36,3 +36,4 @@ mg.plot(orig=False, tide_color='k', title='Extremas et zeros', xhide=True, **kwp
 # - seules les surcotes decotes
 P.subplot(212)
 mg.plot('cotes', savefigs=__file__, savefigs_pdf=True, title='Surcotes et decotes', **kwplot)
+P.close()

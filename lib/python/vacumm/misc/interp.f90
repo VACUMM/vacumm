@@ -1,4 +1,4 @@
-! Copyright or © or Copr. Actimar/IFREMER (contributor(s) : Stephane Raynaud) (2010-2016)
+! Copyright or © or Copr. Actimar/IFREMER (contributor(s) : Stephane Raynaud) (2010-2017)
 !
 ! raynaud@actimar.fr
 !
@@ -1083,9 +1083,9 @@ subroutine cellerr1d(vari, yi, varo, yo, mv, errm, errl, erro, yob, nx, nxb, nyi
                 where(goodi(ix0:ix1,iyi))
 
                     varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + &
-                        & vari(ix0:ix1,iyi) / (errm(:, iyi)**2 + zerrl)
+                        & vari(ix0:ix1,iyi) / (errm(ix0:ix1, iyi)**2 + zerrl)
                     erro(ix0:ix1,iyo) = erro(ix0:ix1,iyo) + &
-                        & 1d0 / (errm(:, iyi)**2 + zerrl)
+                        & 1d0 / (errm(ix0:ix1, iyi)**2 + zerrl)
 
                 endwhere
             enddo
@@ -1209,7 +1209,7 @@ subroutine cellerr1dx(vari, yi, varo, yo, mv, errm, errl, erro, yob, nx, nxb, ny
                 where(goodi(ix0:ix1))
 
                     varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + &
-                        & vari(ix0:ix1,iyi) / (errm(:, iyi)**2 + zerrl)
+                        & vari(ix0:ix1,iyi) / (errm(ix0:ix1, iyi)**2 + zerrl)
                     erro(ix0:ix1,iyo) = erro(ix0:ix1,iyo) + &
                         & 1d0 / (errm(:, iyi)**2 + zerrl)
 
@@ -1331,7 +1331,7 @@ subroutine cellerr1dxx(vari, yi, varo, yo, mv, errm, errl, erro, yob, nx, nxb, n
                 where(goodi(ix0:ix1))
 
                     varo(ix0:ix1,iyo) = varo(ix0:ix1,iyo) + &
-                        & vari(ix0:ix1,iyi) / (errm(:, iyi)**2 + zerrl)
+                        & vari(ix0:ix1,iyi) / (errm(ix0:ix1, iyi)**2 + zerrl)
                     erro(ix0:ix1,iyo) = erro(ix0:ix1,iyo) + &
                         & 1d0 / (errm(:, iyi)**2 + zerrl)
 
@@ -1986,19 +1986,29 @@ subroutine linear4dto1d(xi,yi,zi,ti,vi,xo,yo,zo,to,vo,mv,nxi,nyi,nzi,nti,no)
     real(kind=8),intent(out) :: vo(no)
 
     real(kind=8) :: a , b, c, d
+    real(kind=8) :: ximin, yimin, zimin, timin, ximax, yimax, zimax, timax
     logical :: bmask(nti,nzi,nyi,nxi)
     integer :: io, i, j, k, l, ii, jj, kk, ll, npi, npj, npk, npl
 
     vo = mv
     bmask = abs(vi-mv)<abs(mv*epsilon(1d0)*1.1)
+    ximin = minval(xi)
+    ximax = maxval(xi)
+    yimin = minval(yi)
+    yimax = maxval(yi)
+    zimin = minval(zi)
+    zimax = maxval(zi)
+    timin = minval(ti)
+    timax = maxval(ti)
 
-    !$OMP PARALLEL DO PRIVATE(io,i,j,k,l,ii,jj,kk,ll)
-    !$& SHARED(xi,yi,zi,ti,vi,xo,yo,zo,vo,nxi,nyi,nzi,nti,no,bmask)
+    !$OMP PARALLEL DO DEFAULT(SHARED) &
+    !$OMP PRIVATE(io,i,j,k,l,ii,jj,kk,ll,a,b,c,d)&
+    !$OMP PRIVATE(npi,npj,npl,npk)
     do io = 1, no
-        if((nxi==1 .or. (xo(io)>=xi(1).and.xo(io)<=xi(nxi))) .and.&
-                & (nyi==1 .or. (yo(io)>=yi(1).and.yo(io)<=yi(nyi))) .and.&
-                & (nzi==1 .or. (zo(io)>=zi(1).and.zo(io)<=zi(nzi))) .and.&
-                & (nti==1 .or. (to(io)>=ti(1).and.to(io)<=ti(nti))))then
+        if(       (nxi==1 .or. (xo(io)>=ximin.and.xo(io)<=ximax)) .and.&
+                & (nyi==1 .or. (yo(io)>=yimin.and.yo(io)<=yimax)) .and.&
+                & (nzi==1 .or. (zo(io)>=zimin.and.zo(io)<=zimax)) .and.&
+                & (nti==1 .or. (to(io)>=timin.and.to(io)<=timax)))then
 
             ! Weights
             ! - X
@@ -2014,7 +2024,7 @@ subroutine linear4dto1d(xi,yi,zi,ti,vi,xo,yo,zo,to,vo,mv,nxi,nyi,nzi,nti,no)
                 i = minloc(xi,dim=1,mask=xi>xo(io))-1
                 npi = 2
                 a = abs(xo(io)-xi(i))
-                if(a>180d0)a=360d0-180d0
+                if(a>180d0)a=a-180d0
                 a = a/(xi(i+1)-xi(i))
             endif
             ! - Y
@@ -2069,16 +2079,19 @@ subroutine linear4dto1d(xi,yi,zi,ti,vi,xo,yo,zo,to,vo,mv,nxi,nyi,nzi,nti,no)
                     npl = 2
                 endif
             endif
+!            print*,'ijkl',i,j,k,l
+!            print*,'abcd',a,b,c,d
+!            print*,'np',npi,npj,npk,npl
 
             ! Interpolate
             if(any(bmask(l:l+npl-1, k:k+npk-1, j:j+npj-1, i:i+npi-1)))then ! masked
                 vo(io) = mv
             else
                 vo(io) = 0d0
-                do ii=0,npi-1
-                    do jj=0,npj-1
-                        do kk=0,npk-1
-                            do ll=0,npl-1
+                do ll=0,npl-1
+                    do kk=0,npk-1
+                        do jj=0,npj-1
+                            do ii=0,npi-1
                                 vo(io) = vo(io) +vi(l+ll, k+kk, j+jj, i+ii) * &
                                     & ((1-a) * (1-ii) + a * ii)* &
                                     & ((1-b) * (1-jj) + b * jj)* &
@@ -2219,21 +2232,22 @@ subroutine linear4dto1dx(xi,yi,zi,ti,vi,xo,yo,zo,to,vo,mv,nex,nxi,nyi,nzi,nti,no
 end subroutine linear4dto1dx
 
 subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
-        nxi,nyi,nyix,nxiy, nyiz,nxiz,nzi, nti,ntiz, no,nex)
+        nxi,nyi,nyix,nxiy, nyiz,nxiz,nzi, nti,ntiz, no,nex,nexz)
     ! linear interpolation of gridded data to random positions
 
     implicit none
 
-    integer,intent(in) :: nxi,nyi,nyix,nxiy, nyiz,nxiz,nzi, nti,ntiz, no,nex
-    real(kind=8),intent(in) :: xxi(nyix,nxi), yyi(nyi,nxiy), zzi(ntiz,nzi,nyiz,nxiz), ti(nti)
+    integer,intent(in) :: nxi,nyi,nyix,nxiy, nyiz,nxiz,nzi, nti,ntiz, no,nex,nexz
+    real(kind=8),intent(in) :: xxi(nyix,nxi), yyi(nyi,nxiy), zzi(nexz,ntiz,nzi,nyiz,nxiz), ti(nti)
     real(kind=8),intent(in) :: xo(no), yo(no), zo(no), to(no)
     real(kind=8),intent(in) :: vi(nex,nti,nzi,nyi,nxi), mv
     real(kind=8),intent(out) :: vo(nex,no)
 
-    real(kind=8) :: a , b, c, d, p, q, zi(nzi)
+    real(kind=8) :: a , b, c(nexz), d, p, q, zi(nexz,nzi), az, bz, dz
     real(kind=8) :: ximin, yimin, zimin, timin, ximax, yimax, zimax, timax
     logical :: bmask(nex,nti,nzi,nyi,nxi), curved
-    integer :: io, i, j, k, l, ii, jj, kk, ll, npi, npj, npk, npl
+    integer :: io, i, j, k(nexz), l, ii, jj, kk, ll, npi, npj, npk(nexz), npl, &
+        & npiz, npjz, nplz, iz, jz, lz, iez, ieb, ie0, ie1
 
     vo = mv
     bmask = abs(vi-mv)<abs(mv*epsilon(1d0)*1.1)
@@ -2251,10 +2265,15 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
     if(nyiz/=1 .and. nyiz/=nyi)stop "linear4dto1: Invalid nyiz dimension"
     if(ntiz/=1 .and. ntiz/=nti)stop "linear4dto1: Invalid ntiz dimension"
 
+!    print*,'xxi',xxi
+!    print*,'yyi',yyi
+!    print*,'ti',ti
+!    print*,'zzi',zzi
 
 
-    !$OMP PARALLEL DO PRIVATE(io,i,j,k,l,ii,jj,kk,ll,p,q)
-    !$& SHARED(xi,yi,zi,ti,vi,xo,yo,zo,vo,nei,nxi,nyi,nzi,nti,no,bmask)
+    !$OMP PARALLEL DO DEFAULT(SHARED) &
+    !$OMP PRIVATE(io,i,j,k,l,a,b,c,d,ii,jj,kk,ll,p,q,npi,npj,npk,npl) &
+    !$OMP PRIVATE(npiz,npjz,nplz,iz,jz,lz,az,bz,dz,ieb,ie0,iez,zi)
     do io = 1, no
         if(       (nxi==1 .or. (xo(io)>=ximin.and.xo(io)<=ximax)) .and.&
                 & (nyi==1 .or. (yo(io)>=yimin.and.yo(io)<=yimax)) .and.&
@@ -2263,9 +2282,10 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
 
             ! Weights
             if(curved)then
-
+!print*,'curved'
                 call curv2rel_single(xxi, yyi, xo(io), yo(io), p, q, nxi, nyi)
                 if(p<1 .or. p>nxi .or. q<1 .or. q>nyi) continue
+!                print*,'not masked'
                 i = int(p)
                 j = int(q)
                 a = p - i
@@ -2284,11 +2304,13 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                     npi = 1
                     a = 0d0
                 else
-                    i = minloc(xxi(:,1), dim=1, mask=xxi(:,1)>xo(io))-1
+                    i = minloc(xxi(1,:), dim=1, mask=xxi(1,:)>xo(io))-1
+!                    print*,'i',i
                     npi = 2
-                    a = abs(xo(io)-xxi(i,1))
-                    if(a>180d0)a=360d0-180d0
-                    a = a/(xxi(i+1,1)-xxi(i,1))
+                    a = xo(io)-xxi(1,i)
+                    if(abs(a)>180d0)a=a-180d0 ! FIXME: linear4dto1dxx: abs(a)>180d0
+                    a = a/(xxi(1,i+1)-xxi(1,i))
+!            print*,'xo2i',xo(io),xxi(1,i),xxi(1,i+1)
                 endif
 
                 ! - Y
@@ -2301,14 +2323,16 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                     b  = 0d0
                     npj = 1
                 else
-                    j = minloc(yyi(1,:), dim=1, mask=yyi(1,:)>yo(io)) - 1
-                    b = (yo(io)-yyi(1,j))/(yyi(1,j+1)-yyi(1,j))
+                    j = minloc(yyi(:,1), dim=1, mask=yyi(:,1)>yo(io)) - 1
+                    b = (yo(io)-yyi(j,1))/(yyi(j+1,1)-yyi(j,1))
                     npj = 2
+!            print*,'yo2i',yo(io),yyi(j,1),yyi(j+1,1)
                 endif
 
             endif
 
             ! - T
+!            print*,'nti',nti
             if(nti==1)then
                 l = 1
                 d = 0d0
@@ -2319,14 +2343,17 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                 npl = 1
             else
                 l = minloc(ti, dim=1, mask=ti>to(io))-1
+!                    print*,'l',l
                 if(ti(l+1)==ti(l))then
                     d = 0d0
                     npl = 1
                 else
                     d = (to(io)-ti(l))/(ti(l+1)-ti(l))
                     npl = 2
+!                    print*,'tti',to(io),ti(l),ti(l+1)
                 endif
             endif
+!            print*,'d',d
 
             ! - Z
             if(nzi==1)then
@@ -2336,55 +2363,127 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
             else
 
                 ! Local zi
+
+                if(nxiz==1)then
+                    npiz = 1
+                    az = 0
+                    iz = 1
+                else
+                    npiz = npi
+                    az = a
+                    iz = i
+                endif
+
+                if(nyiz==1)then
+                    npjz = 1
+                    bz = 0
+                    jz = 1
+                else
+                    npjz = npj
+                    bz = b
+                    jz = j
+                endif
+
+                if(ntiz==1)then
+                    nplz = 1
+                    dz = 0
+                    lz = 1
+                else
+                    nplz = npl
+                    dz = d
+                    lz = l
+                endif
+!                print*,'npiz az,iz',npiz,az,iz
+!                print*,'npjz bz,jz',npjz,bz,jz
+!                print*,'nplz dz,lz',nplz,dz,lz
+
                 zi = 0d0
-                do ii=0,npi-1
-                    do jj=0,npj-1
-                        do ll=0,npl-1
-                            zi = zi + zzi(l+ll, :, j+jj, i+ii) * &
-                                & ((1-a) * (1-ii) + a * ii)* &
-                                & ((1-b) * (1-jj) + b * jj)* &
-                                & ((1-d) * (1-ll) + d * ll)
+                do ll=0,nplz-1
+                    do jj=0,npjz-1
+                        do ii=0,npiz-1
+                            zi = zi + zzi(:, lz+ll, :, jz+jj, iz+ii) * &
+                                & ((1-az) * (1-ii) + az * ii)* &
+                                & ((1-bz) * (1-jj) + bz * jj)* &
+                                & ((1-dz) * (1-ll) + dz * ll)
                         enddo
                     enddo
                 enddo
+!                print*,'zi',zi
 
-                ! Normal stuff
-                if(zi(nzi)==zo(io))then
-                    k = nzi
-                    c = 0d0
-                    npk = 1
-                else
-                    k = minloc(zi, dim=1, mask=zi>zo(io))-1
-                    if(zi(k+1)==zi(k))then
-                        c = 0d0
-                        npk = 1
+                ! Normal stuff (c(nexz),zi(nexz,nzi),k(nexz)
+                do iez = 1, nexz ! extra dim
+                    if(zi(iez,nzi)==zo(io))then
+                        k(iez) = nzi
+                        c(iez) = 0d0
+                        npk(iez) = 1
                     else
-                        c = (zo(io)-zi(k)) / (zi(k+1)-zi(k))
-                        npk = 2
+                        k(iez) = minloc(zi(iez,:), dim=1, mask=zi(iez,:)>zo(io))-1
+                        if(zi(iez,k(iez)+1)==zi(iez,k(iez)))then
+                            c(iez) = 0d0
+                            npk(iez) = 1
+                        else
+                            c(iez) = (zo(io)-zi(iez,k(iez))) / (zi(iez,k(iez)+1)-zi(iez,k(iez)))
+                            npk(iez) = 2
+!                        print*,'zo2i',zo(io),zi(iez,k(iez)),zi(iez,k(iez)+1)
+                        endif
                     endif
-                endif
+                enddo
+
+
             endif
+
+!            print*,'X i a npi',i,a,npi
+!            print*,'Y j b npj',j,b,npj
+!            print*,'Z k c npk',k,c,npk
+!            print*,'T l d npl',l,d,npl
+!            print*,'nzi',nzi
 
             ! Interpolate
             vo(:,io) = 0d0
-            do ii=0,npi-1
-                do jj=0,npj-1
-                    do kk=0,npk-1
-                        do ll=0,npl-1
-                            vo(:,io) = vo(:,io) +vi(:,l+ll, k+kk, j+jj, i+ii) * &
-                                & ((1-a) * (1-ii) + a * ii)* &
-                                & ((1-b) * (1-jj) + b * jj)* &
-                                & ((1-c) * (1-kk) + c * kk)* &
-                                & ((1-d) * (1-ll) + d * ll)
-                        enddo
-                    enddo
-                enddo
-            enddo
+!            print*,'nex/nexz',nex/nexz
+            do ieb = 1, nex/nexz
+!                print*,'ieb',ieb
 
-            ! Mask
-            vo(:,io) = merge(mv, vo(:,io), &
-                & any(reshape(bmask(:,l:l+npl-1, k:k+npk-1, j:j+npj-1, i:i+npi-1), &
-                &   (/nex, npl*npk*npj*npi/)), dim=2))
+                ie0 = 1+(ieb-1)*nexz
+!                ie1 = ie0+nexz-1
+
+                do iez=0,nexz-1
+!                    print*,'iez',iez
+!                    print*,'bmask',bmask(ie0:ie0+iez,l:l+npl-1, k(iez+1):k(iez+1)+npk(iez+1)-1, j:j+npj-1, i:i+npi-1)
+!                    print*, l,l+npl-1
+!                    print*, k(iez+1),k(iez+1)+npk(iez+1)-1
+!                    print*, j,j+npj-1
+!                    print*, i,i+npi-1
+!                    print*,'so'
+                    if(any(bmask(ie0:ie0+iez,l:l+npl-1, k(iez+1):k(iez+1)+npk(iez+1)-1, j:j+npj-1, i:i+npi-1)))then
+                        vo(ie0+iez,io) = mv ! masked
+                    else
+                        do ll=0,npl-1
+                            do kk=0,npk(iez+1)-1
+                                do jj=0,npj-1
+                                    do ii=0,npi-1
+!                                        print*,'one'
+                                        vo(ie0+iez,io) = vo(ie0+iez,io) +vi(ie0+iez,l+ll, k(iez+1)+kk, j+jj, i+ii) * &
+                                            & ((1-a) * (1-ii) + a * ii)* &
+                                            & ((1-b) * (1-jj) + b * jj)* &
+                                            & ((1-c(iez+1)) * (1-kk) + c(iez+1) * kk)* &
+                                            & ((1-d) * (1-ll) + d * ll)
+!                                        print*,vo
+                                    enddo
+                                enddo
+                            enddo
+                        enddo
+!                        print*,'vo',vo
+
+                    endif
+                enddo
+
+            end do
+
+!            ! Mask
+!            vo(:,io) = merge(mv, vo(:,io), &
+!                & any(reshape(bmask(:,l:l+npl-1, k:k+npk-1, j:j+npj-1, i:i+npi-1), &
+!                &   (/nex, npl*npk*npj*npi/)), dim=2))
 
         endif
     enddo
@@ -2392,6 +2491,141 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
 
 end subroutine linear4dto1dxx
 
+subroutine nearest4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
+        nxi,nyi,nyix,nxiy, nyiz,nxiz,nzi, nti,ntiz, no,nex,nexz)
+    ! linear interpolation of gridded data to random positions
+
+    implicit none
+
+    integer,intent(in) :: nxi,nyi,nyix,nxiy, nyiz,nxiz,nzi, nti,ntiz, no,nex,nexz
+    real(kind=8),intent(in) :: xxi(nyix,nxi), yyi(nyi,nxiy), zzi(nexz,ntiz,nzi,nyiz,nxiz), ti(nti)
+    real(kind=8),intent(in) :: xo(no), yo(no), zo(no), to(no)
+    real(kind=8),intent(in) :: vi(nex,nti,nzi,nyi,nxi), mv
+    real(kind=8),intent(out) :: vo(nex,no)
+
+    real(kind=8) :: p, q, zi(nexz,nzi), dx(nxi)
+    logical ::  curved
+    integer :: io, i, j, k(nexz), l, iz, jz, lz, iez, ieb, ie0, ie1
+
+    vo = mv
+    curved = nyix/=1
+    if(curved .and. nxi/=nxiy .and. nyi/=nyix)stop "linear4dto1: Invalid curved dimensions"
+    if(nxiz/=1 .and. nxiz/=nxi)stop "linear4dto1: Invalid nxiz dimension"
+    if(nyiz/=1 .and. nyiz/=nyi)stop "linear4dto1: Invalid nyiz dimension"
+    if(ntiz/=1 .and. ntiz/=nti)stop "linear4dto1: Invalid ntiz dimension"
+
+!    print*,'xxi',xxi
+!    print*,'yyi',yyi
+!    print*,'ti',ti
+!    print*,'zzi',zzi
+
+
+    !$OMP PARALLEL DO DEFAULT(SHARED) &
+    !$OMP PRIVATE(io,i,j,k,l,p,q) &
+    !$OMP PRIVATE(iz,jz,lz,ieb,ie0,iez,zi)
+    do io = 1, no
+
+            ! Weights
+            if(curved)then
+!print*,'curved'
+                call curv2rel_single(xxi, yyi, xo(io), yo(io), p, q, nxi, nyi)
+                p = max(p, 1d0)
+                p = min(p, dble(nxi))
+                q = max(q, 1d0)
+                q = min(q, dble(nyi))
+                i = int(p)
+                j = int(q)
+                if(p-i>.5)i = i + .5
+                if(q-j>.5)j = j + .5
+
+            else
+                ! - X
+                if(nxi==1)then
+                    i = 1
+                else
+                    dx = abs(xo(io)-xxi(1,:))
+                    where(dx>180.)dx=360.-dx
+                    i = minloc(dx, dim=1)
+                endif
+
+                ! - Y
+                if(nyi==1)then
+                    j = 1
+                else
+                    j = minloc(abs(yo(io)-yyi(:,1)), dim=1)
+                endif
+
+            endif
+
+            ! - T
+!            print*,'nti',nti
+            if(nti==1)then
+                l = 1
+            else
+                l = minloc(abs(to(io)-ti), dim=1)
+            endif
+
+            ! - Z
+            if(nzi==1)then
+                k = 1
+            else
+
+                ! Local zi
+
+                if(nxiz==1)then
+                    iz = 1
+                else
+                    iz = i
+                endif
+
+                if(nyiz==1)then
+                    jz = 1
+                else
+                    jz = j
+                endif
+
+                if(ntiz==1)then
+                    lz = 1
+                else
+                    lz = l
+                endif
+
+                zi = zzi(:, lz, :, jz, iz)
+!                print*,'zi',zi
+
+                ! Normal stuff zi(nexz,nzi),k(nexz)
+                do iez = 1, nexz ! extra dim
+                    k(iez) = minloc(abs(zo(io)-zi(iez,:)), dim=1)
+                enddo
+
+
+            endif
+
+!            print*,'X i',i
+!            print*,'Y j',j
+!            print*,'Z k',k
+!            print*,'T l',l
+
+            ! Interpolate
+            vo(:,io) = 0d0
+!            print*,'nex/nexz',nex/nexz
+            do ieb = 1, nex/nexz
+!                print*,'ieb',ieb
+
+                ie0 = 1+(ieb-1)*nexz
+!                ie1 = ie0+nexz-1
+
+                do iez=0,nexz-1
+                    vo(ie0+iez,io) = vi(ie0+iez,l, k(iez+1), j, i)
+                enddo
+
+            end do
+
+
+    enddo
+    !$OMP END PARALLEL DO
+
+end subroutine nearest4dto1dxx
 
 
 subroutine nearest4dto1d(xi,yi,zi,ti,vi,xo,yo,zo,to,vo,mv,nxi,nyi,nzi,nti,no)

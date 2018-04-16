@@ -34,6 +34,9 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from __future__ import absolute_import
+import six
+from six.moves import map
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
 __doc__ = '''
@@ -59,10 +62,9 @@ base class.
 
 
 '''
-
-import inspect, os, pdb, pprint, sys, types
+ 
+import inspect, os, pdb, pprint, sys
 from argparse import ArgumentParser
-from optparse import OptionParser
 import configobj
 
 from vacumm import vacumm_warning
@@ -129,10 +131,10 @@ def _set_ext_(fname, ext):
         Remove extension if False, replace it if string,
         or leave it.
     """
-    if ext is False or isinstance(ext, basestring):
+    if ext is False or isinstance(ext, six.string_types):
         fname, suf = os.path.splitext(fname)
         if ext is not False:
-            if isinstance(ext, basestring):
+            if isinstance(ext, six.string_types):
                 suf = ext
             if not '.' in suf:
                 suf = '.'+suf
@@ -227,7 +229,7 @@ try:
             ps += '  SHR: %dMo  DAT: %dMo'%(meminfo[2] / 2**20, meminfo[5] / 2**20)
         ps += ']'
         return ps
-except Exception, e:
+except Exception as e:
     Logger.default.verbose('psinfo disabled: %s', e)
     psinfo = lambda:'Ressources informations not available (no module psutil)'
 
@@ -278,7 +280,7 @@ def describe(obj, stats=None, format=pprint.pformat):
             return '%s: shape: %s%s'%(
                 otype, sh,
                 stats and ', min: %s, max: %s, avg: %s, count: %s'%(mi, ma, av, co) or '')
-    except Exception, e:
+    except Exception:
         logger.exception('Error getting description of object %s', type(obj))
         return '%s (error getting description)'%(type(obj))
 
@@ -293,17 +295,17 @@ class _classinstancemethod_wrapper(object):
         self.obj = obj
         self.type = type
     def __call__(self, *args, **kw):
-        assert not kw.has_key('self') and not kw.has_key('cls'), (
+        assert 'self' not in kw and 'cls' not in kw, (
             "You cannot use 'self' or 'cls' arguments to a "
             "classinstancemethod")
         return self.func(*((self.obj, self.type) + args), **kw)
     def __repr__(self):
         if self.obj is None:
             return ('<bound class method %s.%s>'
-                    % (self.type.__name__, self.func.func_name))
+                    % (self.type.__name__, self.func.__name__))
         else:
             return ('<bound method %s.%s of %r>'
-                    % (self.type.__name__, self.func.func_name, self.obj))
+                    % (self.type.__name__, self.func.__name__, self.obj))
 
 class classinstancemethod(object):
     """
@@ -348,7 +350,7 @@ class Class(type):
         cls._init_class(name, bases, dct)
 
 
-_logging_proxies = list(map(lambda f: (f.lower(),f.lower()), get_str_levels()+['exception']))
+_logging_proxies = list([(f.lower(),f.lower()) for f in get_str_levels()+['exception']])
 _logging_proxies += [
     ('get_loglevel', 'get_level_name'),
     ('set_loglevel', 'set_level'),
@@ -380,11 +382,18 @@ def add_logging_proxies(cls):
         wrapper.__name__ = cfunc
         wrapper.__doc__ = '''Wrapper to the %(lfunc)r method of this object logger (see :meth:`Logger.%(lfunc)s` )'''%vars()
         setattr(cls, cfunc, wrapper)
+        
+        # Register code to be skipped when logging
+        cls.get_logger().skipCaller(wrapper.func)
+        # XXX because _classinstancemethod_wrapper is created on classinstancemethod.__get__(),
+        # we directly use _classinstancemethod_wrapper.__call__
+        cls.get_logger().skipCaller(_classinstancemethod_wrapper.__call__.__func__.__code__)
+        
     for args in _logging_proxies:
         wrap_logging_function(cls, *args)
-add_logging_proxies.__doc__ %= ('\n        - '.join(map(lambda f: '%s => %s'%f, _logging_proxies)),)
+add_logging_proxies.__doc__ %= ('\n        - '.join(['%s => %s'%f for f in _logging_proxies]),)
 
-class Object(object):
+class Object(six.with_metaclass(Class, object)):
     '''
     Vacumm's base class proving common usefull features:
 
@@ -412,8 +421,6 @@ class Object(object):
     configuration (:func:`get_default_config`) made at instance creation time.
 
     '''
-    # All subclasses will use this metaclass
-    __metaclass__ = Class
     # For example, the following classes definition:
     #   In a vacumm.a.py module:
     #     from vacumm import Object
@@ -604,7 +611,7 @@ class Object(object):
         cfgmgr = cls.get_config_manager(encoding=encoding)
         cfgdef = cfgmgr.defaults()
         cfgsec = cls.get_config_section_name()
-        if isinstance(nested, basestring):
+        if isinstance(nested, six.string_types):
             cfgsec = nested
         # Change the class default config if required
         if config is not None:
@@ -722,7 +729,7 @@ class Object(object):
             self._config = self.get_default_config(encoding=encoding)
         self._options = None
         if config is not None:
-            if isinstance(nested, basestring):
+            if isinstance(nested, six.string_types):
                     sec = nested
             if isinstance(config, ArgumentParser):
                 self._config, self._options = mgr.arg_parse(config,
@@ -752,6 +759,23 @@ class Object(object):
                 self.__class__, sec, nested, config, '\n  '.join(self._config.write()))
         return self._config
 
+    def save_config(self, outfile=None, nested=None):
+        if isinstance(outfile, six.string_types):
+            outfile, close = open(outfile, 'w'), True
+        else:
+            close = False
+        config = configobj.ConfigObj(self._config)
+        if nested:
+            if isinstance(nested, six.string_types):
+                sec = nested 
+            else:
+                sec = self.get_config_section_name()
+            # XXX config.dict() is required, otherwise section will not be correctly written ([] missing)
+            config = configobj.ConfigObj({sec:config.dict()})
+        r = config.write(outfile)
+        if close:
+            outfile.close()
+        return r
 
     def get_options(self):
         """Get :attr:`options`"""
@@ -878,6 +902,7 @@ class Object(object):
                     '{} is initialised with an invalid logger type')
         else:
             self._logger = Logger(**lkw)
+        self._logger.skipCaller(self.get_class_logger().skipCaller())
         # Load passed or default configuration
         self.load_config(kwargs.get('config', None),  cfgpatch=kwargs.get('cfgpatch', None))
 
@@ -886,7 +911,7 @@ class Object(object):
 # http://code.activestate.com/recipes/204197-solving-the-metaclass-conflict/
 ################################################################################
 
-import inspect, types, __builtin__
+import six.moves.builtins
 
 ###################### preliminary: two utility functions ######################
 
@@ -900,7 +925,7 @@ def skip_redundant(iterable, skipset=None):
 
 
 def remove_redundant(metaclasses):
-    skipset = set([types.ClassType])
+    skipset = set([type])
     for meta in metaclasses: # determines the metaclasses to be skipped
         skipset.update(inspect.getmro(meta)[1:])
     return tuple(skip_redundant(metaclasses, skipset))

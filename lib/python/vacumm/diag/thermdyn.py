@@ -109,7 +109,7 @@ def density(temp, sal, depth=None, lat=None, potential=False,
 
 
 def mixed_layer_depth(data, depth=None, lat=None, zaxis=None,
-    mode=None, deltatemp=.2, deltadens=.01, kzmax=0.0005,
+    mode=None, deltatemp=.2, deltadens=.03, kzmax=0.0005,
     potential=True, format_axes=False):
     """Get mixed layer depth from temperature and salinity
 

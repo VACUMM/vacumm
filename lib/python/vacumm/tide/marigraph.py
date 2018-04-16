@@ -205,7 +205,7 @@ class Marigraph(object):
             if mean is not None:
                 tmpmean = mean
             else:
-                tmpmean = data.mean()
+                tmpmean = float(data.mean())
             data[:] = MV.masked_outside(data,tmpmean-outside_std*std,   tmpmean+outside_std*std)
 
         # Attributes

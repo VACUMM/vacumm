@@ -14,7 +14,7 @@ from vacumm.misc.plot import add_map_lines
 # Read data
 ds = DS(data_sample(ncfile), 'mars', logger_level='critical')
 temp = ds.get_temp(squeeze=True)
-dens = ds.get_dens(squeeze=True)
+dens = ds.get_dens(squeeze=True, potential=True)
 depth = ds.get_depth(squeeze=True)
 
 # Compute MLD
@@ -34,14 +34,15 @@ xmld[:]*=-1
 # Plot temperature
 s = section2(xtemp, yaxis=xdepth, ymin=-800, fill='contourf', nmax=20,
     contour_linewidths=0.7, bgcolor='0.5', figsize=(7,4),
-    cmap='vacumm_rnb2_hymex',
+    cmap='thermal',
+#    cmap='vacumm_rnb2_hymex',
     title='%(long_name)s (dens) along temp transect', show=False)
 
 # Plot MLD
 curve2(xmld, 'w-', linewidth=2, show=False)
 
 # Add a small map to show the transect positions
-add_map_lines(temp[-1], xlons, xlats, map_zoom=0.7, color='k')
+add_map_lines(temp[-1], xlons, xlats, map_zoom=0.7, color='k', map_cmap='thermal')
 
 # Save
 figfile = code_file_name(ext='png')

@@ -1,5 +1,5 @@
 # All tests in the right order
-TESTS=test_cdat test_plot test_grid test_regrid test_stats test_diag test_arakawa test_mask test_io test_dataset test_ifroco test_color test_basemap test_atime test_filters
+TESTS=test_misc test_plot test_grid test_regrid test_stats test_diag test_arakawa test_mask test_io test_dataset test_ifroco test_color test_basemap test_atime test_filters
 
 # Verbose version
 TESTSV=$(patsubst %,%/v,$(TESTS))

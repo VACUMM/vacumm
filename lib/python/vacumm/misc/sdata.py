@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """High level spatial data tools"""
-# Copyright or © or Copr. Actimar/IFREMER (2016-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2016-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -33,17 +33,35 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
-import numpy as N
+from __future__ import absolute_import
+from __future__ import print_function
+import copy
+import os
+import six
+from six.moves import range
+from six.moves import zip
+import numbers
 
-from .misc import kwfilter
-from .poly import clip_shape
-from .io import read_shapefile
-from .basemap import get_proj
-from .grid import resol
-from .regridding import xy2xy, regrid2d, regrid_method
-from .color import get_cmap, land
+import numpy as N, pylab as P
+from matplotlib.collections import LineCollection, PolyCollection
+from matplotlib.markers import MarkerStyle
+from mpl_toolkits.basemap import Basemap
+import cdms2, MV2
+from _geoslib import Point
+
+from vacumm import vcwarn
+from .misc import kwfilter, broadcast
+from .units import m2deg, deg2m
+from .poly import sort_shapes, proj_shape, create_polygon, polygons
+from .basemap import create_map, get_proj
+from .masking import rsamp, convex_hull, polygon_mask, polygon_select
+from .axes import bounds1d
+from .grid import resol, create_grid, get_xy, get_grid, meshcells, set_grid
+from .io import read_shapefile, write_snx
+from .regridding import xy2xy, regrid2d, regrid_method, griddata
+from .color import get_cmap, land, simple_colors
 from .core_plot import Map
-from .plot import map2, _colorbar_
+from .plot import map2, _colorbar_, savefigs as Savefigs
 
 class Shapes(object):
     """A class to read shapefiles and return GEOS objects
@@ -98,7 +116,7 @@ class Shapes(object):
 
         # Load data
         sdata = read_shapefile(input, m=m, proj=proj, inverse=inverse, clip=clip,
-            shapetype=shapetypre, min_area=min_area, sort=sort, samp=samp,
+            shapetype=shapetype, min_area=min_area, sort=sort, samp=samp,
             clip_proj=clip_proj)
 
         # Set attributes
@@ -131,7 +149,7 @@ class Shapes(object):
                 for shape in self:
                     if zone.intersects(shape):
                         intersections = shape.intersection(zone)
-                        newshapes.extend(filter(lambda s: isinstance(s,  self._shaper), intersections))
+                        newshapes.extend([s for s in intersections if isinstance(s,  self._shaper)])
                 self._shapes = newshapes
                 if sort: self.sort(reverse=reverse)
             return self
@@ -212,7 +230,7 @@ class Shapes(object):
     def _get_proj_(self, proj=None):
         """Get a valid projection function to operate on shapes coordinates"""
         if proj is None: return
-        if proj is True or isinstance(proj, basestring):
+        if proj is True or isinstance(proj, six.string_types):
 
             if hasattr(self, '_proj') and callable(self._proj): # already projected
                 return
@@ -227,7 +245,7 @@ class Shapes(object):
             else:
                 gg = ([self.xmin,self.xmax],
                     N.clip([self.ymin,self.ymax], -89.99, 89.99))
-            kw = dict(proj=proj) if isinstance(proj, basestring) else {}
+            kw = dict(proj=proj) if isinstance(proj, six.string_types) else {}
             return get_proj(gg, **kw)
 
         if callable(self._proj): # already projected
@@ -444,12 +462,12 @@ class Shapes(object):
         if m is True:
             kwmap = kwfilter(kwargs,'m_')
             if not len(self):
-                warn('No shape found, thus nothing to plot')
+                vcwarn('No shape found, thus nothing to plot')
             else:
-                if not kwmap.has_key('lon'):
+                if 'lon' not in kwmap:
                     dx = (self.xmax-self.xmin)*.05
                     kwmap['lon'] = (self.xmin-dx, self.xmax+dx)
-                if not kwmap.has_key('lat'):
+                if 'lat' not in kwmap:
                     dy = (self.ymax-self.ymin)*.05
                     kwmap['lat'] = (self.ymin-dy, self.ymax+dy)
             kwmap.setdefault('res', None)
@@ -663,13 +681,13 @@ class XYZ(object):
                 y = data[:, 1]
                 z = data[:, 2]
         else:
-            raise TypeError, 'xyz must be either a .xyz file or a tuple of (x, y, z) values'
+            raise TypeError('xyz must be either a .xyz file or a tuple of (x, y, z) values')
         # Float64 are needed for polygons
         self._x = N.asarray(x, 'float64')
         self._y = N.asarray(y, 'float64')
         self._z = N.asarray(z)
         if trans is not False:
-            if operator.isNumberType(trans):
+            if isinstance(trans, numbers.Number):
                 self._z *= trans
             elif callable(trans):
                 self._z[:] = trans(self._z)
@@ -728,15 +746,15 @@ class XYZ(object):
             self._update_()
         return self
     def __isub__(self, other):
-        assert operator.isNumberType(other), 'Only scalars are allowed for such arithmetic operation'
+        assert isinstance(other, numbers.Number), 'Only scalars are allowed for such arithmetic operation'
         self._z -= other
         return self
     def __imul__(self, other):
-        assert operator.isNumberType(other), 'Only scalars are allowed for such arithmetic operation'
+        assert isinstance(other, numbers.Number), 'Only scalars are allowed for such arithmetic operation'
         self._z *= other
         return self
     def __idiv__(self, other):
-        assert operator.isNumberType(other), 'Only scalars are allowed for such arithmetic operation'
+        assert isinstance(other, numbers.Number), 'Only scalars are allowed for such arithmetic operation'
         self._z /= other
         return self
 
@@ -848,7 +866,7 @@ class XYZ(object):
                     # Magnet zone
                     if magnet != None:
                         radius, xmgt, ymgt = magnet
-                        dst = N.sqrt((xmgt-self._x[i])**2+(ymgt-self._y[j])**2)
+                        dst = N.sqrt((xmgt-self._x[i])**2+(ymgt-self._y[i])**2)
                         out = dst.min() > radius
                         del dst
 
@@ -871,7 +889,7 @@ class XYZ(object):
             self._xmean = x.mean()
             self._ymean = y.mean()
         else:
-            warn('No more points after exclusion')
+            vcwarn('No more points after exclusion')
             self._xmin = self._xmax = self._ymin = self._ymax = self._zmin = self._zmax = self._xmean = self._ymean = None
 
         # Resolution
@@ -906,7 +924,7 @@ class XYZ(object):
         return ~self._mask
 
     def _clip_mask_(self, zone, inverse):
-        zone = polygons([zone])[0]
+        zone = create_polygon(zone)
         good = self._mask.copy()
         good = good & \
               (self._x>=zone.boundary[:, 0].min()) & (self._x<=zone.boundary[:, 0].max()) & \
@@ -964,7 +982,8 @@ class XYZ(object):
     poly:
         if True, return zone as a Polygon instance"""
         zone = self.get_xmin(mask), self.get_ymin(mask), self.get_xmax(mask), self.get_ymax(mask)
-        if poly: return polygons([zone])[0]
+        if poly: 
+            return create_polygon(zone)
         return zone
 
 #   def get_map(self):
@@ -1122,13 +1141,13 @@ class XYZ(object):
             if isinstance(zone, XYZ):
                 zone = zone.shadows()
             if isinstance(zone, tuple): # inclusions
-                exc = polygons([zone[0]])[0]
+                exc = create_polygon(zone)
                 if len(zone) == 1 or len(zone[1])==0:
                     zone = exc
                 else:
-                    zone = exc, polygons(zone[1]), zone[2]
+                    zone = exc, create_polygon(zone[1]), zone[2]
             else:
-                zone = polygons([zone])[0]
+                zone = create_polygon(zone)
             zones[i] = zone
         self._exclusions.extend(zones)
         self._update_()
@@ -1233,7 +1252,7 @@ class XYZ(object):
         z = self.z[key]
         if isinstance(key, int):
             return x, y, z
-        return zip(x, y, z)
+        return list(zip(x, y, z))
 
     def interp(self, xyo, xyz=False, **kwargs):
         """Interpolate to (xo,yo) positions using :class:`nat.Natgrid`
@@ -1268,9 +1287,9 @@ class XYZ(object):
         elif hasattr(xyo, 'xyz'):
             xo, yo, tmp = xyo.xyz
         else:
-            raise TypeError, 'Wrong input type'
+            raise TypeError('Wrong input type')
         kwinterp = kwfilter(kwargs, 'interp_')
-        zo = vcgr.xy2xy(self.x, self.y, self.z, xo, yo, **kwinterp)
+        zo = xy2xy(self.x, self.y, self.z, xo, yo, **kwinterp)
         if not xyz: return zo
         kwargs.setdefault('units', self.units)
         kwargs.setdefault('long_name', self.long_name)
@@ -1287,7 +1306,7 @@ class XYZ(object):
         - ``"ind"``: indices of points
         - ``"poly"``: :class:`_geoslib.Polygon` instance
         """
-        return vacumm.misc.grid.masking.convex_hull((self.get_x(mask), self.get_y(mask)), poly=out=='poly')
+        return convex_hull((self.get_x(mask), self.get_y(mask)), poly=out=='poly')
 
     def shadows(self):
         """Get the polygons defining the 'shadow' of this dataset.
@@ -1435,12 +1454,12 @@ class XYZ(object):
 
     def _get_res_(self, xres, yres, degres):
         if degres: # need degrees
-            if xres<0: xres = -vcpu.m2deg(xres, self._ymean)
-            if yres<0: yres = -vcpu.m2deg(yres)
+            if xres<0: xres = -m2deg(xres, self._ymean)
+            if yres<0: yres = -m2deg(yres)
             return xres, yres
         else: # need meters
-            if xres>0: xres = vcpu.deg2m(xres, self._ymean)
-            if yres>0: yres = vcpu.deg2m(yres)
+            if xres>0: xres = deg2m(xres, self._ymean)
+            if yres>0: yres = deg2m(yres)
             return xres, yres
 
 
@@ -1510,7 +1529,7 @@ class XYZ(object):
         dy += dy*(yratio%1)/int(yratio)
 
         # Grid
-        grid = vacumm.misc.grid.create_grid(N.arange(xmin, xmax+dx/2., dx), N.arange(ymin, ymax+dy/2., dy))
+        grid = create_grid(N.arange(xmin, xmax+dx/2., dx), N.arange(ymin, ymax+dy/2., dy))
         grid.id = id
         return grid
     grid = property(get_grid, doc="Rectangular grid based on x/y positions and resolution")
@@ -1561,7 +1580,7 @@ class XYZ(object):
         kwmask = kwfilter(kwargs, 'mask_')
         kwargs.setdefault('method', 'carg')
         kwargs.setdefault('ext', True)
-        var = vcgr.griddata(self.x, self.y, self.z, grid, mask=None, cgrid=cgrid, **kwargs)
+        var = griddata(self.x, self.y, self.z, grid, mask=None, cgrid=cgrid, **kwargs)
         if not cgrid: var = var,
 
         # Mask from polygons
@@ -1584,17 +1603,17 @@ class XYZ(object):
                 shapes = GSHHS_BM(mask, clip=clip)
 
             # Create mask
-            mask = vacumm.misc.grid.masking.polygon_mask(grid, shapes.get_shapes(), **kwmask)
+            mask = polygon_mask(grid, shapes.get_shapes(), **kwmask)
 
         # Masking
         if mask is not None and mask is not False and mask is not MV2.nomask:
             for vv in var:
                 if hasattr(mask, 'ndim'): # array
-                    vv[:] = MV.masked_where(mask, vv, copy=0)
+                    vv[:] = MV2.masked_where(mask, vv, copy=0)
                 elif callable(mask): # function
                     vv[:] = mask(vv, **kwmask)
                 else: # value
-                    vv[:] = MV.masked_values(vv, mask, copy=0)
+                    vv[:] = MV2.masked_values(vv, mask, copy=0)
 
         # Attributes
         for vv in var:
@@ -1605,7 +1624,7 @@ class XYZ(object):
         if cgrid: return var
         return var[0]
 
-    def toxy(self, xo, yo, mask=None, outtype='tuple'):
+    def toxy(self, xo, yo, mask=None, outtype='tuple', **kwargs):
         """Interpolate on random points using :func:`~vacumm.misc.grid.regridding.xy2xy`
 
     xo,yo:
@@ -1622,9 +1641,10 @@ class XYZ(object):
                 - ``"xyz"``: as xyz block
                 - ``"XYZ"``: as an :class:`XYZ` (or subclass) instance
         """
+        kwmask = kwfilter(kwargs, 'mask_')
 
         # Interpolate
-        zo = vcgr.xy2xy(self.x, self.y, self.z, xo, yo, **kwargs)
+        zo = xy2xy(self.x, self.y, self.z, xo, yo, **kwargs)
 
 
         # Mask from polygons
@@ -1647,7 +1667,7 @@ class XYZ(object):
             xo, yo, zo = polygon_select(xo, yo, shapes.get_shapes(), zz=zo)
 
         # Out
-        if outype=='xyz':
+        if outtype=='xyz':
             return N.asarray([xo, yo, zo])
         if outtype=='XYZ':
             return self.__class__((xo, yo, zo))
@@ -1692,7 +1712,7 @@ class XYZ(object):
 
         # Params
         kwm = kwfilter(kwargs, 'map')
-        kwhull = kwfilter(kwargs, 'hull')
+#        kwhull = kwfilter(kwargs, 'hull')
         kwcb = kwfilter(kwargs, 'colorbar')
         kwplot = dict(linewidth=linewidth, cmap=get_cmap(cmap))
         kwplot.update(kwargs)
@@ -1729,9 +1749,9 @@ class XYZ(object):
         # Max values
         if mode == 'both':
             zmin = self._z.min()
-            if not kwplot.has_key('vmin'): kwplot['vmin'] = zmin
+            if 'vmin' not in kwplot: kwplot['vmin'] = zmin
             zmax = self._z.max()
-            if not kwplot.has_key('vmax'): kwplot['vmax'] = zmax
+            if 'vmax' not in kwplot: kwplot['vmax'] = zmax
 
         # Valid points
         if mode != 'masked' or mode == 'both':
@@ -1825,7 +1845,7 @@ class XYZ(object):
             x = cdms2.createVariable(self.x, id='x')
             y = cdms2.createVariable(self.y, id='y')
             z = cdms2.createVariable(self.z, id='z')
-            i = cdms2.createAxis(range(len(x)), id='i')
+            i = cdms2.createAxis(list(range(len(x))), id='i')
             f = cdms2.open(xyzfile, 'w')
             for var in x, y, z:
                 var.setAxis(0, i)
@@ -1920,7 +1940,7 @@ class XYZMerger(object):
         return self
     def __isub__(self, d):
         if d not in self._datasets:
-            warn('Dataset not in merger')
+            vcwarn('Dataset not in merger')
         self._datasets.remove(d)
         return self
 
@@ -2029,10 +2049,14 @@ class XYZMerger(object):
 
             # Colors and symbols
             if color is None:
-                color = simple_colors
+                try:
+                    from matplotlib._color_data import TABLEAU_COLORS
+                    color = TABLEAU_COLORS.keys()
+                except:
+                    color = simple_colors
             color = broadcast(color, len(self))
             if marker is None:
-                marker = Markers
+                marker = MarkerStyle.markers
             marker = broadcast(marker, len(self))
 
             # Copy all datasets
@@ -2040,7 +2064,7 @@ class XYZMerger(object):
 
             # Loop on datasets
             m = kwplot.pop('m', None)
-            for j, i in enumerate(xrange(len(datasets)-1, -1, -1)):
+            for j, i in enumerate(range(len(datasets)-1, -1, -1)):
 
                 # Plot current dataset
                 pp.append(datasets[i].plot(mode='both', color=color[i], marker=marker[i],
@@ -2049,7 +2073,7 @@ class XYZMerger(object):
 
                 # Mask next datasets with current one if not transparent
                 if i != 0 and not datasets[i].get_transp():
-                    for k in xrange(i-1, -1, -1):
+                    for k in range(i-1, -1, -1):
                         datasets[k].exclude(datasets[i])
 
             # Legend
@@ -2178,7 +2202,7 @@ class GriddedMerger(object):
         return self
     def remove(self, var):
         if isinstance(var, int):
-            del self._vars[i]
+            del self._vars[var]
         assert var in self._vars, 'Variable not in merger'
         self._vars.remove(var)
     def __isub__(self, var):
@@ -2197,13 +2221,13 @@ class GriddedMerger(object):
         if not len(self): return 'No variables in the merger'
         ret = ''
         for i, var in enumerate(self._vars):
-            print '\n%i) %s_n'%(i, var.id)
+            print('\n%i) %s_n'%(i, var.id))
             for att in 'long_name', 'units', '_gm_method':
                 if hasattr(var, att):
-                    res += '  %s = %s'%(att, getattr(var, att))
+                    ret += '  %s = %s'%(att, getattr(var, att))
             for att in '_gm_xres', '_gm_yres':
                 if hasattr(var.getGrid(), att):
-                    res += '  %s = %s'%(att, getattr(var.getGrid(), att))
+                    ret += '  %s = %s'%(att, getattr(var.getGrid(), att))
         ret += '\n--\nTotal: %i variable(s)'%len(self)
         return ret
 
@@ -2235,12 +2259,12 @@ class GriddedMerger(object):
         nyo, nxo = grid.shape
 
         # Inits
-        outmask2d = N.ones(grid.shape, '?')
+#        outmask2d = N.ones(grid.shape, '?')
         varo = MV2.zeros(self._firstdims+grid.shape)
         set_grid(varo, grid)
         total_cover = N.zeros(grid.shape)
         cover = N.zeros(grid.shape)
-        weight = N.zeros(grid.shape)
+#        weight = N.zeros(grid.shape)
         wnd = N.zeros(varo.shape)
         vo = MV2.zeros(varo.shape)
         kwregrid = kwfilter(kwargs, 'regrid')
@@ -2294,13 +2318,13 @@ class GriddedMerger(object):
             xpad = N.ones(nyo)
             ypad = N.ones(nxo)
             ipadmax = min(ix1, nxo-1)-max(ix0, 0)
-            for ipad in xrange(min(pad, ipadmax+1)):
+            for ipad in range(min(pad, ipadmax+1)):
                 xcov = (ipad+.5)*xpad/(ipadmax+.5)
                 cover[:, ipad] *= xcov
                 cover[:, nxo-ipad-1] *= xcov
                 del xcov
             jpadmax = min(iy1, nyo-1)-max(iy0, 0)
-            for jpad in xrange(min(pad, jpadmax+1)):
+            for jpad in range(min(pad, jpadmax+1)):
                 ycov = (jpad+.5)*ypad/(jpadmax+.5)
                 cover[jpad] *= ycov
                 cover[nyo-jpad-1] *= ycov

@@ -4,6 +4,8 @@
     - http://matplotlib.sourceforge.net/examples/pylab_examples/demo_agg_filter.html
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import matplotlib.pyplot as plt
 
 import numpy as np
@@ -157,7 +159,7 @@ class LightFilter(BaseFilter):
 
         rgb2 = self.light_source.shade_rgb(rgb, elevation,
                                            fraction=self.fraction)
-        print 'process'
+        print('process')
         tgt = np.empty_like(padded_src)
         tgt[:,:,:3] = rgb2
         tgt[:,:,3] = padded_src[:,:,3]

@@ -37,7 +37,8 @@
 # VER : 1.0 (04/2010)
 #
 #**********************************************************************************
-from valid import *
+#from valid import *
+from vacumm.validator.valid import *
 
 class ValidXYT(Valid):
     """ Validation spatiale XY """

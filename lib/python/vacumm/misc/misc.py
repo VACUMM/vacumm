@@ -8,7 +8,7 @@ Misc tools
     >>> from vacumm.misc import auto_scale
 
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -40,6 +40,9 @@ Misc tools
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
+from __future__ import print_function
+import sys
 import re
 import os
 import string
@@ -56,10 +59,14 @@ import numpy as N, MV2, cdms2
 from matplotlib import rcParams
 from MV2 import nomask
 from cdms2 import isVariable
-from genutil import grower
-from genutil import minmax
+from genutil import grower, minmax
+from configobj import ConfigObj, Section
 
 from vacumm import VACUMMError
+import six
+#from six.moves import filter
+from six.moves import map
+from six.moves import range
 
 
 MV = MV2
@@ -78,7 +85,8 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out',
     'kwfilterout', 'filter_selector', 'isempty', 'checkdir', 'splitidx',
     'CaseChecker', 'check_case', 'indices2slices', 'filter_level_selector',
-    'match_atts', 'match_string']
+    'match_atts', 'match_string', 'dicttree_get', 'dicttree_set',
+    'minbox']
 
 def broadcast(set, n, mode='last', **kwargs):
     """Broadcast ``set`` to the specified length ``n``
@@ -109,7 +117,7 @@ def broadcast(set, n, mode='last', **kwargs):
     set = makeiter(set)
     if n<=len(set): return set[:n]
     res = list(set)
-    if kwargs.has_key('fillvalue'):
+    if 'fillvalue' in kwargs:
         fillvalue = makeiter(kwargs['fillvalue'])
     elif mode=='cycle':
         fillvalue = set
@@ -118,8 +126,8 @@ def broadcast(set, n, mode='last', **kwargs):
     else:
         fillvalue = set[-1:]
     filliter = cycle(fillvalue)
-    for i in xrange(n-len(set)):
-        res.append(filliter.next())
+    for i in range(n-len(set)):
+        res.append(next(filliter))
     if isinstance(set, list): return res
     return res.__class__(res)
 
@@ -148,7 +156,7 @@ class Att(dict):
     """
 
     def __getattr__(self, att):
-        if self.has_key(att):
+        if att in self:
             return self[att]
         return dict.__getattribute__(self, att)
 
@@ -163,7 +171,7 @@ def Cfg2Att(cfg):
     if isinstance(cfg, Att): return cfg
     assert isinstance(cfg, (Section, dict)), 'You must pass a ConfigObj object'
     a = Att()
-    a.update(cfg.items())
+    a.update(list(cfg.items()))
     for sec in cfg.keys():
         if isinstance(cfg[sec], dict):
             a[sec] = Cfg2Att(cfg[sec])
@@ -289,7 +297,7 @@ def auto_scale(data = None, nmax = None,vmin = None, vmax = None,
         separators.insert(0,minv)
         separators.append(maxv)
 
-        for i in xrange(nint):
+        for i in range(nint):
             these_levels = basic_auto_scale(separators[i],
                                        separators[i+1],
                                        nmax_sep,**kwargs)
@@ -440,13 +448,13 @@ def cp_atts(var1, var2, overwrite=True, select=None, exclude=None, extra=None, *
 
     # Selection
     if atts and select is not None:
-        if isinstance(select, basestring):
+        if isinstance(select, six.string_types):
             select = [select]
         atts = dict(item for item in atts.items() if item[0] in select)
 
     # Exclusion
     if atts and exclude is not None:
-        if isinstance(exclude, basestring):
+        if isinstance(exclude, six.string_types):
             exclude = [exclude]
         atts = dict(item for item in atts.items() if item[0] not in exclude)
 
@@ -502,8 +510,9 @@ def match_string(ss, checks, ignorecase=True, transform=None):
     ss = ss.strip()
     if ignorecase:
         ss = ss.lower()
-    if not isinstance(checks, (list, tuple)):
+    if not is_iterable(checks):
         checks = [checks]
+    checks = [x for x in checks if x is not None]
 
     # Callables
     sss = []
@@ -512,13 +521,13 @@ def match_string(ss, checks, ignorecase=True, transform=None):
             check = transform(check)
         if callable(check) and check(ss):
             return True
-        if isinstance(check, basestring):
+        if isinstance(check, six.string_types):
             sss.append(check)
 
     # Strings
-    sss = map(str.strip, sss)
+    sss = list(map(str.strip, sss))
     if ignorecase:
-        sss = map(str.lower, sss)
+        sss = list(map(str.lower, sss))
     return ss in sss
 
 def match_atts(obj, checks, id=True, ignorecase=True, transform=None):
@@ -590,7 +599,7 @@ def cp_props(var1, var2, axes=None, grid=True, atts=None, exaxes=None, exatts=No
     # Axes
     if axes is not False:
         if axes is None:
-            axes = range(var1.ndim)
+            axes = list(range(var1.ndim))
         axes = _negpos_(axes, var1.ndim)
         if exaxes is not None:
             if isinstance(exaxes, int):
@@ -631,7 +640,7 @@ def is_iterable(obj, nostr=True, nogen=True):
     #try: len(obj)
     #except: return False
     if not (hasattr(obj, '__len__') and callable(obj.__len__)): return False
-    if nostr: return not isinstance(obj, basestring)
+    if nostr: return not isinstance(obj, six.string_types)
     return True
 
 iterable = is_iterable
@@ -688,7 +697,7 @@ phase_params = """decimal: optional
 """
 
 def deg2str(*args,**kwargs):
-    return phase(*args,**kwargs)
+    return phaselab(*args,**kwargs)
 
 def phaselab(vals, fmt='%.5g', label=None, decimal=True, tex=None, auto_minutes=False,
             no_seconds=False, no_symbol=False, no_zeros=False, auto=False, bfdeg=False, **kwargs):
@@ -698,9 +707,9 @@ def phaselab(vals, fmt='%.5g', label=None, decimal=True, tex=None, auto_minutes=
 
 
     """
-    if kwargs.has_key('nosec'): no_seconds = kwargs['nosec']
-    if kwargs.has_key('dec'): decimal = kwargs['dec']
-    if kwargs.has_key('nosym'): no_symbol = kwargs['nosym']
+    if 'nosec' in kwargs: no_seconds = kwargs['nosec']
+    if 'dec' in kwargs: decimal = kwargs['dec']
+    if 'nosym' in kwargs: no_symbol = kwargs['nosym']
 
     # Longitude/latitude/none
     if label=='lon':
@@ -826,9 +835,13 @@ def lonlab(longitudes, **kwargs):
         Value of longitudes
     %s
 
+<<<<<<< HEAD
     See also
     --------
     :func:`latlab` :func:`deplab`
+=======
+        :func:`phaselab` :func:`latlab` :func:`deplab`
+>>>>>>> master
     """
     kwargs['label'] = 'lon'
     return phaselab(longitudes, **kwargs)
@@ -844,9 +857,13 @@ def latlab(latitudes,**kwargs):
         Value of latitudes
     %s
 
+<<<<<<< HEAD
     See also
     --------
     :func:`lonlab` :func:`deplab`
+=======
+        :func:`phaselab` :func:`lonlab` :func:`deplab`
+>>>>>>> master
     """
     kwargs['label'] = 'lat'
     return phaselab(latitudes, **kwargs)
@@ -944,19 +961,19 @@ def dict_filter(kwargs,filters, defaults=None, copy=False, short=False, keep=Fal
 
     # Set initial items
     kwout = {}
-    for filter in filters:
-        if not filter.endswith('_') and kwargs.has_key(filter):
-            if isinstance(kwargs[filter],dict):
-                kwout.update(kwread(filter))
+    for filter_ in filters:
+        if not filter_.endswith('_') and filter_ in kwargs:
+            if isinstance(kwargs[filter_],dict):
+                kwout.update(kwread(filter_))
             else:
-                kwout[filter] = kwread(filter)
-        if not short and not filter.endswith('_'): filter += '_'
+                kwout[filter_] = kwread(filter_)
+        if not short and not filter_.endswith('_'): filter_ += '_'
         for att,val in kwargs.items():
-            if att.startswith(filter) and att != filter:
+            if att.startswith(filter_) and att != filter_:
                 if keep:
                     kwout[att] = kwread(att)
                 else:
-                    kwout[att[len(filter):]] = kwread(att)
+                    kwout[att[len(filter_):]] = kwread(att)
 
     # Add some items
     kwout.update(kwadd)
@@ -995,12 +1012,15 @@ def dict_filter_out(kwargs, filters, copy=False, mode='start'):
     if isinstance(filters,str):
         filters = [filters]
     if mode=="regexp":
-        filters = [re.compile(filter).match for filter in filters]
+        filters = [re.compile(filter_).match for filter_ in filters]
     for key in kwargs.keys():
-        for filter in filters:
-            if callable(filter) and filter(key): break
-            if mode in ['start', 'end'] and getattr(key, mode+'swith')(filter): break
-            if key==filter: break
+        for filter_ in filters:
+            if callable(filter_) and list(filter_(key)): 
+                break
+            if mode in ['start', 'end'] and getattr(key, mode+'swith')(filter_): 
+                break
+            if key==filter_: 
+                break
         else:
             continue
         kwargs.pop(key)
@@ -1017,15 +1037,15 @@ def dict_aliases(kwargs, aliases):
     >>> dict_aliases(kwargs, ['label', 'title'])
     {'min': 4, 'label': 'Label'}
     """
-    if isinstance(aliases, (str, unicode)):
+    if isinstance(aliases, (str, six.text_type)):
         aliases = [aliases]
     ref_alias = aliases[0]
     for i, alias in enumerate(aliases):
-        if kwargs.has_key(alias):
+        if alias in kwargs:
             if i:
                 kwargs[ref_alias] = kwargs.pop(alias)
-            for j in xrange(i+1, len(aliases)):
-                if kwargs.has_key(aliases[j]):
+            for j in range(i+1, len(aliases)):
+                if aliases[j] in kwargs:
                     del kwargs[aliases[j]]
             break
     return kwargs
@@ -1033,7 +1053,7 @@ def dict_aliases(kwargs, aliases):
 def dict_check_defaults(kwargs, **defs):
     """Check that a dictionary has some default values"""
     if defs is None: defs = {}
-    for item in defs.iteritems():
+    for item in six.iteritems(defs):
         kwargs.setdefault(*item)
     return kwargs
 
@@ -1052,7 +1072,7 @@ def tunique(mytuple):
     utuple = ()
     seen = {}
     for item in mytuple:
-        if item in seen.keys(): continue
+        if item in list(seen.keys()): continue
         seen[item] = True
         utuple += item,
     return utuple
@@ -1067,8 +1087,9 @@ def isempty(x):
 def dict_merge(*dd, **kwargs):
     """Merge dictionaries
 
-    First dictionaries have to priority their followers
+    First dictionaries have priority over next
 
+<<<<<<< HEAD
     Parameters
     ----------
     *dd:
@@ -1099,6 +1120,29 @@ def dict_merge(*dd, **kwargs):
     >>> d2 = dict(a=5, c=7)
     >>> print dict_merge(d1,d2)
     {'a': 3, 'c': 7, 'b': 5}
+=======
+    :Params:
+
+        - **dd**: Argument are interpreted as dictionary to merge.
+          Those who are not dictionaries are skipped.
+        - **mergesubdicts**, optional: Also merge dictionary items
+          (like in a tree) [default: True].
+        - **mergetuples**, optional: Also merge tuple items [default: False].
+        - **mergelists**, optional: Also merge list items [default: False].
+        - **unique**, optional: Uniquify lists and tuples [default: True].
+        - **skipnones**, optional: Skip Nones [default: True].
+        - **skipempty**, optional: Skip everything that is not converted to False
+          using bool [default: False].
+        - **cls**, optional: Class to use. Default to the first class found in arguments
+          that is not a :class:`dict`, else defaults to :class:`dict`.
+
+    :Example:
+
+        >>> d1 = dict(a=3, b=5)
+        >>> d2 = dict(a=5, c=7)
+        >>> print dict_merge(d1,d2)
+        {'a': 3, 'c': 7, 'b': 5}
+>>>>>>> master
 
     """
     # Options
@@ -1109,7 +1153,7 @@ def dict_merge(*dd, **kwargs):
     skipnones = kwargs.get('skipnones', True)
     overwriteempty = kwargs.get('overwriteempty', False)
     cls = kwargs.get('cls')
-    dd = filter(None, dd)
+    dd = [_f for _f in dd if _f]
 
     # Get the class
     if cls is None:
@@ -1119,17 +1163,27 @@ def dict_merge(*dd, **kwargs):
                 cls = d.__class__
                 break
 
+    # Init
+    if cls is Section:
+        for d in dd:
+            if isinstance(d, Section):
+                break
+        else:
+            raise VACUMMError("Can't initialise Section for merging")
+        outd = Section(d.parent, d.depth, d.main, name=d.name)
+    else:
+        outd = cls()
+
     # Loop
-    outd = cls()
     for d in dd:
         if not isinstance(d, dict): continue
 
         # Content
-        for key, val in d.iteritems():
+        for key, val in six.iteritems(d):
             if skipnones and val is None: continue
             if key not in outd or (overwriteempty and isempty(outd[key])): # Not set so we set
                 outd[key] = val
-            elif mergesubdicts and isinstance(outd[key], cls) and isinstance(val, cls): # Merge subdict
+            elif mergesubdicts and isinstance(outd[key], dict) and isinstance(val, dict): # Merge subdict
                 outd[key] = dict_merge(outd[key] , val, **kwargs)
             elif mergelists and isinstance(outd[key], list) and isinstance(val, list): # Merge lists
                 outd[key] += val
@@ -1140,16 +1194,15 @@ def dict_merge(*dd, **kwargs):
                 if unique:
                     outd[key] = tunique(outd[key])
 
-        # Comments for ConfigObj instances
-        from configobj import ConfigObj
-        if cls is ConfigObj:
-            if not outd.initial_comment and hasattr(d, 'initial_comment'):
-               outd.initial_comment = d.initial_comment
-            if not outd.final_comment and hasattr(d, 'final_comment'):
-               outd.final_comment = d.final_comment
-            if hasattr(d, 'inline_comments') and d.inline_comments:
-                outd.inline_comments = dict_merge(outd.inline_comments, d.inline_comments,
-                    overwriteempty=True)
+    # Comments for ConfigObj instances
+    if cls is ConfigObj:
+        if not outd.initial_comment and hasattr(d, 'initial_comment'):
+           outd.initial_comment = d.initial_comment
+        if not outd.final_comment and hasattr(d, 'final_comment'):
+           outd.final_comment = d.final_comment
+        if hasattr(d, 'inline_comments') and d.inline_comments:
+            outd.inline_comments = dict_merge(outd.inline_comments, d.inline_comments,
+                overwriteempty=True)
 
 
     return outd
@@ -1166,7 +1219,7 @@ def dict_copy_items(ddi, ddo, keys):
     keys:
         single or list of keys.
     """
-    if isinstance(keys, basestring):
+    if isinstance(keys, six.string_types):
         keys = [keys]
     single = isinstance(ddo, dict)
     if single: ddo = [ddo]
@@ -1250,14 +1303,14 @@ def write_ascii_time1d(var,file,fmt='%g'):
     try:
         time = var.getTime().asComponentTime()
     except:
-        raise Exception,'[write_ascii1d] No axis time attached to this variable'
+        raise Exception('[write_ascii1d] No axis time attached to this variable')
 
     line_fmt = '%s '+fmt
 
     f = open(file,'w')
     var.setMissing(999.)
     var = MV.filled(var)
-    for it in xrange(len(time)):
+    for it in range(len(time)):
         stime = T.num_to_ascii(time[it])
         f.write(line_fmt % (stime,var[it].flat[0])+'\n')
     f.close()
@@ -1335,7 +1388,7 @@ def xls_style(style=None,b=None,i=None,u=None,c=None,o=None,bd=None,fmt=None,va=
     else:
         bd = {}
     for bdname in bdnames:
-        if kwargs.has_key(bdname):
+        if bdname in kwargs:
             value = kwargs.pop(bdname)
             if value is not None:
                 bd[bdname] = int(value)
@@ -1465,7 +1518,7 @@ class FileTree(object):
 
     def _set_selectors_(self,update=True,**kwargs):
         for key,val in kwargs.items():
-            if key not in self.default_patterns.keys(): continue
+            if key not in list(self.default_patterns.keys()): continue
             if val is True: val = self.default_patterns[key]
             self._set_selector_(key,val,False)
         if update: self.scan()
@@ -1674,7 +1727,7 @@ MV2_concatenate.__doc__ = MV2.concatenate.__doc__
 
 def MV2_axisConcatenate(axes, id=None, attributes=None, copy=True):
     """Advanced version of MV2.axisConcatenate"""
-    from axes import isaxis
+    from .axes import isaxis
     # Single
     if isaxis(axes):
         if copy: axes = axes.clone()
@@ -1709,7 +1762,7 @@ def _box2xyminmax_(box):
         if box.getGrid() is None:
             raise TypeError('You must provide a variable with a valid grid')
         box = box.getGrid()
-    from grid.misc import isgrid, get_xy
+    from .grid.misc import isgrid, get_xy
     if isgrid(box):
         lon, lat = get_xy(box, num=True)
         xmin = lon.min()
@@ -1800,18 +1853,32 @@ def squarebox(box, scale=1):
     newbox = scalebox([lonmin, latmin, lonmax, latmax], scale, square=False)
     return _returnbox_(box, newbox)
 
-
+def minbox(box, dxmin=None, dymin=None):
+    """Ensure that a box as minimal extents"""
+    if dxmin is None and dymin is None:
+        return box
+    xmin, ymin, xmax, ymax = _box2xyminmax_(box)
+    if dxmin is not None and (xmax-xmin) < dxmin:
+        xmean = 0.5 * (xmin + xmax)
+        xmin = xmean - 0.5 * dxmin
+        xmax = xmean + 0.5 * dxmin
+    if dymin is not None and (ymax-ymin) < dymin:
+        ymean = 0.5 * (ymin + ymax)
+        ymin = ymean - 0.5 * dymin
+        ymax = ymean + 0.5 * dymin
+    newbox = xmin, ymin, xmax, ymax
+    return _returnbox_(box, newbox)
 
 def history(nbcommand=None):
     """Display the command history for the interactive python."""
     import readline
     if nbcommand != None:
-        index = range(readline.get_current_history_length()-nbcommand,readline.get_current_history_length())
+        index = list(range(readline.get_current_history_length()-nbcommand,readline.get_current_history_length()))
     else:
-        index = range(readline.get_current_history_length())
+        index = list(range(readline.get_current_history_length()))
 
     for i in index:
-        print readline.get_history_item(i)
+        print(readline.get_history_item(i))
 
 
 def create_selector(*args, **kwargs):
@@ -1921,7 +1988,7 @@ def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False, nos
         selector = create_selector(selector)
     elif copy: selector = selector()
     if selector is None or ids is None: selector
-    ids = filter(None, ids)
+    ids = [_f for _f in ids if _f]
     ipos = -1
     if isinstance(keeppos, int): keeppos = [keeppos]
     for comp in list(selector._Selector__components):
@@ -1954,7 +2021,7 @@ def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False, nos
 def filter_level_selector(selector, ids=None, **kwargs):
     """Filter a :class:`cdms2.selectors.Selector` instance to keep or remove z dimension
     """
-    if isinstance(ids, basestring): ids = [ids]
+    if isinstance(ids, six.string_types): ids = [ids]
     ids = ids or []
     ids.extend(cdms2.axis.level_aliases)
     ids.extend(['lev', 'level', 'depth', 'dep'])
@@ -2004,7 +2071,7 @@ def squeeze_variable(var, spec=True, asmv=False):
         return var
 
     # Squeeze selection
-    if isinstance(spec, basestring):
+    if isinstance(spec, six.string_types):
         for axtype in spec:
             order = var.getOrder()
             if not axtype in order: continue
@@ -2025,8 +2092,8 @@ def grow_variables(var1, var2):
     It is an improved version :func:`genutil.grower.grower`.
     """
     # Guess and merge orders
-    from axes import merge_orders, set_order
-    from grid.misc import set_grid
+    from .axes import merge_orders, set_order
+    from .grid.misc import set_grid
     order1, order2 = merge_orders(var1, var2)
     if '-' in order1+order2:
         raise VACUMMError("All axes must have a known type (xyzt) to grow variables")
@@ -2164,7 +2231,7 @@ def N_choose(a, choices, out=None, mode='raise'):
     if out is None:
         out = choices[0].copy()+100
     N_where = N.ma.where if N.ma.isMA(choices[0]) else N.where
-    for i in xrange(a.max()+1):
+    for i in range(a.max()+1):
         out[:] = N_where(a==i, choices[i], out)
     return out
 
@@ -2362,15 +2429,15 @@ def splitidx(arr, crit):
         if crit<1:
             return [0]
         if crit>nx:
-            return range(nx)
-        return range(0, nx, crit)
+            return list(range(nx))
+        return list(range(0, nx, crit))
 
     # Negative integer = fixed size
     if isinstance(crit, int) and int<0:
         crit = -crit
         if crit>nx:
             return [0]
-        return range(0, nx, crit)
+        return list(range(0, nx, crit))
 
     # Float = equal value
     if isinstance(crit, float):
@@ -2397,11 +2464,11 @@ class CaseChecker(object):
     def __init__(self, valid_cases, errmode='raise', ic=True, casename="parameter"):
 
         # Valid cases
-        if isinstance(valid_cases, basestring):
+        if isinstance(valid_cases, six.string_types):
             valid_cases = [valid_cases]
         else:
             valid_cases = list(valid_cases)
-        valid_cases = map(string.lower,valid_cases)
+        valid_cases = list(map(string.lower,valid_cases))
         self.ic = ic
         self.includes = []
         self.excludes = []
@@ -2441,7 +2508,7 @@ class CaseChecker(object):
         """Check that case is a valid string or None"""
         if case is None:
             return True
-        assert isinstance(case, basestring)
+        assert isinstance(case, six.string_types)
         if self.ic:
             case = case.lower()
 
@@ -2522,3 +2589,31 @@ def dicttree_get(dd, *keys, **kwargs):
     if keys[0] not in dd:
         return default
     return dicttree_get(dd[keys[0]], *keys[1:], **kwargs)
+
+
+def dicttree_set(dd, *keys, **items):
+    """Set values in a tree of dicts
+
+    Parameters
+    ----------
+    dd: dict
+        Dict of dicts to fill
+    keys: strings
+    items: dict
+        To set
+
+    Example
+    -------
+    >>> dd = {}
+    >>> dicttree_set(dd, 'sec', 'subsec', 'subsubsec', option=15)
+    >>> dicttree_set(dd, value1=30, value2=20)
+    """
+    assert isinstance(dd, dict), 'Input must a dict'
+    basedd = dd
+    cls = items.pop('__class__', dd.__class__)
+    for key in keys:
+        if key not in dd:
+            dd[key] = cls()
+        dd = dd[key]
+    dd.update(**items)
+    return basedd

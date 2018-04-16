@@ -42,6 +42,7 @@ __date__ = '2012-11-14'
 __doc__ = 'NEMO model data manipulation'
 
 
+from vacumm.data import register_dataset
 from vacumm.data.misc.dataset import OceanDataset
 
 
@@ -51,83 +52,86 @@ class Nemo(OceanDataset):
 
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
+    name = 'nemo'
+    domain='ocean'
+    description = "The NEMO ocean model"
 
 
     ncobj_specs = {
 
         # depth
-        'depth':{'search':{'names':['depth']}},
+        'depth':{'search':{'id':['depth']}},
 
         # salinity
-        'sal':{'search':{'names':['vosaline']}},
+        'sal':{'search':{'id':['vosaline']}},
 
         # sea surface height
-        'ssh':{'search':{'names':['sossheig']}},
+        'ssh':{'search':{'id':['sossheig']}},
 
         # temperature
-        'temp':{'search':{'names':['votemper']}},
+        'temp':{'search':{'id':['votemper']}},
 
         # salinity
-        'sal':{'search':{'names':['vosaline']}},
+        'sal':{'search':{'id':['vosaline']}},
 
         # zonal current (3d)
-        'u3d':{'search':{'names':['vozocrtx']}},
+        'u3d':{'search':{'id':['vozocrtx']}},
 
         # zonal current (barotrope)
-        #'ubt':{'search':{'names': ['vosaline']}},
+        #'ubt':{'search':{'id': ['vosaline']}},
 
         # meridional current (3d)
-        'v3d':{'search':{'names':['vomecrty']}},
+        'v3d':{'search':{'id':['vomecrty']}},
 
         # meridional current (2d)
-        #'vbt':{'search':{'names':['vomecrty']}}
+        #'vbt':{'search':{'id':['vomecrty']}}
 
         # -- Atmosphere --
             # net downward heat flux
-        'sohefldo':{'search':{'names':['sohefldo']}},
+        'sohefldo':{'search':{'id':['sohefldo']}},
 
         # cloud cover
-        'soccov':{'search':{'names':['soccov']}},
+        'soccov':{'search':{'id':['soccov']}},
 
         # surface heat flux: damping
-        'sohefldp':{'search':{'names':['sohefldp']}},
+        'sohefldp':{'search':{'id':['sohefldp']}},
 
             # specific humidity
-        'sohumspe':{'search':{'names':['sohumspe']}},
+        'sohumspe':{'search':{'id':['sohumspe']}},
 
         # latent downward heat flux
-        'lathf':{'search':{'names':['solhflup']}},
+        'lathf':{'search':{'id':['solhflup']}},
 
         # Longwave Downward Hear flux
-        'lwhf':{'search':{'names':['solwfldo']}},
+        'lwhf':{'search':{'id':['solwfldo']}},
 
             # Sensible Downward Heat Flux
-        'senhf':{'search':{'names':['sosbhfup']}},
+        'senhf':{'search':{'id':['sosbhfup']}},
 
             # Shortwave Radiation
-        'soshfldo':{'search':{'names':['soshfldo']}},
+        'soshfldo':{'search':{'id':['soshfldo']}},
 
         # Air temperature at 2m
-        'sotemair':{'search':{'names':['sotemair']}},
+        'sotemair':{'search':{'id':['sotemair']}},
 
         # Concentration/dilution water flux
-        'sowaflcd':{'search':{'names':['sowaflcd']}},
+        'sowaflcd':{'search':{'id':['sowaflcd']}},
 
         # Surface Water Flux: Damping
-        'sowafldp':{'search':{'names':['sowafldp']}},
+        'sowafldp':{'search':{'id':['sowafldp']}},
 
         # Net Upward Water Flux
-        'sowaflup':{'search':{'names':['sowaflup']}},
+        'sowaflup':{'search':{'id':['sowaflup']}},
 
         # Total Precip
-        'sowapre':{'search':{'names':['sowapre']}},
+        'sowapre':{'search':{'id':['sowapre']}},
 
         # Wind speed module at 10m
-        'sowindsp':{'search':{'names':['sowindsp']}},
+        'sowindsp':{'search':{'id':['sowindsp']}},
 
         # -- Rivers --
         # River runoffs
-        'sornf':{'search':{'names':['sornf']}},
+        'sornf':{'search':{'id':['sornf']}},
 
         # SST
         'sst':{
@@ -164,6 +168,12 @@ class Nemo(OceanDataset):
 
 #: Alias for :class:`Nemo`
 NEMO = Nemo
+
+# Register the class
+register_dataset(NEMO, warn=False)
+
+
+
 
 if __name__ == '__main__' :
     from vacumm.data import setup_dataset

@@ -34,6 +34,13 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from __future__ import absolute_import
+from __future__ import print_function
+import fnmatch, math, os, re, shutil
+import datetime
+import six
+from six.moves import range
+
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
 __doc__ = '''
@@ -48,9 +55,6 @@ This module provides various file related features:
 - size parsing and formatting
 - directory creation without error on existing directory
 '''
-
-
-import fnmatch, os, re, shutil
 
 
 def mkdirs(d):
@@ -68,7 +72,7 @@ def mkdirs(d):
         For a single directory: d if directory has been created, '' otherwise
         (already exists). For a list of directories, the list of directories which have been created.
     '''
-    if not isinstance(d, basestring):
+    if not isinstance(d, six.string_types):
         return [dd for dd in d if mkdirs(dd)]
     if d and not os.path.exists(d):
         os.makedirs(d)
@@ -93,7 +97,7 @@ def mkfdirs(f):
         (already exists). For a list of files, the list of f directories which have been created
         were created
     '''
-    if not isinstance(f, basestring):
+    if not isinstance(f, six.string_types):
         return [os.path.dirname(ff) for ff in f if mkfdirs(ff)]
     return mkdirs(os.path.dirname(f))
 
@@ -129,47 +133,55 @@ def rollover(filepath, count=1, suffix='.%d', keep=True, verbose=False):
         if os.path.exists(sfn):
             if os.path.exists(dfn):
                 os.remove(dfn)
-                if verbose: print 'rollover remove %s'%(dfn)
+                if verbose: print('rollover remove %s'%(dfn))
             os.rename(sfn, dfn)
-            if verbose: print 'rollover rename %s -> %s'%(sfn, dfn)
+            if verbose: print('rollover rename %s -> %s'%(sfn, dfn))
     dfn = fnt%(1)
     if os.path.exists(dfn):
         os.remove(dfn)
-        if verbose: print 'rollover remove %s'%(dfn)
+        if verbose: print('rollover remove %s'%(dfn))
     if keep:
         shutil.copy(filepath, dfn)
-        if verbose: print 'rollover copy %s -> %s'%(filepath, dfn)
+        if verbose: print('rollover copy %s -> %s'%(filepath, dfn))
     else:
         os.rename(filepath, dfn)
-        if verbose: print 'rollover rename %s -> %s'%(filepath, dfn)
+        if verbose: print('rollover rename %s -> %s'%(filepath, dfn))
     return True
 
 
-# 1 kilooctet (ko) = 10**3 octets = 1 000 octets
-sizeunits = {
-    'K':10**3, 'M':10**6, 'G':10**9,
-    'T':10**12, 'P':10**15, 'E':10**18,
-    'Z':10**21, 'Y':10**24,
-}
+_sort_size_dict = lambda sd: sorted(list(sd.items()), lambda a, b: cmp(a[1],b[1]))
 
-# 1 kibioctet (Kio) = 2**10 octets = 1 024 octets
-sisizeunits = {
+# Binary units : 1 kibioctet (Kio) = 2^10 = 1024
+_size_units = {
     'K':2**10, 'M':2**20, 'G':2**30,
     'T':2**40, 'P':2**50, 'E':2**60,
     'Z':2**70, 'Y':2**80,
 }
+_sorted_size_units = _sort_size_dict(_size_units)
 
-def strfsize(size, fmt=None, si=None):
-    """Format a size in bytes using the appropriate unit multiplicator (Ko, Mo, Kio, Mio)
+# SI units : 1 kilooctet (Ko) = 10^3 = 1000
+_si_size_units = {
+    'K':10**3, 'M':10**6, 'G':10**9,
+    'T':10**12, 'P':10**15, 'E':10**18,
+    'Z':10**21, 'Y':10**24,
+}
+_sorted_si_size_units = _sort_size_dict(_si_size_units)
+
+_strfsize_doc_sorted_units = ', '.join([s[0] for s in _sorted_size_units])
+
+def strfsize(size, fmt=None, unit=None, si=False, suffix=True):
+    '''
+    Format a size in bytes using the appropriate unit multiplicator (Ko, Mo, Kio, Mio)
 
     Parameters
     ----------
-
     size:
         the size in bytes
     fmt:
         the format to use, will receive size and unit arguments
                    (None will automatically use "%(size).3f %(unit)s" or "%(size)d %(unit)s")
+    unit:
+        use an auto determinated unit if None, or the given one among %s
     si:
         whether to use SI (International System) units (10^3, ...) or CEI units (2**10, ...)
 
@@ -177,36 +189,54 @@ def strfsize(size, fmt=None, si=None):
     ------
     string
     """
-    if fmt is None:
-        fmt = '%(size).3f %(unit)s' if float(size) % 1 else '%(size)d %(unit)s'
-    sortsizedict = lambda sd: reversed(sorted(sd.items(), lambda a, b: cmp(a[1],b[1])))
-    if si is None: units,usfx = sortsizedict(sisizeunits),'o' # naive usage
-    else: units,usfx = (sortsizedict(sisizeunits),'io') if si else (sortsizedict(sizeunits),'o')
+    '''
+
+    units_dict = _si_size_units if si else _size_units
+    units = reversed(_sorted_si_size_units if si else _sorted_size_units)
+    unit_suffix = 'o' if si else 'io'
     size = float(size)
-    for unit,thresh in units:
-        if size >= thresh:
-            return fmt%{'size':size/thresh, 'unit':unit+usfx}
-    return fmt%{'size':size, 'unit':usfx}
 
-_strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?'%('|'.join(sizeunits.keys())), re.IGNORECASE)
+    fmt_unit, fmt_ratio = '', 1
+    if unit is None:
+        for unit, threshold in units:
+            if size >= threshold:
+                fmt_unit, fmt_ratio = unit, threshold
+                break
+    else:
+        unit = unit.upper().strip()
+        if unit not in units_dict:
+            raise ValueError('Invalid unit, must be one of: %s'%(_strfsize_doc_sorted_units))
+        fmt_unit, fmt_ratio = unit, units_dict[unit]
 
-def strpsize(size, si=True):
+    fmt_size = size / fmt_ratio
+    if fmt is None:
+        fmt = '%(size).3f %(unit)s' if float(fmt_size) % 1 else '%(size)d %(unit)s'
+    if suffix:
+        fmt_unit += unit_suffix
+    return fmt%{'size':fmt_size, 'unit':fmt_unit}
+
+strfsize.__doc__ %= _strfsize_doc_sorted_units
+
+_strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?'%('|'.join(list(_size_units.keys()))), re.IGNORECASE)
+
+def strpsize(size, si=False):
     """Parse a size in Ko, Mo, Kio, Mio, ...
 
     Parameters
     ----------
-
     size:
-        the size string (eg. "1Ko", "2 Mo", " 10 Go"
+        the size string (eg. "1Ko", "2 Mo", " 10 Go")
     si:
-        whether to use International System units (10^3, ...) or CEI units (2**10, ...)
+        when unit does not ends with 'io' force interpretation as
+        International System units (10^3, ...) instead of binary units (2^10, ...)
+        
 
     Return
     ------
     float
         the float number of bytes
     """
-    if not isinstance(size, basestring): size = '%s'%(size)
+    if not isinstance(size, six.string_types): size = '%s'%(size)
     m = _strpsizerex.match(size)
     if m:
         d = m.groupdict()
@@ -214,10 +244,15 @@ def strpsize(size, si=True):
         u = (d.get('unit') or '').upper()
         s = (d.get('usfx') or '').lower()
         if u:
-            if s == 'io': return n * sisizeunits[u]
-            elif si: return n * sisizeunits[u]
-            else: return n * sizeunits[u]
-        else: return n
+            if s == 'io':
+                r = n * _size_units[u]
+            elif si:
+                r = n * _si_size_units[u]
+            else:
+                r = n * _si_size_units[u]
+        else:
+            r = n
+        return int(math.ceil(r))
     raise ValueError('Cannot parse size: %s'%(size))
 
 
@@ -247,7 +282,7 @@ def walk(top, topdown=True, onerror=None, followlinks=False, depth=None, onfile=
     '''
     if depth is not None and depth >= 0 and _depth > depth: return
     try: names = os.listdir(top)
-    except os.error, err:
+    except os.error as err:
         if onerror is not None: onerror(err)
         return
     dirs, nondirs = [], []
@@ -467,8 +502,8 @@ def tfind(regex, path=None, fmt='%Y-%m-%dT%H:%M:%SZ', min=None, max=None, group=
 
     '''
     # If min or max are strings, parse them to datetimes
-    if isinstance(min, basestring): min = datetime.datetime.strptime(min, fmt)
-    if isinstance(max, basestring): max = datetime.datetime.strptime(max, fmt)
+    if isinstance(min, six.string_types): min = datetime.datetime.strptime(min, fmt)
+    if isinstance(max, six.string_types): max = datetime.datetime.strptime(max, fmt)
     # Find paths, getting matched groups
     items = efind(regex, path, getmatch=True, **kwargs)
     # If group is not specified (or 0, meaning all groups), add concatenation of all groups
@@ -476,18 +511,18 @@ def tfind(regex, path=None, fmt='%Y-%m-%dT%H:%M:%SZ', min=None, max=None, group=
         items = list((i[0], i[1], ''.join(i[1].groups())) for i in items)
     # Else add concatenation of named/indexed groups
     else:
-        if isinstance(group, (basestring, int)): group = (group,)
-        m2s = lambda m: ''.join(isinstance(g, basestring) and m.groupdict()[g] or m.group(g) for g in group)
+        if isinstance(group, (six.string_types, int)): group = (group,)
+        m2s = lambda m: ''.join(isinstance(g, six.string_types) and m.groupdict()[g] or m.group(g) for g in group)
         items = list((i[0], i[1], m2s(i[1])) for i in items)
     # Convert matched groups to parsed datetime
     items = list((i[0], i[1], datetime.datetime.strptime(i[2], fmt)) for i in items)
     # Filter by min/max datetimes
     if min:
-        if xmin: items = filter(lambda i: i[2] > min, items)
-        else: items = filter(lambda i: i[2] >= min, items)
+        if xmin: items = [i for i in items if i[2] > min]
+        else: items = [i for i in items if i[2] >= min]
     if max:
-        if xmax: items = filter(lambda i: i[2] < max, items)
-        else: items = filter(lambda i: i[2] <= max, items)
+        if xmax: items = [i for i in items if i[2] < max]
+        else: items = [i for i in items if i[2] <= max]
     # Sort by dates
     items = sorted(items, lambda a,b: cmp(a[2], b[2]))
     # Remove non-requested fields

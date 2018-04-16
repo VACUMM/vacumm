@@ -1,0 +1,110 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'sessions.ui'
+#
+# Created: Mon Dec  4 17:28:37 2017
+#      by: PyQt4 UI code generator 4.6.2
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt4 import QtCore, QtGui
+
+class Ui_SessionsDialog(object):
+    def setupUi(self, SessionsDialog):
+        SessionsDialog.setObjectName("SessionsDialog")
+        SessionsDialog.resize(608, 203)
+        self.verticalLayout = QtGui.QVBoxLayout(SessionsDialog)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.gridLayout = QtGui.QGridLayout()
+        self.gridLayout.setObjectName("gridLayout")
+        self.label_name = QtGui.QLabel(SessionsDialog)
+        self.label_name.setObjectName("label_name")
+        self.gridLayout.addWidget(self.label_name, 0, 0, 1, 1)
+        self.label_specification = QtGui.QLabel(SessionsDialog)
+        self.label_specification.setObjectName("label_specification")
+        self.gridLayout.addWidget(self.label_specification, 1, 0, 1, 1)
+        self.line_specification = QtGui.QLineEdit(SessionsDialog)
+        self.line_specification.setObjectName("line_specification")
+        self.gridLayout.addWidget(self.line_specification, 1, 1, 1, 1)
+        self.line_configuration = QtGui.QLineEdit(SessionsDialog)
+        self.line_configuration.setObjectName("line_configuration")
+        self.gridLayout.addWidget(self.line_configuration, 2, 1, 1, 1)
+        self.label_configuration = QtGui.QLabel(SessionsDialog)
+        self.label_configuration.setObjectName("label_configuration")
+        self.gridLayout.addWidget(self.label_configuration, 2, 0, 1, 1)
+        self.combo_name = QtGui.QComboBox(SessionsDialog)
+        self.combo_name.setEditable(True)
+        self.combo_name.setObjectName("combo_name")
+        self.gridLayout.addWidget(self.combo_name, 0, 1, 1, 1)
+        self.button_specification = QtGui.QPushButton(SessionsDialog)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.button_specification.setIcon(icon)
+        self.button_specification.setObjectName("button_specification")
+        self.gridLayout.addWidget(self.button_specification, 1, 2, 1, 1)
+        self.button_configuration = QtGui.QPushButton(SessionsDialog)
+        self.button_configuration.setIcon(icon)
+        self.button_configuration.setObjectName("button_configuration")
+        self.gridLayout.addWidget(self.button_configuration, 2, 2, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout)
+        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.button_new = QtGui.QPushButton(SessionsDialog)
+        self.button_new.setIcon(icon)
+        self.button_new.setObjectName("button_new")
+        self.horizontalLayout_2.addWidget(self.button_new)
+        self.button_save = QtGui.QPushButton(SessionsDialog)
+        self.button_save.setIcon(icon)
+        self.button_save.setObjectName("button_save")
+        self.horizontalLayout_2.addWidget(self.button_save)
+        self.button_open = QtGui.QPushButton(SessionsDialog)
+        self.button_open.setIcon(icon)
+        self.button_open.setObjectName("button_open")
+        self.horizontalLayout_2.addWidget(self.button_open)
+        self.button_delete = QtGui.QPushButton(SessionsDialog)
+        self.button_delete.setIcon(icon)
+        self.button_delete.setObjectName("button_delete")
+        self.horizontalLayout_2.addWidget(self.button_delete)
+        self.button_close = QtGui.QPushButton(SessionsDialog)
+        self.button_close.setIcon(icon)
+        self.button_close.setObjectName("button_close")
+        self.horizontalLayout_2.addWidget(self.button_close)
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
+
+        self.retranslateUi(SessionsDialog)
+        QtCore.QObject.connect(self.button_specification, QtCore.SIGNAL("clicked()"), SessionsDialog.on_button_specification)
+        QtCore.QObject.connect(self.button_configuration, QtCore.SIGNAL("clicked()"), SessionsDialog.on_button_configuration)
+        QtCore.QObject.connect(self.combo_name, QtCore.SIGNAL("activated(QString)"), SessionsDialog.on_combo_name)
+        QtCore.QObject.connect(self.button_new, QtCore.SIGNAL("clicked()"), SessionsDialog.on_button_new)
+        QtCore.QObject.connect(self.button_save, QtCore.SIGNAL("clicked()"), SessionsDialog.on_button_save)
+        QtCore.QObject.connect(self.button_open, QtCore.SIGNAL("clicked()"), SessionsDialog.on_button_open)
+        QtCore.QObject.connect(self.button_delete, QtCore.SIGNAL("clicked()"), SessionsDialog.on_button_delete)
+        QtCore.QObject.connect(self.button_close, QtCore.SIGNAL("clicked()"), SessionsDialog.on_button_close)
+        QtCore.QMetaObject.connectSlotsByName(SessionsDialog)
+
+    def retranslateUi(self, SessionsDialog):
+        SessionsDialog.setWindowTitle(QtGui.QApplication.translate("SessionsDialog", "Sessions", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_name.setText(QtGui.QApplication.translate("SessionsDialog", "Session name", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_specification.setText(QtGui.QApplication.translate("SessionsDialog", "Specification file", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_configuration.setText(QtGui.QApplication.translate("SessionsDialog", "Configuration file", None, QtGui.QApplication.UnicodeUTF8))
+        self.button_specification.setText(QtGui.QApplication.translate("SessionsDialog", "Browse", None, QtGui.QApplication.UnicodeUTF8))
+        self.button_configuration.setText(QtGui.QApplication.translate("SessionsDialog", "Browse", None, QtGui.QApplication.UnicodeUTF8))
+        self.button_new.setText(QtGui.QApplication.translate("SessionsDialog", "New", None, QtGui.QApplication.UnicodeUTF8))
+        self.button_new.setShortcut(QtGui.QApplication.translate("SessionsDialog", "Ctrl+N", None, QtGui.QApplication.UnicodeUTF8))
+        self.button_save.setText(QtGui.QApplication.translate("SessionsDialog", "Save", None, QtGui.QApplication.UnicodeUTF8))
+        self.button_save.setShortcut(QtGui.QApplication.translate("SessionsDialog", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
+        self.button_open.setText(QtGui.QApplication.translate("SessionsDialog", "Open", None, QtGui.QApplication.UnicodeUTF8))
+        self.button_open.setShortcut(QtGui.QApplication.translate("SessionsDialog", "Ctrl+O", None, QtGui.QApplication.UnicodeUTF8))
+        self.button_delete.setText(QtGui.QApplication.translate("SessionsDialog", "Delete", None, QtGui.QApplication.UnicodeUTF8))
+        self.button_close.setText(QtGui.QApplication.translate("SessionsDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    SessionsDialog = QtGui.QDialog()
+    ui = Ui_SessionsDialog()
+    ui.setupUi(SessionsDialog)
+    SessionsDialog.show()
+    sys.exit(app.exec_())
+

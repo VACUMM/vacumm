@@ -4,7 +4,7 @@ Generic plots using Matplotlib and taking advantage of CDAT
 
 Tutorial: ":ref:`user.tut.misc.plot`".
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -36,13 +36,18 @@ Tutorial: ":ref:`user.tut.misc.plot`".
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-import cPickle
-import re, os, glob
-from copy import copy
+from __future__ import absolute_import
+from __future__ import print_function
+import six.moves.cPickle
+import re, os
 from itertools import cycle
-from operator import isNumberType
 from string import Template
 from tempfile import mktemp
+import six
+from six.moves import map
+from six.moves import range
+from six.moves import zip
+
 
 import cdtime
 import numpy as N,MV2, cdms2
@@ -52,12 +57,12 @@ from genutil import minmax, statistics
 from matplotlib.axes import Subplot
 from matplotlib.cm import ScalarMappable
 from matplotlib.collections import LineCollection
-from matplotlib.colors import ColorConverter,is_color_like, Normalize
+from matplotlib.colors import ColorConverter,is_color_like
 from matplotlib.dates import (DateFormatter, MonthLocator, WeekdayLocator, YearLocator,
-    DayLocator, HourLocator, MinuteLocator, SecondLocator, MONDAY, WEEKLY, YEARLY, MONTHLY,
-    AutoDateLocator, AutoDateFormatter, MO, DAILY, HOURLY, num2date)
+    DayLocator, HourLocator, MinuteLocator, SecondLocator, 
+    AutoDateLocator, MO)
 from matplotlib.patches import Wedge,Shadow,Circle, Arc
-from matplotlib.ticker import FormatStrFormatter, Formatter, FixedLocator
+from matplotlib.ticker import FormatStrFormatter
 import matplotlib.image as mpimg
 from mpl_toolkits.basemap import Basemap
 
@@ -65,18 +70,18 @@ from vacumm import VACUMMError
 from .units import m2deg
 from .docstrings import docfill
 from .misc import (kwfilter, broadcast, auto_scale, is_iterable, geo_scale, deplab,
-    zoombox, dict_check_defaults, squarebox)
+    zoombox, dict_check_defaults, latlab, lonlab, dict_aliases)
 from .color import get_cmap, Scalar2RGB, simple_colors
-from .axes import istime, check_axes
-from .atime import mpl, time, axis_add, SpecialDateFormatter
-from .grid import get_grid, get_axis, meshbounds, meshgrid, var2d, get_xy
+from .axes import istime, check_axes, isaxis, axis_type
+from .atime import mpl, time, axis_add
+from .grid import meshbounds, meshgrid, var2d, get_xy
 from .core_plot import (Curve, Bar, Stick, Hov, Map, Section, Plot2D,
     add_glow, add_shadow, add_agg_filter, hlitvs, AutoDateFormatter2,
-    AutoDateLocator2, AutoDateMinorLocator, AutoDualDateFormatter, add_compass,
+    AutoDateLocator2, AutoDualDateFormatter, add_compass,
     add_right_label, add_left_label, add_top_label, add_bottom_label,
-    add_param_label, get_quiverkey_value, add_lightshading,
+    add_param_label, get_quiverkey_value, add_lightshading, DualDateFormatter, 
+    
     )
-
 
 __all__ = [ 'traj', 'ellipsis',
     'add_colorbar', 'scolorbar','rotate_tick_labels', 'rotate_xlabels', 'rotate_ylabels',
@@ -163,7 +168,7 @@ def traj(lons,lats,res=None,dots=True,color=True,m=None,zoom=.9,cmap=None,colorb
         kwmap = kwfilter(kwargs,'map',defaults=dict(lon=lon_range,lat=lat_range))
         kwmap['show'] = False
         kwmap['res'] = kwargs.pop('resolution',res)
-        m = map(**kwmap)
+        m = list(map(**kwmap))
 
     # Real coordinates
     xx,yy = m(lons,lats)
@@ -187,7 +192,7 @@ def traj(lons,lats,res=None,dots=True,color=True,m=None,zoom=.9,cmap=None,colorb
         dtt = max(tt)-ttmin
         color = tuple([tuple(rgba) for rgba in mp.cmap((.5*(tt[:-1]+tt[1:])-ttmin)/dtt)])
         args = []
-        for ip in xrange(len(xx)-1):
+        for ip in range(len(xx)-1):
             args.extend([xx[ip:ip+2],yy[ip:ip+2]])
         lines = []
         for ip,line in enumerate(P.gca()._get_lines(*args,**kwargs)):
@@ -582,7 +587,7 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
         colors = N.resize(colors, (np,))
         if not scatter:
             colors = Scalar2RGB(colors, cmap)(colors)
-    for i in xrange(np):
+    for i in range(np):
         if colors[i] is None:
             colors[i] = 'k'
     sizes = N.asarray(broadcast(kwargs.pop('size', 8), np))
@@ -635,7 +640,7 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
                 markersize=sizes[i], alpha=alphas[i],**kwpt))
 
             # Labels
-            if isinstance(labels[i], basestring):
+            if isinstance(labels[i], six.string_types):
                 transoffset = offset_copy(ax.transData, fig=fig,
                     x = 0.0, y=-1.2*sizes[i], units='points')
                 P.text(x, y, labels[i], va='center', ha='center', transform=transoffset,
@@ -884,7 +889,7 @@ def rankhist(obs, ens, title='Rank histogram', bins=None, **kwargs):
         Ensemble or nens
 
     """
-    from stats import ensrank
+    from .stats import ensrank
     if isinstance(ens, int):
         rank, nens = obs, ens
     else:
@@ -960,9 +965,9 @@ def ellipsis(xpos,ypos,eAXIS,eaxis=None,rotation=0,
     if m: gobj = m
     if gobj is None:
         gobj = P.gca()
-    elif isinstance(gobj, vccp.Map):
+    elif isinstance(gobj, Map):
         gobj = m.map
-    ismap = isinstance(gobj,Basemap)
+    ismap = isinstance(gobj, Basemap)
     if ismap:
         iscyl = gobj.projection == 'cyl'
         eaxis *= 1.e3 # km
@@ -1016,9 +1021,9 @@ def ellipsis(xpos,ypos,eAXIS,eaxis=None,rotation=0,
             linewidth = lw = kwargs.pop('linewidth',P.rcParams['lines.linewidth'])
             color = cl = ColorConverter().to_rgb(kwargs.pop('color',P.rcParams['lines.color']))
             if sign > 0:
-                pps = range(0,np-1)
+                pps = list(range(0,np-1))
             else:
-                pps = range(np-2,-1,-1)
+                pps = list(range(np-2,-1,-1))
             factor = N.absolute(sign+1.)*3
             for ip in pps:
                 if sign_usewidth:
@@ -1050,9 +1055,9 @@ def ellipsis(xpos,ypos,eAXIS,eaxis=None,rotation=0,
     if myplot is None:
         myplot = pcmd(xx,yy,**kwargs)
         if glow:
-            vacumm.misc.core_plot.add_glow(myplot)
+            add_glow(myplot)
         if shadow:
-            vacumm.misc.core_plot.add_shadow(myplot)
+            add_shadow(myplot)
 
     # Plot key
     if key:
@@ -1091,9 +1096,9 @@ def ellipsis(xpos,ypos,eAXIS,eaxis=None,rotation=0,
         kwkshadow = kwfilter(kwkey, 'shadow')
         tt = P.text(key_x,key_y,key_text,**kwkey)
         if kglow:
-            vacumm.misc.core_plot.add_glow(tt, **kwkglow)
+            add_glow(tt, **kwkglow)
         if kshadow:
-            vacumm.misc.core_plot.add_shadow(tt, **kwkshadow)
+            add_shadow(tt, **kwkshadow)
 
 
 
@@ -1136,7 +1141,7 @@ def add_colorbar(var=None,sm=None,horizontal=False,position=None,cmap=None,drawe
         sm.set_array(N.array(levels))
 
     if sm is None:
-        raise 'Missing explicit arguments sm'
+        raise VACUMMError('Missing explicit arguments sm')
     for key,val in kwargs.items():
         if key not in ('close','show','savefig','units'):
             kwargs['colorbar_'+key] = kwargs.pop(key)
@@ -1155,10 +1160,10 @@ def scolorbar(*args, **kwargs):
 def _plot_grid_(ax, xx, yy, samp, alpha, zorder, labels, **kwargs):
         lines = ()
         ny, nx = xx.shape
-        for iy in xrange(0, ny, samp):
-            lines += zip(xx[iy, ::samp], yy[iy, ::samp]),
-        for ix in xrange(0, nx, samp):
-            lines += zip(xx[::samp, ix], yy[::samp, ix]),
+        for iy in range(0, ny, samp):
+            lines += list(zip(xx[iy, ::samp], yy[iy, ::samp])),
+        for ix in range(0, nx, samp):
+            lines += list(zip(xx[::samp, ix], yy[::samp, ix])),
         oo = LineCollection(lines, **kwargs)
         oo.set_alpha(alpha)
         oo.set_zorder(zorder)
@@ -1312,10 +1317,10 @@ def rotate_tick_labels(angle,vertical=0,*args,**kwargs):
     **kwargs
         Other arguments are passed to :func:`~matplotlib.pyplot.setp`
     """
-    ax = kwargs.get('ax',P.gca())
+    ax = kwargs.get('ax', P.gca())
     func = eval('ax.get_%sticklabels()' % 'xy'[vertical])
     if angle is False: angle = 0
-    P.setp(ax.get_xticklabels(),"rotation",angle,*args)
+    P.setp(func(), "rotation", angle, *args)
 
 def xrotate(angle,*args,**kwargs):
     """Rotate xticklabels
@@ -1429,182 +1434,6 @@ def ydate(rotation=0.,**kwargs):
     """
     _xydate_('y',rotation=rotation,**kwargs)
 
-def _xydateold_(xy, tz=None, auto=True, fmt=None, rotation=None,
-    locator=None, minor_locator=None, nominor=False,
-    nmax_ticks=None, intv=None, trange=None, **kwargs):
-    """
-    tz:
-        Time zone.
-    auto:
-        Auto Scaling [default: True]
-    rotation:
-        Rotation angle of tick labels. If None, automatic [default: None]
-    fmt:
-        Date format.
-    locator:
-        Major locator. Can be within ['year','month','Weekday','day','hour','minute','second']
-        or be like :class:`matplotlib.dates.MonthLocator`.
-    minor_locator:
-        Minor locator.
-    nominor:
-        Do not try to add minor ticks [default: False]
-    nmax_ticks:
-        Maximal number of ticks
-    locator_<keyword>:
-        <keyword> is passed to locator if locator is a string.
-        If locator = 'month', locator = MonthLocator(locator_<keyword>=<value>).
-    minor_locator_<keyword>:
-        Same with minor_locator.
-    """
-    ax = kwargs.get('ax',P.gca())
-##  print 'xlimssss',P.gca(),ax
-##  if ax.get_xlim() == (0.,1.): raise 'a'
-    # Base
-    exec "ax.%saxis_date(tz)" % xy
-
-    # Scale axes
-    if auto:
-        ax.autoscale_view(**{'scale'+xy:True,'scale'+{'x':'y','y':'x'}[xy]:False})
-
-    # Rotates labels
-    if rotation is not None:
-        eval("rotate_%slabels" % xy)(rotation,**kwargs)
-
-    # String case for locators
-    auto_major = locator is None
-    major_locator = locator
-    locs = ['year','month','weekday','day','hour','minute','second']
-    locs.extend([(loc+'s') for loc in locs])
-    kwmjl = kwfilter(kwargs,'locator')
-    kwmnl = kwfilter(kwargs,'minor_locator')
-    if isinstance(major_locator,str):
-        if major_locator.lower() in locs:
-            major_locator = eval(major_locator.lower().title()+'Locator(**kwmjl)')
-        else:
-            major_locator = None
-    if isinstance(minor_locator,str):
-        if minor_locator.lower() in locs:
-            minor_locator = eval(minor_locator.lower().title()+'Locator(**kwmnl)')
-        else:
-            minor_locator = None
-
-    # Tick locations
-    guess_major = major_locator is None
-    if nmax_ticks is None: nmax_ticks = 24
-    if major_locator is None:
-        major_locator = get_major_locator(xy,**kwargs)
-        nticks = len(eval("ax.get_%sticks()" % xy))
-    if nmax_ticks > 0 and not isinstance(major_locator,AutoDateLocator):
-        # Major ticks
-        locname = str(major_locator).split()[0].split('.')[2]
-        nticks = nmax_ticks+1
-        i = 1
-#       mlr = major_locator.rule._rrule
-        while nticks > nmax_ticks:
-            try:
-                major_locator = set_major_locator(xy,eval("%s(interval=%i,**kwmjl)"%(locname,i)),**kwargs)
-            except:
-                major_locator = set_major_locator(xy,eval("%s(%i,**kwmjl)"%(locname,i)),**kwargs)
-            nticks = len(eval("ax.get_%sticks()" % xy))
-            i += 1
-    nmax_ticks = abs(nmax_ticks)
-    if isinstance(major_locator,AutoDateLocator):
-        if N.isfinite(major_locator.axis.get_data_interval()[0]):
-            lims = major_locator.datalim_to_dt()
-        else:
-            lims = major_locator.viewlim_to_dt()
-        major_locator = major_locator.get_locator(*lims)
-
-    # Fix phase of some locators
-    try:
-        sampling = major_locator.rule._rrule._interval # sampling interval
-    except:
-        sampling = major_locator.base._base
-    try:
-        freq = major_locator.rule._rrule._freq
-    except:
-        freq = YEARLY
-    if freq == DAILY and sampling == 7:
-        # Fix daily/7 to weekly/monday locator (start on monday)
-        major_locator = set_major_locator(xy,WeekdayLocator(MO),**kwargs)
-    elif freq == HOURLY and sampling > 1:
-        # Fix hourly locator to start at mindnight
-        good = [2, 3, 4, 6, 8, 12]
-        sampling = good[min(N.searchsorted(good, sampling), len(good)-1)]
-        byhour = range(0, 24, sampling)
-        major_locator = set_major_locator(xy,HourLocator(byhour=byhour),**kwargs)
-    major_unit = major_locator._get_unit()
-
-    # Tick format
-    if fmt is None:
-        # Try a special date formatter
-        if trange < 1 and trange > 1/24.: # H/M
-            fmt = [3]
-        elif trange < 31 and trange > 1: # d/m
-            fmt = [2]
-        elif trange < 365 and trange > 31: # m/d
-            fmt = [1]
-        elif trange < 365*5 and trange > 365: # Y/m
-                fmt = [0]
-    if isinstance(fmt,str):
-        fmt = DateFormatter(fmt)
-    elif isinstance(fmt,list):
-        fmt = SpecialDateFormatter(*fmt)
-    elif isinstance(fmt,dict):
-        fmt = SpecialDateFormatter(**fmt)
-    elif isinstance(fmt,tuple):
-        if len(fmt) == 1:
-            fmt += ({}, )
-        elif not isinstance(fmt[1], dict):
-            fmt[1] = {}
-        fmt = SpecialDateFormatter(fmt[0], **fmt[1])
-    if isinstance(fmt,SpecialDateFormatter) :
-        eval("rotate_%slabels" % xy)(0,**kwargs)
-    if fmt is not None:
-        eval("ax.%saxis.set_major_formatter" % xy)(fmt)
-
-    # Minor ticks
-    if not nominor:
-#       # Minor formatter for special case
-#       if fmt is not None and isinstance(fmt,SpecialDateFormatter):
-#           eval("ax.%saxis.set_minor_formatter" % xy)(fmt)
-        # Direct
-        if minor_locator is not None:
-            set_minor_locator(xy,minor_locator,**kwargs)
-            return
-        # From sampling
-        if sampling > 1:
-            set_minor_locator(xy,get_locator_from_units(major_locator,**kwargs),**kwargs)
-            return
-        # From units
-        if major_unit == 365: # Year
-            for nmaj,itv in [3,1],[5,2],[7,3],[10,4],[nmax_ticks,6]:
-                if nticks <= nmaj:
-                    set_minor_locator(xy,MonthLocator(interval=itv),**kwargs)
-                    break
-        elif major_unit == 30: # Month
-            if nticks > 10:
-                set_minor_locator(xy,DayLocator(bymonthday=15),**kwargs)
-            else:
-                set_minor_locator(xy,WeekdayLocator(MO),**kwargs)
-        elif major_unit == 7: # Week
-            if nticks < 15: set_minor_locator(xy,DayLocator(),**kwargs)
-        elif major_unit == 1: # Day
-            for nmaj,itv in [5,2],[10,4],[nmax_ticks,6]:
-                if nticks <= nmaj:
-                    set_minor_locator(xy,HourLocator(byhour=range(0, 24, itv)),**kwargs)
-                    break
-        elif major_unit == 1./24.: # Hour
-            for nmaj,itv in [5,10],[nmax_ticks,30]:
-                if nticks <= nmaj:
-                    set_minor_locator(xy,MinuteLocator(interval=itv),**kwargs)
-                    break
-        elif major_unit == 1./(24.*60.): # Minutes
-            for nmaj,itv in [5,10],[nmax_ticks,30]:
-                if nticks <= nmaj:
-                    set_minor_locator(xy,SecondLocator(interval=itv),**kwargs)
-                    break
-
 def _xydate_(xy, tz=None, auto=True, fmt='dual', rotation=None,
     locator=None, minor_locator=True, minor_formatter=None, nominor=False,
     nmax_ticks=None, intv=None, trange=None, **kwargs):
@@ -1637,7 +1466,7 @@ def _xydate_(xy, tz=None, auto=True, fmt='dual', rotation=None,
 ##  print 'xlimssss',P.gca(),ax
 ##  if ax.get_xlim() == (0.,1.): raise 'a'
     # Base
-    exec "axes.%saxis_date(tz)" % xy
+    exec("axes.%saxis_date(tz)" % xy)
 
     # Scale axes
     if auto:
@@ -1725,7 +1554,7 @@ def get_locator_from_units(locator,*args,**kwargs):
     loc = locs[units.index(unit)]
     if loc is HourLocator: # fix hour problem
         kw.setdefault('interval', 1)
-        kw['byhour'] = range(0, 24, kw['interval'])
+        kw['byhour'] = list(range(0, 24, kw['interval']))
         args = ()
     if loc is WeekdayLocator:
         args = (MO,)+args
@@ -2004,26 +1833,26 @@ def add_time_mark(date, ymin=0, ymax=1, color='r', line=True,
     res = []
     axis = ax.axis()
     if shadow:
-        from core_plot import add_shadow
+        from .core_plot import add_shadow
 
     # Line
     if line:
-        if isinstance(line, basestring):
+        if isinstance(line, six.string_types):
             kwline.setdefault('linestyle', line)
         o = ax.axvline(date, ymin=ymin, ymax=ymax, color=color, zorder=zorder, **kwline)
         res.append(o)
         if shadow:
-            vacumm.misc.core_plot.add_shadow(o, ax=ax, **kwshad)
+            add_shadow(o, ax=ax, **kwshad)
 
     # Marker
     if marker:
-        if isinstance(marker, basestring):
+        if isinstance(marker, six.string_types):
             kwmarker.setdefault('marker', marker)
         kwmarker.setdefault('s', 40)
         o = ax.scatter([date], [axis[2]], c=color,  zorder=zorder, **kwmarker)
         res.append(o)
         if shadow:
-            vacumm.misc.core_plot.add_shadow(o, ax=ax, **kwshad)
+            add_shadow(o, ax=ax, **kwshad)
         ax.axis(axis)
     return res
 
@@ -2055,7 +1884,7 @@ def add_key(key=None, pos=1, fmt='%s)', xmargin=10, ymargin=10, fig=None, axes=N
     """
     # Base
     if fig is None: fig = P.gcf()
-    if axes is None and kwargs.has_key('ax'): axes = kwargs.pop('ax')
+    if axes is None and 'ax' in kwargs: axes = kwargs.pop('ax')
     if axes is None: axes = fig.gca()
 
     # Text
@@ -2112,7 +1941,7 @@ def hldays(color='.95', y=False, tmin=None, tmax=None, fig=None, axes=None, **kw
     """
     # Base
     if fig is None: fig = P.gcf()
-    if axes is None and kwargs.has_key('ax'): axes = kwargs.pop('ax')
+    if axes is None and 'ax' in kwargs: axes = kwargs.pop('ax')
     if axes is None: axes = fig.gca()
 
     # Bonds
@@ -2135,7 +1964,7 @@ def hldays(color='.95', y=False, tmin=None, tmax=None, fig=None, axes=None, **kw
     kwargs.setdefault('label', '_nolegend_')
     objs = []
     axspan = getattr(axes, 'ax%sspan'%'vh'[y])
-    for t in xrange(int(tmin), int(tmax)+1, 2):
+    for t in range(int(tmin), int(tmax)+1, 2):
         objs.append(axspan(t, t+1, **kwargs))
 #        objs[-1].set_zorder(0)
     getattr(axes, 'set_%slim'%'xy'[y])(tmin, tmax)
@@ -2224,7 +2053,7 @@ def savefigs(basename, png=True, pdf=False, verbose=True, dpi=100, nodots=True, 
             else:
                 fig.savefig(file, dpi=dpi)
             figfiles.append(file)
-            if verbose: print 'Wrote to '+file
+            if verbose: print('Wrote to '+file)
     return figfiles
 
 def make_movie(fig_pattern, outfile, delay=1, clean=False, verbose=False, windows=True):
@@ -2270,26 +2099,26 @@ def make_movie(fig_pattern, outfile, delay=1, clean=False, verbose=False, window
 
     # Execution
     import subprocess
-    if verbose: print 'Executing command: '+cmd
+    if verbose: print('Executing command: '+cmd)
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     out, err =  p.communicate()
     if verbose:
-        print out
-        print err
-    print 'ret', p.returncode,  err
+        print(out)
+        print(err)
+    print('ret', p.returncode,  err)
     if p.returncode:
         raise SystemError
 
 
     # Clean files
     if clean:
-        if verbose: print 'Cleaning files'
+        if verbose: print('Cleaning files')
         p = subprocess.Popen('rm -f %(fig_pattern)s'%vars(),
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out,  err = p.communicate()
         if verbose:
-            print out
-            print err
+            print(out)
+            print(err)
         if p.returncode:
             raise SystemError
     return outfile
@@ -2386,7 +2215,7 @@ def _check_var_(var,rank,order=None,xaxis=None,yaxis=None,tadd=None,tadd_copy=Tr
                 pos = var.getOrder()[-rank:].rfind(c)
                 if pos > -1 and order[pos-rank] != '-' and order.find(c) == -1:
                     if i >= (var.rank()-rank-order.count('-')):
-                        print 'It seems that axis #%i (%s) of var should not be there and cannot be moved' % (i,c.upper())
+                        print('It seems that axis #%i (%s) of var should not be there and cannot be moved' % (i,c.upper()))
                     else:
                         var = var.reorder('-'*(var.rank()-i-1)+c+'-'*i)
                     i += 1
@@ -2460,7 +2289,7 @@ def _start_plot_(figure=None,figsize=None,subplot=None,subplots_adjust=None,bgco
     """
     subplots_adjust = kwargs.pop('sa', subplots_adjust)
     for adj in 'left', 'right', 'top', 'bottom', 'wspace', 'hspace':
-        if kwargs.has_key(adj):
+        if adj in kwargs:
             if subplots_adjust is None: subplots_adjust = {}
             subplots_adjust[adj] = kwargs.pop(adj)
     if fullscreen:
@@ -2583,7 +2412,7 @@ def colorbar(pp=None, vars=None, drawedges=False, levels=None, colorbar_horizont
 #           func = getattr(cb.ax,'set_%slabel'%xy)
             if units not in [True,None]:
                 cb.set_label(units, **kwlabel)
-            elif units is not False and cdms.isVariable(var) and var.attributes.has_key('units'):
+            elif units is not False and cdms.isVariable(var) and 'units' in var.attributes:
                 cb.set_label(var.units, **kwlabel)
         if isaxis(var):
             if istime(var):
@@ -2618,7 +2447,7 @@ def colorbar_new(sm=None, vars=None, drawedges=False, levels=None, horizontal=Fa
     **kwargs
         Other key are passed to :func:`~matplotlib.pyplot.colorbar`
     """
-    if pp is False: return
+    if sm is False: return
 
     # Keywords
     kwcb = kwfilter(kwargs, 'colorbar', defaults=dict(drawedges=drawedges))
@@ -2642,7 +2471,7 @@ def colorbar_new(sm=None, vars=None, drawedges=False, levels=None, horizontal=Fa
             if not standalone: gca = P.gca()
             cax = P.axes(cax)
     elif position is not None:
-        if osition in [True,1,'auto']:
+        if position in [True,1,'auto']:
             if horizontal:
                 position = 0.5
             else:
@@ -2664,7 +2493,7 @@ def colorbar_new(sm=None, vars=None, drawedges=False, levels=None, horizontal=Fa
     # Plot itself
     kwaxis = kwfilter(kwargs, xy)
     kwlabel = kwfilter(kwargs, 'label')
-    cb = P.colorbar(pp,cax,ticks=levels,orientation = orientation,extend=extend,**kwargs)
+    cb = P.colorbar(sm,cax,ticks=levels,orientation = orientation,extend=extend,**kwargs)
     if gca is not None: gobjs(ax=gca, colorbar=cb)
     for t in cb.ax.xaxis.get_major_ticks():
         t.tick1On = t.tick2On = False
@@ -2676,7 +2505,7 @@ def colorbar_new(sm=None, vars=None, drawedges=False, levels=None, horizontal=Fa
 #           func = getattr(cb.ax,'set_%slabel'%xy)
         if units not in [True,None]:
             cb.set_label(units, **kwlabel)
-        elif units is not False and cdms.isVariable(var) and var.attributes.has_key('units'):
+        elif units is not False and cdms.isVariable(var) and 'units' in var.attributes:
             cb.set_label(var.units, **kwlabel)
     if isaxis(var):
         if istime(var):
@@ -2807,10 +2636,10 @@ def decorate_axis(axis=None,vertical=0,date_rotation=None,date_fmt=None,date_loc
         # - get it from cdms variable
         if cdms.isVariable(axis) and raw_att in vatts:
             kwvar = dict_aliases(kwfilter(kwargs, 'v', copy=1), raw_att)
-            if not kwargs.has_key(att) and kwvar.has_key(att):
+            if att not in kwargs and att in kwvar:
                 default = kwvar[att]
         # - special
-        if defaults.has_key(att):
+        if att in defaults:
             default = defaults[att]
 
         # Get attribute
@@ -2824,7 +2653,7 @@ def decorate_axis(axis=None,vertical=0,date_rotation=None,date_fmt=None,date_loc
     xy = 'xy'[vertical]
 
     # Functions
-    exec "tick_func = P.%(xy)sticks ; label_func = P.%(xy)slabel ; date_func = %(xy)sdate ; keyaxis = '%(xy)saxis' ; lim_func = P.%(xy)slim" % vars()
+    exec("tick_func = P.%(xy)sticks ; label_func = P.%(xy)slabel ; date_func = %(xy)sdate ; keyaxis = '%(xy)saxis' ; lim_func = P.%(xy)slim" % vars())
     funcs = {}
 
     # Limits
@@ -2837,13 +2666,13 @@ def decorate_axis(axis=None,vertical=0,date_rotation=None,date_fmt=None,date_loc
         axmin, axmax = minmax(values)
     if props['lim']:
         if isinstance(props['lim'],dict):
-            if props['lim'].has_key(xy+'min'):
+            if xy+'min' in props['lim']:
                 axmin = props['lim'][xy+'min']
-            elif props['lim'].has_key('min'):
+            elif 'min' in props['lim']:
                 axmin = props['lim']['min']
-            if props['lim'].has_key(xy+'max'):
+            if xy+'max' in props['lim']:
                 axmax = props['lim'][xy+'max']
-            elif props['lim'].has_key('max'):
+            elif 'max' in props['lim']:
                 axmax = props['lim']['max']
         else:
             axmin, axmax = props['lim']
@@ -2892,7 +2721,7 @@ def decorate_axis(axis=None,vertical=0,date_rotation=None,date_fmt=None,date_loc
             else:
                 nmonth = axis[-1] - axis[0] + 1
             if nmonth == 12 and int(axis.units.split()[2].split('-')[0]) == 1:
-                print "DETECTED PLOT OF CLIMATOLOGY"
+                print("DETECTED PLOT OF CLIMATOLOGY")
                 if date_rotation is None: date_rotation = 0.
                 if date_fmt is None: date_fmt = '%b'
                 if date_locator is None:
@@ -2929,11 +2758,11 @@ def decorate_axis(axis=None,vertical=0,date_rotation=None,date_fmt=None,date_loc
 
     # Hiding
     if props['hide'] in [True,False] and props['hide']:
-        exec xy+'hide()'
+        exec(xy+'hide()')
 
     # Label
     elif props['label'] is not False:
-        if isinstance(props['label'],(str, unicode)):
+        if isinstance(props['label'],(str, six.text_type)):
             label_func(props['label'], **props['label_kwargs'])
         elif props['type'] not in ['x','y','t','z']:
             ll = getattr(axis,'long_name','')
@@ -2942,7 +2771,7 @@ def decorate_axis(axis=None,vertical=0,date_rotation=None,date_fmt=None,date_loc
             slabel = []
             if ll and not cdms.isVariable(axis):
                 slabel.append(ll)
-            if isinstance(units, (str, unicode)) and units not in ['','-','None']:
+            if isinstance(units, (str, six.text_type)) and units not in ['','-','None']:
                 if len(slabel):
                     slabel.append('[%s]'%units)
                 else:
@@ -3045,7 +2874,7 @@ def _end_plot_(var=None,grid=True,figtext=None,show=True,close=False,savefig=Non
             P.title(title,**kwfilter(kwargs,'title'))
         elif var is not None:
             if isinstance(var,tuple): var = var[0]
-            if var.attributes.has_key('long_name'):
+            if 'long_name' in var.attributes:
                 gobjs(title=P.title(var.long_name,**kwfilter(kwargs,'title')))
 
     # Fig text
@@ -3079,7 +2908,7 @@ def _end_plot_(var=None,grid=True,figtext=None,show=True,close=False,savefig=Non
             elif backend in suff_standalone and not suff.lower().endwith(backend):
                 savefig += '.'+backend
         P.savefig(savefig,**kwfilter(kwargs,'savefig'))
-    if kwargs.has_key('savefigs'):
+    if 'savefigs' in kwargs:
         if kwargs['savefigs'] is not None:
             savefigs(kwargs['savefigs'], **kwfilter(kwargs, 'savefigs_'))
         else:
@@ -3091,7 +2920,7 @@ def _end_plot_(var=None,grid=True,figtext=None,show=True,close=False,savefig=Non
             'pdf':['/usr/bin/kghostview','/usr/bin/evince','/usr/bin/xpdf','/usr/local/bin/acroread'],
             'ps':['/usr/bin/kghostview','/usr/bin/evince','/usr/bin/ghostview'],
             'svg':['/usr/bin/svgdisplay','/usr/bin/konqueror']}
-        if backend in viewers.keys():
+        if backend in list(viewers.keys()):
             if savefig is None:
                 tmpfig = mktemp(suffix='.'+backend)
                 P.savefig(tmpfig,**kwfilter(kwargs,'savefig'))
@@ -3103,7 +2932,7 @@ def _end_plot_(var=None,grid=True,figtext=None,show=True,close=False,savefig=Non
                     try:
                         os.system(cmd)
                     except:
-                        print 'Unable to view file with command:',cmd
+                        print('Unable to view file with command:',cmd)
                     if savefig is None: os.remove(tmpfig)
                     return
         else:
@@ -3140,7 +2969,7 @@ _fill_doc_(xdate, ydate, taylor, dtaylor)
 
 @docfill
 def curve2(*args, **kwargs):
-    """curve2(data, axis=None, title=None, savefig=None, show=True, **kwargs)
+    """curve2(data, parg=None, axis=None, title=None, savefig=None, show=True, **kwargs)
 
     Plot 1D data as a curve and return a :class:`~vacumm.misc.core_plot.Curve` object
     with properties also from :class:`~vacumm.misc.core_plot.Plot` and
@@ -3235,10 +3064,10 @@ def curve2(*args, **kwargs):
     """
     kwargs.setdefault('plot', True)
     kwargs.setdefault('post_plot', True)
-    if len(args)>1 and not kwargs.has_key('parg'):
+    if len(args)>1 and 'parg' not in kwargs:
         kwargs['parg'] = args[1]
         args = args[0:1]+args[2:]
-    return vccp.Curve(*args, **kwargs)
+    return Curve(*args, **kwargs)
 
 @docfill
 def bar2(*args, **kwargs):
@@ -3323,7 +3152,7 @@ def bar2(*args, **kwargs):
     """
     kwargs.setdefault('plot', True)
     kwargs.setdefault('post_plot', True)
-    return vccp.Bar(*args, **kwargs)
+    return Bar(*args, **kwargs)
 
 @docfill
 def stick2(*args, **kwargs):
@@ -3428,7 +3257,7 @@ def stick2(*args, **kwargs):
     """
     kwargs.setdefault('plot', True)
     kwargs.setdefault('post_plot', True)
-    return vccp.Stick(*args, **kwargs)
+    return Stick(*args, **kwargs)
 
 
 @docfill
@@ -3549,7 +3378,7 @@ def hov2(*args, **kwargs):
     """
     kwargs.setdefault('plot', True)
     kwargs.setdefault('post_plot', True)
-    return vccp.Hov(*args, **kwargs)
+    return Hov(*args, **kwargs)
 
 @docfill
 def map2(*args, **kwargs):
@@ -3711,7 +3540,7 @@ def map2(*args, **kwargs):
     kwargs.setdefault('post_plot', True)
     if len(args)==0:
         args=[None]
-    return vccp.Map(*args, **kwargs)
+    return Map(*args, **kwargs)
 
 @docfill
 def section2(*args, **kwargs):
@@ -3833,7 +3662,7 @@ def section2(*args, **kwargs):
     """
     kwargs.setdefault('plot', True)
     kwargs.setdefault('post_plot', True)
-    return vccp.Section(*args, **kwargs)
+    return Section(*args, **kwargs)
 
 @docfill
 def plot2d(*args, **kwargs):
@@ -3961,11 +3790,12 @@ def plot2d(*args, **kwargs):
     """
     kwargs.setdefault('plot', True)
     kwargs.setdefault('post_plot', True)
-    return vccp.Plot2D(*args, **kwargs)
+    return Plot2D(*args, **kwargs)
 
 
 def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., xmargin=None, ymargin=None,
-        lon=None, lat=None, square=False, bgcolor=(0, .8, 1.), fig=None, alpha=1, **kwargs):
+            lon=None, lat=None, square=False, bgcolor=(0, .8, 1.), fig=None,
+            alpha=1, **kwargs):
     """Create a minimap with :func:`map2`
 
     A minimap is small and generally in a corner of the figure,
@@ -3982,8 +3812,8 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., xmargin=None, ymargin=None,
     ------
     :class:`~vacumm.misc.core_plot.Map`
     """
-    from grid import get_xy
-    from color import RGB
+    from .grid import get_xy
+    from .color import RGB
     data = gg if cdms2.isVariable(gg) else None
     x, y = get_xy(gg)
     if lon is not None:
@@ -4037,7 +3867,7 @@ def add_map_point(gg, lon, lat, marker='o', color='r', size=40,  m=None, alpha=1
     kwmap = kwfilter(kwargs, 'map')
     for att in 'bbox', 'bgcolor', 'fig':
         if att in kwargs: kwmap[att] = kwargs.pop(att)
-    if isinstance(gg, vccp.Map): m = gg
+    if isinstance(gg, Map): m = gg
     if m is None: m = minimap(gg, **kwmap)
     return m.add_point(lon, lat, size=size, color=color, marker=marker, **kwargs)
 
@@ -4062,7 +3892,7 @@ def add_map_places(gg, lon, lat, txt, marker='o', color='r', size=40,  m=None,
     kwmap = kwfilter(kwargs, 'map')
     for att in 'bbox', 'bgcolor', 'fig':
         if att in kwargs: kwmap[att] = kwargs.pop(att)
-    if isinstance(gg, vccp.Map): m = gg
+    if isinstance(gg, Map): m = gg
     if m is None: m = minimap(gg, **kwmap)
     for x,y,text in zip(lon,lat,txt):
       m.add_place(x, y, text, shadow=False, glow=False, **kwargs)
@@ -4088,7 +3918,7 @@ def add_map_line(gg, extents, color='r', linewidth=1.5, m=None, **kwargs):
     kwmap = kwfilter(kwargs, 'map')
     for att in 'bbox', 'bgcolor', 'fig':
         if att in kwargs: kwmap[att] = kwargs.pop(att)
-    if isinstance(gg, vccp.Map): m = gg
+    if isinstance(gg, Map): m = gg
     if m is None: m = minimap(gg, **kwmap)
     return m.add_line(extents, color=color, linewidth=linewidth, **kwargs)
 
@@ -4110,7 +3940,7 @@ def add_map_lines(gg, xx, yy, color='r', linewidth=1.5, m=None, closed=False, **
     kwmap = kwfilter(kwargs, 'map')
     for att in 'bbox', 'bgcolor', 'fig':
         if att in kwargs: kwmap[att] = kwargs.pop(att)
-    if isinstance(gg, vccp.Map): m = gg
+    if isinstance(gg, Map): m = gg
     if m is None: m = minimap(gg, **kwmap)
     return m.add_lines(xx, yy, color=color, linewidth=linewidth, **kwargs)
 
@@ -4134,7 +3964,7 @@ def add_map_box(gg, box, color='r', linewidth=1.5, m=None, **kwargs):
     kwmap = kwfilter(kwargs, 'map')
     for att in 'bbox', 'bgcolor', 'fig':
         if att in kwargs: kwmap[att] = kwargs.pop(att)
-    if isinstance(gg, vccp.Map): m = gg
+    if isinstance(gg, Map): m = gg
     if m is None: m = minimap(gg, **kwmap)
     return m.add_box(box, color=color, linewidth=linewidth, **kwargs)
 

@@ -35,12 +35,15 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os, shutil, re
 from stat import *
 import glob
-from urlparse import urlparse
+from six.moves.urllib.parse import urlparse
 from warnings import filterwarnings
 import subprocess
+from six.moves import range
 filterwarnings('ignore', message='.*Not using mpz_powm_sec.*')
 
 __all__ = ['SSHBank', 'sshbank', 'WorkFile', 'InputWorkFiles', 'OutputWorkFile']
@@ -70,7 +73,7 @@ class SSHBank(object):
     def __call__(self, host):
 
         # Check the bank
-        if self._bank.has_key(host):
+        if host in self._bank:
             return self._bank[host]
 
         # Get host, etc
@@ -154,25 +157,25 @@ class WorkFile(object):
             if not warn:
                 raise WorkFileException(msg)
             else:
-                print msg
+                print(msg)
     def debug(self, msg):
         """Send a DEBUG message"""
         if self.logger:
             self.logger.debug(msg)
         else:
-            print msg
+            print(msg)
     def warning(self, msg):
         """Send a WARNING message"""
         if self.logger:
             self.logger.warning(msg)
         else:
-            print msg
+            print(msg)
     def info(self, msg):
         """Send an INFO message"""
         if self.logger:
             self.logger.info(msg)
         else:
-            print msg
+            print(msg)
 
     def remote_exec(self, cmd):
         """Execute a remote command and return result as list of lines
@@ -587,7 +590,7 @@ class OutputWorkFile(WorkFile):
 
                 except: # now check all subdirs
                     remdirs = remdir.split(os.path.sep)
-                    for i in xrange(1, len(remdirs)):
+                    for i in range(1, len(remdirs)):
                         thisdir = os.path.join(os.path.sep, *remdirs[:i+1])
                         try:
                             self.ftp.stat(thisdir)

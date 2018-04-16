@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """In/Output tools"""
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -32,28 +32,34 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-import copy
+from __future__ import absolute_import
+from __future__ import print_function
 import logging.handlers
 import os, gc, glob, logging, re, sys
 from collections import OrderedDict
 from traceback import format_exc
-from warnings import warn
 import warnings
+import datetime, time as _time
+
+import six
+from six.moves import map
+from six.moves import range
 
 import numpy as N, MV2, cdms2, cdtime
-import pylab as P, operator
 from _geoslib import Point, LineString, Polygon
-from matplotlib.collections import LineCollection, PolyCollection
-from mpl_toolkits.basemap import Basemap
 
 from vacumm import VACUMMError
-from .misc import split_selector, kwfilter, squeeze_variable, is_iterable
-from .poly import create_polygon, clip_shape
-from .atime import (has_time_pattern, time_selector, is_interval, is_time,
-    strptime, comptime, are_same_units, ch_units, now, datetime)
-from .axes import get_checker, islon, islat, istime, islevel
+from .misc import (split_selector, kwfilter, squeeze_variable, is_iterable, 
+    itv_union, match_atts, set_atts, broadcast, create_selector, 
+    MV2_concatenate, checkdir)
+from .poly import create_polygon, clip_shape, sort_shapes
+from .axes import (get_checker, islon, islat, istime, islevel, 
+    create_lat, create_lon)
+from .atime import (has_time_pattern, is_time, round_date, add_margin, 
+    strptime, comptime, are_same_units, ch_units, 
+    create_time, tsel2slice)
+from .grid import curv2rect, isgrid, create_grid, set_grid
 
-from . import axes as vca
 
 __all__ = ['list_forecast_files', 'NcIterBestEstimate', 'NcIterBestEstimateError', 'NcFileObj',
     'ncfind_var', 'ncfind_axis', 'ncfind_obj', 'ncget_var', 'ncread_var', 'ncread_files', 'ncread_best_estimate',
@@ -118,7 +124,7 @@ class ColPrinter(object):
         print_header=True,file=None):
         # Inputs
         if not isinstance(columns,(list,tuple)):
-            raise TypeError, 'Input must be a list or tuple of 3-element lists'
+            raise TypeError('Input must be a list or tuple of 3-element lists')
         elif len(columns) == 3 and type(columns[0]) is type('s')  and \
             type(columns[1]) is type(1) and type(columns[2]) is type('s'):
             columns = [columns,]
@@ -154,7 +160,7 @@ class ColPrinter(object):
             if not isinstance(col,(list,tuple)) or \
               len(col) != 3 or type(col[0]) is not type('s') or type(col[1]) != type(1) or \
               type(col[2]) is not type('s') or col[2].find('%') < 0:
-                raise TypeError, 'This description of column must contain the column title (string), the column width (int) and the string format for data (string): %s' % col
+                raise TypeError('This description of column must contain the column title (string), the column width (int) and the string format for data (string): %s' % col)
             width = col[1]
             if width < len(col[0]):
                 width = len(col[0])
@@ -183,7 +189,7 @@ class ColPrinter(object):
         if isinstance(self._fid,file):
             self._fid.write(line+'\n')
         else:
-            print line
+            print(line)
 
     def close(self):
         """Print bottom and close the file (if file mode) """
@@ -237,8 +243,8 @@ class ColPrinter(object):
         The number of arguments must be the same as the number of columns.
         """
         if len(data) != self._ncol:
-            raise TypeError, 'You must give a number of data equal to the number of columns (%i): %i' \
-            % (self._ncol,len(data))
+            raise TypeError('You must give a number of data equal to the number of columns (%i): %i' \
+            % (self._ncol,len(data)))
 
         dds = []
         for i,dd in enumerate(data):
@@ -309,9 +315,9 @@ def list_forecast_files(filepattern, time=None, check=True,
     sfp = str(filepattern)
     if len(sfp)>300: sfp = sfp[:300]+'...'
     if verbose:
-        print 'Guessing file list using:'
-        print '   filepattern: %s'%sfp
-        print '   time selector: %s'%(time, )
+        print('Guessing file list using:')
+        print('   filepattern: %s'%sfp)
+        print('   time selector: %s'%(time, ))
 
     # A list of file
     if isinstance(filepattern, list):
@@ -325,7 +331,7 @@ def list_forecast_files(filepattern, time=None, check=True,
     # Date pattern
     elif not nopat and has_time_pattern(filepattern):
 
-        from atime import pat2freq,IterDates, strftime, is_interval, pat2glob, filter_time_selector
+        from .atime import pat2freq,IterDates, strftime, is_interval, pat2glob, filter_time_selector
         if isinstance(time, cdms2.selectors.Selector):
             seltime = filter_time_selector(time, noslice=True)
             if seltime.components():
@@ -355,7 +361,7 @@ def list_forecast_files(filepattern, time=None, check=True,
         lmargin = 1
         if patfreq is None:
             patfreq = pat2freq(filepattern)
-            if verbose: print 'Detected frequency for looping on possible dates: '+patfreq.upper()
+            if verbose: print('Detected frequency for looping on possible dates: '+patfreq.upper())
         if not isinstance(patfreq, tuple):
 
             #  Reform
@@ -368,7 +374,7 @@ def list_forecast_files(filepattern, time=None, check=True,
                 lmargin = 1
             elif not glob.has_magic(filepattern):
                 date0 = date1 = None
-                for i in xrange(len(gfiles)-1):
+                for i in range(len(gfiles)-1):
                     try:
                         date0 = strptime(gfiles[i], filepattern)
                         date1 = strptime(gfiles[i+1], filepattern)
@@ -435,9 +441,9 @@ def list_forecast_files(filepattern, time=None, check=True,
     # Count
     if verbose:
         if not files:
-            print 'No file found with this file pattern "%s" and time interval %s'%(filepattern, time)
+            print('No file found with this file pattern "%s" and time interval %s'%(filepattern, time))
         else:
-            print 'Found %i files'%len(files)
+            print('Found %i files'%len(files))
 
     # Sort files
     if sort:
@@ -450,30 +456,31 @@ def list_forecast_files(filepattern, time=None, check=True,
     return files
 
 
-def ncfind_var(f, name, ignorecase=True, regexp=False, **kwargs):
+def ncfind_var(f, id, ignorecase=True, regexp=False, **kwargs):
     '''
     Find a variable in a netcdf file using :func:`ncfind_obj`
 
     '''
     nfo = NcFileObj(f)
     f = nfo.f
-    res =  ncfind_obj(f, name, ignorecase=ignorecase, regexp=regexp, ids=f.listvariables(), **kwargs)
+    res =  ncfind_obj(f, id, ignorecase=ignorecase, regexp=regexp,
+                      ids=f.listvariables(), **kwargs)
     del nfo
     return res
 
-def ncfind_axis(f, name, ignorecase=True, regexp=False, **kwargs):
+def ncfind_axis(f, specs, ignorecase=True, regexp=False, **kwargs):
     '''
     Find an axis in a netcdf file using :func:`ncfind_obj`
 
     '''
     nfo = NcFileObj(f)
     f = nfo.f
-    res =  ncfind_obj(f, name, ignorecase=ignorecase, regexp=regexp,
+    res =  ncfind_obj(f, specs, ignorecase=ignorecase, regexp=regexp,
         ids=f.listdimension(), **kwargs)
     del nfo
     return res
 
-def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None,
+def ncfind_obj(f, specs, ignorecase=True, regexp=False, ids=None,
         searchmode=None, **kwargs):
     '''
     Find a variable or an axis in netcdf file using a name, list of names
@@ -498,7 +505,7 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None,
 
     f:
         A cdms2.dataset.CdmsFile.
-    name:
+    specs:
         A string or list of string to look for,
         or a dictionary with keys "name", "standard_name", "long_name", 'units' and 'axis'.
     ignorecase: optional
@@ -515,99 +522,105 @@ def ncfind_obj(f, name, ignorecase=True, regexp=False, ids=None,
 
     Return
     ------
-
+    object, None
         The first matching object name, or None if not found.
 
     '''
     nfo = NcFileObj(f)
     f = nfo.f
 
-    # Targets
-    if ids is None:
-        ids = f.listvariables()+f.listdimension()
-    elif isinstance(ids, basestring):
-        ids = [ids]
-
     # Searched terms
-    withdict = isinstance(name, dict)
-    standard_names = long_names = units = axis = None
+    withdict = isinstance(specs, dict)
+    standard_name = long_name = units = axis = None
+    def check_list(refname):
+        if refname in specs and not is_iterable(specs[refname]):
+            specs[refname] = [specs[refname]]
     if withdict: # Using a dictionary
 
-        # Names and standard_name
-        names = name.get("name", name.get('names', None))
-        if names is None:
-            names = name.get("id", name.get('ids', None))
-        standard_names = name.get("standard_name",  name.get('standard_names', None))
+        specs = specs.copy()
+
+        # Useful functions
+        def check_aliases(refname, *aliases):
+            for alias in aliases:
+                if alias in specs:
+                    if refname not in specs:
+                        specs[refname] = specs[alias]
+                    del specs[alias]
+        re_flag = re.I if ignorecase else 0
+        def check_regexp(refname):
+            if refname in specs and regexp: # Regular expression
+                specs[refname] = [re.compile(x, re_flag).search
+                                  for x in specs[refname] if x is not None]
+
+        # Id
+        check_aliases('id', 'ids', 'name', 'names')
+        check_list('id')
+
+        # Standard name
+        check_aliases('standard_name', 'standard_names')
+        check_list('standard_name')
 
         # Axis
-        axis = name.get("axis", None)
-        if axis is not None:
-            axis = axis.upper()
+        if 'axis' in specs:
+            specs['axis'] = specs['axis'].upper()
 
         # Long_name
-        long_names = name.get("long_name", name.get("long_names", None))
-        if long_names is not None:
-            if not is_iterable(long_names):
-                long_names = [long_names]
-            if regexp: # Regular expression
-                flags = re.I if ignorecase else 0
-                long_names = [re.compile(ln, flags).search for ln in long_names]
-#            elif ignorecase:
-#                long_names = __builtins__['map'](str.lower, long_names)
+        check_aliases('long_name', 'long_names')
+        check_list('long_name')
+        check_regexp('long_name')
 
         # Units
-        units = name.get("units", None)
-        if units is not None:
-            if not is_iterable(units):
-                units = [units]
-            if regexp: # Regular expression
-                flags = re.I if ignorecase else 0
-                units = [re.compile(u, flags).search for u in units]
-#            elif ignorecase:
-#                units = __builtins__['map'](str.lower, units)
+        check_list('units')
+        check_regexp('units')
 
-    else: # Using a list of names
-        names = name if is_iterable(name) else [name]
-#    if names is not None:
-#        names = __builtins__['map'](str.strip, names)
-#        if ignorecase:
-#            names = __builtins__['map'](str.lower, names)
+    else: # Using a list of ids
+        specs = {"id": specs}
+        check_list('id')
 
-    # Search order
-    all_keys = ['standard_names', 'names', 'long_names', 'units', 'axis']
-    all_keys0 = [key[0] for key in all_keys]
-    if searchmode is None:
-        searchmode = 'snlua'
-    if isinstance(name, OrderedDict):
-        keys = [key for key in name.keys() if key in all_keys]
-        keys = [key for key in keys if key[0] in searchmode]
-    else:
-        keys = []
-        for key0 in searchmode:
-            if key0 in all_keys0:
-                keys.append(all_keys[all_keys0.index(key0)])
+    # Order and filter the search
+    specs = filter_search(specs, searchmode)
 
-    # Loop on objects
-    for key in keys:
-        kwsearch = {key:locals()[key]}
-        for name in ids:
-            v = f[name]
-            if ncmatch_obj(v, name=name, ignorecase=ignorecase, **kwsearch):
+    # Loop on targets to match attributes
+    if ids is None:
+        ids = f.listvariables()+f.listdimension()
+    elif isinstance(ids, six.string_types):
+        ids = [ids]
+    for att, val in specs.items(): # loop on attribute types
+        for id in ids: # Loop on targets
+            if match_atts(f[id], {att:val}, id=True, ignorecase=ignorecase):
                 break
         else:
             continue
         break
-
     else: # Not found
-        name = None
+        id = None
 
     nfo.close()
 
-    return name
+    return id
 
+def filter_search(specs, searchmode=None):
+    """Order and filter the search"""
+    # - get order
+    all_keys = ['id', 'standard_name', 'long_name', 'units', 'axis']
+    all_keys0 = [key[0] for key in all_keys]
+    if searchmode is None:
+        if isinstance(specs, OrderedDict):
+            searchmode = ''.join([key[0] for key in specs.keys()])
+        else:
+            searchmode = ''.join(all_keys0)
+    searchmode = searchmode.replace('n', 'i')
+    keys = []
+    for key0 in searchmode:
+        key = all_keys[all_keys0.index(key0)]
+        if key0 in all_keys0 and key in specs:
+            keys.append(key)
+    # - reorder specs
+    return OrderedDict([(key, specs[key]) for key in keys])
 
-def ncmatch_obj(obj, name=None, standard_names=None, names=None,
-        long_names=None, units=None, axis=None, ignorecase=True, **kwargs):
+def ncmatch_obj(obj, id=None, standard_name=None,
+        long_name=None, units=None, axis=None, ignorecase=True,
+        searchmode=None, **kwargs):
     """Check if an MV2 object (typicaly from a netcdf file) matches names, standard_names, etc
 
 
@@ -619,15 +632,13 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
 
     obj:
         A MV2 array.
-    name: optional
+    id: optional
         Name (id) of this array, wich defaults to the id attribute.
-    standard_names: optional
+    standard_name: optional
         List of possible standard_names.
-    names: optional
-        List of possible names (ids).
     axis: optional
         Axis type, as one of 'x, 'y', 'z', 't'.
-    long_names: optional
+    long_name: optional
         List of possible long_names or callable expression
         (such as regular expression method).
     units: optional
@@ -636,41 +647,29 @@ def ncmatch_obj(obj, name=None, standard_names=None, names=None,
     Example
     -------
 
-        >>> ncmatch_obj(sst, standard_names='sea_surface_temperature', names=['sst'])
-        >>> import re
-        >>> ncmatch_obj(sst, long_names=re.compile('sea surface temp').match)
+    >>> ncmatch_obj(sst, standard_name='sea_surface_temperature', id=['sst'])
+    >>> import re
+    >>> ncmatch_obj(sst, long_name=re.compile('sea surface temp').match)
     """
     # Format
     search = OrderedDict()
-    for key in ('standard_names', 'names', 'long_names', 'units', 'axis'):
+    if id is None and 'name' in kwargs:
+        id = kwargs['name']
+    for key in ('standard_name', 'id', 'axis', 'long_name', 'units'):
         val = locals()[key]
+        if val is None:
+            continue
         search[key] = val
-        if val is None: continue
         if key=='axis':
             search[key] = val if not isinstance(key, list) else val[0]
             continue
-        if not is_iterable(val): val = [val]
         search[key] = val
 
-    # Check long_name and units
-    checks = OrderedDict(
-        standard_name=search['standard_names'],
-        id=search['names'],
-        axis=search['axis'],
-        long_names=search['long_names'],
-        units=search['units'])
-    return match_atts(obj, checks, ignorecase)
-#    for refs, val in [
-#            (search['standard_names'], getattr(obj, "standard_name", None)),
-#            (search['names'], name or getattr(obj, 'id', None)),
-#            (search['axis'], getattr(obj, "axis",  None)),
-#            (search['long_names'], getattr(obj, "long_name", None)),
-#            (search['units'], getattr(obj, "units", None))]:
-#        if refs is not None and val is not None:
-#            if _isinlist_(val, refs, ignorecase):
-#                return True
-#
-#    return False
+    # Order and filter the search
+    search = filter_search(search, searchmode)
+
+    # Check attributes
+    return match_atts(obj, search, ignorecase)
 
 
 def ncget_var(f, *args, **kwargs):
@@ -769,7 +768,7 @@ def ncread_var(f, vname, *args, **kwargs):
         to squeeze out singleton axes.
     torect: optional
         If True, try to convert output grid to rectanguar
-        using :func:`~vacumm.misc.grid.misc.curv2rect`.
+        using :func:`~vacumm.misc.grid.curv2rect`.
     mode: optional
         if ``'raise'`` raises an :exc:`IOError`
         if not found, else returns ``None``.
@@ -820,12 +819,12 @@ def _process_var(var, torect, samp, grid, kwgrid, squeeze, atts):
         the rank of the variable. Set values to 0, 1 for no undersampling.
     torect: optional
         If True, try to convert output grid to rectanguar
-        using :func:`~vacumm.misc.grid.misc.curv2rect`.
+        using :func:`~vacumm.misc.grid.curv2rect`.
     grid: optional
         A grid to regrid the variable on.
     grid_<keyword>: optional
         ``keyword`` is passed to
-      :func:`~vacumm.misc.grid.regridding.regrid`.
+      :func:`~vacumm.misc.regridding.regrid`.
     squeeze: optional
         Argument passed to :func:`squeeze_variable` to squeeze out singleton axes.
                 - Extra kwargs are used to refine the **selector** initialized with ``select``.
@@ -834,7 +833,7 @@ def _process_var(var, torect, samp, grid, kwgrid, squeeze, atts):
     '''
     # To rectangular grid?
     if torect:
-        vacumm.misc.grid.curv2rect(var, mode="none")
+        curv2rect(var, mode="none")
 
     # Undersample
     if samp is not None:
@@ -895,7 +894,7 @@ def ncget_axis(f, checker, ids=None, ro=False, checkaxis=False, **kwargs):
 
     nfo = NcFileObj(f)
     f = nfo.f
-    if isinstance(checker, basestring):
+    if isinstance(checker, six.string_types):
         checker = get_checker(checker)
     elif isinstance(checker, (list, tuple, dict)):
         axid = ncfind_obj(f, checker, ids=ids, checkaxis=checkaxis, ro=ro, **kwargs)
@@ -909,7 +908,7 @@ def ncget_axis(f, checker, ids=None, ro=False, checkaxis=False, **kwargs):
     varids = f.listvariables()
     if ids is None:
         ids = varids+dimids
-    elif isinstance(ids, basestring):
+    elif isinstance(ids, six.string_types):
         ids = [ids]
 
     # Loop on targets
@@ -1008,7 +1007,7 @@ def ncget_grid(f, ids=None, torect=False):
 
     if ids is None:
         ids = f.listvariables()
-    elif isinstance(ids, basestring):
+    elif isinstance(ids, six.string_types):
         ids = [ids]
     grid = None
     for id in ids:
@@ -1018,7 +1017,7 @@ def ncget_grid(f, ids=None, torect=False):
             break
     del nfo
     if torect:
-        grid = vacumm.misc.grid.curv2rect(grid, mode="none")
+        grid = curv2rect(grid, mode="none")
     return grid
 
 def ncget_fgrid(f, gg):
@@ -1039,7 +1038,7 @@ def ncget_fgrid(f, gg):
     A :class:`FileGrid` instance or ``None``
     """
     if f is None or gg is None: return
-    if vacumm.misc.grid.isgrid(f): return f
+    if isgrid(f): return f
 
     # From a variable
     if cdms2.isVariable(gg):
@@ -1091,7 +1090,7 @@ def nccache_get_time(f, timeid=None, ro=False):
     """
     # Check cache
     # - file name
-    fname = f if isinstance(f, basestring) else f.id
+    fname = f if isinstance(f, six.string_types) else f.id
     fname = os.path.realpath(fname)
     # - from cache
     if fname in _nccache_time:
@@ -1106,7 +1105,7 @@ class NcIterTimeSlice(object):
     """Basic netcdf file iterator with a fixed slice"""
     def __init__(self, files, tslice=None, timeid=None, keepopen=False, autoclose=True):
         self.i = 0
-        if isinstance(files, basestring): files = [files]
+        if isinstance(files, six.string_types): files = [files]
         self.nfiles = len(files)
         self.files = files
         self.nfonext = None
@@ -1146,14 +1145,14 @@ class NcIterTimeSlice(object):
             return f, None
         self.timeid = taxis.id
         if verbose:
-            print taxis
+            print(taxis)
 
         # Real slice
         tslice = slice(*self.tslice.indices(len(taxis)))
 
         # Finalize
         self.i += 1
-        return f, self.tslice
+        return f, tslice
 
     def close(self):
         """Close file descriptors that can be closed"""
@@ -1207,7 +1206,7 @@ class NcIterBestEstimate(object):
     """
     def __init__(self, files, time=None, toffset=None, timeid=None, tslices=None, keepopen=False, autoclose=True, id=None):
         self.i = 0
-        if isinstance(files, basestring): files = [files]
+        if isinstance(files, six.string_types): files = [files]
         self.nfiles = len(files)
         self.files = files
         self.nfonext = None
@@ -1218,7 +1217,7 @@ class NcIterBestEstimate(object):
         self.timeid = timeid
         self.autoclose = autoclose
         self.keepopen = keepopen
-        from atime import add
+        from .atime import add
         self.add = add
         if id is None:
             id = str(self.toffset)+str(self.seltime)+str(files)
@@ -1269,7 +1268,7 @@ class NcIterBestEstimate(object):
             return f, None
         self.timeid = taxis.id
         if verbose:
-            print taxis
+            print(taxis)
 
         # Get base time slice of current file
         ijk = tsel2slice(taxis, self.seltime, asind=True, nonone=True)
@@ -1371,7 +1370,7 @@ class NcFileObj(object):
         if isinstance(ncfile, NcFileObj):
             self.type = ncfile.type
             self.f = ncfile.f
-        elif isinstance(ncfile, basestring):
+        elif isinstance(ncfile, six.string_types):
             self.type = 'path'
             self.f = cdms2.open(ncfile, mode)
         elif hasattr(ncfile, '_status_'):
@@ -1461,14 +1460,14 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
         A grid to regrid the variable on.
     grid_<keyword>: optional
         ``keyword`` is passed to
-          :func:`~vacumm.misc.grid.regridding.regrid`.
+          :func:`~vacumm.misc.regridding.regrid`.
     timeid: optional
         Time id (otherwise it is guessed).
     ignorecase: optional
         Ignore variable name case (see :func:`ncfind_var`).
     torect: optional
         If True, try to convert output grid to rectanguar
-        using :func:`~vacumm.misc.grid.misc.curv2rect` (see :func:`ncread_var`).
+        using :func:`~vacumm.misc.grid.curv2rect` (see :func:`ncread_var`).
         - Extra kwargs are used to refine the **selector** initialized with ``select``.
     squeeze: optional
         Argument passed to :func:`ncread_var`
@@ -1489,16 +1488,16 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
     single = not isinstance(varname, list)
     varnames = [varname] if single else varname
     if verbose:
-        print 'Reading best estimate variable(s): ', ', '.join([str(v) for v in varnames]), '; time:', time
-        print 'Using files:'
-        print '\n'.join([getattr(fn, 'id', fn) for fn in ncfiles])
+        print('Reading best estimate variable(s): ', ', '.join([str(v) for v in varnames]), '; time:', time)
+        print('Using files:')
+        print('\n'.join([getattr(fn, 'id', fn) for fn in ncfiles]))
 
     # Some inits
     nvar = len(varnames)
     if isinstance(atts, dict):
         atts = [atts]
     atts = broadcast(atts, nvar)
-    allvars = [[] for iv in xrange(nvar)]
+    allvars = [[] for iv in range(nvar)]
     kwgrid = kwfilter(kwargs, 'grid')
     # - base selector
     selects = broadcast(select, nvar)
@@ -1514,7 +1513,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
         samp = [slice(None, None, s) for s in samp]
     # - output grid
     if grid is not None:
-        from grid.regridding import regrid2d
+        from .grid.regridding import regrid2d
     # - time
     time_units = None
     newgrid = None
@@ -1540,7 +1539,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
             oldvn = vn
             vn = ncfind_var(f, vn, ignorecase=ignorecase)
             if vn is None:
-                if verbose: print 'Skipping file %s for %s variable not found'%(f.id, oldvn)
+                if verbose: print('Skipping file %s for %s variable not found'%(f.id, oldvn))
                 continue
 
             # Check time
@@ -1551,7 +1550,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
                 itaxes[iv] = f[vn].getOrder().find('t')
                 tvars[iv] = True
                 if not tslice:
-                    if verbose: print 'Skipping file %s for %s variable because time slice not compatible'%(f.id, oldvn)
+                    if verbose: print('Skipping file %s for %s variable because time slice not compatible'%(f.id, oldvn))
                     continue
                 sel = seltime # with time
             else:
@@ -1559,26 +1558,29 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
 
             # Infos
             if verbose:
-                print 'Processing file no', ifile, ' ', f, ', variable:', vn, ', time slice :', tslice
+                print('Processing file no', ifile, ' ', f, ', variable:', vn, ', time slice :', tslice)
                 if withtime:
                     if taxis is None: taxis = f[vn].getTime()
                     ctimes = taxis.asComponentTime()
-                    print '  Available:', ctimes[0], ctimes[-1]
+                    print('  Available:', ctimes[0], ctimes[-1])
                     del ctimes
 
             # Read the variable
             if verbose:
-                print '  Selecting:', sel
+                print('  Selecting:', sel)
             try:
                 var = ncread_var(f, vn, sel, ignorecase=True, torect=torect, squeeze=squeeze,
                                  grid=grid, samp=samp, searchmode=searchmode,
                                  atts=atts[iv] if atts is not None and iv<len(atts) else None)
                 if verbose:
-                    print '  Loaded:', var.shape
-            except Exception, e:
-                if verbose: print 'Error when reading. Skipping. Message: \n'+format_exc()#e.message
+                    print('  Loaded:', var.shape)
+            except Exception:
+                if verbose: print('Error when reading. Skipping. Message: \n'+format_exc())#e.message
                 continue
 
+            # Regrid
+            if grid is not None and var.getGrid() is not None:
+                grid = regrid2d(var, grid, **kwgrid)
 
             # Fix time units (that may vary between files)
             if iterator.timeid is not None and withtime:
@@ -1606,8 +1608,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
     iterator.close()
 
     # Concatenate
-    from misc import MV2_concatenate
-    for iv in xrange(nvar):
+    for iv in range(nvar):
 
         # Check
         if len(allvars[iv])==0:
@@ -1628,7 +1629,7 @@ def grib_get_names(gribfile):
     import pygrib
     names = []
     with pygrib.open(gribfile) as g:
-        for i in xrange(g.messages):
+        for i in range(g.messages):
             m = g.read(1)[0]
             if m.shortName not in names:
                 names.append(m.shortName)
@@ -1676,7 +1677,7 @@ def grib_read_files(
 
     torect: optional
         If True, try to convert output grid to rectanguar
-        using :func:`~vacumm.misc.grid.misc.curv2rect` (see :func:`ncread_var`).
+        using :func:`~vacumm.misc.grid.curv2rect` (see :func:`ncread_var`).
     samp: optional
         Undersample rate as a list of the same size as
         the rank of the variable. Set values to 0, 1 for no undersampling.
@@ -1684,7 +1685,7 @@ def grib_read_files(
         A grid to regrid the variable on.
     grid_<keyword>: optional
         ``keyword`` is passed to
-          :func:`~vacumm.misc.grid.regridding.regrid`.
+          :func:`~vacumm.misc.regridding.regrid`.
     squeeze: optional
         Argument passed to :func:`ncread_var` to squeeze out singleton axes.
     atts:
@@ -1697,19 +1698,15 @@ def grib_read_files(
     Return
     ------
 
-        If varname is a list of names or dicts:
-        - a dict of loaded variables as :class:`cdms2.tvariable.TransientVariable`
-          this dict keys are are filled with the corresponding varname value if it is a string, or wiht
-          the loaded message's shortName/name/parameterName.
-        Else:
-        - the loaded variable as :class:`cdms2.tvariable.TransientVariable`
+        If varname is a list of names or dicts
+        a dict of loaded variables as :class:`cdms2.tvariable.TransientVariable`
+        this dict keys are are filled with the corresponding varname value if it is a string, or wiht
+        the loaded message's shortName/name/parameterName.
+        Else the loaded variable as :class:`cdms2.tvariable.TransientVariable`
 
     """
-    import datetime, glob, numpy, os, sys, time as _time, traceback
-    import cdms2, pygrib
-    from axes import create_lat, create_lon
-    from atime import create_time, datetime as adatetime
-    from grid import create_grid, set_grid
+    import pygrib
+ 
     if not verbose:
         verbose = lambda s:s
     if verbose and not callable(verbose):
@@ -1724,18 +1721,18 @@ def grib_read_files(
         '  varname: %s'
     %(filepattern, time, '\n- '.join(['%r'%(v) for v in varnames])))
     # List of files
-    if isinstance(filepattern, basestring):
+    if isinstance(filepattern, six.string_types):
         files = list_forecast_files(filepattern, time)
     else:
         if not isinstance(filepattern, (list, tuple)):
             filepattern = (filepattern,)
-        files = tuple(f for l in map(lambda p: glob.glob(p), filepattern) for f in l)
+        files = tuple(f for l in [glob.glob(p) for p in filepattern] for f in l)
     if len(files)==0:
         raise Exception('No valid file found with pattern %r and time %r'%(filepattern, time))
     verbose('number of matching files: %s'%(len(files)))
     #verbose('- %s'%('\n- '.join(files)))
     if time:
-        time = map(datetime, time[:2])
+        time = list(map(datetime, time[:2]))
     vardict = dict()
     # Load grib data
     for f in files:
@@ -1758,7 +1755,7 @@ def grib_read_files(
                     # or use dataDate & dataTime & forecastTime ??
                     else:
                         raise Exception('Don\'t know how to handle datetime for message:\n%r'%(m))
-                    if isinstance(dt, basestring):
+                    if isinstance(dt, six.string_types):
                         dt = datetime.datetime.strptime(dt, '%Y%m%d%H%M%S')
                     if time and (dt < time[0] or dt >= time[1]):
                         continue
@@ -1782,11 +1779,11 @@ def grib_read_files(
                 del ms
     # Transform loaded data into cdms2 variable
     kwgrid = kwfilter(kwargs, 'grid')
-    for n,p in vardict.iteritems():
+    for n,p in six.iteritems(vardict):
         if not p:
             vardict[n] = None
             continue
-        p = sorted(p, lambda a,b: cmp(a['datetime'], b['datetime']))
+        p = sorted(p, key=lambda a: a['datetime'])
         time = create_time([pp['datetime'] for pp in p])
         lat = create_lat(p[0]['latitudes'])
         lon = create_lon(p[0]['longitudes'])
@@ -1795,34 +1792,35 @@ def grib_read_files(
             id='_'.join(n.split()), long_name=n,
         )
         var.setAxis(0, time)
-        set_grid(var, vacumm.misc.grid.create_grid(lon, lat))
-        vatts = atts=atts[iv] if atts is not None and iv<len(atts) else None
+        set_grid(var, create_grid(lon, lat))
+#        vatts = atts[iv] if atts is not None and iv<len(atts) else None # ?
+        vatts = atts[n] if atts is not None and n in atts else None
         if select:
             var = var(**select)
-        var = _process_var(var, torect, samp, grid, kwgrid, squeeze, atts)
+        var = _process_var(var, torect, samp, grid, kwgrid, squeeze, vatts)
         vardict[n] = var
     # Return variable or dict of variables
-    return vardict.values()[0] if (single and vardict) else vardict
+    return list(vardict.values())[0] if (single and vardict) else vardict
 
 
-def grib2nc(filepattern, varname):
+def grib2nc(filepattern, varname, ncoutfile=None):
     '''
     ***Currently for test purpose only***
     '''
     varlist = grib_read_files(filepattern, varname, verbose=True)
     if ncoutfile:
-        print>>sys.stderr, 'Writing to netcdf file:', ncoutfile
+        print('Writing to netcdf file:', ncoutfile, file=sys.stderr)
         netcdf3()
         if os.path.exists(ncoutfile):
-            print>>sys.stderr, 'File already exists:', ncoutfile
+            print('File already exists:', ncoutfile, file=sys.stderr)
             sys.exit(1)
         f = cdms2.open(ncoutfile, 'w')
         try:
-            for n,v in varlist.iteritems():
+            for n,v in six.iteritems(varlist):
                 if v is None:
-                    print>>sys.stderr, '  %r not found'%(n)
+                    print('  %r not found'%(n), file=sys.stderr)
                     continue
-                print>>sys.stderr, '  %r (%r)'%(v.id, n)
+                print('  %r (%r)'%(v.id, n), file=sys.stderr)
                 f.write(v)
         finally: f.close()
 
@@ -1837,48 +1835,51 @@ SHAPEFILE_POLYGONS = 5
 def read_shapefile(self, input, proj=False, inverse=False, clip=True,
         shapetype=None, min_area=None, sort=True, reverse=True, samp=1,
         clip_proj=True, m=None, getextended=False):
+    """Read geometries from a shapefile or a list of coordinates"""
 
     # Inits
     from_file = isinstance(input, str)
     if hasattr(m, 'map'): m = m.map
     default_proj = None if m is None else m
-
+    
     if from_file:
 
         # From a shapefile
-        if shapefile.endswith('.shp') and shapefile.endswith('.dbf'):
-            shapefile = shapefile[:-4]
+        if input.endswith('.shp') or input.endswith('.dbf'):
+            input = input[:-4]
         for ext in ('shp', ):#, 'dbf':
-            fname = '%s.%s'%(shapefile, ext)
+            fname = '%s.%s'%(input, ext)
             assert os.path.exists(fname), fname
         try:
-            from mpl_toolkits.basemap.shapefile import Reader
+            try:
+                from shapefile import Reader
+            except:
+                from mpl_toolkits.basemap.shapefile import Reader
             newreader = True
-            shp = Reader(shapefile)
+            shp = Reader(input)
             shapefile_type = shp.shapeType
-        except Exception, e:
-            print>>sys.stderr, 'Cannot read %s:\n%s\nTrying with shapelib'%(shapefile, e)
+        except Exception as e:
+            print('Cannot read %s:\n%s\nTrying with shapelib'%(input, e), file=sys.stderr)
             from shapelib import ShapeFile
             newreader = False
-            shp = ShapeFile(shapefile)
+            shp = ShapeFile(input)
             shapefile_type = shp.info()[1]
-        prefix = shapefile
-    #           dbf = dbflib.open(shapefile)
+    #           dbf = dbflib.open(input)
         if default_proj and (1, 1) == default_proj(1, 1):
             default_proj = None
     #    self._info = []
 
-    elif isinstance(shapefile, (list, N.ndarray)): # From coordinates
-        in_coords = shapefile
+    elif isinstance(input, (list, N.ndarray)): # From coordinates
+        in_coords = input
         shapefile_type = 5 if not len(in_coords) or in_coords[0].ndim==2 else 1
         self._info = []
 
     else:
 
         # From a Shapes (or super) instance
-        in_coords = shapefile.get_data(proj=False)
-        self._m = shapefile._m # overwrite m keyword
-        default_proj = shapefile._proj
+        in_coords = input.get_data(proj=False)
+        self._m = input._m # overwrite m keyword
+        default_proj = input._proj
         shapefile_type = [SHAPEFILE_POINTS, SHAPEFILE_POLYLINES,
             SHAPEFILE_POLYGONS][input._type]
         self._info = input._info
@@ -1892,13 +1893,13 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
     else:
         nshapes = 1
     coords = []
-    if input_type in [SHAPEFILE_POINTS, SHAPEFILE_MULTIPOINTS]: # A Point or MultiPoint file
+    if shapefile_type in [SHAPEFILE_POINTS, SHAPEFILE_MULTIPOINTS]: # A Point or MultiPoint file
         if shapetype is not None and shapetype != SHAPES_POINTS:
-            raise TypeError, 'Your shape type is not point'
+            raise TypeError('Your shape type is not point')
         stype = SHAPES_POINTS
 
         # Loop on shape groups
-        for iobj in xrange(nshapes):
+        for iobj in range(nshapes):
             if from_file:
                 if newreader:
                     all_points = shp.shape(iobj).shape.points
@@ -1913,22 +1914,22 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
 
 #               if from_file: self._info.append(dbf.read_record(iobj))
 
-    elif input_type in [SHAPEFILE_POLYLINES, SHAPEFILE_POLYGONS]: # A Polyline or Polygon file
+    elif shapefile_type in [SHAPEFILE_POLYLINES, SHAPEFILE_POLYGONS]: # A Polyline or Polygon file
 
         # Shape type
         if shapetype is not None:
             if shapetype == SHAPES_POINTS:
-                raise TypeError, 'Your shape type is point, not polyline or polygon'
+                raise TypeError('Your shape type is point, not polyline or polygon')
             else:
                 stype = shapetype
         else:
-            if input_type==SHAPEFILE_POLYLINES:
+            if shapefile_type==SHAPEFILE_POLYLINES:
                 stype = SHAPES_LINES
             else:
                 stype = SHAPES_POLYGONS
 
         # Loop on shape groups
-        for iobj in xrange(nshapes):
+        for iobj in range(nshapes):
             if from_file:
                 if newreader:
                     obj = shp.shapeRecord(iobj).shape
@@ -1939,7 +1940,7 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
                         all_polys = [all_points]
                     else:
                         all_polys = []
-                        for ip in xrange(nparts-1):
+                        for ip in range(nparts-1):
                             all_polys.append(all_points[obj.parts[ip]:obj.parts[ip+1]])#xxxxxxxx
                 else:
                     all_polys = shp.read_object(iobj).vertices()
@@ -1951,7 +1952,7 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
         xy = N.concatenate(coords)
 
     else:
-        raise TypeError, 'Input shapefile must only contains 2D shapes'
+        raise TypeError('Input shapefile must only contains 2D shapes')
 
     # Bounds
     if xy.shape[0]>0:
@@ -1976,9 +1977,9 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
         proj = proj
     elif default_proj is not None and (proj is None or proj is True):
         proj = default_proj # from basemap
-    elif isinstance(proj, basestring):
+    elif isinstance(proj, six.string_types):
         gg = None if xmin>xmax else ([xmin, xmax], N.clip([ymin, ymax], -89.99, 89.99))
-        kw = dict(proj=proj) if isinstance(proj, basestring) else {}
+        kw = dict(proj=proj) if isinstance(proj, six.string_types) else {}
         from .basemap import get_proj
         proj = get_proj(gg, **kw)
     else:
@@ -2026,7 +2027,7 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
 
         # Minimal area
         if min_area is not None and shaper is Polygon and min_area > 0.:
-            shapes = filter(lambda sh: sh.area() >= min_area, shapes)
+            shapes = [sh for sh in shapes if sh.area() >= min_area]
 
         # Store
         all_shapes.extend(shapes)
@@ -2070,341 +2071,6 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
         ymin=ymin, xmax=xmax, ymax=ymax, xpmin=xpmin, xpmax=xpmax, ypmin=ypmin,
         ypmax=ypmax, clip=clip, sorted=sorted, m_projsync=m_projsync)
 
-class CachedRecord:
-    """Abstract class for managing cached records
-
-    ** It cannot be used by itself **
-
-    The following class variables must be defined:
-
-    - _cache_file: cache file name
-    - _time_range: ('2000-12-01 12:00','2005-10-01','co') OR (1, 'day', 'cc')
-    - _var_info: (('lon','Longitude', 'degrees east', None),('hs','Wave Height', 'm', (0., 20)),)
-    - _station_info: (['Start Bay', '2007-12-25'],['Long Bay', '2004-05-18'])
-    - _dt: (1800, cdtime.Seconds)
-    - _time_units: 'seconds since 2000-01-01'
-
-    The following methods must be defined:
-
-    - _load_from_source_:
-    """
-    _verbose_level = 1
-    _missing_value = 1.e20
-
-    def __init__(self, time_range, **kwargs):
-
-        for key, val in kwargs.items():
-            key = '_'+key
-            if hasattr(self, key):
-                setattr(self, key, val)
-
-        self._cache_file = self._cache_file %vars()
-        self._update_mode = time_range in [None, 'update']
-        if self._update_mode:
-            time_range = 'all'
-        self._time_range = self._get_time_range_(time_range)
-
-        _var_names = [sn for sn, ln, un, vr in _var_info]
-        _station_info = [[name, comptime(time_origin)] for name,  time_origin in _buoy_info]
-
-        self._vars = {}
-        self.check_cache()
-
-
-    def _print_(self, text, level=2):
-        if self._verbose_level >= level:
-            if level == 1:
-                text = '!WARNING! '+text
-            text = '[%s] %s' %(self.buoy_type, text)
-            print text
-
-    def _warn_(self, text):
-        self._print_(text, level=1)
-
-    def show_variables(self):
-        """Print available variables"""
-        print 'Available variables:'.upper()
-        for n,v in self._vars.items():
-            print '%s: %s [%s]' % (n,v.long_name,v.units)
-
-    def get(self,var_name, time_range=None):
-        """Get a variable
-
-    var_name:
-        Name of the variable
-
-        Return: A 1D :mod:`MV2` variable
-
-        See: :meth:`plot()`, :meth:`show_variables()`
-        """
-        # Time range
-        time_range = self._get_time_range_(time_range)
-        if time_range != self._time_range:
-            self.load(time_range)
-        assert var_name.lower() in self._vars.keys(),' Wrong name of variable ("%s"). Please use .show_variables() to list available variables'%var_name.lower()
-        if time_range is None:
-            args = []
-        else:
-            args = [time_range]
-        return self._vars[var_name](*args)
-
-    def __call__(self,*args,**kwargs):
-        """Get a variable
-
-        @see: :meth:`get()`
-        """
-        return self.get(*args,**kwargs)
-
-    def plot(self,var_name,time_range=None,**kwargs):
-        """Plot a variable
-
-    var_name:
-        Name of the variable
-    time:
-        Plot only within this time range (like ('2007-01-01','2007-02-01','co')
-    show:
-        Show the figure [default: None]
-        - All other keywords are passed to :func:`vacumm.misc.plot.curve()`
-
-        Example:
-
-        >>> myvar = mybuoy.plot('baro')
-
-        See: :meth:`get()`, :meth:`show_variables()`
-        """
-#       # Time range
-#       time_range = self._get_time_range_(time_range)
-#       if time_range != self._time_range:
-#           self.load(time_range)
-#
-        # Variable
-        assert var_name.lower() in self._vars.keys(),' Wrong name of variable. Please use .show_variables() to list available variables'
-        var = self._vars[var_name]
-        if time_range is not None:
-            var = var(time_range)
-
-        # Keywords
-        defaults = {
-            'linestyle':'-',
-            'marker':'.',
-            'ms':4.,
-            'mfc':'#00ffff',
-            'title':'%s at %s buoy %s' % (var.long_name,self.buoy_type,self.buoy_id)
-        }
-        for att,val in defaults.items():
-            kwargs.setdefault(att,val)
-
-        # Plot
-        curve(var,**kwargs)
-
-    def save(self, file_name, mode='w', warn=True):
-
-        if len(self._vars) == 0:
-            self._warn_('No variables to save')
-            return
-        if file_name.endswith('.nc'):
-            if not os.access(file_name, os.W_OK):
-                if warn:
-                    self._warn_('No write access to file:'+file_name)
-                return
-            f = cdms2.open(file_name, mode)
-            for var in self._vars.values():
-                f.write(var)
-            for att in 'type', 'id', 'name':
-                att = 'buoy_'+att
-                setattr(f, att, getattr(self, att))
-            if hasattr(self, '_url'):
-                f.url = self._url
-            f.close()
-            if file_name == self._cache_file:
-                self._print_('Cache updated')
-            else:
-                self._print_('Saved to '+file_name)
-
-
-    def __init__(self, buoy, time_range, **kwargs):
-
-        # Search for the buoy
-        buoy_names = _channelcoast_list_(buoy)
-        assert len(buoy_names), 'No buoy matching: '+buoy
-        self.buoy_name = buoy_names[0]
-        self.buoy_id = buoy_id = self.buoy_name.replace(' ', '')
-        for buoy_name, time_origin in self._buoy_info:
-            if buoy_name == self.buoy_name:
-                self._time_origin = time_origin
-                break
-        self.buoy_type = self.__class__.__name__
-
-        # Tuning
-        for key, val in kwargs.items():
-            key = '_'+key
-            if hasattr(self, key):
-                setattr(self, key, val)
-
-        self._cache_file = self._cache_file %vars()
-        self._update_mode = time_range in [None, 'update']
-        if self._update_mode:
-            time_range = 'all'
-        self._time_range = self._get_time_range_(time_range)
-        self._vars = {}
-        self.check_cache()
-
-    def get(self, var_name, time_range=None):
-        time_range = self._get_time_range_(time_range)
-        if time_range != self._time_range:
-            self.load(time_range)
-        return _Buoy_.get(self, var_name, time_range)
-
-    def plot(self, var_name, time_range=None, **kwargs):
-        time_range = self._get_time_range_(time_range)
-        self.load(time_range)
-        return _Buoy_.plot(self, var_name, time_range, **kwargs)
-
-    def _get_time_range_(self, time_range):
-
-        if isinstance(time_range, (list, tuple)): # Directly specified
-            from .atime import time_selector
-            time_range = time_selector(*time_range)
-
-        elif time_range in  ('full', 'all', True, False): # Everything possible
-            time_range = (self._time_origin, now(True))
-
-        else :#if hasattr(self, '_time_range'): # Default specified time range
-            time_range = self._time_range
-
-        if len(time_range) == 2: # Default bound indicators
-            time_range += ('co', )
-
-        if time_range[0] < self._time_origin: # Check not too old
-            time_range = (self._time_origin, ) + time_range[1:]
-        return time_range
-
-    def _check_time_range_(self, time_range, time_axis, getbounds=False):
-        """Check if a time_range is included in an time axis"""
-
-        # Format time range
-        time_range = self._get_time_range_(time_range)
-
-        # Get right time axis
-        if isinstance(time_axis, dict):
-            if not len(time_axis):
-                res = (False, False)
-                if getbounds:
-                    res += (None, None)
-                return res
-            time_axis = time_axis.values()[0]
-        if cdms2.isVariable(time_axis):
-            time_axis = time_axis.getTime()
-
-        # Get axis range
-        nt = len(time_axis)
-        t0, t1 = time_axis.subAxis(0, nt, nt-1).asComponentTime()
-
-        # Convert to closed bounds
-        time_range = list(time_range)
-        for ibound, isign in (0, 1), (1, -1):
-            if time_range[2][ibound] == 'o':
-                time_range[ibound] = time_range[ibound].add(isign*self._dt[0], self._dt[1])
-
-        # Check bounds
-        res = (time_range[0] >= t0 or self._update_mode, time_range[1] <= t1)
-        if getbounds:
-            res += (t0, t1)
-        return res
-
-    def load(self, time_range):
-        """Check if time_range is included in in-memory variables, else, check cache and load from it"""
-        time_range = self._get_time_range_(time_range)
-        if self._vars == {} or \
-            self._check_time_range_(time_range, self._vars) != (True, True):
-            self.check_cache(time_range)
-
-    def check_cache(self, time_range=None):
-        """Update the cache"""
-
-        buoy_id = self.buoy_id
-
-        # Time bounds
-        time_range = self._get_time_range_(time_range)
-        self._print_('CHECK CACHE TIME RANGE '+str(time_range))
-        t0_request, t1_request, bb = time_range
-
-        # Update or create?
-        if time_range is None:raise 'a'
-        if not os.path.exists(self._cache_file%vars()):  # Create
-            self._print_('CREATE')
-            time_range = (time_range[0], time_range[1].add(-1, cdtime.Day), 'cc')
-            self._vars = self._load_from_source_(time_range[:2]+('cc', ))
-            self.save(self._cache_file%vars(), warn=False)
-
-        else: # Update
-
-            # Check cache time range
-            f = cdms2.open(self._cache_file)
-            cache_time = f.getAxis('time').clone()
-            f.close()
-            t0_good, t1_good, t0_cache, t1_cache = self._check_time_range_(time_range, cache_time, getbounds=True)
-
-            # Check first date
-            vars_new = {}
-            if not t0_good:
-                # First date of cache is too recent
-                vars_before = self._load_from_source_((t0_request, t0_cache, time_range[2][0]+'o'))
-                vars_current = self._load_from_cache_('all')
-                if len(vars_before):
-                    for vn in self._var_names:
-                        vars_new[vn] = (vars_before[vn], vars_current[vn])
-            # Check last date
-            if not t1_good:
-                vars_after = self._load_from_source_((t1_cache, t1_request, 'o'+time_range[2][1]))
-                if len(vars_after):
-                    if not len(vars_new):
-                        # We just append to file
-                        self._print_('APPEND TO FILE')
-                        self._vars = vars_after
-                        self.save(self._cache_file%vars(), 'a', warn=False)
-                        self._print_(' loading from cache '+str(time_range))
-                        self._load_from_cache_(time_range)
-                        return
-                    else:
-                        # We append to var before saving
-                        for vn in self._var_names:
-                            vars_new[vn] += (vars_after[vn], )
-
-            # Here we completely change the cache
-            if len(vars_new):
-
-                # Merge
-                self._print_('MERGING')
-                for ivar, (sn, ln, un, vr) in enumerate(self._var_info):
-                    self._vars[sn] = MV.concatenate(vars_new[sn])
-                    self._vars[sn].id = self._vars[sn].name = sn
-                    self._vars[sn].long_name = ln
-                    self._vars[sn].units = un
-
-                # Save
-                self.save(self._cache_file%vars(), warn=False)
-
-            # Update in memory variables
-            if self._check_time_range_(time_range, self._vars) != (True, True):
-                self._load_from_cache_(time_range)
-
-        gc.collect()
-
-    def _load_from_cache_(self, time_range=None):
-        """Load variables from cache"""
-        time_range = self._get_time_range_(time_range)
-        self._vars = {}
-        buoy_id  = self.buoy_id
-        f = cdms2.open(self._cache_file%vars())
-        for var_name in f.variables.keys():
-            self._vars[var_name] = f(var_name, time_range)
-        f.close()
-        return self._vars
-
-
-
-
 
 def write_snx(objects, snxfile, type='auto', mode='w', z=99, xfmt='%g', yfmt='%g', zfmt='%g', close=True):
     """Write points, lines or polygons in a sinusX file"""
@@ -2417,13 +2083,13 @@ def write_snx(objects, snxfile, type='auto', mode='w', z=99, xfmt='%g', yfmt='%g
         if type =='auto' or isinstance(objects[0][0], Point): type = 'point'
 
     # File
-    splitfile = False
+#    splitfile = False
     if isinstance(snxfile, file):
         f = snxfile
     elif '%i' not in snxfile:
         f = open(snxfile, mode)
     else:
-        splitfile = True
+#        splitfile = True
         snxfile = snxfile.replace('%i', '%%0%ii'%int(N.log10(len(objects))))
 
     # Loop on objects
@@ -2460,7 +2126,7 @@ def write_snx(objects, snxfile, type='auto', mode='w', z=99, xfmt='%g', yfmt='%g
 
         # Write
         # - splited file
-        if isinstance(snxfile, (str, unicode)) and '%' in snxfile:
+        if isinstance(snxfile, (str, six.text_type)) and '%' in snxfile:
             f = open(snxfile%i, mode)
         # - header
         if type.startswith('point'): # Points
@@ -2475,7 +2141,7 @@ def write_snx(objects, snxfile, type='auto', mode='w', z=99, xfmt='%g', yfmt='%g
             else:
                 zz = o[2]
             f.write(('%s %s %s'%(xfmt, yfmt, zfmt)+' A\n')%(o[0], o[1], zz))
-        if isinstance(snxfile, (str, unicode)) and '%' in snxfile:
+        if isinstance(snxfile, (str, six.text_type)) and '%' in snxfile:
             f.close()
     if not f.closed and close:
         f.close()

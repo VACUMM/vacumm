@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Module to archive files (codes, images, etc)"""
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -33,9 +33,11 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
-import os,re,zipfile,shutil
+from __future__ import absolute_import
+from __future__ import print_function
+import os, zipfile
 from tempfile import mkdtemp
-from vacumm.misc import FileTree
+from ..misc import FileTree
 import shutil
 
 __all__ = ['Archive', 'FigureArchive', 'CodeArchive']
@@ -43,23 +45,23 @@ __all__ = ['Archive', 'FigureArchive', 'CodeArchive']
 class Archive(FileTree):
     """Basic archive class, derived from a file tree"""
 
-    def __init__(self,input_dir,**kwargs):
+    def __init__(self, input_dir, **kwargs):
 
         kwargs.setdefault('scan',False)
-        FileTree.__init__(self,input_dir,relative=True,**kwargs)
+        FileTree.__init__(self, input_dir, relative=True,**kwargs)
 
-    def __call__(self,*args,**kwargs):
+    def __call__(self, *args, **kwargs):
         self.zipto(*args,**kwargs)
 
-    def zip_to(self,zip_file=None,quiet=False,append=False):
+    def zip_to(self, zip_file=None, quiet=False, append=False):
         """Create a zip with all files
 
         @keyparam zip_file: Zip file name or zipfile.ZipFile instance
         @keyparam append: Append to archive instead of erasing
         @keyparam quiet: Say nothing
         """
-        if zip_file is None: zip_file = input_dir+'.zip'
-        if not quiet: print 'Zipping directory %s to %s...'% (self._input_dir,zip_file)
+        if zip_file is None: zip_file = self._input_dir + '.zip'
+        if not quiet: print('Zipping directory %s to %s...'% (self._input_dir,zip_file))
         if not isinstance(zip_file,zipfile.ZipFile):
             mode = 'w'
             if os.path.exists(zip_file):
@@ -73,7 +75,7 @@ class Archive(FileTree):
 
         # Generic archiving
         self._archive_to_('zip',quiet)
-        if not quiet: print 'Created zip archive', zip_file
+        if not quiet: print('Created zip archive', zip_file)
 
     def copy_to(self,dstdir,quiet=False,append=False):
         archdir = os.path.join(dstdir,os.path.basename(self._input_dir))
@@ -81,12 +83,12 @@ class Archive(FileTree):
             if not append:
                 shutil.rmtree(archdir)
         else:
-            print 'creating',archdir
+            print('creating',archdir)
             os.makedirs(archdir)
         self._archdir = archdir
-        if not quiet: print 'Copying directory %s to %s...'% (self._input_dir,dstdir)
+        if not quiet: print('Copying directory %s to %s...'% (self._input_dir,dstdir))
         self._archive_to_('copy',quiet)
-        if not quiet: print 'Created archive copy', archdir
+        if not quiet: print('Created archive copy', archdir)
 
 
     def _archive_to_(self,archive_method,quiet,dstdir=None,workdir=None):
@@ -126,7 +128,7 @@ class Archive(FileTree):
 
             # Archive file
             archive_cmd(self._transfile,archfile)
-            if not quiet: print '  added',archfile
+            if not quiet: print('  added',archfile)
 
         shutil.rmtree(workdir)
 

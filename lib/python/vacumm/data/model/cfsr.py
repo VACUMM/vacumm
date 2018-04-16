@@ -42,6 +42,7 @@ __date__ = '2013-12-06'
 __doc__ = 'CFSR atmospheric model output manipulation'
 
 
+from vacumm.data import register_dataset
 from vacumm.data.misc.dataset import AtmosDataset
 
 
@@ -51,16 +52,18 @@ class CFSR(AtmosDataset):
 
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
-
+    name = 'cfsr'
+    domain='atmos'
+    description = "The CFSR atmospheric model"
     ncobj_specs = {
 
         # surface wind
         'u10m':{
-            'search':{'names':['10u', 'u10'], 'standard_names':['U-component_of_wind']},
+            'search':{'id':['10u', 'u10'], 'standard_names':['U-component_of_wind']},
             'squeeze':'z'
         },
         'v10m':{
-            'search':{'names':['10v', 'v10'], 'standard_names':['V-component_of_wind']},
+            'search':{'id':['10v', 'v10'], 'standard_names':['V-component_of_wind']},
             'squeeze':'z'
         },
 
@@ -68,6 +71,8 @@ class CFSR(AtmosDataset):
 
 
 
+# Register the class
+register_dataset(CFSR, warn=False)
 
 
 

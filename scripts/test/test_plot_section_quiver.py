@@ -24,9 +24,7 @@ for var in u,w:
 figfile = code_file_name(ext='png')
 if os.path.exists(figfile): os.remove(figfile)
 s = section2((u,w), quiver_norm=1, fill=False, show=False,
-    savefig=figfile, close=False, axes_aspect=1)
+    savefig=figfile, close=True, axes_aspect=1)
 
-# Result
-result = dict(files=figfile)
 
 

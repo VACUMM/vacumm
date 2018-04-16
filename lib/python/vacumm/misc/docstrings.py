@@ -5,7 +5,7 @@
 
     It requires python 2.7 and :mod:`sphinx.ext.napoleon` to work.
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -37,12 +37,14 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-from textwrap import dedent
-import re, inspect
+from __future__ import absolute_import
+from __future__ import print_function
+import inspect
+import six
 
-from sphinx.ext.napoleon import GoogleDocstring, NumpyDocstring
-from sphinx.ext.napoleon import Config
-from sphinx.util.docstrings import prepare_docstring
+from sphinx.ext.napoleon import NumpyDocstring
+#from sphinx.ext.napoleon import Config
+#from sphinx.util.docstrings import prepare_docstring
 
 def get_indent_int(line):
     for i, s in enumerate(line):
@@ -106,9 +108,9 @@ class Docstring2Params(dict):
         """
         # Selection of parameters
         if select is None:
-            select = self.keys()
+            select = list(self.keys())
             select.sort()
-        elif isinstance(select, basestring):
+        elif isinstance(select, six.string_types):
             select = [select]
 
         # Indentation
@@ -117,7 +119,7 @@ class Docstring2Params(dict):
             indent = 1
         elif not indent:
             indent = ''
-        if not isinstance(indent, (basestring, int)): # object
+        if not isinstance(indent, (six.string_types, int)): # object
             indent = get_indent_str(inspect.getsource(indent))
         if isinstance(indent, int):
             indent = indent_unit * indent
@@ -188,7 +190,7 @@ class DocFiller(object):
         for obj in objs+tuple(aliases.keys()):
             key =  obj.__name__
             if inspect.ismethod(obj):
-                key = obj.im_class.__name__+"_"+key
+                key = obj.__self__.__class__.__name__+"_"+key
             prefix = aliases[obj] if obj in aliases else ''
             self.content[key] = Docstring2Params(obj, prefix=prefix)
 
@@ -222,10 +224,10 @@ class DocFiller(object):
         indent = obj if indent is None else indent
         try:
             obj.__doc__ = obj.__doc__.format(**self.formatted(indent))
-        except KeyError, e:
-            if self.verbose: print 'Missing key for docfill: '+e.message
-        except Exception, e:
-            if self.verbose: print 'Docfill error:', e.message
+        except KeyError as e:
+            if self.verbose: print('Missing key for docfill: '+e.message)
+        except Exception as e:
+            if self.verbose: print('Docfill error:', e.message)
         return obj
 
     __call__ = docfill
@@ -237,7 +239,7 @@ docfill = docfiller.docfill
 if __name__=='__main__':
 
     df = DocFiller(Docstring2Params.format)
-    print df.content
+    print(df.content)
 
     @df
     def myfunc(arg):
@@ -250,6 +252,6 @@ if __name__=='__main__':
         """
         pass
 
-    print myfunc.__doc__
+    print(myfunc.__doc__)
 
 

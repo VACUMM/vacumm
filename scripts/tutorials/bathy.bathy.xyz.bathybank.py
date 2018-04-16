@@ -1,5 +1,5 @@
 # Creation de fausses bathymetries xyz
-import numpy as N,  os
+import numpy as N,  os, pylab as P
 from vacumm.bathy.bathy import XYZBathy,  XYZBathyBank
 # - fonction generatrice
 def gene_bathy(xc, yc, r, n):
@@ -44,7 +44,7 @@ bank['large'].long_name = 'Large'
 
 # Suppression d'une bathy
 bank.remove('south')
-#  on peut aussi utiliser: 
+#  on peut aussi utiliser:
 #  >>> bank -= 'south'
 #  >>> bank -= bsouth
 #  >>> del bank['south']
@@ -53,5 +53,6 @@ bank.remove('south')
 bsouth = bank['north'].load()
 
 # Plot de l'ensemble
-bank.plot(size=15,  map_proj='cyl', map_res=None, savefigs=__file__, 
+bank.plot(size=15,  map_proj='cyl', map_res=None, savefigs=__file__,
     savefigs_pdf=True, show=False)
+P.close()

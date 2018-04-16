@@ -7,7 +7,7 @@ List of all available colormaps in matplotlib, including VACUMM colormaps
 .. image:: misc-color-cmaps.png
 
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -39,9 +39,10 @@ List of all available colormaps in matplotlib, including VACUMM colormaps
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
+from __future__ import print_function
 import re
 import os
-import glob
 import colorsys
 from copy import deepcopy
 
@@ -54,6 +55,9 @@ from matplotlib.cm import cmap_d
 import matplotlib.cbook as cbook
 from mpl_toolkits.basemap import cm as basemap_cm
 from genutil import minmax
+import six
+from six.moves import range
+from six.moves import zip
 try:
     import cmocean.cm as cmoceancm
 except:
@@ -110,7 +114,6 @@ __all__ = ['cmap_custom', 'cmap_bwr', 'cmap_bwre', 'cmap_br', 'cmap_wr', 'cmap_w
     'change_luminosity', 'saturate', 'desaturate', 'change_saturation',
     'change_value', 'pastelise'
     ]
-__all__.sort()
 
 # Color maps
 # ----------
@@ -279,7 +282,7 @@ def cmap_magic(n=None, stretch = 0.4, mode='normal', white='.95', name='vacumm_m
     n, pos = _nlev_(n)
     kwargs.setdefault('smoothed', False)
     for att in 'positive', 'negative', 'anomaly',  'symetric': # compat
-        if kwargs.has_key(att):
+        if att in kwargs:
             if kwargs[att]:
                 mode = att
             del kwargs[att]
@@ -925,14 +928,14 @@ def cmap_chla(name='vacumm_chla', smoothed=True, **kwargs):
         112,108,109,107,106,94,98,99,100,101,
         102,104,92,86,85,83,84,81,80,79,
         78,77,76,75,74,73,72,70,69,68,
-        067,47, 47])
+        0o67,47, 47])
     indtab = -(indtab - 127)
 
     param_red = param_red[indtab]
     param_green = param_green[indtab]
     param_blue = param_blue[indtab]
 
-    colors = zip(param_red,param_green,param_blue)
+    colors = list(zip(param_red,param_green,param_blue))
 
     func = cmap_regular_steps if not smoothed else cmap_smoothed_regular_steps
     return func(colors, name=name, **kwargs)
@@ -975,7 +978,7 @@ def cmap_previmer2(name='vacumm_previmer2', **kwargs):
     g /= 255.
     b = N.array([229,213,208,209,159,173,119,205,222,242,252,252,252,252,252,252,252,252,228,155,132,132,126,105,82,49,15,4,4,4,4,4,4,4.])
     b /= 255.
-    colors = zip(r,g,b)
+    colors = list(zip(r,g,b))
     cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
@@ -1026,7 +1029,7 @@ def cmap_ssec(name='vacumm_ssec', **kwargs):
     g = d[1::3]/255.
     b = d[2::3]/255.
 
-    colors = zip(r,g,b)
+    colors = list(zip(r,g,b))
     cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
@@ -1087,7 +1090,7 @@ def cmap_ncview_rainbow(name='vacumm_ncview_rainbow', **kwargs):
     g = d[1::3]/255.
     b = d[2::3]/255.
 
-    colors = zip(r,g,b)
+    colors = list(zip(r,g,b))
     cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
@@ -1330,7 +1333,7 @@ def cmap_nice_gfdl(name='vacumm_nice_gfdl', **kwargs):
     g = d[1::3]
     b = d[2::3]
 
-    colors = zip(r,g,b)
+    colors = list(zip(r,g,b))
     cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
@@ -2114,7 +2117,7 @@ def cmap_eke(name='vacumm_eke', **kwargs):
     0])
 
 
-    colors = zip(r,g,b)
+    colors = list(zip(r,g,b))
     cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
@@ -2262,7 +2265,7 @@ def get_cmap(cmap=None, errmode=None, **kwargs):
     """
     if isinstance(cmap, Colormap):
        return cmap
-    if isinstance(cmap, basestring):
+    if isinstance(cmap, six.string_types):
         if not kwargs: # Try an already registered colormap
             try:
                 return P.get_cmap(cmap)
@@ -2333,7 +2336,7 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), fig=No
     if savefig is not None:
         fig.savefig(savefig, **kwfilter(kwargs, 'savefig'))
     if savefigs is not None:
-        from plot import savefigs as Savefigs
+        from .plot import savefigs as Savefigs
         Savefigs(savefigs, fig=fig, **kwfilter(kwargs, 'savefigs'))
     if show:
         #fig.show()
@@ -2386,7 +2389,7 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5,
     assert ncmap, 'No valid cmap'
 
     # Sort
-    cmaps.sort(cmp=lambda a, b: cmp(a.name, b.name))
+    cmaps.sort(key=lambda a: a.name)
 
     # Setup figure
     if fig is None:
@@ -2402,7 +2405,7 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5,
         figwidth = 6.
     if figsize is None:
         onecol = figwidth / ncol
-        onerow = figwidth * aspect * .8
+        onerow = onecol * aspect * .8
         figheight = onerow * nrow
         figsize = (figwidth, figheight)
     if figsize is not False:
@@ -2423,7 +2426,7 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5,
     if savefig is not None:
         P.savefig(savefig, fig=fig, **kwsf)
     if savefigs is not None:
-        from plot import savefigs as _savefigs
+        from .plot import savefigs as _savefigs
         _savefigs(savefigs, fig=fig, **kwsfs)
     if show: fig.show()
     if close: P.close(fig)
@@ -2444,12 +2447,12 @@ def cmaps_registered(include=None, exclude=None, names=True):
     names:
         Return names OR colormaps.
     """
-    cmap_names = cmap_d.keys()
+    cmap_names = list(cmap_d.keys())
     cmap_names.sort()
     if include is None: include = []
-    elif isinstance(include, basestring): include = [include]
+    elif isinstance(include, six.string_types): include = [include]
     if exclude is None: exclude = []
-    elif isinstance(exclude, basestring): exclude = [exclude]
+    elif isinstance(exclude, six.string_types): exclude = [exclude]
     for inc in include:
         cmap_names = [name for name in cmap_names if name.startswith(inc)]
     for exc in exclude:
@@ -2497,7 +2500,7 @@ def print_cmaps_gmt():
     --------
     :func:`cmap_gmt` :func:`cmaps_gmt` :func:`get_cmap`
     """
-    print 'List of available GMT colormaps: '+', '.join(cmaps_gmt(names=True))
+    print('List of available GMT colormaps: '+', '.join(cmaps_gmt(names=True)))
 
 _re_split_gmt = re.compile(r'[\t/\-]+').split
 def cmap_gmt(name, register=True, **kwargs):
@@ -2569,7 +2572,7 @@ def cmap_gmt(name, register=True, **kwargs):
     g.append(gtemp)
     b.append(btemp)
 
-    nTable = len(r)
+#    nTable = len(r)
     x = N.array( x , 'f')
     r = N.array( r , 'f')
     g = N.array( g , 'f')
@@ -2597,7 +2600,7 @@ def cmap_gmt(name, register=True, **kwargs):
         blue.append([xNorm[i],b[i],b[i]])
     colorDict = {"red":red, "green":green, "blue":blue}
     if register:
-        if isinstance(register, basestring): name = register
+        if isinstance(register, six.string_types): name = register
     return cmap_custom(colorDict, name, register=register, **kwargs)
 
 
@@ -2722,8 +2725,10 @@ def change_luminosity(c, f):
 
     :Params:
         - **c**: color
-        - **f**: Factor between 0 and 1 with null impact at 0
+        - **f**: Factor between 0 and 1 with null impact at 0.5
     """
+    if f==0.5:
+        return c
     f = 2*f-1
     if f>0:
         return whiten(c, f)
@@ -2901,7 +2906,7 @@ class StepsNorm(Normalize):
                 val = ma.log(val)
 
             # Inside
-            for ilev in xrange(nlev-1):
+            for ilev in range(nlev-1):
                 lev0, lev1 = self.levels[ilev:ilev+2]
                 p0, p1 = self.positions[ilev:ilev+2]
                 if self.log:
@@ -2950,7 +2955,7 @@ class StepsNorm(Normalize):
 
             # Inside
             nlev = len(self.levels)
-            for ilev in xrange(len(self.levels)-1):
+            for ilev in range(len(self.levels)-1):
                 lev0, lev1 = self.levels[ilev:ilev+2]
                 p0, p1 = self.positions[ilev:ilev+2]
                 if self.log:

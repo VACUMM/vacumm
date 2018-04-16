@@ -6,17 +6,37 @@ Installations
 
 .. highlight:: bash
 
+
+Quick installation with :program`conda`
+---------------------------------------
+
+Conda is a package manager that provides pre-compiled binaries
+for Windows, OSX and Linux.
+
+Install `conda <https://conda.io/docs/index.html>`_ first
+from this `page <https://conda.io/docs/install/quick.html>`_.
+Miniconda is a mini installer it is good to start with.
+
+Then, you can install vacumm and its dependecies::
+
+    $ conda install -c conda-forge -c uvcdat -c vacumm -c acme vacumm
+
+For more option, please read the conda documentation.
+
+From sources
+------------
+
 In short
---------
+........
 
 Here is an example of basic installation inside UV-CDAT, 
-with some OpenMP parallelisation:
+with some OpenMP parallelisation::
 
     $ cp setup.cfg.omp setup.cfg
     $ python setup.py install
 
 For all users
--------------
+.............
 
 This installation puts the library within the python tree.
 The :program:`python` excutable must be the one provided by UV-CDAT
@@ -32,7 +52,7 @@ For more options::
 
 
 For our own usage
------------------
+.................
 
 In this case, the library is installed in the user's directory.
 
@@ -59,7 +79,7 @@ and to the executables::
 .. _user.install.install.dev:
     
 Local installation for a developper
------------------------------------
+...................................
 
 VACUMM must be used directly after an untar or a checkout by
 compiling the extensions and setting the variables::

@@ -71,4 +71,4 @@ curve2(xe_cub[:, 15], **kwplot)
 xscale(1.1, keep_min=1)
 # - save
 savefigs(__file__)
-
+P.close()

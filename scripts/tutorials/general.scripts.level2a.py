@@ -17,8 +17,9 @@ depth = ds.get_depth(squeeze=1)
 mld = mixed_layer_depth(temp, depth, mode='deltatemp')
 
 # Plot
-map2(mld, proj='merc', figsize=(6, 6), autoresize=0, 
-    colorbar_shrink=0.7, right=1, savefigs=__file__, show=False)
+map2(mld, proj='merc', figsize=(6, 6), autoresize=0,
+    colorbar_shrink=0.7, right=1, savefigs=__file__, show=False,
+    close=True)
 
 
 print 'Done'

@@ -50,6 +50,7 @@ if mld.ndim==3:
 # Plot
 map2(mld, proj='merc', figsize=(6, 6), autoresize=0,
     title=options.title, colorbar_shrink=0.7, right=1,
-    show=options.disp, savefig=options.outputfig, savefig_verbose=True)
+    show=options.disp, savefig=options.outputfig, savefig_verbose=True,
+    close=True)
 
 

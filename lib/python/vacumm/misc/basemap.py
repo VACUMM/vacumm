@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 """Utilities derived from mpl_toolkits.basemap"""
 
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -33,25 +33,24 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-import os, cPickle, stat
-
+from __future__ import absolute_import
+from __future__ import print_function
+import six.moves.cPickle, stat
 import os
+
 import numpy as N
 from mpl_toolkits.basemap import Basemap, __version__ as basemap_version
 from mpl_toolkits.basemap.proj import Proj
 from matplotlib import get_configdir
-from _geoslib import Polygon
-from genutil import minmax
 
 from ...__init__ import vacumm_warn
 from ...config import VACUMM_CFG
-from .misc import kwfilter, dict_check_defaults
+from .misc import kwfilter, dict_check_defaults, dirsize, zoombox
 from .constants import EARTH_RADIUS
 from .grid import get_xy
-from .poly import create_polygon
 
 __all__  = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_map',
-    'merc', 'proj', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
+    'merc', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
     'create_map', 'RSHPERE_WGS84', 'GSHHS_RESLIST']
 
 #: Earth radius of wgs84 ellipsoid
@@ -103,12 +102,12 @@ def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
     # Guess
     file = _cached_map_file_(mapdir=mapdir, **kwargs)
     if file is None: return None
-    if verbose: print 'Checking', file, os.path.exists(file)
+    if verbose: print('Checking', file, os.path.exists(file))
     if not os.path.exists(file): return None
-    if verbose: print 'Loadind cached map from '+os.path.basename(file)
+    if verbose: print('Loadind cached map from '+os.path.basename(file))
     try:
         f = open(file)
-        m = cPickle.load(f)
+        m = six.moves.cPickle.load(f)
         f.close()
         return m
     except:
@@ -128,7 +127,7 @@ def cache_map(m, mapdir=None):
         try:
             f = open(file, 'wb')
             m.ax = None
-            cPickle.dump(m, f)
+            six.moves.cPickle.dump(m, f)
             f.close()
         except:
             vacumm_warn('Error while trying to cache basemap instance into: '+
@@ -155,7 +154,6 @@ def clean_cache(mapdir=None, maxsize=None):
         Default value from :confopt:`[vacumm.misc.grid.basemap]max_cache_size`
         configuration value.
     """
-    from ...misc.misc import dirsize
     mapdir = get_map_dir(mapdir)
     if mapdir is None:
         mapdir = os.path.join(get_configdir(), 'basemap', 'cached_maps')
@@ -164,7 +162,7 @@ def clean_cache(mapdir=None, maxsize=None):
         maxsize = VACUMM_CFG['vacumm.misc.grid.basemap']['max_cache_size']
     if cache_size>maxsize:
         files = [os.path.join(mapdir, ff) for ff in os.listdir(mapdir)]
-        files.sort(cmp=lambda f1, f2: cmp(os.stat(f1)[8], os.stat(f2)[8]))
+        files.sort(key=lambda f1: os.stat(f1)[8])
         for ff in files:
             cache_size -= os.path.getsize(ff)
             try:
@@ -192,7 +190,7 @@ def _cached_map_file_(m=None, mapdir=None, **kwargs):
     if not os.path.exists(mapdir):
         os.makedirs(mapdir)
     if m is None:
-        if kwargs.has_key('resolution') and kwargs['resolution'] is None:
+        if 'resolution' in kwargs and kwargs['resolution'] is None:
             return None
         res = kwargs['resolution']
         kwargs['resolution'] = None
@@ -325,7 +323,6 @@ def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
 
     .. todo:: Merge with :func:`create_map`
     """
-    from vacumm.misc.grid import misc
     if proj is None:
         proj = 'merc'
     if auto is None:

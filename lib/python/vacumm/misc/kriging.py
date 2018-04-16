@@ -2,7 +2,7 @@
 """
 Kriging utilities inspired from the AMBHAS library (http://www.ambhas.com/).
 """
-# Copyright or © or Copr. Actimar/IFREMER (2013-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2013-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -34,15 +34,18 @@ Kriging utilities inspired from the AMBHAS library (http://www.ambhas.com/).
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
 import gc
-import multiprocessing
 from multiprocessing import Pool,  cpu_count
 import warnings
+import six
+from six.moves import range
+from six.moves import zip
 
 import numpy as N
 import pylab as P
 
-from .misc import kwfilter
+from .misc import kwfilter, closeto
 from .grid import get_distances
 
 if not hasattr(N, 'isclose'):
@@ -100,7 +103,7 @@ def variogram_model_type(mtype=None):
         if i<0 or i>len(VARIOGRAM_MODEL_TYPES)-1:
             raise KrigingError(errmsg)
         return VARIOGRAM_MODEL_TYPES[i]
-    if not isinstance(mtype, basestring):
+    if not isinstance(mtype, six.string_types):
         raise KrigingError(errmsg)
     for vtype in VARIOGRAM_MODEL_TYPES:
         if vtype.startswith(mtype): return vtype
@@ -124,16 +127,15 @@ def variogram_model(mtype, n, s, r, nrelmax=0.2):
         return lambda h: n + (s-n) * (1 - N.exp(-3*h/r))
 
     if mtype=='spherical':
-        return lambda h: n + (s-n)*((1.5*h/r - 0.5*(h/r)**3)*int(h<=r) + int(h>r))
+        return lambda h: n + (s-n)*((1.5*h/r - 0.5*(h/r)**3)*(h<=r) + 1*(h>r))
 
     if mtype=='gaussian':
         return lambda h: n + (s-n)*(1-N.exp(-3*h**2/r**2))
 
-    raise KrigingError(errmsg)
 
 class VariogramModel(object):
     """Class used when fitting a variogram model to data to better control params"""
-    param_names = list(variogram_model.func_code.co_varnames[1:])
+    param_names = list(variogram_model.__code__.co_varnames[1:])
     param_names.remove('nrelmax')
     def __init__(self, mtype, **kwargs):
         self.mtype = variogram_model_type(mtype)
@@ -294,7 +296,7 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
     # - rebinning
     db = N.empty(nbin)
     vb = N.empty(nbin)
-    for ib in xrange(nbin):
+    for ib in range(nbin):
         iib = ii[edges[ib]:edges[ib+1]+1]
         db[ib] = d[iib].mean()
         vb[ib] = v[iib].mean()
@@ -436,7 +438,7 @@ def cloud_split(x, y, npmax=1000, getdist=True, getcent=True):
     while csize > npmax:
         centroids, global_distorsion = kmeans(points, nclust)
         indices, distorsions = vq(points, centroids)
-        sindices = [ii[indices==nc] for nc in xrange(nclust)]
+        sindices = [ii[indices==nc] for nc in range(nclust)]
         csizes = [sii.shape[0] for sii in sindices]
         order = N.argsort(csizes)[::-1]
         csize = csizes[order[0]]
@@ -635,7 +637,7 @@ class CloudKriger(object):
             self.xc = []
             self.yc = []
             self.zc = []
-            for ic in xrange(self.ncloud):
+            for ic in range(self.ncloud):
 
                 # Positions and data
                 for xyz in 'x', 'y', 'z':
@@ -682,6 +684,8 @@ class CloudKriger(object):
             return self.variogram_fitting_results['params']['s']
         return vgf(1e60)
 
+    sill = property(fget=get_sill, doc="Sill")
+
     def set_variogram_func(self, vgf):
         """Set the variogram function"""
         if not callable(vgf):
@@ -717,7 +721,7 @@ class CloudKriger(object):
         Ainv = []
         AA = []
         next = int(not self._simple)
-        for ic in xrange(self.ncloud):
+        for ic in range(self.ncloud):
 
             # Get distance between input points
             if len(self._dd)<ic+1:
@@ -798,7 +802,7 @@ class CloudKriger(object):
         # Loop on clouds
         Ainv = self.Ainv
         next = int(not self._simple)
-        for ic in xrange(self.ncloud): # TODO: multiproc here?
+        for ic in range(self.ncloud): # TODO: multiproc here?
 
             # Distances to output points
             # dd = cdist(N.transpose([xi,yi]),N.transpose([xo,yo])) # TODO: test cdist
@@ -816,6 +820,7 @@ class CloudKriger(object):
 
             # Block kriging
             if blockr:
+                from scipy.spatial import cKDTree
                 tree = cKDTree(N.transpose([xo, yo]))
                 Bb = B.copy()
                 for i, iineigh in enumerate(tree.query_ball_tree(tree, blockr)):
@@ -827,7 +832,6 @@ class CloudKriger(object):
 
             # Simple kriging with adjusted mean for long distance values
             if self._simple and self.farvalue is not None:
-                s = self.get_sill()
                 Ais = self.get_sill() * Ainv[ic].sum(axis=0)
                 mean = self.farvalue - (self.zc[ic] * Ais).sum()
                 mean /= (1 - Ais.sum())

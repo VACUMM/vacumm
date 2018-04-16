@@ -6,7 +6,7 @@
 
     Tutorials: :ref:`user.tut.misc.variables.axes`
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -38,20 +38,24 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
 import re
 from re import match
-from operator import isSequenceType,isNumberType
-from fnmatch import fnmatch
+from numbers import Number
+from collection import Sequence
 from warnings import warn
+import six
+from six.moves import range
+from six.moves import zip
+
 
 import numpy as N, cdms2, MV2
 from cdms2.axis import AbstractAxis, FileAxis
 from cdms2.coord import TransientAxis2D
 
 from vacumm import VACUMMError
-from .misc import check_def_atts, dict_check_defaults, match_atts
-
-cdms = cdms2
+from .misc import (check_def_atts, dict_check_defaults, match_atts, 
+    set_atts, get_atts)
 
 
 __all__ = ['isaxis', 'islon', 'islat', 'islev', 'isdep', 'istime',
@@ -59,75 +63,86 @@ __all__ = ['isaxis', 'islon', 'islat', 'islev', 'isdep', 'istime',
     'get_checker', 'is_geo_axis_type', 'axis_type',
     'create_time', 'create_lon', 'create_lat', 'create_dep', 'create_depth',
     'guess_timeid', 'get_order', 'set_order', 'order_match', 'merge_orders',
-    'check_order',  'create_axis', 'BASIC_AXIS_SPECS', 'BASIC_AXIS_DEFAULTS']
+    'check_order',  'create_axis', 'BASIC_AXIS_SPECS', 'BASIC_AXIS_DEFAULTS', 
+    'create_axes2d', 'axes2d', 'num2axes2d']
 
 
 BASIC_AXIS_SPECS = {
     'lon': dict(
         id = 'lon',
         standard_name = 'longitude',
-        units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 'degreee', 'degreese'],
+        units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 
+            'degreee', 'degreese'],
         long_name = 'longitude',
+        axis = 'X',
         ),
     'lat': dict(
         id = 'lat',
         standard_name = 'latitude',
-        units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 'degreen', 'degreesn'],
+        units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 
+            'degreen', 'degreesn'],
         long_name='latitude',
+        axis = 'Y',
     ),
     'lev': dict(
         id = ['dep','lev','plev'],
         standard_name = ['depth','pressure_level'],
         unit = ['m','meters','hpa'],
-        long_name = ['depth','pressure level','profondeur','pression','sigma','geopotential'],
+        long_name = ['depth', 'pressure level', 'profondeur', 'pression', 
+            'sigma', 'geopotential'],
+        axis = 'Z',
     ),
     'dep': dict(
         id = ['dep'],
         standard_name = ['depth'],
         unit = ['m','meters'],
         long_name = ['depth','profondeur'],
+        axis = 'Z',
     ),
     'time': dict(
         id = ['time','date'],
         standard_names = ['time'],
         units = None,
-        long_names = ['time','temps','date'],
+        long_names = ['time', 'temps', 'date'],
+        axis = 'T',
     ),
 }
 
 
 BASIC_AXIS_DEFAULTS = {
-    'lon': dict(units='degrees_east',standard_name='longitude',long_name='Longitude',axis='X'),
-    'lat': dict(units='degrees_north',standard_name='latitude',long_name='Latitude',axis='Y'),
+    'lon': dict(units='degrees_east', standard_name='longitude', 
+        long_name='Longitude',axis='X'),
+    'lat': dict(units='degrees_north', standard_name='latitude', 
+        long_name='Latitude',axis='Y'),
     'lev': dict(axis='Z',long_name='Levels'),
     'dep': dict(axis='Z',long_name='Depth'),
     'time': dict(axis='T', standard_name='time', long_name='Time'),
 }
 
 
-def isaxis(axis):
-    if hasattr(axis, 'isAbstractCoordinate') and axis.isAbstractCoordinate():
+def isaxis(obj):
+    if hasattr(obj, 'isAbstractCoordinate') and obj.isAbstractCoordinate():
         return True
-    return isinstance(axis,(AbstractAxis, FileAxis, TransientAxis2D))
+    return isinstance(obj,(AbstractAxis, FileAxis, TransientAxis2D))
 
-def islon(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
-    """Check if an axis is of longitude type"""
+def islon(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+    """Check if an object is of longitude type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['lon']
     dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['lon'])
-    return is_geo_axis_type(axis, 'x', defaults=defaults, ro=ro, checkatts=checkatts,
+    return is_geo_axis_type(obj, 'x', defaults=defaults, ro=ro, checkatts=checkatts,
         checkaxis=checkaxis, **attchecks)
 
-def islat(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
-    """Check if an axis is of latitude type"""
+def islat(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+    """Check if an object is of latitude type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['lat']
     dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['lat'])
-    return is_geo_axis_type(axis, 'y', defaults=defaults, ro=ro, checkatts=checkatts,
+    return is_geo_axis_type(obj, 'y', defaults=defaults, ro=ro, checkatts=checkatts,
         checkaxis=checkaxis, **attchecks)
 
-def islev(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
-    """Check if an axis is of level type"""
+def islev(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+    """Check if an object is of level type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['lev']
     dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['lev'])
@@ -136,12 +151,12 @@ def islev(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attch
             del attchecks['units']
         if 'long_name' in attchecks:
             del attchecks['long_name']
-    return is_geo_axis_type(axis, 'z', defaults=defaults, ro=ro, checkatts=checkatts,
+    return is_geo_axis_type(obj, 'z', defaults=defaults, ro=ro, checkatts=checkatts,
         checkaxis=checkaxis, **attchecks)
 islevel = islev
 
-def isdep(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
-    """Check if an axis is of depth type"""
+def isdep(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+    """Check if an object is of depth type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['lev']
     dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['dep'])
@@ -150,12 +165,12 @@ def isdep(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attch
             del attchecks['units']
         if 'long_name' in attchecks:
             del attchecks['long_name']
-    return is_geo_axis_type(axis, 'z', defaults=defaults, ro=ro, checkatts=checkatts,
+    return is_geo_axis_type(obj, 'z', defaults=defaults, ro=ro, checkatts=checkatts,
         checkaxis=checkaxis, **attchecks)
 isdepth = isdep
 
-def istime(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
-    """Check if an axis is of time type"""
+def istime(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+    """Check if an object is of time type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['time']
     dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['time'])
@@ -165,11 +180,11 @@ def istime(axis, defaults=None, ro=False, checkaxis=True, checkatts=True, **attc
     from .atime import are_good_units
     units.append(are_good_units)
     attchecks['units'] = units
-    myistime = is_geo_axis_type(axis, 't', defaults=defaults, ro=ro, checkatts=checkatts,
+    myistime = is_geo_axis_type(obj, 't', defaults=defaults, ro=ro, checkatts=checkatts,
         checkaxis=checkaxis, **attchecks)
     if myistime and not ro:
         try:
-            axis.calendar = 'gregorian'
+            obj.calendar = 'gregorian'
         except:
             pass
     return myistime
@@ -194,7 +209,7 @@ def get_checker(name):
     >>> get_checker('lon')(myaxis)
     """
     errmsg = 'Input must be a generic name axis, like "x" or "lon"'
-    if not isinstance(name, basestring):
+    if not isinstance(name, six.string_types):
         raise TypeError(errmsg)
     name = name.lower()
     if name in ('x', 'lon', 'longitude'):
@@ -207,9 +222,9 @@ def get_checker(name):
         return istime
     raise TypeError(errmsg)
 
-def is_geo_axis_type(axis, atype, defaults=None, ro=False, checkaxis=True,
+def is_geo_axis_type(obj, atype, defaults=None, ro=False, checkaxis=True,
         checkatts=True, **attchecks):
-    """Check if an axis is of a specific type
+    """Check if an object is of a specific type
 
     Parameters
     ----------
@@ -219,12 +234,6 @@ def is_geo_axis_type(axis, atype, defaults=None, ro=False, checkaxis=True,
         Axis type as one of 'x', 'y', 'z' or 'z'.
     ids: optional
         List od ids to check.
-    standard_names: optional
-        List of standard_names to check.
-    long_names: optional
-        List of long_names to check.
-    units: optional
-        List of units to check.
     ro: optional
         Read-only mode?
     checkatts: optional
@@ -232,6 +241,10 @@ def is_geo_axis_type(axis, atype, defaults=None, ro=False, checkaxis=True,
     attchecks: optional
         Extra keywords are attributes name and checklist that
         will checks using :func:`~vacumm.misc.misc.match_atts`.
+        
+    Return
+    ------
+    bool
 
     """
     if defaults is None:
@@ -241,10 +254,10 @@ def is_geo_axis_type(axis, atype, defaults=None, ro=False, checkaxis=True,
     if checkaxis:
 
         # Is it an axis?
-        if not isaxis(axis):
+        if not isaxis(obj):
             return False
 
-        # Use for instance axis.isLongitude()
+        # Use for instance obj.isLongitude()
         if atype in ['t', 'time']:
             name = 'Time'
         elif atype in ['z', 'lev', 'dep']:
@@ -256,20 +269,20 @@ def is_geo_axis_type(axis, atype, defaults=None, ro=False, checkaxis=True,
             atype = 'x'
         else:
             False
-        if getattr(axis, 'axis', '-').lower() not in ['-', atype]:
+        if getattr(obj, 'axis', '-').lower() not in ['-', atype]:
             return False
-        isfunc = getattr(axis, 'is' + name)
+        isfunc = getattr(obj, 'is' + name)
         def valfunc():
-            getattr(axis, 'designate'+name)()
-            check_id(axis)
-            check_def_atts(axis, **defaults)
+            getattr(obj, 'designate'+name)()
+            check_id(obj)
+            check_def_atts(obj, **defaults)
         if isfunc():
             if not ro:
                 valfunc()
             return True
 
         # Check axis attribute
-        if getattr(axis,'axis','') == atype.upper():
+        if getattr(obj,'axis','') == atype.upper():
             if not ro:
                 valfunc()
             return True
@@ -278,9 +291,9 @@ def is_geo_axis_type(axis, atype, defaults=None, ro=False, checkaxis=True,
     if not checkatts:
         return False
     #TODO: merge with ncmatch_obj
-    valid = match_atts(axis, attchecks, ignorecase=True,
+    valid = match_atts(obj, attchecks, ignorecase=True,
         transform=lambda ss: (re.compile(ss, re.I).match
-            if isinstance(ss, basestring) else None)) # transform=startswith
+            if isinstance(ss, six.string_types) else None)) # transform=startswith
     if not valid:
         return False
     if not ro:
@@ -292,7 +305,7 @@ _isgeoaxis_ = is_geo_axis_type # Backward compat
 
 def check_axes(var, **kw):
     """Check the format of all axes of a cdms variable"""
-    if cdms.isVariable(var):
+    if cdms2.isVariable(var):
         for axis in var.getAxisList():
             check_axis(axis, **kw)
 
@@ -412,7 +425,7 @@ def create_time(values, units=None, **atts):
     >>> create_time([datetime(2000,1,1),'2000-2-1'],units='months since 2000')
     >>> create_time([cdtime.reltime(1,'months since 2000'),cdtime.comptime(2000,1)])
     """
-    from .axes import are_valid_units, comptime, strftime
+    from .atime import are_valid_units, comptime, strftime
     for var in values, units:
         if hasattr(var, 'units'):
             units = var.units
@@ -423,14 +436,14 @@ def create_time(values, units=None, **atts):
 
     istuple = isinstance(values, tuple)
     if not istuple or (istuple and len(values)>3):
-        if isinstance(values,str) or not isSequenceType(values):
+        if isinstance(values,str) or not isinstance(values, Sequence):
             if hasattr(values, 'next') and hasattr(values, '__iter__'):
                 values = [v for v in values]
             else:
                 values = [values]
         newvalues = []
         for value in values:
-            if isNumberType(value):
+            if isinstance(value, Number):
                 newvalues.append(value)
             else:
                 if units is None and hasattr(value, 'units'):
@@ -443,7 +456,7 @@ def create_time(values, units=None, **atts):
         newvalues = values
 
     if units is None:
-        raise ValueError,'Unable to guess units. You must specify them.'
+        raise ValueError('Unable to guess units. You must specify them.')
 
     return create_axis(newvalues,'t',units=units,**atts)
 
@@ -460,13 +473,12 @@ def create_lon(values, **atts):
     Example
     -------
     >>> create_lon(numpy.arange(-18., -5.))
-    >>> create_lon(numpy.arange(-18., -5.),long_name='original_longitude')
+    >>> create_lon(numpy.arange(-18., -5.), long_name='original_longitude')
 
     """
     if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
         atts.setdefault('long_name', 'Longitude')
-        from .grid import create_axes2d
-        return reate_axes2d(x=values, lonid=atts.pop('id', None), xatts=atts)
+        return create_axes2d(x=values, lonid=atts.pop('id', None), xatts=atts)
     return create_axis(values,'x',**atts)
 
 def create_lat(values, **atts):
@@ -487,7 +499,6 @@ def create_lat(values, **atts):
     """
     if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
         atts.setdefault('long_name', 'Latitude')
-        from .grid import create_axes2d
         return create_axes2d(y=values, latid=atts.pop('id', None), yatts=atts)
     return create_axis(values,'y',**atts)
 
@@ -509,6 +520,175 @@ def create_dep(values,**atts):
     """
     return create_axis(values,'z',**atts)
 create_depth = create_dep
+
+def create_axes2d(x=None, y=None, bounds=False, numeric=False,
+        lonid=None, latid=None, iid='ni', jid='nj',
+        xatts=None, yatts=None, xbounds2d=None, ybounds2d=None, nobounds=False):
+    """Create 2D numerical of complete axes
+
+    Example
+    -------
+    >>> lon2d, lat2d = create_axes2d(x2d, y2d)
+
+    Parameters
+    ----------
+    xaxis: optional
+        1D or 2D X axis
+    xaxis: optional
+        1D or 2D Y axis
+    xatts: optional
+        Attributes for output 2D X axis
+    yatts: optional
+        Attributes for output 2D Y axis
+    xbounds2d: optional
+        2D bounds of input xaxis
+    ybounds2d: optional
+        2D bounds of input yaxis
+    nobounds: optional
+        create (True) or not (False - default) bounds of axis
+    numeric: optional
+        Only return numerical values instead of complete axes
+    bounds: optional
+        Return extended axes positioned on bounds (useful for pcolor).
+        Deprecated: use :func:`meshbounds` instead.
+    lonid: optional
+        Id of longitude axis [defaut='lon'].
+    latid: optional
+        Id of latitude axis [defaut='lat'].
+    iid: optional
+        Id of i axis [defaut='iid'].
+    jid: optional
+        Id of j axis [defaut='jid'].
+
+
+    Return
+    ------
+    array(ny,nx), array(ny,nx)
+        x and y 2D axes
+    """
+    if x is None:
+        hasx = 0
+    elif isinstance(x, TransientAxis2D):
+        hasx = 2
+    else:
+        hasx = 1
+    if y is None:
+        hasy = 0
+    elif isinstance(y, TransientAxis2D):
+        hasy = 2
+    else:
+        hasy = 1
+
+    # - ids
+    xaxis1d = yaxis1d = None
+    if hasx:
+        lonid = getattr(x, 'id', lonid)
+        if x[:].ndim==2 and hasattr(x, 'getAxis'):
+            xaxis1d = x.getAxis(-1)
+            yaxis1d = x.getAxis(-2)
+    if hasy:
+        latid = getattr(y, 'id', latid)
+        if y[:].ndim==2 and hasattr(x, 'getAxis') and xaxis1d is None:
+            xaxis1d = y.getAxis(-1)
+            yaxis1d = y.getAxis(-2)
+
+    # Numeric part
+    if hasx:
+        xn = N.asarray(x[:])
+        if xn.ndim==1 and y is None:
+            raise VACUMMError("Can't create 2D from a single 1D X axis")
+    if hasy:
+        yn = N.asarray(y[:])
+        if yn.ndim==1 and x is None:
+            raise VACUMMError("Can't create 2D from a single 1D Y axis")
+    if hasx and hasy:
+        xx, yy = N.meshgrid(xn[:], yn[:])
+    else:
+        xx = xn if hasx else None
+        yy = yn if hasy else None
+    if hasx: del xn
+    if hasy: del yn
+#    if hasx and hasy and xx.shape != yy.shape:
+#        raise VACUMMError('Incomptible shape between 2D X and Y coordinates: %s != %s'%(xx.shape, yy.shape))
+#    if bounds:
+#        if hasx: xx = meshbounds(xx)
+#        if hasy: yy = meshbounds(yy)
+    if numeric:
+        return xx, yy
+
+    # 2D axes
+    if hasx == 2:
+        xaxis2d = x
+    elif hasx:
+        xaxis2d = TransientAxis2D(xx)
+    if hasy == 2:
+        yaxis2d = y
+    else:
+        yaxis2d = TransientAxis2D(yy)
+
+    # 2D bounds
+    if not nobounds:
+        from .grid import bounds2d
+        if hasx:
+            if xbounds2d is not None:
+                xaxis2d.setBounds(xbounds2d)
+            elif xaxis2d.getBounds() is None:
+                xaxis2d.setBounds(bounds2d(xx))
+        if hasy:
+            if ybounds2d is not None:
+                yaxis2d.setBounds(ybounds2d)
+            elif yaxis2d.getBounds() is None:
+                yaxis2d.setBounds(bounds2d(yy))
+
+    # 1D axes
+    for axis2d in ([xaxis2d] if hasx else [])+([yaxis2d] if hasy else []):
+        if xaxis1d is not None:
+            axis2d.setAxis(-1, xaxis1d)
+        elif iid is not None:
+            axis2d.getAxis(-1).id = iid
+        if yaxis1d is not None:
+            axis2d.setAxis(-2, yaxis1d)
+        elif jid is not None:
+            axis2d.getAxis(-2).id = jid
+
+
+    # Format
+    if hasx:
+        xaxis2d.id = lonid or 'lon'
+#        xaxis2d = create_lon(xaxis2d, id=lonid or 'lon')
+        xaxis2d.getAxis(1).designateLongitude()
+        xaxis2d.getAxis(0).designateLatitude()
+        if hasattr(xaxis2d, 'axis'): del xaxis2d.axis
+        if xatts is not None:
+            xa = get_atts(x)
+            xa.update(xatts)
+            set_atts(xaxis2d, xatts)
+    if hasy:
+        yaxis2d.id = latid or 'lat'
+#        yaxis2d = create_lat(yaxis2d, id=latid or 'lat')
+        yaxis2d.getAxis(1).designateLongitude()
+        yaxis2d.getAxis(0).designateLatitude()
+        if hasattr(yaxis2d, 'axis'): del yaxis2d.axis
+        if yatts is not None:
+            ya = get_atts(y)
+            ya.update(yatts)
+            set_atts(yaxis2d, yatts)
+
+    # Output
+    if not hasx and not hasy: return
+    if not hasx: return yaxis2d
+    if not hasy: return xaxis2d
+    return xaxis2d, yaxis2d
+
+def axes2d(*args, **kwargs):
+    """Alias for :func:`create_axes2d`"""
+    return create_axes2d(*args, **kwargs)
+    
+def num2axes2d(*args, **kwargs):
+    """Alias for :func:`axes2d`"""
+    return axes2d(*args, **kwargs)
+
+
 
 
 def guess_timeid(ncfile, vnames=None):
@@ -599,7 +779,7 @@ def get_order(var):
     "-yx"
     """
     # Already an order
-    if isinstance(var, basestring):
+    if isinstance(var, six.string_types):
         return var.lower()
 
     # Axis
@@ -666,7 +846,7 @@ def order_match(order1, order2, asscore=False, strict=False):
         assert False, 'Both orders must have the same length (%s, %s)'%(order1, order2)
     score = 1
     if strict is True: strict = "both"
-    for ic in xrange(len(order1)):
+    for ic in range(len(order1)):
         o1 = order1[ic]
         o2 = order2[ic]
         if '-' in o1+o2:

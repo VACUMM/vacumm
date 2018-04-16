@@ -35,13 +35,13 @@ extensions = [
         'sphinx.ext.autosummary',
         'sphinx.ext.intersphinx',
         'sphinx.ext.todo',
-        'sphinx.ext.pngmath',
+        'sphinx.ext.imgmath',
         'sphinx.ext.ifconfig',
         'sphinx.ext.extlinks',
         'sphinx.ext.viewcode',
         'sphinx.ext.napoleon',
         'sphinxcontrib.cheeseshop',
-        'sphinxcontrib.ansi',
+#        'sphinxcontrib.ansi',
         'sphinxcontrib.programoutput',
         'sphinxfortran.fortran_domain',
         'sphinxfortran.fortran_autodoc',
@@ -240,12 +240,12 @@ latex_additional_files = ['static/vacumm.sty']
 
 # Intersphinx
 intersphinx_mapping = {
-    'python':('http://docs.python.org/', None),
+    'python':('https://docs.python.org/2', None),
     'matplotlib':('http://matplotlib.org',None),
     'basemap':('http://matplotlib.org/basemap',None),
-    'numpy':('http://docs.scipy.org/doc/numpy', None),
-    'scipy':('http://docs.scipy.org/doc/scipy/reference', None),
-    'sphinx':('http://sphinx.pocoo.org', None),
+    'numpy':('https://docs.scipy.org/doc/numpy', None),
+    'scipy':('https://docs.scipy.org/doc/scipy/reference', None),
+    'sphinx':('http://www.sphinx-doc.org/en/stable', None),
     'http://docs.python.org/dev': None,
     }
 
@@ -346,7 +346,7 @@ autodoc_default_flags = ['members', 'show-inheritance', 'undoc-members']
 
 # Configuration for programoutput extension
 #doesn't works...#programoutput_prompt_template = '[user@host ~]$ %(command)s\n\n%(output)s' # default is: '$ %%(command)s\n%%(output)s'
-programoutput_use_ansi = True # default is: False
+programoutput_use_ansi = False # default is: False
 
 # Fortran autodoc
 fortran_src = [os.path.abspath('../../../lib/python/vacumm/misc/grid/interp.f90')]

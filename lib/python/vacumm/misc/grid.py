@@ -6,7 +6,7 @@ It deals with bounds, areas, interpolations...
 
 See: :ref:`user.tut.misc.grid`.
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -38,25 +38,25 @@ See: :ref:`user.tut.misc.grid`.
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
 import operator
 from gc import collect
+import six
+from six.moves import range
 
 import numpy as N, MV2 ,cdms2
 from numpy import ma as MA
-from cdms2.coord import TransientAxis2D,TransientVirtualAxis, FileAxis2D
-from cdms2.axis import TransientAxis
+from cdms2.coord import FileAxis2D
 from cdms2.hgrid import AbstractCurveGrid, TransientCurveGrid
 from cdms2.grid import AbstractGrid
-from genutil import minmax
-from mpl_toolkits.basemap import Basemap
-from _geoslib import Point
 
 
-from vacumm import VACUMMError, vacumm_warn
-from .misc import numod, get_atts, cp_atts, intersect, set_atts
-from .constants import EARTH_RADIUS
+from vacumm import VACUMMError, vacumm_warn, VACUMMWarning
+from .misc import numod, cp_atts
 from .units import deg2m
-from .axes import islat, islon, isaxis, create_lon, create_lat
+from .axes import (islat, islon, isaxis, create_lon, create_lat, isdep, 
+    create_axes2d)
+from .geo import haversine
 
 
 cdms = cdms2
@@ -66,15 +66,16 @@ isnum = operator.isNumberType
 isdic = ismap = operator.isMappingType
 
 __all__ = ['isoslice','isgrid', 'get_resolution', 'get_distances', 'get_closest', 'get_closest_depth', 'get_geo_area',
-    'bounds2d', 'bounds1d', 'get_axis', 'get_grid', 'get_grid_axes', "gridsel",
-    'grid2d', 'num2axes2d', 'var2d', 'axis1d_from_bounds', 'get_xy',
-    'deg2xy', 'set_grid', 'check_xy_shape', 'axes2d', 'meshgrid','meshbounds', 'meshweights',
+    'bounds2d', 'bounds1d', 'get_grid', 'get_grid_axes', "gridsel",
+    'grid2d', 'var2d', 'axis1d_from_bounds', 'get_xy',
+    'deg2xy', 'set_grid', 'check_xy_shape', 'meshgrid','meshbounds', 'meshweights',
     't2uvgrids', 'meshcells', 'cells2grid', 'curv_grid', 'bounds2mesh', 'resol',
     'create_grid', 'rotate_grid', 'isregular', 'monotonic', 'transect_specs',
-    'depth2dz', 'isdepthup', 'makedepthup', 'dz2depth', 'get_axis_slices',
-    'xextend', 'xshift', 'curv2rect',  'isrect', 'create_grid2d', 'create_var2d', 'create_axes2d',
+    'depth2dz', 'isdepthup', 'makedepthup', 'makealtitudeup', 'dz2depth', 'get_axis_slices',
+    'xextend', 'xshift', 'curv2rect',  'isrect', 'create_grid2d', 'create_var2d', 
     'merge_axis_slice', 'merge_axis_slices', 'get_zdim', 'coord2slice', 'mask2ind',
-    'varsel', 'haversine', 'clone_grid']
+    'varsel', 'haversine', 'clone_grid', 'are_same_grids', 'get_axis''']
+
 
 
 
@@ -101,9 +102,9 @@ def isoslice(var,prop,isoval=0,axis=0,masking=True):
     Get from OCTANT library : https://github.com/hetland/octant
     """
     if (len(var.squeeze().shape)<=2):
-        raise ValueError, 'variable must have at least two dimensions'
+        raise ValueError('variable must have at least two dimensions')
     if not prop.shape == var.shape:
-        raise ValueError, 'dimension of var and prop must be identical'
+        raise ValueError('dimension of var and prop must be identical')
     var = var.swapaxes(0, axis)
     prop = prop.swapaxes(0, axis)
     prop=prop-isoval
@@ -124,8 +125,8 @@ def isoslice(var,prop,isoval=0,axis=0,masking=True):
     if masking:
         result = N.ma.masked_where(zc.sum(axis=0)==0, result)
         if all(result.mask):
-            raise Warning, 'property==%f out of range (%f, %f)' % \
-                           (isoval, (prop+isoval).min(), (prop+isoval).max())
+            raise VACUMMWarning('property==%f out of range (%f, %f)' % \
+                (isoval, (prop+isoval).min(), (prop+isoval).max()))
     result = result.reshape(sz[1:])
     return(result)
 
@@ -331,19 +332,6 @@ def get_distances(xxa, yya, xxb=None, yyb=None, mode=None, pairwise=False, geo=F
     else:
         dist = float(dist)
     return dist
-
-def haversine(xa, ya, xb, yb, radius=None, degrees=True):
-    """Compute the haversine distance for a known radius"""
-    if radius:
-        radius = constants.EARTH_RADIUS
-    if degrees:
-        xa *= N.pi/180
-        ya *= N.pi/180
-        xb *= N.pi/180
-        yb *= N.pi/180
-    Nm = numod(xa, ya, xb, yb)
-    a = Nm.sin((ya-yb)/2)**2 + Nm.cos(ya) * Nm.cos(yb) * Nm.sin((xa-xb)/2)**2
-    return constants.EARTH_RADIUS * 2 * Nm.arcsin(Nm.sqrt(a))
 
 
 def get_closest(xx, yy, xp, yp, distmode=None, mask=None, gridded=True, **kwargs):
@@ -688,7 +676,7 @@ def meshgrid(x,y,copy=1):
         yy = My.resize(y,x.shape[::-1]).transpose()
         return x,yy
 
-    raise ValueError, "Unable to safely convert to 2D axes"
+    raise VACUMMWarning("Unable to safely convert to 2D axes")
 
 def bounds2mesh(xb, yb=None):
     """Convert 2D 4-corners cell bounds arrays (results from :func:`bounds2d`) to 2D arrays
@@ -831,7 +819,7 @@ def meshweights(x, y=None, distmode='haversine', axis=-1, proj=None):
     return dx*dy
 
 
-def cells2grid(xxb,yyb):
+def cells2grid(xxb, yyb):
     """Convert a grid of cells (grid of corners, like results from :func:`meshcells`) to a grid (grid of centers)
 
     Parameters
@@ -847,16 +835,20 @@ def cells2grid(xxb,yyb):
         x and y positions
     """
     M = numod(xxb)
-    xxyy = [M.zeros((nx+1,ny+1),dtype=xxb.dtype), M.zeros((nx+1,ny+1), dtype=yyb.dtype)]
-    bb = (xxb,yyb)
-    ij2ic = M.reshape([0,1,3,2],(2,2))
+    ny, nx = xxb.shape
+    xxyy = [M.zeros((ny+1,nx+1), dtype=xxb.dtype), M.zeros((ny+1,nx+1), dtype=yyb.dtype)]
+    bb = (xxb, yyb)
+    ij2ic = M.reshape([0,1,3,2], (2,2))
     for ib in 0,1:
         # Center
-        xxyy[ib][1:-1,1:-1] = 0.25 * (bb[ib][1:,1:,0]+bb[ib][:-1,1:,1]+bb[ib][:-1,:-1,2]+bb[ib][1:,:-1,3])
+        xxyy[ib][1:-1,1:-1] = 0.25 * (bb[ib][1:,1:,0] + bb[ib][:-1,1:,1] + 
+            bb[ib][:-1,:-1,2] + bb[ib][1:,:-1,3])
         # Sides
         for i in 0,-1:
-            xxyy[ib][i,1:-1] = 0.5 * (bb[ib][i,1:,ij2ic[i,0]]+bb[ib][i,:-1,ij2ic[i,1]]) # Bottom/top
-            xxyy[ib][1:-1,i] = 0.5 * (bb[ib][1:,i,ij2ic[0,i]]+bb[ib][:-1,i,ij2ic[1,i]]) # Left/right
+            xxyy[ib][i,1:-1] = 0.5 * (bb[ib][i, 1:, ij2ic[i,0]] + 
+                bb[ib][i,:-1,ij2ic[i,1]]) # Bottom/top
+            xxyy[ib][1:-1,i] = 0.5 * (bb[ib][1:, i, ij2ic[0,i]] + 
+                bb[ib][:-1,i,ij2ic[1,i]]) # Left/right
         # Corners
         for j in 0,-1:
             for i in 0,-1:
@@ -1186,7 +1178,7 @@ def _coord2ind2d_(cc2d, sel, mask=None, maskonly=False,
         cc2db = meshcells(cc2d)
 
         # Remove 'b' from interval specifications
-        selb = sel[:2]+(b[:2],)   # no 'b'
+#        selb = sel[:2]+(b[:2],)   # no 'b' #FIXME: what is this selb for?
 
         # Select min first
         selmin = (sel[0], N.inf)+(b[:2],)
@@ -1223,211 +1215,9 @@ def _coord2ind2d_(cc2d, sel, mask=None, maskonly=False,
         return mask if maskonly else (None, None, mask)
 
     # Indices
-    [(jmin, jmax), (imin, imax)] = mask2ind(mask, 'n' in e)
+    [(jmin, jmax), (imin, imax)] = mask2ind(mask, 'e' in e)
     return [(imin, imax+1, 1), (jmin, jmax+1, 1), mask]
 
-
-def create_axes2d(x=None, y=None, bounds=False, numeric=False,
-        lonid=None, latid=None, iid='ni', jid='nj',
-        xatts=None, yatts=None, xbounds2d=None, ybounds2d=None, nobounds=False):
-    """Create 2D numerical of complete axes
-
-    Example
-    -------
-    >>> lon2d, lat2d = create_axes2d(x2d, y2d)
-
-    Parameters
-    ----------
-    xaxis: optional
-        1D or 2D X axis
-    xaxis: optional
-        1D or 2D Y axis
-    xatts: optional
-        Attributes for output 2D X axis
-    yatts: optional
-        Attributes for output 2D Y axis
-    xbounds2d: optional
-        2D bounds of input xaxis
-    ybounds2d: optional
-        2D bounds of input yaxis
-    nobounds: optional
-        create (True) or not (False - default) bounds of axis
-    numeric: optional
-        Only return numerical values instead of complete axes
-    bounds: optional
-        Return extended axes positioned on bounds (useful for pcolor).
-        Deprecated: use :func:`meshbounds` instead.
-    lonid: optional
-        Id of longitude axis [defaut='lon'].
-    latid: optional
-        Id of latitude axis [defaut='lat'].
-    iid: optional
-        Id of i axis [defaut='iid'].
-    jid: optional
-        Id of j axis [defaut='jid'].
-
-
-    Return
-    ------
-    array(ny,nx), array(ny,nx)
-        x and y 2D axes
-    """
-    if x is None:
-        hasx = 0
-    elif isinstance(x, TransientAxis2D):
-        hasx = 2
-    else:
-        hasx = 1
-    if y is None:
-        hasy = 0
-    elif isinstance(y, TransientAxis2D):
-        hasy = 2
-    else:
-        hasy = 1
-
-    # - ids
-    xaxis1d = yaxis1d = None
-    if hasx:
-        lonid = getattr(x, 'id', lonid)
-        if x[:].ndim==2 and hasattr(x, 'getAxis'):
-            xaxis1d = x.getAxis(-1)
-            yaxis1d = x.getAxis(-2)
-    if hasy:
-        latid = getattr(y, 'id', latid)
-        if y[:].ndim==2 and hasattr(x, 'getAxis') and xaxis1d is None:
-            xaxis1d = y.getAxis(-1)
-            yaxis1d = y.getAxis(-2)
-
-    # Numeric part
-    if hasx:
-        xn = N.asarray(x[:])
-        if xn.ndim==1 and y is None:
-            raise VACUMMError("Can't create 2D from a single 1D X axis")
-    if hasy:
-        yn = N.asarray(y[:])
-        if yn.ndim==1 and x is None:
-            raise VACUMMError("Can't create 2D from a single 1D Y axis")
-    if hasx and hasy:
-        xx, yy = meshgrid(xn, yn)
-    else:
-        xx = xn if hasx else None
-        yy = yn if hasy else None
-    if hasx: del xn
-    if hasy: del yn
-#    if hasx and hasy and xx.shape != yy.shape:
-#        raise VACUMMError('Incomptible shape between 2D X and Y coordinates: %s != %s'%(xx.shape, yy.shape))
-#    if bounds:
-#        if hasx: xx = meshbounds(xx)
-#        if hasy: yy = meshbounds(yy)
-    if numeric:
-        return xx, yy
-
-    # 2D axes
-    if hasx == 2:
-        xaxis2d = x
-    elif hasx:
-        xaxis2d = TransientAxis2D(xx)
-    if hasy == 2:
-        yaxis2d = y
-    else:
-        yaxis2d = TransientAxis2D(yy)
-
-    # 2D bounds
-    if not nobounds:
-        if hasx:
-            if xbounds2d is not None:
-                xaxis2d.setBounds(xbounds2d)
-            elif xaxis2d.getBounds() is None:
-                xaxis2d.setBounds(bounds2d(xx))
-        if hasy:
-            if ybounds2d is not None:
-                yaxis2d.setBounds(ybounds2d)
-            elif yaxis2d.getBounds() is None:
-                yaxis2d.setBounds(bounds2d(yy))
-
-    # 1D axes
-    for axis2d in ([xaxis2d] if hasx else [])+([yaxis2d] if hasy else []):
-        if xaxis1d is not None:
-            axis2d.setAxis(-1, xaxis1d)
-        elif iid is not None:
-            axis2d.getAxis(-1).id = iid
-        if yaxis1d is not None:
-            axis2d.setAxis(-2, yaxis1d)
-        elif jid is not None:
-            axis2d.getAxis(-2).id = jid
-
-
-    # Format
-    if hasx:
-        xaxis2d.id = lonid or 'lon'
-#        xaxis2d = create_lon(xaxis2d, id=lonid or 'lon')
-        xaxis2d.getAxis(1).designateLongitude()
-        xaxis2d.getAxis(0).designateLatitude()
-        if hasattr(xaxis2d, 'axis'): del xaxis2d.axis
-        if xatts is not None:
-            xa = get_atts(x)
-            xa.update(xatts)
-            set_atts(xaxis2d, xatts)
-    if hasy:
-        yaxis2d.id = latid or 'lat'
-#        yaxis2d = create_lat(yaxis2d, id=latid or 'lat')
-        yaxis2d.getAxis(1).designateLongitude()
-        yaxis2d.getAxis(0).designateLatitude()
-        if hasattr(yaxis2d, 'axis'): del yaxis2d.axis
-        if yatts is not None:
-            ya = get_atts(y)
-            ya.update(yatts)
-            set_atts(yaxis2d, yatts)
-
-    # Output
-    if not hasx and not hasy: return
-    if not hasx: return yaxis2d
-    if not hasy: return xaxis2d
-    return xaxis2d, yaxis2d
-
-def axes2d(*args, **kwargs):
-    """Alias for :func:`create_axes2d`"""
-    return create_axes2d(*args, **kwargs)
-
-def get_axis(gg, iaxis=0, geo=True, strict=False):
-    """A robust way to get an axis from a variable or a grid
-
-    This is a generic way to get a 1D and 2D axes: the only
-    way to get longitude and latitude axes of a curvilinear grid are the
-    :meth:`getLongitude` and :meth:`getLatitude` methods
-    (you can't use :meth:`getAxis` with such grid).
-
-    Parameters
-    ----------
-    gg:
-        The variable or a grid (see :func:`get_grid`)
-    iaxis: optional
-        The axis number [default: 0]
-
-    Examples
-    --------
-    >>> lon = get_axis(grid, -1)
-    >>> lat = get_axis(var, 0)
-
-    Returns
-    -------
-    cdms2 axis
-    """
-
-    grid = get_grid(gg, intercept=False, geo=geo, strict=strict)
-    if grid is not None:
-        getfrom = grid
-    else:
-        getfrom = gg
-    ndim = len(getfrom.shape)
-    if iaxis < 0:
-        iaxis = ndim+iaxis
-    if iaxis <= 2 and isgrid(grid,curv=True):
-        if iaxis == 1:
-            return getfrom.getLongitude()
-        else:
-            return getfrom.getLatitude()
-    return getfrom.getAxis(iaxis)
 
 def get_grid(gg, geo=True, intercept=False, strict=False):
     """Get a cdms grid from gg
@@ -1662,10 +1452,6 @@ def var2d(*args, **kwargs):
     """Alias for :func:`create_var2d`"""
     return create_var2d(*args, **kwargs)
 
-def num2axes2d(*args, **kwargs):
-    """Alias for :func:`axes2d`"""
-    return axes2d(*args, **kwargs)
-
 
 def create_grid(lon, lat, mask=None, lonatts={}, latatts={}, curv=None, **kwargs):
     """Create a cdms rectangular or curvilinear grid from axes
@@ -1721,6 +1507,47 @@ def create_grid(lon, lat, mask=None, lonatts={}, latatts={}, curv=None, **kwargs
 
     else: # Curvilinear
         return create_grid2d(lon, lat, xatts=lonatts, yatts=latatts, mask=mask, **kwargs)
+
+def get_axis(gg, iaxis=0, geo=True, strict=False):
+    """A robust way to get an axis from a variable or a grid
+
+    This is a generic way to get a 1D and 2D axes: the only
+    way to get longitude and latitude axes of a curvilinear grid are the
+    :meth:`getLongitude` and :meth:`getLatitude` methods
+    (you can't use :meth:`getAxis` with such grid).
+
+    Parameters
+    ----------
+    gg:
+        The variable or a grid (see :func:`get_grid`)
+    iaxis: optional
+        The axis number [default: 0]
+
+    Examples
+    --------
+    >>> lon = get_axis(grid, -1)
+    >>> lat = get_axis(var, 0)
+
+    Returns
+    -------
+    cdms2 axis
+    """
+
+    grid = get_grid(gg, intercept=False, geo=geo, strict=strict)
+    if grid is not None:
+        getfrom = grid
+    else:
+        getfrom = gg
+    ndim = len(getfrom.shape)
+    if iaxis < 0:
+        iaxis = ndim+iaxis
+    if iaxis <= 2 and isgrid(grid,curv=True):
+        if iaxis == 1:
+            return getfrom.getLongitude()
+        else:
+            return getfrom.getLatitude()
+    return getfrom.getAxis(iaxis)
+
 
 
 def clone_grid(grid):
@@ -2122,8 +1949,8 @@ def deg2xy(lon, lat, proj=None, inverse=False, mesh=None, **kwargs):
 
     # Need a projection instance
     if not callable(proj):
-        from basemap import get_proj
-        proj = et_proj((lon,lat), proj=proj)
+        from .basemap import get_proj
+        proj = get_proj((lon,lat), proj=proj)
 
     # Transform
     return proj(lon, lat, inverse=inverse)
@@ -2216,7 +2043,6 @@ def resol(axy, mode='median',  axis=None, meters=False, cache=True, lat=None,
     if kwargs.get('averaged', False): # compat
         mode = 'averaged'
     if cache and not mode.startswith('loc'):
-        suf = 'm' if meters else ''
         pres = 'res'+'m' if meters else ''
         if hasattr(axy, '_'+pres):
             return getattr(axy, '_'+pres)
@@ -2321,7 +2147,7 @@ def resol(axy, mode='median',  axis=None, meters=False, cache=True, lat=None,
         else: # 1D
 
             eres = tuple([N.ma.resize(r, (r.shape[0]+1, )) for r in res])
-            for ik in xrange(len(xy)):
+            for ik in range(len(xy)):
                 eres[ik][1:-1] = .5*(res[ik][:-1]+res[ik][1:])
                 eres[ik][0] = 1.5*res[ik][0]-0.5*res[ik][1]
                 eres[ik][-1] = 1.5*res[ik][-1]-0.5*res[ik][-2]
@@ -2387,7 +2213,7 @@ def check_xy_shape(xx, yy, mesh=None):
     if not mesh: return xx, yy
     if xx.ndim==2 and yy.ndim==2 and xx.shape==yy.shape: return xx, yy
     if xx.ndim !=1 or yy.ndim != 1:
-        raise ValueError, 'xx and yy must be 1D for meshgrid transform.'
+        raise VACUMMError('xx and yy must be 1D for meshgrid transform.')
     return N.meshgrid(xx, yy)
 
 
@@ -2436,7 +2262,7 @@ def t2uvgrids(gg, getu=True, getv=True, mask=None):
         yu = yy.clone()
         gu = cdms.createRectGrid(yu, xu)
         if mask is not None:
-            gu.setMask(t2uvmasks(umask, getv=False))
+            gu.setMask(t2uvmasks(mask, getv=False))
         if not getv: return gu
     # V-points
     yv = yy.clone()
@@ -2446,7 +2272,7 @@ def t2uvgrids(gg, getu=True, getv=True, mask=None):
     xv = xx.clone()
     gv = cdms.createRectGrid(yv, xv)
     if mask is not None:
-        gv.setMask(t2uvmasks(vmask, getu=False))
+        gv.setMask(t2uvmasks(mask, getu=False))
     if not getu: return gv
     return gu, gv
 
@@ -2601,9 +2427,9 @@ def xextend(vari, n, mode=None):
         xleft = xi[0]-N.arange(1, nleft+1)*dx0
         xright = xi[-1]+N.arange(1, nright+1)*dx1
         if mode == 'constant':
-            for ileft in xrange(nleft):
+            for ileft in range(nleft):
                 varo[..., ileft] = vari[..., 0]
-            for iright in xrange(nright):
+            for iright in range(nright):
                 varo[..., nxo-iright-1] = vari[..., -1]
 
     # Insert axes
@@ -2812,7 +2638,8 @@ def isrect(gg, tol=1.e-2, mode="real", f=None, nocache=False):
     return res
 
 
-def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=False):
+def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False,
+        m=None, getmap=False, **kwargs):
     """Get specs for a transect given a grid and starting and ending points
 
     Parameters
@@ -2837,10 +2664,10 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=F
     """
 
     # Bounds and resolution
-    xx, yy = get_xy(xx, yy)
-    dx, dy = resol((xx, yy), proj='merc')
     from .basemap import get_map
-    m = get_map((xx, yy), resol=None, proj='merc')
+    dx, dy = resol(gg, proj='merc')
+    if m is None:
+        m = get_map(gg, resol=None, proj='merc')
     x0, y0 = m(lon0, lat0)
     x1, y1 = m(lon1, lat1)
     Dx = N.abs(x1-x0)
@@ -2855,11 +2682,15 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=F
     npts = int(N.ceil(npts))
 
     # Coordinates
-    xx, yy = m.gcpoints(lon0, lat0, lon1, lat1, npts)
+    xx, yy = m.gcpoints(lon0, lat0, lon1, lat1, npts) # FIXME: module geo
     lons, lats = m(xx, yy, inverse=True)
     ret = N.array(lons), N.array(lats)
-    if getxy: ret += N.array(xx), N.array(yy)
-    if getproj: ret += m
+    if getxy:
+        ret += N.array(xx), N.array(yy)
+    if 'getproj' in kwargs:
+        getmap = kwargs['getproj']
+    if getmap:
+        ret += m
     return ret
 
 
@@ -2906,7 +2737,7 @@ def depth2dz(depth, axis=None, mode=None, masked=True):
     slices = get_axis_slices(depth, axis)
 
     # Priority mode
-    if isinstance(mode, basestring):
+    if isinstance(mode, six.string_types):
         mode = mode.lower()
     if mode not in ['last', 'first', None, 'center']:
         mode = None
@@ -3010,7 +2841,6 @@ def merge_axis_slices(slices1, slices2):
 
     Parameters
     ----------
-
     slice1/2:
         Dictionaries of tuples of slices.
 
@@ -3022,7 +2852,6 @@ def merge_axis_slices(slices1, slices2):
         >>> slices12 = merge_axis_slices(slicesx, slicesy) # for X and Y
         """
     slicesm = {}
-    null = slice(None)
     for key in slices1:
         slicesm[key] = merge_axis_slice(slices1[key], slices2[key])
     return slicesm
@@ -3056,7 +2885,7 @@ def merge_axis_slice(sel1, sel2):
         sel1 = [slice(None)]*(ndim2-ndim1)+sel1
     elif ndim1>ndim2:
         sel2 = [slice(None)]*(ndim1-ndim2)+sel2
-    for axis in xrange(len(sel1)):
+    for axis in range(len(sel1)):
         if sel1[axis] is None or sel1[axis]==slice(None) or \
             sel1[axis] is Ellipsis or sel1[axis]==':':
             selm.append(sel2[axis])
@@ -3075,7 +2904,7 @@ def get_zdim(var, axis=None, default=None, strict=True):
         i = var.getAxisList().index(axis)
         if i!=-1: axis = i
     if axis is not None and not strict and hasattr(axis, '__len__') and len(axis)!=0: # find the same axis length
-        good = filter(lambda i:i==len(axis), var.shape)
+        good = [i_ for i_ in var.shape if i_==len(axis)]
         if len(good)==1: return good[0]
         axis = None
     if axis is None:
@@ -3117,7 +2946,7 @@ def isdepthup(depth, axis=None, ro=True):
     """
     # From attribute
     positive = getattr(depth, 'positive', None)
-    if isinstance(positive, basestring):
+    if isinstance(positive, six.string_types):
         if positive.lower() in ['down', 'up']:
             return positive == 'up'
         positive = None
@@ -3183,13 +3012,13 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
         isup = isdepthup(depth, axis=axis, ro=ro)
 
         # Revert depths
-        if not isup and getdeth:
+        if not isup and getdepth:
             depth[:] *= -1
             if isaxis(depth):
                 depth.assignValue(-depth[::-1])
                 depth.positive = 'up'
             else:
-                depth[:] = depth.take(range(depth.shape[axis]-1, -1, -1), axis=axis)
+                depth[:] = depth.take(list(range(depth.shape[axis]-1, -1, -1)), axis=axis)
 
     # Revert variables or depths
     if not isup:
@@ -3200,9 +3029,76 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
             else:
                 axis = get_zdim(var, axis=axis)
                 if axis is None: continue
-                var[:] = var.take(range(var.shape[axis]-1, -1, -1), axis=axis)
+                var[:] = var.take(list(range(var.shape[axis]-1, -1, -1)), axis=axis)
                 depaxis = var.getAxis(axis)
                 depaxis.assignValue(-depaxis[::-1])
+
+    vv = vv[0] if single else vv
+    if getdepth: return vv, depth
+    return vv
+
+
+def makealtitudeup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
+    """Make depth and variables positive up
+
+    :Params:
+
+        - **vv**: A single variable or a list of them.
+        - **depth**, optional: Explicit depths to not guess
+          it with :meth:`getLevel`. If True or False, simply revert along Z
+          dimension.
+        - **axis**, optional: Z dimension (else guessed with :func:`get_zdim`).
+
+    """
+    # A list of variables
+    single = not isinstance(vv, (list,tuple))
+    if single: vv = [vv]
+
+    # Get depth
+    getdepth = isaxis(depth) or isinstance(depth, N.ndarray)
+    if depth is None:
+        if isaxis(vv[0]):
+            depth = depth
+        else:
+            depth = vv[0].getLevel()
+    if axis is None and isaxis(depth):
+        axis = depth
+    if isinstance(depth, bool):
+        isup = depth
+    else:
+
+        axis = get_zdim(vv[0], axis, default=default, strict=strict)
+
+        # No depth found
+        if axis is None:
+            vv = vv[0] if single else vv
+            if getdepth: return vv, depth
+            return vv
+
+        # Positive up?
+        isup = isdepthup(depth, axis=axis, ro=ro)
+
+        # Revert depths
+        if not isup and getdepth:
+#            depth[:] *= -1
+            if isaxis(depth):
+                depth.assignValue(depth[::-1])
+                depth.positive = 'up'
+            else:
+                depth[:] = depth.take(list(range(depth.shape[axis]-1, -1, -1)), axis=axis)
+
+    # Revert variables or depths
+    if not isup:
+        for ivar, var in enumerate(vv):
+            if isaxis(var):
+                var.assignValue(var[::-1])
+                var.positive = 'up'
+            else:
+                axis = get_zdim(var, axis=axis)
+                if axis is None: continue
+                var[:] = var.take(list(range(var.shape[axis]-1, -1, -1)), axis=axis)
+                depaxis = var.getAxis(axis)
+                depaxis.assignValue(depaxis[::-1])
 
     vv = vv[0] if single else vv
     if getdepth: return vv, depth
@@ -3271,7 +3167,7 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge',
     # Guess reference
     if ref is None:
         ref = 0.
-    if isinstance(refloc, basestring): refloc = refloc.lower()
+    if isinstance(refloc, six.string_types): refloc = refloc.lower()
     if refloc in ["eta", "ssh"]: refloc = 'top'
     elif refloc in ["depth", "bathy"]: refloc = 'bottom'
     if refloc not in ['top', 'bottom']: refloc = None
@@ -3296,7 +3192,6 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge',
             if (ref<=0).any():
                 refloc = 'top'
             else:
-                vmax = ref.max()
                 refloc = 'bottom' if ref.max()>15 else 'top'
 
     # Integrate
@@ -3304,7 +3199,7 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge',
 
     # Add reference
     if refloc == 'top': # zero at top
-        for it in xrange(nt):
+        for it in range(nt):
             depths[it] -= depths[it, -1]
         if zerolid:
             ref = 0
@@ -3329,6 +3224,7 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge',
         axes = dz.getAxisList()
         if ext:
             iaxis = int(withtime)
+            from .regridding import extend1d
             zaxis = extend1d(dz.getAxis(iaxis), (1, 0), mode='linear')
             axes[iaxis] = zaxis
         depths.setAxisList(axes)
@@ -3337,3 +3233,18 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge',
             depths.setGrid(grid)
 
     return depths
+
+def are_same_grids(grid0, grid1):
+    """Check if two grids are similars"""
+    if grid0.shape != grid1.shape:
+        return False
+    lon0 = grid0.getLongitude()[:]
+    lat0 = grid0.getLatitude()[:]
+    lon1 = grid1.getLongitude()[:]
+    lat1 = grid1.getLatitude()[:]
+    if (lon0.shape!=lon1.shape) or (lat0.shape!=lat0.shape):
+        return False
+    for a0, a1 in [(lon0, lon1), (lat0, lat1)]:
+        if not N.ma.allclose(a0, a1):
+            return False
+    return True

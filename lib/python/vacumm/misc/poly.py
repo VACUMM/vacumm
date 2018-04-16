@@ -2,7 +2,7 @@
 """Low level polygon utilities
 
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -34,12 +34,16 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
+import six
 import numpy as N
 from matplotlib.pyplot import gca
 from _geoslib import Point, Polygon, LineString
 
+import cdms2
+
 from vacumm import VACUMMError
-from .misc import nduniq
+from .misc import nduniq, kwfilter
 
 GEOS_POINT = GEOS_POINTS = 0
 GEOS_LINESTRING = GEOS_LINES = GEOS_LINE = GEOS_POLYLINE = GEOS_POLYLINES = 1
@@ -71,7 +75,7 @@ def get_geos_type(gtype, mode='int'):
     # Get it as int
     if isinstance(gtype, int):
         assert gtype in (GEOS_POINT, GEOS_LINE, GEOS_POLYGON)
-    elif isinstance(gtype, string):
+    elif isinstance(gtype, six.string_types):
         att = 'GEOS_'+gtype.upper()
         from . import poly as vcpl
         assert hasattr(vcpl, att)
@@ -176,7 +180,7 @@ def create_polygon(data, proj=False, mode='poly'):
 
     # xmin,ymin,xmax,ymax form
     if data.ndim == 1:
-        assert len(data) == 4, '1D form must have 4 elements (xmin,ymin,xmax,ymax), not %i'%len(poly)
+        assert len(data) == 4, '1D form must have 4 elements (xmin,ymin,xmax,ymax), not %i'%len(data)
         xmin, ymin, xmax, ymax = data
         data =  N.asarray([[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]])
 
@@ -213,7 +217,7 @@ def plot_polygon(poly, ax=None, **kwargs):
     return ax.plot(xx, yy, **kwargs)
 
 
-def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
+def create_polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     """Return a list of Polygon instances
 
     :Params:
@@ -245,8 +249,8 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     if isinstance(polys, (Polygon, N.ndarray, tuple)) or hasattr(polys, 'get_shapes'):
         polys = [polys]
 
-    if kwargs.has_key('m'): proj = kwargs['m']
-    kwclip = vcm.kwfilter(kwargs, 'clip_')
+    if 'm' in kwargs: proj = kwargs['m']
+    kwclip = kwfilter(kwargs, 'clip_')
 
     # Numeric or geos polygons
     out_polys = []
@@ -256,13 +260,13 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     else:
         shaper = Polygon
     if clip is not None:
-        clipl = clip # degrees
+#        clipl = clip # degrees (backup)
         kwclip.setdefault('proj', proj)
         clip = create_polygon(clip, **kwclip)
         del kwclip['proj']
         kwclip['mode'] = 'verts'
-    else:
-        clipl = None
+#    else:
+#        clipl = None
 
     # Loop on polygon data
 #    from grid import isgrid, isrect, curv2rect, get_grid
@@ -279,7 +283,7 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
 
         # It's already a polygon
         if isinstance(poly, Polygon):
-            pp = [poly]
+            poly = [poly]
 
 #        # Polygon from GMT
 #        if isinstance(poly, (str, Basemap)):
@@ -314,6 +318,7 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
 
     return out_polys
 
+polygons = create_polygons
 
 def sort_shapes(shapes, reverse=True):
     """Sort shapes according to their surface or length
@@ -326,20 +331,18 @@ def sort_shapes(shapes, reverse=True):
     gtype = get_geos_type(shapes)
     if is_polygon(gtype):
 
-        shapes.shapes.sort(cmp=lambda p0, p1: cmp(p0.area(), p1.area()),
-            reverse=reverse)
+        shapes.shapes.sort(key=lambda p: p.area(), reverse=reverse)
         sorted = 1-2*int(reverse)
 
-    elif is_line(gtype):
+    elif is_linestring(gtype):
 
-        shapes.sort(cmp=lambda p0,
-            p1: cmp(N.diff(p0.boundary).sum(), N.diff(p1.boundary).sum()),
-            reverse=reverse)
+        shapes.sort(cmp=lambda p: N.diff(p.boundary).sum(), reverse=reverse)
         sorted = 1-2*int(reverse)
 
     else:
 
         sorted = 0
+    return sorted
 
 def convex_hull(xy, poly=False, method='delaunay'):
     """Get the envelop of cloud of points
@@ -393,15 +396,17 @@ def convex_hull(xy, poly=False, method='delaunay'):
         # SW
         while True:
             good = xx>xe[-1]
-            if not good.any(): break
+            if not good.any(): 
+                break
             ip = N.argmin(yy[good])
             xe.append(xx[ip])
             ye.append(yy[ip])
 
         # NW
         while True:
-            good = yyx>ye[-1]
-            if not good.any(): break
+            good = yy>ye[-1]
+            if not good.any(): 
+                break
             ip = N.argmax(xx[good])
             xe.append(xx[ip])
             ye.append(yy[ip])
@@ -445,6 +450,6 @@ def convex_hull(xy, poly=False, method='delaunay'):
 
     # Polygon or positions?
     if poly:
-        return create_polygons((xe, ye))
+        return create_polygon((xe, ye))
     return xe, ye
 

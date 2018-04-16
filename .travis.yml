@@ -1,0 +1,24 @@
+language: python
+python:
+  - "2.7"
+install:
+  - sudo apt-get update
+  - wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
+  - conda config --add channels doutriaux1
+  - conda config --add channels uvcdat
+  - conda config --add channels conda-forge
+  - travis_wait 30 conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION gcc>=4.7.0 uvcdat configobj paramiko xlutils seawater pytz cmocean basemap-data-hires matplotlib>=2.0 "scipy<1.0"
+  - source activate test-environment
+  - python setup.py install
+  - python setup.py build_ext --inplace
+  - export UVCDAT_ANONYMOUS_LOG=no
+
+
+
+script: cd test && make

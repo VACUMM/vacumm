@@ -2,7 +2,7 @@
 """
 Time utilities
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -34,12 +34,20 @@ Time utilities
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import re
 import time, datetime as DT
-from operator import isNumberType, gt, ge, lt, le
-from re import split as resplit, match, compile as recompile
-import math
+from numbers import Number
+#from operator import gt, ge, lt, le
+from re import compile as recompile
+from . import math
+import six
+from six.moves import range
+from six.moves import zip
+import numbers
+import operator
 
 import numpy as N, numpy.ma as MA
 from matplotlib.dates import DateFormatter, num2date, date2num
@@ -48,11 +56,13 @@ import cdms2
 import MV2
 import cdtime
 import cdutil
+from genutil.statistics import linearregression
 
 from vacumm import VACUMMError, vacumm_warn
 from .misc import (cp_atts, filter_selector, kwfilter, split_selector, get_atts,
     set_atts)
 from .axes import istime, check_axes, create_time
+from .grid.misc import set_grid, bounds1d
 
 
 # Attributes
@@ -79,11 +89,11 @@ __all__ = ['STR_UNIT_TYPES','RE_SPLIT_DATE','now', 'add', 'axis_add', 'add_time'
     'interp', 'is_time', 'round_date', 'Intervals', 'utc_to_paris', 'ascii_to_num',
     'lindates', 'itv_intersect', 'itv_union','day_of_the_year', 'pat2freq',  'strtime',
     'is_strtime', 'time_type', 'is_axistime', 'notz',  'IterDates', 'numtime',  'is_numtime',
-    'pat2glob', 'midnight_date', 'midnight_interval','reduce_old', 'daily_bounds',
+    'pat2glob', 'midnight_date', 'midnight_interval', 'daily_bounds',
     'hourly_bounds', 'time_split', 'time_split_nmax', 'add_margin', 'fixcomptime',
     'is_interval', 'has_time_pattern', 'tsel2slice', 'tic', 'toc',
     'filter_time_selector','time_selector', 'selector',
-    'julday']
+    'julday', 'interp_clim', 'round_interval']
 
 __all__.sort()
 
@@ -404,7 +414,7 @@ def are_valid_units(units):
     >>> are_good_units('months since 2000-01-01 10h20')
     False
     """
-    if not isinstance(units, basestring): return False
+    if not isinstance(units, six.string_types): return False
 #    try:
 #        cdtime.reltime(100,  units)
 #        return True
@@ -507,7 +517,7 @@ def time_type(mytime, out='string', check=False):
             if out=='type': return type(mytime)
             return eval(stype)
     if check:
-        raise TypeError, 'Time of wrong type: %s'%mytime
+        raise TypeError('Time of wrong type: %s'%mytime)
 
 
 def _nummode_(nummode):
@@ -526,7 +536,7 @@ def _nummode_(nummode):
             return JULIANDAY_TIME_UNITS_NASA
     if are_valid_units(nummode):
         return nummode
-    raise vacumm.VACUMMError('nummode must be either a valid time units'
+    raise VACUMMError('nummode must be either a valid time units'
         ' string, or within: '+', '.join(valid_nummodes))
 
 def comptime(mytime, nummode='mpl'):
@@ -601,7 +611,7 @@ def comptime(mytime, nummode='mpl'):
             continue
 
         # String
-        if isinstance(mytime, basestring):
+        if isinstance(mytime, six.string_types):
             for c in 'TZ_':
                 mytime = mytime.replace(c,' ')
             mytime = mytime.replace('/', '-').replace('h', ':')
@@ -936,7 +946,7 @@ def is_strtime(mytime):
         :func:`is_datetime()` :func:`is_comptime()` :func:`is_reltime()`
         :func:`is_cdtime()`   :func:`is_time()`
     """
-    if not isinstance(mytime, basestring): return False
+    if not isinstance(mytime, six.string_types): return False
     m = RE_MATCH_TIME(mytime)
     if m: return True
     #try:
@@ -1146,14 +1156,12 @@ class Gaps(cdms2.tvariable.TransientVariable):
 
         # Check that we have a valid time axis
         if not cdms2.isVariable(var):
-            raise TypeError,'Your variable is not a cdms variable'
+            raise VACUMMError('Your variable is not a cdms variable')
         mytime = var.getTime()
         if mytime is None:
-            raise TypeError,'Your variable has no time axis'
-        try:
-            time_units =  mytime.units
-        except:
-            raise RuntimeError, 'Your time axis needs units'
+            raise VACUMMError('Your variable has no time axis')
+        if not hasattr(time, 'units'):
+            raise VACUMMError('Your time axis needs units')
         kwdt = kwfilter(kwargs, 'dt')
 
         if dt is None: dt = get_dt(mytime, **kwdt)
@@ -1216,7 +1224,7 @@ class Gaps(cdms2.tvariable.TransientVariable):
         self.setAxis(0,gapstime)
 
         if verbose:
-            print 'Found %i gaps' % self.ngap
+            print('Found %i gaps' % self.ngap)
             self.show(headsep=None)
 
         del gaps,tt
@@ -1229,11 +1237,11 @@ class Gaps(cdms2.tvariable.TransientVariable):
         Parameters are passed to col_printer()
         """
         if not self.ngap:
-            print 'No gaps to print'
+            print('No gaps to print')
             return
         from .io import col_printer
-        cp = vcio.col_printer([['LENGTH',7,'%i'],['START',22,'%s'],['END',22,'%s']],**kwargs)
-        for igap in xrange(self.ngap):
+        cp = col_printer([['LENGTH',7,'%i'],['START',22,'%s'],['END',22,'%s']],**kwargs)
+        for igap in range(self.ngap):
             cp(self._gaps[igap],self._ctime[igap*2],self._ctime[igap*2+1])
         del cp
 
@@ -1253,14 +1261,14 @@ class Gaps(cdms2.tvariable.TransientVariable):
             Use this title for the figure
         """
         if not self.ngap:
-            print 'No gaps to plot'
+            print('No gaps to plot')
             return
-        from plot import xdate,P
+        from .plot import xdate,P
         if self._toplot is None:
             self._toplot = [0,]
             self._times = [self._bounds[0]]
             times = mpl(self.getTime())
-            for igap in xrange(self.ngap):
+            for igap in range(self.ngap):
                 self._toplot.extend([0,1,1,0])
                 self._times.extend([times[igap*2]]*2)
                 self._times.extend([times[igap*2+1]]*2)
@@ -1336,7 +1344,7 @@ def unit_type(units, string_type=False, s=True, raiseerr=True):
     """
     if hasattr(units, 'units'):
         units = units.units.split()[0]
-    if isinstance(units, basestring):
+    if isinstance(units, six.string_types):
         units = units.lower()
         if not units.endswith('s'): units += 's'
     for tt in STR_UNIT_TYPES:
@@ -1451,94 +1459,6 @@ def plot_dt(file, time_axis=None, nice=False):
     show()
 
 
-def reduce_old(data, comp=True, fast=True):
-    """Reduce a variable in time by performing time average on time step that have the same time or time bounds.
-
-    data:
-        A cdms variable with first axis supposed to be time.
-    comp:
-        Call to :meth:`compress()` before reducing [default: True]
-    fast:
-        Convert to pure numpy before processing, then convert back to cdms variable [default: True]
-
-    Return
-    ------
-    The new variable on its new time axis.
-    """
-
-    from grid.misc import set_grid
-
-    assert data.getTime() is not None, 'Your data must have a valid time axis'
-
-    # Time compression
-    if fast: comp = True
-    if comp:
-        data = compress(data)
-
-    # Find interval for averages
-    tt = data.getTime()
-    nt = len(tt)
-    tv = tt.getValue().astype('d')
-    if tt.getBounds() is None:
-        tt.setBounds(bounds1d(tt[:]))
-    bb = tt.getBounds().astype('d')
-    dt = tv[1:]-tv[:-1]
-    dt = N.concatenate((dt,[1.]))
-    dbb = bb[1:]-bb[:-1]
-    dbb = N.concatenate((dbb,[[1.,1.]]))
-    itv = MA.masked_where(MV2.equal(dt,0.),MA.arange(nt))
-    if bb is not None:
-        itv = MA.masked_where(N.logical_and(N.equal(dbb[:,0],0.),
-          N.equal(dbb[:,1],0.)),itv)
-    itv = itv.compressed()
-    nt = len(itv)
-
-    # Fast algo = use Numeric
-    if fast:
-        mydata = data.filled()
-        missing_value = data.getMissing()
-        AV = N
-    else:
-        mydata = data
-        AV = MV2
-    sh = list(data.shape)
-    sh[0] = nt
-    adata = AV.zeros(sh,typecode=data.dtype.char,savespace=True)
-
-    # Compute averages
-    atime = N.zeros(nt).astype('d')
-    if bb is not None:
-        abounds = N.zeros((nt,2)).astype(bb.dtype.char)
-    else:
-        abounds = None
-    it_first = 0
-    for it,it_last in enumerate(itv):
-        adata[it] = AV.average(mydata[it_first:it_last+1].astype(adata.dtype.char),0)
-        if bb is None:
-            atime[it] = tv[it_last]
-        else:
-            abounds[it] = bb[it_last]
-            atime[it] = N.average(abounds[it],0)
-        it_first = it_last+1
-
-    # New time axis
-    atime = cdms2.createAxis(atime,bounds=abounds)
-    cp_atts(tt,atime,id=True)
-    atime.designateTime(calendar=cdtime.DefaultCalendar)
-
-    # New variable
-    if fast:
-        adata = MV2.masked_object(adata,missing_value)
-    adata.setAxis(0,atime)
-    for i in xrange(1,data.rank()):
-        adata.setAxis(i,data.getAxis(i))
-    if data.getGrid() is not None:
-        set_grid(adata,data.getGrid())
-        #adata.setGrid(data.getGrid())
-    cp_atts(data,adata,id=True)
-    del data
-    return adata
-
 def yearly(data,**kwargs):
     """Convert to yearly means
 
@@ -1641,7 +1561,6 @@ def hourly_exact(data,time_units=None,maxgap=None, ctlims=None):
         Maximal gap in hours to enable interpolation [default: None].
     """
 
-    from grid.misc import set_grid
 
     # Check time
     taxis = data.getTime()
@@ -1682,7 +1601,7 @@ def hourly_exact(data,time_units=None,maxgap=None, ctlims=None):
     hdata[:] *= MV2.masked
     cp_atts(data,hdata,id=True)
     hdata.setAxisList(axes)
-    set_grid(hdata,data.getGrid())
+    set_grid(hdata, data.getGrid())
     #hdata.setGrid(data.getGrid())
 
     # Convert to hunits
@@ -1727,8 +1646,6 @@ def hourly_exact(data,time_units=None,maxgap=None, ctlims=None):
 def trend(var):
     """Get linear trend"""
 
-    from genutil.statistics import linearregression
-    from grid.misc import set_grid
 
     # Expansion of first axis
     tt = MV2.array(var.getAxis(0).getValue(),typecode=var.dtype.char)
@@ -1745,7 +1662,7 @@ def trend(var):
     cp_atts(var,var_trend)
     var_trend.id = var.id+'_trend'
     var_trend.name = var_trend.id
-    if var_trend.attributes.has_key('long_name'):
+    if 'long_name' in var_trend.attributes:
         var_trend.long_name = 'Linear trend of '+var_trend.long_name
     var_trend.setAxisList(var.getAxisList())
     set_grid(var_trend,var.getGrid())
@@ -1756,16 +1673,14 @@ def trend(var):
 def detrend(var):
     """Linear detrend"""
 
-    from grid.misc import set_grid
-
     var_detrend = var - trend(var)
-    cp_atts(var,var_detrend)
+    cp_atts(var, var_detrend)
     var_detrend.id = 'detrended_'+var.id
     var_detrend.name = var_detrend.id
-    if var_detrend.attributes.has_key('long_name'):
+    if 'long_name' in var_detrend.attributes:
         var_detrend.long_name = 'Detrended '+var_detrend.long_name
     var_detrend.setAxisList(var.getAxisList())
-    set_grid(var_detrend,var.getGrid())
+    set_grid(var_detrend, var.getGrid())
     #var_detrend.setGrid(var.getGrid())
 
     return var_detrend
@@ -1829,7 +1744,7 @@ def strptime(mytime,fmt):
 _re_has_time_pattern = recompile('%[aAbBcdfHIjmpSUwWxXyYzZ]').search
 def has_time_pattern(ss):
     """Does ss string contains date pattern like %Y?"""
-    if not isinstance(ss, basestring): return False
+    if not isinstance(ss, six.string_types): return False
     if not _re_has_time_pattern(ss): return False
     try:
         DT.datetime.strftime(DT.datetime.now(), ss)
@@ -1843,10 +1758,10 @@ def tz_to_tz(mytime, old_tz, new_tz, copy=True):
     try:
         from pytz import timezone
     except ImportError:
-        raise vacumm.VACUMMError('You must install pytz package to add time zone support'
+        raise VACUMMError('You must install pytz package to add time zone support'
             ' to vacumm')
-    if isinstance(old_tz,basestring): old_tz = timezone(old_tz)
-    if isinstance(new_tz,basestring): new_tz = timezone(new_tz)
+    if isinstance(old_tz,six.string_types): old_tz = timezone(old_tz)
+    if isinstance(new_tz,six.string_types): new_tz = timezone(new_tz)
 
     # Variable
     if cdms2.isVariable(mytime):
@@ -1874,7 +1789,7 @@ def tz_to_tz(mytime, old_tz, new_tz, copy=True):
         # Guess type
         typeback = time_type(mytime,  out='func')
         if typeback is None:
-            raise TypeError, 'Time of wrong type: %s'%mytime
+            raise TypeError('Time of wrong type: %s'%mytime)
         if typeback == reltime:
             myUnits = mytime.units
         dt = datetime(mytime)
@@ -1909,14 +1824,14 @@ def tzname_to_tz(mytzname):
     >>> tz = tzname_to_tz('CEST')
     """
     try:
-        from pytz import all_timezones
+        from pytz import all_timezones, timezone
     except ImportError:
-        raise vacumm.VACUMMError('You must install pytz package to add time zone support'
+        raise VACUMMError('You must install pytz package to add time zone support'
             ' to vacumm')
     for name in all_timezones:
-        tz = timezone(name) #FIXME: timezone
+        tz = timezone(name)
         if not hasattr(tz, '_tzinfos'): continue
-        for (utcoffset, daylight, tzname), _ in tz._tzinfos.iteritems():
+        for (utcoffset, daylight, tzname), _ in six.iteritems(tz._tzinfos):
             if tzname == mytzname:
                 return tz
 
@@ -1939,7 +1854,7 @@ class DateSorter(object):
         self.pattern = pattern
         self.basename = basename
     def __call__(self,arg1,arg2):
-        if isinstance(self.pattern, basestring):
+        if isinstance(self.pattern, six.string_types):
             if self.basename:
                 arg1 = os.path.basename(arg1)
                 arg2 = os.path.basename(arg2)
@@ -1963,7 +1878,7 @@ class SpecialDateFormatter(DateFormatter):
 
         # Which level?
         slevels = ['year', 'month', 'day', 'hour', 'minute']
-        if not operator.isNumberType(level):
+        if not isinstance(level, numbers.Number):
             if level.lower() not in slevels:
                 level = -1
             else:
@@ -2084,20 +1999,20 @@ def is_interval(interval):
         return False
     if not is_time(interval[0]) or not is_time(interval[1]):
         return False
-    if len(interval)==3 and (not isinstance(interval[2], basestring)
+    if len(interval)==3 and (not isinstance(interval[2], six.string_types)
         or not len(interval[2])>1):
         return False
     return True
 
 def round_date(mydate, round_type, mode='round'):
-    """Round a date to year, month, day, hour, minute or second
+    """Round a date to a step in year, month, day, hour, minute or second
 
     Parameters
     ----------
     mydate:
         A date compatible with :func:`comptime`.
     round_type:
-        A string like "year".
+        A string like "year" or a tuple like (3, "year").
     mode: optional
         Rounding mode
 
@@ -2106,21 +2021,58 @@ def round_date(mydate, round_type, mode='round'):
         - Else choose the nearest.
 
     """
-    if not operator.isNumberType(round_type):
+    if isinstance(round_type, tuple):
+        step, round_type = round_type
+    else:
+        step = 1
+    step = max(int(step), 1)
+    if not isinstance(round_type, Number):
         round_type = STR_UNIT_TYPES.index(unit_type(round_type, string_type=True))
     stype = STR_UNIT_TYPES[round_type]
     ct = comptime(mydate)
     sdate = str(ct)
-    ct0 = cdtime.comptime(*[int(float(ss)) for ss in RE_SPLIT_DATE.split(sdate) if ss != ''][:round_type+1])
-    ct1 = ct0 if ct==ct0 else add_time(ct0, 1, stype)
+    values = [int(float(ss)) for ss in RE_SPLIT_DATE.split(sdate) if ss != ''][:round_type+1]
+    base = [0, 1, 1, 0, 0, 0][round_type] # [year, month, ...]
+    rectif = (values[-1]-base) % step
+    ct0 = add_time(cdtime.comptime(*values), -rectif, stype)
+    ct1 = ct0 if ct==ct0 else add_time(ct0, step, stype)
     units = 'days since '+sdate
     t = ct.torel(units).value
-    if mode not in ['floor', 'ceil']: mode = 'round'
+    if mode not in ['floor', 'ceil']:
+        mode = 'round'
     if mode=='round':
-        mode = 'ceil' if (t-ct0.torel(units).value > ct1.torel(units).value-t) else 'flood'
+        mode = 'ceil' if (t-ct0.torel(units).value > ct1.torel(units).value-t) else 'floor'
     if mode=='ceil':
         return ct1
     return ct0
+
+def round_interval(time, round_type, mode='inner'):
+    """Round an time interval using :func:`round_date`
+
+    :Params:
+
+        - **time**: A time interval like ``(time0, time1, 'cce')``
+        - **round_type**: A string like "year" or a tuple like (3, "year").
+        - **mode**, optional: Rounding mode
+
+            - ``"inner"``: Upper for the lower bound and lower for the upper bound.
+            - ``"outer"``: Opposite to "inner"
+            - tuple: first is applied to lower bound, second to upper bound.
+            - Else, passed to :func:`round_date` and applied to both bounds.
+
+    """
+    # Mode
+    if mode=='inner':
+        modes = 'upper', 'lower'
+    elif mode=='outer':
+        modes = 'lower', 'upper'
+    elif isinstance(mode, tuple):
+        modes = mode
+    else:
+        mode = mode, mode
+
+    return (round_date(time[0], round_type, modes[0]),
+        round_date(time[1], round_type, modes[1])) + time[2:]
 
 def midnight_date(mydate):
     """Round a date to the closest midnight
@@ -2242,8 +2194,6 @@ def reduce(vari, geterr=False, **kwargs):
 
     """
 
-    from grid.misc import set_grid
-
     # Inits
     taxis = vari.getTime()
     if taxis is None:
@@ -2256,6 +2206,7 @@ def reduce(vari, geterr=False, **kwargs):
 
     # Compression intervals
     ii = N.arange(nti)
+    tv = []
     if bb is None:
         dt = N.diff(tt)
         it_lasts = ii[dt!=0.].tolist()
@@ -2269,7 +2220,8 @@ def reduce(vari, geterr=False, **kwargs):
     nto = len(it_lasts)
     varo = MV2.zeros((nto,)+vari.shape[1:], vari.dtype)
     cp_atts(vari, varo)
-    if vari.getGrid() is not None: set_grid(varo,vari.getGrid())
+    if vari.getGrid() is not None: 
+        set_grid(varo, vari.getGrid())
     #varo.setGrid(vari.getGrid())
     for i,ax in enumerate(vari.getAxisList()[1:]):
         varo.setAxis(i+1, ax)
@@ -2338,7 +2290,7 @@ def add_margin(interval, lmargin, rmargin=None):
     """
     # Interval
     if not is_interval(interval):
-        raise vacumm.VACUMMError('Wrong time interval')
+        raise VACUMMError('Wrong time interval')
     bb = interval[2] if len(interval)>2 else None
 
     # Format margin
@@ -2348,7 +2300,7 @@ def add_margin(interval, lmargin, rmargin=None):
     for i, margin in enumerate(margins):
         if margin is not None:
             if margin is False: margin = 0
-            if isinstance(margin, basestring): # only units
+            if isinstance(margin, six.string_types): # only units
                 newmargin =  1, unit_type(margin, string_type=True)
             elif isinstance(margin, (int, float)): # fraction of interval
                 if dt is None:
@@ -2359,8 +2311,8 @@ def add_margin(interval, lmargin, rmargin=None):
                 else:
                     newmargin = (dt/margin, 'seconds')
             elif not isinstance(margin, (tuple, list)) and len(margin)<2 and \
-                (not isinstance(margin[0], (int, float) or not isinstance(margin[1], basestring))):
-                raise vacumm.VACUMMError('Wrong time margin')
+                (not isinstance(margin[0], (int, float) or not isinstance(margin[1], six.string_types))):
+                raise VACUMMError('Wrong time margin')
             else:
                 newmargin = margin
         margins[i] = list(newmargin)
@@ -2374,7 +2326,6 @@ def add_margin(interval, lmargin, rmargin=None):
 class Intervals(object):
     """Iterator on intervals
 
-<<<<<<< HEAD
     Parameters
     ----------
     time_range:
@@ -2410,12 +2361,12 @@ class Intervals(object):
 
         # Global range
         if not is_interval(time_range):
-            raise vacumm.VACUMMError('Wrong time interval')
+            raise VACUMMError('Wrong time interval')
         start_date = comptime(time_range[0])
         end_date = comptime(time_range[1])
 
         # dt
-        if operator.isNumberType(dt):
+        if isinstance(dt, numbers.Number):
             units = 'seconds since 2000'
             dt = (
                 (end_date.torel(units).value-start_date.torel(units).value)/dt,
@@ -2444,7 +2395,7 @@ class Intervals(object):
             self._lastbounds = time_range[2]
         elif bounds in [True, None]:
             self._lastbounds = 'co'
-        elif isinstance(bounds, basestring):
+        elif isinstance(bounds, six.string_types):
             self._lastbounds = bounds
         else:
             self._lastbounds = self._innerbounds = False
@@ -2516,7 +2467,7 @@ class IterDates(object):
         end_date = comptime(time_range[1])
 
         # dt
-        if operator.isNumberType(dt):
+        if isinstance(dt, numbers.Number):
             units = 'seconds since 2000'
             dt = (
                 (end_date.torel(units).value-start_date.torel(units).value)*1./dt,
@@ -2605,7 +2556,7 @@ def time_split(what, how, roundit=None, bb='co'):
         what = list(what[:2])
     what = comptime(what)
     if not isinstance(what, list):
-        raise TypeError, "Can't split a single date"
+        raise TypeError("Can't split a single date")
     tmin = min(what)
     tmax = max(what)
     tminmax = (tmin, tmax, bbw)
@@ -2616,7 +2567,7 @@ def time_split(what, how, roundit=None, bb='co'):
     if is_time(how): how = [how]
 
     # dt
-    if (isNumberType(how) or isinstance(how, basestring) or
+    if (isinstance(how, Number) or isinstance(how, six.string_types) or
             isinstance(how, tuple)):
         how = Intervals(tminmax[:2], how, roundto=roundit)
 
@@ -2634,9 +2585,9 @@ def time_split(what, how, roundit=None, bb='co'):
             if len(how)==1: # single date
                 if tmin<=how[0] and tmax>=how[0]:
                     how = [tmin, how, tmax]
-            how = [(how[i], how[i+1], 'co') for i in xrange(len(how)-1)]
+            how = [(how[i], how[i+1], 'co') for i in range(len(how)-1)]
     else:
-        raise TypeError, "Can't recognize the split specification"
+        raise TypeError("Can't recognize the split specification")
 
     # Checks
     itvs = []
@@ -2651,10 +2602,10 @@ def time_split(what, how, roundit=None, bb='co'):
 def time_split_nmax(what, nmax, roundit=True):
     """Smartly split an interval with a length into subintervals of max length"""
     if isinstance(what, tuple):
-        raise TypeError, "Please provide a time axis, a list of dates, or IterDates or Intervals iterators."
+        raise TypeError("Please provide a time axis, a list of dates, or IterDates or Intervals iterators.")
     ctimes = comptime(what)
     if not isinstance(ctimes, list):
-        raise TypeError, "Can't split a single date"
+        raise TypeError("Can't split a single date")
     if len(ctimes) < nmax:
         return ctimes[0], ctimes[-1]
     taxis = create_time(ctimes)
@@ -2822,7 +2773,7 @@ def tsel2slice_old(taxis, *args, **kwargs):
     >>> myslice = tsel2slice(taxis, slice(10,12), dict(time=slice(4,5), time=('2000','2002'))
     """
     # Inits
-    if not istime(taxis): raise vacumm.VACUMMError('taxis must be a valid time axis')
+    if not istime(taxis): raise VACUMMError('taxis must be a valid time axis')
     asind = kwargs.pop('asind', False)
     nonone = kwargs.pop('nonone', False)
     fullslice = slice(*slice(None).indices(len(taxis)))
@@ -2894,14 +2845,14 @@ def time_selector(arg0, arg1=None, bounds=None, round=False, utc=True):
     # Interval
     if arg1 is None: # from a date to now
         selection = (comptime(arg0), now(utc))
-    elif isNumberType(arg0): # from now into the past
+    elif isinstance(arg0, Number): # from now into the past
         nn = now(utc)
         selection = (add_time(nn, -arg0, arg1), nn)
     else: # between two dates
         selection = (comptime(arg0), comptime(arg1))
 
     # Bounds
-    if isinstance(bounds, basestring):
+    if isinstance(bounds, six.string_types):
         selection += (bounds, )
 
     return selection
@@ -2938,7 +2889,7 @@ def filter_time_selector(*args, **kwargs):
     out = kwargs.pop('out', False)
     keeppos = kwargs.pop('keeppos', False)
     if ids is None: ids = []
-    if isinstance(ids, basestring): ids = [ids]
+    if isinstance(ids, six.string_types): ids = [ids]
     ids = list(ids)+['time']+cdms2.convention.time_aliases
 
     # Build the selector using refinements
@@ -2987,7 +2938,7 @@ def tsel2slice(taxis, *args, **kwargs):
     >>> myslice = tsel2slice(taxis, slice(10,12), dict(time=slice(4,5), time=('2000','2002'))
     """
     # Inits
-    if not istime(taxis): raise vacumm.VACUMMError('taxis must be a valid time axis')
+    if not istime(taxis): raise VACUMMError('taxis must be a valid time axis')
     asind = kwargs.pop('asind', False)
     nonone = kwargs.pop('nonone', False)
     fullslice = slice(*slice(None).indices(len(taxis)))
@@ -3040,7 +2991,7 @@ def tic():
     """
     import time as tc
     stime = tc.clock()
-    print tc.asctime()
+    print(tc.asctime())
     return stime
 
 def toc(stime=0.):
@@ -3067,15 +3018,15 @@ def toc(stime=0.):
     r = tc.clock()-stime
     if r > 60:
         if r > 3600:
-            print (r/3600), "hours"
+            print((r/3600), "hours")
         else:
-            print (r/60), " minutes"
+            print((r/60), " minutes")
     else:
-        print tc.clock()-stime, " seconds"
+        print(tc.clock()-stime, " seconds")
 
 
 def interp_clim(clim, times, method='linear', day=15):
-    """Interpolate a bathymetry at specified dates"""
+    """Interpolate a climatology at specified dates"""
     from .grid.regridding import regrid1d, extend1d
     assert method in ('linear', 'cubic')
     taxis = create_time(times)
@@ -3085,7 +3036,7 @@ def interp_clim(clim, times, method='linear', day=15):
     months = N.array([ct.month for ct in ctimes])
     years = N.array([ct.year for ct in ctimes])
     atts = get_atts(clim)
-    cmonths = range(1, 13)
+    cmonths = list(range(1, 13))
     cyears = [0]*12
 
     left_extent = 0

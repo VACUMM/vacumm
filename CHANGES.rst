@@ -1,6 +1,110 @@
 Release notes
 #############
 
+Version 3.5.1
+=============
+
+- Added round_interval
+- Added step support to round_date
+- Added 256-based color to config color validator
+- Added left frame to application logo in cfgui
+- Added get_transect to Atmosphere
+- Added domain attribute to Dataset classes
+- Added flexibility to NcSigma
+- Fixed Map memory issue
+- Fixed some old Dataset methods
+- Fixed runcheck
+
+Version 3.5.0
+=============
+
+- Added new classes for MesoNh, Symphonie and WW3 models
+- Added cfgui: graphical user interface to ConfigMgr
+- Added support for 4D interpolation to grid2xy
+- Added linear4dto1dxx
+- Added tcompress, bound_ops and haversine to vcmq
+- Renamed check.py to runcheck
+- Fixed kinetic_energy: bad indexes
+- Fixed cfgm merging
+- Fixed vacumm.misc.file.strfsize
+- Fixed OceanDataset.get_mld density issue
+- Fixed missing datetime import for tfind
+- Fixed ConfigManager warning when default value is not scalar
+- Fixed fix xml text nodes load
+- Fixed Logger defaults
+- Fixed Object class logging funcName
+- Fixed spherical variogram
+- Fixed imports in basemap
+- Fixed cdtime validator in config
+
+Version 3.4.1
+=============
+
+- Fix 3d map plots
+
+Version 3.4.0
+=============
+
+- New cf specs management system based on ConfigObj
+- Added haversine
+- Added CaseChecker and check_case
+- Added vacumm_warning and vcwarn utilities
+- Added fixed number of step support to lindates
+- Added Dataset.get_selector
+- Added Added NcIterTimeSlice
+- Added match_string and match_atts
+- Added logger keyword to Object
+- Added ArgTuple
+- Added support for non gridded variable in Dataset.get_variable
+- Added support for level='3d' to Dataset
+- Added grid support to grid to Dataset.get_variable
+- Added clone_grid
+- Added id search to ncfind_obj
+- Added zerolid support to sigma and dz2depth
+- Added id attribute and use it for default long_name
+- Added cmap support to VAR_SPECS
+- Added get_cf_cmap
+- Added x and y support to autoresize in Plot
+- Added special pos/neg/sym cmap name to color
+- Added dicttree_get and dicttree_set
+- Added dict validator for configobj
+- Added register_config_validator
+- Added Map.add_arcgisimage
+- Added some 3d capabilities to Map
+- Added some 3D support to plot_grid
+- Added the axes="3d" support to Plot
+- Added some 3d support for map tick labels
+- Added register_dataset
+- Added __getitem__ to Plot to retreive plotted objects
+- Added axis attribute detection for axes.isXXX functions
+- Added support to empty to all plot functions
+- Added azim and elev to Plot init
+- Added kwargs transfert to x/ylocator in Plot
+- Added support for cfgspec to cfg2rst
+- Added travis support
+- Added public access to config validator functions
+- Improved resol that now works with haversine
+- Improved levels_mode and cmap handling in Plot
+- Improved dataset._get_depth_
+- Fixed selector applied to axes in Sigma._load_by_name
+- Fixed ArgList
+- Fixed Dataset.get_variable with non-generic variables
+- Fixed sorting in list_forecast_files
+- Fixed level and time slicing in Dataset
+- Fixed scalar handling for create_<axis> functions
+- Fixed indices2slices for a single index
+- Fixed axis detection
+- Fixed nccache_get_time with strict axis checking
+- Fixed lat with coriolis_param
+- Fixed single value case for config validators
+- Fixed shapefile reading, zone clipping and x/y/min/max in Shapes
+- Fixed Marigraph mean
+- Fixed xaxis and yaxis for maps
+- Fixed configobj.Section support to dict_merge
+- Fixed format_var with physloc
+- Fixed x/y/min/max in plots with no data
+- Fixed Dataset.get_depth at T point
+
 Version 3.3.0
 =============
 

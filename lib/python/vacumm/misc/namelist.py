@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -36,7 +36,10 @@
 
 # ==================================================================================================
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os, re, StringIO, sys
+import six
 
 # ==================================================================================================
 
@@ -138,7 +141,7 @@ class Namelist(dict):
         dict.__init__(self)
 
     def __str__(self):
-        return '\n\n'.join('%s:\n%s'%(namelist, '\n'.join(('  %s = %s (%s)'%(k,v,v.__class__.__name__) for k,v in variables.iteritems()))) for namelist, variables in self.iteritems())
+        return '\n\n'.join('%s:\n%s'%(namelist, '\n'.join(('  %s = %s (%s)'%(k,v,v.__class__.__name__) for k,v in six.iteritems(variables)))) for namelist, variables in six.iteritems(self))
 
     def __setitem__(self, key, value):
         if not isinstance(value, dict):
@@ -216,19 +219,19 @@ class Namelist(dict):
     def save_string(self):
         '''Return the (fortran) formated namelists'''
         s = StringIO.StringIO()
-        for namelist,variables in self.iteritems():
+        for namelist,variables in six.iteritems(self):
             s.write('&%s\n'%namelist)
-            for vn,vv in variables.iteritems():
+            for vn,vv in six.iteritems(variables):
                 if isinstance(vv, dict):
-                    for i,vi in vv.iteritems():
-                        if isinstance(vi, (str,unicode)):
+                    for i,vi in six.iteritems(vv):
+                        if isinstance(vi, (str,six.text_type)):
                             s.write('  %s(%s) = "%s"\n'%(vn,i,vi))
                         elif isinstance(vi, bool):
                             s.write('  %s(%s) = .%s.\n'%(vn,i,str(vi).lower()))
                         else:
                             s.write('  %s(%s) = %s\n'%(vn,i,vi))
                 else:
-                    if isinstance(vv, (str,unicode)):
+                    if isinstance(vv, (str,six.text_type)):
                         s.write('  %s = "%s"\n'%(vn,vv))
                     elif isinstance(vv, bool):
                         s.write('  %s = .%s.\n'%(vn,str(vv).lower()))
@@ -242,14 +245,14 @@ class Namelist(dict):
     def load_file(self, filepath):
         '''Load namelists from a text file'''
         self._filepath = filepath
-        fh = file(self._filepath, 'rU')
+        fh = open(self._filepath, 'rU')
         fc = fh.read(self._maxreadsize)
         fh.close()
         self.load_string(fc)
 
     def save_file(self, filename, append=False):
         '''Save the (fortran) formatted namelists to a file'''
-        fh = file(filename, append and 'a' or 'w')
+        fh = open(filename, append and 'a' or 'w')
         fh.write(self.save_string())
         fh.close()
 
@@ -293,21 +296,21 @@ if __name__ == '__main__':
 '''
 
     if len(sys.argv) == 2 and sys.argv[1] in ('-t', '-test', '--test'):
-        print ' namelist in input '.center(80, '=')
-        print namelist
-        print
+        print(' namelist in input '.center(80, '='))
+        print(namelist)
+        print()
         nf = Namelist.from_string(namelist)
     elif len(sys.argv) == 2:
         nf = Namelist.from_file(sys.argv[1])
     else:
-        print 'usage: %(prog)s (namelistfile|--test)'%dict(prog=os.path.split(sys.argv[0])[1])
+        print('usage: %(prog)s (namelistfile|--test)'%dict(prog=os.path.split(sys.argv[0])[1]))
         sys.exit(1)
-    print ' namelist as a descriptive string (__str__ method) '.center(80, '=')
-    print nf
-    print
-    print ' namelist as formated string (save_string method) '.center(80, '=')
-    print nf.save_string()
-    print
+    print(' namelist as a descriptive string (__str__ method) '.center(80, '='))
+    print(nf)
+    print()
+    print(' namelist as formated string (save_string method) '.center(80, '='))
+    print(nf.save_string())
+    print()
 
 
 

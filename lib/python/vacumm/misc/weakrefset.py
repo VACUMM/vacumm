@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -33,6 +33,7 @@
 #
 from __future__ import with_statement
 
+from __future__ import absolute_import
 from _weakref import ref
 
 __all__ = ['WeakSet']

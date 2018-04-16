@@ -12,7 +12,7 @@ print poly.area()
 #  -> 300.0
 # - plot grace a 'boundary'='get_coord()' (= pp)
 import pylab as P
-P.fill(poly.boundary[:, 0], poly.boundary[:, 1], 
+P.fill(poly.boundary[:, 0], poly.boundary[:, 1],
     facecolor=(.9, .9, .9))
 
 # Points aleatoires et inclusion
@@ -30,7 +30,7 @@ for pt in pts:
     # - plot grace a 'boundary'
     x, y = pt.boundary
     P.plot([x], [y], 'o'+color)
-    
+
 # Ligne de points et intersection
 # - coordonnees
 xy = N.array([[2., 7., 20., 26.], [2., 2., 28., 28.]])
@@ -45,7 +45,7 @@ print line.intersects(poly)
 for subline in line.intersection(poly): # = poly.intersection(line)
     xyl = subline.boundary
     P.plot(xyl[:, 0], xyl[:, 1], '-', color=(0, 1, 0))
-        
+
 # Autre polygone
 # - creation et plot
 xyp = N.array([[22., 3], [25., 7], [28, 3]])
@@ -60,3 +60,4 @@ if triangle.intersects(poly):
 from vacumm.misc.plot import savefigs
 P.axis([0, 30, 0, 30])
 savefigs(__file__, pdf=True)
+P.close()

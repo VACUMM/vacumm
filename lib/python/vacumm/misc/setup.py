@@ -32,11 +32,13 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
 def configuration(parent_package='',top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration('misc', parent_package, top_path)
 #    config.add_data_files('logo_vacumm.gif')
     config.add_subpackage('axml')
+    config.add_subpackage('cfgui')
 #   config.add_subpackage('easyPypar')
     config.add_data_files('vacumm.cfg')
     config.add_data_files('cpt/*')

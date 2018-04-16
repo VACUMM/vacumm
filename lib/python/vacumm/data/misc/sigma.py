@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -34,20 +34,27 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from __future__ import absolute_import
+from __future__ import print_function
+import six
+from six.moves import map
+from six.moves import range
 __author__ = 'Stéphane Raynaud'
 __email__ = 'raynaud@actimar.fr'
 
 '''This module defines a class for all sigma coordinates systems'''
 
-import re, math, numpy as N, cdms2, MV2
+import re, math, string, numpy as N, cdms2, MV2
 from traceback import format_exc
 from warnings import warn
-from cdms2.selectors import Selector
-from vacumm.misc.misc import (selector2str, create_selector,
-                              filter_level_selector)
+from vacumm import vcwarn
+from vacumm.misc import (selector2str, create_selector, split_selector,
+    filter_level_selector, dict_merge)
 import vacumm.data.cf as cf
 from vacumm.misc.axes import axis_type
 from vacumm.misc.grid import dz2depth as dz2depths
+from vacumm.misc.atime import create_time
+from vacumm.misc.regridding import grid2xy
 from vacumm.misc.io import NcFileObj, ncread_axis, ncread_var
 
 RE_SN2LOC_SEARCH = re.compile(r'_at_([uvwtdfr])_location', re.I).search
@@ -104,14 +111,18 @@ class NcSigma(object):
 
     '''
     standard_names = dict(
-        dz = cf.VAR_SPECS['dz']['standard_names'],
-        dzu = cf.VAR_SPECS['dz_u']['standard_names'],
-        dzv = cf.VAR_SPECS['dz_v']['standard_names'],
-        dzw = cf.VAR_SPECS['dz_w']['standard_names'],
-        depth = cf.VAR_SPECS['bathy']['standard_names'],
-        depthu = cf.VAR_SPECS['bathy_u']['standard_names'],
-        depthv = cf.VAR_SPECS['bathy_v']['standard_names'],
-        eta = cf.VAR_SPECS['ssh']['standard_names'],
+        dz = cf.VAR_SPECS['dz']['standard_name'],
+        dzu = cf.VAR_SPECS['dz_u']['standard_name'],
+        dzv = cf.VAR_SPECS['dz_v']['standard_name'],
+        dzw = cf.VAR_SPECS['dz_w']['standard_name'],
+        depth = cf.VAR_SPECS['bathy']['standard_name'],
+        depthu = cf.VAR_SPECS['bathy_u']['standard_name'],
+        depthv = cf.VAR_SPECS['bathy_v']['standard_name'],
+        eta = cf.VAR_SPECS['ssh']['standard_name'],
+#cval utile ?
+        oro = cf.VAR_SPECS['oro']['standard_name'],
+        height = cf.VAR_SPECS['topheight']['standard_name'],
+        altitude = cf.VAR_SPECS['altitude']['standard_name'],
 #        dz = "ocean_layer_thickness",
 #        dzu = "ocean_layer_thickness_at_u_location",
 #        dzv = "ocean_layer_thickness_at_v_location",
@@ -122,13 +133,13 @@ class NcSigma(object):
 #        eta = ["sea_surface_height_above_geoid"],
     )
     gridvars = dict(
-        t = ['eta', 'depth'],
+        t = ['eta', 'depth','oro','altitude'],
         u = ['depthu'],
         v = ['depthv'],
     )
     gridvars['all'] = gridvars['t']+gridvars['u']+gridvars['v']
     names = {}
-    horiz_terms = ['depth', 'eta']
+    horiz_terms = ['depth', 'eta', 'height', 'oro']
     sigma_name = None
 
     def __init__(self, ncfile, levelvars=None, formula_terms=None):
@@ -145,6 +156,12 @@ class NcSigma(object):
 
         # Load formula terms
         self.load_formula_terms(formula_terms)
+
+        try:
+            if 'depth' in self.formula_terms['t']: self.domain = 'ocean'
+            elif 'height' in self.formula_terms['t']: self.domain = 'atmosphere'
+        except:
+            self.domain = None
 
         # Load names from standard_names
         self._load_names_(self.f)
@@ -297,58 +314,96 @@ class NcSigma(object):
 
     def load_formula_terms(self, formula_terms=None, at=None, mode='noerr'):
         """Read formula terms at T and W points and store them in
-        the dictionary attribute :attr:`formula_terms` whose keys are 't' and 'w'"""
-        # Get formula
-        if formula_terms is None:
-            formula_terms = {}
-            for at, levelvar in self.levelvars.items():
-                try:
-                    formula_terms[at] = levelvar.formula_terms
-                except:
-                    if mode!='noerr':
-                        raise SigmaError('Error when reading formula_term attribute of netcdf variable or axis: '+levelvar.id)
-        else:
-            for at in 'wt':
-                if at in formula_terms: break
-            else:
-                formula_terms = {'t':formula_terms}
+        the dictionary attribute :attr:`formula_terms` whose keys are 't' and 'w'
+        """
+
+        # String from file
+        formula_terms_from_file = {}
+        for at_, levelvar in self.levelvars.items():
+            if at and at!=at_:
+                continue
+            formula_terms_from_file[at_] = getattr(levelvar, "formula_terms", {})
+
+        # Specified
+        if not formula_terms:
+           formula_terms = {}
+        elif (isinstance(formula_terms, (str, list, tuple)) or
+                (isinstance(formula_terms, dict) and
+                    't' not in formula_terms and 'w' not in formula_terms)):
+            formula_terms = {'t':formula_terms}
 
         # Scan formulas
         self.formula_terms = {}
-        for at in 'wt':
-            self.formula_terms[at] = {}
-            ft = formula_terms.get(at, None)
-            if not ft: continue
-            if not isinstance(ft, (list,tuple)):
-                ft = re.split('[\W]+', ft)
-            self.formula_terms[at] = {}
-            for i in xrange(len(ft)/2):
-                try:
-                    self.formula_terms[at][ft[i*2]] = ft[i*2+1]
-                except:
-                    raise SigmaError('Error while scaning formula terms')
+        for at_ in 'wt':
+
+            # Check position
+            if at and at!=at_:
+                continue
+
+            # To dicts
+            file_formula_terms = self._ft_to_dict_(formula_terms.get(at_, {}))
+            spec_formula_terms = self._ft_to_dict_(formula_terms_from_file.get(at_, {}))
+
+            # Merge
+            self.formula_terms[at_] = dict_merge(spec_formula_terms, file_formula_terms)
+
+            # Check if empty when required
+            if at and not self.formula_terms[at_]:
+                vcwarn('No formula term for {} position'.format(at_))
 
             # Patch names for eta and depth into self.names
             for name in self.horiz_terms:
-                if name in ft:
-                    self.names[name] = self.formula_terms[at][name]
+                if name in self.formula_terms[at_]:
+                    self.names[name] = self.formula_terms[at_][name]
 
-    def _get_from_cache_(self, name, selector=None):
+        # Final check
+        if (not self.formula_terms or
+                not any([bool(ct) for ct in self.formula_terms.values()])):
+            vcwarn('No formula term currently loaded')
+
+    @staticmethod
+    def _ft_to_dict_(formula_terms):
+        if isinstance(formula_terms, dict):
+            return formula_terms
+        if not isinstance(formula_terms, (list,tuple)):
+            formula_terms = re.split('[\W]+', formula_terms)
+        ft = {}
+        for i in range(len(formula_terms)/2):
+            try:
+                ft[formula_terms[i*2]] = formula_terms[i*2+1]
+            except:
+                raise SigmaError('Error while scaning formula terms')
+        return ft
+
+
+    @staticmethod
+    def _serialize_selector_(selector=None, lons=None, lats=None, times=None):
+        selector = as_selector(selector)
+        ss = selector2str(selector)
+        if lons is not None and lats is not None:
+            ss += str(hash(str(N.asarray(lons).data)))
+            ss += str(hash(str(N.asarray(lats).data)))
+            if times is not None:
+                ss += str(hash(str(N.asarray(create_time(times)).data)))
+        return ss
+
+    def _get_from_cache_(self, name, selector=None, lons=None, lats=None, times=None):
         """Get a variable either from the cache or
         by reading it with :func:`_get_from_name_`"""
         # Check the cache
         name = name.lower()
         if not hasattr(self, '_cache'): self._cache = {}
         selector = as_selector(selector)
-        ss = selector2str(selector)
-        if not self._cache.has_key(name):
+        ss = self._serialize_selector_(selector=selector,
+            lons=lons, lats=lats, times=times)
+        if name not in self._cache:
             self._cache[name] = [None,None]
         if self._cache[name][0] is ss and self._cache[name][0] is not None:
             return self._cache[name][1]
         del self._cache[name]
 
         # Read it
-        var = self._get_from_name_(name, selector)
+        var = self._get_from_name_(name, selector, lons, lats)
         self._cache[name] = [ss, var]
         return var
 
@@ -366,7 +421,7 @@ class NcSigma(object):
             ncname = self.names[name]
         return ncname
 
-    def _get_from_name_(self, name, selector=None):
+    def _get_from_name_(self, name, selector=None, lons=None, lats=None, times=None):
         """Load axis or variable from its generic name
 
         .. note:: Tests against generic names are case insensitives.
@@ -380,7 +435,7 @@ class NcSigma(object):
         if ncname is None: return
         selector = as_selector(selector)
 
-        # Axes
+        # Axis
         var = ncread_axis(self.f, ncname, mode=None)
         if var is not None:
 
@@ -395,16 +450,33 @@ class NcSigma(object):
                     var = var.subaxis(*ijk)
             return var
 
-        # Variables
-        args = [ncname]
-        if selector: args.append(selector)
-        kwargs = {'mode':None}
-        var = ncread_var(self.f, *args, **kwargs)
-        if var is None: return
-        if hasattr(self.f[ncname], '_FillValue') and cdms2.isVariable(var):
-            var[:] = MV2.masked_values(var, self.f[ncname]._FillValue, copy=0)
-        return var
+        # Variable
+        Variables = list(self.f.variables.keys())
+        variables = list(map(string.lower, Variables))
+        if ncname.lower() in variables:
+            ncname = Variables[variables.index(ncname.lower())]
+            not_scalar = self.f[ncname].shape
+            args = [ncname]
+            if selector and not_scalar:
+                args.append(selector)
+            kwargs = {'mode':None}
+            var = ncread_var(self.f, *args, **kwargs)
+            if var is None:
+                return
+            if not_scalar and hasattr(self.f[ncname], '_FillValue') and cdms2.isVariable(var):
+                var[:] = MV2.masked_values(var, self.f[ncname]._FillValue, copy=0)
 
+            # Transect
+            if not_scalar and lons is not None and lats is not None:
+                var = grid2xy(var, xo=lons, yo=lons, to=times, outaxis=False)
+            return var
+
+        # Attribute
+        Attributes = list(self.f.attributes.keys())
+        attributes = list(map(string.lower, Attributes))
+        if ncname.lower() in attributes:
+            ncname = Attributes[attributes.index(ncname.lower())]
+        return self.f.attributes.get(ncname, None)
 
     def load_sigma(self, selector=None, at=None):
         """Scan variables to find sigma (or s), and set :attr:`sigma` (or :attr:`s`) attributes"""
@@ -441,21 +513,37 @@ class NcSigma(object):
         """Check if W sigma coordinates are available"""
         return 't' in self.sigma
 
-    def get_depth(self, selector=None, at='t', mode='error'):
+    def get_depth(self, selector=None, lons=None, lats=None, times=None, at='t', mode='error'):
         """Read bottom depth at T, U or V points"""
         at = self._at_(at, squeezet=True)
         if at=="w": at = 't'
-        var = self._get_from_cache_('depth'+at, selector)
+        var = self._get_from_cache_('depth'+at, selector,
+            lons=lons, lats=lats, times=times)
         if var is None and mode=='error':
             raise SigmaError('Depth variable at %-points not found for %s coordinates: %s'(self.sigma_name, at, 'depth'+at))
         return var
 
-
-    def get_eta(self, selector=None, mode='error'):
+    def get_eta(self, selector=None, lons=None, lats=None, times=None, mode='error'):
         """Scan variables to find eta and read it"""
-        var = self._get_from_cache_('eta', selector)
+        var = self._get_from_cache_('eta', selector,
+            lons=lons, lats=lats, times=times)
         if var is None and mode=='error':
             raise SigmaError('Eta variable not found for %s coordinates'%self.sigma_name)
+        return var
+
+    def get_oro(self, selector=None, lons=None, lats=None, times=None, mode='error'):
+        """Scan variables to find oro and read it"""
+        var = self._get_from_cache_('oro', selector,
+            lons=lons, lats=lats, times=times)
+        if var is None and mode=='error':
+            raise SigmaError('Oro variable not found for %s coordinates'%self.sigma_name)
+        return var
+
+    def get_height(self, mode='error'):
+        """Scan variables to find height and read it"""
+        var = self._get_from_cache_('height')
+        if var is None and mode=='error':
+            raise SigmaError('Height variable not found for %s coordinates'%self.sigma_name)
         return var
 
 #    def load_thickness_names(self):
@@ -472,7 +560,7 @@ class NcSigma(object):
 #            standard_name = sef.standard_names["dz"+at]
 #            self.names["dz"+at] = self._get_from_standard_name_(standard_name, mode='id')
 
-    def get_dz(self, selector=None, at='t'):
+    def get_dz(self, selector=None, lons=None, lats=None, times=None, at='t'):
         """Load thickness at T or W if availables
 
         :Params:
@@ -483,7 +571,8 @@ class NcSigma(object):
         :Return: The variable if available or None
         """
         at = self._at_(at, focus='ver', squeezet=True)
-        return self._get_from_cache_("dz"+at, selector)
+        return self._get_from_cache_("dz"+at, selector,
+            lons=lons, lats=lats, times=times)
 
 
 
@@ -497,7 +586,7 @@ class NcSigma(object):
 
     @staticmethod
     def _at_(at, squeezet=False, focus=None):
-        if isinstance(at, basestring): at = at.lower()
+        if isinstance(at, six.string_types): at = at.lower()
         if at=='' or at is True: at = 't'
 
         # Aliases
@@ -519,7 +608,7 @@ class NcSigma(object):
         return at
 
 
-    def _get_dz2d_config_(self, at, selector=None):
+    def _get_dz2d_config_(self, at, selector=None, lons=None, lats=None, times=None):
         """Get what is needed to generate depths from layer thicknesses
 
         :Params:
@@ -534,7 +623,8 @@ class NcSigma(object):
         if at not in 'tw': return
 
         # Check config already existing
-        ss = selector2str(as_selector(selector))
+        kwsel = dict(selector=selector, lons=lons, lats=lats, times=times)
+        ss = self._serialize_selector_(**kwsel)
         if not hasattr(self, '_dz2d_config'): self._dz2d_config={}
         if at in self._dz2d_config and ss in self._dz2d_config[at]:
             return self._dz2d_config[at][ss]
@@ -544,15 +634,15 @@ class NcSigma(object):
         if at=='t' and 'depth' in self.names and 'dzw' in self.names:
 
             config = ('dzw/depth',
-                self._get_from_cache_('dzw', selector),
-                self._get_from_cache_('depth', selector),
+                self._get_from_cache_('dzw', **kwsel),
+                self._get_from_cache_('depth', **kwsel),
             )
 
         elif at=='w' and 'eta' in self.names and 'dz' in self.names:
 
             config = ('dz/eta',
-                self._get_from_cache_('dz', selector),
-                self._get_from_cache_('eta', selector),
+                self._get_from_cache_('dz', **kwsel),
+                self._get_from_cache_('eta', **kwsel),
             )
 
         if at not in self._dz2d_config:
@@ -560,14 +650,16 @@ class NcSigma(object):
         self._dz2d_config[at][ss] = config
         return config
 
-    def dz_to_depths(self, selector=None, at='t', copyaxes=True, zerolid=False):
+    def dz_to_depths(self, selector=None, at='t', copyaxes=True, zerolid=False,
+            lons=None, lats=None, times=None):
         """Get depths from layer thicknesses
 
         :Params:
         """
         # Get config
         at = self._at_(at, focus='z')
-        config = self._get_dz2d_config_(at, selector)
+        config = self._get_dz2d_config_(at, selector,
+            lons=lons, lats=lats, times=times)
         msg = "Can't compute depths from layer thicknesses at %s"%at
         if config is None:
             raise SigmaError(msg+": no config available")
@@ -575,7 +667,7 @@ class NcSigma(object):
         refloc = cfgname.split('/')[1]
         try:
             return dz2depths(dz, ref, refloc=refloc, zerolid=zerolid)
-        except Exception, e:
+        except Exception:
             raise SigmaError(msg+': '+format_exc())
 
     def update_file(self, newncfile, close=False):
@@ -606,8 +698,8 @@ class NcSigmaStandard(NcSigma):
     '''
     standard_names = NcSigma.standard_names.copy()
     sigma_name = 'sigma'
-    standard_names[sigma_name] = ["ocean_sigma_coordinate", "ocean_sigma_coordinate_at_t_location"]
-    standard_names[sigma_name+'w'] = ["ocean_sigma_coordinate_at_w_location"]
+    standard_names[sigma_name] = ["ocean_sigma_coordinate", "ocean_sigma_coordinate_at_t_location", "atmosphere_sigma_coordinate", "atmosphere_sigma_coordinate_at_t_location"]
+    standard_names[sigma_name+'w'] = ["ocean_sigma_coordinate_at_w_location", "atmosphere_sigma_coordinate_at_w_location"]
 
     def __init__(self, ncfile, levelvars=None, formula_terms=None):
 
@@ -615,9 +707,13 @@ class NcSigmaStandard(NcSigma):
         NcSigma.__init__(self, ncfile, levelvars=levelvars, formula_terms=formula_terms)
 
         # Ocean or standard sigma?
+#cval ici pas super clair le choix
         for at in 't', 'w':
             if at in self.sigma:
-                self.standard = self.sigma[at][:].sum()<0
+                if self.domain == 'ocean':
+                    self.standard = self.sigma[at][:].sum()<0
+                elif self.domain == 'atmosphere':
+                    self.standard = self.sigma[at][:].sum()>0
                 break
         else:
             self.standard = None
@@ -631,8 +727,10 @@ class NcSigmaStandard(NcSigma):
 #        return NcSigma._load_sigma_('sigma', selector)
 
 
-    def sigma_to_depths(self, selector=None, at='t', mode=None, copyaxes=True,
-            eta=None, zerolid=None):
+    def sigma_to_depths(self, selector=None,
+            lons=None, lats=None, times=None,
+            at='t', mode=None, copyaxes=True,
+            eta=None, zerolid=None, depth=None):
         """Get depths for the current state
 
         :Params:
@@ -648,7 +746,8 @@ class NcSigmaStandard(NcSigma):
         # Inits
         if mode is None: mode = 'auto'
         at = self._at_(at)
-        atz = self._at_(at, focus='z')
+        atz = self._at_(at, focus='z') # TODO: check atz usage
+        kwsel = dict(selector=selector, lons=lons, lats=lats, times=times)
 
         # From sigma
         if mode=='auto' or mode=='sigma':
@@ -658,19 +757,20 @@ class NcSigmaStandard(NcSigma):
 
                 # Read variables
                 if eta is None:
-                    eta = self.get_eta(selector, mode='noerr')
+                    eta = self.get_eta(mode='noerr', **kwsel)
                 elif eta is False:
                     eta = None
-                depth = self.get_depth(selector)
+                if depth is None:
+                    depth = self.get_depth(**kwsel)
 
                 # Force sigma reload to allow level selection
                 self.load_sigma(selector)
 
                 # Compute it
-                return sigma2depths(self.sigma[at], depth, eta, stype=self.stype,
+                return sigma2depths(self.sigma[atz], depth, eta, stype=self.stype,
                     copyaxes=copyaxes, zerolid=zerolid)
 
-            except Exception, e:
+            except Exception as e:
 
                 if isinstance(e, KeyError):
                     msg = "can't compute it at %s location"%e.message
@@ -684,9 +784,9 @@ class NcSigmaStandard(NcSigma):
 
         # From dz
         try:
-            return self.dz_to_depths(selector=selector, at=at, copyaxes=copyaxes,
-                zerolid=zerolid)
-        except SigmaError, e:
+            return self.dz_to_depths(at=at, copyaxes=copyaxes,
+                zerolid=zerolid, **kwsel)
+        except SigmaError as e:
             if mode=='auto':
                 raise SigmaError("Can't compute depths from layer thicknesses or sigma coordinates")
             else:
@@ -736,7 +836,74 @@ class NcSigmaStandard(NcSigma):
 #        self.f.close()
 #        return depths
 
-    __call__ = sigma_to_depths
+
+    def sigma_to_altitudes(self, selector=None, at='t', mode=None, copyaxes=True,
+            oro=None, zerolid=None):
+        """Get depths for the current state
+
+        :Params:
+
+            - **selector**: cdms selector or dict of selection specs.
+            - **at**, optional: Where to compute them (T or Z).
+            - **mode**, optional: Computational mode: "auto"/None, "sigma" or "dz".
+            - **eta**: Sea surface elevation. A scalar, False, an array or defaults
+              file's eta.
+
+        """
+
+        # Inits
+        if mode is None: mode = 'auto'
+        at = self._at_(at)
+        atz = self._at_(at, focus='z')
+
+        # From sigma
+        if mode=='auto' or mode=='sigma':
+
+            # Compute it
+            try:
+
+                # Read variables
+                if oro is None:
+                    oro = self.get_oro(selector, mode='noerr')
+                height = self.get_height()
+
+                # Force sigma reload to allow level selection
+                self.load_sigma(selector)
+
+                # Compute it
+                return sigma2altitudes(self.sigma[atz], height, oro, stype=self.stype,
+                    copyaxes=copyaxes, zerolid=zerolid)
+
+            except Exception as e:
+
+                if isinstance(e, KeyError):
+                    msg = "can't compute it at %s location"%e.message
+                else:
+                    msg = format_exc()
+                msg = "Can't compute altitudes from sigma coordinates. Error: %s"%msg
+                if mode=='sigma':
+                    raise SigmaError(msg)
+                else:
+                    warn(msg, SigmaWarning)
+
+        # From dz
+#        try:
+#            return self.dz_to_depths(selector=selector, at=at, copyaxes=copyaxes,
+#                zerolid=zerolid)
+#        except SigmaError, e:
+#            if mode=='auto':
+#                raise SigmaError("Can't compute altitudes from layer thicknesses or sigma coordinates")
+#            else:
+#                raise SigmaError(e.message)
+
+
+    #def sigma_to_depthaltitudes(self, selector=None, at='t', mode=None, copyaxes=True,
+    def sigma_to_levels(self, selector=None, at='t', mode=None, copyaxes=True, zerolid=None):
+
+        if self.domain == 'atmosphere': return self.sigma_to_altitudes(selector=selector, at=at, mode=mode, copyaxes=copyaxes, zerolid=zerolid)
+        else: return self.sigma_to_depths(selector=selector, at=at, mode=mode, copyaxes=copyaxes, zerolid=zerolid)
+
+    __call__ = sigma_to_levels
 
 
 class  NcSigmaGeneralized(NcSigma):
@@ -833,7 +1000,7 @@ class  NcSigmaGeneralized(NcSigma):
             setattr(self, term, var)
 
     def load_stretchings(self):
-        """Load stretching at mid and top layer and store them in :attr:`csu`"""
+        """Load stretching at mid and top layer and store them in :attr:`cs` dict"""
         self.cs = {}
         for at in 'w', 't':
             csname = "cs"+at
@@ -844,11 +1011,14 @@ class  NcSigmaGeneralized(NcSigma):
             self.cs[at] = var
 
 
-    def get_depth_c(self, selector, mode='error'):
+    def get_depth_c(self, selector=None,
+            lons=None, lats=None, times=None,
+            mode='error'):
         """Scan file for limit depth and read it"""
-        var = self._get_from_cache_('depth_c', selector)
+        var = self._get_from_cache_('depth_c', selector,
+            lons=lons, lats=lats, times=times)
         if var is None and mode=='error':
-            raise SigmaError('Depth_c variable not found for %s coordinates: '%(self.sigma_name, varname))
+            raise SigmaError('depth_c variable not found for %s coordinates'%(self.sigma_name))
         return var
 
 #    def load_sigma(self, selector=None):
@@ -858,8 +1028,10 @@ class  NcSigmaGeneralized(NcSigma):
 #        """
 #        return self._load_sigma_('s', selector)
 
-    def sigma_to_depths(self, selector=None, at='t', mode=None, copyaxes=True,
-            eta=None, zerolid=False):
+    def sigma_to_depths(self, selector=None,
+            lons=None, lats=None, times=None,
+            at='t', mode=None, copyaxes=True,
+            eta=None, zerolid=False, depth=None, depth_c=None):
         """Get depths for the current state
 
         :Params:
@@ -876,6 +1048,7 @@ class  NcSigmaGeneralized(NcSigma):
         if mode is None: mode = 'auto'
         at = self._at_(at)
         atz = self._at_(at, focus='z')
+        kwsel = dict(selector=selector, lons=lons, lats=lats, times=times)
 
         # From sigma
         if mode=='auto' or mode=='sigma':
@@ -885,11 +1058,13 @@ class  NcSigmaGeneralized(NcSigma):
                 # Read variables
 #cval revoir le selector ici
                 if eta is None:
-                    eta = self.get_eta(selector, mode='noerr')
+                    eta = self.get_eta(mode='noerr', **kwsel)
                 elif eta is False:
                     eta = None
-                depth = self.get_depth(selector)
-                depth_c = self.get_depth_c(selector)
+                if depth is None:
+                    depth = self.get_depth(**kwsel)
+                if depth_c is None:
+                    depth_c = self.get_depth_c(**kwsel)
 
                 # Force sigma reload to allow level selection
                 self.load_sigma(selector)
@@ -899,7 +1074,7 @@ class  NcSigmaGeneralized(NcSigma):
                     cs=self.cs[atz], depth_c=depth_c, a=self.a, b=self.b,
                     copyaxes=copyaxes, zerolid=zerolid)
 
-            except Exception, e:
+            except Exception as e:
 
                 if isinstance(e, KeyError):
                     msg = "can't compute it at %s location"%e.message
@@ -913,9 +1088,9 @@ class  NcSigmaGeneralized(NcSigma):
 
         # From dz
         try:
-            return self.dz_to_depths(selector=selector, at=at, copyaxes=copyaxes,
-                zerolid=zerolid)
-        except SigmaError, e:
+            return self.dz_to_depths(at=at, copyaxes=copyaxes,
+                zerolid=zerolid, **kwsel)
+        except SigmaError as e:
             if mode=='auto':
                 raise SigmaError("Can't compute depths from layer thicknesses or sigma coordinates")
             else:
@@ -982,11 +1157,12 @@ def sigma2depths(sigma, depth, eta=None, stype='standard',
     nt = eta.shape[0] if withtime else 1
     nz = sigma.shape[0]
     shape = (nt, nz) + depth.shape
+    #shape = (nt, nz) + depth.shape[-2:] # cval devrait etre cela je pense pour que tous les cas soient pris en compte
     depths = MV2.zeros(shape, eta.dtype)
     depths.long_name = 'Depths'
     depths.units = 'm'
     depths.id = 'depths'
-    sigman = sigma.filled() if N.ma.isMA(sigma) else sigma
+#    sigman = sigma.filled() if N.ma.isMA(sigma) else sigma
     etam = N.ma.atleast_1d(etam)
 #    if not withtime:
 #        etam = N.ma.resize(etam, (1, )+eta.shape)
@@ -1007,8 +1183,8 @@ def sigma2depths(sigma, depth, eta=None, stype='standard',
         dd = depth-depth_c
 
     # Time loop
-    for it in xrange(nt):
-        for iz in xrange(nz):
+    for it in range(nt):
+        for iz in range(nz):
 
             # Sigma generalized
             if stype == 2:
@@ -1054,6 +1230,106 @@ def sigma2depths(sigma, depth, eta=None, stype='standard',
 
     return depths
 
+
+def sigma2altitudes(sigma, height, oro, stype='standard',
+        cs=None, depth_c=None, a=None, b=None, copyaxes=True,
+        zerolid=False):
+    """Conversion from standard or ocean sigma coordinates to depths
+
+    :Params:
+
+        - **sigma**: Sigma levels (abs(sigma)<1) as an 1D array.
+        - **height**: Top altitude.
+        - **eta**: Orography (with a time axis or not).
+        - **stype**, optional: Sigma coordinates type
+
+            - ``"standard"`` or ``0``: Standard.
+            - ``"atmosphere"`` or ``1``: Ocean standard.
+            - ``"generalized"`` or ``2``: Generalized (s) coordinates.
+
+        cval A completer avec sleve coordinates
+        - **cs**, optional: Stretching function (s coords only).
+          If not provided, it is computed from stretching parameters.
+        - **depth_c**, optional: Surface limit depth (s coords only).
+        - **a**, optional: Surface control parameter (s coords only).
+        - **b**, optional: Bottom control parameter (s coords only).
+        - **zerolid**, optional: The surface is put at a zero depth to simulate
+          observed depths. This makes the bottom to change with time if
+          the sea level is varying.
+          
+    FIXME: Must merge sigma2altitudes with sigma2depths!
+    """
+
+    # Init altitudes
+    if oro is None:
+        oro = 0   # cela va marcher mais ne prend pas en compte orography alors
+    if height == 0 or height is None:
+        height = sigma[-1]
+    if not isinstance(oro, N.ndarray):
+        oro = orom = N.ma.array(oro, dtype='d')
+        withtime = False
+    else:
+        withtime = oro.getTime() is not None
+        orom = oro.asma()
+    nt = oro.shape[0] if withtime else 1
+    nz = sigma.shape[0]
+    shape = (nt, nz) + oro.shape[-2:]
+    altitudes = MV2.zeros(shape, oro.dtype)
+    altitudes.long_name = 'Altitudes'
+    altitudes.units = 'm'
+    altitudes.id = 'altitudes'
+#    sigman = sigma.filled() if N.ma.isMA(sigma) else sigma
+    orom = N.ma.atleast_1d(orom)
+#    if not withtime:
+#        etam = N.ma.resize(etam, (1, )+eta.shape)
+
+    # Compute it
+    stype = _check_sigma_type_(stype)
+
+    # Time loop
+    for it in range(nt):
+        for iz in range(nz):
+
+            # Sigma generalized
+            if stype == 2:
+
+                pass
+#                depths[it, iz] = etam[it] * (1+sigma[iz])
+#                depths[it, iz] += depth_c * sigma[iz]
+#                depths[it, iz] += dd*cs[iz]
+#
+#                if zerolid:
+#                    depths[it, iz] -= etam[it]
+
+            else:
+                # Common base
+                altitudes[it, iz] = sigma[iz] / height * (height - orom[it]) + orom[it]
+
+        if not withtime:
+            altitudes = altitudes[0]
+
+    # Format axes
+    if copyaxes:
+        axes = []
+        if withtime: # Time axis
+            axes.append(oro.getTime())
+        if isinstance(sigma, cdms2.axis.AbstractAxis): # Vertical axis
+            axes.append(sigma)
+        elif cdms2.isVariable(sigma):
+            axes.append(sigma.getAxis(0))
+        else:
+            zaxis = altitudes.getAxis(int(withtime))
+            zaxis.id = 'z'
+            zaxis.long_name = 'Vertical levels'
+            axes.append(zaxis)
+        #print "depth.getAxisList()",depth.getAxisList()
+        axes.extend(oro.getAxisList()[-2:]) # Horizontal axes
+        altitudes.setAxisList(axes) # Set axes
+        grid = oro.getGrid() # Grid
+        if grid is not None:
+            altitudes.setGrid(grid)
+
+    return altitudes
 
 class SigmaStandard(object):
     """Standard or ocean sigma coordinates converters
@@ -1139,4 +1415,4 @@ def as_selector(select=None):
 
 if __name__=='__main__':
     a=cdms2.selectors.Selector((7,4),time=(5,6))
-    print selector2str(a)
+    print(selector2str(a))

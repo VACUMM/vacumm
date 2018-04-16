@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 "Unit conversions"
 
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -34,10 +34,12 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from __future__ import absolute_import
 import re
-from constants import *
+from .constants import *
 import numpy as N
 import MV2
+import six
 
 __all__ = [
     'kt2ms', 'ms2kt', 'deg2m', 'm2deg', 'ms2bf', 'dms2deg', 'deg2dms',
@@ -227,7 +229,7 @@ def tometric(units, value=1.,  munits=['m',  'm/s']):
     ------
     a float or ``None`` if conversion failed.
     """
-    if isinstance(munits, basestring):
+    if isinstance(munits, six.string_types):
         munits = [munits]
     for mu in munits:
         try:
@@ -293,7 +295,7 @@ def strfsize(size, fmt=None, si=None):
     """
     if fmt is None:
         fmt = '%.3f %s' if float(size) % 1 else '%d %s'
-    sortsizedict = lambda sd: reversed(sorted(sd.items(), lambda a, b: cmp(a[1],b[1])))
+    sortsizedict = lambda sd: reversed(sorted(list(sd.items()), lambda a, b: cmp(a[1],b[1])))
     if si is None: units,usfx = sortsizedict(sisizeunits),'o' # naive usage
     else: units,usfx = (sortsizedict(sisizeunits),'io') if si else (sortsizedict(sizeunits),'o')
     size = float(size)
@@ -302,7 +304,7 @@ def strfsize(size, fmt=None, si=None):
             return fmt%(size/thresh, unit) + usfx
     return fmt%(size) + usfx
 
-_strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?'%('|'.join(sizeunits.keys())), re.IGNORECASE)
+_strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?'%('|'.join(list(sizeunits.keys()))), re.IGNORECASE)
 
 def strpsize(size, si=True):
     """Parse a size in Ko, Mo, Kio, Mio, ...
@@ -319,7 +321,7 @@ def strpsize(size, si=True):
     ------
     the float number of bytes
     """
-    if not isinstance(size, basestring): size = '%s'%(size)
+    if not isinstance(size, six.string_types): size = '%s'%(size)
     m = _strpsizerex.match(size)
     if m:
         d = m.groupdict()

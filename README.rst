@@ -3,6 +3,8 @@ VACUMM
 
 .. image:: https://zenodo.org/badge/22859/VACUMM/vacumm.svg
    :target: https://zenodo.org/badge/latestdoi/22859/VACUMM/vacumm
+.. image:: https://travis-ci.org/VACUMM/vacumm.svg?branch=master
+    :target: https://travis-ci.org/VACUMM/vacumm
 
 VACUMM provides generic and specialized tools for the validation of ocean models,
 and more especially the MARS model from `IFREMER <http://www.ifremer.fr>`_.
@@ -80,8 +82,10 @@ From sources::
 
 Using `conda <http://conda.pydata.org/docs/index.html>`_::
 
-    $ conda install -c vacumm vacumm
+    $ conda install -c vacumm -c uvcdat -c conda-forge  vacumm
 
+For more information, please go to this:
+http://www.ifremer.fr/vacumm/user.install.installations.html
 
 Release notes
 -------------

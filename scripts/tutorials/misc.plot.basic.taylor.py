@@ -12,7 +12,7 @@ model2.long_name = 'Model 2'
 
 # Plot
 from vacumm.misc.plot import taylor
-taylor([model1, model2], ref, figsize=(8, 8), label_size='large', size=15, 
-    labels = ['Good model', None], colors='cyan', title_size=18, 
-    savefigs=__file__,  savefigs_pdf=True, show=False)
+taylor([model1, model2], ref, figsize=(8, 8), label_size='large', size=15,
+    labels = ['Good model', None], colors='cyan', title_size=18,
+    savefigs=__file__,  savefigs_pdf=True, show=False, close=True)
 

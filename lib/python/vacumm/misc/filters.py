@@ -33,7 +33,9 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
 import warnings
+from six.moves import range
 
 import numpy as N,MV2, cdms2
 from genutil.filters import *
@@ -48,8 +50,6 @@ __all__ = ['generic1d', 'shapiro1d', 'gaussian1d', 'hamming1d','generic2d',
     'shapiro2d', 'gaussian2d', 'deriv', 'deriv2d',
     'norm_atan','running_average',
     'bartlett1d', 'kaiser1d', 'hanning1d', 'blackman1d']
-__all__.sort()
-
 
 
 
@@ -125,7 +125,6 @@ def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
     assert weights.ndim, 'Input weights array must be at least 1D'
     assert weights.shape[-1] % 2 == 1, 'Shape of weights must be of odd size'
     ww = (~N.ma.getmaskarray(data)).astype('i') #  = good 2D
-    nw = weights.shape[-1]
     nw2 = weights.shape[-1] / 2
     weights.shape = 1, -1
     ww.shape = datan.shape
@@ -313,9 +312,8 @@ def gaussian1d(data,nxw,**kwargs):
     :class:`MV2.array`
     """
     assert nxw % 2 == 1 , 'nxw must be an odd number'
-    tc = data.dtype.char
     xx = N.arange(nxw)-nxw/2.
-    return generic1d(data, N.exp(-xx**2/nxw**2),**kwargs)
+    return generic1d(data, N.exp(-xx**2/nxw**2), **kwargs)
 
 
 
@@ -385,7 +383,7 @@ def generic2d(data, weights, mask='same', copy=True):
 
     # Filter
     kwf = dict(mode='same', boundary='fill', fillvalue=0.)
-    for i in xrange(datan.shape[0]):
+    for i in range(datan.shape[0]): # TODO: multiproc filter2d
         datan[i] = scipy.signal.convolve2d(datan[i], weights, **kwf)
         if data.mask is MV2.nomask:
             ww[i] = scipy.signal.convolve2d(one2d, weights, **kwf)
@@ -426,70 +424,6 @@ def generic2d(data, weights, mask='same', copy=True):
         del one2d
     return datao
 
-def generic2d_old(data,weights,fast=False,fill_value=None,min_valid=0):
-    """Generic 2D filter
-
-    data:
-        2D variable.
-    weights:
-        Weights of the filter as 2D array of odd sizes.
-    """
-    if not cdms.isVariable(data):
-        data = MV.masked_array(data, data.mask)
-    assert data.rank() == 2, 'You need a 2D data set'
-    assert len(weights.shape) == 2, 'You need to apply 2D weights'
-    for i in 0,1:
-        assert weights.shape[i] % 2 == 1, \
-            'Shape of weights must be of odd size in the two directions'
-    weights = weights.astype(data.dtype.char)
-    nyw,nxw = weights.shape
-    dxw = nxw/2
-    dyw = nyw/2
-    ny,nx = data.shape
-
-    data_filt = data.clone()
-
-    if data.mask is MV.nomask:
-        fast = True
-    data_min = data.min()
-    data_max = data.max()
-    if fast:
-        if fill_value is None:
-            if data.getMissing() is None:
-                data.setMissing(data.max()*1.e20)
-                fill_value = data.getMissing()
-            data_to_use = data.filled()
-        else:
-            data_to_use = data.filled(fill_value)
-        mm = N
-    else:
-        data_to_use = data
-        mm = MV
-
-    for j in xrange(ny):
-        yyrange = N.clip([j-dyw,j+dyw],0,ny-1)
-        jminw = min(yyrange)-j+dyw+1
-        jmaxw = max(yyrange)-j+dyw+1
-        for i in xrange(nx):
-            xxrange = N.clip([i-dxw,i+dxw],0,nx-1)
-            this_data = data_to_use[yyrange[0]:yyrange[1],xxrange[0]:xxrange[1]]
-            if min_valid and MV.count(this_data) < min_valid:
-                if not fast:
-                    data_filt[j,i] = MV.masked
-                else:
-                    data_filt[j,i] = fill_value
-                continue
-            iminw = min(xxrange)-i+dxw+1
-            imaxw = max(xxrange)-i+dxw+1
-            data_filt[j,i] = mm.average(this_data,
-                weights = weights[jminw:jmaxw,iminw:imaxw])
-
-    if fast and data.mask is not MV.masked:
-        data_filt[:] = MV.masked_greater(data_filt,data_max)
-        data_filt[:] = MV.masked_less(data_filt,data_min)
-    if data.mask is not MV.nomask:
-        data_filt[:] = MV.masked_where(data.mask, data_filt, copy=0)
-    return data_filt
 
 def shapiro2d(data, corners=.5, **kwargs):
     """Shapiro (121) 2D filter
@@ -513,25 +447,6 @@ def shapiro2d(data, corners=.5, **kwargs):
     return generic2d(data, weights, **kwargs)
 
 
-def shapiro2d_old(data,**kwargs):
-    """Shapiro (121) 2D filter
-
-    data:
-        Data array
-    - Keywords are passed to :func:`generic2d`
-    """
-##  print 'shap2d'
-    weights = N.zeros((3,3),data.dtype.char)
-    weights[1,:] = [1.,2.,1.]
-    weights[:,1] = [1.,2.,1.]
-    for j in 1,-1:
-        for i in 1,-1:
-            weights[j,i] = 0.5
-    shap = generic2d(data,weights,**kwargs)
-    for i in 0, -1:
-        shap[i] = data[i]
-        shap[:, i] = data[:, i]
-    return shap
 
 def gaussian2d(data, nxw, nyw=None, sxw=1/3., syw=1/3., rmax=3., **kwargs):
     """Gaussian 2D filter
@@ -559,7 +474,7 @@ def gaussian2d(data, nxw, nyw=None, sxw=1/3., syw=1/3., rmax=3., **kwargs):
     assert nxw % 2 == 1 and nyw % 2 == 1, 'nxw and nyw must be odd numbers'
     assert sxw > 0 and syw > 0,  'sxw and syw must be positive'
 
-    xx,yy = meshgrid(N.arange(nxw)-nxw/2, N.arange(nyw)-nxw/2)
+    xx,yy = meshgrid(N.arange(nxw)-nxw/2, N.arange(nyw)-nyw/2)
 
     if sxw < 1:
         sxw *= nxw/2
@@ -728,75 +643,8 @@ def norm_atan(var,stretch=1.):
     else:
         var_norm = N.array(var)
         mm = N
-    std = var.std()
     var_norm[:] = mm.arctan(stretch*var/var.std())*2./N.pi
     return var_norm
 
 
-
-def running_average(x, l, d = 0, w = None, keep_mask = True):
-    """Perform a running average on an masked array. Average is linearly reduced near bounds, so that the input and output have the same size.
-
-    Warning
-    -------
-    This function deprecated. Please use :func:`generic1d` instead.
-
-    Parameters
-    ----------
-    x:
-        Masked array
-    l:
-        Window size
-
-    d:
-        Dimension over which the average is performed (0)
-    w:
-        Weights (1...)
-    keep_mask:
-        Apply mask from x to output array
-
-    Example
-    -------
-    >>> running_average(x, l, d = 0, w = None, keep_mask = 1)
-
-    Returns Average array (same size as x)
-
-    """
-
-    s= x.shape
-    if cdms.isVariable(x):
-        AV = MV
-        out = x.clone()
-    else:
-        AV = N
-        out = N.zeros(s,x.dtype.char)
-        keep_mask = False
-    ns = len(s)
-
-    if d > (ns-1) or d < 0:
-        raise '[running_average] bad dimension', d
-
-    n = s[d]
-    #if w is None:
-    #   w = N.ones(n,'f')
-
-    ii = []
-    io = []
-    for id in range(ns):
-        if id == d:
-            ii.append('i')
-            io.append('imin:imax')
-        else:
-            ii.append(':')
-            io.append(':')
-
-    for i in range(n):
-        imin = max(0,  i-l/2)
-        imax = min(n-1,i+l/2)+1
-        exec 'out['+','.join(ii)+'] = AV.average(x['+','.join(io)+'], d)'
-
-    if keep_mask:
-        out = MV.masked_array(out,mask=MV.getmask(x))
-
-    return out
 

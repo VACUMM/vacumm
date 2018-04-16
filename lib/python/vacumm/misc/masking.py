@@ -38,23 +38,26 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 #print 'importing masking 0'
-from warnings import warn
+from __future__ import absolute_import
+from __future__ import print_function
+import gc
+
+from six.moves import range
+from six.moves import zip
+
 import numpy as N
-from cdms2.hgrid import TransientCurveGrid
-from cdms2.grid import AbstractGrid
 import cdms2, MV2
 from mpl_toolkits.basemap import Basemap
 from _geoslib import Point, Polygon, LineString
-import gc
-from genutil import minmax
 
-from .misc import nduniq
-from .axes import islon, islat
+from vacumm import vcwarn
+from .misc import nduniq, cp_atts
 from .grid import (get_xy, set_grid, isgrid, bounds2d, meshcells, curv2rect,
-    meshbounds, bounds1d, get_grid, resol)
+    meshbounds, bounds1d, get_grid, resol, meshgrid, curv_grid)
 from .units import deg2m
+from .poly import convex_hull, polygons # compat only
+from .masking import get_proj
 
-from .poly import convex_hull, create_polygon, polygons # compat only
 envelop = convex_hull
 
 uniq = nduniq # backward compat
@@ -144,7 +147,7 @@ def get_coastal_indices(mask, coast=None, asiijj=False, **kwargs):
     jj = N.compress(coast.ravel(),iy.ravel())
     ii = N.compress(coast.ravel(),ix.ravel())
     if asiijj: return ii, jj
-    return zip(jj, ii)
+    return list(zip(jj, ii))
 
 def get_dist_to_coast(grid, mask=None, proj=True):
     """Get the distance to coast on grid
@@ -178,7 +181,7 @@ def get_dist_to_coast(grid, mask=None, proj=True):
         mask = grid
     xx, yy = get_xy(grid, proj=proj, mesh=True, num=True)
     if mask is None:
-        from basemap import gshhs_autores, merc
+        from .basemap import gshhs_autores
         x, y = get_xy(grid, proj=False, num=True, mesh=False)
         res = gshhs_autores(x.min(), x.max(), y.min(), y.max())
         mask = polygon_mask(grid, res)
@@ -314,13 +317,13 @@ class Lakes(object):
         # Find lakes using labelling
         import scipy.ndimage
         self._lakes, self.nlakes = scipy.ndimage.label(1-self._imask)
-        self._ncells = [N.equal(self._lakes, ilake).astype('i').sum() for ilake in xrange(1, self.nlakes+1)]
+        self._ncells = [N.equal(self._lakes, ilake).astype('i').sum() for ilake in range(1, self.nlakes+1)]
 
         # Compute indices
         self._indices = []
-        for ilake in xrange(1, self.nlakes+1):
+        for ilake in range(1, self.nlakes+1):
             mask = self._lakes == ilake
-            self._indices.append(zip(self._ix[mask], self._iy[mask]))
+            self._indices.append(list(zip(self._ix[mask], self._iy[mask])))
 
         # Sorting argument
         self._argsort = N.argsort(self._ncells)[::-1]
@@ -485,18 +488,18 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
         dx = xxb.ptp()/xxb.shape[1]
         dy = yyb.ptp()/yyb.shape[0]
         clip = (xxb.min()-dx, yyb.min()-dy, xxb.max()+dx, yyb.max()+dy)
-        ymins = yyb[:, 0, 0]-dy/10.
+#        ymin = yyb[:, 0, 0]-dy/10.
         xmin = xxb[0, 0].min()-dx/10.
         xmax = xxb[0, -1].max()+dx/10.
-        ymax = yyb[-1, 0].max()+dy/10.
+#        ymax = yyb[-1, 0].max()+dy/10.
     else:
         dx = xx.ptp()/xx.shape[1]
         dy = yy.ptp()/yy.shape[0]
         clip = (xx.min()-dx, yy.min()-dy, xx.max()+dx, yy.max()+dy)
-        ymins = yy[:, 0]-dy/10.
+#        ymin = yy[:, 0]-dy/10.
         xmin = xx[0, 0]-dx/10.
         xmax = xx[0, -1]+dx/10.
-        ymax = yy[-1, 0]+dy/10.
+#        ymax = yy[-1, 0]+dy/10.
     if curved:
         xxc, yyc = meshcells(xx, yy)
         dxx = N.diff(xxc, axis=1)
@@ -513,13 +516,13 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
     kwpoly = dict(clip=clip, proj=proj, shapetype=2, clip_proj=False)
     if isinstance(polys, str):
         from vacumm.bathy.shorelines import get_shoreline
-        polys = get_shoreline(polys, **kwplots).get_shapes()
+        polys = get_shoreline(polys, **kwpoly).get_shapes()
     else:
-        polys = polygons(polys, **kwplots)
+        polys = polygons(polys, **kwpoly)
 
     # Loop on grid points
     skipped = 0
-    for j in xrange(xx.shape[0]):
+    for j in range(xx.shape[0]):
 
         # Get polygons of the current row
         ypolys = []
@@ -554,7 +557,7 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
                 pass
         del rowpoly_array, rowpoly
 
-        for i in xrange(xx.shape[1]):
+        for i in range(xx.shape[1]):
 
             # Pre-masking
             if premask is not None and premask[j, i] != -1:
@@ -572,13 +575,13 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
             # Check the cell
             cell_poly = Polygon(N.asarray([xxb[j, i, :], yyb[j, i, :]]).transpose())
             if isinstance(cell_poly, (LineString, Point)):
-                raise TypeError, 'cell'
+                raise TypeError('cell')
             intersect_area = 0.
             nintersect = 0
             for ip, poly in enumerate(ypolys):
                 if poly is None: continue
                 if isinstance(poly, (LineString, Point)):
-                    raise TypeError, 'poly'
+                    raise TypeError('poly')
 
                 # Check X range
                 if xxb[j, i, :].max() <= poly.boundary[:, 0].min()  or \
@@ -867,7 +870,7 @@ def grid_envelop(gg, centers=False, poly=True):
 
     # Return the polygon or arrays
     if not poly: return N.asarray(xp), N.asarray(yp)
-    return Polygon(N.asarray(zip(xp, yp)))
+    return Polygon(N.asarray(list(zip(xp, yp))))
 
 def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
     """Create a mask on output grid from the bounds of an input grid:
@@ -903,7 +906,7 @@ def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
         return ~polygon_mask(ggo, [poly], mode='inside')
 
     else: # Using regridding
-        from regridding import regrid2d
+        from .regridding import regrid2d
         xxb, yyb = meshbounds(*meshbounds(*get_xy(ggi)))
         vari = MV2.asarray(xxb*0.)
         vari[[0, -1]] = 1.
@@ -965,8 +968,8 @@ def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
 
         # Get intersection areas
         areas = N.zeros(amask.shape, 'f')
-        for j in xrange(amask.shape[-2]):
-            for i in xrange(amask.shape[-1]):
+        for j in range(amask.shape[-2]):
+            for i in range(amask.shape[-1]):
                 cell_poly = Polygon(N.array([xxb[j, i, :].ravel(), yyb[j, i, :].ravel()]).transpose())
                 if cell_poly.intersects(island_poly):
                     areas[j, i] = cell_poly.intersection(island_poly).area()
@@ -976,7 +979,7 @@ def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
         amask.flat[N.argmax(areas)] = True
         mask[jmin:jmax, imin:imax] = amask
 
-    print 'Masked %i islands' % ni
+    print('Masked %i islands' % ni)
     return mask
 
 def check_poly_straits(mask, polys, dcell=2, threshold=.75):
@@ -1022,7 +1025,7 @@ def check_poly_straits(mask, polys, dcell=2, threshold=.75):
                 npoly += len(intersections)
                 for intersection in intersections:
                     area += intersection.area()
-                    if area > threshold: break
+                    if area / cell_area > threshold: break
                 else:
                     continue
             break
@@ -1030,7 +1033,7 @@ def check_poly_straits(mask, polys, dcell=2, threshold=.75):
             # Several polygons = strait, so open
             mask[j, i] = npoly < 2
 
-    print 'Opened %i straits' %ns
+    print('Opened %i straits' %ns)
     return mask
 
 
@@ -1126,12 +1129,12 @@ def _old_rsamp_(x, y, r, z=None, rmean=.7, proj=False, getmask=False):
 
     # Projection
     if proj is True:
-        proj = vcgb.get_proj((x,y))
+        proj = get_proj((x,y))
     if callable(proj):
         x, y = proj(x, y)
 
     # Loop on valid points
-    for i0 in xrange(n):
+    for i0 in range(n):
         if not good[i0]: continue
         # Search for neighbours
         dst[:] = N.sqrt((x-x[i0])**2+(y-y[i0])**2)
@@ -1187,7 +1190,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
 
     # Projection
     if proj is True:
-        proj = vcgb.get_proj((x,y))
+        proj = get_proj((x,y))
     if callable(proj):
         x, y = proj(x, y)
 
@@ -1207,7 +1210,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
 
     # Loop on x bands
     x0 = xmin+r-rblock
-    for ixb in xrange(nxb):
+    for ixb in range(nxb):
         x0 += rblock-r
         if ixb == nxb-1:
             x1 = xmax
@@ -1218,7 +1221,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
 
         # Loop on y bands
         y0 = ymin+r-rblock
-        for iyb in xrange(nyb):
+        for iyb in range(nyb):
             y0 += rblock-r
             if iyb == nyb-1:
                 y1 = ymax
@@ -1236,7 +1239,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
             gg = good[block]
 
             # Loop on valid points
-            for i0 in xrange(nn):
+            for i0 in range(nn):
                 if not gg[i0]: continue
                 # Search for neighbours
                 dst = N.sqrt((xx-xx[i0])**2+(yy-yy[i0])**2)
@@ -1296,7 +1299,7 @@ def zcompress(z, *xy, **kwargs):
                 newvar = var[good]
             else:
                 newvar = cdms2.createVariable(var.asma()[good])
-                vacumm.misc.misc.cp_atts(var, newvar, id=True)
+                cp_atts(var, newvar, id=True)
             # Numpify
             if npf and hasattr(var, 'filled'):
                 ret += newvar.filled(),
@@ -1384,7 +1387,7 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
 
     # Scaler
     if scaler is None:
-        scaler = vcgb.get_proj((xx, yy))
+        scaler = get_proj((xx, yy))
     if callable(scaler):
         xxs, yys = scaler(xx, yy)
     else:
@@ -1546,7 +1549,7 @@ def merge_masks(varlist, copy=False, mode='max'):
     out = []
     for var in varlist:
         if not N.ma.isMA(var) and not copy:
-            warn('Not a masked array, thus cannot apply a mask without copy')
+            vcwarn('Not a masked array, thus cannot apply a mask without copy')
             out.append(var)
             continue
         if copy:

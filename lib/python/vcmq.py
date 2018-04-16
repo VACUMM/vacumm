@@ -1,7 +1,8 @@
-"""Module for quickly loading VACUMM essentials"""
+"""Module for quickly loading VACUMM content"""
 
 # System
 
+from __future__ import absolute_import
 import os
 import sys
 import shutil
@@ -72,14 +73,15 @@ from vacumm.misc.misc import (
     isempty, isnumber, lunique, main_geodir, selector2str, rm_html_tags,
     tunique, split_selector, xls_style, Att, splitidx, CaseChecker, check_case,
     indices2slices, filter_level_selector, filter_selector, match_atts,
-    match_string, ArgTuple, dicttree_get)
+    match_string, ArgTuple, dicttree_get, dicttree_set, minbox,
+    bound_ops, squarebox)
 
 from vacumm.misc.axes import (
     create_lon, create_lat, create_time, create_depth,
     create_dep, islon, islat, isdep, isaxis, istime, create_axis,
     check_axes, check_id, check_order, get_axis_type, get_checker,
     guess_timeid, is_geo_axis, is_geo_axis_type, merge_orders,
-    order_match, set_order,
+    order_match, set_order, create_axes2d, get_axis, num2axes2d, 
     )
 
 from vacumm.misc.atime import (
@@ -89,18 +91,21 @@ from vacumm.misc.atime import (
     mpl, tic, toc, pat2freq, pat2glob, has_time_pattern,
     is_interval, is_time, is_axistime, is_cdtime, is_datetime, is_in_time_interval,
     is_numtime, is_strtime, itv_intersect, itv_union, julday, reltime,
-    are_valid_units, SpecialDateFormatter, check_range,
+    are_valid_units, SpecialDateFormatter, check_range, numtime,
     daily, daily_bounds, day_of_the_year, unit_type, toc,
     hourly, hourly_bounds, hourly_exact, monthly, tsel2slice,
     reduce, yearly, are_same_units, ascii_to_num, detrend, from_utc,
     time_selector, selector, filter_time_selector,
-    plot_dt, strtime, interp_clim,
-    datetime as adatetime,
+    plot_dt, strtime, interp_clim, round_interval,
+    datetime as adatetime, compress as compress,
     add,
     )
 datetime_ = adatetime
 add_time = add
 is_time_interval = is_interval
+tcompress = compress
+round_time_interval = round_interval
+round_time = round_date
 
 from vacumm.misc.bases import (
     psinfo, code_base_name, code_file_name, code_dir_name, describe, Class, Object,
@@ -132,8 +137,9 @@ from vacumm.misc.log import (Logger, ColoredStreamHandler, LoggerAdapter,
 
 from vacumm.misc.config import (ConfigManager, cfgargparse, ConfigException,
     ValidationWarning, cfg2rst, cfgoptparse, filter_section, get_secnames,
-    getspec, list_options, opt2rst, option2rst, print_short_help,
-    register_config_validator)
+    get_spec, list_options, opt2rst, option2rst, print_short_help,
+    register_config_validator, get_validator,
+    get_spec as getspec)
 
 from vacumm.misc.stats import (StatAccum, qtmax, qtmin, qtminmax, ensrank,
     corr_proba, StatAccumError)
@@ -167,6 +173,7 @@ from vacumm.misc.plot import (
     ellipsis, get_cls, hldays, rotate_xlabels, rotate_ylabels,
     scale_xlim, scale_ylim, wedge, set_major_locator, set_minor_locator,
     xdate, ydate, get_quiverkey_value, add_lightshading,
+    add_param_label, add_map_box
     )
 curve = curve2
 map = map2
@@ -177,6 +184,7 @@ bar = bar2
 
 from vacumm.misc.core_plot import (
     Plot, Plot1D, Plot2D, ScalarMappable, Stick, Bar, Hov, Curve, Map, Section,
+    loc2align, loc2tuple, loc2offset, best_loc_map,
     )
 
 from vacumm.misc.color import (
@@ -196,13 +204,16 @@ from vacumm.misc.color import (
     change_luminosity, change_value, pastelise,
     discretise_cmap as discretize_cmap,
     pastelise as pastelize,
-
+    bistre, land, ocean, sea,
+    land as land_color,
+    ocean as ocean_color,
+    sea as sea_color,
     )
 
 # - spatial
 
 from vacumm.misc.poly import (
-    create_polygon, clip_shape, polygons, convex_hull,
+    create_polygon, clip_shape, create_polygons, polygons, convex_hull,
     get_geos_type, is_linestring, is_point, is_polygon, clip_shapes,
     plot_polygon, proj_shape, sort_shapes)
 envelop = convex_hull
@@ -210,20 +221,20 @@ envelop = convex_hull
 from vacumm.misc.grid import (
     get_grid, set_grid, create_grid, create_grid2d, resol, monotonic, isdepthup, depth2dz,
     meshcells, meshbounds, meshgrid, bounds1d, bounds2d, coord2slice, isregular,
-    isrect, curv2rect, isgrid, get_xy, create_axes2d, gridsel, varsel, xshift, rotate_grid,
-    get_closest, get_closest_depth, makedepthup, get_axis, transect_specs,
+    isrect, curv2rect, isgrid, get_xy, gridsel, varsel, xshift, rotate_grid,
+    get_closest, get_closest_depth, makedepthup, transect_specs,
     get_axis_slices, get_distances, dz2depth, meshweights, axis1d_from_bounds,
     bounds2mesh, cells2grid, check_xy_shape, curv_grid, create_var2d,
     get_geo_area, get_grid_axes, get_resolution, get_zdim, isoslice, mask2ind,
-    merge_axis_slice, merge_axis_slices, num2axes2d, t2uvgrids, xextend,
-    xshift, clone_grid,
+    merge_axis_slice, merge_axis_slices, t2uvgrids, xextend,
+    xshift, clone_grid, haversine, are_same_grids,
     )
 
 from vacumm.misc.regridding import (
     regrid1d, regrid2d, interp1d, interp2d, cellave1d, cellave2d, cellerr1d,
     cargen, xy2xy, shift1d, shift2d, extend1d, extend2d, regrid_method,
     transect, griddata, CDATRegridder, grid2xy, cubic1d, krig,
-    nearest1d, shiftgrid, extendgrid, fill1d, fill2d
+    nearest1d, shiftgrid, extendgrid, fill1d, fill2d, CurvedInterpolator,
     )
 
 from vacumm.misc.basemap import (
@@ -233,7 +244,8 @@ from vacumm.misc.basemap import (
 
 from vacumm.misc.masking import (
     erode_coast, polygon_mask, GetLakes, get_coast, polygon_select, zcompress,
-    envelop, get_coastal_indices, grid_envelop, merge_masks
+    envelop, get_coastal_indices, grid_envelop, merge_masks, 
+    masked_polygon, mask2d, get_dist_to_coast,
     )
 
 from vacumm.misc.kriging import (
@@ -241,6 +253,7 @@ from vacumm.misc.kriging import (
     variogram_model_type, variogram_multifit, cloud_split,
     KrigingError, VariogramModel, VariogramModelError, SimpleCloudKriger,
     krig as krign,
+    VARIOGRAM_MODEL_TYPES, DEFAULT_VARIOGRAM_MODEL_TYPE,
     )
 
 from vacumm.misc.sdata import GSHHSBM, Shapes, GriddedMerger, XYZ, XYZMerger
@@ -248,13 +261,16 @@ GSHHS_BM = GSHHSBM
 
 # - data
 
-from vacumm.data import setup_dataset, DS
+from vacumm.data import setup_dataset, DS, register_dataset
 
 from vacumm.data.cf import (
     format_var, format_axis, format_grid, match_var, change_loc, match_obj,
     set_loc, get_loc, GENERIC_NAMES, GENERIC_AXIS_NAMES, GENERIC_VAR_NAMES,
     AXIS_SPECS, VAR_SPECS, GRID_SPECS, ARAKAWA_SUFFIXES, HIDDEN_CF_ATTS,
-    match_known_var, match_known_axis, get_cf_cmap
+    match_known_var, match_known_axis, get_cf_cmap, CF_AXIS_SPECS, CF_VAR_SPECS,
+    register_cf_variable, register_cf_variables_from_cfg,
+    register_cf_axis, register_cf_axes_from_cfg,
+    CF_VAR_NAMES, CF_AXIS_NAMES, is_cf_known,
     )
 
 from vacumm.data.misc.sigma import NcSigma, sigma2depths, SigmaGeneralized, SigmaStandard
@@ -263,6 +279,9 @@ from vacumm.data.misc.arakawa import (
     ArakawaGrid, ARAKAWA_LOCATIONS as arakawa_locations,
     CGrid, AGrid, ArakawaGridTransfer
     )
+
+from vacumm.data.misc.dataset import (
+    Dataset, OceanDataset, AtmosDataset, GenericDataset)
 
 # - diag
 

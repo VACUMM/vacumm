@@ -35,4 +35,4 @@ b = bar2(precip, figsize=(5.5, 6), xhide=True,
 b.figtext('Precipitations', style='italic')
 bar2(precip2, subplot=212, **kwplot)
 savefigs(__file__, pdf=True)
-
+b.close()

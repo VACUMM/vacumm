@@ -8,6 +8,7 @@ import vacumm.misc.file as F
 
 print 'Changing the working directory to vacumm\'s root directory'
 print
+PWD = os.getcwd()
 os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
 searchdir = '.'
 fkw = dict(abspath=False)
@@ -23,7 +24,8 @@ print
 
 # Controlling the search depth
 print 'Searching any file starting with "misc.file." (depth=None):\n'
-print ' ','\n  '.join(F.find('misc.file.*', searchdir, depth=None, **fkw))
+print ' ','\n  '.join(F.find('misc.file.*', searchdir, depth=None,
+    exclude=('*/build/*', ), **fkw))
 print
 # we've set the depth to None to supress the limit in recursion (which defaults
 # to 0 meaning 0 levels from the search directory)
@@ -37,7 +39,8 @@ print
 
 # How to exclude
 print 'Searching any file starting with "misc.file.", excluding "library" and ".svn" directories and "*.rst" files:\n'
-print ' ','\n  '.join(F.find('*/misc.file.*', searchdir, depth=None, exclude=('*/library/*', '*/.svn/*', '*.rst'), matchall=True, **fkw))
+print ' ','\n  '.join(F.find('*/misc.file.*', searchdir, depth=None,
+    exclude=('*/library/*', '*/.svn/*', '*.rst'), matchall=True, **fkw))
 print
 # by default only file names are evaluated
 # we've set matchall to True because .svn is part of the whole paths to be evaluated
@@ -58,15 +61,17 @@ print
 print 'Showing search results with callbacks:\n'
 def ondir(e):
     # we want to limit the outputs of this tutorial...
-    if '/.svn' not in e:
+    if '/.svn' not in e and '/.git' not in e and '/build' not in e:
         print '  + evaluating directory:', e
 def onfile(e):
     # we want to limit the outputs of this tutorial...
-    if '/.svn' not in e and 'misc.file.' in e:
+    if '/.svn' not in e and 'misc.file.' in e and '/.git' not in e and '/build' not in e:
         print '  - evaluating file:', e
 def onmatch(e):
     print '  * matching entry:', e
-F.find('*/misc.file.*', searchdir, depth=None, exclude=('*/library/*', '*/.svn/*', '*.rst'), matchall=True, ondir=ondir, onfile=onfile, onmatch=onmatch, **fkw)
+F.find('*/misc.file.*', searchdir, depth=None,
+    exclude=('*/library/*', '*/.svn/*', '*.rst', '*/.??*', '*/build/*'),
+    matchall=True, ondir=ondir, onfile=onfile, onmatch=onmatch, **fkw)
 print
 # note that ondir and onfile callbacks are called even if the path does not matches
 
@@ -91,3 +96,4 @@ print
 # this is not the case here, just an example
 
 
+os.chdir(PWD)
