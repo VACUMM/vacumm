@@ -1,4 +1,5 @@
 """Test the fortran function :f:func:`curv2rect`"""
+from builtins import zip
 from vcmq import N, P, code_file_name, P, os
 from vacumm.misc.grid._interp_ import curv2rect
 

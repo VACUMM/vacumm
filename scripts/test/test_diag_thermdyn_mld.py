@@ -19,8 +19,8 @@ mld = {}
 mld['deltatemp'] = mixed_layer_depth(temp, mode='deltatemp',**kw)
 mld['deltadens'] = mixed_layer_depth((temp,sal), mode='deltadens', **kw)
 mld['kz'] = mixed_layer_depth(kz, mode='kz', **kw)
-vmin = min([v.min() for v in mld.values()])
-vmax = max([v.max() for v in mld.values()])
+vmin = min([v.min() for v in list(mld.values())])
+vmax = max([v.max() for v in list(mld.values())])
 
 # Plot it
 rc('font', size=8)

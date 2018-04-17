@@ -1,6 +1,7 @@
 """Test :class:`~vacumm.misc.stats.StatAccum` for a pair of variables"""
 
 # Imports
+from builtins import range
 from vcmq import MV2, N
 from vacumm.misc.stats import StatAccum
 
@@ -52,7 +53,7 @@ dstats = dict(
 dstats['thist'] = N.ma.zeros((nbins-1, ny, nx), 'l'), N.ma.zeros((nbins-1, ny, nx), 'l')
 dstats['shist'] = N.ma.zeros((nt, nbins-1), 'l'), N.ma.zeros((nt, nbins-1), 'l')
 for ivar, varm in enumerate([varm1, varm2]):
-    for ibin in xrange(nbins-1):
+    for ibin in range(nbins-1):
         valid = (varm>=bins[ibin])&(varm<bins[ibin+1])
         dstats['thist'][ivar][ibin] = valid.filled(False).sum(axis=0)
         dstats['shist'][ivar][:, ibin] = valid.filled(False).reshape((nt, -1)).sum(axis=1)

@@ -1,6 +1,7 @@
 """Test :class:`~vacumm.misc.stats.StatAccum` for a single variable"""
 
 # Imports
+from builtins import range
 from vcmq import MV2, N
 from vacumm.misc.stats import StatAccum
 
@@ -33,7 +34,7 @@ dstats = dict(
 )
 dstats['thist'] = N.ma.zeros((nbins-1, ny, nx), 'l')
 dstats['shist'] = N.ma.zeros((nt, nbins-1), 'l')
-for ibin in xrange(nbins-1):
+for ibin in range(nbins-1):
     valid = (varm>=bins[ibin])&(varm<bins[ibin+1])
     dstats['thist'][ibin] = valid.filled(False).sum(axis=0)
     dstats['shist'][:, ibin] = valid.filled(False).reshape((nt, -1)).sum(axis=1)

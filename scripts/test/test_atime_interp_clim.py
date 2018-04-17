@@ -1,4 +1,5 @@
 """Test :func:`~vacumm.misc.atime.interp_clim`"""
+from builtins import range
 from vcmq import (code_file_name, interp_clim, MV2, N, create_time, lindates, curve,
     strftime)
 
@@ -7,7 +8,7 @@ N.random.seed(0)
 s = N.resize(N.sin(N.linspace(0, 1, 13)[:12]*2*N.pi), (2, 12)).T
 clim = MV2.array(s, fill_value=1e20)
 p = curve(clim[:, 0], 'o-', show=False, subplot=211, title='Original climatology',
-    xmin=-.5, xmax=11.5, xticks=range(12),
+    xmin=-.5, xmax=11.5, xticks=list(range(12)),
     xticklabels=[strftime('%b', '2000-%i'%i) for i in range(1, 13)])
 
 # Target times

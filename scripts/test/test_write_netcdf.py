@@ -1,4 +1,5 @@
 """Testing to read/modidy/(re)write NEtCDF files without loosing attributes"""
+from __future__ import print_function
 
 # Inits
 ncfile = "nobounds.nc"
@@ -23,7 +24,7 @@ cdms2.setAutoBounds('off')
 
 # -- Read and write in another file variables
 for var in f.listvariable():
-    print '>> '+var+ ' <<'
+    print('>> '+var+ ' <<')
     data=f(var)
     try: # - Variable is an n-dimension array
         data.getValue()

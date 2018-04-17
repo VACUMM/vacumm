@@ -1,5 +1,6 @@
 """Test :func:`~vacumm.misc.grid.regridding.extend1d` and :func:`~vacumm.misc.grid.regridding.extend2d`"""
 
+from builtins import range
 from vcmq import N, create_grid2d, P, rc, plot2d, MV2, set_grid, savefigs, code_file_name
 from vacumm.misc.grid.regridding import extend1d, extend2d
 
@@ -7,9 +8,9 @@ from vacumm.misc.grid.regridding import extend1d, extend2d
 nxi = 4
 nyi = 3
 xxi, yyi = N.meshgrid(N.arange(nxi)+.25, N.arange(nyi)-.25)
-for j in xrange(nyi):
+for j in range(nyi):
     xxi[j,:] -= j*0.5
-for i in xrange(nxi):
+for i in range(nxi):
     yyi[:,i] += i*0.5
 gridi = create_grid2d(xxi,yyi) # input cdms grid
 vari = MV2.array(N.arange(nyi*nxi).reshape(nyi,nxi))+10.

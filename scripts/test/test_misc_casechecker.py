@@ -15,7 +15,7 @@ assert c2.isvalid(None) is True
 #assert_raises(VACUMMError, c1.check, 'mode5')
 try:
     c1.check('mode5')
-except Exception, e: #VACUMMError, e:
+except Exception as e: #VACUMMError, e:
     assert e.message == "Invalid mode 'mode5': it must be one of ['mode1', 'mode2']"
 
 c3 = CaseChecker(['mode?', '-mode[56]'])

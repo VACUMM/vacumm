@@ -1,4 +1,5 @@
 """Test de :func:`subaxis2slice` function"""
+from builtins import zip
 from vcmq import create_axis, isaxis, coord2slice, cdms2, N
 
 

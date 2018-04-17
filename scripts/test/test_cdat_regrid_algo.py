@@ -1,4 +1,6 @@
 """Testing CDAT regridding algorithm"""
+from __future__ import print_function
+from builtins import range
 from vcmq import create_grid2d, meshbounds, set_grid, code_file_name, P, N, MV2, rc, add_grid
 from collections import OrderedDict
 
@@ -15,10 +17,10 @@ configs = OrderedDict(
 nxi = 5
 nyi = 4
 xxi, yyi = N.meshgrid(N.arange(nxi)+.25, N.arange(nyi)-.25)
-for j in xrange(nyi):
+for j in range(nyi):
     xxi[j,:] -= j*0.5
     #yyi[j,:] += j
-for i in xrange(nxi):
+for i in range(nxi):
     yyi[:,i] += i*0.5
 gridi = create_grid2d(xxi,yyi) # input cdms grid
 xxib,yyib = meshbounds(xxi,yyi) # coordinates of cell corners
@@ -46,10 +48,10 @@ logfile = code_file_name(ext='log')
 f = open(logfile, 'w')
 def log(f, text): # logger
 #    print text
-    print >>f, text
+    print(text, file=f)
 
 # Loop on methods and tools
-for tool, methods in configs.items():
+for tool, methods in list(configs.items()):
     for method in methods:
         log(f, '-'*60)
         log(f,  ('%s/%s'%(tool,method)).upper())

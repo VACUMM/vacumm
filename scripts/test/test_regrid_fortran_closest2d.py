@@ -1,4 +1,5 @@
 """Test the fortran function :f:func:`closest2d`"""
+from builtins import zip
 from vcmq import N, P, code_file_name, P, os, rotate_grid, add_grid
 from vacumm.misc.grid._interp_ import closest2d
 

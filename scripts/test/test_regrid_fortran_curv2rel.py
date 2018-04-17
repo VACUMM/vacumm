@@ -1,4 +1,5 @@
 """Test the fortran function :f:func:`curv2rel`"""
+from builtins import range
 from vcmq import N, P, code_file_name, P, os, meshbounds
 from vacumm.misc.grid._interp_ import curv2rel
 

@@ -1,4 +1,5 @@
 """Testing CDAT regridding from curvilinear grid to rectangular grid"""
+from __future__ import print_function
 
 config = {
     #'esmf':['conserv'],
@@ -73,31 +74,31 @@ if rank==0:
     f = open(repfile, 'w')
     if size:
 #        print 'MPI', size
-        print >>f, 'MPI: NPROC=%i'%size
-    print >>f, 'NT=%(nt)i, NZ=%(nz)i'%locals()
-    print >>f, 'NYI=%(nyi)i, NXI=%(nxi)i'%locals()
-    print >>f, 'NYO=%(nyo)i, NXO=%(nxo)i'%locals()
+        print('MPI: NPROC=%i'%size, file=f)
+    print('NT=%(nt)i, NZ=%(nz)i'%locals(), file=f)
+    print('NYI=%(nyi)i, NXI=%(nxi)i'%locals(), file=f)
+    print('NYO=%(nyo)i, NXO=%(nxo)i'%locals(), file=f)
 
 #if rank==0: print 'regridding...'
 vmin = vari.min()
 vmax = vari.max()
-for tool, methods in config.items():
+for tool, methods in list(config.items()):
     for method in methods:
         if rank==0:
             t0 = time()
-            print >>f, tool.upper(), method, ':'
+            print(tool.upper(), method, ':', file=f)
             diag = {'dstAreaFractions': None}
         else: diag = None
         try:
             varo = vari.regrid(grido, tool=tool, method=method, diag=diag)
-            if rank==0: print >>f, ' ok'
+            if rank==0: print(' ok', file=f)
         except:
             if rank==0:
-                print >>f, ' failed'
-                print >>f, format_exc()
+                print(' failed', file=f)
+                print(format_exc(), file=f)
             continue
         if rank==0:
-            print >>f, tool.upper(), method, ':', '%5.1f'%(time()-t0), 'seconds', psinfo()
+            print(tool.upper(), method, ':', '%5.1f'%(time()-t0), 'seconds', psinfo(), file=f)
             frac = diag['dstAreaFractions']
             if frac is not None:
                 mask = frac<=1.e-3
@@ -109,7 +110,7 @@ for tool, methods in config.items():
 #        del r
         gc.collect()
         if rank==0:
-            print >>f, ' plot'
+            print(' plot', file=f)
             P.figure(figsize=(12, 6))
             P.subplots_adjust(right=0.9)
             P.subplot(121)
@@ -123,6 +124,6 @@ for tool, methods in config.items():
             P.title(tool.upper()+' / '+method.upper())
             P.colorbar(extend='min')#cax=P.axes([0.92, 0.3, 0.02, 0.6]))
         del varo
-if rank==0:print >>f, 'Done'
+if rank==0:print('Done', file=f)
 f.close()
 

@@ -1,4 +1,5 @@
 """Test :class:`~vacumm.misc.stats.StatAccum` with dumping and loading """
+from __future__ import print_function
 
 # Imports
 from vcmq import MV2, N, code_file_name, StatAccum
@@ -32,7 +33,7 @@ bins = N.linspace(-0.1*vmax, 0.9*vmax, 14)
 nbins = len(bins)
 restart_file5 = code_file_name(ext='5.nc')
 restart_file7 = code_file_name(ext='7.nc')
-print restart_file5
+print(restart_file5)
 
 # Normal
 sab = StatAccum(tall=True, sall=True, bins=bins)
@@ -51,10 +52,10 @@ sa7 = StatAccum(restart=True, restart_file=restart_file7)
 # Intermediate loads
 sai = StatAccum(tall=True, sall=True, bins=bins)
 sai += var1[:5], var2[:5]
-print sai.load(restart_file7) # erase
+print(sai.load(restart_file7)) # erase
 saw = StatAccum(tall=True, sall=True, bins=bins)
 saw += var1[:7], var2[:7]
-print saw.load(restart_file5) # not loaded
+print(saw.load(restart_file5)) # not loaded
 
 # Finish stats
 sab += var1[7:], var2[7:]
@@ -70,11 +71,11 @@ sai_stats = sai.get_stats()
 
 # Result
 result = []
-for sname in sab_stats.keys():
+for sname in list(sab_stats.keys()):
     assert_array_almost_equal(sab_stats[sname], sa5_stats[sname])
     assert_array_almost_equal(sab_stats[sname], sa7_stats[sname])
     assert_array_almost_equal(sab_stats[sname], sai_stats[sname])
 #    result.append(('assertTrue', N.ma.allclose(sab_stats[sname], sa1_stats[sname])))
 #    print sname, N.ma.allclose(sab_stats[sname], sa1_stats[sname])
 
-print 'Done'
+print('Done')
