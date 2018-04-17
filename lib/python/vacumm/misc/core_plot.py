@@ -72,8 +72,8 @@ from mpl_toolkits.basemap import Basemap, _setlatlab, _setlonlab
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.collections import PolyCollection, LineCollection
 
-from vacumm import VACUMMError
-from vacumm.config import VACUMM_CFG, get_cfg_checked
+from vacumm import VACUMMError, VACUMM_CFG
+from vacumm.config import get_cfg_checked
 from .misc import (kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts,
     auto_scale, dict_check_defaults, basic_auto_scale, dict_copy_items,
     dict_merge, phaselab, set_atts)
@@ -88,7 +88,6 @@ from .axes import (check_axes, axis_type, set_order, merge_orders,
 from .color import (get_cmap, RGB, land, 
     RGBA, change_luminosity, change_saturation, pastelise,
     CMAP_POSITIVE, CMAP_NEGATIVE, CMAP_SYMETRIC)
-import color
 from .grid import meshbounds, get_axis, meshgrid, meshcells
 from .basemap import create_map
 from .regridding import shift1d
@@ -8202,7 +8201,6 @@ def _asnum_(xy):
         out.append(xy)
     if single: return out[0]
     return out
-
 
 docfiller.scan(Plot, Plot.format_axes, Plot.load_data, Plot._check_order_,
     Plot.pre_plot, Plot.post_plot,

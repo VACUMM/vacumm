@@ -55,8 +55,8 @@ from .units import m2deg, deg2m
 from .poly import sort_shapes, proj_shape, create_polygon, polygons
 from .basemap import create_map, get_proj
 from .masking import rsamp, convex_hull, polygon_mask, polygon_select
-from .axes import bounds1d
-from .grid import resol, create_grid, get_xy, get_grid, meshcells, set_grid
+from .grid import (resol, create_grid, get_xy, get_grid, meshcells, set_grid, 
+    bounds1d)
 from .io import read_shapefile, write_snx
 from .regridding import xy2xy, regrid2d, regrid_method, griddata
 from .color import get_cmap, land, simple_colors

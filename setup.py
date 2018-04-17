@@ -32,7 +32,7 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 # Inits
-import sys, os, shutil
+import os, shutil
 rootdir = os.path.dirname(__file__)
 #sys.path.insert(0, os.path.abspath(os.path.join(rootdir, 'doc/sphinx/source')))
 
@@ -76,7 +76,7 @@ classifiers = ["Development Status :: 4 - Beta",
                ]
 
 # Setup
-from numpy.distutils.core import setup
+from numpy.distutils.core import setup, Extension
 from numpy.distutils.misc_util import Configuration
 from glob import glob
 def configuration(parent_package='',top_path=None):
@@ -110,7 +110,6 @@ def configuration(parent_package='',top_path=None):
     config.add_data_dir(('vacumm/vacumm-scripts/test', 'scripts/test')) # test scripts
     config.add_data_dir(('vacumm/vacumm-scripts/tutorials', 'scripts/tutorials')) # tutorials
     config.add_data_dir(('vacumm/vacumm-scripts/courses', 'scripts/courses')) # courses
-
 
     return config
 
@@ -192,7 +191,8 @@ if __name__ == '__main__':
         classifiers = classifiers,
         cmdclass={'install':vacumm_install, 'install_data':vacumm_install_data,
             'bdist_rpm':vacumm_bdist_rpm},
-        configuration=configuration
+        configuration=configuration, 
+#        ext_modules = [ext1]
 
     )
 

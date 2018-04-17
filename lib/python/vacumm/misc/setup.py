@@ -40,9 +40,9 @@ def configuration(parent_package='',top_path=None):
     config.add_subpackage('axml')
     config.add_subpackage('cfgui')
 #   config.add_subpackage('easyPypar')
-    config.add_data_files('vacumm.cfg')
+#    config.add_data_files('vacumm.cfg')
     config.add_data_files('cpt/*')
-    config.add_extension('_interp_',  sources=['interp.f90'])
+#    config.add_extension('_interp_',  sources=['interp.f90'])
     config.add_data_files('Makefile')
     return config
 

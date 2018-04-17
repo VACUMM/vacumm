@@ -232,7 +232,7 @@ class DocFiller(object):
 
     __call__ = docfill
 
-from vacumm.config import VACUMM_CFG
+from vacumm import VACUMM_CFG
 docfiller = DocFiller(verbose=VACUMM_CFG['vacumm.misc.docstrings']['verbose'])
 docfill = docfiller.docfill
 

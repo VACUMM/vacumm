@@ -39,7 +39,7 @@
 #
 from __future__ import absolute_import
 from __future__ import print_function
-import gc, os, subprocess
+import gc
 import re
 import warnings
 from collections import OrderedDict
@@ -53,22 +53,20 @@ from six.moves import zip
 from scipy import interpolate
 
 from vacumm import VACUMMError, VACUMMWarning, vacumm_warn
+from vacumm.fortran import interp as finterp
 from .misc import (cp_atts, get_atts, closeto, set_atts, 
     )
-from .atime import are_same_units, ch_units, lindates
 from .axes import (check_axes, isaxis, axis_type, create_lon, istime, 
     create_lat, create_time, create_axis, islon, islat, create_dep)
 from .grid import (get_axis, transect_specs, set_grid, get_axis_slices,
     merge_axis_slice, isgrid, create_axes2d, get_xy, get_grid, t2uvgrids,
     bounds1d, bounds2d, meshgrid, create_grid, resol, meshcells, curv2rect,
     get_distances)
-from .kriging import krig as _krig_
 from .basemap import get_proj
+from .atime import are_same_units, ch_units, lindates
+from .kriging import krig as _krig_
 
-#MA = N.oldnumeric.ma
 MA = N.ma
-MV=MV2
-cdms=cdms2
 
 # Python functions
 __all__ = ['fill1d', 'regular', 'regular_fill1d', 'cellave1d', 'spline_interp1d',
@@ -80,34 +78,6 @@ __all__ = ['fill1d', 'regular', 'regular_fill1d', 'cellave1d', 'spline_interp1d'
     'extendgrid', 'regrid2d_method_name', 'fill1d2', 'krig', 'CurvedInterpolator',
     'regrid2d_tool_name', 'regrid2dnew', 'regrid1d_method_name',
     'cellerr1d']
-__all__.sort()
-
-# Fortran functions
-_interp_funcs = ['interp1d', 'interp1dx', 'interp1dxx',
-    'remap1d', 'remap1dx', 'remap1dxx', 'nearest2d', 'bilin', 'dstwgt',
-    'mbilin2d', 'mixt2dx', 'cargen', 'extrap1d', 'curv2rel',
-    'nearest2dto1d', 'nearest2dto1dc', 'nearest2dto1dc_reduc',
-    'bilin2dto1d', 'bilin2dto1dc', 'bilin2dto1dc_reduc',
-    'dstwgt2dto1d', 'dstwgt2dto1dc', 'dstwgt2dto1dc_reduc',
-    'cellerr1d', 'cellerr1dx', 'cellerr1dxx', 'linear4dto1dxx',
-    'nearest4dto1dxx',
-    ]
-
-# Load fortran
-_interp_funcs = ['%s as _%s_'%(ff, ff) for ff in _interp_funcs]
-_interp_funcs = ', '.join(_interp_funcs)
-import_interp = "from _interp_ import %s" % (_interp_funcs, )
-try:
-    exec(import_interp)
-except Exception as e:
-    print(e.message)
-    print('Trying to build it...')
-    cmd = ["make"] # Compilation of all vacumm extensions from the root of sources
-    out = subprocess.Popen(cmd, cwd=os.path.dirname(__file__), stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE).communicate()
-    if out[1]!='':
-        raise ImportError("Can't build _interp_ for importation:\n%s"%('\n'.join(out)))
-    exec(import_interp)
 
 
 # Interpolation methods
@@ -339,7 +309,7 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
     """
 
     # Input specs
-    assert cdms.isVariable(vari), 'Works only with cdms variables'
+    assert cdms2.isVariable(vari), 'Works only with cdms variables'
     if xmap is not None or xmapper is not None:
         warnings.warn('xmap and xmapper keywords of regrid1d are deprecated. '
             'Please use axi/axo and iaxi/iaxo keywords instead.', VACUMMWarning)
@@ -500,17 +470,17 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
 
     # Routine and arguments
     if nxi==1 and nxo==1: # 1D->1D
-        interp_func = _interp1d_
-        remap_func = _remap1d_
-        cellerr_func = _cellerr1d_
+        interp_func = finterp.interp1d
+        remap_func = finterp.remap1d
+        cellerr_func = finterp.cellerr1d
     elif nxo==1: # 1D->ND
-        interp_func = _interp1dx_
-        remap_func = _remap1dx_
-        cellerr_func = _cellerr1dx_
+        interp_func = finterp.interp1dx
+        remap_func = finterp.remap1dx
+        cellerr_func = finterp.cellerr1dx
     else: # ND->ND
-        interp_func = _interp1dxx_
-        remap_func = _remap1dxx_
-        cellerr_func = _cellerr1dxx_
+        interp_func = finterp.interp1dxx
+        remap_func = finterp.remap1dxx
+        cellerr_func = finterp.cellerr1dxx
     if method == -1: # Cellave
         regrid_func = remap_func
         kwargs=dict(conserv=conserv,extrap=0)
@@ -542,7 +512,7 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
     elif not isinstance(extrap, int):
         extrap = int(bool(extrap))
     if extrap:
-        varo2d = _extrap1d_(varo2d, missing_value, extrap)
+        varo2d = finterp.extrap1d(varo2d, missing_value, extrap)
 
     # Reshape back
     varos = varo2d.reshape(varis.shape[:-1]+axond.shape[-1:]) ; del varo2d
@@ -734,7 +704,7 @@ def fill1d2(vi,axis=0, k=1,padding=None,clip=False,min_padding=None, method='lin
     xi = vi.getAxis(0).getValue().astype('d')
 
     # Removes missing points
-    mask = MV.getmaskarray(vi)
+    mask = MV2.getmaskarray(vi)
     cxi = N.ma.masked_array(xi,mask=mask).compressed()
     cvi = vi.compressed()
     cii = N.ma.masked_array(N.arange(len(xi)),mask=mask).compressed()
@@ -906,7 +876,7 @@ def fill2d(var, xx=None, yy=None, mask=None, copy=True, **kwargs):
     - Other keywords are passe to :func:`griddata`
     """
     # Checkings
-    if not cdms.isVariable(var): var = cdms.createVariable(var)
+    if not cdms2.isVariable(var): var = cdms2.createVariable(var)
     if copy: var = var.clone()
     assert var.ndim >= 2, 'Input var must be at least 2D'
 
@@ -931,7 +901,7 @@ def fill2d(var, xx=None, yy=None, mask=None, copy=True, **kwargs):
     # Mask
     if mask is None:
         mask = var3d.mask
-    elif mask is not MV.nomask:
+    elif mask is not MV2.nomask:
         assert mask.shape[-2:] == var3d.shape[-2:]
         mask = mask.copy()
         if mask.ndim!=2:
@@ -941,14 +911,14 @@ def fill2d(var, xx=None, yy=None, mask=None, copy=True, **kwargs):
     for iex in range(nex):
 
         var2d = var3d[iex].asma()
-        if mask is not MV.nomask:
+        if mask is not MV2.nomask:
             if mask.shape==2:
                 mask2d = mask
             else:
                 mask2d = mask[iex]
 
         # Unmasking
-        if mask is MV.nomask or mask2d.all() or ~mask2d.any(): continue
+        if mask is MV2.nomask or mask2d.all() or ~mask2d.any(): continue
         good = ~mask2d
         xi = xx[good]
         yi = yy[good]
@@ -994,10 +964,10 @@ def regular(vi,dx=None,verbose=True,auto_bounds=False):
     gaps = N.where(N.less((gaps+1.) % 1.,0.1),N.floor(gaps),gaps)
     gaps = N.where(N.greater((gaps+1.) % 1.,0.9),N.ceil(gaps),gaps).astype('l')
     ngaps = N.sum(gaps)
-    gaps = MV.masked_object(gaps,0)
-    mask = MV.getmaskarray(gaps)
+    gaps = MV2.masked_object(gaps,0)
+    mask = MV2.getmaskarray(gaps)
     gaps = gaps.compressed()
-    igaps = MV.masked_array(N.arange(len(xi)-1,typecode='l'),mask=mask).compressed()
+    igaps = MV2.masked_array(N.arange(len(xi)-1,typecode='l'),mask=mask).compressed()
     ng = len(igaps)
 
     if not ngaps:
@@ -1010,7 +980,7 @@ def regular(vi,dx=None,verbose=True,auto_bounds=False):
     nxo = nxi+ngaps
     sho = list(sh) ;  sho[0] = nxo
     xo = N.zeros(nxo,typecode='d')
-    vo = MV.resize(vi,sho)
+    vo = MV2.resize(vi,sho)
     #vo.id = vi.id+'_regular' ; vo.name = vo.id
 
     # Loop on first axis
@@ -1037,8 +1007,8 @@ def regular(vi,dx=None,verbose=True,auto_bounds=False):
 ##  vo[-1] = vi[-1]
 
     # Axes
-    vo = MV.masked_object(vo,missing_value)
-    xo = cdms.createAxis(xo)
+    vo = MV2.masked_object(vo,missing_value)
+    xo = cdms2.createAxis(xo)
     cp_atts(xi,xo,id=True)
     axeso = list(axes)
     axeso[0] = xo
@@ -1308,9 +1278,9 @@ def cargen(xi, yi, zi, ggo, mask=None, geo=None, compress=False, missing_value=N
         xi, yi, zzi, mmi = get
 
         # Interpolate
-        zo3d[iex] = _cargen_(xi, yi, zzi, GDH.x[:], GDH.y[:], 1.e20).transpose()
+        zo3d[iex] = finterp.cargen(xi, yi, zzi, GDH.x[:], GDH.y[:], 1.e20).transpose()
         if mmi is not None:
-            mo3d[iex] = _cargen_(xi, yi, mmi, GDH.x[:], GDH.y[:], 1.).transpose()
+            mo3d[iex] = finterp.cargen(xi, yi, mmi, GDH.x[:], GDH.y[:], 1.).transpose()
 
     # Format output
     return GDH.format(zi, zo3d, mo3d, missing_value, **kwargs)
@@ -1573,13 +1543,13 @@ class _GridDataHelper_(object):
         if self.outtype == 1: return zo
 
         # Gridding
-        zo = cdms.createVariable(zo)
+        zo = cdms2.createVariable(zo)
         if self.grid is not None:
             set_grid(zo, self.grid)
         else:
             zo.setAxis(-1, self.x)
             zo.setAxis(-2, self.y)
-        if cdms.isVariable(zi):
+        if cdms2.isVariable(zi):
             cp_atts(zi, zo, id=True)
             for i, axis in enumerate(zi.getAxisList()[:-2]):
                 zo.setAxis(i, axis)
@@ -1884,13 +1854,13 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
         if univ:
             vi, [ti, zi, yi, xi] = _monotonise_(vi, [ti, zi, yi, xi],
                 targets=targets, subdims=subdims)
-            vo = _nearest4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, zo, to, mv)
+            vo = finterp.nearest4dto1dxx(xi, yi, zi, ti, vi, xo, yo, zo, to, mv)
         else:
             if rect:
-                func = _nearest2dto1d_
+                func = finterp.nearest2dto1d
                 vi, [yi, xi] = _monotonise_(vi, [yi, xi])
             else:
-                func = _nearest2dto1dc_
+                func = finterp.nearest2dto1dc
             vo = func(xi, yi, vi, xo, yo, mv)
             if method=='nat' and mi is not None:
                 vonear = vo
@@ -1900,13 +1870,13 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
         if univ:
             vi, [ti, zi, yi, xi] = _monotonise_(vi, [ti, zi, yi, xi],
                 targets=targets, subdims=subdims)
-            vo = _linear4dto1dxx_(xi, yi, zi, ti, vi, xo, yo, zo, to, mv)
+            vo = finterp.linear4dto1dxx(xi, yi, zi, ti, vi, xo, yo, zo, to, mv)
         else:
             if rect:
-                func = _bilin2dto1d_
+                func = finterp.bilin2dto1d
                 vi, [yi, xi] = _monotonise_(vi, [yi, xi])
             else:
-                func = _bilin2dto1dc_
+                func = finterp.bilin2dto1dc
             vi, [yi, xi] = _monotonise_(vi, [yi, xi])
             vo = func(xi, yi, vi, xo, yo, mv)
 
@@ -2107,7 +2077,7 @@ def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
         return vari
 
     # Initialize
-    if cdms.isVariable(vari):
+    if cdms2.isVariable(vari):
         op = MA
     else:
         op = N
@@ -2116,11 +2086,11 @@ def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
         sho += ((nxy-1)*factor+1, )
     varo = op.zeros(sho, vari[:].dtype)
     if isinstance(vari, TransientAxis):
-        varo = cdms.createAxis(varo.astype('d'))
+        varo = cdms2.createAxis(varo.astype('d'))
         cp_atts(vari, varo, id=True)
         geo = False
-    elif cdms.isVariable(vari):
-        varo = cdms.createVariable(varo)
+    elif cdms2.isVariable(vari):
+        varo = cdms2.createVariable(varo)
         cp_atts(vari, varo, id=True)
     else:
         geo = False
@@ -2142,7 +2112,7 @@ def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
             xo = N.linspace(0., xi[-1], varo.shape[-1])
             yo = N.linspace(0., yi[-1], varo.shape[-2])
             xxo, yyo = N.meshgrid(xo, yo)
-            varo[:] = _mbilin2d_(vari, xi, yi, xxo.flat, yyo.flat,
+            varo[:] = finterp.mbilin2d(vari, xi, yi, xxo.flat, yyo.flat,
                 1.e20, smoothcoast, nogeo=1-int(geo)).reshape(varo.shape)
 
         # Masked data
@@ -2150,7 +2120,7 @@ def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
 
             varo.setMissing(1.e20)
             # Grids
-            if cdms.isVariable(vari):
+            if cdms2.isVariable(vari):
                 xi = vari.getAxis(-1)
                 yi = vari.getAxis(-2)
                 xo = refine(xi, factor)
@@ -2163,19 +2133,19 @@ def refine(vari, factor, geo=True, smoothcoast=False, noaxes=False):
             xxo, yyo = N.meshgrid(xo[:], yo[:])
 
             # Interpolation
-            varo[:] = _mbilin2d_(vari.filled(1.e20),xi[:], yi[:], xxo.flat, yyo.flat,
+            varo[:] = finterp.mbilin2d(vari.filled(1.e20),xi[:], yi[:], xxo.flat, yyo.flat,
                 1.e20, smoothcoast,len(xi),len(yi),N.size(xxo),geo).reshape(varo.shape)
 
             # Masking
-            if vari.mask is not MV.nomask:
+            if vari.mask is not MV2.nomask:
                 fmaski = vari.mask.astype('f')
-                fmasko = _mbilin2d_(fmaski,xi[:], yi[:], xxo.flat, yyo.flat,
+                fmasko = finterp.mbilin2d(fmaski,xi[:], yi[:], xxo.flat, yyo.flat,
                     1.e20, False, len(xi),len(yi),N.size(xxo),geo).reshape(varo.shape)
-                varo[:] = MV.masked_where(N.greater(fmasko, .5), varo, copy=0)
-            varo[:] = MV.masked_values(varo, 1.e20, copy=0)
+                varo[:] = MV2.masked_where(N.greater(fmasko, .5), varo, copy=0)
+            varo[:] = MV2.masked_values(varo, 1.e20, copy=0)
 
             # Axes
-            if not noaxes and cdms.isVariable(varo):
+            if not noaxes and cdms2.isVariable(varo):
                 for i in -2, -1:
 #                   varo.setAxis(i, refine(vari.getAxis(i), factor))
                     varo.setAxis(i, (yo, xo)[i])
@@ -2318,7 +2288,7 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
     """
 
     # Check grids
-    vari = MV.asarray(vari)
+    vari = MV2.asarray(vari)
     mv = vari.getMissing()
     if mv is None or N.isnan(mv):
         vari.setMissing(1.e20)
@@ -2390,7 +2360,7 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
 
     # 3D variable?
     if vari.ndim != 3:
-        vari3d = MV.resize(vari, (nzi, nyi, nxi))
+        vari3d = MV2.resize(vari, (nzi, nyi, nxi))
         set_grid(vari3d, ggi)
     else:
         vari3d = vari
@@ -2451,7 +2421,7 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
 
     # Back to rights dims
     if vari.ndim != 3:
-        varo = MV.resize(varo3d, vari.shape[:-2]+(nyo, nxo))
+        varo = MV2.resize(varo3d, vari.shape[:-2]+(nyo, nxo))
         del vari3d, varo3d
     else:
         varo = varo3d
@@ -2479,48 +2449,48 @@ def _regrid2d_nearest2d_(vari3d, xxi, yyi, xxo, yyo, mv, geo, maskoext):
     if nb == 1: nb = 0
 #    nb = -1
     if N.ma.isMA(vari3d): vari3d = vari3d.filled(mv)
-    varo3d = N.asarray(_nearest2d_(vari3d, xxi, yyi, xxo, yyo, nb, not geo), order='C')
+    varo3d = N.asarray(finterp.nearest2d(vari3d, xxi, yyi, xxo, yyo, nb, not geo), order='C')
     if maskoext is not False:
         varo3d[maskoext] = mv
     return varo3d
 
 def _regrid2d_bilinear_r2r_(vari3d, xi, yi, xo, yo, mv, geo, ext=0):
-    """Wrapper to fortran _bilin_"""
+    """Wrapper to fortran finterp.bilin"""
     if N.ma.isMA(vari3d): vari3d = vari3d.filled(mv)
-    varo3d =  N.asarray(_bilin_(vari3d, xi, yi, xo, yo, mv, not geo), order='C')
+    varo3d =  N.asarray(finterp.bilin(vari3d, xi, yi, xo, yo, mv, not geo), order='C')
     return varo3d
 _regrid2d_bilinear_ = _regrid2d_bilinear_r2r_
 
 def _regrid2d_bilinear_r2c_(vari3d, xi, yi, xxo, yyo, mv):
-    """Wrapper to fortran _bilin2dto1d_"""
+    """Wrapper to fortran finterp.bilin2dto1d"""
     if N.ma.isMA(vari3d): vari3d = vari3d.filled(mv)
-    varo3d =  N.ascontiguousarray(_bilin2dto1d_(xi, yi, vari3d, xxo.ravel(), yyo.ravel(), mv))
+    varo3d =  N.ascontiguousarray(finterp.bilin2dto1d(xi, yi, vari3d, xxo.ravel(), yyo.ravel(), mv))
     varo3d.shape = varo3d[:-1]+xxo.shape
     return varo3d
 
 def _regrid2d_bilinear_c2c_(vari3d, xxi, yyi, xxo, yyo, mv, rgdr=None):
-    """Wrapper to fortran _bilin2dto1dc_reduc_ through :class:`CurvedInterpolator`"""
+    """Wrapper to fortran finterp.bilin2dto1dcreduc_ through :class:`CurvedInterpolator`"""
     if rgdr is None:
         rgdr = CurvedInterpolator((xxi, yyi), (xxo, yyo), g2g=True)
     varo3d =  N.ascontiguousarray(rgdr(vari3d, method='bilinear'))
     return varo3d, rgdr
 
 def _regrid2d_dstwgt_r2r_(vari3d, xi, yi, xo, yo, mv, geo, ext=0):
-    """Wrapper to fortran _bilin_"""
+    """Wrapper to fortran finterp.bilin"""
     if N.ma.isMA(vari3d): vari3d = vari3d.filled(mv)
-    varo3d =  N.asarray(_dstwgt_(vari3d, xi, yi, xo, yo, mv, not geo), order='C')
+    varo3d =  N.asarray(finterp.dstwgt(vari3d, xi, yi, xo, yo, mv, not geo), order='C')
     return varo3d
 _regrid2d_dstwgt_ = _regrid2d_dstwgt_r2r_
 
 def _regrid2d_dstwgt_r2c_(vari3d, xi, yi, xxo, yyo, mv):
-    """Wrapper to fortran _bilin2dto1d_"""
+    """Wrapper to fortran finterp.bilin2dto1d"""
     if N.ma.isMA(vari3d): vari3d = vari3d.filled(mv)
-    varo3d =  N.ascontiguousarray(_dstwgt2dto1d_(xi, yi, vari3d, xxo.ravel(), yyo.ravel(), mv))
+    varo3d =  N.ascontiguousarray(finterp.dstwgt2dto1d(xi, yi, vari3d, xxo.ravel(), yyo.ravel(), mv))
     varo3d.shape = varo3d[:-1]+xxo.shape
     return varo3d
 
 def _regrid2d_dstwgt_c2c_(vari3d, xxi, yyi, xxo, yyo, mv, rgdr=None):
-    """Wrapper to fortran _bilin2dto1dc_reduc_ through :class:`CurvedInterpolator`"""
+    """Wrapper to fortran finterp.bilin2dto1dc_reduc through :class:`CurvedInterpolator`"""
     if rgdr is None:
         rgdr = CurvedInterpolator((xxi, yyi), (xxo, yyo), g2g=True)
     varo3d =  N.ascontiguousarray(rgdr(vari3d, method='dstwgt'))
@@ -2528,9 +2498,9 @@ def _regrid2d_dstwgt_c2c_(vari3d, xxi, yyi, xxo, yyo, mv, rgdr=None):
 
 
 def _regrid2d_mixt_(vari3d, xi, yi, xo, yo, mv, geo, ext=0):
-    """Wrapper to fortran _mixt2dx_"""
+    """Wrapper to fortran finterp.mixt2dx"""
     if N.ma.isMA(vari3d): vari3d = vari3d.filled(mv)
-    varo3d = N.asarray(_mixt2dx_(vari3d, xi, yi,  xo, yo, mv, ext).T, order='C')
+    varo3d = N.asarray(finterp.mixt2dx(vari3d, xi, yi,  xo, yo, mv, ext).T, order='C')
     return varo3d
 
 def _regrid2d_bining_(vari3d, xxi, yyi, xo, yo, mv):
@@ -3457,7 +3427,7 @@ class CurvedInterpolator(object):
             self._shapeo = xo.shape
 
         # Find relative positions
-        self._p, self._q = _curv2rel_(xxi, yyi, xo, yo)
+        self._p, self._q = finterp.curv2rel(xxi, yyi, xo, yo)
 
     def interp(self, vari, method='bilinear'):
         """Interpolate
@@ -3475,8 +3445,9 @@ class CurvedInterpolator(object):
         if method not in self.valid_methods:
             raise VACUMMError('Invalid interpolation method. Choose of: '+
                 ', '.join(self.valid_methods))
-        if method=='bilinear': method = 'bilin'
-        func = eval('_%s2dto1dc_reduc_'%method)
+        if method=='bilinear': 
+            method = 'bilin'
+        func = eval('%s2dto1dc_reduc'%method)
 
         # Interpolate
         mv = vari.get_fill_value()
