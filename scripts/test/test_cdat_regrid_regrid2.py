@@ -47,8 +47,6 @@ P.pcolor(xxob, yyob, wo)
 add_grid(grido)
 P.title("Output weights")
 P.tight_layout()
-savefigs(code_file_name(),pdf=True, verbose=False)
-P.close()
 
 
 

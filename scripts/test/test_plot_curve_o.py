@@ -1,7 +1,7 @@
 """Test :func:`~vacumm.misc.plot.curve2` with an arbitrary axis"""
 
 # Imports
-from vcmq import MV2, code_file_name, os, code_file_name, curve2
+from vcmq import MV2, curve2
 
 # Init
 var = MV2.arange(5.)
@@ -13,7 +13,5 @@ axis.long_name = 'Distance'
 
 
 # Plot
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
-curve2(var, savefig=figfile, show=False, close=True)
+curve2(var)
 

@@ -22,25 +22,23 @@ for p in 'u', 'v', 'f', 'w':
 # Surface plots
 vmin, vmax = minmax(*[var[p][-1] for p in ['u', 'v', 'f']])
 kw = dict(show=False, res=None, vmin=vmin, vmax=vmax, colorbar=False, grid=False, cmap='jet')
-m = map2(var['t'][-1], fill='pcolor', 
+m = map2(var['t'][-1], fill='pcolor',
     title='Interpolations on an Arakawa C grid: T->U/V/F', **kw)
 add_grid(var['t'], linestyle='-')
 kw.update(fill='scatter', contour=False, fill_s=60)
 markers = dict(u='>', v='^', f='D', t='o')
 for p in 't', 'u', 'v', 'f':
     m = map2(var[p][-1], fill_marker=markers[p], shadow=True, zorder=100, **kw)
-m.savefig(code_file_name(ext='_1.png'))
-m.close()
 
 # Vertical plot
-curve2(var['t'][:, 0, 0], 'o-b', ymax=0, show=False, 
+curve2(var['t'][:, 0, 0], 'o-b', ymax=0, show=False, fig='new',
     title='Interpolations on an Arakawa C grid: T->W')
-curve2(var['w'][:, 0, 0], '^r', show=False, savefig=code_file_name(ext='_2.png'))
+curve2(var['w'][:, 0, 0], '^r', show=False)
 
 
 result = [
-    ('assertEqual', [var['t'][0, 0, :2].mean(), var['u'][0, 0, 0]]), 
-    ('assertEqual', [var['t'][0, :2, 0].mean(), var['v'][0, 0, 0]]), 
-    ('assertEqual', [var['t'][0, :2, :2].mean(), var['f'][0, 0, 0]]), 
-    ('assertEqual', [var['t'][:2, 0, 0].mean(), var['w'][0, 0, 0]]), 
+    ('assertEqual', [var['t'][0, 0, :2].mean(), var['u'][0, 0, 0]]),
+    ('assertEqual', [var['t'][0, :2, 0].mean(), var['v'][0, 0, 0]]),
+    ('assertEqual', [var['t'][0, :2, :2].mean(), var['f'][0, 0, 0]]),
+    ('assertEqual', [var['t'][:2, 0, 0].mean(), var['w'][0, 0, 0]]),
     ]

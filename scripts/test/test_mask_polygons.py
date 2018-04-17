@@ -12,18 +12,18 @@ def plot_polygons(polys, **kwargs):
     for p in polys:
         plot_polygon(p, **kwargs)
 
-## Single known argument
-#pp0 = polygons(Polygon(N.array([xx, yy]).T))
-#
-## Classic data
-#pp0 = polygons([N.array([xx, yy]), N.array([xx, yy]).T+6.])
-#
-## Classic with projection
-#proj = lambda x, y: (x*1.5, y*1.5)
-#pp1 = polygons([N.array([xx, yy])])
-#
-## Classic with clipping
-#pp2 = polygons([-N.array([xx, yy])], clip=clip)
+# Single known argument
+pp0 = polygons(Polygon(N.array([xx, yy]).T))
+
+# Classic data
+pp0 = polygons([N.array([xx, yy]), N.array([xx, yy]).T+6.])
+
+# Classic with projection
+proj = lambda x, y: (x*1.5, y*1.5)
+pp1 = polygons([N.array([xx, yy])])
+
+# Classic with clipping
+pp2 = polygons([-N.array([xx, yy])], clip=clip)
 
 # From grid
 pp3 = polygons([create_grid(xaxis, yaxis)])

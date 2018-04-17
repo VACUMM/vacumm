@@ -3,7 +3,7 @@ from vcmq import create_grid2d, meshbounds, set_grid, code_file_name, P, N, MV2,
 from collections import OrderedDict
 
 configs = OrderedDict(
-    libcf=['linear'], 
+    libcf=['linear'],
     esmf=[
         'linear',
         'patch',
@@ -38,12 +38,9 @@ set_grid(vari, gridi) # set grid and axes
 #gridi.setMask(vari.mask)
 
 # Define plot function
-figfile = code_file_name(ext=False)+'_%(ifig)i.png'
-#'%(tool)s_%(method)s.png'
-figfiles = []
 rc('font',size=9)
 kw = dict(vmin=vari.min(),vmax=vari.max())
-    
+
 # Define logger
 logfile = code_file_name(ext='log')
 f = open(logfile, 'w')
@@ -58,11 +55,11 @@ for tool, methods in configs.items():
         log(f,  ('%s/%s'%(tool,method)).upper())
         diag = {'dstAreaFractions': None,'dstAreas':
                 None,'srcAreaFractions':None,'srcAreas':None} # output diags
-        
+
         # Regridding
-        varo = vari.regrid(grido, tool=tool, method=method, 
+        varo = vari.regrid(grido, tool=tool, method=method,
             diag=diag, coordSys='cart')
-        
+
         # Ajustment for conservative methode
         frac = diag['dstAreaFractions']
         if method=='conservative': # divide by dstAreaFractions for conservative
@@ -72,9 +69,9 @@ for tool, methods in configs.items():
             varo[:] /= frac
             varo[:] = MV2.masked_where(mask, varo, copy=0)
             log(f, ' dstareas: %s'%diag['dstAreas'])
-            
+
         log(f, ' varo: %s'%varo)
-        
+
         # Plot
         P.figure(figsize=(6,3))
         P.subplot(121).set_aspect(1)
@@ -93,11 +90,6 @@ for tool, methods in configs.items():
         add_grid(gridi, color=(0,0,.2), marker='o', **kwg)
         add_grid(grido, color=(.2,0,0), marker='+',markerlinewidth=1,markersize=8,**kwg)
         P.axis(axis)
-        ifig = len(figfiles)
-        ff = figfile%vars()
         P.tight_layout()
-        P.savefig(ff)
-        figfiles.append(ff)
-        P.close()
 f.close()
 

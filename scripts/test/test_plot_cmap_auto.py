@@ -1,7 +1,7 @@
 """Test :func:`~vacumm.misc.plot.plot2d` with automatic colormaps"""
 
 # Imports
-from vcmq import MV2, code_file_name, plot2d, os
+from vcmq import MV2, plot2d, os
 
 # Init
 var = MV2.reshape(MV2.arange(10*8), (8,10))
@@ -29,7 +29,7 @@ var[:] += 500
 plot2d(var, subplot=321, show=False, cmap='auto', title='Normal?')
 # - symetric
 var[:] -= var.mean()
-plot2d(var, subplot=324, savefig=figfile, show=True, cmap='auto',
-    tight_layout=True, close=True, title='Symetric?')
+plot2d(var, subplot=324, show=True, cmap='auto',
+    tight_layout=True, title='Symetric?')
 
 

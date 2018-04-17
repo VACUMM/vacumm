@@ -45,6 +45,7 @@ extensions = [
         'sphinxcontrib.programoutput',
         'sphinxfortran.fortran_domain',
         'sphinxfortran.fortran_autodoc',
+        'sphinx_gallery.gen_gallery',
         'vacumm.sphinxext.overview',
 #        'vacumm.sphinxext.docversions',
         'gen_gallery',
@@ -256,6 +257,17 @@ extlinks = {
     'rstdoc': ('http://docutils.sourceforge.net/docs/ref/rst/%s', None),
     }
 
+# Sphinx-gallery
+sphinx_gallery_conf = {
+    # path to your examples scripts
+    'examples_dirs' : ['../../../scripts/sg/simple'], #, '../../../scripts/sg/test'],
+    # path where to save gallery generated examples
+    'gallery_dirs'  : ['auto_sg_tests/simple'], #, 'auto_sg_tests/test'],
+#    'filename_pattern': '/test_plot_',
+    'filename_pattern': '/test_',
+    'backreferences_dir': False,
+    }
+
 
 # Python overview
 overview_title_overview = False
@@ -326,6 +338,7 @@ gen_gallery_paths = {
 #gen_gallery_root = 'gallery'
 #gen_gallery_skips = [] # basenames to skip
 #gen_gallery_nmax = 3 # max number of muti-figures
+
 
 # Colormaps
 gen_cmaps_prefix = 'misc-color-'

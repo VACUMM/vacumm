@@ -20,6 +20,4 @@ for i, method in enumerate(('linear', 'cubic', )):
         subplot=212, title='Interpolated climatology', legend=True,
         markersize=2,
         tight_layout=True)
-c.savefig(code_file_name())
-c.show()
 

@@ -10,11 +10,11 @@ Documentation de VACUMM
 
 
     **Résumé :**
-    
+
     .. include:: intro.txt
 
     **PDF/EPUB :**
-    
+
     Cette documentation existe aussi aux formats `PDF <VACUMM.pdf>`_ et `EPUB <VACUMM.epub>`_.
 
     **Table des matières :**

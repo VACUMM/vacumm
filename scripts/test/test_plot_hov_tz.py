@@ -1,7 +1,7 @@
 """Test :func:`~vacumm.misc.plot.hov2` with a TZ variable"""
 
 # Imports
-from vcmq import N, MV2, create_dep, create_time, hov2, os, rc, code_file_name
+from vcmq import N, MV2, create_dep, create_time, hov2, rc
 
 # Init data with z 1D
 nt = 10
@@ -17,16 +17,12 @@ z2d *= N.resize((N.arange(1., nt+1)/nt).reshape(1, nt), (nz, nt)).T
 
 # Plot with z 1D
 rc('font', size=8)
-kw = dict(show=False, bgcolor='0.5', date_fmt="%a")
-hov2(var, subplot=211, **kw)
+kw = dict(bgcolor='0.5', date_fmt="%a")
+hov2(var, subplot=211, show=False, **kw)
 
 # Plot with z 2D
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
-hov2(var, xaxis=z2d, subplot=212, twin='x', savefig=figfile, close=True, **kw)
+hov2(var, xaxis=z2d, subplot=212, twin='x', **kw)
 
-# Unittest
-result = dict(files=figfile)
 
 
 

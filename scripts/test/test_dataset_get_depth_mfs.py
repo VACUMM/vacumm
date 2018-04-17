@@ -4,15 +4,15 @@
 ncfile = "mfs.nc"
 
 # Imports
-from vcmq import DS, os, map2, data_sample, code_file_name, isdep
+from vcmq import DS, map2, data_sample, isdep
 
 # Read data
 ncfile = data_sample(ncfile)
-ds = DS(ncfile, 'nemo', logger_level='critical') 
+ds = DS(ncfile, 'nemo', logger_level='critical')
 depth = ds.get_depth(squeeze=True)
 
 # For unittest
 result = [
-    (isdep, depth), 
-    ('assertTrue', depth[0]<depth[-1]<0), 
+    (isdep, depth),
+    ('assertTrue', depth[0]<depth[-1]<0),
 ]

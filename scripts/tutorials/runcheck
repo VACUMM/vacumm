@@ -111,6 +111,8 @@ warnings.showwarning = Warner(logger).showwarning
 
 # Run them all
 import subprocess, traceback
+from matplotlib import rcdefaults
+rcdefaults()
 igood = 0
 ibad = 0
 PWD = os.getcwd()
@@ -119,8 +121,6 @@ for script in files:
     if os.path.realpath(script)==os.path.realpath(__file__):
         logger.debug('{}: {}'.format(base_script, 'SKIPPED'))
         continue
-    if os.getcwd()!=PWD:
-        xxx
     os.chdir(PWD)
     sys.argv = [script]
     logger.debug('Trying {}...'.format(base_script))
@@ -137,6 +137,7 @@ for script in files:
         result = 'FAILED'
         report_func = logger.error
     report_func('{}: {} [{:.1f}s]'.format(base_script, result, _time_()-t0_))
+    rcdefaults()
 
 # Finalize
 gb = []

@@ -4,7 +4,7 @@
 ncfile = "menor.nc"
 
 # Imports
-from vcmq import DS, os, map2, data_sample, code_file_name
+from vcmq import DS, os, map2, data_sample
 
 # Read data
 ncfile = data_sample(ncfile)
@@ -13,13 +13,11 @@ tbot = ds.get_temp(level='bottom', squeeze=True)
 tsurf = ds.get_temp(level='surf', squeeze=True)
 
 # Plot bottom
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
 kw = dict(contour=True, fill='contourf',  colorbar_shrink=0.8,
     cmap='cmocean_thermal', linewidth=.3)
-m = map2(tsurf, subplot=211, close=False, show=False, figsize=(5, 7),
+m = map2(tsurf, subplot=211, show=False, figsize=(5, 7),
     title='Testing Dataset.get_temp(level="surf")',  **kw)
-map2(tbot, subplot=212, close=True, show=True, m=m,
+map2(tbot, subplot=212, m=m,
     title='Testing Dataset.get_temp(level="bottom")',
-    savefig=figfile, **kw)
+    **kw)
 
