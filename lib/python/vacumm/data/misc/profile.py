@@ -34,6 +34,12 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from __future__ import absolute_import
+import six
+from six.moves import filter
+from six.moves import map
+from six.moves import range
+from six.moves import zip
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
 __date__ = '2015-02-27'
@@ -167,14 +173,14 @@ class Profile(Object):
         # - Store depth as axis
         for a in self.__properties:
             setattr(self, a, kwargs.get(a, None))
-        if not isinstance(self.platform_code, basestring):
+        if not isinstance(self.platform_code, six.string_types):
             self.platform_code = ''.join(numpy.array(self.platform_code, dtype='c'))
         self.platform_code = self.platform_code.strip()
         if not hasattr(self.depth, 'shape'):
             self.depth = numpy.ma.array(self.depth).reshape((1,))
         if len(self.depth.shape) != 1:
             raise ValueError('Invalid depth shape, expecting 1D array, got %s'%(self.depth.shape,))
-        self.level = cdms2.createAxis(range(len(self.depth)), id='level')
+        self.level = cdms2.createAxis(list(range(len(self.depth))), id='level')
         self.depth = cdms2.createVariable(self.depth, id='depth', axes=(self.level,))
         for n,v in self.variables.items():
             if not hasattr(v, 'shape') and self.depth.shape[0] == 1:
@@ -191,7 +197,7 @@ class Profile(Object):
         return '<%s %s, depth shape: %s, variables: %s'%(
             self.__class__.__name__,
             ', '.join(('%s: %s'%(a, getattr(self, a, None)) for a in self.__properties[:5])), # update this on properties changes
-            self.depth.shape, self.variables.keys())
+            self.depth.shape, list(self.variables.keys()))
 
     def get_depth_min(self):
         '''Return the minimum depth value.'''
@@ -212,8 +218,8 @@ class Profile(Object):
             - **variables**: optional list of strings used to restrict the variable to display
             - **args, kwargs**: passed to the underlying plot function
         '''
-        if not variables: variables = self.variables.keys()
-        if isinstance(variables, basestring): variables = (variables,)
+        if not variables: variables = list(self.variables.keys())
+        if isinstance(variables, six.string_types): variables = (variables,)
         save = kwargs.pop('save', False)
         gobjs = []
         for i,varid in enumerate(variables):
@@ -310,8 +316,8 @@ class AbstractProfiles(Object, list):
             try:
                 if isinstance(c, type) and issubclass(c, cls):
                     types[c.get_type()] = c
-            except NotImplementedError, e: self.warning('%s: %s', e.__class__.__name__, e)
-            except Exception, e: self.warning(e)
+            except NotImplementedError as e: self.warning('%s: %s', e.__class__.__name__, e)
+            except Exception as e: self.warning(e)
         return types
 
     @classmethod
@@ -438,12 +444,12 @@ class Profiles(AbstractProfiles):
         if spec:
             for a in 'variables_map', 'variables', 'qualities', 'time_units':
                 setattr(self, a, copy.copy(getattr(spec, a)))
-        datasets = filter(lambda p: not isinstance(p, Profile), profiles)
-        profiles = filter(lambda p: isinstance(p, Profile), profiles)
+        datasets = [p for p in profiles if not isinstance(p, Profile)]
+        profiles = [p for p in profiles if isinstance(p, Profile)]
         # Apply args
         vmap = kwargs.pop('variables_map', None)
         if vmap:
-            for k,v in vmap.iteritems():
+            for k,v in six.iteritems(vmap):
                 if not isinstance(v, (list,tuple)): v = (v,)
                 if k in self.variables_map:
                     self.variables_map[k] = list(v) + list(self.variables_map[k])
@@ -565,11 +571,11 @@ class Profiles(AbstractProfiles):
                 - 'time': Sort the nested profiles based on their datetime
         Other parameters passed to the original sort method
         '''
-        import __builtin__
-        if isinstance(cmp, basestring):
+        import six.moves.builtins
+        if isinstance(cmp, six.string_types):
             cmp = cmp.strip().lower()
             if cmp == 'time':
-                AbstractProfiles.sort(self, cmp=lambda p1, p2: __builtin__.cmp(p1.datetime, p2.datetime), *args, **kwargs)
+                AbstractProfiles.sort(self, cmp=lambda p1, p2: six.moves.builtins.cmp(p1.datetime, p2.datetime), *args, **kwargs)
             else:
                 raise ValueError('Invalid sort method: "%s"'%cmp)
         else:
@@ -586,8 +592,8 @@ class Profiles(AbstractProfiles):
         # Variables candidates are case insensitive
         pfx, sfx = kwargs.get('prefix', ''), kwargs.get('suffix', '')
         varnames = self.variables_map.get(varid, varid)
-        if isinstance(varnames, basestring): varnames = (varnames,)
-        varnames = map(lambda n: '%s%s%s'%(pfx, n, sfx), varnames)
+        if isinstance(varnames, six.string_types): varnames = (varnames,)
+        varnames = ['%s%s%s'%(pfx, n, sfx) for n in varnames]
         var = None
         for varname in varnames:
             for n in dataset.variables.keys():
@@ -657,7 +663,7 @@ class Profiles(AbstractProfiles):
                 if second > 59: cf = True; second = 0
                 ct = cdtime.comptime(d.year, d.month, d.day, hour, minute, second)
                 return ct, cf
-            times, corrflags = numpy.array(map(parsetime, timevar)).transpose()
+            times, corrflags = numpy.array(list(map(parsetime, timevar))).transpose()
             timevar = create_time(times, units=self.time_units)
         else: corrflags = None
         timevar = ch_units(timevar, self.time_units)
@@ -711,14 +717,14 @@ class Profiles(AbstractProfiles):
             # NOTE: pressure in decibar, depth in meters, latitude in decimal degrees [-90,+90]
             depth = -1. * sw_depth(pres[:].swapaxes(0,1), lat[:]).swapaxes(0,1)
             # TODO: add explicit named axes
-            proax = cdms2.createAxis(xrange(depth.shape[0]), id="profile")
-            depax = cdms2.createAxis(xrange(depth.shape[1]), id="depth")
+            proax = cdms2.createAxis(range(depth.shape[0]), id="profile")
+            depax = cdms2.createAxis(range(depth.shape[1]), id="depth")
             depth = cdms2.createVariable(depth, id='depth', axes=(proax, depax))
             self.verbose('Computed depth: %s', self.describe(depth))
         if depth is not None:
             # Check negative depth values
             nmod = 0
-            for ip in xrange(len(depth) if len(depth.shape) == 1 else depth.shape[0]):
+            for ip in range(len(depth) if len(depth.shape) == 1 else depth.shape[0]):
                 d = depth if len(depth.shape) == 1 else depth[ip]
                 mi, ma, av = MV2.min(d), MV2.max(d), MV2.average(d)
                 if ma > 0:
@@ -766,8 +772,8 @@ class Profiles(AbstractProfiles):
             # NOTE: pressure in decibar, depth in meters, latitude in decimal degrees [-90,+90]
             pres = sw_pres(depth[:].swapaxes(0,1), lat[:]).swapaxes(0,1)
             # TODO: add explicit named axes
-            proax = cdms2.createAxis(xrange(depth.shape[0]), id="profile")
-            depax = cdms2.createAxis(xrange(depth.shape[1]), id="depth")
+            proax = cdms2.createAxis(range(depth.shape[0]), id="profile")
+            depax = cdms2.createAxis(range(depth.shape[1]), id="depth")
             pres = cdms2.createVariable(pres, id='pressure', axes=(proax, depax))
             self.verbose('Computed pressure: %s', self.describe(pres))
         return pres
@@ -812,7 +818,7 @@ class Profiles(AbstractProfiles):
         self.verbose('Latitude range filter: %s', latrange)
         dsfile = None
         try:
-            if isinstance(dataset, basestring):
+            if isinstance(dataset, six.string_types):
                 dsfile = cdms2.open(dataset)
             # Load dimensions or associated variables
             platvar = self.load_platform_code(dsfile)
@@ -857,7 +863,7 @@ class Profiles(AbstractProfiles):
             timeqcerr = timeqcexc = posqcerr = posqcexc = depqcerr = depqcexc = 0
             # Load profiles timesteps
             npro = timevar.shape[0]
-            for ipro in xrange(npro):
+            for ipro in range(npro):
                 self.debug('Processing profile[%s]', ipro)
 
                 ptime = adatetime(cdtime.reltime(timevar[ipro], self.time_units))
@@ -907,7 +913,7 @@ class Profiles(AbstractProfiles):
                 if timecflag is not None: cftime = timecflag[ipro]
                 else: cftime = False
 
-                if isinstance(platvar, basestring): platcode = platvar
+                if isinstance(platvar, six.string_types): platcode = platvar
                 elif platvar is not None: platcode = platvar[ipro]
                 else: platcode = ''
 
@@ -988,7 +994,7 @@ class Profiles(AbstractProfiles):
             n = len(self)
             self.notice('Loaded %s profile%s', n, ('','s')[n>1])
 
-        except Exception, e:
+        except Exception as e:
             self.exception('Error loading %s', dataset)
         finally:
             if dsfile: dsfile.close()
@@ -1006,7 +1012,7 @@ class Profiles(AbstractProfiles):
         npro, ndep = len(self), 0
         if npro:
             ndep = max([p.depth.shape[0] for i,p in enumerate(self)])
-        depth = cdms2.createAxis(numpy.array(range(ndep)), id='level')
+        depth = cdms2.createAxis(numpy.array(list(range(ndep))), id='level')
         depth.standard_name = 'level'
         depth.long_name = 'Level'
         depth.axis = 'Z'
@@ -1016,7 +1022,7 @@ class Profiles(AbstractProfiles):
         '''Return the platform code cdms variable of the nested profiles, if suitable, None otherwise'''
         platmaxlen = max([len(p.platform_code) for i,p in enumerate(self)])
         if platmaxlen:
-            platax = cdms2.createAxis(numpy.array(range(platmaxlen)), id='platform_code_string')
+            platax = cdms2.createAxis(numpy.array(list(range(platmaxlen))), id='platform_code_string')
             platarr = numpy.array([numpy.array(p.platform_code.ljust(platmaxlen) or ' '*platmaxlen, dtype='c') for p in self], dtype='c')
             platvar = cdms2.createVariable(platarr, id='platform_code', typecode='c', axes=(self.get_profile_axis(), platax), attributes = {})
             return platvar
@@ -1025,7 +1031,7 @@ class Profiles(AbstractProfiles):
         '''Return the filename cdms variable of the nested profiles '''
         filemaxlen = max([len(p.filename) for i,p in enumerate(self)])
         if filemaxlen:
-            fileax = cdms2.createAxis(numpy.array(range(filemaxlen)), id='filename_string')
+            fileax = cdms2.createAxis(numpy.array(list(range(filemaxlen))), id='filename_string')
             filearr = numpy.array([numpy.array(p.filename.ljust(filemaxlen) or ' '*filemaxlen, dtype='c') for p in self], dtype ='c')
             filevar = cdms2.createVariable(filearr, id='filename', typecode='c', axes=(self.get_profile_axis(), fileax), attributes = {})
             filevar.description = 'File name of the original file'
@@ -1143,7 +1149,7 @@ class Profiles(AbstractProfiles):
             dataset.westernmost_longitude = MV2.min(lon)
             dataset.easternmost_longitude = MV2.max(lon)
             return True
-        except Exception, e:
+        except Exception as e:
             self.exception('Failed to save file %s', filepath)
         finally:
             if dataset: dataset.close()
@@ -1161,7 +1167,7 @@ class Profiles(AbstractProfiles):
         profiles = self.__class__(self)
         del profiles[:]
         if not variables: variables = self.variables
-        if isinstance(variables, basestring): variables = (variables,)
+        if isinstance(variables, six.string_types): variables = (variables,)
         if polys and not isinstance(polys, (list, tuple)): polys = (polys,)
         for ipro,pro in enumerate(self):
             # Check at least one variable matches
@@ -1170,7 +1176,7 @@ class Profiles(AbstractProfiles):
                     if v in variables:
                         break
                 else:
-                    self.debug('profile %s variables %s match %s', ipro, pro.variables.keys(), variables)
+                    self.debug('profile %s variables %s match %s', ipro, list(pro.variables.keys()), variables)
                     continue
             # Check time matches
             if time and not is_time_in_range(pro.datetime, time):
@@ -1468,10 +1474,10 @@ class ProfilesMerger(Object):
             - **filter_sort**: optional, string, see :meth:`Profiles.sort`
             - **reject_sort**: optional, string, see :meth:`Profiles.sort`
         '''
-        if isinstance(filter, basestring):
+        if isinstance(filter, six.string_types):
             filter = globals().get(filter)
         if isinstance(filter, type):
-            filter = filter()
+            filter = list(filter())
         self.notice('Merging %s profiles with filter %s', len(self.profiles), filter.__class__.__name__)
         # self.psinfo()
         if filter:
@@ -1601,7 +1607,7 @@ class ProfilesMerger(Object):
             merger.merge(**cfgo[cfgsec]['merge'])
 
             return 0
-        except Exception, e:
+        except Exception as e:
             cls.exception('Fatal error: %s', e)
             return 1
 
@@ -1633,11 +1639,11 @@ class ProfilesDataset(OceanDataset):
             return None
         orgselect, (tmp,select) = select, self.get_selector(split=True, **select)
         seltime = select.pop('time', None)
-        if seltime: seltime = map(comptime, seltime[:2])
+        if seltime: seltime = list(map(comptime, seltime[:2]))
         sellat = select.pop('latitude', select.pop('lat', None))
-        if sellat: sellat = map(float, sellat[:2])
+        if sellat: sellat = list(map(float, sellat[:2]))
         sellon = select.pop('longitude', select.pop('lon', None))
-        if sellon: sellon = map(float, sellon[:2])
+        if sellon: sellon = list(map(float, sellon[:2]))
         selpolys = select.pop('polygons', None)
         if selpolys and not is_iterable(selpolys, (list, tuple)): selpolys = (selpolys,)
         ax, allaxes = None, []
@@ -1655,7 +1661,7 @@ class ProfilesDataset(OceanDataset):
                     lat = create_lat(ncget_var(dataset, self._latid))
                 if sellon or selpolys:
                     lon = create_lon(ncget_var(dataset, self._lonid))
-                for ipro in xrange(len(ax)):
+                for ipro in range(len(ax)):
                     # Check time matches
                     #if seltime and not (adatetime(seltime[0]) <= adatetime(time[ipro]) <= adatetime(seltime[1])): continue
                     if seltime and not (seltime[0] <= time[ipro] <= seltime[1]): continue
@@ -1698,11 +1704,11 @@ class ProfilesDataset(OceanDataset):
         if select is None: select = {}
         orgselect, (tmp,select) = select, self.get_selector(split=True, **select)
         seltime = select.pop('time', None)
-        if seltime: seltime = map(comptime, seltime[:2])
+        if seltime: seltime = list(map(comptime, seltime[:2]))
         sellat = select.pop('latitude', select.pop('lat', None))
-        if sellat: sellat = map(float, sellat[:2])
+        if sellat: sellat = list(map(float, sellat[:2]))
         sellon = select.pop('longitude', select.pop('lon', None))
-        if sellon: sellon = map(float, sellon[:2])
+        if sellon: sellon = list(map(float, sellon[:2]))
         selpolys = select.pop('polygons', None)
         if selpolys and not is_iterable(selpolys, (list, tuple)): selpolys = (selpolys,)
         var, allvars = None, []
@@ -1723,7 +1729,7 @@ class ProfilesDataset(OceanDataset):
                     lat = create_lat(ncget_var(dataset, self._latid))
                 if sellon or selpolys:
                     lon = create_lon(ncget_var(dataset, self._lonid))
-                for ipro in xrange(var.shape[0]):
+                for ipro in range(var.shape[0]):
                     # Check time matches
                     #if seltime and not (adatetime(seltime[0]) <= adatetime(time[ipro]) <= adatetime(seltime[1])): continue
                     if seltime and not (seltime[0] <= time[ipro] <= seltime[1]): continue
@@ -1841,7 +1847,7 @@ class ProfilesDataset(OceanDataset):
         hist, hist_time = [], []
         for itv in Intervals((round_date(min(dtime), tstep[1]), round_date(add_date(max(dtime), tstep[0], tstep[1]), tstep[1])), tstep):
             hist_time.append(adatetime(itv[0]))
-            n = len(filter(lambda d: adatetime(itv[0]) <= d < adatetime(itv[1]), dtime))
+            n = len([d for d in dtime if adatetime(itv[0]) <= d < adatetime(itv[1])])
             hist.append(n)
             self.verbose('Interval %s: %s', itv[:2], n)
         hist_time = create_time(hist_time)
@@ -1949,7 +1955,7 @@ class ProfilesDataset(OceanDataset):
         plotkw.update(dict(show=False, axes_rect=(0.075, 0.05, 0.75, 0.925)))
         m = map2(**plotkw)
         polyscounts = [0] * len(polygons)
-        for ipro in xrange(npro):
+        for ipro in range(npro):
             pt = Point((lon[ipro], lat[ipro]))
             for ipoly,poly in enumerate(polygons):
                 if pt.within(poly):
@@ -1962,7 +1968,7 @@ class ProfilesDataset(OceanDataset):
         maxcount = len(polygons) and max(max(polyscounts), 10) or 10
         nsteps = 10
         step = maxcount/nsteps
-        levels = range(0, maxcount+step, step)
+        levels = list(range(0, maxcount+step, step))
         from matplotlib import mpl
         import matplotlib.colorbar
         colors = ['#0040FF', '#0080FF', '#00A2FF', '#00FFFB', '#00FF98', '#5DFF00', '#BFFF00', '#F1FF00', '#FFDD00', '#FFAC00', '#FF1800', '#CE1300']
@@ -2134,7 +2140,7 @@ Examples:
                 Object.load_default_config(options.cfgfile, nested=True)
                 cls.load_default_config(Object.get_default_config())
             if options.debug:
-                for c in [Object,ProfilesDataset]+Profiles.get_types().values():
+                for c in [Object,ProfilesDataset]+list(Profiles.get_types().values()):
                     c.get_logger().set_level('debug')
                     c._log_obj_stats = True
             if not options.save:
@@ -2142,23 +2148,23 @@ Examples:
             select = {}
             # format variables to a list of variables candidates
             # ex: [['temperature','TEMP'], ['salinity','PSAL']]
-            options.variables = map(lambda v: v.split(','), options.variables)
+            options.variables = [v.split(',') for v in options.variables]
             if options.hist:
                 options.hist = options.hist.split(',')
                 options.hist[0] = int(options.hist[0])
             if options.time:
                 select.update(time=options.time.split(','))
             if options.bbox:
-                b = map(float, options.bbox.split(','))
+                b = list(map(float, options.bbox.split(',')))
                 select.update(lat=(b[1],b[3]), lon=(b[0],b[2]))
             polys = []
             polys.extend(options.poly)
             for fp in options.polyfile:
-                f = file(fp)
+                f = open(fp)
                 polys.append(' '.join(l.strip() for l in f if l.strip() and not l.strip().startswith('#')))
                 f.close()
             for fp in options.polysfile:
-                f = file(fp)
+                f = open(fp)
                 polys.extend(l.strip() for l in f if l.strip() and not l.strip().startswith('#'))
                 f.close()
             if polys:
@@ -2168,12 +2174,12 @@ Examples:
                     # two possible delimiters: whitespaces and ','
                     for s in poly.split(): c.extend(s.split(','))
                     c = [v.strip() for v in c if v.strip()]
-                    c = map(float, c)
+                    c = list(map(float, c))
                     if len(c) == 4:
                         x1, y1, x2, y2 = c
                         p = Polygon(numpy.array([[x1, y1], [x2, y1], [x2, y2], [x1, y2]]))
                     elif len(c) >= 8 and len(c)%2 == 0:
-                        p = Polygon(numpy.array(zip(c[::2],c[1::2])))
+                        p = Polygon(numpy.array(list(zip(c[::2],c[1::2]))))
                     else:
                         cls.error('Invalid format in polygon %s', ipoly)
                         continue
@@ -2183,7 +2189,7 @@ Examples:
             plot_kwargs = dict(select=select)
 
             if options.bbox:
-                b = map(float, options.bbox.split(','))
+                b = list(map(float, options.bbox.split(',')))
                 plot_kwargs.update(dict(plot_lon_min=b[0], plot_lat_min=b[1], plot_lon_max=b[2], plot_lat_max=b[3]))
 
             if options.convert:
@@ -2196,7 +2202,7 @@ Examples:
                 vmap = dict()
                 for v in options.variables:
                     vmap[v[0]] = len(v) > 1 and v[1:] or v[0]
-                profiles = Profiles(variables_map=vmap, variables=vmap.keys(), qualities=())
+                profiles = Profiles(variables_map=vmap, variables=list(vmap.keys()), qualities=())
                 for f in args: profiles.load(f)
                 profiles.save(options.convert)
                 if not options.variables:
@@ -2239,9 +2245,9 @@ Examples:
                 indexes = []
                 try:
                     for idx in options.pro.split(','):
-                        if ':' in idx: indexes.extend(range(*map(lambda i: int(i) if len(i) else None, idx.split(':'))))
+                        if ':' in idx: indexes.extend(list(range(*[int(i) if len(i) else None for i in idx.split(':')])))
                         else: indexes.append(int(idx))
-                except Exception,e: cls.error('Invalid profiles indexes format: %s: %s'%(options.pro, e))
+                except Exception as e: cls.error('Invalid profiles indexes format: %s: %s'%(options.pro, e))
                 if not options.variables: cls.error('At least one variable option is required for profile plot')
                 for varname in options.variables:
                     pylab.clf()
@@ -2256,7 +2262,7 @@ Examples:
                     if options.show: pylab.show()
 
             return 0
-        except Exception, e:
+        except Exception as e:
             cls.exception('Fatal error: %s', e)
             return 1
 
@@ -2361,7 +2367,7 @@ Examples:
         '''
         time, lat, lon, depth, depthimax, deltadepth, temp, sal, dens, densmin, densmax, densmean = self.get_stratification_data(select)
         # Maximum depth (max + thick * 0.5)
-        H = numpy.array([depth[depthimax[i]][i] + deltadepth[depthimax[i]][i] * 0.5 for i in xrange(depth.shape[1])])
+        H = numpy.array([depth[depthimax[i]][i] + deltadepth[depthimax[i]][i] * 0.5 for i in range(depth.shape[1])])
         self.debug('H:   %s', self.describe(H))
         # Compute Mixed Layer Depth
         mld = H*(densmax - densmean) / (densmax - densmin)

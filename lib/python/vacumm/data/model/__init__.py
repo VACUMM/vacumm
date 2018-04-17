@@ -37,6 +37,7 @@ model tools
 #
 
 # import mars
+from __future__ import absolute_import
 import os as _os, locale as _locale
 _os.environ['LC_NUMERIC'] = 'en_US.UTF-8'
 try:
@@ -44,12 +45,12 @@ try:
 except:
     pass
 
-import cfsr
-import globcurrent
-import hycom
-import mars3d
-import nemo
-import swan
-import mesonh
-import symphonie
-import ww3
+from . import cfsr
+from . import globcurrent
+from . import hycom
+from . import mars3d
+from . import nemo
+from . import swan
+from . import mesonh
+from . import symphonie
+from . import ww3

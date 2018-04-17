@@ -32,11 +32,14 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from __future__ import absolute_import
+from __future__ import print_function
 import numpy as N
 from vacumm.misc import kwfilter
 from vacumm.misc.grid import resol
 import matplotlib.pyplot as P
 import cdms2
+from six.moves import range
 
 def get_kxky(shape, dx, dy, verbose=False):
     """Generate 2D wavenumbers"""
@@ -51,7 +54,7 @@ def get_kxky(shape, dx, dy, verbose=False):
     # Ly = Lx * nlat / nlon * dy / dx
     coefx = Lx / (2*N.pi)
     coefy = Ly / (2*N.pi)
-    if verbose: print "Lx : %s Ly : %s coefx : %s coefy : %s  \n" %(Lx,Ly,coefx,coefy)
+    if verbose: print("Lx : %s Ly : %s coefx : %s coefy : %s  \n" %(Lx,Ly,coefx,coefy))
     kx = N.hstack( ( N.arange(0.,nlon/2), N.array([0]), -N.arange(1.,nlon/2)[::-1] ) ) / coefx
     ky = N.hstack( ( N.arange(0.,nlat/2), N.array([0]), -N.arange(1.,nlat/2)[::-1] ) ) / coefy
     [kkx,kky] = N.meshgrid(kx,ky)
@@ -80,13 +83,13 @@ def get_spec(var1, var2=None, dx=None, dy=None, verbose=False, fft=False, **kwar
     # Part 1 - estimate of the wavenumbers
     [kx,ky,kkx,kky,kk,Lx,Ly] = get_kxky(var1, dx, dy, verbose=verbose)
     if verbose:
-        print "dx = %s, fy = %s " %(dx,dy)
-        print "kx = ",kx[0:3]
-        print "ky = ",ky[0:3]
-        print "kkx[0:3,2] = ",kkx[0:3,2]
-        print "kky[0:3,1] = ",kky[0:3,1]
-        print "kk[0:3,3] = ",kk[0:3,3]
-        print "shape",kx.shape,ky.shape,kkx.shape,kky.shape,kk.shape
+        print("dx = %s, fy = %s " %(dx,dy))
+        print("kx = ",kx[0:3])
+        print("ky = ",ky[0:3])
+        print("kkx[0:3,2] = ",kkx[0:3,2])
+        print("kky[0:3,1] = ",kky[0:3,1])
+        print("kk[0:3,3] = ",kk[0:3,3])
+        print("shape",kx.shape,ky.shape,kkx.shape,kky.shape,kk.shape)
 
     # Part 2 - estimate of the spectrum
     # - fast fourier transform
@@ -127,9 +130,9 @@ def get_spec(var1, var2=None, dx=None, dy=None, verbose=False, fft=False, **kwar
     specvar *= 2.0*N.pi/1000.0
     if verbose:
         if var2 is not None:
-            print "\n Normalized co-spectrum : \n",specvar
+            print("\n Normalized co-spectrum : \n",specvar)
         else:
-            print "\n Normalized spectrum : \n",specvar
+            print("\n Normalized spectrum : \n",specvar)
     return specvar,nbwave,dk
 
 def get_cospec(var1, var2, dx=None, dy=None, verbose=False, **kwargs):
@@ -237,8 +240,8 @@ def energy_spectrum(var, dx=None, dy=None, ctime=None, dispfig=False, latmean=No
     f0 = 2*N.pi/(24.*3600.)*2.0*N.sin(N.pi*latmean/180.)
     gof0 = grav/f0
     if verbose:
-        print "the spatial resolution of the grid is constant \n dx = %s m, dy = %s m" %(dx,dy)
-        print "the averaged latitude is %s degrees\n" %(latmean)
+        print("the spatial resolution of the grid is constant \n dx = %s m, dy = %s m" %(dx,dy))
+        print("the averaged latitude is %s degrees\n" %(latmean))
 
 
     ###############################################
@@ -256,7 +259,7 @@ def energy_spectrum(var, dx=None, dy=None, ctime=None, dispfig=False, latmean=No
 
     # estimate of the rms to further check
     sshbox_rms = N.sqrt( (sshbox**2).mean() )
-    if verbose: print "rms of the ssh over the region of interest (from physical field) : %s \n" %sshbox_rms
+    if verbose: print("rms of the ssh over the region of interest (from physical field) : %s \n" %sshbox_rms)
 
     ################################
     # create a double periodic field
@@ -270,7 +273,7 @@ def energy_spectrum(var, dx=None, dy=None, ctime=None, dispfig=False, latmean=No
 
     # estimate of the rms to further check
     ssh2per_rms = N.sqrt( (ssh2per**2).mean() )
-    if verbose: print "rms of the double periodic ssh over the region of interest (from physical field) : %s \n" %ssh2per_rms
+    if verbose: print("rms of the double periodic ssh over the region of interest (from physical field) : %s \n" %ssh2per_rms)
 
     ################################
     # wavenumber spectrum of the ssh (double periodic field)
@@ -281,7 +284,7 @@ def energy_spectrum(var, dx=None, dy=None, ctime=None, dispfig=False, latmean=No
 
     # make sure the FFT is correct : we must have the same rms either from physics or from wavenumbers
     ssh2per_rmsk = N.sqrt( (ssh2per_spec*dk).sum() )
-    if verbose: print "rms of the ssh over the region of interest (from wave number fields) : %s \n" %ssh2per_rmsk
+    if verbose: print("rms of the ssh over the region of interest (from wave number fields) : %s \n" %ssh2per_rmsk)
 
     # figure
     if dispfig: plot_loglog_kspec(ssh2per_spec, ssh2per_k, savefig='ssh2per_spec',
@@ -323,7 +326,7 @@ def energy_spectrum(var, dx=None, dy=None, ctime=None, dispfig=False, latmean=No
 
     # estimate of the eke to further check
     uv2per_rmsk = N.sqrt( ((uv2per_cospec*dk)/2.).sum() )
-    if verbose: print "eke over the region of interest (from physical field) : %s \n" %uv2per_rmsk
+    if verbose: print("eke over the region of interest (from physical field) : %s \n" %uv2per_rmsk)
     # make sure the FFT is correct : we must have the same rms either from physics or from wavenumbers
     #ssh2per_rmsk = N.sqrt( (ssh2per_spec*dk).mean() )
     #if verbose: print "eke over the region of interest (from physical field) : %s \n" %sshbox_rms
@@ -383,7 +386,7 @@ def energy_spectrum(var, dx=None, dy=None, ctime=None, dispfig=False, latmean=No
 
     # choose kmax1 such that it corresponds to gg_k(kmax1) < 1/(3*dx)*1000 [km/m] (2dx Shanon + take into account diffusion)
     kmax1 = min( N.where(gg_k>= 1/(3.0*dx)*1000.)[0][0] - 1 ,gg_spec.shape[0])
-    if verbose: print "Shanon criterium kmax1 = %s, gg_k(kmax1) = %s, gg_k(kmax1+1) = %s, 1/(3.0*dx)*1000. = %s" %(kmax1,gg_k[kmax1],gg_k[kmax1+1],1/(3.0*dx)*1000.)
+    if verbose: print("Shanon criterium kmax1 = %s, gg_k(kmax1) = %s, gg_k(kmax1+1) = %s, 1/(3.0*dx)*1000. = %s" %(kmax1,gg_k[kmax1],gg_k[kmax1+1],1/(3.0*dx)*1000.))
     # integration from large scales to small ones (shift one large scales)
     tpi = N.array( [sum(gg_spec[ i:kmax1 ]) for i in range(kmax1)] )
     tpi[0]=0.
@@ -395,7 +398,7 @@ def energy_spectrum(var, dx=None, dy=None, ctime=None, dispfig=False, latmean=No
         xlabel='Wavenumber (cycles/km)', ylabel='Sum of EKE from small scales to k [(m/s)^2/(cycle/km)]')
 
 
-    if verbose: print "The end !"
+    if verbose: print("The end !")
 
     del grav,f0,gof0,sshbox_rms,ssh2per_rms,dk,kx,ky,kkx,kky,kk,Lx,Ly,uv2per_rmsk,ug,vg,u,v,term_u,term_v,ugx,ugy,vgx,vgy,eke_prod,eke_prod_phys1,eke_prod_phys2,phi,gg_spec
     gc.collect()

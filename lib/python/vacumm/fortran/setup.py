@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Installation script"""
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -36,7 +36,7 @@ from __future__ import absolute_import
 def configuration(parent_package='',top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration('fortran', parent_package, top_path)
-    config.add_extension('interp',  sources=['interp.f90'])
+#    config.add_extension('interp',  sources=['interp.f90'])
     return config
 
 if __name__ == '__main__':

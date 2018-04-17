@@ -3,7 +3,7 @@
 Data tools
 
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -36,6 +36,8 @@ Data tools
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os as _os, locale as _locale
 try:
     _os.environ['LC_NUMERIC'] = 'en_US.UTF-8'
@@ -46,8 +48,8 @@ try:
 except:
     pass
 
-from vacumm import VACUMMError
-import satellite
+from vacumm import VACUMMError, vcwarn
+from . import satellite
 
 #: Specifications of available dataset types
 DATASET_SPECS = {}
@@ -102,12 +104,12 @@ def DS(ncfile, clsname='generic', *args, **kwargs):
         cls = DATASET_SPECS[clsname]
     else:
         raise VACUMMError('Wrong name of dataset type: %s. '
-            ' Please choose one of the following: %s'%(clsname, ', '.join(DATASET_NAMES)))
+            ' Please choose one of the following: %s'%(clsname, ', '.join(DATASET_SPECS.keys())))
 
     # Instantiate
     return cls(ncfile, *args, **kwargs)
 
-DS.__doc__ = DS.__doc__%', '.join(DATASET_SPECS.keys())
+DS.__doc__ = DS.__doc__%', '.join(list(DATASET_SPECS.keys()))
 
 def setup_dataset(clsname, ncfile=None, *args, **kwargs):
     """Alias for ``DS(ncfile,  clsname, *args, **kwargs)``
@@ -150,7 +152,7 @@ def register_dataset(cls, clsname=None, warn=True, force=True):
                 ms = 'Overwriting it...'
             else:
                 ms = 'Skipping...'
-            sonat_warn('Dataset class "{}" is already registered. '+ms)
+            vcwarn('Dataset class "{}" is already registered. '+ms)
         if not force:
             return
 
@@ -161,6 +163,6 @@ def register_dataset(cls, clsname=None, warn=True, force=True):
 def print_registered_datasets():
     """Print all registered datasets"""
     for clsname, cls in DATASET_SPECS.items():
-        print clsname + ':'
-        print '  description: {}'.format(cls.description or '')
-        print '  class: ' + cls.__name__
+        print(clsname + ':')
+        print('  description: {}'.format(cls.description or ''))
+        print('  class: ' + cls.__name__)

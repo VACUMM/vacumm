@@ -76,7 +76,7 @@ classifiers = ["Development Status :: 4 - Beta",
                ]
 
 # Setup
-from numpy.distutils.core import setup, Extension
+from numpy.distutils.core import setup
 from numpy.distutils.misc_util import Configuration
 from glob import glob
 def configuration(parent_package='',top_path=None):
@@ -95,7 +95,7 @@ def configuration(parent_package='',top_path=None):
         delegate_options_to_subpackages=True,
     )
 
-    # Add scripts
+    # Add bin scripts
     scripts = []
     for pat in ['*.py', '*.bash', '*.sh']:
         pat = os.path.join('bin', pat)
@@ -110,6 +110,9 @@ def configuration(parent_package='',top_path=None):
     config.add_data_dir(('vacumm/vacumm-scripts/test', 'scripts/test')) # test scripts
     config.add_data_dir(('vacumm/vacumm-scripts/tutorials', 'scripts/tutorials')) # tutorials
     config.add_data_dir(('vacumm/vacumm-scripts/courses', 'scripts/courses')) # courses
+    
+    # Add extensions
+    config.add_extension('vacumm.fortran.interp', ['src/interp.f90'])
 
     return config
 
@@ -192,7 +195,7 @@ if __name__ == '__main__':
         cmdclass={'install':vacumm_install, 'install_data':vacumm_install_data,
             'bdist_rpm':vacumm_bdist_rpm},
         configuration=configuration, 
-#        ext_modules = [ext1]
+#        ext_modules = [ext_interp]
 
     )
 

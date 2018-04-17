@@ -38,6 +38,7 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from __future__ import absolute_import
 import os
 
 

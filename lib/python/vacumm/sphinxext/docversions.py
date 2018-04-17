@@ -32,6 +32,8 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os, inspect, sys, re
 from collections import OrderedDict
 from glob import glob
@@ -92,8 +94,8 @@ class VersionFinder(object):
                     return eval(self.subpath_version_var)
             f.close()
         except Exception as e:
-            print 'Cannot retreive version label for dir: '+src_dir
-            print e.message
+            print('Cannot retreive version label for dir: '+src_dir)
+            print(e.message)
 
 
     def get_tag_specs(self, src_dir):

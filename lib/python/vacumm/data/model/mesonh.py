@@ -38,6 +38,9 @@
 
 
 
+from __future__ import absolute_import
+from __future__ import print_function
+from six.moves import range
 __author__ = 'Valerie Garnier'
 __email__ = 'vgarnier@ifremer.fr'
 __date__ = '2015-07-08'
@@ -106,11 +109,11 @@ register_dataset(mesonh)
 if __name__ == '__main__' :
 
     nb_cell = mesonh.mesonh().nb_cells()
-    print nb_cell[0:100]
+    print(nb_cell[0:100])
     from vacumm.data import DS
     from vacumm.misc.plot import map2 as map
     #map(sshmod[0, Ellipsis], res=None)
-    print "test utus"
+    print("test utus")
     f = DS('/temp/vgarnier/AMICO/WORKENV_METHODO/AROME/./AROME_IROISE_20110901-0000_20110910-0000.nc','mesonh')
     xwind = f.get_u10m()
     xxx

@@ -9,7 +9,7 @@ the time units between each coefficients.
 
     :ref:`user.tut.tide.filters`
 """
-# Copyright or © or Copr. Actimar/IFREMER (2011-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2011-2018)
 #
 #
 # This software is a computer program whose purpose is to provide
@@ -41,18 +41,19 @@ the time units between each coefficients.
 #
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
-import cdtime, numpy as N,MV2,cdms2,genutil.filters as F
+from __future__ import absolute_import
+from __future__ import print_function
+from six.moves import zip
 
-from vacumm.misc.axes import check_axis, check_axes, create_time
+from scipy.ndimage.filters import convolve1d
+import cdtime, numpy as N, MV2, cdms2
+
+from vacumm.misc import cp_atts
+from vacumm.misc.axes import check_axes, create_time
 from vacumm.misc.atime import unit_type,  compress,strftime
 from vacumm.misc.filters import running_average
 from vacumm.misc.grid import isregular
-from vacumm.misc.grid.regridding import interp1d
-from vacumm.misc import cp_atts
-from scipy.ndimage.filters import convolve1d
-
-import datetime
-from operator import isNumberType
+from vacumm.misc.regridding import interp1d
 
 
 _filter_doc = """- *units*: Units of coefficient spacings (like 'hours' or cdms2.Hour) [default: 'hours']
@@ -142,9 +143,9 @@ def generic(var,coefs,units='hours',get_tide=False,only_tide=False,filter_name='
     if check_regular:
         assert isregular(time), 'Your time axis seems not regular'
     dt = N.diff(time[:]).mean()
-    if not time.attributes.has_key('units'):
+    if 'units' not in time.attributes:
            time.units = 'hours since 1970-01-01'
-           print 'The time axis of your variable has no units. Assuming : '+time.units
+           print('The time axis of your variable has no units. Assuming : '+time.units)
     if not time.isTime():
         time.designateTime(calendar=cdtime.DefaultCalendar)
 
@@ -156,11 +157,10 @@ def generic(var,coefs,units='hours',get_tide=False,only_tide=False,filter_name='
     coefs_range = coefs_range1.value - coefs_range0.value
     coefs_dt = coefs_range0.add(1,units).value - coefs_range0.value
     if time_range < coefs_range:
-        raise Exception,'Your sample is shorter than the time range of your coefficients'
+        raise Exception('Your sample is shorter than the time range of your coefficients')
     nt = len(var)
 
     # Remap coefficients to data time axis
-    tc = var.dtype.char
 #   print 'dt', dt
 #   print 'coefs_dt', coefs_dt
     if abs((coefs_dt-dt)/dt) > 0.01:
@@ -186,10 +186,10 @@ def generic(var,coefs,units='hours',get_tide=False,only_tide=False,filter_name='
     if not only_tide:
         fvar.id = var.id+'_cotes'
         fvar.name = fvar.id
-        if var.attributes.has_key('long_name'):
+        if 'long_name' in var.attributes:
             fvar.long_name = 'Tide removed signal from '+var.long_name.lower()
         fvar.long_name_fr = 'Signal sans la maree'
-        if var.attributes.has_key('units'):
+        if 'units' in var.attributes:
             fvar.units = var.units
         fvar.setAxis(0,time)
         fvar.filter_coefficients = coefs
@@ -199,9 +199,9 @@ def generic(var,coefs,units='hours',get_tide=False,only_tide=False,filter_name='
         tvar = var-fvar
         tvar.id = 'tidal_'+var.id
         tvar.name = tvar.id
-        if var.attributes.has_key('long_name'):
+        if 'long_name' in var.attributes:
             tvar.long_name = 'Tidal signal from '+var.long_name.lower()
-        if var.attributes.has_key('units'):
+        if 'units' in var.attributes:
             tvar.units = var.units
         tvar.setAxis(0,time)
         tvar.filter_coefficients = coefs
@@ -292,8 +292,8 @@ def zeros(var, ref='mean',mean=None, getref=True, **kwargs):
         dv = vara[i0+1]-vara[i0]
         zeros[i] = times[i0]*vara[i0+1]/dv - times[i0+1]*vara[i0]/dv
         if getref and longref:
-            dt = times[i0+1]-times[i0]
-            ret[i] = var_ref[i0]*vara[i0+1]/dv - var_ref[i0+1]*vara[i0]/dv
+#            dt = times[i0+1]-times[i0]
+            ret[i] = varref[i0]*vara[i0+1]/dv - varref[i0+1]*vara[i0]/dv
 
     # Format
     if not getref:
@@ -367,9 +367,9 @@ def extrema(var,ref='mean',mean=None,getmax=True,getmin=True,getsign=False,getid
 
     # Returned data
     if getidx:
-        ctime,var,idxmin = zip(*minima)
+        ctime,var,idxmin = list(zip(*minima))
         idxmin=N.array(idxmin)+1
-        ctime,var,idxmax = zip(*maxima)
+        ctime,var,idxmax = list(zip(*maxima))
         idxmax=N.array(idxmax)+1
 
     res = []
@@ -417,7 +417,7 @@ def _extremum_(func,ctime,i0,i,var,spline):
     return val,this_ctime
 
 def _extrema_var_(extrem,units=None,indices=False,**kwargs):
-    ctime,var,idx = zip(*extrem)
+    ctime,var,idx = list(zip(*extrem))
     if indices:
         mytime = cdms2.createAxis(idx)
         mytime.id = 'time_index'

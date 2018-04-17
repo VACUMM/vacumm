@@ -35,6 +35,8 @@
 #
 
 
+from __future__ import absolute_import
+from six.moves import range
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
 __date__ = '2011-01-17'
@@ -251,7 +253,7 @@ class Colocator(Object):
         pres_mod = MV2.zeros(temp_mod.shape)+MV2.masked
         pres_mod.setAxisList(temp_mod.getAxisList())
         dens_mod = pres_mod.clone()
-        for ip in xrange(len(lons_mod)):
+        for ip in range(len(lons_mod)):
             pres_mod[:, ip] = seawater.csiro.pres(deps_mod[:, ip], numpy.resize([lats_mod[ip]], deps_mod[:, ip].shape))
             dens_mod[:, ip] = seawater.csiro.dens(sal_mod[:, ip], temp_mod[:, ip], pres_mod[:, ip])
         pres_mod.id = 'pressure'

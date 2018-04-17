@@ -33,8 +33,9 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
 from vacumm.data.satellite.satellite import Satellite
-import ConfigParser
+import six.moves.configparser
 
 class Sst(Satellite) :
     """ SST satellite """
@@ -47,7 +48,7 @@ class Sst(Satellite) :
 
         #-- retrocompatibilite
         if cfg is None:
-            config = ConfigParser.RawConfigParser()
+            config = six.moves.configparser.RawConfigParser()
             config.read(os.path.join(SCRIPT_DIR,'config.cfg'))	
             andeb = config.getint('Time Period', 'andeb')
             anfin = config.getint('Time Period', 'anfin')		

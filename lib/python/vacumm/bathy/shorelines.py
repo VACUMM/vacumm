@@ -33,6 +33,8 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 
 _shoreline_list = ['Histolitt', 'EUROSION', 'GSHHS_SF', 'GSHHS','GSHHSBM']
@@ -60,21 +62,21 @@ def _shorelines_list_(name=None):
 
     # Check requested name
     if name is not None:
-        if not shorelines.has_key('shapefile_'+name):
-            raise VACUMMShorelineError, 'Shoreline not available: %s. Please use list_shorelines() to print the list of available shorelines.'%name
+        if 'shapefile_'+name not in shorelines:
+            raise VACUMMShorelineError('Shoreline not available: %s. Please use list_shorelines() to print the list of available shorelines.'%name)
         return shorelines['shapefile_'+name]
 
     return shorelines
 
 def list_shorelines():
     """List available shorelines"""
-    print 'Available shorelines:'
+    print('Available shorelines:')
     shorelines = _shorelines_list_()
     if not shorelines:
-        print 'None available'
+        print('None available')
     else:
         for item in shorelines.items():
-            print '- %s (%s)'%item
+            print('- %s (%s)'%item)
 
 class _CoastalBathy_:
     _factor = 2.
@@ -95,7 +97,7 @@ class _CoastalBathy_:
         try:
             from vacumm.tide.station_info import MeanSeaLevel
         except:
-            raise ImportError, 'Cannot guess bathymetry along shoreline because module "vacumm.tide.station_info" not available'
+            raise ImportError('Cannot guess bathymetry along shoreline because module "vacumm.tide.station_info" not available')
         msl = MeanSeaLevel()
         # Interpolate to coastal positions
         cb = msl.interp(self, ext=ext, nl=nl, xyz=xyz, **kwargs)

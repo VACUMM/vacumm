@@ -36,6 +36,7 @@
 
 
 
+from __future__ import absolute_import
 from vacumm.data import register_dataset
 from vacumm.data.misc.dataset import OceanSurfaceDataset
 

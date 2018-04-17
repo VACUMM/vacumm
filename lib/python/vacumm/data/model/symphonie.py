@@ -38,6 +38,8 @@
 
 
 
+from __future__ import absolute_import
+from __future__ import print_function
 __author__ = 'Valerie Garnier'
 __email__ = 'vgarnier@ifremer.fr'
 __date__ = '2012-11-14'
@@ -105,7 +107,7 @@ if __name__ == '__main__' :
     #sshmod = f.get_ssh()
     #map(sshmod[0, Ellipsis], res=None)
 #    f = DS('symphonie', dataset='/home2/creizic/pgarreau/SIMED/SYMPHONIE/SST/20100501_000118.nc')
-    print "test temperature"
+    print("test temperature")
     f = setup_dataset('symp', '/home2/creizic/pgarreau/SIMED/SYMPHONIE/SST/20100501_000118.nc')
 #    f = setup_dataset('symphonie', '/home2/creizic/pgarreau/SIMED/SYMPHONIE/SST/20100501_000118.nc')
     temp = f.get_temp()

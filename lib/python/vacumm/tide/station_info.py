@@ -37,24 +37,19 @@ MeanSeaLevel : A class dedicated to mean sea level along french coast (more comp
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 
+from __future__ import absolute_import
+from __future__ import print_function
 import os
-#dirname = os.path.dirname(__file__)
-#cfgfiles = dict(
-#    default = os.path.join(dirname, 'config.cfg'),
-#    site = os.path.join(dirname, 'site.cfg'),
-#)
-#def _get_option_(key,  **kwargs):
-#    f = ConfigParser()
-#    f.read([cfgfiles['default'], cfgfiles['site']])
-#    if f.has_option(__name__, key):
-#        return f.get(__name__, key)
-from vacumm.config import get_config_value
 
-from _geoslib import Point
 import numpy as N
 
+import six
+from six.moves import range
+
+from vacumm.config import VACUMM_CFG
 from vacumm.bathy.bathy import XYZBathy
-from ConfigParser import ConfigParser
+
+
 class StationInfoError(Exception):
     pass
 class _StationPlot_(object):
@@ -71,9 +66,9 @@ class _StationPlot_(object):
             - Other keywords are passed to :func:`~vacumm.misc.plot.map`.
         """
         if self.nom is None:
-            print "Aucune station n'est actuellement definie"
+            print("Aucune station n'est actuellement definie")
             return None
-
+        # FIXME: _StationPlot_ not finished and not working!
         import pylab as P
         from vacumm.misc.color import bistre
         from vacumm.misc import auto_scale
@@ -100,12 +95,12 @@ class _StationPlot_(object):
                        station['longitude'] < max(lon) and \
                        station['latitude'] > min(lat) and \
                        station['latitude'] < max(lat):
-                    long, lati = m([station['longitude'],],[station['latitude']])
-                    m.plot(long,lati,'o',color='k',   label = '_nolegend_')
-                    P.text(long,lati,station['nom']+'\n',va='bottom',ha='center',fontsize=fontsize*0.6)
+                    int, lati = m([station['longitude'],],[station['latitude']])
+                    m.plot(int,lati,'o',color='k',   label = '_nolegend_')
+                    P.text(int,lati,station['nom']+'\n',va='bottom',ha='center',fontsize=fontsize*0.6)
 
         # Plot our station and add info
-        long, lati = m([self.longitude,],[self.latitude,])
+        int, lati = m([self.longitude,],[self.latitude,])
         ll = m.plot(mlon,mlat,'o',color=color,markersize=10.)
         P.text(mlon, mlat,self.nom+'\n',
              va='bottom',ha='center',fontsize=fontsize,color=color)
@@ -167,7 +162,7 @@ class StationInfo(_StationPlot_):
         # File name
         if file is None:
 #            file = _get_option_('ports_file')
-            file = get_config_value(__name__, 'ports_file', ispath=True)
+            file = VACUMM_CFG[__name__]['ports_file']
         if file is not None:
 #            if not os.path.isabs(file):
 #                file = os.path.abspath(os.path.join(dirname,  '../../../../data', file))
@@ -189,7 +184,7 @@ class StationInfo(_StationPlot_):
         import os
         self._loaded = False
         if not os.path.exists(file):
-            print 'Fichier de station introuvable : '+file
+            print('Fichier de station introuvable : '+file)
         self._file = file
         self._load_file(**kwargs)
 
@@ -197,9 +192,9 @@ class StationInfo(_StationPlot_):
     def _load_file(self,**kwargs):
 
         # Open information file
-        if kwargs.has_key('verbose'):
+        if 'verbose' in kwargs:
             if verbose:
-                print 'Lecture de ',self._file
+                print('Lecture de ',self._file)
         f = open(self._file)
 
         # Parse general attributes
@@ -241,7 +236,7 @@ class StationInfo(_StationPlot_):
                 break
 
         # Header line
-        line = f.next()
+        line = next(f)
         attributes = line[27:-1].lower().split()
 
         # Loop on stations
@@ -263,7 +258,7 @@ class StationInfo(_StationPlot_):
                 del sline[len(attributes):]
 
             # Ids
-            for iatt in xrange(len(attributes)):
+            for iatt in range(len(attributes)):
                 value = sline[iatt]
                 # Coordinates
                 if attributes[iatt] in ['longitude','latitude']:
@@ -376,12 +371,12 @@ class StationInfo(_StationPlot_):
         stations = self._search(nom=nom,regexp=regexp,nmax=nmax,**kwargs)
 
         if stations is None:
-            print 'Aucune station trouvee verifiant vos criteres'
+            print('Aucune station trouvee verifiant vos criteres')
         else:
-            print 'Liste des stations trouvees (max %i) :' % nmax
+            print('Liste des stations trouvees (max %i) :' % nmax)
             for station in stations:
                 self._print_one(station)
-                print 'Definition des termes accessible avec definitions()'
+                print('Definition des termes accessible avec definitions()')
 
 
     def find(self,nom=None,regexp=True,verbose=False,*args,**kwargs):
@@ -395,12 +390,12 @@ class StationInfo(_StationPlot_):
         station = self._search(nom=nom,regexp=regexp,nmax=1,*args,**kwargs)
         if station is None:
             if verbose:
-                print 'Aucune station trouvee verifiant vos criteres'
+                print('Aucune station trouvee verifiant vos criteres')
         else:
             if verbose:
-                print 'Chargement de la station suivante :'
+                print('Chargement de la station suivante :')
                 self._print_one(station)
-                print 'Definition des termes accessible avec definitions()'
+                print('Definition des termes accessible avec definitions()')
             self._set(station)
 
         return Station(station)
@@ -428,11 +423,11 @@ class StationInfo(_StationPlot_):
         for id in self._ids:
             self._print_one_arg(id.upper(),station[id])
         # Properties
-        keys = self._numerics.keys()
+        keys = list(self._numerics.keys())
         keys.sort()
         for att in keys:
             if station[att] is not None:
-                if type(station[att]) is types.StringType:
+                if type(station[att]) is bytes:
                     fmt = '%s'
                 else:
                     fmt = '%g'
@@ -441,7 +436,7 @@ class StationInfo(_StationPlot_):
 
     def _print_one_arg(self,att,val):
         if val is not None:
-            print '  '+att.ljust(10)+' : '+val.encode('utf8')
+            print('  '+att.ljust(10)+' : '+val.encode('utf8'))
 
 
     def _set(self,station):
@@ -454,16 +449,16 @@ class StationInfo(_StationPlot_):
     def info(self):
         """ Show all available information about the current station """
         if not self.is_set():
-            print "Aucune station n'est actuellement definie"
+            print("Aucune station n'est actuellement definie")
         else:
-            print 'Station actuelle :'
+            print('Station actuelle :')
             self._print_one(self.get_dict())
 
 
     def get_dict(self):
         """ Get the current station as a dictionnary """
         if self.nom is None:
-            print "Aucune station n'est actuellement definie"
+            print("Aucune station n'est actuellement definie")
             return None
         station = {}
         for att in self._headers.keys():
@@ -477,7 +472,7 @@ class StationInfo(_StationPlot_):
 
     def definitions(self):
         """ Print out the definition of all terms """
-        print 'Definition des termes :'
+        print('Definition des termes :')
         headers = ['nom','longitude','latitude','zone']
         for att in headers:
             self._print_one_arg(att,self._headers[att])
@@ -498,7 +493,7 @@ class Station(dict, _StationPlot_):
 
     def __init__(self, *args, **kwargs):
         dict.__init__(self, *args, **kwargs)
-        self._atts = self.keys()
+        self._atts = list(self.keys())
         for key, value in self.items():
             setattr(self, key, value)
 
@@ -610,7 +605,7 @@ class MeanSeaLevel(XYZBathy):
             xx = [] ; yy = [] ; zz = []
             f = open(msl)
             for line in f:
-                name = unicode(line[:29].strip(), 'utf8')
+                name = six.text_type(line[:29].strip(), 'utf8')
                 y, x, z = [float(v) for v in line[29:].split()]
                 names.append(name)
                 xx.append(x)

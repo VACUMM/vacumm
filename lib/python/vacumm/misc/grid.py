@@ -2664,7 +2664,7 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False,
     """
 
     # Bounds and resolution
-    from .basemap import get_map
+    from .basemap import get_map # FIXME: haversine and geo for transect_specs
     dx, dy = resol(gg, proj='merc')
     if m is None:
         m = get_map(gg, resol=None, proj='merc')

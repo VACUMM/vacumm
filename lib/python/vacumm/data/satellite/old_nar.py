@@ -31,8 +31,10 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
+from __future__ import print_function
 from vacumm.data.satellite.sst import Sst
-import ConfigParser
+import six.moves.configparser
 
 # NAR data / FTP CERSAT .... until 2009
 
@@ -62,16 +64,16 @@ class Old_nar(Sst) :
         """ Rappatrie par ftp les donnees NAR SST """
         import os,subprocess,cdtime
         #----------------------------------------------------
-        print ''
-        print '---------- RECUPERATION FICHIERS NAR ----------'
-        print ''
+        print('')
+        print('---------- RECUPERATION FICHIERS NAR ----------')
+        print('')
         #----------------------------------------------------
 
 
         #-------------------------------------------------------------
         #------- recuperation des donnees : generalites (site ftp, etc)
         if cfg is None:
-	        config = ConfigParser.RawConfigParser()
+	        config = six.moves.configparser.RawConfigParser()
 	        config.read(os.path.join(self.SCRIPT_DIR,'config.cfg'))
 	        URL_CERSAT = config.get('Old Nar SST', 'url_cersat')
 	        #URL_CERSAT='ftp.ifremer.fr/pub/ifremer/cersat'
@@ -107,14 +109,14 @@ class Old_nar(Sst) :
         #----------------------------------------------------
         if os.path.isfile(gridfile)==False:
           url_dir="ftp://%(URL_NAR_GRID)s"%vars()
-          print "Downloading NAR %(znar)s grid FILE"%vars()
+          print("Downloading NAR %(znar)s grid FILE"%vars())
           file_in="%(gridfile)s.gz"%vars()
           remote_file="%(url_dir)s/%(gridfile)s.gz"%vars()
           subprocess.call(["wget", "-O", file_in, remote_file])
           subprocess.call(["gunzip","-f", file_in])
         else:
             dwork=self.WORKDIR
-            print "Grille NAR deja presente dans le repertoire %(dwork)s."%vars()
+            print("Grille NAR deja presente dans le repertoire %(dwork)s."%vars())
 
 
         #-- recuperation des donnees par FTP anonymous
@@ -124,14 +126,14 @@ class Old_nar(Sst) :
         # prevoir un test pour les cas ou le fichier de donnees n'existe pas !!!
         while ctest <= self.ctfin:
           if (NAR_DAYNIGHT == 'NIGHT') or (NAR_DAYNIGHT == 'ALL'):
-            print '--> donnees de nuit'
+            print('--> donnees de nuit')
             #H1=HEURE_NAR[0]
             H2=HEURE_NAR[3]
             #Old_nar.recup_ftp_sst_nar(self,URL_NAR_DATA,self.ZONE_NAR,ctest.year,ctest.month,ctest.day,H1, EXT_NAR, '9')
             Old_nar.recup_ftp_sst_nar(self,URL_NAR_DATA,self.ZONE_NAR,ctest.year,ctest.month,ctest.day,H2, EXT_NAR, '9')
 
           if (NAR_DAYNIGHT == 'DAY') or (NAR_DAYNIGHT == 'ALL'):
-            print '--> donnees de jour'
+            print('--> donnees de jour')
             H1=HEURE_NAR[1]
             H2=HEURE_NAR[2]
             Old_nar.recup_ftp_sst_nar(self,URL_NAR_DATA,self.ZONE_NAR,ctest.year,ctest.month,ctest.day,H1, EXT_NAR, '9')
@@ -170,19 +172,19 @@ class Old_nar(Sst) :
 
         #-- Extraction du fichier
         if  os.path.isfile(outfile)==False:
-          print "Downloading NAR %(ZONE)s FILE %(url_file_def)s"%vars()
+          print("Downloading NAR %(ZONE)s FILE %(url_file_def)s"%vars())
           list_file="%(url_dir)s/%(url_file_def)s"%vars()
           #subprocess.call(["wget", "-t", ntry, "-O", outfile, list_file])
           subprocess.call(["wget", "-t", ntry, "-O", outfile, list_file])
           s=os.path.getsize(outfile) # If file is empty !!
           if s==0:
-            print "Empty file: %(outfile)s !"%vars()
+            print("Empty file: %(outfile)s !"%vars())
             os.remove(outfile)
           else:
             subprocess.call(["gunzip","-f", outfile])
 
         else:
-          print "Pas de downloading : %(url_dir)s/%(url_file_def)s existe deja"%vars()
+          print("Pas de downloading : %(url_dir)s/%(url_file_def)s existe deja"%vars())
         #-- Fin de ftp
         #----------------------------------------------------
 

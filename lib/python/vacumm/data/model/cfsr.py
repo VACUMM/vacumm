@@ -36,6 +36,7 @@
 
 
 
+from __future__ import absolute_import
 __author__ = 'Stephane Raynaud'
 __email__ = 'raynaud@actimar.fr'
 __date__ = '2013-12-06'

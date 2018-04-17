@@ -32,11 +32,13 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
 from sphinx.directives import Directive
 from docutils.parsers.rst.directives import unchanged,single_char_or_unicode,positive_int
 from docutils import nodes
 from docutils.statemachine import string2lines
 import inspect, sys, re
+import six
 
 
 
@@ -88,15 +90,15 @@ class OverViewDirective(Directive):
         # - titles
         titles = {}
         for title_name in 'overview', 'content':
-            if self.options.has_key('title_'+title_name) and self.options['title_'+title_name] is not None:
+            if 'title_'+title_name in self.options and self.options['title_'+title_name] is not None:
                 title = self.options['title_'+title_name]
             else:
                 title = getattr(config, 'overview_title_'+title_name)
-            if not isinstance(title, (str, unicode)) or not title:
+            if not isinstance(title, (str, six.text_type)) or not title:
                 title = False
             titles[title_name] = title
         # - underline
-        if self.options.has_key('underline') and self.options['underline'] is not None:
+        if 'underline' in self.options and self.options['underline'] is not None:
             underline = self.options['underline']
         else:
             underline = config.overview_underline
@@ -105,7 +107,7 @@ class OverViewDirective(Directive):
         extra={}
         for etype in 'attributes', 'functions', 'classes', 'methods', 'class_attributes':
             etype = 'extra_'+etype
-            if self.options.has_key(etype) and self.options[etype] is not None:
+            if etype in self.options and self.options[etype] is not None:
                 extra[etype] = self.options[etype]
         # - columns
         columns = self.options.get('columns', config.overview_columns)
@@ -213,7 +215,7 @@ class OverView(object):
 
              # Inheritance
             if self.inherited is False and hasattr(object, '__dict__'):
-                members = [(mname, member) for mname, member in members if mname in object.__dict__.keys()]
+                members = [(mname, member) for mname, member in members if mname in list(object.__dict__.keys())]
 
             # Filter out non local members
             if not self.inherited or predicate_spec not in ['method', None, 'classmethod', 'staticmethod']:
@@ -247,7 +249,7 @@ class OverView(object):
 
         # Class content
         if clsname is None and hasattr(object, 'im_class'):
-            clsname = object.im_class.__name__
+            clsname = object.__self__.__class__.__name__
         if clsname is not None: #FIXME: properties
             objname = '%s.%s'%(clsname, objname)
 

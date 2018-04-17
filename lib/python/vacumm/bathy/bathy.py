@@ -34,15 +34,18 @@ Bathmetry tools
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
+from __future__ import print_function
 import cdms2,MV2
 from genutil import minmax
 import numpy as N
+from six.moves import range
 MV = MV2
 cdms = cdms2
 
 
 from string import Template
-from ConfigParser import ConfigParser, SafeConfigParser
+from six.moves.configparser import ConfigParser, SafeConfigParser
 import os.path, operator
 from matplotlib.ticker import Formatter
 import pylab as P
@@ -113,7 +116,7 @@ def bathy_list(name=None, cfgfile=None, minstatus=0):
         if not len(bathies): raise NcGriddedBathyError('No bathy are available')
         if not name in bathies:
             raise NcGriddedBathyError('Wrong bathymetry name: "%s". Please choose one of these: %s.'%
-                (name, ', '.join(bathies.keys())))
+                (name, ', '.join(list(bathies.keys()))))
         return bathies[name]
     return bathies
 
@@ -130,14 +133,14 @@ def _check_bathy_file_(bathyname, **kwargs):
 def print_bathy_list(cfgfile=None):
     """Print available bathymetries"""
 #    if not cfgfile: cfgfile = get_cfgfiles_gridded()
-    print 'List of bathymetries:'
+    print('List of bathymetries:')
     for bathyname,vv in bathy_list(cfgfile=cfgfile).items():
-        print '\n[%s]' % bathyname
-        print '  status: '+['Not available (need user input)',
-            'Downloadable', 'On disk'][vv['status']]
+        print('\n[%s]' % bathyname)
+        print('  status: '+['Not available (need user input)',
+            'Downloadable', 'On disk'][vv['status']])
         for key in 'file','file_url','file_license','var','lon','lat':
             if key in vv:
-                print '  - %s: %s' % (key,vv[key])
+                print('  - %s: %s' % (key,vv[key]))
 list_bathy = print_bathy_list
 
 class Bathy(object):
@@ -239,7 +242,7 @@ class Bathy(object):
 #           self.bathy.unmask()
         self.bathy.id = 'bathy' ; self.bathy.name = self.bathy.id
         self.bathy.long_name = self.bathy_name[0].upper()+self.bathy_name[1:]+' bathymetry'
-        if not self.bathy.attributes.has_key('units'):
+        if 'units' not in self.bathy.attributes:
             self.bathy.units = 'm'
         lon_axis = self.bathy.getAxis(1)
         lon_axis.id = 'lon'
@@ -302,11 +305,11 @@ class Bathy(object):
 
         bathy1d = self.bathy.ravel()
         f = open(file,'w')
-        for i in xrange(len(bathy1d)):
+        for i in range(len(bathy1d)):
             f.write((fmt+'\n') % (self._lon2d.flat[i],self._lat2d.flat[i],bathy1d[i]))
         f.close()
         del bathy1d
-        print 'Bathy wrote to ascii file',file
+        print('Bathy wrote to ascii file',file)
 
 
 def plot_bathy(bathy, shadow=True, contour=True, shadow_stretch=1., shadow_shapiro=False,
@@ -352,7 +355,7 @@ def plot_bathy(bathy, shadow=True, contour=True, shadow_stretch=1., shadow_shapi
     # Default arguments for map
     if hasattr(bathy, 'long_name'):
         kwargs.setdefault('title',bathy.long_name)
-    if not kwargs.has_key('cmap'):
+    if 'cmap' not in kwargs:
         vmin, vmax = minmax(bathy)
 #        print 'cmap topo', vmin, vmax
         kwargs['cmap'] = auto_cmap_topo((kwargs.get('vmin', vmin), kwargs.get('vmax', vmax)))
@@ -381,7 +384,7 @@ def plot_bathy(bathy, shadow=True, contour=True, shadow_stretch=1., shadow_shapi
         levels = auto_scale(bathy,nmax=nmax)
         colors = []
         nlevel = len(levels)
-        for i in xrange(nlevel):
+        for i in range(nlevel):
             if i < nlevel/2:
                 colors.append('w')
             else:
@@ -598,7 +601,7 @@ class XYZBathyBankClient(object):
                     self.cfg.remove_option(self.id, att)
             self._check_(att=att)
         else:
-            if att == 'id' and self.__dict__.has_key('id'):
+            if att == 'id' and 'id' in self.__dict__:
                 # Rename section
                 assert not self.cfg.has_section(att), 'Bathy id "%s" already exists!'%att
                 self.cfg.add_section(val)
@@ -608,7 +611,7 @@ class XYZBathyBankClient(object):
                 self.bank._clients[val] = self
                 self.bank._clients.pop(self.id)
             elif id == 'cfg':
-                raise AttributeError, "You can't change the cfg file"
+                raise AttributeError("You can't change the cfg file")
             self.__dict__[att] = val
         self.save()
     def __getattr__(self, att):
@@ -724,7 +727,7 @@ class XYZBathyBank(object):
             if force:
                 self.cfg.remove_section(id)
             else:
-                raise KeyError, 'Bathymetry %s already exists'%id
+                raise KeyError('Bathymetry %s already exists'%id)
         self.cfg.add_section(id)
         self.cfg.set(id, 'xyzfile', xyzfile)
         self._clients[id] = XYZBathyBankClient(self, id, **kwargs)
@@ -778,7 +781,7 @@ class XYZBathyBank(object):
 
     def list(self):
         """Get all clients of the bank as a list"""
-        return self._clients.values()
+        return list(self._clients.values())
 
     def select(self, xmin=None, xmax=None, ymin=None, ymax=None, load=True, margin=None, ordered=None):
         """Return a list of bathymetries relevant to the specified region
@@ -1157,7 +1160,7 @@ class NcGriddedBathy(GriddedBathy):
                 if 'etopo2' in bathies:
                     bathyname = 'etopo2'
                 else:
-                    kk = bathies.keys()
+                    kk = list(bathies.keys())
 #                    if not len(kk):
 #                        raise NcGriddedBathyError('No valid bathymetry found')
                     bathyname = kk[0]
@@ -1191,14 +1194,14 @@ class NcGriddedBathy(GriddedBathy):
             self.lonname = f[self.varname].getAxis(1).id
         elif self.lonname in f.listdimension():
             if f[self.varname].getAxis(1).id != self.lonname:
-                print 'Bad longitude name "%s" for variable "%s". Skipping...'%(self.lonname, self.varname)
+                print('Bad longitude name "%s" for variable "%s". Skipping...'%(self.lonname, self.varname))
             else:
                 cdms.axis.longitude_aliases.append(self.lonname)
         if self.latname is None:
             self.latname = f[self.varname].getAxis(0).id
         elif self.latname in f.listdimension():
             if f[self.varname].getAxis(0).id != self.latname:
-                print 'Bad latitude name "%s" for variable "%s". Skipping...'%(self.latname, self.varname)
+                print('Bad latitude name "%s" for variable "%s". Skipping...'%(self.latname, self.varname))
             else:
                 cdms.axis.latitude_aliases.append(self.latname)
         # - select
@@ -1230,7 +1233,7 @@ class NcGriddedBathy(GriddedBathy):
 
 
 ######################################################################
-from shorelines import get_best, get_shoreline, ShoreLine, get_bestres
+from .shorelines import get_best, get_shoreline, ShoreLine, get_bestres
 from vacumm.misc.grid import get_xy, axes2d, resol, create_grid, get_grid, meshgrid, \
     meshbounds, get_axis
 from vacumm.misc.grid.regridding import griddata, refine, regrid2d

@@ -56,6 +56,10 @@
 # ==============================================================================
 
 
+from __future__ import absolute_import
+import six
+from six.moves import range
+from six.moves import zip
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
 __date__ = '2011-01-17'
@@ -200,7 +204,7 @@ def getvar_decmets(cls):
     """
     # Get the basic list
     if not hasattr(cls, 'auto_generic_var_names'): return cls
-    if isinstance(cls.auto_generic_var_names, basestring):
+    if isinstance(cls.auto_generic_var_names, six.string_types):
         cls.auto_generic_var_names = [cls.auto_generic_var_names]
 
     # Add names for other positions (u, v, etc) if available.
@@ -223,7 +227,7 @@ def getvar_decmets(cls):
         if hasattr(cls, metname): continue
 
         # Declare the method
-        exec getvar_decmet_tpl%locals()
+        exec(getvar_decmet_tpl%locals())
 
         # Change its name
         get_var.__name__ = metname
@@ -722,7 +726,7 @@ class Dataset(Object):
         search = None
 
         # Generic name -> cf specs and/or class level specs
-        if isinstance(varname , basestring) and not varname.startswith('+'):
+        if isinstance(varname , six.string_types) and not varname.startswith('+'):
             specs = self._get_ncobj_merged_specs_(varname, searchmode=searchmode)
             genname = varname
 
@@ -740,7 +744,7 @@ class Dataset(Object):
         # Single (+varname) or list of netcdf names
         else:
 
-            if isinstance(varname , basestring) and varname.startswith('+'): # Netcdf name
+            if isinstance(varname , six.string_types) and varname.startswith('+'): # Netcdf name
                 varname = varname[1:]
             search = varname
             if isinstance(search, list):
@@ -763,7 +767,7 @@ class Dataset(Object):
             if atts is None:
                 atts = specs.get('atts', None)
                 if atts and attsingle:
-                    for att, val in atts.iteritems():
+                    for att, val in six.iteritems(atts):
                         if isinstance(val, list):
                             atts[att] = val[0]
 
@@ -909,10 +913,10 @@ class Dataset(Object):
             for only in onlies:
                 only = str(only).lower()
                 _geonames = {'x':'lon', 'y':'lat', 'z':'level', 't':'time'}
-                allowed = _geonames.keys()+_geonames.values()
+                allowed = list(_geonames.keys())+list(_geonames.values())
                 if not only in allowed:
                     raise TypeError('Wrong selector type for "only". Please choose on of: '%', '.join(allowed))
-                if only in  _geonames.keys():
+                if only in  list(_geonames.keys()):
                     only = _geonames[only]
 
                 # Get and merge
@@ -1177,7 +1181,7 @@ class Dataset(Object):
         # Specifications for searching, selecting and modifying the variable
         specs = self._get_ncobj_specs_(varname, searchmode=searchmode)
         if specs is None:
-            if (isinstance(varname, basestring) and not varname.startswith('+')
+            if (isinstance(varname, six.string_types) and not varname.startswith('+')
                     and varname in self.get_variable_names()):
                 specs = self._get_ncobj_specs_('+'+varname)  # direct from file
             else:
@@ -1244,7 +1248,7 @@ class Dataset(Object):
             if var is None:
                 if warn: self.warning('No data found for variable: %s, local select: %s', varname, selstring)
                 return
-        except VACUMMError, e:
+        except VACUMMError as e:
             if warn: self.warning('Error reading variable: %s. Message: %s',
                 varname,  e.message)
             return
@@ -1924,7 +1928,7 @@ class Dataset(Object):
                 title = "\n".join((title,"%s / %s period" %(ct0,ct1)))
             else:
                 title = "\n".join((title,ct0))
-        except Exception, e:
+        except Exception as e:
             self.warning("Can't get time information. Error: \n"+e.message)
         var = squeeze_variable(var)
 
@@ -2028,7 +2032,7 @@ class Dataset(Object):
                 ct1 = strftime('%Y-%m-%d',time[-1])
                 ctime = "%s / %s period" %(ct0,ct1)
             else: ctime = ct0
-        except Exception, e:
+        except Exception as e:
             self.warning("Can't get time information. Error: \n"+e.message)
 
         # Interpolate
@@ -2346,7 +2350,7 @@ class OceanDataset(OceanSurfaceDataset):
     def _parse_level_(self, level, squeeze=False):
 
         # Convert level argument from string
-        if isinstance(level, basestring):
+        if isinstance(level, six.string_types):
 
             # Selector
             bottom = slice(0, 1)
@@ -2631,7 +2635,7 @@ class OceanDataset(OceanSurfaceDataset):
                     try:
                         d = sigma_converter(sel, at=atz, copyaxes=True, mode='sigma',
                             zerolid=zerolid)
-                    except Exception, e:
+                    except Exception as e:
                         if warn:
                             self.warning("Can't get depth from sigma. Error: \n"+e.message)
                         break
@@ -3254,10 +3258,10 @@ class OceanDataset(OceanSurfaceDataset):
             tmp, data = [], []
             time = depth.getTime()
             ctime = time.asComponentTime()
-            for it in xrange(len(time)):
+            for it in range(len(time)):
                 self.verbose('Processing time: %s', ctime[it])
                 tmp.append(compute_strat(temp[it], sal[it], lat, depth[it]))
-            for i in xrange(len(tmp[0])):
+            for i in range(len(tmp[0])):
                 d = [d[i] for d in tmp]
                 data.append(MV2.concatenate([d]))
             dens, densmin, densmax, densmean, ddepth = data
@@ -3634,7 +3638,7 @@ class OceanDataset(OceanSurfaceDataset):
             ct0 = strftime('%Y-%m-%d',time[0])
             ct1 = strftime('%Y-%m-%d',time[-1])
             ctime = "%s / %s period" %(ct0,ct1)
-        except Exception, e:
+        except Exception as e:
             self.warning("Can't get time information. Error: \n"+e.message)
 
         plotkw.setdefault('title', '%s Hovmoller of %s\ntime: %s\n%s'%(hovtype, var.id, ' / '.join((ct0,ct1)), lonlat))
@@ -3816,7 +3820,7 @@ class AtmosDataset(AtmosSurfaceDataset):
     def _parse_level_(self, level, squeeze=False):
 
         # Convert level argument from string
-        if isinstance(level, basestring):
+        if isinstance(level, six.string_types):
 
             # Selector
             top = slice(-2, -1)
@@ -4012,7 +4016,7 @@ class AtmosDataset(AtmosSurfaceDataset):
                     try:
                         d = sigma_converter(sel, at=atz, copyaxes=True, mode='sigma',
                             zerolid=zerolid)
-                    except Exception, e:
+                    except Exception as e:
                         if warn:
                             self.warning("Can't get altitude from sigma. Error: \n"+e.message)
                         break
@@ -4070,7 +4074,7 @@ class AtmosDataset(AtmosSurfaceDataset):
 def _at_(at, squeezet=False, focus=None, prefix=False):
     """Convert location letters"""
 
-    if isinstance(at, basestring): at = at.lower()
+    if isinstance(at, six.string_types): at = at.lower()
     if at=='' or at is True: at = 't'
 
     # Aliases
@@ -4093,7 +4097,7 @@ def _at_(at, squeezet=False, focus=None, prefix=False):
     if at != '':
         if prefix is True:
             prefix = '_'
-        if isinstance(prefix, basestring):
+        if isinstance(prefix, six.string_types):
             at = prefix+at
 
     return at
@@ -4135,7 +4139,7 @@ def check_mode(validmodes, modes, strict=False):
             mode = [mode]
         for m in modes:
             if m is None and not strict: return True
-            rev = isinstance(m, basestring) and m.startswith('-')
+            rev = isinstance(m, six.string_types) and m.startswith('-')
             if strict and rev:
                 return False
             if rev and m[1:] not in validmodes:
@@ -4224,7 +4228,7 @@ class CurvedSelector(object):
         if n==0: return []
         lons = broadcast(lons, n, fillvalue=None)
         lats = broadcast(lats, n, fillvalue=None)
-        return zip(lons, lats)
+        return list(zip(lons, lats))
 
     @staticmethod
     def remove_geosels(select):
@@ -4241,8 +4245,8 @@ class CurvedSelector(object):
 def merge_squeeze_specs(squeeze1, squeeze2):
     if squeeze1==squeeze2:
         return squeeze1
-    s1 = isinstance(squeeze1, basestring)
-    s2 = isinstance(squeeze2, basestring)
+    s1 = isinstance(squeeze1, six.string_types)
+    s2 = isinstance(squeeze2, six.string_types)
     if (((squeeze1 or squeeze1 is None) and not s1) or
             ((squeeze2 or squeeze2 is None) and not s2)):
         return True

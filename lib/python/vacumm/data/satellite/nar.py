@@ -33,8 +33,10 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
+from __future__ import print_function
 from vacumm.data.satellite.sst import Sst
-import ConfigParser
+import six.moves.configparser
 
 #import psutil
 
@@ -56,11 +58,11 @@ class Nar(Sst) :
         """ Rappatrie par cp des donnees NAR SST AVHRR METOP_A"""
         import os,subprocess,cdtime
         #----------------------------------------------------
-        print '---------- RECUPERATION FICHIERS NAR SST ----------'
+        print('---------- RECUPERATION FICHIERS NAR SST ----------')
         #----------------------------------------------------
         
         if cfg is None:
-	  config = ConfigParser.RawConfigParser()
+	  config = six.moves.configparser.RawConfigParser()
 	  config.read(os.path.join(self.SCRIPT_DIR,'config.cfg'))        
    
     
@@ -100,7 +102,7 @@ class Nar(Sst) :
         #-------------------------------------------------------------
         #------- recuperation des donnees : generalites (repertoire, etc)
         if cfg is None:
-	  config = ConfigParser.RawConfigParser()
+	  config = six.moves.configparser.RawConfigParser()
 	  config.read(os.path.join(self.SCRIPT_DIR,'config.cfg'))        
 	  file_directory = config.get('Nar SST', 'dir_nar')
 	else:       
@@ -144,15 +146,15 @@ class Nar(Sst) :
             #-- Extraction du fichier
             # outfile[:-4] => filename without bz2 extension
             if  os.path.isfile(outfile[:-4])==False:    
-                print url_dir+file_def        
+                print(url_dir+file_def)        
                 if os.path.exists(url_dir+file_def):
-                    print "Copying NAR FILE %(file_def)s"%vars()            
+                    print("Copying NAR FILE %(file_def)s"%vars())            
                     shutil.copyfile(url_dir+file_def, file_def)                
                     subprocess.call(["bunzip2","-f", outfile])                
                 else:
-                    print "The file does not exist ! => %(url_dir)s%(file_def)s"%vars()
+                    print("The file does not exist ! => %(url_dir)s%(file_def)s"%vars())
             else:
-                print "No copy needed : %(url_dir)s%(file_def)s already exists."%vars()
+                print("No copy needed : %(url_dir)s%(file_def)s already exists."%vars())
                 
         #-- Fin de copie
         #----------------------------------------------------
@@ -164,7 +166,7 @@ class Nar(Sst) :
         #-------------------------------------------------------------
         #------- recuperation des donnees : generalites (repertoire, etc)
         if cfg is None:
-	  config = ConfigParser.RawConfigParser()
+	  config = six.moves.configparser.RawConfigParser()
 	  config.read(os.path.join(self.SCRIPT_DIR,'config.cfg'))        
 	  URL_CERSAT = config.get('Nar SST', 'url_cersat')
 	  DATA_DIR = config.get('Nar SST', 'data_dir')
@@ -219,15 +221,15 @@ class Nar(Sst) :
             #-- Extraction du fichier
             # outfile[:-4] => filename without bz2 extension
             if  os.path.isfile(outfile[:-4])==False:    
-                print url_dir+file_def        
+                print(url_dir+file_def)        
                 #if os.path.exists(url_dir+file_def):
-                print "Downloading NAR FILE %(file_def)s"%vars() 
+                print("Downloading NAR FILE %(file_def)s"%vars()) 
                 subprocess.call(["wget", url_dir+file_def])
                 subprocess.call(["bunzip2","-f", outfile])                
                 #else:
                 #    print "The file does not exist ! => %(url_dir)s%(file_def)s"%vars()
             else:
-                print "No ftp copy needed : %(file_def)s already exists."%vars()
+                print("No ftp copy needed : %(file_def)s already exists."%vars())
                 
         #-- Fin de copie
         #----------------------------------------------------
@@ -258,7 +260,7 @@ class Nar(Sst) :
         files = []
         # Cree la liste des fichiers correspondants a la periode consideree
         if cfg is None:
-	  config = ConfigParser.RawConfigParser()
+	  config = six.moves.configparser.RawConfigParser()
 	  config.read(os.path.join(self.SCRIPT_DIR,'config.cfg'))
 	  hr_satellites = config.get('Nar SST', 'hr_satellites')
 	else:
@@ -295,7 +297,7 @@ class Nar(Sst) :
         #print files
 
         if files == []:
-            print 'No data file to read ...'
+            print('No data file to read ...')
         else:
             
             # ---- Lecture et creation de la grille ----
@@ -342,7 +344,7 @@ class Nar(Sst) :
                 
                 if verbose:
                     # == TEST OCCUPATION MEMOIRE ===
-                    print ctest,  'Avant'
+                    print(ctest,  'Avant')
                     #print psutil.Process(os.getpid()).get_memory_percent()
                     #print psutil.Process(os.getpid()).get_memory_info()
                     #print 'CPU percent: ', psutil.cpu_percent(interval=0.1)
@@ -353,7 +355,7 @@ class Nar(Sst) :
                 
                 if verbose:
                     # == TEST OCCUPATION MEMOIRE ===
-                    print ctest,  'Apres del'
+                    print(ctest,  'Apres del')
                     #print psutil.Process(os.getpid()).get_memory_percent()
                     #print psutil.Process(os.getpid()).get_memory_info()
                     #print 'CPU percent: ', psutil.cpu_percent(interval=0.1)
@@ -382,18 +384,18 @@ class Nar(Sst) :
                 
                 if verbose:
                     # == TEST OCCUPATION MEMOIRE ===
-                    print ctest,  'Avant gccollect'
+                    print(ctest,  'Avant gccollect')
                     #print psutil.Process(os.getpid()).get_memory_percent()
                     #print psutil.Process(os.getpid()).get_memory_info()
                     #print 'CPU percent: ', psutil.cpu_percent(interval=0.1)
                     #print 'Used phymem: ', psutil.used_phymem()
                     #print 'Used virtmem: ', psutil.used_virtmem()
-                    print gc.collect()
+                    print(gc.collect())
                 gc.collect()
                 
                 if verbose:
                     # == TEST OCCUPATION MEMOIRE ===
-                    print ctest,  'Apres gccollect'
+                    print(ctest,  'Apres gccollect')
                     #print psutil.Process(os.getpid()).get_memory_percent()
                     #print psutil.Process(os.getpid()).get_memory_info()
                     #print 'CPU percent: ', psutil.cpu_percent(interval=0.1)
@@ -437,7 +439,7 @@ class Nar(Sst) :
         # --
 
         if files == []:
-            print 'No data file to delete ...'
+            print('No data file to delete ...')
         else:
             for filename in files:
                 os.remove(filename)

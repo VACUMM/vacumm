@@ -36,6 +36,7 @@
 
 
 
+from __future__ import absolute_import
 __author__ = 'Valerie Garnier'
 __email__ = 'vgarnier@ifremer.fr'
 __date__ = '2012-11-14'

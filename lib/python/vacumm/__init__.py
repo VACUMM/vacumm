@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -34,7 +34,9 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from __future__ import absolute_import
 from warnings import warn
+import six
 
 __project__ = 'vacumm'
 __version__ = '3.5.1'
@@ -74,15 +76,15 @@ def help(text=None, recent=False):
         - **text**, optional: String to search for.
         - **recent**, optional: Use the most recent version of the documentation.
     """
-    from config import get_config_value
+    from .config import get_config_value
     key = 'url_recent' if recent else 'url'
     url = get_config_value('vacumm', key)
     if url is None: url = 'http://www.ifremer.fr/vacumm'
     from webbrowser import open
     if text is not None:
-        if not isinstance(text, basestring):
+        if not isinstance(text, six.string_types):
             if hasattr(text, 'func_name'):
-                text = text.func_name
+                text = text.__name__
             else:
                 text = text.__class__.__name__
         if not text.startswith('/'):
@@ -105,6 +107,6 @@ vcwarn = vacumm_warning = vacumm_warn
 
 #: Current VACUMM configuration (default+common+user)
 VACUMM_CFG = CFG = None
-import config
+from . import config
 config.load_cfg('com')
 config.load_cfg('user')

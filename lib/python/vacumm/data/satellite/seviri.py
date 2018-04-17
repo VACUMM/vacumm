@@ -33,8 +33,10 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import absolute_import
+from __future__ import print_function
 from vacumm.data.satellite.sst import Sst
-import ConfigParser
+import six.moves.configparser
 
 
 
@@ -42,7 +44,7 @@ class Seviri(Sst) :
     """ SEVIRI SST """
     def __init__(self,cfg=None):
         import os
-        print 'using custom Seviri class !!'
+        print('using custom Seviri class !!')
         Sst.__init__(self,cfg)
         DIR_SEVIRI=os.path.join(self.WORKDIR,'SST_SEVIRI')      # repertoire de stockage des donnees SST SEVIRI
         if os.path.isdir(DIR_SEVIRI)==False:
@@ -58,15 +60,15 @@ class Seviri(Sst) :
         """ Rappatrie par ftp les donnees SEVIRI SST """
         import os,subprocess,cdtime
         #----------------------------------------------------
-        print ''
-        print '---------- RECUPERATION FICHIERS SEVIRI ----------'
-        print ''
+        print('')
+        print('---------- RECUPERATION FICHIERS SEVIRI ----------')
+        print('')
         #----------------------------------------------------
 	
 	#-------------------------------------------------------------
 	#------- recuperation des donnees : generalites (site ftp, etc)
         if cfg is None:
-  	    config = ConfigParser.RawConfigParser()
+  	    config = six.moves.configparser.RawConfigParser()
 	    config.read(os.path.join(self.SCRIPT_DIR,'config.cfg'))
 	
 	try:
@@ -76,13 +78,13 @@ class Seviri(Sst) :
               timerange = cfg['Seviri SST']['timerange']
 	  # timerange = 'midnight' pour donnees a minuit seulement 
 	  # timerange = 'all' pour donnees a minuit seulement
-	except ConfigParser.NoOptionError:
-	  print 'No Time Range'
+	except six.moves.configparser.NoOptionError:
+	  print('No Time Range')
 	  timerange = 'all' # Par defaut, lecture de toutes les heures
 	
-	if self.ctdeb >= cdtime.comptime(2012,01,01,0,0,0):
-	  print timerange
-	  print 'Data moved to /home5/taveeg/cache/project/osi-saf/data/sst/l3c/seviri/osi-saf/'
+	if self.ctdeb >= cdtime.comptime(2012,0o1,0o1,0,0,0):
+	  print(timerange)
+	  print('Data moved to /home5/taveeg/cache/project/osi-saf/data/sst/l3c/seviri/osi-saf/')
 	  EXT_SEVIRI=".nc"
 	  
 	  if cfg is None:
@@ -115,7 +117,7 @@ class Seviri(Sst) :
 	    ctest=ctest.add(1,cdtime.Days)
 	  
 	else:
-	  print 'Works for data before 2012/03/19. [In this program, method not used for data after 2012/01/01]'
+	  print('Works for data before 2012/03/19. [In this program, method not used for data after 2012/01/01]')
 
           if cfg is None:
 	      COMPRESS_SEVIRI = config.get('Seviri SST', 'compress')
@@ -204,13 +206,13 @@ class Seviri(Sst) :
 	# --------------- LE FTP FONCTIONNE MAIS LES FICHIERS SEMBLENT CORROMPUS ... PROBLEME DANS LE BZ2
 	# -- Complement du nom de repertoire avec l'annee et le jour relatif (001-> 365)
 	DATA_DIR = os.path.join(DATA_DIR,str(YYYY))
-	print DATA_DIR
+	print(DATA_DIR)
 	a = cdtime.comptime(YYYY,MM,DD)
 	a2 = a.torel('days since '+strftime('%Y-%m-%d',cdtime.comptime(YYYY-1,12,31)))
 	
 	DATA_DIR = os.path.join(DATA_DIR,'%(#)03d' % {'#':a2.value})
 	
-	print DATA_DIR
+	print(DATA_DIR)
 	
 	# connection au CDOCO
         ftp = FTP(host=URL_CERSAT, user=usr, passwd=pwd)
@@ -243,7 +245,7 @@ class Seviri(Sst) :
                 subprocess.call(["bunzip2","-f", file_to_read])
 	
 	    else:
-	      print "Pas de downloading : %(file_to_read)s existe deja"%vars()
+	      print("Pas de downloading : %(file_to_read)s existe deja"%vars())
         
         ftp.quit()
         # ----------------------------------------------------------------------------------------
@@ -273,7 +275,7 @@ class Seviri(Sst) :
         url_dir="%(url_dir_seviri)s/%(YYYY)s/%(MM)s"%vars()
         url_file_def="sst1h_msg_%(YYYY)s%(MM)s%(DD)s%(ext)s"%vars()
         if cfg is None:
-            config = ConfigParser.RawConfigParser()
+            config = six.moves.configparser.RawConfigParser()
             config.read(os.path.join(self.SCRIPT_DIR,'config.cfg'))
             COMPRESS_SEVIRI = config.get('Seviri SST', 'compress')
         else:
@@ -306,13 +308,13 @@ class Seviri(Sst) :
  
         #-- Extraction du fichier
         if  os.path.isfile(outfile_uncompressed)==False:
-          print "Downloading SEVIRI FILE %(url_file_def)s"%vars()
+          print("Downloading SEVIRI FILE %(url_file_def)s"%vars())
           list_file="%(url_dir)s/%(url_file_def)s"%vars()
           #subprocess.call(["wget", "-t", ntry, "-O", outfile, list_file])
           subprocess.call(["wget", "-t", ntry, "-O", outfile, list_file])
           s=os.path.getsize(outfile) # If file is empty !!
           if s==0:
-            print "Empty file: %(outfile)s !"%vars()
+            print("Empty file: %(outfile)s !"%vars())
             os.remove(outfile)
           else:
             subprocess.call(["bunzip2","-f", outfile])
@@ -327,7 +329,7 @@ class Seviri(Sst) :
             # S. Petton
     
         else:
-          print "Pas de downloading : %(url_dir)s/%(url_file_def)s existe deja"%vars()
+          print("Pas de downloading : %(url_dir)s/%(url_file_def)s existe deja"%vars())
         #-- Fin de ftp
         #----------------------------------------------------
 
@@ -341,7 +343,7 @@ class Seviri(Sst) :
         from vacumm.misc.atime import create_time
         from vacumm.misc.phys.units import kel2degc
         
-        if self.ctdeb >= cdtime.comptime(2012,01,01,0,0,0):
+        if self.ctdeb >= cdtime.comptime(2012,0o1,0o1,0,0,0):
 	  # -- Creation d'un objet cdms nomme self.data et d'un tableau cumt pour les dates extraites des noms de fichiers
 	  self.data = () #Initialise un tuple
 	  # =============== ATTENTION ====================
@@ -361,7 +363,7 @@ class Seviri(Sst) :
 	    # --
 
           if cfg is None:
-	      config = ConfigParser.RawConfigParser()
+	      config = six.moves.configparser.RawConfigParser()
 	      config.read(os.path.join(self.SCRIPT_DIR,'config.cfg'))
 	      lomin = float(config.get('Domain', 'lomin') )    
 	      lomax = float(config.get('Domain', 'lomax')      )
@@ -378,14 +380,14 @@ class Seviri(Sst) :
 	      timerange = config.get('Seviri SST', 'timerange')
 	      # timerange = 'midnight' pour donnees a minuit seulement 
 	      # timerange = 'all' pour donnees a minuit seulement
-	    except ConfigParser.NoOptionError:
+	    except six.moves.configparser.NoOptionError:
 	      #print 'No Time Range'
 	      timerange = 'all' # Par defaut, lecture de toutes les heures
 	  else:
 	    timerange = cfg['Seviri SST']['timerange']
 	  
 	  if files == []:
-	      print 'No data file to read ...'
+	      print('No data file to read ...')
 	  else:        
 	      for ifile, filename in enumerate(files):
 		  # -- Lecture du fichier filename                        
@@ -434,7 +436,7 @@ class Seviri(Sst) :
 	  # --
           
           if cfg is None:
-              config = ConfigParser.RawConfigParser()
+              config = six.moves.configparser.RawConfigParser()
               config.read(os.path.join(self.SCRIPT_DIR,'config.cfg'))
               lomin = float(config.get('Domain', 'lomin') )
               lomax = float(config.get('Domain', 'lomax')      )
@@ -451,7 +453,7 @@ class Seviri(Sst) :
 	      timerange = config.get('Seviri SST', 'timerange')
 	      # timerange = 'midnight' pour donnees a minuit seulement 
 	      # timerange = 'all' pour donnees a minuit seulement
-	    except ConfigParser.NoOptionError:
+	    except six.moves.configparser.NoOptionError:
 	      #print 'No Time Range'
 	      timerange = 'all' # Par defaut, lecture de toutes les heures
 	  else:
@@ -459,7 +461,7 @@ class Seviri(Sst) :
 	
 	  
 	  if files == []:
-	      print 'No data file to read ...'
+	      print('No data file to read ...')
 	  else:        
 	      for ifile, filename in enumerate(files):
 		  # -- Lecture du fichier filename                        
@@ -511,7 +513,7 @@ class Seviri(Sst) :
         # -- Creation d'un objet cdms nomme self.data                 
                 
         if cfg is None:
-	  config = ConfigParser.RawConfigParser()
+	  config = six.moves.configparser.RawConfigParser()
 	  config.read(os.path.join(self.SCRIPT_DIR,'config.cfg'))
 	  lomin = float(config.get('Domain', 'lomin') )    
 	  lomax = float(config.get('Domain', 'lomax')      )
@@ -531,7 +533,7 @@ class Seviri(Sst) :
         filename = os.path.join(obsdir, fln) 
         
         if os.path.isfile(filename) == False :                    
-            print 'No data file to read ...'
+            print('No data file to read ...')
         else:        
             # -- Lecture du fichier filename                        
             f = cdms2.open(filename)
@@ -561,7 +563,7 @@ class Seviri(Sst) :
         # -- Lecture du fichier filename
         self.data=[]
         flist = list_forecast_files(os.path.join(obsdir,fln),(str(cfg['Time Period']['andeb'])+'-'+str(cfg['Time Period']['mdeb'])+'-'+str(cfg['Time Period']['jdeb']),str(cfg['Time Period']['anfin'])+'-'+str(cfg['Time Period']['mfin'])+'-'+str(cfg['Time Period']['jfin']),'co'))  
-        print flist
+        print(flist)
         for fil in flist:                      
             f = cdms2.open(fil)
             temp = f('sst', lon=(lomin,lomax), lat=(lamin,lamax),  time=(self.ctdeb, self.ctfin))     

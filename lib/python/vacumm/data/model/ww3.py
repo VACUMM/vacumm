@@ -38,6 +38,8 @@
 
 
 
+from __future__ import absolute_import
+from __future__ import print_function
 __author__ = 'Valerie Garnier'
 __email__ = 'vgarnier@ifremer.fr'
 __date__ = '2015-07-08'
@@ -90,7 +92,7 @@ if __name__ == '__main__' :
     from vacumm.data import DS
     from vacumm.misc.plot import map2 as map
     #map(sshmod[0, Ellipsis], res=None)
-    print "test utus"
+    print("test utus")
     f = DS('/home1/caparmor/vgarnier/ww3.190012.nc','ww3')
     stokes = f.get_utus()
     xxx
