@@ -1,6 +1,6 @@
 # Creation de fausses bathymetries xyz
-import numpy as N,  os
-from vacumm.bathy.bathy import XYZBathy,  XYZBathyMerger
+import numpy as N, pylab as P
+from vcmq import XYZBathy,  XYZBathyMerger
 # - fonction generatrice
 def gene_bathy(xc, yc, xr, yr, n=500, amp=30.):
     noise = N.random.random(n)
@@ -21,7 +21,8 @@ N.savetxt(fxyz5, gene_bathy(-5.15, 48.2, .2, .1, amp=15).transpose()) # center
 xyz = xyz1 + xyz2 + xyz3 + xyz4 + fxyz5
 
 # Plot
-import pylab as P ; P.figure(figsize=(5., 8.5)) ; P.subplot(311)
+P.figure(figsize=(5., 8.5))
+P.subplot(311)
 P.rcParams['font.size'] = 9
 P.subplots_adjust(bottom=.03, top=.97, hspace=.25)
 kwplot = dict(show=False, colorbar=False,map_res=None, margin=0., map_autoresize=0,
@@ -61,5 +62,4 @@ merged_xyz = merger.get_xyz(long_name='Merged')
 
 # On peut donc le sauvegarder
 merged_xyz.save(__file__[:-2]+'merged.xyz')
-P.close()
 

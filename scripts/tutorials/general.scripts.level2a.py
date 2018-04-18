@@ -1,12 +1,12 @@
 from __future__ import print_function
+
 # Parameters
 ncfile = "menor.nc"
 lon=(3.,4.5)
 lat=(42, 42.8)
 
 # Imports
-from vcmq import DS, map2, data_sample
-from vacumm.diag.thermdyn import mixed_layer_depth
+from vcmq import DS, map2, data_sample, mixed_layer_depth
 
 # Read temperature and depth
 ncfile = data_sample(ncfile)
@@ -19,8 +19,8 @@ mld = mixed_layer_depth(temp, depth, mode='deltatemp')
 
 # Plot
 map2(mld, proj='merc', figsize=(6, 6), autoresize=0,
-    colorbar_shrink=0.7, right=1, savefigs=__file__, show=False,
-    close=True)
+    colorbar_shrink=0.7, right=1, show=False,
+    close=False)
 
 
 print('Done')

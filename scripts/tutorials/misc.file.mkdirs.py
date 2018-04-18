@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-from os.path import abspath, dirname, join, realpath
+from os.path import join
 from shutil import rmtree
 from tempfile import mkdtemp
 

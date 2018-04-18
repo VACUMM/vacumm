@@ -1,11 +1,7 @@
-from __future__ import print_function
 # Modules
-import numpy as N,  os
-from vacumm.bathy.bathy import XYZBathy
-import pylab as P
-from vacumm.misc.grid.basemap import merc
-from vacumm.misc.grid import create_grid, resol
-from vacumm.misc.plot import map2
+from __future__ import print_function
+import numpy as N, pylab as P
+from vcmq import XYZBathy, create_grid, resol, map2
 
 # Creation d'une fausse bathymetrie xyz
 n = 1000 ; xc = -5.1 ; yc = 48.2 ; xr = .4 ; yr = .15
@@ -95,6 +91,5 @@ kwplot.update(autoresize=0, ticklabel_size=9)
 map2(gridded_manual, subplot=312, xhide=True, title='Sur grille manuelle', **kwplot)
 # - interpole auto
 map2(gridded_auto, subplot=313, title='Sur grille auto', savefigs=__file__,
-    close=True, **kwplot)
-#P.show()
+    close=False, **kwplot)
 

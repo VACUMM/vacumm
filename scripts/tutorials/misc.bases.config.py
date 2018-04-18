@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, sys
+import os
 
-from vacumm.misc.bases import Object
+from vcmq import Object
 
 class MyObject(Object):
     # These are the defaults but in case you want to change these behavior...

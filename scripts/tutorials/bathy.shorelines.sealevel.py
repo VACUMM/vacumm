@@ -1,5 +1,4 @@
 # -*- coding: utf8 -*-
-import pylab as P
 
 # Definition de la region de travail Bretagne
 zone = (-6.5, 47.2, -2, 49.05)
@@ -12,5 +11,4 @@ tc = GSHHS(input='h', clip=zone)
 xyz = tc.bathy()
 
 # Plot
-xyz.plot(size=10, savefigs=__file__, show=False)#, savefigs_pdf=True)
-P.close()
+xyz.plot(size=10, savefigs=__file__, show=False)

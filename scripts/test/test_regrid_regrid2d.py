@@ -1,4 +1,4 @@
-"""Test the :func:`~vacumm.misc.grid.regridding.regrid2d` function"""
+"""Test the :func:`~vacumm.misc.regridding.regrid2d` function"""
 from vcmq import (P, N, MV2, add_grid, rotate_grid, set_grid,
     create_grid, rc, plot2d, regrid2d, create_time)
 

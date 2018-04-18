@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-from vacumm.misc.bases import Object
+from vcm import Object
 
 class MyObject(Object):
     

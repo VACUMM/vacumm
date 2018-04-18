@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-import os, os.path as P, pprint, sys
+import os.path as P, pprint, sys
 import vacumm.misc.config as C
 
 def main(argv=None):

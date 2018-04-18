@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from vacumm.misc.bases import Object
+from vcmq import Object
 
 class MyObject(Object):
     pass
@@ -50,7 +50,7 @@ def main():
     obj.error('error message')
     obj.critical('critical message')
     try: 0 / 0
-    except Exception as e:
+    except Exception:
         obj.exception('Division by 0 failed !')
     
     MyObject.verbose('\n  MyObject.get_logger(): %r\n  MyObject.get_class_logger(): %r\n  MyObject.logger: %r', MyObject.get_logger(), MyObject.get_class_logger(), MyObject.logger)

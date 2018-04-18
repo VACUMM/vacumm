@@ -1,5 +1,7 @@
+from vcmq import GSHHS, EUROSION, Histolitt
+from pylab import legend, title
+
 # Lecture des divers traits de cote
-from vacumm.bathy.shorelines import *
 zone = (-5.15, 48.42, -5.03, 48.49)
 gmt = GSHHS(clip=zone)
 euro = EUROSION(clip=zone)
@@ -14,9 +16,6 @@ gmt.plot(fill=False, color='k', linewidth=1.5, zorder=10, label='GSHHS',
     m='auto', show=False)
 
 # Fin de plot
-from pylab import show, legend, title, close
-from vacumm.misc.plot import savefigs
 legend()
 title("Ushant shorelines")
-savefigs(__file__, pdf=True)
-close()
+

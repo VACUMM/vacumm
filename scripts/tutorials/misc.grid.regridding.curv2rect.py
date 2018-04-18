@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from __future__ import print_function
-from vcmq import *
+from vcmq import (cdms2, create_lon, create_lat, regrid2d, P, map2, add_grid, N, 
+    data_sample)
 
 # Read data
 zone = dict(yc=slice(0, 40), xc=slice(10, 40))
@@ -31,7 +32,7 @@ print(' - dstwgt')
 hs_dst = regrid2d(hs, rgrid, method='dstwgt')
 
 print('Plots')
-rc('font', size=11)
+P.rc('font', size=11)
 P.figure(figsize=(6.5, 9))
 P.subplots_adjust(hspace=.22, bottom=.06, left=.09, right=.98, top=.95)
 kwplot = dict(show=False, colorbar=False, vmin=hs.min(), vmax=hs.max(),
@@ -49,8 +50,6 @@ map2(hs_pat, title='Patch', subplot=325, m=m, **kwplot)
 add_grid(cgrid, lw=.7, alpha=.3)
 map2(hs_dst, title='Dist. weights', subplot=326, m=m, **kwplot)
 add_grid(cgrid, lw=.7, alpha=.3)
-#m.show()
-savefigs(code_base_name(ext='png'))
-m.close()
+P.rcdefaults()
 
 

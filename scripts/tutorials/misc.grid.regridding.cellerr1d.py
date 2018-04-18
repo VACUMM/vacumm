@@ -1,6 +1,5 @@
 from vcmq import (cdms2, data_sample, N, cdtime, curve2,round_date, create_time,
     lindates, regrid1d, add_key,  P)
-from vacumm.misc.grid._interp_ import cellerr1d
 from scipy.stats import linregress
 
 # Read data
@@ -52,5 +51,5 @@ curve2(sp, 'o', err=spe.asma()/2., markersize=2, ymin=-.4, ymax=.1,
     show=False, subplot=212, label='Original')
 curve2(sph, '-r', err=speh.asma()/2., linewidth=1.5, show=False, key=2,
     savefigs=__file__, label='Interpolated', legend=True, tight_layout=True,
-    legend_loc='lower right', close=True)
+    legend_loc='lower right', close=False)
 

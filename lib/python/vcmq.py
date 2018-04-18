@@ -1,4 +1,5 @@
 """Module for quickly loading VACUMM content"""
+from __future__ import print_function
 
 # System
 

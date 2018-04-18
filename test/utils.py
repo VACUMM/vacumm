@@ -34,7 +34,7 @@ class VCTestCase(unittest.TestCase):
 
     def handle_result(self, result=None):
         """Handle result from test scripts"""
-        if isinstance(result, dict): result = result.items()
+        if isinstance(result, dict): result = list(result.items())
         if not isinstance(result, (list, tuple)): return
 
         # Loop on content

@@ -35,6 +35,7 @@
 #
 
 from __future__ import absolute_import
+from __future__ import print_function
 from warnings import warn
 import six
 
@@ -76,9 +77,8 @@ def help(text=None, recent=False):
         - **text**, optional: String to search for.
         - **recent**, optional: Use the most recent version of the documentation.
     """
-    from .config import get_config_value
     key = 'url_recent' if recent else 'url'
-    url = get_config_value('vacumm', key)
+    url = VACUMM_CFG['vacumm'][key]
     if url is None: url = 'http://www.ifremer.fr/vacumm'
     from webbrowser import open
     if text is not None:

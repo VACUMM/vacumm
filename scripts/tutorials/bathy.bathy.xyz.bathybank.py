@@ -1,7 +1,8 @@
 from __future__ import print_function
+import numpy as N,  os
+from vcmq import XYZBathyBank
+
 # Creation de fausses bathymetries xyz
-import numpy as N,  os, pylab as P
-from vacumm.bathy.bathy import XYZBathy,  XYZBathyBank
 # - fonction generatrice
 def gene_bathy(xc, yc, r, n):
     noise = N.random.random(n)
@@ -23,7 +24,8 @@ N.savetxt(flarge, gene_bathy(-5.2, 48., .4, 300.))
 # On stocke dans une banque
 # - from scratch
 bank_file = __file__[:-2]+'bank.cfg'
-if os.path.exists(bank_file): os.remove(bank_file)
+if os.path.exists(bank_file): 
+    os.remove(bank_file) # FIXME: use code_file_name for tut?
 # - init de la banque
 bank = XYZBathyBank(bank_file)
 # - ajout des fichiers bathy
@@ -54,6 +56,4 @@ bank.remove('south')
 bsouth = bank['north'].load()
 
 # Plot de l'ensemble
-bank.plot(size=15,  map_proj='cyl', map_res=None, savefigs=__file__,
-    savefigs_pdf=True, show=False)
-P.close()
+bank.plot(size=15,  map_proj='cyl', map_res=None, show=False)

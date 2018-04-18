@@ -1,8 +1,7 @@
 # -*- coding: utf8 -*-
 from __future__ import print_function
-import cdms2, MV2, os
+import cdms2, os
 import numpy as np
-from scipy import interpolate
 from time import strftime, time
 from vacumm.config import data_sample
 from vacumm.data.misc.sigma import NcSigma
@@ -51,7 +50,7 @@ s = section2(data_out[0, :, 10], subplot=212, title='Z', savefigs=__file__,
     close=True, **kw)
 
 # Sauvegarde
-outfile = __file__[:-2]+'nc'
+outfile = __file__[:-2]+'nc' # FIXME: code_file_name?
 if os.path.isfile(outfile):
   os.remove(outfile)
 netcdf3()

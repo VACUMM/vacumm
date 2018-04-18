@@ -7,6 +7,8 @@ Help:
 """
 
 # Parse arguments
+from past.builtins import execfile
+from builtins import object
 from argparse import ArgumentParser
 import sys, os
 from time import time as _time_

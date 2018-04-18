@@ -3,6 +3,7 @@
 from builtins import range
 import datetime
 import cdms2, numpy, pylab
+from vcmq import data_sample
 import vacumm.data.misc.profile as P
 
 # Turn off netcdf4 file writting
@@ -37,7 +38,6 @@ p = P.Profiles(
     # qualities=(1,2)
 )
 
-from vacumm.config import data_sample
 p.load(data_sample('data.misc.profile.nc'))
 
 ##########
@@ -57,7 +57,7 @@ p = P.ProfilesDataset(of)
 # Plot the last two temperature profiles
 pylab.figure()
 p.plot_pro('temperature', -1, -2, plot_title='plot_pto')
-pylab.savefig('data.misc.profile.plotpro.png')
+#pylab.savefig('data.misc.profile.plotpro.png')
 pylab.figure()
 p.plot_dist(
     plot_lon_min=-10, plot_lat_min=42,
@@ -69,7 +69,7 @@ p.plot_dist(
 #    plot_lon_min=-10, plot_lat_min=42,
 #    plot_lon_max=0, plot_lat_max=50,
 #    plot_title='plot_dist')
-pylab.savefig('data.misc.profile.plotdist.png')
+#pylab.savefig('data.misc.profile.plotdist.png')
 #pylab.show()
 
 
@@ -104,6 +104,6 @@ profiles.append(
 # Note that variables must be specified, otherwise the default ('temperature','salinity') is used
 # (feature used by merge_profiles.py, this must be fixed by a variables auto detection)
 p = P.Profiles(profiles, variables=('var1', 'var2'))
-p.save('data.misc.profile.fromscratch.nc')
+#p.save('data.misc.profile.fromscratch.nc')
 
 

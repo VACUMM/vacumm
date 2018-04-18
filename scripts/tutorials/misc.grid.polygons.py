@@ -1,10 +1,11 @@
-from __future__ import print_function
 # Importation des formes depuis la libraire de polygones
+from __future__ import print_function
 from builtins import zip
 from _geoslib import Point, LineString, Polygon
+import pylab as P
+import numpy as N
 
 # Polygone
-import numpy as N
 # - points sous la forme [[x1,y1],[x2,y2],...]
 pp = N.array([[5., 5.], [25., 5.], [25., 25.], [15., 25.]])
 # - transformation de numpy a Polygon
@@ -13,7 +14,6 @@ poly = Polygon(pp)
 print(poly.area())
 #  -> 300.0
 # - plot grace a 'boundary'='get_coord()' (= pp)
-import pylab as P
 P.fill(poly.boundary[:, 0], poly.boundary[:, 1],
     facecolor=(.9, .9, .9))
 
@@ -58,8 +58,4 @@ if triangle.intersects(poly):
     for pol in triangle.intersection(poly):
         xyp = pol.boundary
         P.fill(xyp[:, 0], xyp[:, 1], facecolor='y', alpha=.5)
-# Trace
-from vacumm.misc.plot import savefigs
 P.axis([0, 30, 0, 30])
-savefigs(__file__, pdf=True)
-P.close()

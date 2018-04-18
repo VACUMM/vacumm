@@ -1,14 +1,12 @@
 from __future__ import print_function
 # Inits
-from vacumm.misc.grid.masking import Lakes
-from vacumm.misc.grid.misc import meshbounds
-import vacumm.misc.color as C
-from vacumm.misc.plot import savefigs
+from vcmq import Lakes, meshbounds, cmap_linear, cmap_srs, land
 import numpy as N, pylab as P
+
 P.figure(figsize=(5.5, 5))
 P.subplots_adjust(bottom=.02, top=.92, left=.01, right=.98, hspace=.3)
-cmap_mask = C.cmap_linear(((.6, .8, 1), C.land))
-cmap_lakes = C.cmap_srs(('w', 'r', 'g', 'b'), stretch=0)
+cmap_mask = cmap_linear(((.6, .8, 1), land))
+cmap_lakes = cmap_srs(('w', 'r', 'g', 'b'), stretch=0)
 
 # Creer un mask avec des lacs
 mask = N.ones((20, 30), '?') # Terre partout
@@ -46,6 +44,3 @@ P.title('Mask ocean')
 print('La routine ocean marche ?')
 print((ocean==lakes[0]).all())
 
-# Save
-savefigs(__file__, pdf=True)
-P.close()

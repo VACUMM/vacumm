@@ -4,8 +4,7 @@
 from builtins import range
 import cdms2, numpy
 
-from vacumm.misc.axes import create_time, create_lat, create_lon
-from vacumm.misc.bases import Object
+from vcmq import create_time, create_lat, create_lon, Object
 
 class MyObject(Object):
     def do_something(self):

@@ -1,6 +1,5 @@
-from vacumm.misc.grid.masking import erode_coast
-from vacumm.misc.plot import savefigs, add_key
 import MV2, numpy as N, matplotlib.pyplot as P
+from vcmq import erode_coast, add_key
 
 # Champs initial
 xx, yy = N.indices((50, 100), 'f')
@@ -32,8 +31,7 @@ P.title('Reference mask') ; add_key(2, color='w')
 P.subplot(313)
 P.pcolormesh(vare.asma())
 P.title('With coastal erosion') ; add_key(3, color='w')
-savefigs(__file__)
-P.close()
+
 
 
 
