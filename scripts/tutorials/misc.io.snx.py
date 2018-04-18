@@ -1,6 +1,6 @@
-from __future__ import print_function
 # Init
-from vacumm.misc.io import write_snx
+from __future__ import print_function
+from vcmq import write_snx
 from _geoslib import Point, LineString, Polygon
 import numpy as N
 fbase = __file__[:-2]

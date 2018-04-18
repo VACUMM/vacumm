@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 # Lecture et masquage de Hs
-from vcmq import  cdms2, MV2, data_sample, code_base_name
+from vcmq import  cdms2, data_sample
 
 f = cdms2.open(data_sample('swan.four.nc'))
 lon = f('longitude')
@@ -14,5 +14,5 @@ hs[:] = cdms2.MV.masked_object(hs, missing_value, copy=0)
 from vacumm.misc.plot import map2
 map2(hs, xaxis=lon, yaxis=lat,  figsize=(6, 4), 
     long_name = 'Significant wave height', fill='pcolormesh', contour=False, 
-    savefigs=code_base_name(ext='png'), left=.12, right=1, show=False)
+    left=.12, right=1, show=False)
 

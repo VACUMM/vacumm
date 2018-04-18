@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
+import cdms2, MV2, pylab as P
+from vcmq import data_sample, map2
+
 # Lecture de la temperature
-import cdms2, MV2
-from vacumm.config import data_sample
-from vcmq import code_base_name
 f = cdms2.open(data_sample('mars3d.xy.nc'))
 temp = f('temp', lon=(-5.5, -4), lat=(47, 49))
 f.close()
@@ -21,10 +21,9 @@ from vacumm.misc.grid.masking import masked_polygon
 tempf[:] = masked_polygon(tempf, 'h', copy=0)
 
 # Plots
-from vacumm.misc.plot import map2, P
 P.rc('font', size=9)
-kw = dict(vmin=9, vmax=13)
-map2(temp, show=False, subplot=211, hspace=.2, bottom=.05,
+kw = dict(vmin=9, vmax=13, show=False)
+map2(temp, subplot=211, hspace=.2, bottom=.05,
     left=.08, top=.97, figsize=(4.5, 8), nmax=10, **kw)
-map2(tempf, show=False, subplot=212, savefigs=code_base_name(ext='png'), **kw)
-P.close()
+map2(tempf, subplot=212, **kw)
+P.rcdefaults()

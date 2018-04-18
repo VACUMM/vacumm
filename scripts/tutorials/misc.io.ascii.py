@@ -1,9 +1,10 @@
 from __future__ import print_function
-# On recupere une variable cdms
 from builtins import range
-import cdms2 as cdms
-from vacumm.config import data_sample
-f = cdms.open(data_sample('mars3d.t.nc'))
+import cdms2
+from vcmq import data_sample, strftime, ch_units, strptime
+
+# On recupere une variable cdms
+f = cdms2.open(data_sample('mars3d.t.nc'))
 temp = f('temp')
 u =  f('u')
 v =  f('v')
@@ -14,7 +15,6 @@ time =  temp.getTime() # axe
 ctime = time.asComponentTime() # temps cdtime.comptime()
 
 # Creation a la main au format : YYYY/MM/DDZHH:MM TEMP U V
-from vacumm.misc.atime import strftime, ch_units, strptime
 f = open('misc.io.ascii.1.dat', 'w')
 f.write('# Ligne de commentaire\n')
 for it in range(len(temp)):

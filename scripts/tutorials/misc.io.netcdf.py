@@ -1,7 +1,9 @@
 from __future__ import print_function
-# Ouverture
 import cdms2
-from vacumm.config import data_sample
+from vcmq import data_sample
+import os
+
+# Ouverture
 f = cdms2.open(data_sample('mars2d.xyt.nc'))
 
 # Lister les variables
@@ -30,8 +32,7 @@ cdms2.setNetcdfDeflateFlag(1)
 cdms2.setNetcdfDeflateLevelFlag(3)
 
 # Creer un nouveau fichier
-ncfile = 'misc-io-netcdf.nc'
-import os
+ncfile = 'misc-io-netcdf.nc' # WARNING: code_file_name?
 if os.path.exists(ncfile): os.remove(ncfile) 
 f = cdms2.open('misc-io-netcdf.nc', 'w') # ouverture en ecriture
 f.write(xe) # ecriture d'une variable

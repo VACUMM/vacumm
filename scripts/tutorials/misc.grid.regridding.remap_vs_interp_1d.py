@@ -1,8 +1,9 @@
 # *-* coding: utf-8 *-*
+import cdms2, MV2, numpy as N, pylab as P
+from vcmq import data_sample, create_lon, curve2, regrid1d, yscale
+
 # Lecture de la temperature
-import cdms2, MV2, numpy as N
-from vacumm.config import data_sample
-f =cdms2.open(data_sample('mars3d.x.uv.nc'))
+f = cdms2.open(data_sample('mars3d.x.uv.nc'))
 v = f('v', squeeze=1, lon=(-5.08, -4.88))
 f.close()
 v =  MV2.masked_values(v, 0.)
@@ -12,7 +13,6 @@ v.long_name = 'Original'
 v[:] += N.random.random(len(v))
 
 # Creation des deux axes de longitudes
-from vacumm.misc.axes import create_lon
 lon = v.getLongitude().getValue()
 dlon = N.diff(lon).mean()
 # - basse résolution
@@ -23,9 +23,7 @@ lon_hr = create_lon((lon.min()+dlon, lon.max()+dlon, dlon/3.3))
 lons = dict(haute=lon_hr, basse=lon_lr)
 
 # Regrillages et plots
-from matplotlib import rcParams ; rcParams['font.size'] = 9
-from vacumm.misc.grid.regridding import regrid1d
-from vacumm.misc.plot import curve2,savefigs, yscale ; import pylab as P
+P.rcParams['font.size'] = 9
 P.figure(figsize=(5.5, 6))
 kwplot = dict(show=False,vmin=v.min(),vmax=v.max(),alpha=.7)
 for ilh,resdst  in enumerate(['basse', 'haute']):
@@ -43,6 +41,5 @@ for ilh,resdst  in enumerate(['basse', 'haute']):
     P.title(u'Vers la %s resolution'%resdst)
     if not ilh: P.legend(loc='lower left').legendPatch.set_alpha(.6)
 
-savefigs(__file__, pdf=True)
-P.close()
+
 

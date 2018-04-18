@@ -1,6 +1,7 @@
+import cdms2, numpy as N, MV2, pylab as P
+from vcmq import data_sample, curve2, stick2, bar2
+
 # Read data
-import cdms2, numpy as N, MV2
-from vacumm.config import data_sample
 select = dict(time=('2008-10-12', '2008-10-15', 'cc'), squeeze=1)
 f = cdms2.open(data_sample('wrf_1d.nc'))
 u = f('u10m', **select)
@@ -12,8 +13,6 @@ nt = len(u)
 
 
 # Plots
-from vacumm.misc.plot import curve2, stick2, bar2
-import matplotlib.pyplot as P
 P.rc('font', size=9)
 P.figure(figsize=(5.5, 6))
     
@@ -47,5 +46,4 @@ lp = curve2(p, color='g', vminmax=1015, ymaxmin=1025, twin='x',
     zorder=150, title=False, ylabel = '%(long_name)s [$%(units)s$]', 
     ylabel_color='g', shadow=True, show=False)
     
-lp.savefigs(__file__, pdf=True)
 

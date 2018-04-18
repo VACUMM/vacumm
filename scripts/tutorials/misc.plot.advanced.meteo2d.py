@@ -1,9 +1,5 @@
 import cdms2, MV2
-from vacumm.misc.plot import map2
-from vacumm.misc.color import cmap_custom
-from vacumm.misc.filters import generic2d
-from vacumm.misc.phys.units import ms2kt
-from vacumm.config import data_sample
+from vcmq import map2, cmap_custom, generic2d, ms2kt, data_sample
 from matplotlib import rc
 rc('font', size=9)
 
@@ -37,5 +33,5 @@ u[:] = ms2kt(u*5)
 v[:] = ms2kt(v*5)
 m = map2((u[::3, ::3], v[::3, ::3]), fill=False, contour=False, barbs=True, projection='merc',
     quiver_sizes=dict(height=.2, spacing=.15), quiver_linewidths=.8, zorder=10,
-    shadow=True, quiver_alpha=.5, savefigs=__file__, show=False, savefigs_pdf=True,
+    shadow=True, quiver_alpha=.5, show=False, 
     fillcontinents=False)

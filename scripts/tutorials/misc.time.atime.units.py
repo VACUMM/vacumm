@@ -1,8 +1,7 @@
 from __future__ import print_function
-import numpy as N
-from vacumm.misc.atime import (are_valid_units,  ch_units,  are_same_units, mpl,
-    strftime, tz_to_tz, now, to_utc, utc_to_paris)
-from vacumm.misc.axes import create_time
+import numpy as N, MV2
+from vcmq import (are_valid_units,  ch_units,  are_same_units, mpl,
+    strftime, tz_to_tz, now, to_utc, utc_to_paris, create_time)
 
 
 # We define units
@@ -37,7 +36,6 @@ print(taxis_mpl[0], taxis_mpl.units)
 #  -> 730134.25 days since 0001
 
 # Change the time units of a variable
-import MV2
 var = MV2.array(MV2.arange(len(taxis)), dtype='f', axes=[taxis])
 ch_units(var, 'hours since 2000-01-15 06')
 print(var.getTime()[0:2])

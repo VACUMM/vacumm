@@ -1,6 +1,7 @@
 # On construit un grille reguliere
 import numpy as N
-from vacumm.misc.grid import meshbounds
+import pylab as P
+from vcmq import meshbounds
 xr = N.arange(20.)
 yr = N.arange(10.)
 xxr, yyr = N.meshgrid(xr, yr)
@@ -22,8 +23,6 @@ zirn = griddata(xi, yi, zi, (xr, yr), method='nat', ext=True, sub=6)
 zirk = griddata(xi, yi, zi, (xr, yr), method='carg')
 
 # Plot de verif
-import pylab as P
-from vacumm.misc.plot import savefigs
 P.figure(1, figsize=(6, 8))
 P.subplots_adjust(hspace=.3, bottom=.05, top=.95, left=.06)
 # - regulier
@@ -44,5 +43,3 @@ P.pcolor(xrb, yrb, zirk, **vminmax)
 P.plot(xi, yi, 'ko')
 P.xlim(xrb.min(), xrb.max()) ; P.ylim(yrb.min(), yrb.max())
 P.title('Minicargen (err = %02i%%)'%((zzr-zirk).std()*100/stdref))
-savefigs(__file__)
-P.close()

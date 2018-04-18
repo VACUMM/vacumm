@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import os, sys
-import vacumm.misc.log as L
+from vcmq import Logger
 
-l1 = L.Logger(name='L1', level='info', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-l2 = L.Logger(name='L2', level='debug', format='[%(asctime)s %(name)s %(levelname)s] %(message)s', date_format='%H:%M:%S')
+l1 = Logger(name='L1', level='info', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+l2 = Logger(name='L2', level='debug', format='[%(asctime)s %(name)s %(levelname)s] %(message)s', date_format='%H:%M:%S')
 l1.info('info from logger l1')
 l1.debug('debug from logger l1')
 l2.info('info from logger l2')
@@ -16,7 +16,7 @@ l1.info('info from logger l1')
 l1.debug('debug from logger l1')
 
 lf = '%s.%s.log'%(os.path.splitext(sys.argv[0])[0], os.getpid())
-l = L.Logger(
+l = Logger(
     name=os.path.basename(sys.argv[0]),
     level='debug',
     logfile=dict(

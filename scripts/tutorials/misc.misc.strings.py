@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
-# Opérations
 from __future__ import print_function
+
+# Opérations
 print('aaa'+"bbb")
 #   -> aaabbb
 print('-'*50)

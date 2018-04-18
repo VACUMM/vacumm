@@ -1,13 +1,13 @@
 # -*- coding: utf8 -*-
+import cdms2, pylab as P
+from vcmq import data_sample, Marigraph
+
 # Lecture du niveau de la mer
-import cdms2
-from vacumm.config import data_sample
 f = cdms2.open(data_sample('tide.sealevel.BREST.mars.nc'))
 sea_level = f('sea_level', time=('2006-10', '2006-10-07'))
 f.close()
 
 # Initialisation de l'objet marégraphique
-from vacumm.tide.marigraph import Marigraph
 mg = Marigraph(sea_level, verbose=True)
 
 # Extraction du signal de maree
@@ -26,7 +26,6 @@ lows = mg.lows(ref=ref)
 zeros = mg.zeros(ref=ref)
 
 # On plot
-import pylab as P
 P.rc('font', size=10)
 P.figure(figsize=(5, 5))
 kwplot = dict(date_fmt='%d/%m', date_locator='day', show=False, hspace=.2,  left=.15)
@@ -35,5 +34,4 @@ P.subplot(211)
 mg.plot(orig=False, tide_color='k', title='Extremas et zeros', xhide=True, **kwplot)
 # - seules les surcotes decotes
 P.subplot(212)
-mg.plot('cotes', savefigs=__file__, savefigs_pdf=True, title='Surcotes et decotes', **kwplot)
-P.close()
+mg.plot('cotes', title='Surcotes et decotes', **kwplot)

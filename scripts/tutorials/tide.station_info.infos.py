@@ -1,7 +1,8 @@
 # -*- coding: utf8 -*-
-# On cherche directement 'Bre' pour Brest
 from __future__ import print_function
 from vacumm.tide.station_info import StationInfo
+
+# On cherche directement 'Bre' pour Brest
 station = StationInfo('Bre')
 # ->:
 #Chargement de la station suivante :

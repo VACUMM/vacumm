@@ -1,12 +1,14 @@
 # -*- coding: utf8 -*-
-# On charge le fichier
 from __future__ import print_function
 from future import standard_library
 standard_library.install_aliases()
 from configparser import SafeConfigParser
+import os
+
+# On charge le fichier
 config = SafeConfigParser()
-import os;print(os.getcwd())
-config.read('misc.io.config.in.ini')
+print(os.getcwd())
+config.read('misc.io.config.in.ini') # FIXME: code_file_name?
 
 # List des sections
 print(config.sections())

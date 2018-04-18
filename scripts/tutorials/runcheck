@@ -113,7 +113,7 @@ warnings.showwarning = Warner(logger).showwarning
 
 # Run them all
 import subprocess, traceback
-from matplotlib import rcdefaults
+from matplotlib import rcdefaults, pyplot as P
 rcdefaults()
 igood = 0
 ibad = 0
@@ -138,6 +138,7 @@ for script in files:
         logger.debug(traceback.format_exc())
         result = 'FAILED'
         report_func = logger.error
+    P.close()
     report_func('{}: {} [{:.1f}s]'.format(base_script, result, _time_()-t0_))
     rcdefaults()
 

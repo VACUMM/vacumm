@@ -1,5 +1,6 @@
 from __future__ import print_function
 import cdtime
+from vcmq import is_comptime,is_reltime
 
 # Creer un objet 'comptime' : temps absolu
 # - en specifiant tout (annee,mois,jour,heure,minute,seconde)
@@ -39,5 +40,4 @@ print(ctime2 <= ctime)
 #  -> False
 
 # Verification des types
-from vacumm.misc.atime import is_comptime,is_reltime
 print(is_comptime(ctime),is_reltime(rtime))

@@ -1,5 +1,7 @@
-# Construction des jeux de donnees
 import MV2, numpy as N
+from vcmq import taylor
+
+# Construction des jeux de donnees
 nt = 50
 # - reference
 ref = MV2.sin(MV2.arange(nt, dtype='f'))*10.
@@ -11,8 +13,7 @@ model2 = ref/2.+N.random.rand(nt)*15.
 model2.long_name = 'Model 2'
 
 # Plot
-from vacumm.misc.plot import taylor
 taylor([model1, model2], ref, figsize=(8, 8), label_size='large', size=15,
     labels = ['Good model', None], colors='cyan', title_size=18,
-    savefigs=__file__,  savefigs_pdf=True, show=False, close=True)
+    show=False)
 

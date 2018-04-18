@@ -29,10 +29,10 @@ time.units = 'days since 2006-08-01'
 time.designateTime() # time.axis = 'T'
 # - verif
 ctime = time.asComponentTime()
-print(ctime,ctime[1].day)
+print(ctime, ctime[1].day)
 #  -> [2006-8-1 0:0:0.0, 2006-8-2 0:0:0.0, 2006-8-3 0:0:0.0] 2
 rtime = time.asRelativeTime()
-print(rtime,rtime[1].value)
+print(rtime, rtime[1].value)
 #  -> [0.00 days since 2006-08-01, 1.00 days since 2006-08-01,
 #      2.00 days since 2006-08-01] 1.0
 

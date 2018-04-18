@@ -1,7 +1,8 @@
 from __future__ import print_function
+from vcmq import XYZ, data_sample
+import pylab as P
+
 # Lecture d'un fichier xyz et plot
-from vacumm.misc.io import XYZ
-from vacumm.config import data_sample
 xyz = XYZ(data_sample('celtic_sea.xyz'))
 
 # Verifs
@@ -21,7 +22,6 @@ print(xyz.z.max())
 #  -> -141.0
 
 # Plot
-import pylab as P
 P.figure(figsize=(5.5, 8))
 P.subplots_adjust(left=.12, top=.96, right=1, bottom=.06)
 P.subplot(211)
@@ -33,10 +33,9 @@ xyz_zoom = xyz.clip((-6, 51.5, -4, 52.5), long_name='Zoom')
 P.subplot(212)
 xyz_zoom.plot(m=True, savefigs=__file__, size=7,
     show=False, cmap='cmap_bathy')
-P.close()
 
 # Sauvegarde
-xyz_zoom.save('zoom.xyz')
+xyz_zoom.save('zoom.xyz') # WARNING: code_file_name?
 
 # Autres exemples d'initialisations
 xyz2 = XYZ(xyz.xyz)

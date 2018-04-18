@@ -1,8 +1,11 @@
-# Read
 from __future__ import print_function
 from builtins import range
 import cdms2, MV2
-from vacumm.config import data_sample
+import pylab as P
+from vcmq import data_sample, map2, make_movie, auto_scale, savefigs
+from matplotlib import rc
+
+# Read
 f=cdms2.open(data_sample('mars2d.xyt.nc'))
 u = f('u', time=slice(0, 5))
 v = f('v', time=slice(0, 5))
@@ -11,10 +14,7 @@ f.close()
 mod = MV2.sqrt(u**2+v**2)
 
 # Plots
-from matplotlib import rc ; rc('font', size=9)
-from vacumm.misc.plot import map2, savefigs, make_movie
-from vacumm.misc import auto_scale
-import pylab as P
+rc('font', size=9)
 m=None
 levels = auto_scale(mod,nmax=10, vmin=0.)
 nt = len(u)

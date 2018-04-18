@@ -1,7 +1,6 @@
 # -*- coding: utf8 -*-
 import cdms2
-from vacumm.misc.plot import curve2
-from vacumm.config import data_sample
+from vcmq import curve2, data_sample
 
 # Trace de la moyenne spatiale
 # - lecture
@@ -19,8 +18,7 @@ zsst = cdms2.MV2.average(f('temp'), axis=0)
 f.close()
 # - plot
 curve2(zsst, title=u'SST zonale', color='r', show=False, close=True,
-    subplot=212,top=.9,hspace=.4,left=.15,bottom=.07,
-    savefigs=__file__)
+    subplot=212, top=.9, hspace=.4, left=.15, bottom=.07)
 
 
 

@@ -1,6 +1,6 @@
 from __future__ import print_function
-import time,datetime,cdtime
-from vacumm.misc.atime import is_datetime,is_cdtime
+import time, datetime, cdtime
+from vcmqe import is_datetime,is_cdtime
 
 # Le temps de base : time
 # - heure locale

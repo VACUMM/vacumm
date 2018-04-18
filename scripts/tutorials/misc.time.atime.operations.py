@@ -1,9 +1,8 @@
 from __future__ import print_function
-from vacumm.misc.atime import *
-from vacumm.misc.axes import create_time
-from matplotlib.dates import date2num
 from datetime import datetime as Datetime
 import cdtime
+from vcmq import (create_time, date2num, strtime, comptime, numtime, add, 
+    datetime, utc_to_paris, paris_to_utc)
 
 # Comversions
 ct = comptime('2000-01')

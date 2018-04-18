@@ -80,4 +80,3 @@ m.add_mscp(pos='upper left')
 
 P.tight_layout()
 P.subplots_adjust(bottom=0.08)
-m.savefigs(__file__)
