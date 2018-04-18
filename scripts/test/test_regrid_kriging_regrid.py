@@ -1,11 +1,11 @@
-"""Test function :func:`~vacumm.misc.grid.kriging.krig` for grid refinement"""
+"""Test function :func:`~vacumm.misc.kriging.krig` for grid refinement"""
 
 nxi = 15
 nyi = 10
 r = 3
 
-from vcmq import P, savefigs, code_file_name, N, auto_scale, add_grid
-from vacumm.misc.grid.kriging import gridded_gauss3, random_gauss3, random_points, krig
+from vcmq import P, savefigs, N, auto_scale, add_grid, krign as krig
+from vacumm.misc.kriging import gridded_gauss3
 
 # Generate random gridded field
 xi, yi, zzi = gridded_gauss3(nx=nxi, ny=nyi)

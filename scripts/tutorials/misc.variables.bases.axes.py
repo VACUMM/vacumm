@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as N, cdms2, MV2
 
 # Creation d'un axe de longitude
@@ -28,10 +29,10 @@ time.units = 'days since 2006-08-01'
 time.designateTime() # time.axis = 'T'
 # - verif
 ctime = time.asComponentTime()
-print ctime,ctime[1].day
+print(ctime,ctime[1].day)
 #  -> [2006-8-1 0:0:0.0, 2006-8-2 0:0:0.0, 2006-8-3 0:0:0.0] 2
 rtime = time.asRelativeTime()
-print rtime,rtime[1].value
+print(rtime,rtime[1].value)
 #  -> [0.00 days since 2006-08-01, 1.00 days since 2006-08-01,
 #      2.00 days since 2006-08-01] 1.0
 
@@ -42,7 +43,7 @@ temp1 = cdms2.createVariable(N.ones((3,3,3,3)),typecode='f',id='temp',
     fill_value=1.e20,axes=[time,depth,lat,lon],copyaxes=0,
     attributes=dict(long_name='Temperature',units='degC'))
 # - remarque
-print cdms2.createVariable is MV2.array
+print(cdms2.createVariable is MV2.array)
 #  -> True         (ce sont les meme fonctions !)
 # - une methode indirecte
 #   . initialisation

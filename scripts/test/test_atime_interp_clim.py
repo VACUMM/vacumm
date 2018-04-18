@@ -1,6 +1,6 @@
 """Test :func:`~vacumm.misc.atime.interp_clim`"""
 from builtins import range
-from vcmq import (code_file_name, interp_clim, MV2, N, create_time, lindates, curve,
+from vcmq import (interp_clim, MV2, N, lindates, curve,
     strftime)
 
 # Original clim

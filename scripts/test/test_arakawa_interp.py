@@ -1,7 +1,7 @@
 """Test :meth:`vacumm.data.misc.arakawa.CGrid.interp`"""
 
-from vcmq import MV2, N, create_grid, create_dep, set_grid, map2, \
-    code_file_name, CGrid, minmax, curve2, add_grid
+from vcmq import (MV2, N, create_grid, create_dep, set_grid, map2,
+    CGrid, minmax, curve2, add_grid)
 
 # Initial variable
 grid = create_grid(N.arange(-7, 0.), N.arange(43, 50.))

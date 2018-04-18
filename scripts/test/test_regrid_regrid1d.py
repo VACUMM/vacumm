@@ -1,6 +1,5 @@
-"""Test the :func:`~vacumm.misc.grid.regridding.regrid1d` function"""
-from vcmq import N,MV2, create_dep, create_time, P,meshcells, minmax, code_file_name
-from vacumm.misc.grid.regridding import regrid1d
+"""Test the :func:`~vacumm.misc.regridding.regrid1d` function"""
+from vcmq import N,MV2, create_dep, P,meshcells, minmax, regrid1d
 
 nt = 2
 nx = 4
@@ -8,7 +7,7 @@ ny = 3
 result = []
 
 
-def myplot(vari, depi, varol, varoc, depo, figfile):
+def myplot(vari, depi, varol, varoc, depo):
     def getdv(var, dep):
         v = var[1, :, 1, :]
         if dep[:].ndim==var.ndim:
@@ -34,7 +33,6 @@ def myplot(vari, depi, varol, varoc, depo, figfile):
     P.ylim(ymin=min(ybi.min(), ybo.min()), ymax=max(ybi.max(), ybo.max()))
     P.title('Cellave')
     P.tight_layout()
-    P.savefig(figfile)
 
 
 # 1d->1d
@@ -47,7 +45,7 @@ varol1 = regrid1d(vari, depo1d, method='linear')
 varol2 = regrid1d(vari, depo1d, method='linear', iaxi=0, iaxo=0, axi=depi1d)
 result.append(('assertEqual', [(varol1-varol2).std(), 0]))
 varoc = regrid1d(vari, depo1d, method='cellave')
-myplot(vari, depi1d, varol1, varoc, depo1d, code_file_name(ext='_0.png'))
+myplot(vari, depi1d, varol1, varoc, depo1d)
 
 
 # 4d->1d
@@ -64,7 +62,7 @@ varol1 = regrid1d(vari, depo1d, method='linear', axi=depi4d)
 varol2 = regrid1d(vari, depo1d, method='linear', iaxi=1, axi=depi4d)
 result.append(('assertEqual', [(varol1-varol2).std(), 0]))
 varoc = regrid1d(vari, depo1d, method='cellave', iaxi=1, axi=depi4d)
-myplot(vari, depi4d, varol1, varoc, depo1d, code_file_name(ext='_1.png'))
+myplot(vari, depi4d, varol1, varoc, depo1d)
 
 
 # 4d->4d
@@ -86,7 +84,7 @@ varol1 = regrid1d(vari, depo4d, axis=1, method='linear', axi=depi4d)
 varol2 = regrid1d(vari, depo4d, axis=1, method='linear', iaxi=1, axi=depi4d, iaxo=1)
 result.append(('assertEqual', [(varol1-varol2).std(), 0]))
 varoc = regrid1d(vari, depo4d, axis=1, method='cellave', iaxi=1, axi=depi4d, iaxo=1)
-myplot(vari, depi4d, varol1, varoc, depo4d, code_file_name(ext='_2.png'))
+myplot(vari, depi4d, varol1, varoc, depo4d)
 
 
 # 4d->3d
@@ -108,7 +106,7 @@ varol1 = regrid1d(vari, depo3d, axis=1, method='linear', axi=depi4d)
 varol2 = regrid1d(vari, depo3d, axis=1, method='linear', iaxi=1, axi=depi4d, iaxo=0)
 result.append(('assertEqual', [(varol1-varol2).std(), 0]))
 varoc = regrid1d(vari, depo3d, axis=1, method='cellave', iaxi=1, axi=depi4d, iaxo=0)
-myplot(vari, depi4d, varol1, varoc, depo3d, code_file_name(ext='_3.png'))
+myplot(vari, depi4d, varol1, varoc, depo3d)
 
 # 4d->1d avec extrap=2
 depi1d = N.arange(-4500., 1, 500)
@@ -124,8 +122,6 @@ varol1 = regrid1d(vari, depo1d, method='linear', axi=depi4d, extrap=2)
 varol2 = regrid1d(vari, depo1d, method='linear', iaxi=1, axi=depi4d, extrap=2)
 result.append(('assertEqual', [(varol1-varol2).std(), 0]))
 varoc = regrid1d(vari, depo1d, method='cellave', iaxi=1, axi=depi4d, extrap=2)
-myplot(vari, depi4d, varol1, varoc, depo1d, code_file_name(ext='_4.png'))
-
-P.close()
+myplot(vari, depi4d, varol1, varoc, depo1d)
 
 

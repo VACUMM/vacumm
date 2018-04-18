@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+from __future__ import print_function
 from vcmq import *
 
 # Read data
@@ -17,19 +18,19 @@ lon1d = create_lon(N.arange(lon2d.min(), lon2d.max()+dlon/2., dlon))
 lat1d = create_lat(N.arange(lat2d.min(), lat2d.max()+dlat/2., dlat))
 rgrid = cdms2.createRectGrid(lat1d, lon1d)
 
-print 'Regridding'
-print ' - nearest neighbours'
+print('Regridding')
+print(' - nearest neighbours')
 hs_nearest = regrid2d(hs, rgrid, method='nearest')
-print ' - cell averages'
+print(' - cell averages')
 hs_cell = regrid2d(hs, rgrid, method='cellave')
-print ' - bilinear'
+print(' - bilinear')
 hs_bilin = regrid2d(hs, rgrid, method='bilinear')
-print ' - patch'
+print(' - patch')
 hs_pat = regrid2d(hs, rgrid, method='patch')
-print ' - dstwgt'
+print(' - dstwgt')
 hs_dst = regrid2d(hs, rgrid, method='dstwgt')
 
-print 'Plots'
+print('Plots')
 rc('font', size=11)
 P.figure(figsize=(6.5, 9))
 P.subplots_adjust(hspace=.22, bottom=.06, left=.09, right=.98, top=.95)

@@ -1,6 +1,6 @@
 """Test :func:`~vacumm.misc.grid.misc.get_distances`"""
 
-from vcmq import code_file_name, P, os, N
+from vcmq import N
 from vacumm.misc.grid import get_distances
 
 result = []

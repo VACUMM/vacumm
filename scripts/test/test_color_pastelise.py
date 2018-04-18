@@ -1,7 +1,7 @@
 """Test :class:`~vacumm.misc.color.pastelise` """
 
 # Imports
-from vcmq import P, pastelise, code_file_name, plot_cmap
+from vcmq import P, pastelise, plot_cmap
 
 cmap_name = "jet"
 cmap_old = P.get_cmap(cmap_name)
@@ -19,7 +19,4 @@ P.subplot(212)
 plot_cmap(cmap_new, title='Pastelised', **kw)
 P.tight_layout()
 P.figtext(.5, 1, 'Pastelise '+cmap_name, va='top', ha='center', size=12)
-P.show()
-P.savefig(code_file_name(ext='png'))
-P.close()
 

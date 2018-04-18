@@ -1,30 +1,32 @@
 # Read
+from __future__ import print_function
+from builtins import range
 import cdms2, MV2
 from vacumm.config import data_sample
 f=cdms2.open(data_sample('mars2d.xyt.nc'))
-u = f('u')
-v = f('v')
-h0=f('h0')
+u = f('u', time=slice(0, 5))
+v = f('v', time=slice(0, 5))
+h0 = f('h0', time=slice(0, 5))
 f.close()
 mod = MV2.sqrt(u**2+v**2)
 
 # Plots
 from matplotlib import rc ; rc('font', size=9)
-from vacumm.misc.plot import map2 as map, savefigs, make_movie
+from vacumm.misc.plot import map2, savefigs, make_movie
 from vacumm.misc import auto_scale
-import gc, pylab as P
+import pylab as P
 m=None
 levels = auto_scale(mod,nmax=10, vmin=0.)
 nt = len(u)
-for it in xrange(nt):
-    print it
+for it in range(nt):
+    print(it)
 
     # Bathymetry
-    m=map(h0, show=False, close=False, nofill=True, linewidth=.3,
-        proj='merc', fmt='%i m', m=m, contour_colors='#555555', )
+    m = map2(h0, show=False, close=False, nofill=True, linewidth=.3,
+        proj='merc', fmt='%i m', m=m, contour_colors='#555555', fig='new')
 
     # Currents
-    map((u[it], v[it]), m=m, nofill=True,
+    map2((u[it], v[it]), m=m, nofill=True,
         quiverkey_value=1,
         quiver_scale=.05,
         quiver_units='dots',
@@ -42,8 +44,6 @@ for it in xrange(nt):
     # Save
     P.savefig('quiver%02i.png'%it)
     if it==0: savefigs(__file__[:-3]+'_png.png')
-    P.close()
-    gc.collect()
 
 # Animations
 outbase=__file__[:-3].replace('.', '-')
@@ -51,4 +51,4 @@ outbase=__file__[:-3].replace('.', '-')
 make_movie('quiver*.png', outbase+'.gif')
 # - video compatible windows
 #make_movie('quiver*.png', outbase+'_mpg.mpg', clean=True)
-print 'Done'
+print('Done')

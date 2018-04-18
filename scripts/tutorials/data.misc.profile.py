@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from builtins import range
 import datetime
 import cdms2, numpy, pylab
 import vacumm.data.misc.profile as P
@@ -82,10 +83,10 @@ for i in range(1,npro):
     profiles.append(
         P.Profile(
             platform_code='PRF%d'%i,
-            datetime=datetime.datetime(2000, 01, 01, i),
+            datetime=datetime.datetime(2000, 0o1, 0o1, i),
             latitude=46+0.1*i,
             longitude=-8+0.1*i,
-            depth=cdms2.createVariable(range(i))*-10.0,
+            depth=cdms2.createVariable(list(range(i)))*-10.0,
             variables=dict(
                 var1=cdms2.createVariable(numpy.random.rand(i)),
                 var2=cdms2.createVariable(numpy.random.rand(i)))))
@@ -94,10 +95,10 @@ i += 1
 profiles.append(
         P.Profile(
             platform_code='PRF%d'%i,
-            datetime=datetime.datetime(2000, 01, 01, i),
+            datetime=datetime.datetime(2000, 0o1, 0o1, i),
             latitude=46+0.1*i,
             longitude=-8+0.1*i,
-            depth=cdms2.createVariable(range(i))*-10.0,
+            depth=cdms2.createVariable(list(range(i)))*-10.0,
             variables=dict(var1=cdms2.createVariable(numpy.random.rand(i)))))
 
 # Note that variables must be specified, otherwise the default ('temperature','salinity') is used

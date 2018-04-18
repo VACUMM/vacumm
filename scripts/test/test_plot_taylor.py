@@ -1,5 +1,5 @@
 """Test function :func:`~vacumm.misc.plot.taylor` in different configurations"""
-from vcmq import taylor, rc, rcdefaults, MV2, N
+from vcmq import taylor, rc, rcdefaults, MV2, N, P
 
 # Make some data
 nt = 50
@@ -17,6 +17,7 @@ dat2.long_name = 'Set 2'
 
 # Plot
 rc('font', size=8)
+kwplot = dict(show=False)
 # - single variable
 P.figure(figsize=(5,5))
 taylor(dat1[0], ref1, colors='cyan', title='Basic', **kwplot)

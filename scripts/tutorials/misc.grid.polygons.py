@@ -1,4 +1,6 @@
+from __future__ import print_function
 # Importation des formes depuis la libraire de polygones
+from builtins import zip
 from _geoslib import Point, LineString, Polygon
 
 # Polygone
@@ -8,7 +10,7 @@ pp = N.array([[5., 5.], [25., 5.], [25., 25.], [15., 25.]])
 # - transformation de numpy a Polygon
 poly = Polygon(pp)
 # - calcul de l'aire
-print poly.area()
+print(poly.area())
 #  -> 300.0
 # - plot grace a 'boundary'='get_coord()' (= pp)
 import pylab as P
@@ -39,7 +41,7 @@ line = LineString(xy.transpose())
 # - plot
 P.plot(xy[0], xy[1], '-r')
 # - intersection (via 'intersects()') ?
-print line.intersects(poly)
+print(line.intersects(poly))
 #  -> True
 # - plot des intersections (via intersection)
 for subline in line.intersection(poly): # = poly.intersection(line)

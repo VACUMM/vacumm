@@ -1,5 +1,5 @@
 """Test the :func:`~vacumm.misc.grid.masking.polygons` function"""
-from vcmq import N, P, polygons, create_polygon, plot_polygon, create_grid
+from vcmq import N, polygons, create_polygon, plot_polygon, create_grid
 from _geoslib import Polygon
 
 # Data
@@ -13,7 +13,7 @@ def plot_polygons(polys, **kwargs):
         plot_polygon(p, **kwargs)
 
 # Single known argument
-pp0 = polygons(Polygon(N.array([xx, yy]).T))
+pp0 = create_polygon(Polygon(N.array([xx, yy]).T))
 
 # Classic data
 pp0 = polygons([N.array([xx, yy]), N.array([xx, yy]).T+6.])

@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 # Lecture du niveau de la mer sur 9 pas de temps à une latitude
+from __future__ import print_function
 import cdms2, MV2
 from vacumm.config import data_sample
 f =cdms2.open(data_sample('mars3d.xt.xe.nc'))
@@ -54,7 +55,7 @@ xscale(1.1, keep_min=1)
 hov2(xe_nea, subplot=423, **kwhov)
 P.axis(axlims)
 curve2(xe[:, 15], 'o', subplot=424, **kwcurve)
-print 'ok'
+print('ok')
 curve2(xe_nea[:, 15], **kwplot)
 xscale(1.1, keep_min=1)
 # - linear

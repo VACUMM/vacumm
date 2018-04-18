@@ -1,4 +1,4 @@
-"""Test function :func:`~vacumm.misc.grid.kriging.OrdinaryKriger` in parallel and multifit modes"""
+"""Test function :func:`~vacumm.misc.kriging.OrdinaryKriger` in parallel and multifit modes"""
 
 # Params
 npi = 2000 # number of input points
@@ -7,9 +7,9 @@ npmax = 500 # max size of clouds
 nproc = 2 # max number of procs
 
 # Imports
-from vcmq import P, savefigs, code_file_name, N
-from vacumm.misc.grid.kriging import (gridded_gauss3, random_gauss3,
-    random_points, OrdinaryCloudKriger)
+from vcmq import P, N, OrdinaryCloudKriger
+from vacumm.misc.kriging import (gridded_gauss3, random_gauss3,
+    random_points)
 from time import time
 
 # Random and gridded input fields
@@ -42,6 +42,5 @@ P.imshow(zzg, **kwim)
 P.scatter(xo, yo, c=zo if zo.ndim==1 else zo[0], s=40, **kwsc)
 P.title('Interpolated points')
 P.tight_layout()
-savefigs(code_file_name(), verbose=False)
-P.close()
+
 

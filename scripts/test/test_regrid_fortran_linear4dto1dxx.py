@@ -1,7 +1,7 @@
 
 """Test the fortran function :f:func:`linear4dto1d`"""
-from vcmq import N, P, meshcells, minmax, code_file_name, os
-from vacumm.misc.grid._interp_ import linear4dto1dxx
+from vcmq import N
+from vacumm.fortran.interp import linear4dto1dxx
 # vo = linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,mv,[nxi,nyi,nyix,nxiy,nyiz,nxiz,nzi,nti,ntiz,no,nex])
 
 # Bases

@@ -1,10 +1,9 @@
-"""Test class :func:`~vacumm.misc.grid.kriging.OrdinaryCloudKriger`"""
+"""Test class :func:`~vacumm.misc.kriging.OrdinaryCloudKriger`"""
 
 npi = 50
 
-from vcmq import P, savefigs, code_file_name
-from vacumm.misc.grid.kriging import (gridded_gauss3, random_gauss3,
-    random_points, OrdinaryCloudKriger)
+from vcmq import P, OrdinaryCloudKriger
+from vacumm.misc.kriging import (gridded_gauss3, random_gauss3)
 
 # Generate random field
 xg, yg, zzg = gridded_gauss3()
@@ -52,5 +51,3 @@ P.xlabel('Distance')
 P.ylabel('Error')
 P.title('Fitted variogram')
 P.tight_layout()
-savefigs(code_file_name(), verbose=False)
-P.close()

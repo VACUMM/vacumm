@@ -1,8 +1,7 @@
 """Test :func:`~vacumm.misc.plot.add_logo`"""
 
 # Imports
-from vcmq import N, P, add_logo, os, data_sample
-import matplotlib.image as mpimg
+from vcmq import P, add_logo, data_sample
 
 # Inits
 logofile = data_sample('logo_ifremer.png')
@@ -21,4 +20,3 @@ add_logo(logofile, loc='upper left', scale=2)
 # Alpha
 add_logo(logofile, loc='lower right', alpha=0.2)
 
-P.sshow()

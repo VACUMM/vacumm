@@ -21,7 +21,7 @@ for var in u,w:
     var.units = 'm/s'
 
 # Plot
-section2((u,w), quiver_norm=1, fill=False, axes_aspect=1)
+section2((u,w), quiver_norm=1, fill=False, axes_aspect=1, show=False)
 
 
 

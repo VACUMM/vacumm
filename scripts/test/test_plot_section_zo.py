@@ -19,10 +19,10 @@ z2d *= N.arange(1., nd+1)/nd
 
 # Plot with z 1D
 rc('font', size=8)
-kw = dict(bgcolor='0.5')
+kw = dict(bgcolor='0.5', show=False)
 section2(var, subplot=211, **kw)
 
 # Plot with z 2D
-section2(var, yaxis=z2d, subplot=212, show=True, **kw)
+section2(var, yaxis=z2d, subplot=212, **kw)
 
 

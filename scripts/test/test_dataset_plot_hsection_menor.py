@@ -5,11 +5,11 @@ ncfile = "menor.nc"
 depth = -1000.
 
 # Imports
-from vcmq import DS, data_sample, os
+from vcmq import DS, data_sample
 
 # Setup dataset
 ds = DS(data_sample(ncfile), 'mars', logger_level='critical')
 
 # Plot hsection
-ds.plot_hsection('temp', depth, savefig=figfile, fill='contourf')
+ds.plot_hsection('temp', depth, fill='contourf', show=False)
 

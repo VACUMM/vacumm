@@ -1,5 +1,5 @@
 """Test :class:`~vacumm.misc.misc.CaseChecker`"""
-from vcmq import CaseChecker, VACUMMError, assert_raises
+from vcmq import CaseChecker
 
 c1 = CaseChecker(['mode1', 'mode2'], casename='mode')
 assert c1.isvalid('mode1') is True

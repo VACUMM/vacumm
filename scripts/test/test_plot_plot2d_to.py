@@ -15,4 +15,4 @@ y.units = 'Hz'
 y.long_name = 'Frequency'
 
 # Plot
-plot2d(var, fill='pcolor', order='t-')
+plot2d(var, fill='pcolor', order='t-', show=False)

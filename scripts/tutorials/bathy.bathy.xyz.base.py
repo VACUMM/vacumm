@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Modules
 import numpy as N,  os
 from vacumm.bathy.bathy import XYZBathy
@@ -31,7 +32,7 @@ xyz.select([[-5.4, 48.1], [-4.8, 48.1], [-5.1, 48.5]])
 xyz.exclude([-5.2, 48., -5, 48.25])
 
 # Infos
-print xyz
+print(xyz)
 
 # Recuperation des valeurs
 x = xyz.x
@@ -40,26 +41,26 @@ z = xyz.z
 
 # Extensions
 # - en tenant compte des zones de selection et exclusion
-print  'Limites :', xyz.xmin,  xyz.xmax, xyz.ymin,  xyz.ymax
+print('Limites :', xyz.xmin,  xyz.xmax, xyz.ymin,  xyz.ymax)
 # - donnees brutes
-print  'X min brut :', xyz.get_xmin(mask=False),   xyz.get_x(mask=False).min()
+print('X min brut :', xyz.get_xmin(mask=False),   xyz.get_x(mask=False).min())
 
 # Resolution moyenne
-print 'Resolution geographique :', xyz.resol(deg=True)
-print 'Resolution metrique :', xyz.resol()
+print('Resolution geographique :', xyz.resol(deg=True))
+print('Resolution metrique :', xyz.resol())
 
 # Definition auto d'une grille reguliere
 grid_auto = xyz.grid
-print 'Resolution grille auto :', resol(grid_auto)
+print('Resolution grille auto :', resol(grid_auto))
 
 # Interpolation sur grille auto
-print 'Interpolation auto'
+print('Interpolation auto')
 gridded_auto = xyz.togrid()
 #  equivalent a :
 #  >>> gridded_auto = xyz.togrid(xyz.grid)
 
 # Interpolation sur grille manuelle
-print 'Interpolation et masquage manuels puis extraction'
+print('Interpolation et masquage manuels puis extraction')
 # - defintion de la grille
 grid_manual = create_grid((-5.3, -4.91, .01), (48.1, 48.41, .01))
 # - interpolation
@@ -71,13 +72,13 @@ xyz_up = xyz.clip(zone=(None, None, None, 48.3), margin=2)
 #   -> ici : ymax = 48.3 + xyz.resol()[1]*2
 
 # Sauvegarde
-print 'Sauvegarde'
+print('Sauvegarde')
 prefix = __file__[:-2]+'up'
 xyz_up.save(prefix+'.xyz') # ascii
 xyz_up.save(prefix+'.nc')  # netcdf/grd
 
 # Plots
-print 'Plots'
+print('Plots')
 # - init
 P.figure(figsize=(4.5, 8))
 P.rc('font', size=8)

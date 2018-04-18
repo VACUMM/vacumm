@@ -15,5 +15,5 @@ y.units = 'Hz'
 y.long_name = 'Frequency'
 
 # Plot
-plot2d(var)
+plot2d(var, show=False)
 

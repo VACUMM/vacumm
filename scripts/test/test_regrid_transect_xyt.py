@@ -11,8 +11,8 @@ time1 = "2008-08-15 16:00"
 
 
 # Imports
-from vcmq import cdms2, data_sample, N, transect, stick2, code_file_name, os, \
-    transect_specs, add_map_lines, create_time, IterDates, P
+from vcmq import (cdms2, data_sample, transect, stick2, 
+    transect_specs, add_map_lines)
 
 # Read data
 f = cdms2.open(data_sample(ncfile))
@@ -34,8 +34,3 @@ s = stick2(tu, tv, figsize=(8,3), title='Space-time transect of speed',
 
 # Add a small map to show the transect positions
 add_map_lines(u.getGrid(), tlons, tlats, map_zoom=0.5)
-
-# Save
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
-s.savefig(figfile, pdf=True)

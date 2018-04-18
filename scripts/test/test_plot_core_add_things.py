@@ -27,7 +27,6 @@ m.add_line([-8, 46, -1, 50], color='b')
 m.add_lines([-8, -1, -4, -8], [45, 45, 47, 45], color='r', linewidth=2, shadow=True)
 m.add_box([-8, 46, -1, 50], color='c')
 
-m.savefig(figfile%0)
 
 
 # Test with dates
@@ -36,5 +35,3 @@ time = create_time(['2000', '2005'], units='years since 2000')
 var.setAxis(0, time)
 c = curve2(var, show=False, fig='new')
 c.add_point('2001', 4, marker='+', size=100, linewidth=2)
-c.savefig(figfile%1)
-m.close()

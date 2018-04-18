@@ -1,6 +1,6 @@
 """Test :func:`vacumm.misc.config.get_spec`"""
 from configobj import ConfigObj
-from vcmq import get_validator, cfg2rst
+from vcmq import cfg2rst
 
 
 # Basic

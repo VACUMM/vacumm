@@ -1,9 +1,11 @@
 """Test external griddata and natgrid tools"""
 
-from vcmq import code_file_name
+from vcmq import P, N
+from nat import Natgrid
+
+
 
 # Generate data
-import numpy as N
 xr = N.arange(20.)
 yr = N.arange(10.)
 xxr, yyr = N.meshgrid(xr, yr)
@@ -19,7 +21,6 @@ xo2, yo2 = xxr.flat[ij2], yyr.flat[ij2]
 
 
 # CDAT natgrid
-from nat import Natgrid
 I = Natgrid(xi, yi, xr, yr)
 I.ext = 1
 I.igr = 1
@@ -33,7 +34,6 @@ zzok = I(xxr,yyr)
 
 
 # Plot
-from matplotlib import pyplot as P
 P.figure(figsize=(4, 11))
 P.subplot(311)
 P.pcolormesh(zzr, **vminmax)
@@ -45,7 +45,6 @@ P.title('CDAT Natgrid: err=%i%%'%((zzr-zzoc).std()*100/stdref))
 P.subplot(313)
 P.pcolormesh(zzok, **vminmax)
 P.title('MPL/R. Kern : err=%i%%'%((zzr-zzok).std()*100/stdref))
-P.savefig(code_file_name(ext='png'))
 
 
 

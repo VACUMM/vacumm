@@ -1,6 +1,6 @@
 """Test the fortran function :f:func:`nearest2d`"""
-from vcmq import N, P, code_file_name, P, os, rotate_grid, add_grid, meshbounds
-from vacumm.misc.grid._interp_ import nearest2d
+from vcmq import N, P, rotate_grid, add_grid, meshbounds
+from vacumm.fortran.interp import nearest2d
 
 
 # Input grid
@@ -33,8 +33,4 @@ P.pcolor(xxbo, yybo, varo[0], vmin=vmin, vmax=vmax)
 add_grid(gridi)
 P.title('nearest2d')
 P.axis('image')
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
-P.savefig(figfile)
-P.show()
-P.close()
+P.tight_layout()

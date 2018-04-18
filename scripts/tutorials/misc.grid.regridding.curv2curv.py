@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 # Lecture des donnees
+from __future__ import print_function
 from matplotlib import rc;rc('font', size=11)
 import cdms2, MV2
 from vacumm.config import data_sample
@@ -23,15 +24,15 @@ import numpy as N
 cgrido = rotate_grid(hs.getGrid(), -30)
 
 
-print 'Regrillage'
+print('Regrillage')
 from vacumm.misc.grid.regridding import regrid2d
-print ' - par SCRIP/conservative'
+print(' - par SCRIP/conservative')
 hs_scripcons = regrid2d(hs, cgrido, 'conservative')
-print ' - par SCRIP/bilineaire'
+print(' - par SCRIP/bilineaire')
 hs_scripbilin = regrid2d(hs, cgrido, 'bilinear')
 
 
-print 'Plots'
+print('Plots')
 from matplotlib import rcParams ; rcParams['font.size'] = 10
 import pylab as P
 from vacumm.misc.plot import map2, savefigs, xhide, yhide, add_grid

@@ -16,7 +16,7 @@ logofile = "logo2_previmer_cetmef.png"
 copyright = u"© Previmer"
 
 # Imports
-from vacumm.report.ifroco.curves import (round_date, P, DS, paris_to_utc, now, os,
+from vacumm.report.ifroco.curves import (round_date, DS, paris_to_utc, os,
     cfgget, N, grid2xy, plot_curves, cdtime, utc_to_paris, Day12hFormatter,
     load_cfg)
 from vcmq import data_sample, code_file_name

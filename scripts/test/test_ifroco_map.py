@@ -10,8 +10,8 @@ logofile = "logo2_previmer_cetmef.png"
 copyright = u"© Previmer"
 
 # Imports
-from vacumm.report.ifroco.maps import DS, cfgget, N, plot_map, P, data_sample
-from vcmq import os
+from vacumm.report.ifroco.maps import (cfgget, plot_map)
+from vcmq import os, data_sample, code_file_name, DS
 
 # Read data
 ds = DS(data_sample('menor.nc'), 'mars', logger_level='critical')

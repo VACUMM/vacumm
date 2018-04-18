@@ -1,6 +1,6 @@
 """Test the fortran function :f:func:`extrap1d`"""
-from vcmq import N, P,meshcells, minmax
-from vacumm.misc.grid._interp_ import extrap1d
+from vcmq import N
+from vacumm.fortran.interp import extrap1d
 
 
 mv = 999.

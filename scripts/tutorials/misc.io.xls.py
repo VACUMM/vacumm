@@ -1,5 +1,7 @@
 # -*- coding: utf8 -*-
 # On initialise le document Excel
+from builtins import str
+from builtins import range
 from xlwt import Workbook, Formula
 w = Workbook()
 
@@ -39,7 +41,7 @@ for irow, title in enumerate(data1.keys()):
         # écriture
         wc.write(irow+1, icol+1, str(value), col_style)
 # - bottom
-for icol in xrange(3): wc.write(irow+2, icol, '', style_bottom)
+for icol in range(3): wc.write(irow+2, icol, '', style_bottom)
 
 # Deuxième feuille
 # - nom

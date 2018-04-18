@@ -26,7 +26,7 @@ assert_allclose(resol(cgrid, cache=False), (1.0, 1.0))
 assert_allclose(resol(cgrid, meters=True, cache=False), (94804.663264739473, 94804.663264739473))
 
 
-N.random.seed(0)
-x = N.random.random(10)
-y = N.random.random(10)
-from matplotlib.tri import Triangulation
+#N.random.seed(0)
+#x = N.random.random(10)
+#y = N.random.random(10)
+#from matplotlib.tri import Triangulation

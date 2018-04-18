@@ -4,7 +4,7 @@
 ncfiles = "mars2d.xyt.*.nc"
 
 # Imports
-from vcmq import DS, os, map2, data_sample
+from vcmq import DS, data_sample
 
 # Glob pattern
 result = []

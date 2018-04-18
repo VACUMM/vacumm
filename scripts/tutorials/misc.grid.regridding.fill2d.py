@@ -21,10 +21,10 @@ from vacumm.misc.grid.masking import masked_polygon
 tempf[:] = masked_polygon(tempf, 'h', copy=0)
 
 # Plots
-from vacumm.misc.plot import map2 as map, P
+from vacumm.misc.plot import map2, P
 P.rc('font', size=9)
 kw = dict(vmin=9, vmax=13)
-map(temp, show=False, subplot=211, hspace=.2, bottom=.05,
+map2(temp, show=False, subplot=211, hspace=.2, bottom=.05,
     left=.08, top=.97, figsize=(4.5, 8), nmax=10, **kw)
-map(tempf, show=False, subplot=212, savefigs=code_base_name(ext='png'), **kw)
+map2(tempf, show=False, subplot=212, savefigs=code_base_name(ext='png'), **kw)
 P.close()

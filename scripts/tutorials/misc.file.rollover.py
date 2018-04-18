@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 from shutil import rmtree
 from tempfile import mkdtemp
 from os.path import join
@@ -40,4 +41,4 @@ try:
 finally:
     # cleaning
     rmtree(tmpdir)
-print 'Empty output'
+print('Empty output')

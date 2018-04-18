@@ -1,7 +1,7 @@
 """Test the :class:`~vacumm.data.cf.VarSpecs` and :class:`~vacumm.data.cf.AxisSpecs` classes"""
 from vcmq import code_file_name
-from vacumm.data.cf import CF_VAR_SPECS, CF_AXIS_SPECS, register_cf_variable
-
+from vacumm.data.cf import CF_VAR_SPECS
+# TODO: test_cf_specs to complete
 
 # Content
 assert 'temp' in CF_VAR_SPECS

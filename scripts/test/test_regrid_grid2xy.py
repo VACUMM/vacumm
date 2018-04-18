@@ -1,4 +1,4 @@
-"""Test :func:`~vacumm.misc.grid.regridding.grid2xy` with interpolation in X, Y, Z and T"""
+"""Test :func:`~vacumm.misc.regridding.grid2xy` with interpolation in X, Y, Z and T"""
 
 # Inits
 np = 100
@@ -20,9 +20,9 @@ nez = 2
 
 
 # Imports
-from vcmq import (N, MV2, code_file_name, os, P, create_lon, create_lat, create_dep,
-                  create_time, lindates, create_axis, reltime, grid2xy,
-                  comptime, set_grid, rotate_grid, add_grid)
+from vcmq import (N, MV2, P, create_lon, create_lat, create_dep,
+    create_time, lindates, create_axis, reltime, grid2xy,
+    comptime, set_grid, rotate_grid, add_grid)
 
 # Rectangular xyzt with 1d z data and coords
 # - data
@@ -62,8 +62,7 @@ add_grid(vi.getGrid())
 P.title('nearest4d')
 P.figtext(.5, .98, 'grid2xy in 4D', va='top', ha='center', weight='bold')
 P.tight_layout()
-P.savefig(code_file_name(ext='.png'))
-P.close()
+
 
 # Reversed z and y
 vi_revz = vi[:, :, ::-1, ::-1, :]

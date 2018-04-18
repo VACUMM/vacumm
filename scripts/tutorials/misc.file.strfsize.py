@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import vacumm.misc.file as F
 
 sizes = (
@@ -19,5 +20,5 @@ sizes = (
 for size in sizes:
     fsize = F.strfsize(size, si=False)
     fsisize = F.strfsize(size, si=True)
-    print 'size: %(size)14d, formatted: %(fsize)8s (CEI, SI: %(fsisize)8s)'%vars()
+    print('size: %(size)14d, formatted: %(fsize)8s (CEI, SI: %(fsisize)8s)'%vars())
 

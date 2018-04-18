@@ -1,4 +1,5 @@
 # Lecture des donnnees
+from builtins import map
 import cdms2, MV2, numpy as N
 from vacumm.config import data_sample
 select=dict(lon=(-5.3, -4.72), lat=(47.9, 48.8), time=slice(0, 24))
@@ -24,9 +25,9 @@ hov(vo, cmap='jet', show=False,  top=.9, date_fmt='%H',
     colorbar_shrink=.5,  left=.13)
 # - carte + diagonal
 import pylab as P
-m = map(v[0],  xhide=True, yhide=True, contour=False,
+m = list(map(v[0],  xhide=True, yhide=True, contour=False,
     title=False, autoresize=0, cmap='cmap_bwr',
-    colorbar=False, axes_rect=[.78, .78, .2, .2], show=False)
+    colorbar=False, axes_rect=[.78, .78, .2, .2], show=False))
 m.map.plot(xo, yo, 'r-', lw=2)
 savefigs(__file__)
 P.close()

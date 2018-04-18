@@ -1,4 +1,4 @@
-"""Test :func:`~vacumm.misc.grid.regridding.transect`"""
+"""Test :func:`~vacumm.misc.regridding.transect`"""
 
 # Inits
 ncfile = "menor.nc"
@@ -8,8 +8,8 @@ lon1 = 4.78
 lat1 = 42.01
 
 # Imports
-from vcmq import DS, data_sample, mixed_layer_depth, N, transect, section2, curve2, code_file_name, os
-from vacumm.misc.plot import add_map_lines
+from vcmq import (DS, data_sample, mixed_layer_depth, N, transect, 
+    section2, curve2, add_map_lines)
 
 # Read data
 ds = DS(data_sample(ncfile), 'mars', logger_level='critical')
@@ -44,8 +44,4 @@ curve2(xmld, 'w-', linewidth=2, show=False)
 # Add a small map to show the transect positions
 add_map_lines(temp[-1], xlons, xlats, map_zoom=0.7, color='k', map_cmap='thermal')
 
-# Save
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
-s.savefig(figfile, pdf=True)
 

@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 # On cherche directement 'Bre' pour Brest
+from __future__ import print_function
 from vacumm.tide.station_info import StationInfo
 station = StationInfo('Bre')
 # ->:
@@ -19,20 +20,20 @@ station = StationInfo('Bre')
 # Loupé !
 # On récupère la première station trouvée lors de l'initialisation
 # Mais bon, on vérifie quand même
-print station.attributes()
+print(station.attributes())
 # -> ['igs', 'psmsl', 'uhslc', 'gloss', 'shom', 'legos', 'latitude', 
 #       'longitude', 'zone', 'phm', 'pm95', 'pm45', 'nm', 'bm45', 
 #        'bm95', 'pbm', 'zero_hydro']
-print station.name, station.longitude
+print(station.name, station.longitude)
 # -> Ile de Brehat (Port-Clos) -3.0
 
 # On peut se servir de station pour continuer à chercher
 # car le fichier est déjà chargé
 
 # On affiche finalement toute les stations contenant 'bre'
-print '-'*70
+print('-'*70)
 station.search('bre')
-print '-'*70
+print('-'*70)
 # ->
 #   Nom        : Ile de Brehat (Port-Clos)
 #...
@@ -43,9 +44,9 @@ print '-'*70
 # Ok, on récupère Brest et uniquement Brest
 # - en sélectionnant la station d'identifiant SHOM='Brest'
 brest = station.find(shom='Brest', verbose=False)
-print brest.name
+print(brest.name)
 # -> Brest
 # - ou par sa position (station la plus proche)
 brest = station.find(position=(4.5,48.4), verbose=False)
-print brest.longitude, brest.latitude
+print(brest.longitude, brest.latitude)
 # -> 2.36777777778 51.0347222222

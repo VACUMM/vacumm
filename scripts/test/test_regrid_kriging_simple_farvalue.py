@@ -1,6 +1,6 @@
-"""Test class :func:`~vacumm.misc.grid.kriging.SimpleCloudkriger` with farvalue keyword"""
+"""Test class :func:`~vacumm.misc.kriging.SimpleCloudkriger` with farvalue keyword"""
 
-from vcmq import SimpleCloudKriger, N, P, variogram_model, code_file_name
+from vcmq import SimpleCloudKriger, N, P, variogram_model
 
 # Kriging params
 sill = 9.
@@ -46,6 +46,4 @@ P.colorbar()
 P.scatter(xi, yi, c=zi, s=100, cmap=cmap, **kw)
 P.axis('image')
 P.title('Simple kriging with fixed far value')
-P.savefig(code_file_name(ext='.png'))
-P.show()
-P.close()
+

@@ -1,4 +1,4 @@
-"""Test :func:`~vacumm.misc.grid.regridding.transect` on a curvilinear grid"""
+"""Test :func:`~vacumm.misc.regridding.transect` on a curvilinear grid"""
 
 # Inits
 ncfile = "swan.four.nc"
@@ -9,8 +9,7 @@ lat1 = 48.55
 
 
 # Imports
-from vcmq import cdms2, data_sample, N, transect, curve2, code_file_name, os, \
-    add_map_lines,  P, add_shadow
+from vcmq import (cdms2, data_sample, transect, curve2, add_map_lines)
 
 # Read data
 f = cdms2.open(data_sample(ncfile))
@@ -27,7 +26,3 @@ s = curve2(hst, figsize=(8,3), title='Spatial transect on curved grid',
 # Add a small map to show the transect positions
 o = add_map_lines(hs, lons, lats, map_bgcolor='w', map_bbox= [.6, .2, .3, .5], map_anchor='W')
 
-# Save
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
-s.savefig(figfile, pdf=True)

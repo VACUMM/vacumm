@@ -10,5 +10,5 @@ var.long_name = 'Speed'
 var.setAxis(0, create_lon(var.getAxis(0)))
 
 # Plot
-curve2(var)
+curve2(var, show=False)
 

@@ -1,7 +1,7 @@
-"""Test the class :class:`~vacumm.misc.grid.regridding.CurvedInterpolator`"""
+"""Test the class :class:`~vacumm.misc.regridding.CurvedInterpolator`"""
 
-from vcmq import (P, N, set_grid, plot2d, MV2, add_grid, code_file_name, os,
-                  create_time, CurvedInterpolator, rotate_grid)
+from vcmq import (P, N, set_grid, MV2, add_grid, create_time, 
+    CurvedInterpolator, rotate_grid)
 
 
 # Curved grid
@@ -49,12 +49,7 @@ add_grid(gridi, edges=False, centers=-1)
 xylims = (xxi.min(), xxi.max(), yyi.min(), yyi.max())
 P.axis(xylims)
 P.title('Interp to random')
-
-# Finalize
 P.tight_layout()
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
-P.savefig(figfile)
-P.close()
+
 
 

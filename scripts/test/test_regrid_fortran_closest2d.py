@@ -1,7 +1,7 @@
 """Test the fortran function :f:func:`closest2d`"""
 from builtins import zip
-from vcmq import N, P, code_file_name, P, os, rotate_grid, add_grid
-from vacumm.misc.grid._interp_ import closest2d
+from vcmq import N, P, rotate_grid, add_grid
+from vacumm.fortran.interp import closest2d
 
 
 # Input grid
@@ -23,7 +23,3 @@ add_grid(grid, color='k', markersize=10, centers=True, marker='o', alpha=1)
 P.scatter(xxo, yyo, c='r', s=40, zorder=11)
 P.title('closest2d')
 P.axis('image')
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
-P.savefig(figfile)
-P.close()

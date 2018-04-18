@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Creation de fausses bathymetries xyz
 import numpy as N,  os, pylab as P
 from vacumm.bathy.bathy import XYZBathy,  XYZBathyBank
@@ -31,7 +32,7 @@ bank.add(fnorth, id='north', long_name='North')
 bank.add(flarge) # id auto
 #   you can also use: bank += flarge
 # - on verifie ce qu'on a
-print bank
+print(bank)
 
 
 # Petites modifs

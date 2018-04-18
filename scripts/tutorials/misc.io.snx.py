@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Init
 from vacumm.misc.io import write_snx
 from _geoslib import Point, LineString, Polygon
@@ -54,4 +55,4 @@ f.close()
 write_snx([bloc_xyz, bloc_xyz2], fbase+'split%i.snx', type='polygon', close=False)
 
 
-print 'Done'
+print('Done')

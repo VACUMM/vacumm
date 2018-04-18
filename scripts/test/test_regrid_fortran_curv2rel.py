@@ -1,7 +1,7 @@
 """Test the fortran function :f:func:`curv2rel`"""
 from builtins import range
-from vcmq import N, P, code_file_name, P, os, meshbounds
-from vacumm.misc.grid._interp_ import curv2rel
+from vcmq import N, P, meshbounds
+from vacumm.fortran.interp import curv2rel
 
 
 # Input grid
@@ -47,7 +47,3 @@ P.pcolor(xxbi, yybi, zzi, vmin=vmin, vmax=vmax)
 P.scatter(xxo, yyo, c=zzo, vmin=vmin, vmax=vmax, s=80)
 P.grid()
 P.title('curv2rel')
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
-P.savefig(figfile)
-P.close()

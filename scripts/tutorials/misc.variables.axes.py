@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Creation d'un axe de temps
 from vacumm.misc.axes import *
 import numpy as N, cdms2
@@ -17,11 +18,11 @@ bad_axis = cdms2.createAxis([1],id='pipo')
 
 # Verification des types d'axes avec 'axis_type'
 # - affichage pour tous
-print ' | '.join(['%s:%s'%(axis.id,axis_type(axis)) 
-    for axis in time_axis,lon_axis,lat_axis,dep_axis,bad_axis])
+print(' | '.join(['%s:%s'%(axis.id,axis_type(axis)) 
+    for axis in (time_axis,lon_axis,lat_axis,dep_axis,bad_axis)]))
 #  -> time:t | other_time:t | longitude:x | lat:y | depth:z | pipo:-
 # - verification ponctuele
-print islon(lon_axis),islon(lat_axis),is_geo_axis(lat_axis)
+print(islon(lon_axis),islon(lat_axis),is_geo_axis(lat_axis))
 #  -> True False False
 
 # Reformattage des axes pour deviner identifier
@@ -31,7 +32,7 @@ print islon(lon_axis),islon(lat_axis),is_geo_axis(lat_axis)
 time_axis2 = cdms2.createAxis([6],id='other_time')
 time_axis2.long_name = 'Time'
 check_axis(time_axis2) 
-print istime(time_axis2) # en fait, 'check_axis' appelle 'istime'
+print(istime(time_axis2)) # en fait, 'check_axis' appelle 'istime'
 #  -> True
 # - une variable tiree d'un fichier (voir le tutoriel (*@\ref{lst:misc.io.netcdf}@*))
 from vacumm.config import data_sample
@@ -40,5 +41,5 @@ var = f('xe',time=slice(0,1), squeeze=1)
 f.close()
 check_axes(var)
 lon_axis = var.getAxis(0)
-print lon_axis.axis, islon(lon_axis)
+print(lon_axis.axis, islon(lon_axis))
 #  -> X True

@@ -20,6 +20,6 @@ y[:] = [1.5, 3.5, 4.5]
 y2db = N.array([0., 3, 4, 5])
 
 # Plot
-plot2d(var, savefig=figfile, y2db=y2db, fill='pcolor',
+plot2d(var, y2db=y2db, fill='pcolor', show=False, 
     xmin=-.5, xmax=3.5, ymin=0, ymax=5, cmap='jet')
 

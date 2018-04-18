@@ -11,5 +11,5 @@ depth = create_dep((-80,0.1,20.))
 var.setAxis(0, depth)
 
 # Plot
-curve2(var)
+curve2(var, show=False)
 

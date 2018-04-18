@@ -1,6 +1,5 @@
 """Test the :func:`~vacumm.misc.grid.io.Shapes` class"""
-from vcmq import N, P, data_sample
-from vacumm.misc.io import Shapes
+from vcmq import data_sample, Shapes
 result = []
 
 # Shapefile
@@ -29,5 +28,4 @@ S = Shapes(shpfile, clip=[-10, 42, 10, 51.], proj=True)
 result.append(('assertEqual', [len(S), 3]))
 S.plot(title='Clipped+projected', show=False, m_fig='new')
 
-P.show()
 

@@ -10,8 +10,6 @@ var.getAxis(0).id = 'frequency'
 var.getAxis(1).id = 'distance'
 
 # Plot
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
 # - positive
 plot2d(var, subplot=326, show=False, figsize=(6, 8), cmap='auto',
     title='Positive?')
@@ -29,7 +27,7 @@ var[:] += 500
 plot2d(var, subplot=321, show=False, cmap='auto', title='Normal?')
 # - symetric
 var[:] -= var.mean()
-plot2d(var, subplot=324, show=True, cmap='auto',
+plot2d(var, subplot=324, show=False, cmap='auto',
     tight_layout=True, title='Symetric?')
 
 

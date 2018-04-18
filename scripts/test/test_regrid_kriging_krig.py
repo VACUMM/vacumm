@@ -1,10 +1,10 @@
-"""Test function :func:`~vacumm.misc.grid.kriging.krig`"""
+"""Test function :func:`~vacumm.misc.kriging.krig`"""
 
 npi = 500
 npo = 200
 
-from vcmq import P, savefigs, code_file_name
-from vacumm.misc.grid.kriging import gridded_gauss3, random_gauss3, random_points, krig
+from vcmq import P, krign as krig
+from vacumm.misc.grid.kriging import gridded_gauss3, random_gauss3, random_points
 
 # Generate random field
 xg, yg, zzg = gridded_gauss3()
@@ -33,5 +33,3 @@ P.imshow(zzg, **kwim)
 P.scatter(xo, yo, c=zo, marker='s', s=30, **kwsc)
 P.axis(axis)
 P.tight_layout()
-savefigs(code_file_name(), verbose=False)
-P.close()

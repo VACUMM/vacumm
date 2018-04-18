@@ -1,6 +1,6 @@
 """Test the fortran function :f:func:`linear4dto1d`"""
 from vcmq import N
-from vacumm.misc.grid._interp_ import linear4dto1d
+from vacumm.fortran.interp import linear4dto1d
 
 nxi = 7
 nyi = 6

@@ -1,6 +1,6 @@
 """Test the fortran function :f:func:`interp1dx`"""
-from vcmq import N, P,meshcells, minmax, code_file_name, os
-from vacumm.misc.grid._interp_ import interp1dx
+from vcmq import N, P,meshcells
+from vacumm.fortran.interp import interp1dx
 
 
 nx = nyi = 10
@@ -41,7 +41,3 @@ P.pcolor(xxob, yyob, varoh, **kw)
 P.axis(axlims)
 P.title('Hermit1dx')
 P.tight_layout()
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
-P.savefig(figfile)
-P.close()

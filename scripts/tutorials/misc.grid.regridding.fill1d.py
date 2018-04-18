@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 # Lecture du niveau de la mer horaire
+from __future__ import print_function
 import cdms2, MV2
 from vacumm.config import data_sample
 f =cdms2.open(data_sample('mars3d.t.nc'))
@@ -18,7 +19,7 @@ xe[40:46] = MV2.masked
 from vacumm.misc.grid.regridding import fill1d
 import time ; t0=time.time()
 xef = fill1d(xe, method='cubic', maxgap=5)
-print time.time()-t0
+print(time.time()-t0)
 xef.long_name = 'Rempli'
 xef[:] += xef.max()/5. # on décalle pour les plots
 

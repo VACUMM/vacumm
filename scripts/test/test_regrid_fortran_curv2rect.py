@@ -1,7 +1,7 @@
 """Test the fortran function :f:func:`curv2rect`"""
 from builtins import zip
-from vcmq import N, P, code_file_name, P, os
-from vacumm.misc.grid._interp_ import curv2rect
+from vcmq import N, P
+from vacumm.fortran.interp import curv2rect
 
 # Input
 x1, y1 = 0., 0.
@@ -34,8 +34,3 @@ P.subplot(212)
 o = P.contourf(xx.reshape(nxy), yy.reshape(nxy), qq.reshape(nxy), levels=levels)
 P.colorbar(o)
 P.plot(xp, yp, 'k')
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
-P.savefig(figfile)
-P.close()
-

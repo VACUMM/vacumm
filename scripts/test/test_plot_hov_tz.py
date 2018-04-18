@@ -17,8 +17,8 @@ z2d *= N.resize((N.arange(1., nt+1)/nt).reshape(1, nt), (nz, nt)).T
 
 # Plot with z 1D
 rc('font', size=8)
-kw = dict(bgcolor='0.5', date_fmt="%a")
-hov2(var, subplot=211, show=False, **kw)
+kw = dict(bgcolor='0.5', date_fmt="%a", show=False)
+hov2(var, subplot=211, **kw)
 
 # Plot with z 2D
 hov2(var, xaxis=z2d, subplot=212, twin='x', **kw)

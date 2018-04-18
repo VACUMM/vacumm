@@ -1,6 +1,6 @@
 """Test CDAT conservative regridding"""
-from vcmq import N, meshbounds, bounds1d, cdms2, MV2, rc, P, add_grid, rcdefaults, \
-    create_lon, create_lat, savefigs, code_file_name
+from vcmq import (N, meshbounds, bounds1d, cdms2, MV2, rc, P, add_grid, rcdefaults, \
+    create_lon, create_lat)
 
 # Input grid
 x0, y0, nx, ny, dx, dy = 0., 0., 20, 15, 5., 5.

@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Inits
 from vacumm.misc.grid.masking import Lakes
 from vacumm.misc.grid.misc import meshbounds
@@ -42,8 +43,8 @@ ocean = lakes.ocean()
 P.pcolor(xxb, yyb, ocean, cmap=cmap_mask)
 P.xlim(xlim) ; P.ylim(ylim) ; P.xticks([])  ;P.yticks([])
 P.title('Mask ocean')
-print 'La routine ocean marche ?'
-print (ocean==lakes[0]).all()
+print('La routine ocean marche ?')
+print((ocean==lakes[0]).all())
 
 # Save
 savefigs(__file__, pdf=True)

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Creation d'un jeu de precipitations horaires
+from __future__ import print_function
 import MV2, cdms2, numpy as N
 from vacumm.misc.axes import create_time
 hours = create_time((12*60, 25.*60,  60), 'minutes since 2000')
@@ -17,9 +18,9 @@ precip2 = regrid1d(precip, hours2, 'conservative')
 precip2.long_name = 'Regridded'
 
 # Verifications
-print 'Total precip.:'
-print '- original =', precip.sum()
-print '- remapped =', precip2.sum()
+print('Total precip.:')
+print('- original =', precip.sum())
+print('- remapped =', precip2.sum())
 # > Total precip.:
 # > - original = 89.957242832779755
 # > - remapped = 89.957237

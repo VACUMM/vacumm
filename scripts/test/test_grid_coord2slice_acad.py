@@ -1,7 +1,7 @@
 """Test :func:`~vacumm.misc.grid.misc.coord2slice`"""
 
 from builtins import range
-from vcmq import code_file_name, P, os, N, create_lon
+from vcmq import P, N, create_lon
 from vacumm.misc.grid import coord2slice, create_grid, create_axes2d, meshbounds
 from vacumm.misc.plot import add_grid
 

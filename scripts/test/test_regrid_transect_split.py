@@ -1,4 +1,4 @@
-"""Test :func:`~vacumm.misc.grid.regridding.transect` with interpolation in both time and space"""
+"""Test :func:`~vacumm.misc.regridding.transect` with interpolation in both time and space"""
 
 # Inits
 ncfile = "mars2d.xyt.nc"
@@ -12,8 +12,8 @@ splits = [None, 3, -3, (3, 'hour'), 3600*3.]
 
 
 # Imports
-from vcmq import (cdms2, data_sample, N, transect, stick2, code_file_name, os,
-    transect_specs, add_map_lines, create_time, IterDates, P)
+from vcmq import (cdms2, data_sample, N, transect, 
+    transect_specs, create_time, IterDates)
 
 # Read data
 f = cdms2.open(data_sample(ncfile))

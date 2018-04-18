@@ -1,22 +1,23 @@
+from __future__ import print_function
 # Lecture d'un fichier xyz et plot
 from vacumm.misc.io import XYZ
 from vacumm.config import data_sample
 xyz = XYZ(data_sample('celtic_sea.xyz'))
 
 # Verifs
-print len(xyz)
+print(len(xyz))
 #  -> 23538
-print xyz[0:3]
+print(xyz[0:3])
 #  -> [(-5.93,52.97,25.0),(-5.90,52.97,41.0),(-5.85,52.97,33.0)]
 
 # Exclusion
 xyz.exclude([[-6., 52.], [-5.5, 52], [-5.5, 52.5], [-6., 52.5]])
 
 # Modification
-print xyz.z.max()
+print(xyz.z.max())
 #  -> 141.0
 xyz *= -1
-print xyz.z.max()
+print(xyz.z.max())
 #  -> -141.0
 
 # Plot

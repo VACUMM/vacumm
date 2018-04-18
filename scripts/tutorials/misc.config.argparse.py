@@ -1,5 +1,6 @@
 #!/bin/env python
 """Sample executable script using config"""
+from __future__ import print_function
 
 # FORCE COMMANDLINE ARGUMENTS FOR THE EXAMPLE
 from vcmq import data_sample, code_file_name
@@ -20,7 +21,7 @@ parser.add_argument('ncfile', help='input netcdf file')
 # Configuration
 from vacumm.misc.config import cfgargparse
 cfg, args = cfgargparse('misc.config.argparse.ini', parser)
-print 'Current configuration:', cfg
+print('Current configuration:', cfg)
 
 # Now use it
 # - load zoom

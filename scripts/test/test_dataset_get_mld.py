@@ -4,7 +4,7 @@
 ncfile = "menor.nc"
 
 # Imports
-from vcmq import DS, os, map2, data_sample
+from vcmq import DS, map2, data_sample
 
 # Read data
 ds = DS(data_sample(ncfile), 'mars', logger_level='critical')

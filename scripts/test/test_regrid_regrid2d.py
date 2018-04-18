@@ -1,6 +1,6 @@
 """Test the :func:`~vacumm.misc.grid.regridding.regrid2d` function"""
-from vcmq import (P, N, MV2, code_file_name, os, add_grid, rotate_grid, set_grid,
-    create_grid, rc, rcdefaults, plot2d, regrid2d, create_time)
+from vcmq import (P, N, MV2, add_grid, rotate_grid, set_grid,
+    create_grid, rc, plot2d, regrid2d, create_time)
 
 
 # Input grid and data
@@ -96,6 +96,4 @@ varo = regrid2d(varci, gridco, method='conserv', tool='esmf')
 plot2d(varo[0], title='ESMF / Conserv', subplot=(4,3,ip), **kw);ip+=1
 add_grid(gridci, **kwg)
 P.tight_layout()
-P.savefig(code_file_name(ext='png'))
-rcdefaults()
-P.close()
+

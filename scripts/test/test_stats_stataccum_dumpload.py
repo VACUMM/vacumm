@@ -2,7 +2,7 @@
 from __future__ import print_function
 
 # Imports
-from vcmq import MV2, N, code_file_name, StatAccum
+from vcmq import MV2, N, code_file_name, StatAccum, cdms2
 from numpy.testing import assert_array_almost_equal
 from numpy.random import seed
 

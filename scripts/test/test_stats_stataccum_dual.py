@@ -2,8 +2,7 @@
 
 # Imports
 from builtins import range
-from vcmq import MV2, N
-from vacumm.misc.stats import StatAccum
+from vcmq import MV2, N, StatAccum
 
 # Setup masked data
 nt, ny, nx = 20, 15, 10

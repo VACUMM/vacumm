@@ -1,7 +1,7 @@
 """Test fortran function :f:func:`dstwgt2dto1dc`"""
 
-from vcmq import P, N, code_file_name, os, add_grid, rotate_grid
-from vacumm.misc.grid._interp_ import dstwgt2dto1dc
+from vcmq import P, N, add_grid, rotate_grid
+from vacumm.fortran.interp import dstwgt2dto1dc
 
 
 # Input grid and data
@@ -33,9 +33,5 @@ P.contourf(xxi, yyi, zzi[0], **kw)
 add_grid((xxi, yyi), edges=False, centers=True, marker='o')
 P.scatter(xo, yo, c=zo[0], s=50, **kw)
 P.title('dstwgt2dto1dc')
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
-P.savefig(figfile)
-P.close()
 
 

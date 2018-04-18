@@ -14,5 +14,5 @@ axis.axis = 'T'
 
 
 # Plot
-curve2(var, hlitvs=True)
+curve2(var, hlitvs=True, show=False)
 

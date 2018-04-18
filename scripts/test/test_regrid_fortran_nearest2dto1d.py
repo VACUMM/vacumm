@@ -1,7 +1,7 @@
 """Test fortran function :f:func:`nearest2dto1d`"""
 
-from vcmq import P, N, code_file_name, os, add_grid
-from vacumm.misc.grid._interp_ import nearest2dto1d
+from vcmq import P, N, add_grid
+from vacumm.fortran.interp import nearest2dto1d
 
 
 # Input grid and data
@@ -31,9 +31,6 @@ P.contourf(xxi, yyi, zi[0], **kw)
 add_grid((xi, yi), edges=False, centers=True, marker='o')
 P.scatter(xo, yo, c=zo[0], s=50, **kw)
 P.title('nearest2dto1d')
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
-P.savefig(figfile)
-P.close()
+P.tight_layout()
 
 

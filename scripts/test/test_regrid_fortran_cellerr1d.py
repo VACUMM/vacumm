@@ -1,6 +1,7 @@
 """Test the fortran function :f:func:`cellerr1d`, :f:func:`cellerr1dx` et :f:func:`cellerr1dxx`"""
-from vcmq import cdms2, data_sample, N, P, meshcells, minmax, code_file_name, os
-from vacumm.misc.grid._interp_ import cellerr1d, cellerr1dx, cellerr1dxx
+from vcmq import N
+from vacumm.fortran.interp import cellerr1d #, cellerr1dx, cellerr1dxx
+# TODO: add test for cellerr1dx, cellerr1dxx
 
 # Academic example pure 1d
 # - data

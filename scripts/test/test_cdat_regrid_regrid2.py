@@ -1,7 +1,6 @@
 """Test the traditionnal CDAT regrid2 regridder"""
 
-from vcmq import MV2, create_grid, meshbounds, P, add_grid, N, bounds1d, plot2d, savefigs,code_file_name
-from regrid2 import Horizontal
+from vcmq import MV2, create_grid, meshbounds, P, add_grid, N, bounds1d, plot2d
 
 # Input
 nx, ny = 6, 4

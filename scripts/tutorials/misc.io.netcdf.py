@@ -1,22 +1,23 @@
+from __future__ import print_function
 # Ouverture
 import cdms2
 from vacumm.config import data_sample
 f = cdms2.open(data_sample('mars2d.xyt.nc'))
 
 # Lister les variables
-print f.variables.keys()
+print(list(f.variables.keys()))
 #  -> ['bounds_lon', 'h0', 'v', 'xe', 'u', 'bounds_lat']
 
 # Avoir des informations sur une variables sans la lire, via []
 nt = f['xe'].shape[0]
-print f['xe'].getTime().asComponentTime()[0:nt:nt-1]
+print(f['xe'].getTime().asComponentTime()[0:nt:nt-1])
 #  -> [2008-8-15 0:0:0.0, 2008-8-15 23:0:0.0]
 
 # Lire une selection de la variable
 import cdtime
 xe = f('xe', ('2008-8-15',cdtime.comptime(2008,8,15,12), 'cc'), 
     lon=slice(5,6), lat=(48.1, 48.5), squeeze=1)
-print xe.shape
+print(xe.shape)
 # -> (13, 29)
 # squeeze a supprime l'axes des longitudes de dim 1
 

@@ -10,4 +10,4 @@ f.close()
 map2((u, v), fill=False, contour=False, streamplot=True, streamplot_density=3,
     streamplot_linewidth='modulus', streamplot_lwmod=3, streamplot_color='modulus',
     title='Tidal stream lines', colorbar_shrink=0.7,
-    right=1)
+    right=1, show=False)

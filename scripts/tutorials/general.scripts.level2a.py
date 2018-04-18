@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Parameters
 ncfile = "menor.nc"
 lon=(3.,4.5)
@@ -22,4 +23,4 @@ map2(mld, proj='merc', figsize=(6, 6), autoresize=0,
     close=True)
 
 
-print 'Done'
+print('Done')

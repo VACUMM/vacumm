@@ -10,5 +10,5 @@ var.long_name = 'Precipitation'
 create_lat(var.getAxis(0))
 
 # Plot
-curve2(var, latex_units=True)
+curve2(var, latex_units=True, show=False)
 

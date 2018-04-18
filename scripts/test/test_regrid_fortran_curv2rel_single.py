@@ -1,7 +1,7 @@
 """Test the fortran function :f:func:`curv2rel_single`"""
 from builtins import zip
 from builtins import range
-from vcmq import N, P, code_file_name, P, os, meshbounds
+from vcmq import N, P, meshbounds
 from vacumm.misc.grid._interp_ import curv2rel_single
 
 
@@ -50,7 +50,4 @@ P.pcolor(xxbi, yybi, zzi, vmin=vmin, vmax=vmax)
 P.scatter(xxo, yyo, c=zzo, vmin=vmin, vmax=vmax, s=80)
 P.grid()
 P.title('curv2rel_single')
-figfile = code_file_name(ext='png')
-if os.path.exists(figfile): os.remove(figfile)
-P.savefig(figfile)
-P.close()
+

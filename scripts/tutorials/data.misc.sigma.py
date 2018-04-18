@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+from __future__ import print_function
 import cdms2, MV2, os
 import numpy as np
 from scipy import interpolate
@@ -15,7 +16,7 @@ print_time_format = "%a, %d %b %Y %H:%M:%S"
 t0 = time()
 time_format = "%Y%m%d"
 date = strftime(time_format)
-print "Begin : " + strftime(print_time_format)
+print("Begin : " + strftime(print_time_format))
 
 # Profondeurs sur lesquelles nous souhaitons interpoler (en m)
 depths = np.array([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
@@ -57,10 +58,10 @@ netcdf3()
 f2 = cdms2.open(outfile,'w')
 f2.write(data_out)
 f2.close()
-print 'Saved to', outfile
+print('Saved to', outfile)
 
 # Temps de calcul
-print "Whole computation took %.2f s" % (time() - t0)
-print "End : " + strftime(print_time_format)
+print("Whole computation took %.2f s" % (time() - t0))
+print("End : " + strftime(print_time_format))
 
 

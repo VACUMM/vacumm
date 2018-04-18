@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 from os.path import abspath, dirname, join, realpath
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -17,9 +18,9 @@ anotherfile = join(anotherdir, 'anotherfile')
 
 try:
     
-    print 'Created directory:', F.mkdirs(adir)
+    print('Created directory:', F.mkdirs(adir))
     F.mkfdirs(afile) # no effect, already created
-    print 'Created directories:',  F.mkfdirs((afile, anotherfile))
+    print('Created directories:',  F.mkfdirs((afile, anotherfile)))
     F.mkdirs((adir, anotherdir)) # no effect, already created
     
 finally:
