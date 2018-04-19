@@ -9,7 +9,7 @@ f.close()
 
 # Plot
 stick2(u, v,  title='Current in the Iroise Sea', units='m/s',
-    bottom=.2, top=.85, quiver_headwidth=2, close=True,
+    bottom=.2, top=.85, quiver_headwidth=2, close=False,
     quiverkey_value=.5, quiver_width=0.002, quiver_scale=5.,
-    savefigs=__file__, figsize=(5.5,  3),  show=False)
+    figsize=(5.5,  3), show=False)
 

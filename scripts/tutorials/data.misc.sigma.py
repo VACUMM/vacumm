@@ -46,8 +46,8 @@ data_out = regrid1d(data_in, depth_out, axi=depths_in, axis=1, method='linear', 
 # Plot
 kw = dict(show=False, vmin=10, vmax=14, xhide='auto', add_grid=True, ymax=0)
 section2(data_in[0, :, 10], yaxis=depths_in[0, :, 10], subplot=211, title='Sigma', **kw)
-s = section2(data_out[0, :, 10], subplot=212, title='Z', savefigs=__file__,
-    close=True, **kw)
+s = section2(data_out[0, :, 10], subplot=212, title='Z', 
+    **kw)
 
 # Sauvegarde
 outfile = __file__[:-2]+'nc' # FIXME: code_file_name?

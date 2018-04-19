@@ -2,8 +2,6 @@
 """
 Misc tools
 
-Misc submodule can be used with vacumm.misc.*
-instead of vacumm.misc.misc.*.
 """
 # Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #

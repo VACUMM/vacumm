@@ -55,7 +55,7 @@ merger.plot(mode='value', title='Merger : valeurs', **kwplot)
 # - cluster
 P.subplot(313)
 merger.plot(mode='cluster', size=10, title='Merger : cluster', marker='o',
-    legend_loc='upper left', savefigs=__file__, savefigs_pdf=True, **kwplot)
+    legend_loc='upper left', **kwplot)
 
 # On recupere le tout dans un xyz
 merged_xyz = merger.get_xyz(long_name='Merged')

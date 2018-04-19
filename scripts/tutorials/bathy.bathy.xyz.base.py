@@ -90,6 +90,6 @@ xyz.plot(size=10, mode='both', masked_alpha=.1, **kwplot)
 kwplot.update(autoresize=0, ticklabel_size=9)
 map2(gridded_manual, subplot=312, xhide=True, title='Sur grille manuelle', **kwplot)
 # - interpole auto
-map2(gridded_auto, subplot=313, title='Sur grille auto', savefigs=__file__,
+map2(gridded_auto, subplot=313, title='Sur grille auto', 
     close=False, **kwplot)
 

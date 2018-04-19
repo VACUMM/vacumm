@@ -33,6 +33,5 @@ var = f(cfg['var'], lon=lon, lat=lat, time=slice(0, 1))
 f.close()
 # - plot
 long_name = var.long_name
-map2(var, title=cfg['title']%locals(), savefigs=code_file_name(), show=False,
-    close=False)
+map2(var, title=cfg['title']%locals(), show=False, close=False)
 

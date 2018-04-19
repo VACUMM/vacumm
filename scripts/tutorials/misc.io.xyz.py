@@ -31,8 +31,7 @@ xyz.plot(title='Mer celtique', units='m', m=True,
 # Zoom
 xyz_zoom = xyz.clip((-6, 51.5, -4, 52.5), long_name='Zoom')
 P.subplot(212)
-xyz_zoom.plot(m=True, savefigs=__file__, size=7,
-    show=False, cmap='cmap_bathy')
+xyz_zoom.plot(m=True, size=7, show=False, cmap='cmap_bathy')
 
 # Sauvegarde
 xyz_zoom.save('zoom.xyz') # WARNING: code_file_name?

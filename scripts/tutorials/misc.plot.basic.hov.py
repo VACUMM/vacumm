@@ -12,6 +12,6 @@ f.close()
 
 # Plot
 h = hov2(xe, fmt='%.1f', left=.15, right=.98, linewidths=1.5,
-    clabel_glow=2, nmax=20, figsize=(6, 6), close=True,
+    clabel_glow=2, nmax=20, figsize=(6, 6), close=False,
     fill='contour', show=False)
 

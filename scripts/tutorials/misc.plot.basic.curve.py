@@ -17,7 +17,7 @@ f = cdms2.open(data_sample('mars3d.xy.nc'))
 zsst = cdms2.MV2.average(f('temp'), axis=0)
 f.close()
 # - plot
-curve2(zsst, title=u'SST zonale', color='r', show=False, close=True,
+curve2(zsst, title=u'SST zonale', color='r', show=False, close=False,
     subplot=212, top=.9, hspace=.4, left=.15, bottom=.07)
 
 
