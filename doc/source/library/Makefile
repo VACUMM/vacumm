@@ -1,0 +1,1 @@
+all: python make.py

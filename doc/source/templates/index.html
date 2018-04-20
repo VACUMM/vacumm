@@ -1,0 +1,130 @@
+{% extends "layout.html" %}
+{% set title = 'VACUMM' %}
+
+{% block body %}
+
+    <h1>VACUMM</h1>
+
+    <p><b>Version:</b> {{release}}</p>
+
+    <blockquote>
+        <p><i>"Validation, Analysis, Comparison - Utilities written in Python to validate and analyze
+        Multi-Model outputs, and compare them to observations."</i></p>
+
+        <p>-- Quote translated from the <a href="https://forge.ifremer.fr/projects/vacumm">forge page</a> of the project</p>
+    </blockquote>
+
+    <p>
+        VACUMM provides generic and specialized tools for the validation of ocean models, and more especially
+        the MARS model from <a href="http://www.ifremer.fr">IFREMER</a>.
+        The heart of VACUMM is a <a href="{{ pathto('library/index') }}">library</a> written mainly
+        in the <a href="http://www.python.org">Python</a> language,
+        whose <a href="{{ pathto('library/misc') }}">core</a> can be used for the <b>preprocessing</b> and the
+        <b>postprocessing</b> of oceanic and atmospheric data coming from models or observations.
+        The library for instance also has specialized modules for managing outputs from
+        <a href="{{ pathto('library/data/model') }}">models</a> and making advanced
+        <a href="{{ pathto('library/diag') }}">diagnostics</a>.
+    </p>
+
+    <h1>Features</h1>
+
+    <ul>
+
+        <li> A huge documentation with a gallery, a lot of examples and the complete API: <a href='http://www.ifremer.fr/vacumm'>http://www.ifremer.fr/vacumm</a></li>
+        <li> Full UV-CDAT support and extensions.</li>
+        <li> Matplotlib graphics with advanced plotting objects like geographical mapping tools.</li>
+        <li> Numerous utilities for manipulating and converting time data.</li>
+        <li> Regridding and interpolation of random or gridded data, in 1D or 2D, with curvilinear grid support.</li>
+        <li> Helper routines for inspecting and reading NetCDF objects in single or multiple file datasets.</li>
+        <li> Generic and specialized 1D and 2D filters working on masked variables.</li>
+        <li> Specialized physical and numerical diagnostics, like dynamics, thermodynamics, spectral analyses, tides, etc.</li>
+        <li> Support and extension of CF conventions for searching or formatting variables.</li>
+        <li> Miscellaneous location utilities such as readers of sigma coordinates for ocean models, or Arakawa grid converters.</li>
+        <li> High level generic interface for reading and post-processing NetCDF data from standard or known dataset, such as model outputs or satellite products.</li>
+        <li> Statistical accumulator for large datasets.</li>
+        <li> Interfaces for working with random and gridded bathymetries, and with shorelines.</li>
+        <li> Utilities for working with masks and selection of spatial data.</li>
+        <li> Utilities for working with input and output remote files.</li>
+        <li> Advanced logging classes.</li>
+        <li> Extensions to sphinx for Fortran and Python.</li>
+        <li> A collection of scripts for some diagnostics.</li>
+
+    </ul>
+
+    <h1>Dependecies</h1>
+
+    Mandatory:
+    <a href="http://uvcdat.llnl.gov/">UVCDAT</a>,
+    <a href="http://www.voidspace.org.uk/python/configobj.html">configobj</a>.<br>
+
+    Optional:
+    <a href="https://pypi.python.org/pypi/seawater">seawater</a>,
+    <a href="https://pypi.python.org/pypi/PIL">PIL</a>,
+    <a href="http://pytz.sourceforge.net">pytz</a>,
+    <a href="http://www.paramiko.org">paramiko</a>,
+    <a href="https://pypi.python.org/pypi/xlwt">xlwt</a>,
+    <a href="https://pypi.python.org/pypi/sphinx-fortran">sphinx-fortran</a>,
+    <a href="https://pypi.python.org/pypi/cmocean">cmocean</a>.
+
+    <h1>Download</h1>
+
+    To download VACUMM sources, please go to this
+    <a href="{{ pathto('user.install.download') }}">page</a>.
+
+    <h1>Installation</h1>
+
+
+    From sources:
+
+    <div class="highlight-bash"><div class="highlight"><pre>
+<span class="gp">$</span> python setup.py install
+</pre></div></div>
+
+    Using <a href='http://conda.pydata.org/docs/index.html'>conda</a>:
+
+    <div class="highlight-bash"><div class="highlight"><pre>
+<span class="gp">$</span> conda install -c vacumm -c uvcdat -c conda-corge vacumm
+</pre></div></div>
+
+    For more information, please go to <a href="{{ pathto('user.install.installations') }}">page</a
+
+    <h1>Release notes</h1>
+
+    Release notes for each version are available on this
+    <a href="{{ pathto('appendix.release') }}">page</a>.
+
+    <h1>Documentation</h1>
+
+    The documentation is available <a href="{{ pathto('contents') }}">here</a>,
+    with in particular
+    its <a href="{{ pathto('user') }}">user guide</a> and
+    its <a href="{{ pathto('library/index') }}">library</a>.
+
+    <h1>License</h1>
+
+    VACUMM is under the <a href="{{ pathto('appendix.license') }}">CeCiLL</a> license,
+    which is compatible with well knwon GPL license.
+
+    <h1>Contact</h1>
+
+    Stephane Raynaud (raynaud (at) actimar.fr),
+    Guillaume Charria (Guillaume.Charria (at) ifremer.fr).<br>
+    See the <a href="{{ pathto('contact') }}">contact page</a>.
+
+
+    <h1>Test it!</h1>
+
+    Try importating the core:
+
+    <div class="highlight-python"><div class="highlight"><pre>
+<span class="gp">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">vacumm.misc</span>
+</pre></div></div>
+
+    A more concrete example:
+    <div class="highlight-python"><div class="highlight"><pre>
+<span class="gp">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">vcmq</span> <span class="kn">import</span> *
+<span class="gp">&gt;&gt;&gt;</span> sst = DS(data_sample(<span class="s">&#39;mars3d.xy.nc&#39;</span>), <span class="s">&#39;mars&#39;</span>).get_sst()
+<span class="gp">&gt;&gt;&gt;</span> map2(sst)
+</pre></div></div>
+
+{% endblock %}

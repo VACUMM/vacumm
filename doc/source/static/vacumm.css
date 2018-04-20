@@ -1,0 +1,114 @@
+/* Inherit from sphinxdoc style */
+@import url(sphinxdoc.css);
+
+/* Added by SR */
+
+div.body h1,
+div.body h2,
+div.body h3,
+div.body h4,
+div.body h5,
+div.body h6 {
+    text-shadow: 1.0px 1.0px 2px #ccc
+}
+div.sphinxsidebar h3,
+div.sphinxsidebar h4 {
+    text-shadow: 2px 2px 2px #777
+}
+
+div.related {
+    text-shadow: 1px 1px 0 #ddd;
+}
+
+
+div.sidebar {
+    -webkit-box-shadow: 3px 1px 3px #d8d8d8;
+    -moz-box-shadow: 4px 4px 3px #d8d8d8;
+}
+
+
+dl.ftype > dt, dl.fvar > dt, dl.method > dt, dl.classmethod > dt, dl.staticmethod > dt, dl.class > dt, dl.attribute > dt, dl.type > dt, dl.variable > dt, dl.program > dt, dl.subroutine > dt {
+    background-color: #EFEFEF;
+}
+dl.exception > dt {
+    background-color: #FFEFEF;
+}
+dl.class > dt {
+    background-color: #EFFFEF;
+}
+dl.class, dl.exception {
+    background-color: #F9F9F9;
+}
+dl.function > dt {
+    background-color: #F9F9FF;
+}
+
+dl.program > dt {
+    background-color: #FFEFEF; /*red*/
+}
+dl.type > dt {
+    background-color: #FFFFEF; /*yellow*/
+}
+dl.variable > dt {
+    background-color: #EFFFFF; /*turquoise*/
+}
+dl.subroutine > dt {
+    background-color: #EFFFEF; /*green*/
+}
+
+dl.function:hover, dl.method:hover, dl.classmethod:hover, dl.staticmethod:hover, dl.ftype:hover, dl.fvar:hover, dl.class:hover, dl.attribute:hover, dl.subroutine:hover, dl.program:hover, dl.variable:hover, dl.type:hover {
+    border: 1px solid #ccc;
+}
+dl.function, dl.class, dl.ftype, dl.fvar, dl.subroutine, dl.type, dl.variable, dl.program {
+    border: 1px solid white;
+}
+dl.method, dl.attribute, dl.classmethod, dl.staticmethod {
+    border: 1px solid #F9F9F9;
+}
+
+dl.data > dt > tt.descclassname, dl.function > dt > tt.descclassname, dl.class > dt > tt.descclassname, dl.exception > dt > tt.descclassname {
+    display:none;
+}
+
+/*.highlight-python >
+    border-top-color: #68A4C4;
+    border-bottom-color: #68A4C4;
+*/
+.highlight {
+    border-color:1px solid #C6C9CB;
+    -webkit-box-shadow: 1px 1px 1px #d8d8d8;
+    -moz-box-shadow: 1px 1px 1px #d8d8d8;
+}
+
+div.admonition pre, div.warning pre {
+    background-color: #f7f7f7;
+}
+
+
+th.head {
+    background-color: #ECD8B9;
+}
+
+div.figure, p.graphviz  {
+    text-align:center
+}
+
+p.caption {
+    font-style : italic;
+}
+
+/* Gallery */
+figure {
+  margin: 1em;
+  display: inline-block;
+}
+
+figure img {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+figcaption {
+    text-align: center;
+    font-size:small;
+}
