@@ -46,13 +46,13 @@ from matplotlib.ticker import (AutoLocator, MaxNLocator, FixedLocator, IndexLoca
 # VACUMM
 
 from vacumm import (VACUMMError, VACUMMWarning, help as vchelp, vacumm_warning,
-    vacumm_warn, vcwarn)
+    vacumm_warn, vcwarn, VACUMM_CFG)
 
 
 # - config
 
 from vacumm.config import (
-    VACUMM_CFG, VACUMM_CFGSPECS, VACUMM_CFGSPECS_FILE, VACUMM_VDT, VACUMM_VDT_LIVE,
+    VACUMM_CFGSPECS, VACUMM_CFGSPECS_FILE, VACUMM_VDT, VACUMM_VDT_LIVE,
     VCValidator, check_data_file, download_file, edit_file, get_cfg_checked,
     get_cfg_path, get_com_conf_dir, get_com_conf_file, get_data_dir,
     get_default_config, get_dir_dict, get_dist_dir, get_dl_dir,
@@ -82,7 +82,7 @@ from vacumm.misc.axes import (
     create_dep, islon, islat, isdep, isaxis, istime, create_axis,
     check_axes, check_id, check_order, get_axis_type, get_checker,
     guess_timeid, is_geo_axis, is_geo_axis_type, merge_orders,
-    order_match, set_order, create_axes2d, get_axis, num2axes2d, 
+    order_match, set_order, create_axes2d, num2axes2d, 
     )
 
 from vacumm.misc.atime import (
@@ -228,7 +228,7 @@ from vacumm.misc.grid import (
     bounds2mesh, cells2grid, check_xy_shape, curv_grid, create_var2d,
     get_geo_area, get_grid_axes, get_resolution, get_zdim, isoslice, mask2ind,
     merge_axis_slice, merge_axis_slices, t2uvgrids, xextend,
-    xshift, clone_grid, haversine, are_same_grids,
+    xshift, clone_grid, haversine, are_same_grids, get_axis, 
     )
 
 from vacumm.misc.regridding import (

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -69,48 +69,46 @@ __doc__ = 'Common dataset utilities'
 # ==============================================================================
 
 
-import os, sys
+import os
+import copy
 from traceback import format_exc
 from collections import OrderedDict
 
-import cdms2, MV2, numpy, pylab, seawater
-from matplotlib.pyplot import colorbar, tight_layout
+import cdms2, MV2, numpy, seawater
 N = numpy
 
-from vacumm.misc import auto_scale, MV2_concatenate, MV2_axisConcatenate, create_selector, \
-    split_selector, dict_merge, dict_check_defaults, set_atts, broadcast
-from vacumm.misc.atime import add as add_time, comptime, datetime as adatetime, Intervals, \
-    filter_time_selector, itv_intersect, strftime
-from vacumm.misc.axes import create_time, create_dep, create_lat, create_lon, guess_timeid, get_axis_type, isaxis
-from vacumm.misc.bases import Object
-import vacumm.misc.color as C
-from vacumm.misc.io import (ncget_var, ncfind_var, ncfind_obj, ncfind_axis,
-    list_forecast_files, ncread_files, ncmatch_obj,
-    ncread_best_estimate, NcIterBestEstimate, ncget_time, ncget_lon, ncget_lat, ncget_level,
-    ncget_grid, ncget_axis, NcIterTimeSlice)
-from vacumm.misc.grid.misc import meshweights, resol, create_grid, set_grid, \
-    dz2depth, depth2dz, isdepthup, gridsel, makedepthup, curv2rect, isgrid,  \
-    coord2slice, clone_grid
-from vacumm.misc.grid.regridding import resol, interp1d, regrid1d, grid2xy, transect,  \
-    shift1d, shift2d, extend1d, extend2d, regrid1dold
-from vacumm.misc.misc import is_iterable, kwfilter, squeeze_variable, dict_filter_out,  \
-    get_atts, set_atts
+from vacumm import VACUMMError
+from vacumm.misc.misc import (auto_scale, MV2_concatenate, 
+    MV2_axisConcatenate, create_selector, kwfilter, squeeze_variable, 
+    split_selector, dict_merge, dict_check_defaults, broadcast, 
+    dict_filter_out, get_atts, set_atts, grow_variables)
 from vacumm.misc.phys.constants import GRAVITY
+from vacumm.misc.axes import (create_dep,
+    get_axis_type, isaxis, islon, islat, isdep)
+from vacumm.misc.bases import Object
+from vacumm.misc.grid import( meshweights, resol, create_grid, set_grid,
+    dz2depth, depth2dz, isdepthup, gridsel, makedepthup, curv2rect, isgrid, 
+    coord2slice, clone_grid, get_axis_slices, makealtitudeup)
+import vacumm.misc.color as C
+from vacumm.misc.io import (ncfind_var, ncfind_obj, ncfind_axis,
+    list_forecast_files, ncread_files, ncmatch_obj,
+    NcIterBestEstimate, NcIterTimeSlice)
+from vacumm.misc.regridding import shift1d, extend1d, transect, regrid1d
+from vacumm.misc.atime import (comptime, datetime as adatetime, Intervals, 
+    itv_intersect, strftime)
 from vacumm.misc.plot import map2, curve2, section2, hov2, add_map_lines
-from vacumm.misc.axes import islon, islat, isdep
 from vacumm.data import register_dataset
 from vacumm.data.misc.sigma import NcSigma
-from vacumm.data.misc.arakawa import ArakawaGrid, AGrid, CGrid, ARAKAWA_LOCATIONS as arakawa_locations,  \
-    set_grid_type, get_grid_type, _cdms2_atts as cdms2_arakawa_atts
+from vacumm.data.misc.arakawa import (ArakawaGrid, 
+    ARAKAWA_LOCATIONS as arakawa_locations, 
+    set_grid_type, _cdms2_atts as cdms2_arakawa_atts)
 from vacumm.data.cf import (VAR_SPECS, AXIS_SPECS, cf2search, cf2atts,
     CF_AXIS_SPECS, CF_VAR_SPECS, format_axis, format_var, get_loc, no_loc_single,
     DEFAULT_LOCATION, change_loc, HIDDEN_CF_ATTS, change_loc_single, format_grid,
     CF_DICT_MERGE_KWARGS)
-from vacumm import VACUMMError
 from vacumm.diag.dynamics import barotropic_geostrophic_velocity, kinetic_energy
 from vacumm.diag.thermdyn import mixed_layer_depth, density
 
-from vacumm.misc.misc import grow_variables
 
 # Kwargs which are pop'ed from intermediate plots
 # (e.g. plot section, then trajectory map, then post plot using these kwargs)
@@ -262,7 +260,7 @@ getvar_fmtdoc_tpl = """%(func_name)s(time=None, level=None, lat=None, lon=None, 
         - **format**, optional: Format the variable and its axes using
           :func:`~vacumm.data.cf.format_var`.
         - **torect**, optional: If possible, convert a curvilinear grid to
-          a rectilinar grid using :func:`~vacumm.misc.grid.regridding.curv2rect`.
+          a rectilinar grid using :func:`~vacumm.misc.regridding.curv2rect`.
         - **order**, optional: Change order of axes (like ``'xty'``).
         %(kwargs_params)s
     """
@@ -397,7 +395,7 @@ class Catalog(Object):
 
         '''
         datasets = []
-        if self.files: datasets.extend(files)
+        if self.files: datasets.extend(self.files)
         if self.filepattern and self.time:
             datasets.extend(self.find_datasets(self.filepattern, self.time))
         return datasets
@@ -1302,7 +1300,7 @@ class Dataset(Object):
 
         # Find time id
         specs = self._get_ncobj_specs_('time')
-        genname = specs['genname']
+#        genname = specs['genname']
         search = specs['search']
         timeid = ncfind_axis(self.dataset[0], search)
         self._set_cached_ncid_('time', timeid)
@@ -1978,7 +1976,7 @@ class Dataset(Object):
         if minimap=='auto': minimap = None
         if minimap is True or (minimap is None and not getattr(p.axes, '_minimap', False)):
             kwmap.setdefault('map_zoom', 0.5)
-            m = add_map_lines(((lons[0],lons[-1]),(lats[0], lats[-1])), lons, lats, **kwmap)
+            add_map_lines(((lons[0],lons[-1]),(lats[0], lats[-1])), lons, lats, **kwmap)
             p.axes._minimap = True
 
         del kwargs['title']
@@ -2165,7 +2163,7 @@ class Dataset(Object):
 
     def finalize_object(self, var, genname=None, format=format, squeeze=False, order=None,
         asvar=None, torect=True, atts=None, lon=None, lat=None, curvsel=None,
-        at=None, **kwargs):
+        at=None, warn=True, **kwargs):
         """Finalize a variable or an axis
 
         :Params:
@@ -2193,7 +2191,7 @@ class Dataset(Object):
         kwat = kwfilter(kwargs, 'at_')
         kwat.update(kwfilter(kwargs, 'toloc_'))
         at = kwargs.pop('toloc', at)
-        ax = isaxis(var)
+#        ax = isaxis(var)
         if atts is None: atts = {}
 
         if not isaxis(var):
@@ -2591,12 +2589,12 @@ class OceanDataset(OceanSurfaceDataset):
             grid = getattr(self, gridmet)()#False)
         curvsel = CurvedSelector(grid, sselector)
         kwfinal['curvsel'] = curvsel
-        kwfinal['genname'] = genname = 'depth' + at_p
+        kwfinal['genname'] = 'depth' + at_p
         if len(seltimes)>1:
             kwfinal[self.get_timeid()] = seltimes[1]
         kwfinalz = kwfinal.copy()
         if at_p and at_z!=at_p: # from T or W to U, etc
-            kwfinalz['genname'] = genname = 'depth' + at_z
+            kwfinalz['genname'] = 'depth' + at_z
             kwfinalz.setdefault('at', at)
 
         # Second, try from sigma-like coordinates at W and T points only (for now)
@@ -3202,7 +3200,7 @@ class OceanDataset(OceanSurfaceDataset):
         if op in ('mean','avg'):
             op = 'average'
         elif op not in ['min','max']:
-            raise ValueError('Invalid extrema: %s'%(extrema))
+            raise ValueError('Invalid extrema: %s'%(op))
         op = getattr(MV2, op, None)
         if op is None:
             raise ValueError('Invalid operation: %s'%(operation))
@@ -3459,7 +3457,7 @@ class OceanDataset(OceanSurfaceDataset):
 
         '''
 
-        varname=kwargs.pop('varname', None)
+#        varname=kwargs.pop('varname', None)
         grid = self.get_grid(**kwargs)
         glob_lon, glob_lat = grid.getLongitude(), grid.getLatitude()
         mapkw = kwfilter(kwargs, 'map',
@@ -3532,7 +3530,7 @@ class OceanDataset(OceanSurfaceDataset):
         # Compute scaling/informationnal data
 #        vmin,vmax = numpy.min(var), numpy.max(var)
 #        vstep = abs(vmax-vmin)/10.
-        dmin,dmax = MV2.min(dep), MV2.max(dep)
+#        dmin,dmax = MV2.min(dep), MV2.max(dep)
 #        dstep = abs(dmax-dmin)/10.
 #        if dmax > 0: dmax = 0
 #        var, dep = var[::-1], dep[::-1]
@@ -3560,9 +3558,9 @@ class OceanDataset(OceanSurfaceDataset):
 #        section(var, **seckw)
         from vacumm.misc.plot import add_grid
         add_grid((pos, dep))
-        mp = None
+#        mp = None
         if pmap:
-            mp = self.plot_trajectory_map(lon, lat, **mapkw)
+            self.plot_trajectory_map(lon, lat, **mapkw)
         # Post plotting
         plotkw.setdefault('title', 'Vertical section of %s\ntime: %s\nlon: %s to %s, lat: %s to %s'%(var.id, select['time'], xmin, xmax, ymin, ymax))
         sc.post_plot(**plotkw)
@@ -3602,8 +3600,8 @@ class OceanDataset(OceanSurfaceDataset):
                 self.debug('Squeezing variable: %s', self.describe(var))
                 var = squeeze_variable(var)
         # Compute scaling/informationnal data
-        vmin,vmax = numpy.min(var), numpy.max(var)
-        vstep = abs(vmax-vmin)/10.
+#        vmin,vmax = numpy.min(var), numpy.max(var)
+#        vstep = abs(vmax-vmin)/10.
         xname = meridional and 'Latitude' or 'Longitude'
         hovkw = kwfilter(kwargs, 'hov',
             defaults=dict(
@@ -3622,9 +3620,9 @@ class OceanDataset(OceanSurfaceDataset):
         # Plot the section
         hovkw.update(time_vertical=True, show=False)
         hv = hov2(var, **hovkw)
-        mp = None
+#        mp = None
         if pmap:
-            mp = self.plot_trajectory_map(lon, lat, **mapkw)
+            self.plot_trajectory_map(lon, lat, **mapkw)
         # Post plotting
         if meridional:
             hovtype = 'Meridional'
@@ -3632,12 +3630,12 @@ class OceanDataset(OceanSurfaceDataset):
         else:
             hovtype = 'Zonal'
             lonlat = 'lon: %s to %s, lat: %s'%(xorymin, xorymax, xory)
-        ctime = None
+#        ctime = None
         try:
             time = var.getTime().asComponentTime()
             ct0 = strftime('%Y-%m-%d',time[0])
             ct1 = strftime('%Y-%m-%d',time[-1])
-            ctime = "%s / %s period" %(ct0,ct1)
+#            ctime = "%s / %s period" %(ct0,ct1)
         except Exception as e:
             self.warning("Can't get time information. Error: \n"+e.message)
 
@@ -3662,8 +3660,8 @@ class OceanDataset(OceanSurfaceDataset):
         # Get data
         var, lat, lon = self.get_extrema_location(varname, xorymin, xorymax, xory, meridional, extrema, select, **datakw)
         # Compute scaling/informationnal data
-        vmin,vmax = numpy.min(var), numpy.max(var)
-        vstep = abs(vmax-vmin)/10.
+#        vmin,vmax = numpy.min(var), numpy.max(var)
+#        vstep = abs(vmax-vmin)/10.
         xname = meridional and 'Latitude' or 'Longitude'
         curkw = kwfilter(kwargs, 'cur',
             defaults=dict(
@@ -3680,9 +3678,9 @@ class OceanDataset(OceanSurfaceDataset):
         # Plot the location curve
         curkw.update(order='td', show=False)
         cur = curve2(var, **curkw)
-        mp = None
+#        mp = None
         if pmap:
-            mp = self.plot_trajectory_map(lon, lat, **mapkw)
+            self.plot_trajectory_map(lon, lat, **mapkw)
         # Post plotting
         if meridional:
             curtype = 'Meridional'
@@ -3715,8 +3713,8 @@ class OceanDataset(OceanSurfaceDataset):
         # Get data
         var, lat, lon = self.get_localized_computed_values(varname, xorymin, xorymax, xory, meridional, operation, select, **datakw)
         # Compute scaling/informationnal data
-        vmin,vmax = numpy.min(var), numpy.max(var)
-        vstep = abs(vmax-vmin)/10.
+#        vmin,vmax = numpy.min(var), numpy.max(var)
+#        vstep = abs(vmax-vmin)/10.
         curkw = kwfilter(kwargs, 'cur',
             defaults=dict(
                 label=self.__class__.__name__,
@@ -3733,7 +3731,7 @@ class OceanDataset(OceanSurfaceDataset):
         curkw.update(show=False)#, order='td')
         cur = curve2(var, **curkw)
         if pmap:
-            mp = self.plot_trajectory_map(lon, lat, **mapkw)
+            self.plot_trajectory_map(lon, lat, **mapkw)
         # Post plotting
         if meridional:
             curtype = 'Meridional'
@@ -3973,12 +3971,12 @@ class AtmosDataset(AtmosSurfaceDataset):
             grid = getattr(self, gridmet)()#False)
         curvsel = CurvedSelector(grid, sselector)
         kwfinal['curvsel'] = curvsel
-        kwfinal['genname'] = genname = 'depth' + at_p
+        kwfinal['genname'] = 'depth' + at_p
         if len(seltimes)>1:
             kwfinal[self.get_timeid()] = seltimes[1]
         kwfinalz = kwfinal.copy()
         if at_p and at_z!=at_p: # from T or W to U, etc
-            kwfinalz['genname'] = genname = 'altitude' + at_z
+            kwfinalz['genname'] = 'altitude' + at_z
             kwfinalz.setdefault('at', at)
 
         # Second, try from sigma-like coordinates at W and T points only (for now)
@@ -4190,8 +4188,8 @@ class CurvedSelector(object):
         """Make a copy and put it on another grid with new xid and yid"""
         cs = copy(self)
         if hasattr(cs, 'xid'):
-            cs.xid = xid or grid.getAxis(1).id
-            cs.yid = yid or grid.getAxis(0).id
+            cs.xid = cs.xid or grid.getAxis(1).id
+            cs.yid = cs.yid or grid.getAxis(0).id
         return cs
 
     def finalize(self, var):

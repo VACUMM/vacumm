@@ -2,7 +2,7 @@
 """
 Bathmetry tools
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -36,24 +36,35 @@ Bathmetry tools
 #
 from __future__ import absolute_import
 from __future__ import print_function
-import cdms2,MV2
+import cdms2, MV2
 from genutil import minmax
 import numpy as N
 from six.moves import range
+import six
+from configobj import ConfigObj
 MV = MV2
 cdms = cdms2
 
 
-from string import Template
-from six.moves.configparser import ConfigParser, SafeConfigParser
-import os.path, operator
+import os.path
 from matplotlib.ticker import Formatter
 import pylab as P
-from warnings import warn
-import pickle
 
-from vacumm.config import check_data_file, get_config_sections, get_config_value
-from vacumm.misc.shapes import XYZ, XYZMerger
+from vacumm import VACUMMError, vcwarn, VACUMM_CFG
+from vacumm.config import check_data_file
+from vacumm.misc.misc import kwfilter, auto_scale
+from vacumm.misc.grid import (get_xy, axes2d, resol, create_grid, meshgrid, 
+    meshbounds, get_axis)
+from vacumm.misc.grid.masking import polygon_mask
+from vacumm.misc.color import cmap_custom, auto_cmap_topo
+from vacumm.misc.regridding import refine, regrid2d
+from vacumm.misc.plot import map2
+from vacumm.misc.filters import norm_atan,deriv2d,shapiro2d
+from vacumm.misc.io import Shapes
+from vacumm.misc.sdata import XYZ, XYZMerger
+
+from .shorelines import get_best, get_shoreline, ShoreLine, get_bestres
+
 
 
 __all__ = ['print_bathy_list', 'Bathy', 'plot_bathy', 'fmt_bathy',  'bathy_list',
@@ -90,8 +101,8 @@ def bathy_list(name=None, cfgfile=None, minstatus=0):
     """
 
     # Read config file
-    sections, cfg = get_config_sections(cfg=cfgfile, parent_section=__name__,
-        parent_option='cfgfile_gridded', getcfg=True)
+#    sections, cfg = get_config_sections(cfg=cfgfile, parent_section=__name__,
+#        parent_option='cfgfile_gridded', getcfg=True)
 
 #    if not cfgfile: cfgfile = get_cfgfiles_gridded() # File name
 #    dvars = get_dir_dict(__names__) # Various directory names
@@ -102,14 +113,13 @@ def bathy_list(name=None, cfgfile=None, minstatus=0):
 
     # Loop on section
     bathies = {}
-    for section in sections:
+    for section in VACUMM_CFG['gridded'].sections:
         status = _check_bathy_file_(section, avail=True)
 #        if not os.path.exists(f.get(section, 'file', vars=dvars)): continue
-        if status<=minstatus: continue
+        if status<=minstatus: 
+            continue
         bathies[section] = {'status':status}
-        for key in 'file','file_url','file_license','var','lon','lat':
-            if cfg.has_option(section, key):
-                bathies[section][key] = get_config_value(section, key, cfg=cfg)
+        bathies[section].update(VACUMM_CFG['gridded'][section])
 
     # Found any bathy?
     if name is not None:
@@ -122,8 +132,7 @@ def bathy_list(name=None, cfgfile=None, minstatus=0):
 
 def _check_bathy_file_(bathyname, **kwargs):
     """Make sure to have a bathy file (see :func:`~vacumm.config.check_data_file`)"""
-    return check_data_file(bathyname, 'file', parent_section=__name__,
-        parent_option='cfgfile_gridded', **kwargs)
+    return check_data_file(VACUMM_CFG['gridded'][bathyname], **kwargs)
 
 
 #def get_cfgfiles_gridded():
@@ -226,7 +235,7 @@ class Bathy(object):
 
         self._lon_range = lon
         self._lat_range = lat
-        kwargs = {self._lon_name:self._lon_range,self._lat_name:self._lat_range}
+#        kwargs = {self._lon_name:self._lon_range,self._lat_name:self._lat_range}
 
         f = cdms.open(self.file_name)
         ilonmin,ilonmax,ilonsamp = f[self._var_name].getLongitude().mapIntervalExt(self._lon_range)
@@ -344,9 +353,9 @@ def plot_bathy(bathy, shadow=True, contour=True, shadow_stretch=1., shadow_shapi
 
     # Masking
     if 'maxdep' in kwargs:
-        zmin = -maxdep
+        zmin = -kwargs['maxdep']
     if 'maxalt' in kwargs:
-        zmax = maxalt
+        zmax = kwargs['maxalt']
     if zmin is not None:
         bathy[:] = MV2.masked_less(bathy, zmin)
     if zmax is not None:
@@ -623,7 +632,7 @@ class XYZBathyBankClient(object):
     def _check_(self, att=None):
         """Check that infos are consistent"""
         if not os.path.exists(self.xyzfile):
-            warn('%s xyz bathy file does not exist'%self.xyzfile)
+            vcwarn('%s xyz bathy file does not exist'%self.xyzfile)
         else:
             # Fill what is missing
             if att is not None:
@@ -656,7 +665,7 @@ class XYZBathyBankClient(object):
             :meth:`~vacumm.misc.io.XYZ.clip`
         """
         if not os.path.exists(self.xyzfile):
-            warn('%s xyz bathy file does not exist'%self.xyzfile)
+            vcwarn('%s xyz bathy file does not exist'%self.xyzfile)
         else:
             xyz = XYZBathy(self.xyzfile, long_name=self.long_name, transp=self.transp, id=self.id)
             if zone is not None and zone != (None, )*4:
@@ -680,20 +689,20 @@ class XYZBathyBank(object):
     >>> xyzb = XYZBathyBank()
 
     """
-    def __init__(self, cfgfile=None):
+    def __init__(self, cfg=None):
 
-        # Guess file name
-        if cfgfile is None:
-            f = ConfigParser()
-            f.read(get_config_value(__name__, 'cfgfile_xyz'))
-            if f.has_option('banks', 'main'):
-                cfgfile = f.get('banks', 'main')
-            #else:
-            #    raise Exception, 'Cannot read config file to guess bank file name'
-        # Read file
-        self.cfg = SafeConfigParser()
+        # Config
+        if cfg is None: # default
+            cfg = VACUMM_CFG[__name__]['xyz']
+            cfgfile = None
+        elif isinstance(cfg, six.string_types) and os.path.exists(cfg):
+            cfgfile = cfg
+            cfg = ConfigObj()
+            cfg.load(cfgfile)
+        self.cfg = cfg
         self.cfgfile = cfgfile
-        if cfgfile and os.path.exists(cfgfile): self.cfg.read(cfgfile)
+            
+        # Populate
         self._clients = {}
         for id in self.cfg.sections():
             self._clients[id] = XYZBathyBankClient(self, id)
@@ -745,7 +754,7 @@ class XYZBathyBank(object):
         if isinstance(id, XYZBathyBankClient):
             id = id.id
         if not self.cfg.has_section(id):
-            warn('No such bathymetry %s'%id)
+            vcwarn('No such bathymetry %s'%id)
             return
         self.cfg.remove_section(id)
         del self._clients[id]
@@ -802,9 +811,9 @@ class XYZBathyBank(object):
                 b = b.load(zone=(xmin, ymin, xmax, ymax), margin=margin)
             res.append(b)
         if self.get_order() is not None and ordered != False:
-            ids = [b.id for b in res]
-            order = [id for id in self.get_order() if id in ids]
-            res.sort(cmp=lambda b1, b2: cmp(self.get_order().index(b1), self.get_order().index(b2)))
+#            ids = [b_.id for b_ in res]
+#            order = [id for id in self.get_order() if id in ids]
+            res.sort(key=lambda b: self.get_order().index(b))
         return res
 
     def set_order(self, order):
@@ -1232,19 +1241,3 @@ class NcGriddedBathy(GriddedBathy):
 
 
 
-######################################################################
-from .shorelines import get_best, get_shoreline, ShoreLine, get_bestres
-from vacumm.misc.grid import get_xy, axes2d, resol, create_grid, get_grid, meshgrid, \
-    meshbounds, get_axis
-from vacumm.misc.grid.regridding import griddata, refine, regrid2d
-from vacumm.misc.grid.masking import polygon_mask, GetLakes
-from vacumm.misc.misc import kwfilter, auto_scale,geo_scale,deplab
-from vacumm.misc.color import cmap_jete, cmap_bathy,bistre, cmap_custom, auto_cmap_topo
-from vacumm.misc.plot import map2
-from vacumm.misc.filters import norm_atan,deriv2d,shapiro2d
-from vacumm.misc.io import Shapes
-
-
-#b = NcGriddedBathy((9.2, 14.2), (-8.3, -3.4))
-#b.plot(mask=True)
-#

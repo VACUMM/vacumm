@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Utilities to handle shorelines"""
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -35,14 +35,14 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
-import os
 
 _shoreline_list = ['Histolitt', 'EUROSION', 'GSHHS_SF', 'GSHHS','GSHHSBM']
 __all__ = _shoreline_list+['ShoreLine', 'get_best', 'get_shoreline', 'list_shorelines', 'get_bestres']
 
 import numpy as N
 
-from vacumm import config, VACUMMError
+from vacumm import VACUMMError, VACUMM_CFG
+from vacumm.config import check_data_file
 from vacumm.misc.grid import get_xy
 from vacumm.misc.basemap import gshhs_reslist, gshhs_autores
 from vacumm.misc.sdata import Shapes, GSHHSBM
@@ -53,18 +53,13 @@ class VACUMMShorelineError(VACUMMError):
 
 def _shorelines_list_(name=None):
     # Get list a dict
-    shorelines = config.get_config_value(__name__, 'shapefile_.*', regexp=True, ispath=True)
-
-    # Skip bad keys
-    for key in shorelines.keys():
-        if key.endswith('_url') or key.endswith('_license'):
-            del shorelines[key]
+    shorelines = VACUMM_CFG[__name__]['xyz']
 
     # Check requested name
     if name is not None:
-        if 'shapefile_'+name not in shorelines:
+        if name not in shorelines:
             raise VACUMMShorelineError('Shoreline not available: %s. Please use list_shorelines() to print the list of available shorelines.'%name)
-        return shorelines['shapefile_'+name]
+        return shorelines[name]
 
     return shorelines
 
@@ -75,8 +70,8 @@ def list_shorelines():
     if not shorelines:
         print('None available')
     else:
-        for item in shorelines.items():
-            print('- %s (%s)'%item)
+        for name, specs in shorelines.items():
+            print('- {} ({})'.format(name, specs['file']))
 
 class _CoastalBathy_:
     _factor = 2.
@@ -149,8 +144,7 @@ class ShoreLine(_CoastalBathy_, _PolyShapes_,  Shapes):
 
     def _check_input_(self, input):
         if input is None and self._name is not None:
-            input = config.check_data_file(__name__, 'shapefile_'+self._name,
-                suffix=['.shp', '.shx'])[0][:-4]
+            input = check_data_file(VACUMM_CFG[__file__]['shapefiles'][self._name])[:-4]
         return input
 
     @classmethod
@@ -166,7 +160,7 @@ class ShoreLine(_CoastalBathy_, _PolyShapes_,  Shapes):
     def avail(cls):
         """Is this shoreline available locally or for download?"""
         if cls._name is None: return True
-        return config.check_data_file(__name__, 'shapefile_'+cls._name, avail=True)
+        return check_data_file(VACUMM_CFG[__file__]['shapefiles'][cls._name], avail=True)
 #        return 'shapefile_%s'%cls._name in _shorelines_list_()
 
 

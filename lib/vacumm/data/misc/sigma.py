@@ -48,14 +48,14 @@ import re, math, string, numpy as N, cdms2, MV2
 from traceback import format_exc
 from warnings import warn
 from vacumm import vcwarn
-from vacumm.misc import (selector2str, create_selector, split_selector,
+from vacumm.misc.misc import (selector2str, create_selector, split_selector,
     filter_level_selector, dict_merge)
-import vacumm.data.cf as cf
 from vacumm.misc.axes import axis_type
 from vacumm.misc.grid import dz2depth as dz2depths
 from vacumm.misc.atime import create_time
 from vacumm.misc.regridding import grid2xy
 from vacumm.misc.io import NcFileObj, ncread_axis, ncread_var
+import vacumm.data.cf as cf
 
 RE_SN2LOC_SEARCH = re.compile(r'_at_([uvwtdfr])_location', re.I).search
 

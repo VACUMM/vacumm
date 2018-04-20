@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -215,7 +215,7 @@ def strfsize(size, fmt=None, unit=None, si=False, suffix=True):
         fmt_unit += unit_suffix
     return fmt%{'size':fmt_size, 'unit':fmt_unit}
 
-strfsize.__doc__ %= _strfsize_doc_sorted_units
+#strfsize.__doc__ %= _strfsize_doc_sorted_units # FIXME: strfsize: TypeError: format requires a mapping
 
 _strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?'%('|'.join(list(_size_units.keys()))), re.IGNORECASE)
 

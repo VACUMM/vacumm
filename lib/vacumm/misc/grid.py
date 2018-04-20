@@ -2967,6 +2967,62 @@ def isdepthup(depth, axis=None, ro=True):
     return isup
 
 
+def _makelevup_(negative, vv, levels=None, axis=None, default=None, ro=False, strict=True):
+    # A list of variables
+    single = not isinstance(vv, (list,tuple))
+    if single: vv = [vv]
+
+    # Get depth
+    getlevels = isaxis(levels) or isinstance(levels, N.ndarray)
+    if levels is None:
+        if isaxis(vv[0]):
+            levels = levels # ?
+        else:
+            levels = vv[0].getLevel()
+    if axis is None and isaxis(levels):
+        axis = levels
+    if isinstance(levels, bool):
+        isup = levels
+    else:
+
+        axis = get_zdim(vv[0], axis, default=default, strict=strict)
+
+        # No levels found
+        if axis is None:
+            vv = vv[0] if single else vv
+            if getlevels: return vv, levels
+            return vv
+
+        # Positive up?
+        isup = isdepthup(levels, axis=axis, ro=ro)
+
+        # Revert levels
+        if not isup and getlevels:
+            if negative:
+                levels[:] *= -1
+            if isaxis(levels):
+                levels.assignValue(levels[::-1])
+                levels.positive = 'up'
+            else:
+                levels[:] = levels.take(list(range(levels.shape[axis]-1, -1, -1)), axis=axis)
+
+    # Revert variables or levels
+    if not isup:
+        for ivar, var in enumerate(vv):
+            if isaxis(var):      
+                var.assignValue(var[::-1] * (-1 if negative else 1))
+                var.positive = 'up'
+            else:
+                axis = get_zdim(var, axis=axis)
+                if axis is None: continue
+                var[:] = var.take(list(range(var.shape[axis]-1, -1, -1)), axis=axis)
+                depaxis = var.getAxis(axis)
+                depaxis.assignValue(depaxis[::-1] * (-1 if negative else 1))
+
+    vv = vv[0] if single else vv
+    if getlevels: return vv, levels
+    return vv
+
 def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
     """Make depth and variables positive up
 
@@ -2983,127 +3039,28 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
         Z dimension (else guessed with :func:`get_zdim`).
 
     """
-    # A list of variables
-    single = not isinstance(vv, (list,tuple))
-    if single: vv = [vv]
-
-    # Get depth
-    getdepth = isaxis(depth) or isinstance(depth, N.ndarray)
-    if depth is None:
-        if isaxis(vv[0]):
-            depth = depth
-        else:
-            depth = vv[0].getLevel()
-    if axis is None and isaxis(depth):
-        axis = depth
-    if isinstance(depth, bool):
-        isup = depth
-    else:
-
-        axis = get_zdim(vv[0], axis, default=default, strict=strict)
-
-        # No depth found
-        if axis is None:
-            vv = vv[0] if single else vv
-            if getdepth: return vv, depth
-            return vv
-
-        # Positive up?
-        isup = isdepthup(depth, axis=axis, ro=ro)
-
-        # Revert depths
-        if not isup and getdepth:
-            depth[:] *= -1
-            if isaxis(depth):
-                depth.assignValue(-depth[::-1])
-                depth.positive = 'up'
-            else:
-                depth[:] = depth.take(list(range(depth.shape[axis]-1, -1, -1)), axis=axis)
-
-    # Revert variables or depths
-    if not isup:
-        for ivar, var in enumerate(vv):
-            if isaxis(var):
-                var.assignValue(-var[::-1])
-                var.positive = 'up'
-            else:
-                axis = get_zdim(var, axis=axis)
-                if axis is None: continue
-                var[:] = var.take(list(range(var.shape[axis]-1, -1, -1)), axis=axis)
-                depaxis = var.getAxis(axis)
-                depaxis.assignValue(-depaxis[::-1])
-
-    vv = vv[0] if single else vv
-    if getdepth: return vv, depth
-    return vv
+    return _makelevup_(True, vv, levels=depth, axis=axis, default=default, 
+        ro=ro, strict=strict)
 
 
-def makealtitudeup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
-    """Make depth and variables positive up
+def makealtitudeup(vv, altitude=None, axis=None, default=None, ro=False, strict=True):
+    """Make altitude and variables positive up
 
-    :Params:
+    Parameters
+    ----------
 
-        - **vv**: A single variable or a list of them.
-        - **depth**, optional: Explicit depths to not guess
-          it with :meth:`getLevel`. If True or False, simply revert along Z
-          dimension.
-        - **axis**, optional: Z dimension (else guessed with :func:`get_zdim`).
+    vv:
+        A single variable or a list of them.
+    altitude: optional
+        Explicit altitudes to not guess
+        it with :meth:`getLevel`. If True or False, simply revert along Z
+        dimension.
+    axis: optional
+        Z dimension (else guessed with :func:`get_zdim`).
 
     """
-    # A list of variables
-    single = not isinstance(vv, (list,tuple))
-    if single: vv = [vv]
-
-    # Get depth
-    getdepth = isaxis(depth) or isinstance(depth, N.ndarray)
-    if depth is None:
-        if isaxis(vv[0]):
-            depth = depth
-        else:
-            depth = vv[0].getLevel()
-    if axis is None and isaxis(depth):
-        axis = depth
-    if isinstance(depth, bool):
-        isup = depth
-    else:
-
-        axis = get_zdim(vv[0], axis, default=default, strict=strict)
-
-        # No depth found
-        if axis is None:
-            vv = vv[0] if single else vv
-            if getdepth: return vv, depth
-            return vv
-
-        # Positive up?
-        isup = isdepthup(depth, axis=axis, ro=ro)
-
-        # Revert depths
-        if not isup and getdepth:
-#            depth[:] *= -1
-            if isaxis(depth):
-                depth.assignValue(depth[::-1])
-                depth.positive = 'up'
-            else:
-                depth[:] = depth.take(list(range(depth.shape[axis]-1, -1, -1)), axis=axis)
-
-    # Revert variables or depths
-    if not isup:
-        for ivar, var in enumerate(vv):
-            if isaxis(var):
-                var.assignValue(var[::-1])
-                var.positive = 'up'
-            else:
-                axis = get_zdim(var, axis=axis)
-                if axis is None: continue
-                var[:] = var.take(list(range(var.shape[axis]-1, -1, -1)), axis=axis)
-                depaxis = var.getAxis(axis)
-                depaxis.assignValue(depaxis[::-1])
-
-    vv = vv[0] if single else vv
-    if getdepth: return vv, depth
-    return vv
-
+    return _makelevup_(False, vv, levels=altitude, axis=axis, default=default, 
+        ro=ro, strict=strict)
 
 def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge',
         zerolid=False):

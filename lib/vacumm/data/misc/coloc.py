@@ -46,23 +46,20 @@ __doc__ = 'Dataset Colocalizations'
 # ==============================================================================
 
 
-import os, sys
 
-import cdms2, MV2, numpy, pylab, seawater
+import cdms2, MV2, numpy, seawater
 from matplotlib.pyplot import colorbar
 
-from vacumm.data.misc.sigma import NcSigma
 from vacumm.misc import auto_scale
-from vacumm.misc.atime import add as add_time, comptime, datetime as adatetime, Intervals
-from vacumm.misc.axes import create_time, create_dep, create_lat, create_lon
+from vacumm.misc.misc import is_iterable
+from vacumm.misc.grid import meshweights, resol
+from vacumm.misc.atime import add as add_time 
+from vacumm.misc.axes import create_time, create_dep
 from vacumm.misc.bases import Object
 from vacumm.misc.color import cmap_magic
-from vacumm.misc.io import ncget_var, ncfind_var, list_forecast_files, ncread_best_estimate, NcIterBestEstimate
-from vacumm.misc.grid.misc import meshweights, resol
-from vacumm.misc.grid.regridding import resol, interp1d, regrid1dold, grid2xy
-from vacumm.misc.misc import is_iterable, kwfilter
+from vacumm.misc.regridding import interp1d, regrid1dold, grid2xy
 from vacumm.misc.phys.constants import g
-from vacumm.misc.plot import map2, curve2, section2, hov2
+from vacumm.misc.plot import map2
 
 
 class Colocator(Object):
@@ -106,7 +103,7 @@ class Colocator(Object):
         prof_pro = profiles.get_axis('profile', select=select)
         if prof_pro is None or not len(prof_pro):
             raise Exception('No profiles found, aborting')
-        lev_pro = profiles.get_axis('level', select=select)
+#        lev_pro = profiles.get_axis('level', select=select)
         time_pro = profiles.get_variable('time', select=select)
         lons_pro = profiles.get_variable('longitude', select=select)
         lats_pro = profiles.get_variable('latitude', select=select)
@@ -385,13 +382,13 @@ class Colocator(Object):
             from vacumm.misc.axes import create_dep
             depaxis = create_dep([dep])
             # Interpolations
-            dens_mod_ref = dens_mod_ref.reorder('-z')
+            dens_mod_ref = dens_mod.reorder('-z')
             dens_mod_ref = regrid1dold(dens_mod, axo=depaxis, xmap=0, xmapper=deps_mod) # Required order: ...z
             dens_mod_ref = dens_mod_ref.reorder('z-')
             # Valeur du différentiel de densité (cf. de Boyer Montégut et all, 2003)
             delta_dens = 0.03
             # Densité cible
-            dens_mod_target = dens_mod_ref+0.03
+            dens_mod_target = dens_mod_ref+delta_dens
             # Masques de la couche mélangée et des eaux profondes
             dens_mod_target3d = MV2.resize(dens_mod_target, dens_mod.shape)
             dens_mod_good = (dens_mod.asma() <= dens_mod_target3d.asma()).filled(False)

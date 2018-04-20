@@ -70,10 +70,10 @@ arakawa_locations = ARAKAWA_LOCATIONS
 THISDIR = os.path.dirname(__file__)
 
 #: Joint variables and axes config specification file
-CF_GCFG_INIFILE = os.path.join(THISDIR, 'cf.ini')
+CF_GFG_INIFILE = os.path.join(THISDIR, 'cf.ini')
 
 # Config manager for specs
-CF_CFGM = ConfigManager(CF_GCFG_INIFILE)
+CF_CFGM = ConfigManager(CF_GFG_INIFILE)
 
 #: Base config file for CF specifications
 CF_CFG_CFGFILE = os.path.join(THISDIR, 'cf.cfg')
@@ -178,8 +178,6 @@ class BaseSpecs(object):
         if name in specs['id']:
             specs['id'].remove(name)
         specs['id'].insert(0, name)
-        if name=='mld':
-            pass
 
         # Long name
         if not specs['long_name']:
@@ -204,10 +202,9 @@ class BaseSpecs(object):
                     specs['axes'][l].append(n)
 
         # Inherits from other specs (merge specs with dict_merge)
-        if name=='mld':
-            pass
         if specs['inherit']:
             from_name = specs['inherit']
+            self._check_entry_(from_name) # to handle high level inheritance 
             from_specs = None
             to_scan = []
             if self._inherit:
@@ -225,6 +222,7 @@ class BaseSpecs(object):
                     for key in specs.keys():
                         if key not in self._cfgspec:
                             del specs[key]
+            specs['inherit'] = None # switch off inheritance now
 
 #                    break
 
