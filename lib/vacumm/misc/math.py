@@ -38,8 +38,7 @@ from math import *
 
 import numpy as np
 
-__all__ = ['cosd','sind']
-__all__.sort()
+__all__ = ['cosd', 'sind']
 
 def cosd(x):
     """Cosine elementwise

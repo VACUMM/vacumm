@@ -33,6 +33,8 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+# TODO: cf must be moved to vacumm.misc
+
 from __future__ import absolute_import
 import os
 from warnings import warn
@@ -41,21 +43,21 @@ import string
 
 import cdms2, MV2, re
 from vacumm import VACUMMError, vcwarn
-from vacumm.misc.misc import kwfilter, dict_merge
+from vacumm.misc.misc import kwfilter, dict_merge, match_atts
 from vacumm.misc.axes import isaxis
 from vacumm.misc.color import get_cmap
 from vacumm.misc.grid import create_axes2d
-from vacumm.misc.io import ncmatch_obj
 from vacumm.misc.config import ConfigManager
 from vacumm.data.misc.arakawa import ARAKAWA_LOCATIONS
 import six
 
 __all__ = ['VAR_SPECS', 'AXIS_SPECS',
-    'format_var', 'format_axis', 'format_grid', 'match_obj',
+    'format_var', 'format_axis', 'format_grid', 'match_cf_obj',
     'cf2atts', 'cf2search', 'cp_suffix', 'get_loc',
     'change_loc', 'change_loc_single', 'dupl_loc_specs', 'no_loc_single',
     'change_loc_specs', 'squeeze_loc_single', 'squeeze_loc', 'get_physloc',
-    'HIDDEN_CF_ATTS', 'set_loc', 'match_known_var', 'match_known_axis',
+    'HIDDEN_CF_ATTS', 'set_loc', 'match_known_cf_var', 'match_known_cf_axis',
+    'match_known_cf_obj', 
     'CF_AXIS_SPECS', 'CF_VAR_SPECS',
     'register_cf_variable', 'register_cf_variables_from_cfg',
     'register_cf_axis', 'register_cf_axes_from_cfg',
@@ -204,7 +206,15 @@ class BaseSpecs(object):
         # Inherits from other specs (merge specs with dict_merge)
         if specs['inherit']:
             from_name = specs['inherit']
-            self._check_entry_(from_name) # to handle high level inheritance 
+            if ":" in from_name:
+                from_cat, from_name = from_name.split(':')[:2]
+                if from_cat==self.category:
+                    from_specs_container = self
+                else:
+                    from_specs_container = CF_SPECS[from_cat]
+            else:
+                from_specs_container = self
+            from_specs_container._check_entry_(from_name) # to handle high level inheritance 
             from_specs = None
             to_scan = []
             if self._inherit:
@@ -226,9 +236,15 @@ class BaseSpecs(object):
 
 #                    break
 
+#        # Select
+#        if specs['select']:
+#            for key in specs['select']:
+#                try:
+#                    specs['select'] = eval(specs['select'])
+#                except:
+#                    pass
+
         # Standard_names in ids
-        if name=='mld':
-            pass
         if specs['standard_name']:
             for standard_name in specs['standard_name']:
                 if standard_name not in specs['id']:
@@ -744,14 +760,18 @@ generic_var_names = GENERIC_VAR_NAMES = GENERIC_CF_VAR_NAMES = CF_VAR_NAMES # co
 CF_AXIS_NAMES = []
 generic_axis_names = GENERIC_AXIS_NAMES = GENERIC_CF_AXIS_NAMES = CF_AXIS_NAMES # compat
 
+#: Specifications by category
+CF_SPECS = {}
+
 #: Specifications for variables
 CF_VAR_SPECS = VAR_SPECS = var_specs = VarSpecs(names=CF_VAR_NAMES)
+CF_SPECS[CF_VAR_SPECS.category] = CF_VAR_SPECS
 
 #: Specifications for axes
 CF_AXIS_SPECS = AXIS_SPECS = axis_specs = AxisSpecs(inherit=CF_VAR_SPECS,
                                                     names=CF_AXIS_NAMES)
-
-
+CF_SPECS[CF_AXIS_SPECS.category] = CF_AXIS_SPECS
+                                                    
 #: Specifications for grid formating
 GRID_SPECS = {
     '': dict(lon='lon', lat='lat', level='depth'),
@@ -810,17 +830,17 @@ def register_cf_axes_from_cfg(cfg):
     CF_AXIS_SPECS.register_from_cfg(cfg)
 
 
-def cf2search(name, mode='isa', raiseerr=True, **kwargs):
+def cf2search(name, mode=None, raiseerr=True, **kwargs):
     """Extract specs from :attr:`CF_AXIS_SPECS` or :attr:`CFVAR_SPECS`
     to form a search dictionary
 
     :Params:
 
         - **name**: Generic name of an axis or a variable.
-        - **mode**, optional: Search mode [default: None->``"ns"``].
+        - **mode**, optional: Search mode [default: None->``"isa"``].
           A string containg one or more of the following letters:
 
-            - ``"n"``: Search using names (ids).
+            - ``"i"``: Search using names (ids).
             - ``"s"``: Search using standard_name attribute.
             - ``"a"``: Search using axis attribute.
             - ``"l"``: Search using long_name attribute.
@@ -849,6 +869,10 @@ def cf2search(name, mode='isa', raiseerr=True, **kwargs):
             return
 
     # Form search dict
+    if specs['searchmode']:
+        mode = specs['searchmode']
+    else:
+        mode = None
     if not isinstance(mode, six.string_types):
         mode = 'isa'
     mode = mode.replace('n', 'i')
@@ -970,8 +994,8 @@ def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=T
         else:
             raise KeyError("Generic var name not found '%s'. Please choose one of: %s"%(
                 name, ', '.join(list(CF_VAR_SPECS.keys())+list(CF_AXIS_SPECS.keys()))))
-    isaxis = name in CF_AXIS_SPECS
-    if isaxis:
+    isaxis_ = name in CF_AXIS_SPECS
+    if isaxis_:
         specs = CF_AXIS_SPECS[name].copy()
         if 'axis' in specs:
             del specs['axis']
@@ -996,7 +1020,7 @@ def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=T
     # - id
     if ((force is True or force in [2, 'id', 'all'])
             or var.id.startswith('variable_') or
-            (isaxis and var.id.startswith('axis_'))): # FIXME: use regexp
+            (isaxis_ and var.id.startswith('axis_'))): # FIXME: use regexp
         var.id = name
     # - attributes
     forceatts = (force is True or force in ['atts', 'all'] or
@@ -1063,7 +1087,7 @@ def format_axis(axis, name=None, force=True, recreate=False, format_subaxes=True
         - **nodef**, optional: Remove location specification when it refers to the
           default location (:attr:`DEFAULT_LOCATION`).
         - **axes2d_<param>**, optional: <param> is passed to
-          :func:`~vacumm.misc.grid.misc.create_axes2d` for 2D axes.
+          :func:`~vacumm.misc.grid.create_axes2d` for 2D axes.
         - **recreate**, optional: Force recreation of axes using either
 
         - Other parameters are passed as attributes.
@@ -1177,7 +1201,79 @@ def format_grid(grid, pt, **kwargs):
 HIDDEN_CF_ATTS = ['_vacumm_cf_name', '_vacumm_cf_physloc', '_vacumm_cf_location']
 hidden_cf_atts = HIDDEN_CF_ATTS # compat
 
-def match_obj(obj, name, searchmode=None, **kwargs):
+def filter_search(specs, searchmode=None):
+    """Order and filter attribute-based searching"""
+    # - get order
+    all_keys = ['id', 'standard_name', 'long_name', 'units', 'axis']
+    all_keys0 = [key[0] for key in all_keys]
+    if searchmode is None:
+        if isinstance(specs, OrderedDict):
+            searchmode = ''.join([key[0] for key in specs.keys()])
+        else:
+            searchmode = ''.join(all_keys0)
+    searchmode = searchmode.replace('n', 'i')
+    keys = []
+    for key0 in searchmode:
+        key = all_keys[all_keys0.index(key0)]
+        if key0 in all_keys0 and key in specs:
+            keys.append(key)
+    # - reorder specs
+    return OrderedDict([(key_, specs[key_]) for key_ in keys])
+
+
+def match_cf_obj(obj, id=None, standard_name=None,
+        long_name=None, units=None, axis=None, ignorecase=True,
+        searchmode=None, **kwargs):
+    """Check if an MV2 object (typicaly from a netcdf file) matches names, standard_names, etc
+
+    It first checks the standard_name, then the names (ids), the axis, and finally
+    the long_names and units.
+
+    Parameters
+    ----------
+    obj:
+        A MV2 array.
+    id: optional
+        Name (id) of this array, wich defaults to the id attribute.
+    standard_name: optional
+        List of possible standard_names.
+    axis: optional
+        Axis type, as one of 'x, 'y', 'z', 't'.
+    long_name: optional
+        List of possible long_names or callable expression
+        (such as regular expression method).
+    units: optional
+        Same as ``long_names`` but for units.
+
+    Example
+    -------
+
+    >>> ncmatch_obj(sst, standard_name='sea_surface_temperature', id=['sst'])
+    >>> import re
+    >>> ncmatch_obj(sst, long_name=re.compile('sea surface temp').match)
+    """
+    # Format
+    search = OrderedDict()
+    if id is None and 'name' in kwargs:
+        id = kwargs['name']
+    for key in ('standard_name', 'id', 'axis', 'long_name', 'units'):
+        val = locals()[key]
+        if val is None:
+            continue
+        search[key] = val
+        if key=='axis':
+            search[key] = val if not isinstance(key, list) else val[0]
+            continue
+        search[key] = val
+
+    # Order and filter the search
+    search = filter_search(search, searchmode)
+
+    # Check attributes
+    return match_atts(obj, search, ignorecase)
+
+
+def match_known_cf_obj(obj, name, searchmode=None, **kwargs):
     """Check if a variable or an axis matches generic specifications
 
     :Params:
@@ -1187,25 +1283,31 @@ def match_obj(obj, name, searchmode=None, **kwargs):
         - **searchmode**, optional: Passed to :func:`~vacumm.misc.io.ncmatch_obj`.
     """
     search = cf2search(name, mode=searchmode, raiseerr=False)
-    if search is None: return False
+    if search is None: 
+        return False
     search.update(kwargs)
-    return ncmatch_obj(obj, searchmode=searchmode, **search)
+    return match_cf_obj(obj, searchmode=searchmode, **search)
 
-match_var = match_obj
+match_var = match_known_cf_obj
 
-def match_known_var(obj, searchmode=None, **kwargs):
+
+def match_known_cf_var(obj, searchmode=None, **kwargs):
     """Check if an object matches a known variable"""
     for name in CF_VAR_SPECS:
-        if match_obj(obj, name, searchmode=searchmode):
+        if match_cf_obj(obj, name, searchmode=searchmode):
             return name
     return False
 
-def match_known_axis(obj, searchmode=None, **kwargs):
+match_known_var = match_known_cf_var
+
+def match_known_cf_axis(obj, searchmode=None, **kwargs):
     """Check if an object matches a known axis"""
     for name in CF_AXIS_SPECS:
-        if match_obj(obj, name, searchmode=searchmode):
+        if match_cf_obj(obj, name, searchmode=searchmode):
             return name
     return False
+
+match_known_axis = match_known_cf_axis
 
 def is_cf_known(name, type=None):
     """Is this names registered in :attr:`CF_VAR_SPECS` or

@@ -46,6 +46,8 @@ from sphinx.ext.napoleon import NumpyDocstring
 #from sphinx.ext.napoleon import Config
 #from sphinx.util.docstrings import prepare_docstring
 
+from vacumm import VACUMM_CFG
+
 def get_indent_int(line):
     for i, s in enumerate(line):
         if not s.isspace():
@@ -232,7 +234,6 @@ class DocFiller(object):
 
     __call__ = docfill
 
-from vacumm import VACUMM_CFG
 docfiller = DocFiller(verbose=VACUMM_CFG['vacumm.misc.docstrings']['verbose'])
 docfill = docfiller.docfill
 

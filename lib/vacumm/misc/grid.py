@@ -1920,7 +1920,7 @@ def deg2xy(lon, lat, proj=None, inverse=False, mesh=None, **kwargs):
         Latitude in degrees
     proj: optional
         Proj object for projection. If False, returns (lon,lat).
-        If None, a new instance using :func:`~vacumm.misc.grid.basemap.get_proj` is created,
+        If None, a new instance using :func:`~vacumm.misc.basemap.get_proj` is created,
         where proj is passed as a parameter.
     inverse: optional
         Inverse transform (from meters to degrees)

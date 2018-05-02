@@ -55,9 +55,12 @@ from .misc import (split_selector, kwfilter, squeeze_variable, is_iterable,
 from .poly import create_polygon, clip_shape, sort_shapes
 from .axes import (get_checker, islon, islat, istime, islevel, 
     create_lat, create_lon)
+from .basemap import get_proj
 from .atime import (has_time_pattern, is_time, round_date, add_margin, 
     strptime, comptime, are_same_units, itv_union, ch_units, 
-    create_time, tsel2slice)
+    create_time, tsel2slice,  pat2freq,IterDates, strftime, is_interval, 
+    pat2glob, filter_time_selector, add_time)
+
 from .grid import curv2rect, isgrid, create_grid, set_grid
 
 
@@ -331,7 +334,6 @@ def list_forecast_files(filepattern, time=None, check=True,
     # Date pattern
     elif not nopat and has_time_pattern(filepattern):
 
-        from .atime import pat2freq,IterDates, strftime, is_interval, pat2glob, filter_time_selector
         if isinstance(time, cdms2.selectors.Selector):
             seltime = filter_time_selector(time, noslice=True)
             if seltime.components():
@@ -599,30 +601,14 @@ def ncfind_obj(f, specs, ignorecase=True, regexp=False, ids=None,
 
     return id
 
-def filter_search(specs, searchmode=None):
-    """Order and filter the search"""
-    # - get order
-    all_keys = ['id', 'standard_name', 'long_name', 'units', 'axis']
-    all_keys0 = [key[0] for key in all_keys]
-    if searchmode is None:
-        if isinstance(specs, OrderedDict):
-            searchmode = ''.join([key[0] for key in specs.keys()])
-        else:
-            searchmode = ''.join(all_keys0)
-    searchmode = searchmode.replace('n', 'i')
-    keys = []
-    for key0 in searchmode:
-        key = all_keys[all_keys0.index(key0)]
-        if key0 in all_keys0 and key in specs:
-            keys.append(key)
-    # - reorder specs
-    return OrderedDict([(key, specs[key]) for key in keys])
 
 def ncmatch_obj(obj, id=None, standard_name=None,
         long_name=None, units=None, axis=None, ignorecase=True,
         searchmode=None, **kwargs):
     """Check if an MV2 object (typicaly from a netcdf file) matches names, standard_names, etc
 
+
+    TODO: ncmatch_obj must be moved to cf
 
     It first checks the standard_name, then the names (ids), the axis, and finally
     the long_names and units.
@@ -1056,7 +1042,6 @@ def ncget_fgrid(f, gg):
     latid = getattr(lat, '_oldid', lat.id)
 
     # Loop on file grids
-    from vacumm.misc.io import NcFileObj
     nfo = NcFileObj(f)
     for fgrid in nfo.f.grids.values():
         flon = fgrid.getLongitude()
@@ -1217,8 +1202,6 @@ class NcIterBestEstimate(object):
         self.timeid = timeid
         self.autoclose = autoclose
         self.keepopen = keepopen
-        from .atime import add
-        self.add = add
         if id is None:
             id = str(self.toffset)+str(self.seltime)+str(files)
             try:
@@ -1279,7 +1262,7 @@ class NcIterBestEstimate(object):
         # Offset
         ctimes = taxis.asComponentTime()
         if isinstance(self.toffset, tuple):
-            subseltime = (self.add(ctimes[0], *self.toffset), ctimes[-1], 'cc')
+            subseltime = (add_time(ctimes[0], *self.toffset), ctimes[-1], 'cc')
             subtaxis = taxis.subAxis(*ijk)
             ijo = subtaxis.mapIntervalExt(subseltime)
             if ijo is None or ijo[2]==-1: return self.empty() # nothing
@@ -1304,7 +1287,7 @@ class NcIterBestEstimate(object):
             taxisnext = nccache_get_time(self.nfonext.f, timeid=self.timeid, ro=True)
             if isinstance(self.toffset, tuple):
                 ct1 = taxisnext.subAxis(0, 1).asComponentTime()[0]
-                ct1 = self.add(ct1, *self.toffset)
+                ct1 = add_time(ct1, *self.toffset)
                 bb = 'co'
             else:
                 if self.toffset>=len(taxisnext): # Next file too short for offset
@@ -1513,7 +1496,7 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
         samp = [slice(None, None, s) for s in samp]
     # - output grid
     if grid is not None:
-        from .grid.regridding import regrid2d
+        from .regridding import regrid2d
     # - time
     time_units = None
     newgrid = None
@@ -1980,7 +1963,6 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
     elif isinstance(proj, six.string_types):
         gg = None if xmin>xmax else ([xmin, xmax], N.clip([ymin, ymax], -89.99, 89.99))
         kw = dict(proj=proj) if isinstance(proj, six.string_types) else {}
-        from .basemap import get_proj
         proj = get_proj(gg, **kw)
     else:
         proj = False

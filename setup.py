@@ -38,7 +38,7 @@ rootdir = os.path.dirname(__file__)
 
 # Revision number
 # - from __init__.py
-f = open(os.path.join(rootdir, 'lib/python/vacumm/__init__.py'))
+f = open(os.path.join(rootdir, 'lib/vacumm/__init__.py'))
 for line in f:
     line = line[:-1].strip()
     if line.startswith('__version__'):
@@ -104,7 +104,7 @@ def configuration(parent_package='',top_path=None):
 
     # Add special files
     config.add_data_files(('vacumm', ['LICENSE', 'CHANGES.rst']))
-    config.add_subpackage('vacumm', 'lib/python/vacumm')
+    config.add_subpackage('vacumm', 'lib/vacumm')
     config.add_data_dir(('vacumm/vacumm-config', 'config')) # not needed
     config.add_data_dir(('vacumm/vacumm-data', 'data')) # all data files
     config.add_data_dir(('vacumm/vacumm-scripts/test', 'scripts/test')) # test scripts
@@ -189,7 +189,7 @@ if __name__ == '__main__':
         maintainer_email = author_email,
         license = license,
         url=url,
-        package_dir= {'':'lib/python'},
+        package_dir= {'':'lib'},
         py_modules = ['vcmq'],
         classifiers = classifiers,
         cmdclass={'install':vacumm_install, 'install_data':vacumm_install_data,

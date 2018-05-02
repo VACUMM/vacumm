@@ -88,7 +88,7 @@ from .axes import (check_axes, axis_type, set_order, merge_orders,
 from .color import (get_cmap, RGB, land, 
     RGBA, change_luminosity, change_saturation, pastelise,
     CMAP_POSITIVE, CMAP_NEGATIVE, CMAP_SYMETRIC)
-from .grid import meshbounds, get_axis, meshgrid, meshcells
+from .grid import meshbounds, get_axis, meshgrid, meshcells, bounds2d
 from .basemap import create_map
 from .regridding import shift1d
 from .masking import resol_mask
@@ -7725,11 +7725,9 @@ def best_loc_map(m, onland=True, allowed=_locations):
     if not hasattr(m, 'coastpolygons'):
         sloc = allowed[0]
     else:
-        from .grid.masking import polygons
-        from .grid import bounds2d
-        from _geoslib import Polygon
+        from .poly import create_polygons, Polygon
         fractions = N.zeros((3, 3))
-        polys = polygons(m)
+        polys = create_polygons(m)
         x = m.xmin + (m.xmax-m.xmin)*(0.5+N.arange(3))/3.
         y = m.ymin + (m.ymax-m.ymin)*(0.5+N.arange(3))/3.
         xxb, yyb = bounds2d(x, y)

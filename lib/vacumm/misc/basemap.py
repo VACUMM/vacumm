@@ -46,19 +46,18 @@ from matplotlib import get_configdir
 from vacumm import vacumm_warn, VACUMM_CFG
 from .misc import kwfilter, dict_check_defaults, dirsize, zoombox
 from .constants import EARTH_RADIUS
-from .grid import get_xy
 
 __all__  = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_map',
     'merc', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
     'create_map', 'RSHPERE_WGS84', 'GSHHS_RESLIST']
 
 #: Earth radius of wgs84 ellipsoid
-RSHPERE_WGS84 = (6378137.0,6356752.3141)
-rshpere_wgs84 = RSHPERE_WGS84
+RSHPERE_WGS84 = (6378137.0, 6356752.3141)
+rshpere_wgs84 = RSHPERE_WGS84 # compat
 
 #: GSHHS shorelines letters
 GSHHS_RESLIST = ['f', 'h', 'i', 'l', 'c']
-gshhs_reslist = GSHHS_RESLIST
+gshhs_reslist = GSHHS_RESLIST # compat
 
 def gshhs_autores(lon_min, lon_max, lat_min, lat_max, asindex=False, shift=None):
     """Guess best resolution from lon/lat bounds"""
@@ -304,6 +303,11 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
     mymap.res = res
     return mymap
 
+def _get_xy_(xy):
+    """Get a tuple of (lon, lat) numeric axes"""
+    if hasattr(xy, 'getLongitude'):
+        xy = xy.getLongitude(), xy.getLatitude()
+    return xy[0][:], xy[1][:]
 
 def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
     """Quickly create :class:`Basemap` instance
@@ -329,7 +333,7 @@ def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
     if gg is None: auto = False
     kwmap = dict(resolution=res, projection=proj)
     if auto:
-        xx, yy = get_xy(gg, proj=False)
+        xx, yy = _get_xy_(gg)
         lat_center = yy.mean()
         lon_center = xx.mean()
         kwmap.update(
@@ -382,7 +386,7 @@ def get_proj(gg=None, proj=None, **kwargs):
     Parameters
     ----------
     gg: optional
-        Grid or coordinates (see :func:`~vacumm.misc.grid.misc.get_xy`).
+        Grid or tuple of coordinates.
         If not provided, lon bounds are set to (-180,180) and lat bounds to (-89.99,89.99).
     **kwargs
         Other keywords are passed to :class:`~mpl_toolkits.basemap.proj.Proj`. One of
@@ -405,9 +409,10 @@ def get_proj(gg=None, proj=None, **kwargs):
 
     >>> proj = get_proj(R=6000000.)
     """
-    if callable(proj): return proj
+    if callable(proj): 
+        return proj
     if gg is not None:
-        x,y = get_xy(gg, num=True)
+        x, y = _get_xy_(gg)
         xmin, ymin, xmax, ymax = x.min(), y.min(), x.max(), y.max()
     else:
         xmin, ymin, xmax, ymax = -180, -90, 180, 90

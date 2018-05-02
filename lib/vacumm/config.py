@@ -49,6 +49,16 @@ from validate import Validator, VdtMissingValue
 import vacumm
 from vacumm import VACUMMError
 
+__all__ = ['VACUMM_CFGSPECS', 'VACUMM_CFGSPECS_FILE', 'VACUMM_VDT', 'VACUMM_VDT_LIVE',
+    'VCValidator', 'check_data_file', 'download_file', 'edit_file', 'get_cfg_checked',
+    'get_cfg_path', 'get_com_conf_dir', 'get_com_conf_file', 'get_data_dir',
+    'get_default_config', 'get_dir_dict', 'get_dist_dir', 'get_dl_dir',
+    'get_home_conf_dir', 'get_scripts_dir', 'get_tut_dir', 'get_user_conf_file',
+    'get_user_conf_dir', 'load_cfg', 'save_config_value', 'set_config_value',
+    'edit_user_conf_file', 'print_config', 'get_config_value', 'data_sample',
+    'write_default_config', 'get_lib_dir', 
+    ]
+
 def get_lib_dir():
     """Directory of the :mod:`vacumm` package"""
     return os.path.abspath(os.path.dirname(__file__))
@@ -57,7 +67,7 @@ def get_lib_dir():
 def get_dist_dir():
     """Upper directory of VACUMM distribution tree or ``None`` for an installed package"""
     lib_dir = get_lib_dir()
-    dist_dir = os.path.abspath(os.path.join(lib_dir, '../../..'))
+    dist_dir = os.path.abspath(os.path.join(lib_dir, '../..'))
     if not os.path.exists(os.path.join(dist_dir, 'setup.py')): return
     return dist_dir
 

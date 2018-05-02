@@ -1,8 +1,9 @@
 import unittest
 import os
-from glob import glob
-from matplotlib import use, rcdefaults ; use('Agg')
-from vcmq import *
+from matplotlib import use, rcdefaults
+use('Agg')
+from matplotlib import pyplot as P
+#from vcmq import *
 
 rcdefaults()
 

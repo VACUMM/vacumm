@@ -42,7 +42,6 @@ import time, datetime as DT
 from numbers import Number
 #from operator import gt, ge, lt, le
 from re import compile as recompile
-from . import math
 import six
 from six.moves import range
 from six.moves import zip
@@ -61,6 +60,7 @@ from genutil.statistics import linearregression
 from vacumm import VACUMMError, vacumm_warn
 from .misc import (cp_atts, filter_selector, kwfilter, split_selector, get_atts,
     set_atts)
+from . import math
 from .axes import istime, check_axes, create_time
 from .grid import set_grid, bounds1d
 

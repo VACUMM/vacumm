@@ -121,6 +121,14 @@ class Mars3D(OceanDataset,AtmosSurfaceDataset):
 #    ncobj_specs = dict_merge(ncobj_specs, AtmosSurfaceDataset.ncobj_specs)
 #    del _local_obj_specs
 
+    cf_specs = """
+        [sst] # sea surface temperature
+            inherit:temp
+            squeeze:z
+            [[select]]
+                level:slice(-1, None)
+        """
+    
 
 #: Alias for :class:`Mars3D`
 MARS3D = Mars3D

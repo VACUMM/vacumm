@@ -35,26 +35,26 @@ Misc tools
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-from __future__ import absolute_import
-from . import misc
-
-from . import axes
-from . import units
-from . import constants
-from . import geo
-from . import math
-from . import color
-from . import poly
-from . import grid
-from . import basemap
-from . import atime
-from . import io
-from . import masking
-from . import regridding
-from . import kriging
-from . import filters
-from . import plot
-from . import sdata
+#from __future__ import absolute_import
+#from . import misc
+#
+#from . import axes
+#from . import units
+#from . import constants
+#from . import geo
+#from . import math
+#from . import color
+#from . import poly
+#from . import grid
+#from . import basemap
+#from . import atime
+#from . import io
+#from . import masking
+#from . import regridding
+#from . import kriging
+#from . import filters
+#from . import plot
+#from . import sdata
 
 import os as _os, locale as _locale
 _os.environ['LC_NUMERIC'] = 'en_US.UTF-8'
