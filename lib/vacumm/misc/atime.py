@@ -1952,7 +1952,7 @@ def interp(vari, outtimes, squeeze=1, **kwargs):
     squeeze:
         Remove uneeded output dimensions [default: 1]
     **kwargs
-        All other keywords are passed to :func:`~vacumm.misc.grid.regridding.interp1d`.
+        All other keywords are passed to :func:`~vacumm.misc.regridding.interp1d`.
     """
     # Convert to time axis
     if not istime(outtimes):
@@ -2220,7 +2220,7 @@ def reduce(vari, geterr=False, **kwargs):
     nto = len(it_lasts)
     varo = MV2.zeros((nto,)+vari.shape[1:], vari.dtype)
     cp_atts(vari, varo)
-    if vari.getGrid() is not None: 
+    if vari.getGrid() is not None:
         set_grid(varo, vari.getGrid())
     #varo.setGrid(vari.getGrid())
     for i,ax in enumerate(vari.getAxisList()[1:]):
@@ -3026,8 +3026,26 @@ def toc(stime=0.):
 
 
 def interp_clim(clim, times, method='linear', day=15):
-    """Interpolate a climatology at specified dates"""
-    from .grid.regridding import regrid1d, extend1d
+    """Interpolate a climatology at specified dates
+
+    Parameters
+    ----------
+    clim: MV2.array
+        Climatological array with 12 time steps
+    times:
+        Dates at wich to interpolate the climatology
+    method:
+        Regridding method (see :func:`~vacumm.misc.regridding.regrid1d`).
+    day: int
+        Day of the month for the clim
+
+    Return
+    ------
+    MV2.array
+        Length is that of dates, and other dims are those of clim.
+
+    """
+    from .regridding import regrid1d, extend1d
     assert method in ('linear', 'cubic')
     taxis = create_time(times)
     assert not (N.diff(taxis[:])<0).any(), 'Output times must be monotonically increasing'

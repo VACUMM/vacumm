@@ -4076,7 +4076,7 @@ class ScalarMappable:
 
     @staticmethod
     def _get_config_cmap_(key='cmap'):
-            cmap = get_cfg_checked('vacumm.misc.plot', 'cmap', key)
+            cmap = VACUMM_CFG['vacumm.misc.plot'][key]
             if cmap is None or cmap.lower() in ['none', 'mpl', 'default',
                 'normal', 'true', 'false']:
                 cmap = None # default from matplotlib
