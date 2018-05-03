@@ -59,16 +59,15 @@ from matplotlib.cm import ScalarMappable
 from matplotlib.collections import LineCollection
 from matplotlib.colors import ColorConverter,is_color_like
 from matplotlib.dates import (DateFormatter, MonthLocator, WeekdayLocator, YearLocator,
-    DayLocator, HourLocator, MinuteLocator, SecondLocator, 
+    DayLocator, HourLocator, MinuteLocator, SecondLocator,
     AutoDateLocator, MO)
 from matplotlib.patches import Wedge,Shadow,Circle, Arc
 from matplotlib.ticker import FormatStrFormatter
 import matplotlib.image as mpimg
 from mpl_toolkits.basemap import Basemap
 
-from vacumm import VACUMMError
+from vacumm import VACUMMError, VACUMM_CFG
 from .units import m2deg
-from .docstrings import docfill
 from .misc import (kwfilter, broadcast, auto_scale, is_iterable, geo_scale, deplab,
     zoombox, dict_check_defaults, latlab, lonlab, dict_aliases)
 from .color import get_cmap, Scalar2RGB, simple_colors
@@ -79,9 +78,14 @@ from .core_plot import (Curve, Bar, Stick, Hov, Map, Section, Plot2D,
     add_glow, add_shadow, add_agg_filter, hlitvs, AutoDateFormatter2,
     AutoDateLocator2, AutoDualDateFormatter, add_compass,
     add_right_label, add_left_label, add_top_label, add_bottom_label,
-    add_param_label, get_quiverkey_value, add_lightshading, DualDateFormatter, 
-    
+    add_param_label, get_quiverkey_value, add_lightshading, DualDateFormatter,
+
     )
+
+if VACUMM_CFG['vacumm.misc.docstrings']['activate']:
+    from .docstrings import docfill
+else:
+    docfill = lambda func: func
 
 __all__ = [ 'traj', 'ellipsis',
     'add_colorbar', 'scolorbar','rotate_tick_labels', 'rotate_xlabels', 'rotate_ylabels',

@@ -79,13 +79,12 @@ from .misc import (kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp
     dict_merge, phaselab, set_atts)
 from ._ext_plot import (FilteredArtistList, DropShadowFilter, GrowFilter,
     LightFilter)
-from .docstrings import docfiller
 from .units import deg2m, tometric, m2deg
 from .remote import OutputWorkFile
 from .atime import mpl, strftime, is_numtime, numtime
 from .axes import (check_axes, axis_type, set_order, merge_orders,
     check_order, order_match, isaxis, get_axis_type)
-from .color import (get_cmap, RGB, land, 
+from .color import (get_cmap, RGB, land,
     RGBA, change_luminosity, change_saturation, pastelise,
     CMAP_POSITIVE, CMAP_NEGATIVE, CMAP_SYMETRIC)
 from .grid import meshbounds, get_axis, meshgrid, meshcells, bounds2d
@@ -94,6 +93,10 @@ from .regridding import shift1d
 from .masking import resol_mask
 from .filters import generic2d
 from six.moves import filter
+
+if VACUMM_CFG['vacumm.misc.docstrings']['activate']:
+    from .docstrings import docfiller
+
 
 MA = N.ma
 
@@ -8200,17 +8203,18 @@ def _asnum_(xy):
     if single: return out[0]
     return out
 
-docfiller.scan(Plot, Plot.format_axes, Plot.load_data, Plot._check_order_,
-    Plot.pre_plot, Plot.post_plot,
-    Plot1D._set_axes_, Plot1D._check_order_,
-    Curve.plot, Curve.load_data,
-    Bar.plot,
-    Stick.load_data, Stick.plot,
-    ScalarMappable, ScalarMappable.colorbar, ScalarMappable.post_plot,
-    ScalarMappable.get_cmap, ScalarMappable.get_levels,
-    Plot2D.load_data,
-    Plot2D.plot, Plot2D.plot_contour, Plot2D.plot_fill,
-    Plot2D.plot_quiver, Plot2D._set_axes_,
-    Map.load_data, Map.pre_plot, Map.post_plot,
-    quiverkey_=QuiverKey.quiverkey,
-    savefig_=Plot.savefig)
+if VACUMM_CFG['vacumm.misc.docstrings']['activate']:
+    docfiller.scan(Plot, Plot.format_axes, Plot.load_data, Plot._check_order_,
+        Plot.pre_plot, Plot.post_plot,
+        Plot1D._set_axes_, Plot1D._check_order_,
+        Curve.plot, Curve.load_data,
+        Bar.plot,
+        Stick.load_data, Stick.plot,
+        ScalarMappable, ScalarMappable.colorbar, ScalarMappable.post_plot,
+        ScalarMappable.get_cmap, ScalarMappable.get_levels,
+        Plot2D.load_data,
+        Plot2D.plot, Plot2D.plot_contour, Plot2D.plot_fill,
+        Plot2D.plot_quiver, Plot2D._set_axes_,
+        Map.load_data, Map.pre_plot, Map.post_plot,
+        quiverkey_=QuiverKey.quiverkey,
+        savefig_=Plot.savefig)

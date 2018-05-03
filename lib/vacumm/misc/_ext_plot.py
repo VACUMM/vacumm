@@ -6,13 +6,9 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
-import matplotlib.pyplot as plt
 
 import numpy as np
-import matplotlib.cm as cm
-import matplotlib.mlab as mlab
 from matplotlib.artist import Artist
-import matplotlib.transforms as mtransforms
 
 def smooth1d(x, window_len):
     # copied from http://www.scipy.org/Cookbook/SignalSmooth (9,) 9 (24,) (8,)
