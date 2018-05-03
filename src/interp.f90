@@ -1408,8 +1408,9 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nogeo, nxi, nyi, nxo, n
         ! Scan all input points everytime
         do ixo = 1, nxo
             do iyo = 1, nyo
-                call closest2d(xxi,yyi,xxo(iyo,ixo),yyo(iyo,ixo),nxi,nyi,imin,jmin,.not. geo)
-                varo(:,iyo,ixo) = vari(:,jmin,imin)
+                call closest2d(xxi, yyi, xxo(iyo,ixo), yyo(iyo,ixo), &
+                    & nxi, nyi, imin, jmin,.not. geo)
+                varo(:,iyo,ixo) = vari(:, jmin, imin)
             enddo
 !             exit
         enddo
@@ -1429,22 +1430,24 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nogeo, nxi, nyi, nxo, n
             do iyo = 1, nyo
 
                 ! Try a small block
-                ixmin = max(1,ixlast-znb2)
-                ixmax = min(nxi,ixlast+znb2)
-                iymin = max(1,iylast-znb2)
-                iymax = min(nyi,iylast+znb2)
-                call closest2d(xxi(iymin:iymax,ixmin:ixmax), &
-                    & yyi(iymin:iymax,ixmin:ixmax),xxo(iyo,ixo),yyo(iyo,ixo),nxi,nyi,imin,jmin,.not. geo)
+                ixmin = max(1, ixlast-znb2)
+                ixmax = min(nxi, ixlast+znb2)
+                iymin = max(1, iylast-znb2)
+                iymax = min(nyi, iylast+znb2)
+                call closest2d(xxi(iymin:iymax, ixmin:ixmax), &
+                    & yyi(iymin:iymax, ixmin:ixmax), xxo(iyo, ixo), yyo(iyo, ixo), &
+                    & ixmax-ixmin+1, iymax-iymin+1, imin, jmin, .not. geo)
                 imin = imin+ixmin-1
                 jmin = jmin+iymin-1
 
                 ! Fall on bounds so use full block
                 if((imin==ixmin.and.ixmin/=1).or.(imin==ixmax.and.ixmax/=nxi).or.&
                     & (jmin==iymin.and.iymin/=1).or.(jmin==iymax.and.iymax/=nyi))&
-                    & call closest2d(xxi,yyi,xxo(iyo,ixo),yyo(iyo,ixo),nxi,nyi,imin,jmin,.not. geo)
+                    & call closest2d(xxi, yyi, xxo(iyo, ixo), yyo(iyo, ixo), &
+                    &   nxi, nyi, imin, jmin, .not. geo)
 
                 ! Store value
-                varo(:,iyo,ixo) = vari(:,jmin,imin)
+                varo(:,iyo,ixo) = vari(:, jmin, imin)
 
                 ! Update min/max positions
                 if(ixo==nxo)then
