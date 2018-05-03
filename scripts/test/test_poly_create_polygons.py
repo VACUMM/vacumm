@@ -1,5 +1,5 @@
-"""Test the :func:`~vacumm.misc.grid.masking.polygons` function"""
-from vcmq import N, polygons, create_polygon, plot_polygon, create_grid
+"""Test the :func:`~vacumm.misc.poly.create_polygons` function"""
+from vcmq import N, create_polygons, create_polygon, plot_polygon, create_grid
 from _geoslib import Polygon
 
 # Data
@@ -16,15 +16,15 @@ def plot_polygons(polys, **kwargs):
 pp0 = create_polygon(Polygon(N.array([xx, yy]).T))
 
 # Classic data
-pp0 = polygons([N.array([xx, yy]), N.array([xx, yy]).T+6.])
+pp0 = create_polygons([N.array([xx, yy]), N.array([xx, yy]).T+6.])
 
 # Classic with projection
 proj = lambda x, y: (x*1.5, y*1.5)
-pp1 = polygons([N.array([xx, yy])])
+pp1 = create_polygons([N.array([xx, yy])])
 
 # Classic with clipping
-pp2 = polygons([-N.array([xx, yy])], clip=clip)
+pp2 = create_polygons([-N.array([xx, yy])], clip=clip)
 
-# From grid
-pp3 = polygons([create_grid(xaxis, yaxis)])
+## From grid
+#pp3 = create_polygons([create_grid(xaxis, yaxis)]) # no longer integrated
 

@@ -3,12 +3,17 @@ import os
 from matplotlib import use, rcdefaults
 use('Agg')
 from matplotlib import pyplot as P
+import sys
 #from vcmq import *
 
 rcdefaults()
 
 cur_dir = os.path.abspath(os.path.dirname(__file__))
-test_dir = os.path.realpath(os.path.join(cur_dir,'../scripts/test'))
+root_dir = os.path.realpath(os.path.join(cur_dir,  '..'))
+lib_dir = os.path.join(root_dir, 'lib')
+test_dir = os.path.join(root_dir, 'scripts', 'test')
+
+sys.path.insert(0, lib_dir)
 
 method_template = """def {0}(self):
     P.close()
