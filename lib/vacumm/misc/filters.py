@@ -39,8 +39,8 @@ from six.moves import range
 
 import numpy as N,MV2, cdms2
 from genutil.filters import *
-import scipy.signal
-from scipy.signal import convolve2d
+import scipy.signal as S
+#from scipy.signal import convolve2d
 from pylab import meshgrid
 
 from .units import deg2m
@@ -145,13 +145,13 @@ def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
 
     # Filter
     kwf = dict(mode=mode)
-    datan = convolve2d(fdatan, weights, **kwf)
+    datan = S.convolve2d(fdatan, weights, **kwf)
     one2d = N.resize(N.convolve(one1d, weights[0], **kwf), datan.shape)
     del one1d
     if data.mask is MV2.nomask:
         ww = one2d
     else:
-        ww = convolve2d(fww, weights, **kwf)
+        ww = S.convolve2d(fww, weights, **kwf)
     del fdatan, fww
     bad = ww==0
     ww[bad] = 1
@@ -384,13 +384,13 @@ def generic2d(data, weights, mask='same', copy=True):
     # Filter
     kwf = dict(mode='same', boundary='fill', fillvalue=0.)
     for i in range(datan.shape[0]): # TODO: multiproc filter2d
-        datan[i] = scipy.signal.convolve2d(datan[i], weights, **kwf)
+        datan[i] = S.convolve2d(datan[i], weights, **kwf)
         if data.mask is MV2.nomask:
-            ww[i] = scipy.signal.convolve2d(one2d, weights, **kwf)
+            ww[i] = S.convolve2d(one2d, weights, **kwf)
         else:
-            ww[i] = scipy.signal.convolve2d(ww[i], weights, **kwf)
+            ww[i] = S.convolve2d(ww[i], weights, **kwf)
     if data.mask is not  MV2.nomask:
-        one3d = scipy.signal.convolve2d(one2d, weights, **kwf)
+        one3d = S.convolve2d(one2d, weights, **kwf)
         one3d = N.resize(one3d, datan.shape)
     bad = ww==0
     ww[bad]=1.

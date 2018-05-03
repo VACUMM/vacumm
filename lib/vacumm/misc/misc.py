@@ -57,7 +57,6 @@ from warnings import warn
 
 import numpy as N, MV2, cdms2
 from matplotlib import rcParams
-from MV2 import nomask
 from cdms2 import isVariable
 from genutil import grower, minmax
 from configobj import ConfigObj, Section
@@ -181,9 +180,9 @@ def Cfg2Att(cfg):
 
 def ismasked(arr):
     try:
-        return ((arr.mask is None) or (arr.mask is nomask))
+        return ((arr.mask is None) or (arr.mask is N.ma.nomask))
     except:
-        return arr.mask is MA.nomask
+        return arr.mask is N.ma.nomask
 
 
 def bound_ops(bounds):
@@ -1015,11 +1014,11 @@ def dict_filter_out(kwargs, filters, copy=False, mode='start'):
         filters = [re.compile(filter_).match for filter_ in filters]
     for key in kwargs.keys():
         for filter_ in filters:
-            if callable(filter_) and list(filter_(key)): 
+            if callable(filter_) and list(filter_(key)):
                 break
-            if mode in ['start', 'end'] and getattr(key, mode+'swith')(filter_): 
+            if mode in ['start', 'end'] and getattr(key, mode+'swith')(filter_):
                 break
-            if key==filter_: 
+            if key==filter_:
                 break
         else:
             continue
@@ -2617,3 +2616,37 @@ def dicttree_set(dd, *keys, **items):
         dd = dd[key]
     dd.update(**items)
     return basedd
+
+
+class MV2Wrapper(object):
+    """Helper MV2.array to convert from/to other high level data types
+
+    Example
+    -------
+
+    >>> mw = MV2Wrapper(xar)
+    >>> mar = mw.get() # now you are sure to have a MV2.array
+    >>> xar = mw.put(mar)
+    """
+    def __init__(self, ar):
+        if hasattr(ar, 'to_cdms2'):
+            self.atype = 'xarray'
+        elif cdms2.isVariable(ar):
+            self.atype = 'mv2'
+        else:
+            raise VACUMMError('Array type not supported: {}'.format(type(ar)))
+        self.ar = ar
+
+    def get(self):
+        """Convert input array to MV2.array"""
+        if self.atype=='mv2':
+            return self.ar
+        return self.ar.to_cdms2()
+
+    def put(self, mv2ar):
+        """Convert MV2.array to input array type"""
+        if self.atype=='mv2':
+            return mv2ar
+        import xarray
+        return xarray.DataArray.from_cdms2(mv2ar)
+
