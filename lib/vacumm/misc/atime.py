@@ -93,7 +93,7 @@ __all__ = ['STR_UNIT_TYPES','RE_SPLIT_DATE','now', 'add', 'axis_add', 'add_time'
     'hourly_bounds', 'time_split', 'time_split_nmax', 'add_margin', 'fixcomptime',
     'is_interval', 'has_time_pattern', 'tsel2slice', 'tic', 'toc',
     'filter_time_selector','time_selector', 'selector',
-    'julday', 'interp_clim', 'round_interval']
+    'julday', 'interp_clim', 'round_interval', 'is_datetime64', 'datetime64']
 
 __all__.sort()
 
@@ -495,7 +495,7 @@ def time_type(mytime, out='string', check=False):
         Output format, one of:
 
             - ``"string"``: Return one of ``"comptime"``, ``"reltime"``
-              ``"datetime"``, ``"strtime"``, ``"numtime"``.
+              ``"datetime"``, ``"strtime"``, ``"numtime"``, ``"datetime64"``.
             - ``"type"``: Simply return result of ``type(mytime)``
             - ``"func"``: Return the function used to convert
               to this type : :func:`comptime`, :func:`reltime`,
@@ -738,6 +738,34 @@ def datetime(mytimes, nummode='mpl'):
             ct.hour, ct.minute, ct_seconds, ct_microseconds))
     return LH.put(res)
 
+
+def datetime64(mytimes, nummode='mpl'):
+    """Convert to :class:`datetime.datetime` format
+
+    Parameters
+    ----------
+    mytimes:
+        Time as string, :class:`numpy.datetime64`,
+        :func:`cdtime.comptime`, :func:`cdtime.reltime`, a number,
+        or a: mod:`cdms2` time axis.
+
+    .. note::
+
+        If not an :mod:`cdms2` time axis, first argument may be a list.
+        In this case, a list is also returned.
+
+    Sea also
+    --------
+    :func:`comptime` :func:`reltime`   :func:`strtime`    :func:`numtime`
+    """
+    # As datetime
+    mytimes = datetime(mytimes, nummode=nummode)
+
+    # Datetime -> datetime64
+    LH = _LH_(mytimes)
+    mytimes = LH.get()
+    return LH.put([N.datetime64(d) for d in mytimes])
+
 def strtime(mytime):
     """Convert to valid string date
 
@@ -914,6 +942,22 @@ def is_datetime(mytime):
     """
 
     return isinstance(mytime, DT.datetime)
+
+def is_datetime64(mytime):
+    """Check if a time is a :class:`numpy.datetime64` time or an array of that
+
+    Parameters
+    ----------
+    mytime:
+        object to check
+
+    Sea also
+
+        :func:`is_comptime()` :func:`is_reltime()` :func:`is_cdtime()`   :func:`is_time()`
+    """
+    if not hasattr(mytime, 'dtype'):
+        return False
+    return mytime.dtype.char=='M'
 
 def is_axistime(mytime):
     """Check if a time is a :mod:`cdms2` time axis
@@ -2724,11 +2768,13 @@ class _LH_(object):
         else:
             self.listtype = None
         self.arg = myarg
+
     def get(self):
         """Get input argument as a list"""
         if self.listtype is list: return self.arg
         if self.listtype is tuple: return list(self.arg)
         return [self.arg]
+
     def put(self, result):
         """Get output argument as original type"""
         if self.listtype is None:
