@@ -149,7 +149,7 @@ def clean_cache(mapdir=None, maxsize=None):
         Directory where maps are cached
     maxsize: optional
         Maximal size of directory in bytes.
-        Default value from :confopt:`[vacumm.misc.grid.basemap]max_cache_size`
+        Default value from :confopt:`[vacumm.misc.basemap]max_cache_size`
         configuration value.
     """
     mapdir = get_map_dir(mapdir)
@@ -157,7 +157,7 @@ def clean_cache(mapdir=None, maxsize=None):
         mapdir = os.path.join(get_configdir(), 'basemap', 'cached_maps')
     cache_size = dirsize(mapdir)
     if maxsize is None:
-        maxsize = VACUMM_CFG['vacumm.misc.grid.basemap']['max_cache_size']
+        maxsize = VACUMM_CFG['vacumm.misc.basemap']['max_cache_size']
     if cache_size>maxsize:
         files = [os.path.join(mapdir, ff) for ff in os.listdir(mapdir)]
         files.sort(key=lambda f1: os.stat(f1)[8])
@@ -391,7 +391,7 @@ def get_proj(gg=None, proj=None, **kwargs):
     **kwargs
         Other keywords are passed to :class:`~mpl_toolkits.basemap.proj.Proj`. One of
         them is the projection type, which defaults to configuration option
-        :confopt:`[vacumm.misc.grid.basemap] proj`.
+        :confopt:`[vacumm.misc.basemap] proj`.
 
     Return
     ------
@@ -409,7 +409,7 @@ def get_proj(gg=None, proj=None, **kwargs):
 
     >>> proj = get_proj(R=6000000.)
     """
-    if callable(proj): 
+    if callable(proj):
         return proj
     if gg is not None:
         x, y = _get_xy_(gg)
