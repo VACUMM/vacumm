@@ -54,7 +54,7 @@ from cdms2.axis import AbstractAxis, FileAxis
 from cdms2.coord import TransientAxis2D
 
 from vacumm import VACUMMError
-from .misc import (check_def_atts, dict_check_defaults, match_atts, 
+from .misc import (check_def_atts, dict_check_defaults, match_atts,
     set_atts, get_atts)
 
 
@@ -63,7 +63,7 @@ __all__ = ['isaxis', 'islon', 'islat', 'islev', 'isdep', 'istime',
     'get_checker', 'is_geo_axis_type', 'axis_type',
     'create_time', 'create_lon', 'create_lat', 'create_dep', 'create_depth',
     'guess_timeid', 'get_order', 'set_order', 'order_match', 'merge_orders',
-    'check_order',  'create_axis', 'BASIC_AXIS_SPECS', 'BASIC_AXIS_DEFAULTS', 
+    'check_order',  'create_axis', 'BASIC_AXIS_SPECS', 'BASIC_AXIS_DEFAULTS',
     'create_axes2d', 'axes2d', 'num2axes2d']
 
 
@@ -71,7 +71,7 @@ BASIC_AXIS_SPECS = {
     'lon': dict(
         id = 'lon',
         standard_name = 'longitude',
-        units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e', 
+        units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e',
             'degreee', 'degreese'],
         long_name = 'longitude',
         axis = 'X',
@@ -79,7 +79,7 @@ BASIC_AXIS_SPECS = {
     'lat': dict(
         id = 'lat',
         standard_name = 'latitude',
-        units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n', 
+        units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n',
             'degreen', 'degreesn'],
         long_name='latitude',
         axis = 'Y',
@@ -88,7 +88,7 @@ BASIC_AXIS_SPECS = {
         id = ['dep','lev','plev'],
         standard_name = ['depth','pressure_level'],
         unit = ['m','meters','hpa'],
-        long_name = ['depth', 'pressure level', 'profondeur', 'pression', 
+        long_name = ['depth', 'pressure level', 'profondeur', 'pression',
             'sigma', 'geopotential'],
         axis = 'Z',
     ),
@@ -110,9 +110,9 @@ BASIC_AXIS_SPECS = {
 
 
 BASIC_AXIS_DEFAULTS = {
-    'lon': dict(units='degrees_east', standard_name='longitude', 
+    'lon': dict(units='degrees_east', standard_name='longitude',
         long_name='Longitude',axis='X'),
-    'lat': dict(units='degrees_north', standard_name='latitude', 
+    'lat': dict(units='degrees_north', standard_name='latitude',
         long_name='Latitude',axis='Y'),
     'lev': dict(axis='Z',long_name='Levels'),
     'dep': dict(axis='Z',long_name='Depth'),
@@ -241,7 +241,7 @@ def is_geo_axis_type(obj, atype, defaults=None, ro=False, checkaxis=True,
     attchecks: optional
         Extra keywords are attributes name and checklist that
         will checks using :func:`~vacumm.misc.misc.match_atts`.
-        
+
     Return
     ------
     bool
@@ -290,7 +290,7 @@ def is_geo_axis_type(obj, atype, defaults=None, ro=False, checkaxis=True,
     # Check from attributes
     if not checkatts:
         return False
-    #TODO: merge with ncmatch_obj
+    # TODO: merge with ncmatch_obj
     valid = match_atts(obj, attchecks, ignorecase=True,
         transform=lambda ss: (re.compile(ss, re.I).match
             if isinstance(ss, six.string_types) else None)) # transform=startswith
@@ -301,7 +301,10 @@ def is_geo_axis_type(obj, atype, defaults=None, ro=False, checkaxis=True,
             valfunc()
 
     return True
-_isgeoaxis_ = is_geo_axis_type # Backward compat
+
+
+_isgeoaxis_ = is_geo_axis_type  # Backward compat
+
 
 def check_axes(var, **kw):
     """Check the format of all axes of a cdms variable"""
@@ -309,13 +312,17 @@ def check_axes(var, **kw):
         for axis in var.getAxisList():
             check_axis(axis, **kw)
 
+
 def is_geo_axis(axis, **kw):
     """Return True if axis is time, level, lat or lon"""
-    return istime(axis, **kw) or islev(axis, **kw) or islat(axis, **kw) or islon(axis, **kw)
+    return (istime(axis, **kw) or islev(axis, **kw)
+            or islat(axis, **kw) or islon(axis, **kw))
+
 
 def check_axis(axis, **kw):
     """Check the format an axis"""
     is_geo_axis(axis, ro=False, **kw)
+
 
 def get_axis_type(axis, genname=False, **kw):
     """Return the axis type as a signle letter (CDAT standards): -, t, z, y, or x
@@ -339,25 +346,31 @@ def get_axis_type(axis, genname=False, **kw):
     if islon(axis, **kw):
         at = "x"
     elif islat(axis, **kw):
-        at =  "y"
+        at = "y"
     elif islev(axis, **kw):
-        at =  "z"
+        at = "z"
     elif istime(axis, **kw):
-        at =  "t"
+        at = "t"
     else:
-        at =  '-'
-    if not genname: return at
-    if at=='-': return
-    return {'x':'lon', 'y':'lat', 'z':'level', 't':'time'}[at]
+        at = '-'
+    if not genname:
+        return at
+    if at == '-':
+        return
+    return {'x': 'lon', 'y': 'lat', 'z': 'level', 't': 'time'}[at]
 
-axis_type = get_axis_type # Backward compat
 
-def check_id(axis,**kwargs):
+axis_type = get_axis_type  # Backward compat
+
+
+def check_id(axis, **kwargs):
     """Verify that an axis has a suitable id (not like 'axis_3' but 'lon')"""
-    aliases = dict(X='lon',Y='lat',Z='depth',T='time')
+    aliases = dict(X='lon', Y='lat', Z='depth', T='time')
     aliases.update(kwargs)
-    if hasattr(axis,'axis') and match('^axis_\d+$',axis.id) is not None or match('^variable_\d+$',axis.id):
+    if (hasattr(axis, 'axis') and match('^axis_\d+$', axis.id) is not None
+            or match('^variable_\d+$', axis.id)):
         axis.id = aliases[axis.axis]
+
 
 def create_axis(values, atype='-', **atts):
     """Quickly create a :mod:`cdms2` axis
@@ -379,7 +392,7 @@ def create_axis(values, atype='-', **atts):
     if N.isscalar(values):
         values = [values]
     if isinstance(values, tuple) and len(values) < 4:
-        values = N.arange(*values, **{'dtype':'d'})
+        values = N.arange(*values, **{'dtype': 'd'})
     if cdms2.isVariable(values):
         for item in values.attributes.items():
             atts.setdefault(*item)
@@ -476,7 +489,7 @@ def create_lon(values, **atts):
     >>> create_lon(numpy.arange(-18., -5.), long_name='original_longitude')
 
     """
-    if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
+    if isinstance(values, N.ndarray) and len(values.shape) == 2 and not isaxis(values):
         atts.setdefault('long_name', 'Longitude')
         return create_axes2d(x=values, lonid=atts.pop('id', None), xatts=atts)
     return create_axis(values,'x',**atts)
@@ -497,12 +510,14 @@ def create_lat(values, **atts):
     >>> create_lat(numpy.arange(40., 48., 1.5),long_name='strange_latitude')
 
     """
-    if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
+    if (isinstance(values, N.ndarray) and len(values.shape) == 2
+            and not isaxis(values)):
         atts.setdefault('long_name', 'Latitude')
         return create_axes2d(y=values, latid=atts.pop('id', None), yatts=atts)
-    return create_axis(values,'y',**atts)
+    return create_axis(values, 'y', **atts)
 
-def create_dep(values,**atts):
+
+def create_dep(values, **atts):
     """Create a depthaxis
 
      Parameters
@@ -518,12 +533,16 @@ def create_dep(values,**atts):
     >>> create_dep(numpy.arange(-1000., -500., 10.),long_name='deep_depth')
 
     """
-    return create_axis(values,'z',**atts)
+    return create_axis(values, 'z', **atts)
+
+
 create_depth = create_dep
 
+
 def create_axes2d(x=None, y=None, bounds=False, numeric=False,
-        lonid=None, latid=None, iid='ni', jid='nj',
-        xatts=None, yatts=None, xbounds2d=None, ybounds2d=None, nobounds=False):
+                  lonid=None, latid=None, iid='ni', jid='nj',
+                  xatts=None, yatts=None,
+                  xbounds2d=None, ybounds2d=None, nobounds=False):
     """Create 2D numerical of complete axes
 
     Example
@@ -583,31 +602,34 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
     xaxis1d = yaxis1d = None
     if hasx:
         lonid = getattr(x, 'id', lonid)
-        if x[:].ndim==2 and hasattr(x, 'getAxis'):
+        if x[:].ndim == 2 and hasattr(x, 'getAxis'):
             xaxis1d = x.getAxis(-1)
             yaxis1d = x.getAxis(-2)
     if hasy:
         latid = getattr(y, 'id', latid)
-        if y[:].ndim==2 and hasattr(x, 'getAxis') and xaxis1d is None:
+        if y[:].ndim == 2 and hasattr(x, 'getAxis') and xaxis1d is None:
             xaxis1d = y.getAxis(-1)
             yaxis1d = y.getAxis(-2)
 
     # Numeric part
     if hasx:
         xn = N.asarray(x[:])
-        if xn.ndim==1 and y is None:
+        if xn.ndim == 1 and y is None:
             raise VACUMMError("Can't create 2D from a single 1D X axis")
     if hasy:
         yn = N.asarray(y[:])
-        if yn.ndim==1 and x is None:
+        if yn.ndim == 1 and x is None:
             raise VACUMMError("Can't create 2D from a single 1D Y axis")
     if hasx and hasy:
-        xx, yy = N.meshgrid(xn[:], yn[:])
+        from .grid import meshgrid
+        xx, yy = meshgrid(xn[:], yn[:])
     else:
         xx = xn if hasx else None
         yy = yn if hasy else None
-    if hasx: del xn
-    if hasy: del yn
+    if hasx:
+        del xn
+    if hasy:
+        del yn
 #    if hasx and hasy and xx.shape != yy.shape:
 #        raise VACUMMError('Incomptible shape between 2D X and Y coordinates: %s != %s'%(xx.shape, yy.shape))
 #    if bounds:
@@ -651,14 +673,14 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
         elif jid is not None:
             axis2d.getAxis(-2).id = jid
 
-
     # Format
     if hasx:
         xaxis2d.id = lonid or 'lon'
 #        xaxis2d = create_lon(xaxis2d, id=lonid or 'lon')
         xaxis2d.getAxis(1).designateLongitude()
         xaxis2d.getAxis(0).designateLatitude()
-        if hasattr(xaxis2d, 'axis'): del xaxis2d.axis
+        if hasattr(xaxis2d, 'axis'):
+            del xaxis2d.axis
         if xatts is not None:
             xa = get_atts(x)
             xa.update(xatts)
@@ -668,27 +690,31 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
 #        yaxis2d = create_lat(yaxis2d, id=latid or 'lat')
         yaxis2d.getAxis(1).designateLongitude()
         yaxis2d.getAxis(0).designateLatitude()
-        if hasattr(yaxis2d, 'axis'): del yaxis2d.axis
+        if hasattr(yaxis2d, 'axis'):
+            del yaxis2d.axis
         if yatts is not None:
             ya = get_atts(y)
             ya.update(yatts)
             set_atts(yaxis2d, yatts)
 
     # Output
-    if not hasx and not hasy: return
-    if not hasx: return yaxis2d
-    if not hasy: return xaxis2d
+    if not hasx and not hasy:
+        return
+    if not hasx:
+        return yaxis2d
+    if not hasy:
+        return xaxis2d
     return xaxis2d, yaxis2d
+
 
 def axes2d(*args, **kwargs):
     """Alias for :func:`create_axes2d`"""
     return create_axes2d(*args, **kwargs)
-    
+
+
 def num2axes2d(*args, **kwargs):
     """Alias for :func:`axes2d`"""
     return axes2d(*args, **kwargs)
-
-
 
 
 def guess_timeid(ncfile, vnames=None):
@@ -715,11 +741,12 @@ def guess_timeid(ncfile, vnames=None):
     """
     from .io import NcFileObj
     nfo = NcFileObj(ncfile)
-    if vnames is None: vnames = nfo.f.listvariables()
+    if vnames is None:
+        vnames = nfo.f.listvariables()
     for vv in vnames:
-       time = nfo.f[vv].getTime()
-       if time is not None:
-           break
+        time = nfo.f[vv].getTime()
+        if time is not None:
+            break
     nfo.close()
     return time.id if time is not None else None
 
@@ -741,24 +768,25 @@ def set_order(var, order, replace=False):
     >>> set_order(temp, 'tyx')
     """
     current_order = var.getOrder()
-    assert len(current_order)==len(order), \
-        'Specified order must have length %i'%len(current_order)
+    assert len(current_order) == len(order), \
+        'Specified order must have length %i' % len(current_order)
     for i, (co, o) in enumerate(zip(current_order, order.lower())):
-        if co==o or (co!='-' and not replace): continue
+        if co == o or (co != '-' and not replace):
+            continue
         axis = var.getAxis(i)
-        if o=='x':
+        if o == 'x':
             axis.designateLongitude()
-        elif o=='y':
+        elif o == 'y':
             axis.designateLatitude()
-        elif o=='z':
+        elif o == 'z':
             axis.designateLevel()
-        elif o=='t':
+        elif o == 't':
             axis.designateTime()
-        elif o=='-' and hasattr(axis, 'axis'):
+        elif o == '-' and hasattr(axis, 'axis'):
             del axis.axis
 
-
     return var
+
 
 def get_order(var):
     """Enhanced version of getOrder() method that handles 2D axes
@@ -785,26 +813,29 @@ def get_order(var):
     # Axis
     if isaxis(var):
         order = get_axis_type(var)
-        if len(var.shape)==2 and order in 'xy':
+        if len(var.shape) == 2 and order in 'xy':
             return 'yx'
         return order
 
     # Variable
-    if not cdms2.isVariable(var): return '-'*len(var.shape)
+    if not cdms2.isVariable(var):
+        return '-'*len(var.shape)
     order = var.getOrder()
-    if getattr(var,  '_nogridorder', False) or \
-        '-' not in order[-2:]: return order
-    if var.getGrid() is not None and \
-        'z' not in order[-2:] and 't' not in order[-2:]:
-        if order[-1]=='-' and 'x' not in order:
+    if (getattr(var,  '_nogridorder', False) or
+            '-' not in order[-2:]):
+        return order
+    if (var.getGrid() is not None and
+            'z' not in order[-2:] and 't' not in order[-2:]):
+        if order[-1] == '-' and 'x' not in order:
 #            lon = var.getLongitude()
-#            if len(lon.shape)==2:
-            order= order[:-1]+'x'
-        if order[-2]=='-' and 'y' not in order:
+#            if len(lon.shape) == 2:
+            order = order[:-1]+'x'
+        if order[-2] == '-' and 'y' not in order:
 #            lat = var.getLatitude()
-#            if len(lat.shape)==2:
+#            if len(lat.shape) == 2:
             order = order[:-2]+'y'+order[-1]
     return order
+
 
 def order_match(order1, order2, asscore=False, strict=False):
     """Check that to axis orders are compatible
@@ -851,11 +882,11 @@ def order_match(order1, order2, asscore=False, strict=False):
         o2 = order2[ic]
         if '-' in o1+o2:
             if o1!=o2 and (
-                strict=="both" or
-                (strict=='left' and o1!='-') or
-                (strict=='right' and o2!='-')):
+                strict == "both" or
+                (strict == 'left' and o1!='-') or
+                (strict == 'right' and o2!='-')):
                 return 0 if asscore else False
-        elif o1==o2:
+        elif o1 == o2:
             score *=2
         else:
             return 0 if asscore else False
@@ -916,10 +947,10 @@ def merge_orders(order1, order2, raiseerr=True):
     for i in range(l):
         c1 = order1[i1+i]
         c2 = order2[i2+i]
-        if c1==c2 or c2=='-':
+        if c1 == c2 or c2 == '-':
             neworder1 += c1
             neworder2 += c1
-        elif c1=='-':
+        elif c1 == '-':
             neworder1 += c2
             neworder2 += c2
         else:
@@ -1001,8 +1032,8 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
     idx = N.sort(idx)
     allowed = N.array(allowed)[idx].tolist()
     # - restrict to vertical or horizontal (1D data only)
-    if vertical is not None and len(allowed[0])==2:
-        allowed = [oo for oo in allowed if oo[int(vertical)]=='d']
+    if vertical is not None and len(allowed[0]) == 2:
+        allowed = [oo for oo in allowed if oo[int(vertical)] == 'd']
 
     # Data order
     data_cdms_order = get_order(var)
@@ -1025,7 +1056,7 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
             try:
                 reordered = cdms2.order2index(var.getAxisList(), allowed_cdms_order)
                 new_var = var.reorder(allowed_cdms_order)
-                if allowed_cdms_order[-1]=='x' and len(get_axis(new_var, -1).shape)==2: # 2D axes
+                if allowed_cdms_order[-1] == 'x' and len(get_axis(new_var, -1).shape) == 2: # 2D axes
                     del var
                     var = var2d(new_var,
                         MV2.transpose(get_axis(new_var, 0)),
