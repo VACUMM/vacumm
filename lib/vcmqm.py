@@ -46,14 +46,12 @@ from matplotlib.ticker import (AutoLocator, MaxNLocator, FixedLocator, IndexLoca
     LinearLocator, LogLocator, MultipleLocator, AutoMinorLocator)
 
 # VACUMM
-print('import vacumm')
 from vacumm import (VACUMMError, VACUMMWarning, help as vchelp, vacumm_warning,
     vacumm_warn, vcwarn, VACUMM_CFG)
 
 
 # - config
 
-print('import vacumm.config')
 from vacumm.config import (
     VACUMM_CFGSPECS, VACUMM_CFGSPECS_FILE, VACUMM_VDT, VACUMM_VDT_LIVE,
     VCValidator, check_data_file, download_file, edit_file, get_cfg_checked,
@@ -67,7 +65,6 @@ from vacumm.config import (
 
 # - misc
 
-print('import vacumm.misc')
 from vacumm.misc.misc import (
     lonlab, latlab, deplab, kwfilter, broadcast, ArgList, closeto, dict_merge,
     dict_check_defaults, cp_atts, dict_filter,  cp_props, numod, set_atts, get_atts,
@@ -79,7 +76,7 @@ from vacumm.misc.misc import (
     tunique, split_selector, xls_style, Att, splitidx, CaseChecker, check_case,
     indices2slices, filter_level_selector, filter_selector, match_atts,
     match_string, ArgTuple, dicttree_get, dicttree_set, minbox,
-    bound_ops, squarebox)
+    bound_ops, squarebox, MV2Wrapper)
 
 from vacumm.misc.axes import (
     create_lon, create_lat, create_time, create_depth,
@@ -103,9 +100,11 @@ from vacumm.misc.atime import (
     time_selector, selector, filter_time_selector,
     plot_dt, strtime, interp_clim, round_interval,
     datetime as adatetime, compress as compress,
-    add,
+    add, is_datetime64,
+    datetime64 as adatetime64,
     )
 datetime_ = adatetime
+datetime64_ = adatetime64
 add_time = add
 is_time_interval = is_interval
 tcompress = compress

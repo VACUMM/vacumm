@@ -54,16 +54,16 @@ from scipy import interpolate
 
 from vacumm import VACUMMError, VACUMMWarning, vacumm_warn
 from vacumm.fortran import interp as finterp
-from .misc import (cp_atts, get_atts, closeto, set_atts, 
+from .misc import (cp_atts, get_atts, closeto, set_atts,
     )
-from .axes import (check_axes, isaxis, axis_type, create_lon, istime, 
+from .axes import (check_axes, isaxis, axis_type, create_lon, istime,
     create_lat, create_time, create_axis, islon, islat, create_dep)
 from .grid import (get_axis, transect_specs, set_grid, get_axis_slices,
     merge_axis_slice, isgrid, create_axes2d, get_xy, get_grid, t2uvgrids,
     bounds1d, bounds2d, meshgrid, create_grid, resol, meshcells, curv2rect,
     get_distances)
 from .basemap import get_proj
-from .atime import are_same_units, ch_units, lindates
+from .atime import are_same_units, ch_units, lindates, is_time, comptime
 from .kriging import krig as _krig_
 
 MA = N.ma
@@ -71,7 +71,7 @@ MA = N.ma
 # Python functions
 __all__ = ['fill1d', 'regular', 'regular_fill1d', 'cellave1d', 'spline_interp1d',
     'refine', 'GridData', 'griddata', 'cargen', 'fill2d', 'regrid2d',
-    'regrid1d', 'interp1d', 'nearest1d', 'cubic1d', 
+    'regrid1d', 'interp1d', 'nearest1d', 'cubic1d',
     'xy2grid', 'grid2xy', 'fill1d', 'regrid_method',
     'cellave2d', 'interp2d', 'xy2xy', 'shift1d', 'shift2d',
     'shiftgrid',  'transect', 'CDATRegridder', 'extend1d', 'extend2d',
@@ -323,8 +323,12 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
     missing_value = vari.getMissing()
 
     # Output axis
+    if not isaxis(axo) and is_time(axo[0]):
+        axo = create_time(comptime(axo))
     axon = axo[:]
-    if N.ma.isMA(axon): axon = axon.filled(missing_value)
+    if N.ma.isMA(axon):
+        axon = axon.filled(missing_value)
+
 
     # Working data axis
     if vari.ndim==1: # 1D
@@ -353,7 +357,8 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
 
     # Input axis
     # - get it
-    if axi is None: axi = vari.getAxis(axis)
+    if axi is None:
+        axi = vari.getAxis(axis)
     # - special case for time axis: must have same units !
     dxi2o = 1.
     if ((axis_type(axo), order[axis]) == ('t', 't') and
@@ -541,7 +546,7 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
     else:
         axes[axis] = varo.getAxis(axis)
         if nxo==1:
-            odlaxis = axes[axis]
+            oldaxis = axes[axis]
             axes[axis][:] = axo[:]
             cp_atts(oldaxis, axes[axis])
     varo.setAxisList(axes)
@@ -2191,16 +2196,16 @@ regrid2_tools = OrderedDict([
 
 def regrid2d_tool_name(tool, raiseerr=True):
     """Check the tool name and return its generic name"""
-    if tool is None or tool.lower()=='auto': 
+    if tool is None or tool.lower()=='auto':
         return 'auto'
     tool = tool.lower()
-    if tool.startswith('es'): 
+    if tool.startswith('es'):
         return 'esmf'
-    if tool.startswith('lib') or tool.startswith('g'): 
+    if tool.startswith('lib') or tool.startswith('g'):
         return 'libcf'
-    if tool.startswith('cd') or tool.startswith('reg'): 
+    if tool.startswith('cd') or tool.startswith('reg'):
         return 'regrid2'
-    if tool.startswith('v'): 
+    if tool.startswith('v'):
         return 'vacumm'
     if raiseerr:
         raise VACUMMError('Invalid regrid2d tool. Please use for example one of these: '+
@@ -2254,7 +2259,7 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
     getrgdr: optional
         Also return the regridder instance if it applies, or None.
     *kwargs:
-        Other keywords are passed to special interpolation 
+        Other keywords are passed to special interpolation
         functions depending on method and choices :
 
             - :func:`cargen` when "nat" or "carg" method is used
@@ -3445,7 +3450,7 @@ class CurvedInterpolator(object):
         if method not in self.valid_methods:
             raise VACUMMError('Invalid interpolation method. Choose of: '+
                 ', '.join(self.valid_methods))
-        if method=='bilinear': 
+        if method=='bilinear':
             method = 'bilin'
         func = eval('%s2dto1dc_reduc'%method)
 
