@@ -76,22 +76,21 @@ from vacumm import VACUMMError, VACUMM_CFG
 from vacumm.config import get_cfg_checked
 from .misc import (kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts,
     auto_scale, dict_check_defaults, basic_auto_scale, dict_copy_items,
-    dict_merge, phaselab, set_atts)
+    dict_merge, phaselab, set_atts, MV2Wrapper)
 from ._ext_plot import (FilteredArtistList, DropShadowFilter, GrowFilter,
     LightFilter)
 from .units import deg2m, tometric, m2deg
-from .remote import OutputWorkFile
-from .atime import mpl, strftime, is_numtime, numtime
 from .axes import (check_axes, axis_type, set_order, merge_orders,
     check_order, order_match, isaxis, get_axis_type)
 from .color import (get_cmap, RGB, land,
     RGBA, change_luminosity, change_saturation, pastelise,
     CMAP_POSITIVE, CMAP_NEGATIVE, CMAP_SYMETRIC)
+from .filters import generic2d
 from .grid import meshbounds, get_axis, meshgrid, meshcells, bounds2d
 from .basemap import create_map
+from .atime import mpl, strftime, is_numtime, numtime
 from .regridding import shift1d
 from .masking import resol_mask
-from .filters import generic2d
 from six.moves import filter
 
 if VACUMM_CFG['vacumm.misc.docstrings']['activate']:
@@ -433,17 +432,18 @@ class Plot(object):
 #            return
 
         # Arrows
-        if data is not None:
+        if data is not None: # mod or (u,v) or (mod,u,v)
             N.seterr(over='ignore')
             if isinstance(data, list):
                 data = tuple(data)
             if not isinstance(data, tuple):
-                self.data = [MV2.array(data, copy=1),]
-            elif len(data) in [1,3]: # (mod,) or (mod,u,v)
-                self.data = [MV2.array(v, copy=1) for v in data]
+                data = [data]
+            data = [MV2Wrapper(d).get(copy=True) for d in data]
+            if len(data) in [1,3]: # (mod,) or (mod,u,v)
+                self.data = data
             elif len(data)==2:
                 # Get vectors and modulus (u,v) -> (mod,u,v)
-                vx,vy = [MV2.array(v, copy=1) for v in data]
+                vx, vy = [MV2.array(v, copy=1) for v in data]
                 self.data = [MV2.sqrt(vx**2+vy**2),vx,vy]
                 ln = []
                 for vv in vx,vy:
@@ -2706,6 +2706,7 @@ class Plot(object):
             return oo
 
         # Remote output file
+        from .remote import OutputWorkFile
         rem = figfile if isinstance(figfile, OutputWorkFile) else False
         if rem: figfile = figfile.local_file
 
