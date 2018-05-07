@@ -35,23 +35,25 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
-import os, zipfile
+import os
+import zipfile
 from tempfile import mkdtemp
 from ..misc import FileTree
 import shutil
 
 __all__ = ['Archive', 'FigureArchive', 'CodeArchive']
 
+
 class Archive(FileTree):
     """Basic archive class, derived from a file tree"""
 
     def __init__(self, input_dir, **kwargs):
 
-        kwargs.setdefault('scan',False)
-        FileTree.__init__(self, input_dir, relative=True,**kwargs)
+        kwargs.setdefault('scan', False)
+        FileTree.__init__(self, input_dir, relative=True, **kwargs)
 
     def __call__(self, *args, **kwargs):
-        self.zipto(*args,**kwargs)
+        self.zipto(*args, **kwargs)
 
     def zip_to(self, zip_file=None, quiet=False, append=False):
         """Create a zip with all files
@@ -60,38 +62,43 @@ class Archive(FileTree):
         @keyparam append: Append to archive instead of erasing
         @keyparam quiet: Say nothing
         """
-        if zip_file is None: zip_file = self._input_dir + '.zip'
-        if not quiet: print('Zipping directory %s to %s...'% (self._input_dir,zip_file))
-        if not isinstance(zip_file,zipfile.ZipFile):
+        if zip_file is None:
+            zip_file = self._input_dir + '.zip'
+        if not quiet:
+            print('Zipping directory %s to %s...' %
+                  (self._input_dir, zip_file))
+        if not isinstance(zip_file, zipfile.ZipFile):
             mode = 'w'
             if os.path.exists(zip_file):
                 if append:
                     mode = 'a'
                 else:
                     os.remove(zip_file)
-            self._zip = zipfile.ZipFile(zip_file,mode)
+            self._zip = zipfile.ZipFile(zip_file, mode)
         else:
             self._zip = zip_file
 
         # Generic archiving
-        self._archive_to_('zip',quiet)
-        if not quiet: print('Created zip archive', zip_file)
+        self._archive_to_('zip', quiet)
+        if not quiet:
+            print('Created zip archive', zip_file)
 
-    def copy_to(self,dstdir,quiet=False,append=False):
-        archdir = os.path.join(dstdir,os.path.basename(self._input_dir))
+    def copy_to(self, dstdir, quiet=False, append=False):
+        archdir = os.path.join(dstdir, os.path.basename(self._input_dir))
         if os.path.exists(archdir):
             if not append:
                 shutil.rmtree(archdir)
         else:
-            print('creating',archdir)
+            print('creating', archdir)
             os.makedirs(archdir)
         self._archdir = archdir
-        if not quiet: print('Copying directory %s to %s...'% (self._input_dir,dstdir))
-        self._archive_to_('copy',quiet)
-        if not quiet: print('Created archive copy', archdir)
+        if not quiet:
+            print('Copying directory %s to %s...' % (self._input_dir, dstdir))
+        self._archive_to_('copy', quiet)
+        if not quiet:
+            print('Created archive copy', archdir)
 
-
-    def _archive_to_(self,archive_method,quiet,dstdir=None,workdir=None):
+    def _archive_to_(self, archive_method, quiet, dstdir=None, workdir=None):
 
         # Temporary directory for file transformations
         targetdir = os.path.basename(self._input_dir)
@@ -104,22 +111,25 @@ class Archive(FileTree):
         if workdir is None:
             workdir = mkdtemp(prefix='tmp-python-archive-')
         else:
-            if not os.path.exists(workdir): os.makedirs(workdir)
-        tmpdir = os.path.join(workdir,targetdir)
-        if not os.path.exists(tmpdir): os.makedirs(tmpdir)
+            if not os.path.exists(workdir):
+                os.makedirs(workdir)
+        tmpdir = os.path.join(workdir, targetdir)
+        if not os.path.exists(tmpdir):
+            os.makedirs(tmpdir)
 
         # Loop on file with code filtering
         for relfile in self.file_list():
 
-            infile = os.path.join(self._input_dir,relfile)
-            self._transfile = os.path.join(tmpdir,relfile)
-            archfile = os.path.join(archdir,relfile)
+            infile = os.path.join(self._input_dir, relfile)
+            self._transfile = os.path.join(tmpdir, relfile)
+            archfile = os.path.join(archdir, relfile)
             checkfiles = [self._transfile]
             if archive_method == 'copy':
                 checkfiles.append(archfile)
             for checkfile in checkfiles:
                 lastdir = os.path.dirname(checkfile)
-                if not os.path.exists(lastdir): os.makedirs(lastdir)
+                if not os.path.exists(lastdir):
+                    os.makedirs(lastdir)
 
             # File transformation (does nothing by default)
             self.file_transform(infile)
@@ -127,24 +137,25 @@ class Archive(FileTree):
                 self._transfile = infile
 
             # Archive file
-            archive_cmd(self._transfile,archfile)
-            if not quiet: print('  added',archfile)
+            archive_cmd(self._transfile, archfile)
+            if not quiet:
+                print('  added', archfile)
 
         shutil.rmtree(workdir)
 
-
-    def file_transform(self,infile):
+    def file_transform(self, infile):
         """Abstract class for file transformations"""
         self._transfile = None
 
 
 class FigureArchive(Archive):
     default_patterns = FileTree.default_patterns.copy()
-    suffixes = ['jpg','jpeg','gif','png','bmp','tiff']
+    suffixes = ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'tiff']
     default_patterns['patterns'] = []
     for suf in suffixes:
-        suf = '\.%s$'%suf
-        default_patterns['patterns'].extend([suf,suf.upper()])
+        suf = '\.%s$' % suf
+        default_patterns['patterns'].extend([suf, suf.upper()])
+
 
 class CodeArchive(Archive):
     pass

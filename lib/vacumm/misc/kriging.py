@@ -63,15 +63,26 @@ def get_blas_func(name):
         import scipy.linalg.fblas
         func = getattr(scipy.linalg.fblas, 'd'+name)
     return func
+
+
 blas_dgemv = get_blas_func('gemv')
+
+
 def dgemv(a, x): return blas_dgemv(1., a, x)
+
+
 dgemm = get_blas_func('gemm')
+
+
 def symm(a, b): return dgemm(1., a, b)
+
+
 sytri = N.linalg.pinv
 
 
 class KrigingError(Exception):
     pass
+
 
 #: Variogram model types
 VARIOGRAM_MODEL_TYPES = ['linear', 'exponential', 'spherical', 'gaussian']
@@ -79,6 +90,7 @@ VARIOGRAM_MODEL_TYPES = VARIOGRAM_MODEL_TYPES
 
 #: Default variogram model type
 DEFAULT_VARIOGRAM_MODEL_TYPE = 'exponential'
+
 
 def variogram_model_type(mtype=None):
     """Check the the variogram model type
@@ -95,18 +107,20 @@ def variogram_model_type(mtype=None):
         return VARIOGRAM_MODEL_TYPES
     errmsg = []
     for i, vtype in enumerate(VARIOGRAM_MODEL_TYPES):
-        errmsg += '"%s" (=%i)'%(vtype, i)
-    errmsg = 'Invalid variogram model type. Please choose one of: '+ ', '.join(errmsg)
+        errmsg += '"%s" (=%i)' % (vtype, i)
+    errmsg = 'Invalid variogram model type. Please choose one of: ' + \
+        ', '.join(errmsg)
     if mtype is None:
         mtype = DEFAULT_VARIOGRAM_MODEL_TYPE
     if isinstance(mtype, int):
-        if i<0 or i>len(VARIOGRAM_MODEL_TYPES)-1:
+        if i < 0 or i > len(VARIOGRAM_MODEL_TYPES)-1:
             raise KrigingError(errmsg)
         return VARIOGRAM_MODEL_TYPES[i]
     if not isinstance(mtype, six.string_types):
         raise KrigingError(errmsg)
     for vtype in VARIOGRAM_MODEL_TYPES:
-        if vtype.startswith(mtype): return vtype
+        if vtype.startswith(mtype):
+            return vtype
     raise KrigingError(errmsg)
 
 
@@ -121,15 +135,15 @@ def variogram_model(mtype, n, s, r, nrelmax=0.2):
     s = max(s, 0)
 
     if mtype == 'linear':
-        return lambda h: n + (s-n) * ((h/r)*(h<=r) + 1*(h>r))
+        return lambda h: n + (s-n) * ((h/r)*(h <= r) + 1*(h > r))
 
-    if mtype=='exponential':
+    if mtype == 'exponential':
         return lambda h: n + (s-n) * (1 - N.exp(-3*h/r))
 
-    if mtype=='spherical':
-        return lambda h: n + (s-n)*((1.5*h/r - 0.5*(h/r)**3)*(h<=r) + 1*(h>r))
+    if mtype == 'spherical':
+        return lambda h: n + (s-n)*((1.5*h/r - 0.5*(h/r)**3)*(h <= r) + 1*(h > r))
 
-    if mtype=='gaussian':
+    if mtype == 'gaussian':
         return lambda h: n + (s-n)*(1-N.exp(-3*h**2/r**2))
 
 
@@ -137,10 +151,11 @@ class VariogramModel(object):
     """Class used when fitting a variogram model to data to better control params"""
     param_names = list(variogram_model.__code__.co_varnames[1:])
     param_names.remove('nrelmax')
+
     def __init__(self, mtype, **kwargs):
         self.mtype = variogram_model_type(mtype)
         self.fixed_params = dict([(p, v) for (p, v) in kwargs.items()
-            if p in self.param_names and v is not None])
+                                  if p in self.param_names and v is not None])
 
     def get_all_kwargs(self, pp):
         """Get arguments list to :func:`variogram_model` by merging variable params `p`
@@ -148,16 +163,18 @@ class VariogramModel(object):
         """
         pp = list(pp)
         return dict([(p, (self.fixed_params[p] if p in self.fixed_params else pp.pop(0)))
-            for p in self.param_names])
+                     for p in self.param_names])
 
     def get_var_args(self, **kwargs):
         """Get variable arguments list from specified params
 
         .. note:: Result cannot contain ``None``
         """
-        vargs = [kwargs[p] for p in self.param_names if p not in self.fixed_params]
+        vargs = [kwargs[p]
+                 for p in self.param_names if p not in self.fixed_params]
         if None in vargs:
-            raise VariogramModelError('Variable arguments cannot contains Nones')
+            raise VariogramModelError(
+                'Variable arguments cannot contains Nones')
         return vargs
 
     def __call__(self, d, *pp):
@@ -173,20 +190,25 @@ class VariogramModel(object):
 class VariogramModelError(KrigingError):
     pass
 
+
 def _get_xyz_(x, y, z=None, check=True, noextra=True, getmask=False):
-    if not x.ndim==1 and x.shape!=y.shape :
+    if not x.ndim == 1 and x.shape != y.shape:
         raise KrigingError('x, y must have the same 1D shape')
     if z is not None:
-        if (noextra or z.ndim==1) and x.shape!=z.shape:
-                raise KrigingError('z must have the same 1D shape as x and y')
-        elif not noextra and z.ndim!=1 and (z.ndim!=2 or x.shape!=z.shape[1:]):
-            raise KrigingError('z must have 2 dims with its last dim of same length as x and y')
+        if (noextra or z.ndim == 1) and x.shape != z.shape:
+            raise KrigingError('z must have the same 1D shape as x and y')
+        elif not noextra and z.ndim != 1 and (z.ndim != 2 or x.shape != z.shape[1:]):
+            raise KrigingError(
+                'z must have 2 dims with its last dim of same length as x and y')
     mask = N.ma.nomask
-    if N.ma.isMA(z): mask = N.ma.getmaskarray(z)
-    if N.ma.isMA(x): mask |= N.ma.getmaskarray(x)
-    if N.ma.isMA(y): mask |= N.ma.getmaskarray(y)
+    if N.ma.isMA(z):
+        mask = N.ma.getmaskarray(z)
+    if N.ma.isMA(x):
+        mask |= N.ma.getmaskarray(x)
+    if N.ma.isMA(y):
+        mask |= N.ma.getmaskarray(y)
     if mask is not N.ma.nomask and mask.any():
-        if mask.shape==2: # permanent mask
+        if mask.shape == 2:  # permanent mask
             mask = N.logical_and.reduce(mask, axis=0)
         good = ~mask
         if check and not good.any():
@@ -202,8 +224,9 @@ def _get_xyz_(x, y, z=None, check=True, noextra=True, getmask=False):
         res += mask,
     return res
 
+
 def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
-        nbmin=10, distmax=None,  distfunc='simple', errfunc=None):
+              nbmin=10, distmax=None,  distfunc='simple', errfunc=None):
     """Estimate variogram from data
 
     Parameters
@@ -246,7 +269,7 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
     npts = x.shape[0]
 
     # Undepsample?
-    if npts>2*nmax:
+    if npts > 2*nmax:
         samp = npts/nmax
         x = x[::samp]
         y = y[::samp]
@@ -258,27 +281,30 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
 
     # Variogram
     if errfunc is None:
-        errfunc = lambda a0, a1: 0.5*(a1-a0)**2
+        def errfunc(a0, a1): return 0.5*(a1-a0)**2
     vv = errfunc(*N.meshgrid(z, z))
 
     # Unique
     ii = N.indices(dd.shape)
-    iup = ii[1]>ii[0]
+    iup = ii[1] > ii[0]
     d = dd[iup]
     v = vv[iup]
     del dd, vv
 
     # Max distance
     if distmax:
-        valid = d<=distmax
+        valid = d <= distmax
         d = d[valid]
         v = v[valid]
         del valid
 
     # Direct variogram?
-    if binned is None and len(d)>nbindef*nbmin: binned = True
-    if binned is True: binned = nbindef
-    if not binned: return d, v
+    if binned is None and len(d) > nbindef*nbmin:
+        binned = True
+    if binned is True:
+        binned = nbindef
+    if not binned:
+        return d, v
 
     # Rebin
     # - first try
@@ -287,12 +313,13 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
     nbin = binned
     edges = N.linspace(0, np-1, nbin+1).astype('i').tolist()
     # - more details in first bin
-    if nbin0 is None: # do we need more details?
+    if nbin0 is None:  # do we need more details?
         NBIN0MAX = 10
         nbin0 = min(edges[1]/nbmin, NBIN0MAX)
-    if nbin0>1: # split first bin
-        edges = N.linspace(0., edges[1], nbin0+1).astype('i')[:-1].tolist()+edges[1:]
-        nbin = nbin - 1 + nbin0 # len(edges)-1
+    if nbin0 > 1:  # split first bin
+        edges = N.linspace(0., edges[1], nbin0 +
+                           1).astype('i')[:-1].tolist()+edges[1:]
+        nbin = nbin - 1 + nbin0  # len(edges)-1
     # - rebinning
     db = N.empty(nbin)
     vb = N.empty(nbin)
@@ -302,8 +329,9 @@ def variogram(x, y, z, binned=None, nmax=1500, nbindef=30, nbin0=None,
         vb[ib] = v[iib].mean()
     return db, vb
 
+
 def variogram_fit(x, y, z, mtype=None, getall=False, getp=False, geterr=False,
-        distfunc='simple', errfunc=None, **kwargs):
+                  distfunc='simple', errfunc=None, **kwargs):
     """Fit a variogram model to data and return the function
 
     Example
@@ -366,10 +394,11 @@ def variogram_fit(x, y, z, mtype=None, getall=False, getp=False, geterr=False,
     # Fitting
 #    p, e = curve_fit(vm, d, v, p0=p0) # old way: no constraint
     from scipy.optimize import minimize
-    func = lambda pp: ((v-vm.get_variogram_model(pp)(d))**2).sum()
+
+    def func(pp): return ((v-vm.get_variogram_model(pp)(d))**2).sum()
     warnings.filterwarnings('ignore', 'divide by zero encountered in divide')
     p = minimize(func, p0, bounds=[(N.finfo('d').eps, None)]*len(p0),
-        method='L-BFGS-B')['x']
+                 method='L-BFGS-B')['x']
     del warnings.filters[0]
 
     # Output
@@ -377,9 +406,9 @@ def variogram_fit(x, y, z, mtype=None, getall=False, getp=False, geterr=False,
         return dict(
             func=vm.get_variogram_model(p),
             err=(vm.get_variogram_model(p)(d)-v).std(),
-            params = vm.get_all_kwargs(p),
-            popt = p)
-    if int(getp)==2:
+            params=vm.get_all_kwargs(p),
+            popt=p)
+    if int(getp) == 2:
         res = vm.get_all_kwargs(p)
     elif getp:
         res = p
@@ -389,30 +418,33 @@ def variogram_fit(x, y, z, mtype=None, getall=False, getp=False, geterr=False,
         return res
     return res,  (vm.get_variogram_model(p)(d)-v).std()
 
+
 def variogram_multifit(xx, yy, zz, mtype=None, getall=False, getp=False, **kwargs):
     """Same as :func:`variogram_fit` but with several samples"""
     vm = VariogramModel(mtype, **kwargs)
     pp = []
     for i, (x, y, z) in enumerate(zip(xx, yy, zz)):
         x, y, z = _get_xyz_(x, y, z, check=False)
-        if len(x)==0: continue
+        if len(x) == 0:
+            continue
         p = variogram_fit(x, y, z, mtype, getp=True, **kwargs)
         pp.append(p)
     pp = N.asarray(pp)
-    if pp.shape[0]==0:
+    if pp.shape[0] == 0:
         raise KrigingError('All data are masked')
     mp = N.median(pp, axis=0)
     if getall:
         return dict(
             func=vm.get_variogram_model(mp),
             err=None,
-            params = vm.get_all_kwargs(mp),
-            popt = mp)
-    if int(getp)==2:
+            params=vm.get_all_kwargs(mp),
+            popt=mp)
+    if int(getp) == 2:
         return vm.get_all_kwargs(mp)
     if getp:
         return mp
     return vm.get_variogram_model(mp)
+
 
 def cloud_split(x, y, npmax=1000, getdist=True, getcent=True):
     """Split data intot cloud of points of max size npmax:
@@ -429,7 +461,8 @@ def cloud_split(x, y, npmax=1000, getdist=True, getcent=True):
 
     # Nothing to do
     csize = len(x)
-    if npmax<2 or csize<=npmax: return
+    if npmax < 2 or csize <= npmax:
+        return
 
     # Loop on the number of clusters
     nclust = 2
@@ -438,11 +471,12 @@ def cloud_split(x, y, npmax=1000, getdist=True, getcent=True):
     while csize > npmax:
         centroids, global_distorsion = kmeans(points, nclust)
         indices, distorsions = vq(points, centroids)
-        sindices = [ii[indices==nc] for nc in range(nclust)]
+        sindices = [ii[indices == nc] for nc in range(nclust)]
         csizes = [sii.shape[0] for sii in sindices]
         order = N.argsort(csizes)[::-1]
         csize = csizes[order[0]]
-        if getdist: sdistorsions = [distorsions[sii] for sii in sindices]
+        if getdist:
+            sdistorsions = [distorsions[sii] for sii in sindices]
         nclust += 1
 
     #  Reorder
@@ -454,11 +488,15 @@ def cloud_split(x, y, npmax=1000, getdist=True, getcent=True):
         centroids = centroids[order]
 
     # Output
-    if not getdist and not getcent: return indices
+    if not getdist and not getcent:
+        return indices
     ret = sindices,
-    if getcent: ret += centroids,
-    if getdist: ret += dists,
+    if getcent:
+        ret += centroids,
+    if getdist:
+        ret += dists,
     return ret
+
 
 def syminv(A):
     """Invert a symetric matrix
@@ -479,10 +517,13 @@ def syminv(A):
     res = sytri(A.astype('d'))
     if isinstance(res, tuple):
         info = res[1]
-        if info: raise KrigingError('Error during call to Lapack DSYTRI (info=%i)'%info)
+        if info:
+            raise KrigingError(
+                'Error during call to Lapack DSYTRI (info=%i)' % info)
         return res[0]
     else:
         return res
+
 
 class CloudKriger(object):
     """Ordinary kriger using mutliclouds of points
@@ -571,16 +612,17 @@ class CloudKriger(object):
     """
 
     def __init__(self, x, y, z, krigtype, mtype=None, vgf=None, npmax=1000,
-            nproc=None, exact=False, distfunc='simple', errfunc=None,
-            mean=None, farvalue=None, **kwargs):
+                 nproc=None, exact=False, distfunc='simple', errfunc=None,
+                 mean=None, farvalue=None, **kwargs):
         if krigtype is None:
             krigtype = 'ordinary'
         krigtype = str(krigtype).lower()
         assert krigtype in ['simple', 'ordinary'], ('krigtype must be either '
-            '"simple" or "ordinary"')
-        self.x, self.y, self.z, self.mask = _get_xyz_(x, y, z, noextra=False, getmask=True)
+                                                    '"simple" or "ordinary"')
+        self.x, self.y, self.z, self.mask = _get_xyz_(
+            x, y, z, noextra=False, getmask=True)
         self.np = self.x.shape[0]
-        self.nt = 0 if self.z.ndim==1 else z.shape[0]
+        self.nt = 0 if self.z.ndim == 1 else z.shape[0]
         self.mtype = variogram_model_type(mtype)
         self.npmax = npmax
         if nproc is None:
@@ -609,9 +651,12 @@ class CloudKriger(object):
         return self.x.shape[0]
 
     def _get_xyz_(self, x=None, y=None, z=None):
-        if x is None: x = self.x
-        if y is None: y = self.y
-        if z is None: z = self.z
+        if x is None:
+            x = self.x
+        if y is None:
+            y = self.y
+        if z is None:
+            z = self.z
         return _get_xyz_(x, y, z, noextra=False)
 
     def _setup_clouds_(self):
@@ -626,11 +671,11 @@ class CloudKriger(object):
 
         # Split?
         self.npc = []
-        if self.npmax>2 and self.x.shape[0]>self.npmax:
+        if self.npmax > 2 and self.x.shape[0] > self.npmax:
 
             # Split in clouds
             indices, centroids, (gdist, dists) = cloud_split(self.x, self.y,
-                npmax=self.npmax, getdist=True, getcent=True)
+                                                             npmax=self.npmax, getdist=True, getcent=True)
             self.ncloud = len(indices)
 
             # Loop on clouds
@@ -641,12 +686,13 @@ class CloudKriger(object):
 
                 # Positions and data
                 for xyz in 'x', 'y', 'z':
-                    getattr(self, xyz+'c').append(getattr(self, xyz)[..., indices[ic]].T)
+                    getattr(self, xyz+'c').append(getattr(self, xyz)
+                                                  [..., indices[ic]].T)
 
                 # Size
                 self.npc.append(len(indices[ic]))
 
-        else: # Single cloud
+        else:  # Single cloud
 
             self.xc = [self.x]
             self.yc = [self.y]
@@ -669,9 +715,10 @@ class CloudKriger(object):
         kw['distfunc'] = self.distfunc
         kw['errfunc'] = self.errfunc
         x, y, z = self._get_xyz_(x, y, z)
-        if z.ndim==2:
+        if z.ndim == 2:
             ne = z.shape[0]
-            res = variogram_multifit([x]*ne, [y]*ne, z, self.mtype, getall=True, **kw)
+            res = variogram_multifit(
+                [x]*ne, [y]*ne, z, self.mtype, getall=True, **kw)
         else:
             res = variogram_fit(x, y, z, self.mtype, getall=True, **kw)
         self.variogram_func = res['func']
@@ -692,19 +739,21 @@ class CloudKriger(object):
             raise KrigingError("Your variogram function must be callable")
         reset = getattr(self, '_vgf', None) is not vgf
         self._vgf = vgf
-        if reset: del self.Ainv
+        if reset:
+            del self.Ainv
+
     def get_variogram_func(self):
         """Get the variogram function"""
         if not hasattr(self, '_vgf'):
             self.variogram_fit()
         return self._vgf
+
     def del_variogram_func(self):
         """Delete the variogram function"""
         if hasattr(self, '_vgf'):
             del self._vgf
     variogram_func = property(get_variogram_func, set_variogram_func,
-        del_variogram_func, "Variogram function")
-
+                              del_variogram_func, "Variogram function")
 
     def get_Ainv(self):
         """Get the inverse of A"""
@@ -717,16 +766,17 @@ class CloudKriger(object):
         vgf = self.variogram_func
 
         # Loop on clouds
-        if not hasattr(self, '_dd'): self._dd = []
+        if not hasattr(self, '_dd'):
+            self._dd = []
         Ainv = []
         AA = []
         next = int(not self._simple)
         for ic in range(self.ncloud):
 
             # Get distance between input points
-            if len(self._dd)<ic+1:
+            if len(self._dd) < ic+1:
                 dd = get_distances(self.xc[ic], self.yc[ic],
-                    self.xc[ic], self.yc[ic], mode=self.distfunc)
+                                   self.xc[ic], self.yc[ic], mode=self.distfunc)
                 self._dd.append(dd)
             else:
                 dd = self._dd[ic]
@@ -744,13 +794,13 @@ class CloudKriger(object):
                 A[-1, -1] = 0
 
             # Invert for single cloud
-            if self.nproc==1:
+            if self.nproc == 1:
                 Ainv.append(syminv(A))
             else:
                 AA.append(A)
 
         # Multiprocessing inversion
-        if self.nproc>1:
+        if self.nproc > 1:
             pool = Pool(self.nproc)
             Ainv = pool.map(syminv, AA, chunksize=1)
             pool.close()
@@ -763,13 +813,13 @@ class CloudKriger(object):
     def set_Ainv(self, Ainv):
         """Set the invert of A"""
         self._Ainv = Ainv
+
     def del_Ainv(self):
         """Delete the invert of A"""
         if hasattr(self, '_Ainv'):
             del self._Ainv
 
     Ainv = property(get_Ainv, set_Ainv, del_Ainv, doc='Invert of A')
-
 
     def interp(self, xo, yo, geterr=False, blockr=None):
         """Interpolate to positions xo,yo
@@ -796,17 +846,18 @@ class CloudKriger(object):
         zo = N.zeros(so, 'd')
         if geterr:
             eo = N.zeros(npo, 'd')
-        if self.ncloud>1 or geterr:
+        if self.ncloud > 1 or geterr:
             wo = N.zeros(npo, 'd')
 
         # Loop on clouds
         Ainv = self.Ainv
         next = int(not self._simple)
-        for ic in range(self.ncloud): # TODO: multiproc here?
+        for ic in range(self.ncloud):  # TODO: multiproc here?
 
             # Distances to output points
             # dd = cdist(N.transpose([xi,yi]),N.transpose([xo,yo])) # TODO: test cdist
-            dd = get_distances(xo, yo, self.xc[ic], self.yc[ic], mode=self.distfunc)
+            dd = get_distances(
+                xo, yo, self.xc[ic], self.yc[ic], mode=self.distfunc)
 
             # Form B
             np = self.npc[ic]
@@ -840,12 +891,12 @@ class CloudKriger(object):
 
             # Interpolate
             z = N.ascontiguousarray(dgemv(N.asfortranarray(W[:np].T, 'd'),
-                N.asfortranarray(self.zc[ic]-mean, 'd')))
+                                          N.asfortranarray(self.zc[ic]-mean, 'd')))
             if self._simple:
                 z += mean
 
             # Simplest case
-            if not geterr and self.ncloud<2:
+            if not geterr and self.ncloud < 2:
                 zo[:] = z.T
                 continue
 
@@ -856,22 +907,24 @@ class CloudKriger(object):
 
             # Weigthed contribution based on errors
             w = 1/e**2
-            if self.ncloud>1:
+            if self.ncloud > 1:
                 z[:] *= w
             wo += w
             del w
-            zo[:] += z.T ; del z
+            zo[:] += z.T
+            del z
 
         # Error
         if geterr:
             eo = 1/N.sqrt(wo)
 
         # Normalization
-        if self.ncloud>1:
+        if self.ncloud > 1:
             zo[:] /= wo
 
         gc.collect()
-        if geterr: return zo, eo
+        if geterr:
+            return zo, eo
         return zo
 
     __call__ = interp
@@ -879,40 +932,46 @@ class CloudKriger(object):
 
 class OrdinaryCloudKriger(CloudKriger):
     """Ordinary kriger using cloud splitting"""
+
     def __init__(self, x, y, z, mtype=None, vgf=None, npmax=1000,
-            nproc=None, exact=False, distfunc='simple', errfunc=None,
-            **kwargs):
+                 nproc=None, exact=False, distfunc='simple', errfunc=None,
+                 **kwargs):
         CloudKriger.__init__(self, x, y, z, 'ordinary', mtype=mtype, vgf=vgf, npmax=npmax,
-            nproc=nproc, exact=False, distfunc=distfunc, errfunc=errfunc,
-            **kwargs)
+                             nproc=nproc, exact=False, distfunc=distfunc, errfunc=errfunc,
+                             **kwargs)
+
+
 OrdinaryKriger = OrdinaryCloudKriger
 
 
 class SimpleCloudKriger(CloudKriger):
     """Simple kriger using cloud splitting"""
+
     def __init__(self, x, y, z, mtype=None, vgf=None, npmax=1000,
-            nproc=None, exact=False, distfunc='simple', errfunc=None,
-            mean=None, farvalue=None, **kwargs):
+                 nproc=None, exact=False, distfunc='simple', errfunc=None,
+                 mean=None, farvalue=None, **kwargs):
         CloudKriger.__init__(self, x, y, z, 'simple', mtype=mtype, vgf=vgf, npmax=npmax,
-            nproc=nproc, exact=False, distfunc=distfunc, errfunc=errfunc,
-            mean=mean, farvalue=farvalue, **kwargs)
+                             nproc=nproc, exact=False, distfunc=distfunc, errfunc=errfunc,
+                             mean=mean, farvalue=farvalue, **kwargs)
 
 
 def krig(xi, yi, zi, xo, yo, vgf=None, geterr=False, **kwargs):
     """Quickly krig data"""
     return OrdinaryKriger(xi, yi, zi, vgf=vgf, **kwargs)(xo, yo, geterr=geterr)
 
+
 def gauss3(x, y,
-    x0=-1, y0=0.5, dx0=1, dy0=1, f0=1.,
-    x1=1, y1=1, dx1=2, dy1=0.5, f1=-1,
-    x2=0, y2=-1.5, dx2=.5, dy2=.5, f2=-.3,
-    **kwargs):
+           x0=-1, y0=0.5, dx0=1, dy0=1, f0=1.,
+           x1=1, y1=1, dx1=2, dy1=0.5, f1=-1,
+           x2=0, y2=-1.5, dx2=.5, dy2=.5, f2=-.3,
+           **kwargs):
     """Create data sample as function position and 3-gaussian function"""
     g = P.bivariate_normal(x, y, dx0, dy0, x0, y0)*f0
-    g+= P.bivariate_normal(x, y, dx1, dy1, x1, y1)*f1
-    g+= P.bivariate_normal(x, y, dx2, dy2, x2, y2)*f2
+    g += P.bivariate_normal(x, y, dx1, dy1, x1, y1)*f1
+    g += P.bivariate_normal(x, y, dx2, dy2, x2, y2)*f2
     g *= 10.
     return g
+
 
 def gridded_gauss3(nx=100, ny=100, xmin=-3, xmax=3, ymin=-3, ymax=3, mesh=False, **kwargs):
     """Create a data sample on a grid using :func:`gauss3`"""
@@ -924,18 +983,16 @@ def gridded_gauss3(nx=100, ny=100, xmin=-3, xmax=3, ymin=-3, ymax=3, mesh=False,
         return xx, yy, zz
     return x, y, zz
 
+
 def random_gauss3(**kwargs):
     """Create a data sample of random points using :func:`gauss3`"""
     x, y = random_points(**kwargs)
     z = gauss3(x, y, **kwargs)
     return x, y, z
 
+
 def random_points(np=200, xmin=-3, xmax=3, ymin=-3, ymax=3, **kwargs):
     """Generate random coordinates of points"""
     x = P.rand(np)*(xmax-xmin)+xmin
     y = P.rand(np)*(ymax-ymin)+ymin
     return x, y
-
-
-
-

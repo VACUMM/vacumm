@@ -43,7 +43,9 @@ __date__ = '2010-11-02'
 __doc__ = 'Exceptions utilities'
 
 
-import sys, traceback, types
+import sys
+import traceback
+import types
 
 
 class ExceptionDebugger(object):
@@ -73,7 +75,8 @@ class ExceptionDebugger(object):
             if etype is None or evalue is None or tb is None:
                 fmt_tb = traceback.format_exc()
             else:
-                fmt_tb = u''.join(traceback.format_exception(etype, evalue, tb))
+                fmt_tb = u''.join(
+                    traceback.format_exception(etype, evalue, tb))
             if tb is None:
                 tb = sys.exc_info()[2]
             if tb is None:
@@ -88,31 +91,35 @@ class ExceptionDebugger(object):
                 stack.append(f)
                 f = f.f_back
             stack.reverse()
-            info = u'%s\nException details, locals by frame, innermost last'%(ls)
+            info = u'%s\nException details, locals by frame, innermost last' % (
+                ls)
             if self.nframe is None:
                 self.nframe = len(stack)
             for frame in stack[-self.nframe:]:
                 #info = u'%s\n%s\nFrame %s in %s at line %s\n' % (info, ls, frame.f_code.co_name, frame.f_code.co_filename, frame.f_lineno)
-                info = u'%s\n%s\n%s\n' % (info, ls, ''.join(traceback.format_stack(frame, 1)))
+                info = u'%s\n%s\n%s\n' % (info, ls, ''.join(
+                    traceback.format_stack(frame, 1)))
                 for key in sorted(frame.f_locals.keys()):
                     value = frame.f_locals[key]
                     if type(value) == types.ModuleType or type(value) == types.FunctionType:
                         continue
                     if key.startswith('__') and key.endswith('__'):
                         continue
-                    info = u'%s\t%20s '%(info, key)
+                    info = u'%s\t%20s ' % (info, key)
                     try:
                         s = str(value)
                         if len(s) > 800:
                             s = s[:800] + ' (...)'
                         s = s.replace('\n', '\n\t'+' '*22)
-                        s = '%s = %s'%(type(value), s)
-                        info = u'%s%s\n'%(info, s)
+                        s = '%s = %s' % (type(value), s)
+                        info = u'%s%s\n' % (info, s)
                     except Exception as e:
-                        info = u'%s<ERROR WHILE PRINTING VALUE: %s>\n'%(info, e)
+                        info = u'%s<ERROR WHILE PRINTING VALUE: %s>\n' % (
+                            info, e)
         except Exception as e:
-            info = u'%s<ERROR WHILE PRINTING EXCEPTION DETAILS: %s>\n'%(info, e)
-        info = u'%s\n%s\n%s\n%s\n'%(info, ls, fmt_tb, ls)
+            info = u'%s<ERROR WHILE PRINTING EXCEPTION DETAILS: %s>\n' % (
+                info, e)
+        info = u'%s\n%s\n%s\n%s\n' % (info, ls, fmt_tb, ls)
         return info
 
     def exceptHook(self, etype, evalue, tb):
@@ -132,6 +139,7 @@ class ExceptionDebugger(object):
 # Default exception debbuger
 _excdbg = ExceptionDebugger()
 
+
 def bindExceptHook(*a, **k):
     '''See :meth:`ExceptionDebugger.bindExceptHook`'''
     _excdbg.bindExceptHook(*a, **k)
@@ -140,6 +148,3 @@ def bindExceptHook(*a, **k):
 def getDetailedExceptionInfo(*a, **k):
     '''See :meth:`ExceptionDebugger.getDetailedExceptionInfo`'''
     return _excdbg.getDetailedExceptionInfo(*a, **k)
-
-
-

@@ -35,43 +35,52 @@
 from __future__ import absolute_import
 from __future__ import print_function
 import logging.handlers
-import os, gc, glob, logging, re, sys
+import os
+import gc
+import glob
+import logging
+import re
+import sys
 from collections import OrderedDict
 from traceback import format_exc
 import warnings
-import datetime, time as _time
+import datetime
+import time as _time
 
 import six
 from six.moves import map
 from six.moves import range
 
-import numpy as N, MV2, cdms2, cdtime
+import numpy as N
+import MV2
+import cdms2
+import cdtime
 from _geoslib import Point, LineString, Polygon
 
 from vacumm import VACUMMError
-from .misc import (split_selector, kwfilter, squeeze_variable, is_iterable, 
-    match_atts, set_atts, broadcast, create_selector, 
-    MV2_concatenate, checkdir)
+from .misc import (split_selector, kwfilter, squeeze_variable, is_iterable,
+                   match_atts, set_atts, broadcast, create_selector,
+                   MV2_concatenate, checkdir)
 from .poly import create_polygon, clip_shape, sort_shapes
-from .axes import (get_checker, islon, islat, istime, islevel, 
-    create_lat, create_lon)
+from .axes import (get_checker, islon, islat, istime, islevel,
+                   create_lat, create_lon)
 from .basemap import get_proj
-from .atime import (has_time_pattern, is_time, round_date, add_margin, 
-    strptime, comptime, are_same_units, itv_union, ch_units, 
-    create_time, tsel2slice,  pat2freq,IterDates, strftime, is_interval, 
-    pat2glob, filter_time_selector, add_time)
+from .atime import (has_time_pattern, is_time, round_date, add_margin,
+                    strptime, comptime, are_same_units, itv_union, ch_units,
+                    create_time, tsel2slice,  pat2freq, IterDates, strftime, is_interval,
+                    pat2glob, filter_time_selector, add_time)
 
 from .grid import curv2rect, isgrid, create_grid, set_grid
 
 
 __all__ = ['list_forecast_files', 'NcIterBestEstimate', 'NcIterBestEstimateError', 'NcFileObj',
-    'ncfind_var', 'ncfind_axis', 'ncfind_obj', 'ncget_var', 'ncread_var', 'ncread_files', 'ncread_best_estimate',
-    'ncget_grid', 'ncget_time','ncget_lon','ncget_lat','ncget_level', 'ncmatch_obj',
-    'ncget_axis', 'netcdf3', 'netcdf4', 'ncread_axis', 'ncread_obj', 'ncget_fgrid',
-    'grib_read_files', 'nccache_get_time', 'grib2nc', 'grib_get_names',
-    'write_snx', 'ColoredFormatter', 'Logger',
-    'TermColors', 'read_shapefile', 'NcIterTimeSlice',
-    ]
+           'ncfind_var', 'ncfind_axis', 'ncfind_obj', 'ncget_var', 'ncread_var', 'ncread_files', 'ncread_best_estimate',
+           'ncget_grid', 'ncget_time', 'ncget_lon', 'ncget_lat', 'ncget_level', 'ncmatch_obj',
+           'ncget_axis', 'netcdf3', 'netcdf4', 'ncread_axis', 'ncread_obj', 'ncget_fgrid',
+           'grib_read_files', 'nccache_get_time', 'grib2nc', 'grib_get_names',
+           'write_snx', 'ColoredFormatter', 'Logger',
+           'TermColors', 'read_shapefile', 'NcIterTimeSlice',
+           ]
 
 MA = N.ma
 MV = MV2
@@ -122,21 +131,22 @@ class ColPrinter(object):
         >>> p.close()
         ------------------
     """
-    def __init__(self,columns,headsep=True,align='left',
-        left=None,right=None,top=None,bottom=None,frame=None,colsep=' ',
-        print_header=True,file=None):
+
+    def __init__(self, columns, headsep=True, align='left',
+                 left=None, right=None, top=None, bottom=None, frame=None, colsep=' ',
+                 print_header=True, file=None):
         # Inputs
-        if not isinstance(columns,(list,tuple)):
+        if not isinstance(columns, (list, tuple)):
             raise TypeError('Input must be a list or tuple of 3-element lists')
-        elif len(columns) == 3 and type(columns[0]) is type('s')  and \
-            type(columns[1]) is type(1) and type(columns[2]) is type('s'):
-            columns = [columns,]
-        if align not in ['left','right','center']:
+        elif len(columns) == 3 and type(columns[0]) is type('s') and \
+                type(columns[1]) is type(1) and type(columns[2]) is type('s'):
+            columns = [columns, ]
+        if align not in ['left', 'right', 'center']:
             align = 'left'
         if frame is True:
             left = right = '|'
             top = bottom = '-'
-        for bb in 'left','right','top','bottom':
+        for bb in 'left', 'right', 'top', 'bottom':
             val = locals()[bb]
             if val is not None:
                 setattr(self, '_'+bb, val)
@@ -147,7 +157,7 @@ class ColPrinter(object):
             self._colsep = ' '
         if self._colsep != ' ':
             self._colsep = ' '+self._colsep+' '
-        if headsep in ['',None,False]:
+        if headsep in ['', None, False]:
             self._headsep = None
         elif headsep is True:
             self._headsep = '-'
@@ -160,10 +170,11 @@ class ColPrinter(object):
         self._fmt = []
         self._ncol = len(columns)
         for col in columns:
-            if not isinstance(col,(list,tuple)) or \
-              len(col) != 3 or type(col[0]) is not type('s') or type(col[1]) != type(1) or \
-              type(col[2]) is not type('s') or col[2].find('%') < 0:
-                raise TypeError('This description of column must contain the column title (string), the column width (int) and the string format for data (string): %s' % col)
+            if not isinstance(col, (list, tuple)) or \
+                    len(col) != 3 or type(col[0]) is not type('s') or type(col[1]) != type(1) or \
+                    type(col[2]) is not type('s') or col[2].find('%') < 0:
+                raise TypeError(
+                    'This description of column must contain the column title (string), the column width (int) and the string format for data (string): %s' % col)
             width = col[1]
             if width < len(col[0]):
                 width = len(col[0])
@@ -178,7 +189,7 @@ class ColPrinter(object):
 
         # File case
         if file is not None:
-            self._fid = open(file,'w')
+            self._fid = open(file, 'w')
         else:
             self._fid = None
 
@@ -188,8 +199,8 @@ class ColPrinter(object):
             self.header()
         self._bottom__printed = False
 
-    def __print(self,line):
-        if isinstance(self._fid,file):
+    def __print(self, line):
+        if isinstance(self._fid, file):
             self._fid.write(line+'\n')
         else:
             print(line)
@@ -197,7 +208,7 @@ class ColPrinter(object):
     def close(self):
         """Print bottom and close the file (if file mode) """
         self.bottom()
-        if isinstance(self._fid,file) and not self._fid.closed:
+        if isinstance(self._fid, file) and not self._fid.closed:
             self._fid.close()
 
     def __left(self):
@@ -226,40 +237,40 @@ class ColPrinter(object):
         """ Print header separator line """
         if self._headsep is not None:
             n = len(self._header) + \
-              len(self.__left()) - len(self._left) + \
-              len(self.__right()) - len(self._right)
+                len(self.__left()) - len(self._left) + \
+                len(self.__right()) - len(self._right)
             self.__print(self._left+(self._headsep * n)[:n]+self._right)
 
     def bottom(self):
         """ Print bottom frame """
-        if self._bottom__printed: return
+        if self._bottom__printed:
+            return
         if len(self._bottom):
             n = len(self._header)+len(self.__left())+len(self.__right())
             self.__print((self._bottom * n)[:n])
         self._bottom__printed = True
 
-
-    def __call__(self,*data):
+    def __call__(self, *data):
         """Print data in columns
 
         Arguments refer to the data.
         The number of arguments must be the same as the number of columns.
         """
         if len(data) != self._ncol:
-            raise TypeError('You must give a number of data equal to the number of columns (%i): %i' \
-            % (self._ncol,len(data)))
+            raise TypeError('You must give a number of data equal to the number of columns (%i): %i'
+                            % (self._ncol, len(data)))
 
         dds = []
-        for i,dd in enumerate(data):
+        for i, dd in enumerate(data):
             dds.append((self._fmt[i] % dd).ljust(self._width[i]))
         self.__print(self.__left()+self._colsep.join(dds)+self.__right())
 
-col_printer = ColPrinter # compat
 
+col_printer = ColPrinter  # compat
 
 
 def list_forecast_files(filepattern, time=None, check=True,
-    nopat=False, patfreq=None, patfmtfunc=None, patmargin=None, verbose=False, sort=True):
+                        nopat=False, patfreq=None, patfmtfunc=None, patmargin=None, verbose=False, sort=True):
     """Get a list of forecast files according to a file pattern
 
     Parameters
@@ -316,20 +327,20 @@ def list_forecast_files(filepattern, time=None, check=True,
         >>> list_forecast_files('http://www.ifremer.fr/data/mrsPRVMR_r0_2010-05-06_00.nc')
     """
     sfp = str(filepattern)
-    if len(sfp)>300: sfp = sfp[:300]+'...'
+    if len(sfp) > 300:
+        sfp = sfp[:300]+'...'
     if verbose:
         print('Guessing file list using:')
-        print('   filepattern: %s'%sfp)
-        print('   time selector: %s'%(time, ))
+        print('   filepattern: %s' % sfp)
+        print('   time selector: %s' % (time, ))
 
     # A list of file
     if isinstance(filepattern, list):
         files = []
         for filepat in filepattern:
             files.extend(list_forecast_files(filepat, time=time, check=check,
-                patfreq=patfreq, patfmtfunc=patfmtfunc, patmargin=patmargin,
-                verbose=False, nopat=nopat, sort=False))
-
+                                             patfreq=patfreq, patfmtfunc=patfmtfunc, patmargin=patmargin,
+                                             verbose=False, nopat=nopat, sort=False))
 
     # Date pattern
     elif not nopat and has_time_pattern(filepattern):
@@ -337,12 +348,13 @@ def list_forecast_files(filepattern, time=None, check=True,
         if isinstance(time, cdms2.selectors.Selector):
             seltime = filter_time_selector(time, noslice=True)
             if seltime.components():
-                _, comps = split_selector(seltime) # FIXME: include positional components
+                # FIXME: include positional components
+                _, comps = split_selector(seltime)
                 for i, comp in comps:
                     itv = comp.spec
                     if not is_interval(itv) and is_time(itv):
                         itv = (itv, itv, 'ccb')
-                    if i==0:
+                    if i == 0:
                         time = itv
                     else:
                         time = itv_union(itv, time)
@@ -354,8 +366,8 @@ def list_forecast_files(filepattern, time=None, check=True,
                 time = (time, time, 'ccb')
             else:
                 raise ValueError('Your file pattern contains date pattern (like "%Y"), '
-                    'so you must provide a valid absolute time interval such as (date1,date2,"co")'
-                    ' or at least a valid single date')
+                                 'so you must provide a valid absolute time interval such as (date1,date2,"co")'
+                                 ' or at least a valid single date')
         time = tuple(time)
         patfmtfunc = patfmtfunc if callable(patfmtfunc) else strftime
 
@@ -363,7 +375,9 @@ def list_forecast_files(filepattern, time=None, check=True,
         lmargin = 1
         if patfreq is None:
             patfreq = pat2freq(filepattern)
-            if verbose: print('Detected frequency for looping on possible dates: '+patfreq.upper())
+            if verbose:
+                print(
+                    'Detected frequency for looping on possible dates: '+patfreq.upper())
         if not isinstance(patfreq, tuple):
 
             #  Reform
@@ -372,7 +386,7 @@ def list_forecast_files(filepattern, time=None, check=True,
             # Guess left margin when possible
             gfiles = glob.glob(pat2glob(filepattern))
             gfiles.sort()
-            if gfiles<2:
+            if gfiles < 2:
                 lmargin = 1
             elif not glob.has_magic(filepattern):
                 date0 = date1 = None
@@ -382,10 +396,11 @@ def list_forecast_files(filepattern, time=None, check=True,
                         date1 = strptime(gfiles[i+1], filepattern)
                     except:
                         continue
-                    if date0>=time[0] or date1<=time[1]: break
+                    if date0 >= time[0] or date1 <= time[1]:
+                        break
                 if None not in [date0, date1]:
                     dt = datetime(date1)-datetime(date0)
-                    if dt.seconds!=0:
+                    if dt.seconds != 0:
                         lmargin = comptime('2000').add(dt.seconds, cdtime.Seconds).torel(
                             patfreq[1]+' since 2000').value
                     else:
@@ -393,7 +408,7 @@ def list_forecast_files(filepattern, time=None, check=True,
                             patfreq[1]+' since 2000').value
                 else:
                     lmargin = 1
-             #FIXME: make it work with date+glob patterns
+             # FIXME: make it work with date+glob patterns
             else:
                 lmargin = patfreq[0]
 
@@ -414,7 +429,7 @@ def list_forecast_files(filepattern, time=None, check=True,
         itertime = (round_date(time[0], patfreq[1], 'floor'), time[1])
         itertime = add_margin(itertime, (lmargin-1, patfreq[1]), False)
         iterdates = IterDates(itertime, patfreq,
-            closed = len(time)==3 and time[2][1]=='c' or True)
+                              closed=len(time) == 3 and time[2][1] == 'c' or True)
         files = []
         for date in iterdates:
             file = patfmtfunc(filepattern, date)
@@ -443,13 +458,14 @@ def list_forecast_files(filepattern, time=None, check=True,
     # Count
     if verbose:
         if not files:
-            print('No file found with this file pattern "%s" and time interval %s'%(filepattern, time))
+            print('No file found with this file pattern "%s" and time interval %s' % (
+                filepattern, time))
         else:
-            print('Found %i files'%len(files))
+            print('Found %i files' % len(files))
 
     # Sort files
     if sort:
-        key = lambda x: getattr(x, 'id', x)
+        def key(x): return getattr(x, 'id', x)
         if callable(sort):
             files = sort(files, key=key)
         else:
@@ -465,10 +481,11 @@ def ncfind_var(f, id, ignorecase=True, regexp=False, **kwargs):
     '''
     nfo = NcFileObj(f)
     f = nfo.f
-    res =  ncfind_obj(f, id, ignorecase=ignorecase, regexp=regexp,
-                      ids=f.listvariables(), **kwargs)
+    res = ncfind_obj(f, id, ignorecase=ignorecase, regexp=regexp,
+                     ids=f.listvariables(), **kwargs)
     del nfo
     return res
+
 
 def ncfind_axis(f, specs, ignorecase=True, regexp=False, **kwargs):
     '''
@@ -477,13 +494,14 @@ def ncfind_axis(f, specs, ignorecase=True, regexp=False, **kwargs):
     '''
     nfo = NcFileObj(f)
     f = nfo.f
-    res =  ncfind_obj(f, specs, ignorecase=ignorecase, regexp=regexp,
-        ids=f.listdimension(), **kwargs)
+    res = ncfind_obj(f, specs, ignorecase=ignorecase, regexp=regexp,
+                     ids=f.listdimension(), **kwargs)
     del nfo
     return res
 
+
 def ncfind_obj(f, specs, ignorecase=True, regexp=False, ids=None,
-        searchmode=None, **kwargs):
+               searchmode=None, **kwargs):
     '''
     Find a variable or an axis in netcdf file using a name, list of names
     or matching attributes such as standard_name, long_name and units.
@@ -534,10 +552,11 @@ def ncfind_obj(f, specs, ignorecase=True, regexp=False, ids=None,
     # Searched terms
     withdict = isinstance(specs, dict)
     standard_name = long_name = units = axis = None
+
     def check_list(refname):
         if refname in specs and not is_iterable(specs[refname]):
             specs[refname] = [specs[refname]]
-    if withdict: # Using a dictionary
+    if withdict:  # Using a dictionary
 
         specs = specs.copy()
 
@@ -549,8 +568,9 @@ def ncfind_obj(f, specs, ignorecase=True, regexp=False, ids=None,
                         specs[refname] = specs[alias]
                     del specs[alias]
         re_flag = re.I if ignorecase else 0
+
         def check_regexp(refname):
-            if refname in specs and regexp: # Regular expression
+            if refname in specs and regexp:  # Regular expression
                 specs[refname] = [re.compile(x, re_flag).search
                                   for x in specs[refname] if x is not None]
 
@@ -575,7 +595,7 @@ def ncfind_obj(f, specs, ignorecase=True, regexp=False, ids=None,
         check_list('units')
         check_regexp('units')
 
-    else: # Using a list of ids
+    else:  # Using a list of ids
         specs = {"id": specs}
         check_list('id')
 
@@ -587,14 +607,14 @@ def ncfind_obj(f, specs, ignorecase=True, regexp=False, ids=None,
         ids = f.listvariables()+f.listdimension()
     elif isinstance(ids, six.string_types):
         ids = [ids]
-    for att, val in specs.items(): # loop on attribute types
-        for id in ids: # Loop on targets
-            if match_atts(f[id], {att:val}, id=True, ignorecase=ignorecase):
+    for att, val in specs.items():  # loop on attribute types
+        for id in ids:  # Loop on targets
+            if match_atts(f[id], {att: val}, id=True, ignorecase=ignorecase):
                 break
         else:
             continue
         break
-    else: # Not found
+    else:  # Not found
         id = None
 
     nfo.close()
@@ -603,8 +623,8 @@ def ncfind_obj(f, specs, ignorecase=True, regexp=False, ids=None,
 
 
 def ncmatch_obj(obj, id=None, standard_name=None,
-        long_name=None, units=None, axis=None, ignorecase=True,
-        searchmode=None, **kwargs):
+                long_name=None, units=None, axis=None, ignorecase=True,
+                searchmode=None, **kwargs):
     """Check if an MV2 object (typicaly from a netcdf file) matches names, standard_names, etc
 
 
@@ -646,7 +666,7 @@ def ncmatch_obj(obj, id=None, standard_name=None,
         if val is None:
             continue
         search[key] = val
-        if key=='axis':
+        if key == 'axis':
             search[key] = val if not isinstance(key, list) else val[0]
             continue
         search[key] = val
@@ -674,8 +694,8 @@ def ncget_var(f, *args, **kwargs):
     oldvname = args[0]
     vname = ncfind_var(f, *args, **kwargs)
     if vname is None:
-        raise IOError('Variable not found %s in file %s'%(oldvname, f.id))
-    var =  f.getVariable(vname)
+        raise IOError('Variable not found %s in file %s' % (oldvname, f.id))
+    var = f.getVariable(vname)
     del nfo
     return var
 
@@ -689,13 +709,14 @@ def ncread_obj(f, name, *args, **kwargs):
     ncname = ncfind_obj(f, name, ignorecase=ignorecase)
     if ncname is None:
         del nfo
-        raise IOError('Object not found %s in file %s'%(name, f.id))
+        raise IOError('Object not found %s in file %s' % (name, f.id))
     if ncname in f.variables:
         obj = ncread_var(f, ncname, *args, **kwargs)
     else:
         obj = ncread_axis(f, ncname, *args, **kwargs)
     del nfo
     return obj
+
 
 def ncread_axis(f, name, select=None, ignorecase=True, mode='raise'):
     """Read a 1D axis
@@ -715,8 +736,8 @@ def ncread_axis(f, name, select=None, ignorecase=True, mode='raise'):
     ncname = ncfind_axis(f, name, ignorecase=ignorecase)
     if ncname is None:
         del nfo
-        if mode=='raise':
-            raise IOError('Axis not found %s in file %s'%(name, f.id))
+        if mode == 'raise':
+            raise IOError('Axis not found %s in file %s' % (name, f.id))
         return
     axis = f.getAxis(ncname).clone()
     del nfo
@@ -785,8 +806,9 @@ def ncread_var(f, vname, *args, **kwargs):
     vname = ncfind_var(f, vname, ignorecase=ignorecase)
     if vname is None:
         del nfo
-        if mode=='raise':
-            raise VACUMMError('Variable not found %s in file %s'%(oldvname, f.id))
+        if mode == 'raise':
+            raise VACUMMError('Variable not found %s in file %s' %
+                              (oldvname, f.id))
         return
 
     # Read
@@ -797,6 +819,7 @@ def ncread_var(f, vname, *args, **kwargs):
 
     del nfo
     return var
+
 
 def _process_var(var, torect, samp, grid, kwgrid, squeeze, atts):
     '''
@@ -823,12 +846,12 @@ def _process_var(var, torect, samp, grid, kwgrid, squeeze, atts):
 
     # Undersample
     if samp is not None:
-        if len(samp)!=var.ndim:
+        if len(samp) != var.ndim:
             del nfo
             raise VACUMMError('Sampling keyword ("samp") must have'
-                ' a size equal to the rank of the variable (%i)'%var.ndim)
+                              ' a size equal to the rank of the variable (%i)' % var.ndim)
         for i, ss in enumerate(samp):
-            if samp==0 or samp==1:
+            if samp == 0 or samp == 1:
                 samp[i] = slice(None)
             elif not isinstance(ss, slice):
                 samp[i] = slice(None, None, ss)
@@ -842,7 +865,8 @@ def _process_var(var, torect, samp, grid, kwgrid, squeeze, atts):
     # Squeeze
     if squeeze:
         for ss in squeeze:
-            if ss is False: break
+            if ss is False:
+                break
             var = squeeze_variable(var, ss)
             if ss in [True, None]:
                 break
@@ -852,6 +876,7 @@ def _process_var(var, torect, samp, grid, kwgrid, squeeze, atts):
         set_atts(var, atts)
 
     return var
+
 
 def ncget_axis(f, checker, ids=None, ro=False, checkaxis=False, **kwargs):
     """Get an axis in a netcdf file by searching all axes and variables
@@ -883,8 +908,10 @@ def ncget_axis(f, checker, ids=None, ro=False, checkaxis=False, **kwargs):
     if isinstance(checker, six.string_types):
         checker = get_checker(checker)
     elif isinstance(checker, (list, tuple, dict)):
-        axid = ncfind_obj(f, checker, ids=ids, checkaxis=checkaxis, ro=ro, **kwargs)
-        if axid is None: return
+        axid = ncfind_obj(f, checker, ids=ids,
+                          checkaxis=checkaxis, ro=ro, **kwargs)
+        if axid is None:
+            return
         axis = f[axid].clone()
         nfo.close()
         return axis
@@ -938,6 +965,7 @@ def ncget_lon(f, ids=None, checkaxis=False, ro=False):
     """
     return ncget_axis(f, islon, ids, checkaxis=checkaxis, ro=ro)
 
+
 def ncget_lat(f, ids=None, checkaxis=False, ro=False):
     """Get latitude axis of a netcdf file
 
@@ -950,6 +978,7 @@ def ncget_lat(f, ids=None, checkaxis=False, ro=False):
         List of ids to help searching.
     """
     return ncget_axis(f, islat, ids, checkaxis=checkaxis, ro=ro)
+
 
 def ncget_time(f, ids=None, checkaxis=False, ro=False):
     """Get time axis of a netcdf file
@@ -964,6 +993,7 @@ def ncget_time(f, ids=None, checkaxis=False, ro=False):
     """
     return ncget_axis(f, istime, ids, checkaxis=checkaxis, ro=ro)
 
+
 def ncget_level(f, ids=None, checkaxis=False, ro=False):
     """Get level axis of a netcdf file
 
@@ -976,6 +1006,7 @@ def ncget_level(f, ids=None, checkaxis=False, ro=False):
         List of ids to help searching.
     """
     return ncget_axis(f, islevel, ids, checkaxis=checkaxis, ro=ro)
+
 
 def ncget_grid(f, ids=None, torect=False):
     """Get a grid of a netcdf file
@@ -998,13 +1029,14 @@ def ncget_grid(f, ids=None, torect=False):
     grid = None
     for id in ids:
         grid = f[id].getGrid()
-        if grid is not None :
-#            grid = grid.clone()
+        if grid is not None:
+            #            grid = grid.clone()
             break
     del nfo
     if torect:
         grid = curv2rect(grid, mode="none")
     return grid
+
 
 def ncget_fgrid(f, gg):
     """Get the file grid that matches a transient grid or variable
@@ -1023,13 +1055,16 @@ def ncget_fgrid(f, gg):
     ------
     A :class:`FileGrid` instance or ``None``
     """
-    if f is None or gg is None: return
-    if isgrid(f): return f
+    if f is None or gg is None:
+        return
+    if isgrid(f):
+        return f
 
     # From a variable
     if cdms2.isVariable(gg):
         gg = gg.getGrid()
-        if gg is None: return
+        if gg is None:
+            return
 
     # Current grid
     if isinstance(gg, tuple):
@@ -1037,7 +1072,8 @@ def ncget_fgrid(f, gg):
     else:
         lon = gg.getLongitude()
         lat = gg.getLatitude()
-    if lon is None or lat is None: return
+    if lon is None or lat is None:
+        return
     lonid = getattr(lon, '_oldid', lon.id)
     latid = getattr(lat, '_oldid', lat.id)
 
@@ -1048,13 +1084,15 @@ def ncget_fgrid(f, gg):
         flat = fgrid.getLatitude()
         flonid = getattr(flon, '_oldid', flon.id)
         flatid = getattr(flat, '_oldid', flat.id)
-        if (lonid, latid)==(flonid, flatid):
+        if (lonid, latid) == (flonid, flatid):
             nfo.close()
             return fgrid
     nfo.close()
 
 
 _nccache_time = {}
+
+
 def nccache_get_time(f, timeid=None, ro=False):
     """Get a time axis from cache or netcdf file
 
@@ -1086,11 +1124,14 @@ def nccache_get_time(f, timeid=None, ro=False):
     _nccache_time[fname] = taxis
     return taxis
 
+
 class NcIterTimeSlice(object):
     """Basic netcdf file iterator with a fixed slice"""
+
     def __init__(self, files, tslice=None, timeid=None, keepopen=False, autoclose=True):
         self.i = 0
-        if isinstance(files, six.string_types): files = [files]
+        if isinstance(files, six.string_types):
+            files = [files]
         self.nfiles = len(files)
         self.files = files
         self.nfonext = None
@@ -1113,12 +1154,13 @@ class NcIterTimeSlice(object):
             raise StopIteration
 
         # Open current file
-        if self.nfonext is not None: # from next one
+        if self.nfonext is not None:  # from next one
             f = self.nfonext.f
-            if not self.keepopen: self.nfo.close()
+            if not self.keepopen:
+                self.nfo.close()
             self.nfo = self.nfonext
             self.nfonext = None
-        else: # first time used
+        else:  # first time used
             self.nfo = NcFileObj(self.files[self.i])
             f = self.nfo.f
 
@@ -1146,6 +1188,7 @@ class NcIterTimeSlice(object):
                 self.nfonext.close()
             if self.nfo:
                 self.nfo.close()
+
 
 class NcIterBestEstimate(object):
     """Iterator on netcdf forecast files
@@ -1189,15 +1232,18 @@ class NcIterBestEstimate(object):
     ...     if tslice is False or time is None: continue
     ...     var = f(time=tslice)
     """
+
     def __init__(self, files, time=None, toffset=None, timeid=None, tslices=None, keepopen=False, autoclose=True, id=None):
         self.i = 0
-        if isinstance(files, six.string_types): files = [files]
+        if isinstance(files, six.string_types):
+            files = [files]
         self.nfiles = len(files)
         self.files = files
         self.nfonext = None
-        self.seltime = time #[time] if isinstance(time,list) else time
+        self.seltime = time  # [time] if isinstance(time,list) else time
         self.tslices = [] if tslices is None else tslices
-        if toffset is None: toffset = 0
+        if toffset is None:
+            toffset = 0
         self.toffset = toffset
         self.timeid = timeid
         self.autoclose = autoclose
@@ -1222,7 +1268,7 @@ class NcIterBestEstimate(object):
             raise StopIteration
 
         # Check cache of time slices
-        if len(self.tslices)>self.i:
+        if len(self.tslices) > self.i:
             self.nfo = NcFileObj(self.files[self.i])
             f = self.nfo.f
             tslice = self.tslices[self.i]
@@ -1230,12 +1276,13 @@ class NcIterBestEstimate(object):
             return f, tslice
 
         # Open current file
-        if self.nfonext is not None: # from next one
+        if self.nfonext is not None:  # from next one
             f = self.nfonext.f
-            if not self.keepopen: self.nfo.close()
+            if not self.keepopen:
+                self.nfo.close()
             self.nfo = self.nfonext
             self.nfonext = None
-        else: # first time used
+        else:  # first time used
             self.nfo = NcFileObj(self.files[self.i])
             f = self.nfo.f
 
@@ -1256,7 +1303,7 @@ class NcIterBestEstimate(object):
         # Get base time slice of current file
         ijk = tsel2slice(taxis, self.seltime, asind=True, nonone=True)
         if ijk is False:
-            return self.empty() # nothing
+            return self.empty()  # nothing
         i, j, k = ijk
 
         # Offset
@@ -1265,11 +1312,13 @@ class NcIterBestEstimate(object):
             subseltime = (add_time(ctimes[0], *self.toffset), ctimes[-1], 'cc')
             subtaxis = taxis.subAxis(*ijk)
             ijo = subtaxis.mapIntervalExt(subseltime)
-            if ijo is None or ijo[2]==-1: return self.empty() # nothing
+            if ijo is None or ijo[2] == -1:
+                return self.empty()  # nothing
             i += ijo[0]
         else:
             i = max(i, self.toffset)
-            if i>=j: return self.empty() # nothing
+            if i >= j:
+                return self.empty()  # nothing
             subtaxis = None
 
         # Truncate to next file
@@ -1284,21 +1333,25 @@ class NcIterBestEstimate(object):
 
             # End of slice
             self.nfonext = NcFileObj(self.files[self.i+1])
-            taxisnext = nccache_get_time(self.nfonext.f, timeid=self.timeid, ro=True)
+            taxisnext = nccache_get_time(
+                self.nfonext.f, timeid=self.timeid, ro=True)
             if isinstance(self.toffset, tuple):
                 ct1 = taxisnext.subAxis(0, 1).asComponentTime()[0]
                 ct1 = add_time(ct1, *self.toffset)
                 bb = 'co'
             else:
-                if self.toffset>=len(taxisnext): # Next file too short for offset
+                # Next file too short for offset
+                if self.toffset >= len(taxisnext):
                     ct1 = ctimes[-1]
-                    bb ='cc'
-                else: # First step starting from offset
-                    ct1 = taxisnext.subAxis(self.toffset, self.toffset+1).asComponentTime()[0]
+                    bb = 'cc'
+                else:  # First step starting from offset
+                    ct1 = taxisnext.subAxis(
+                        self.toffset, self.toffset+1).asComponentTime()[0]
                     bb = 'co'
             subseltime = (ct0, ct1, bb)
             ijo = subtaxis.mapIntervalExt(subseltime)
-            if ijo is None or ijo[2]==-1: return self.empty() # nothing
+            if ijo is None or ijo[2] == -1:
+                return self.empty()  # nothing
             io, jo, ko = ijo
             j = min(j, i+jo)
         del ctimes
@@ -1349,6 +1402,7 @@ class NcFileObj(object):
         >>> nfo.close() # close file descriptor
 
     """
+
     def __init__(self, ncfile, mode='r'):
         if isinstance(ncfile, NcFileObj):
             self.type = ncfile.type
@@ -1363,17 +1417,23 @@ class NcFileObj(object):
             else:
                 self.f = ncfile
         else:
-            raise IOError('Unknown file type %s (not a file name or a netcdf file object)'%ncfile)
+            raise IOError(
+                'Unknown file type %s (not a file name or a netcdf file object)' % ncfile)
+
     def isclosed(self):
         return self.type == 'closed'
+
     def ispath(self):
         return self.type == 'path'
+
     def isopen(self):
         return self.type == 'open'
+
     def close(self):
         if self.type in ['closed', 'path'] and self.f._status_ == 'open':
             self.f.close()
     __del__ = close
+
 
 def ncread_best_estimate(filepattern, varname, *args, **kwargs):
     """Read the best estimate of a variable through a set of netcdf forecast files
@@ -1388,10 +1448,11 @@ def ncread_best_estimate(filepattern, varname, *args, **kwargs):
     """
     return ncread_files(varname, filepattern, *args, **kwargs)
 
+
 def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, select=None,
-    atts=None, samp=None, grid=None, verbose=False, ignorecase=True, torect=True,
-    squeeze=False, searchmode=None, nibeid=None, sort=True, nopat=False, patfreq=None,
-    patfmtfunc=None, check=True, bestestimate=True, **kwargs):
+                 atts=None, samp=None, grid=None, verbose=False, ignorecase=True, torect=True,
+                 squeeze=False, searchmode=None, nibeid=None, sort=True, nopat=False, patfreq=None,
+                 patfmtfunc=None, check=True, bestestimate=True, **kwargs):
     """Read the best estimate of a variable through a set of netcdf files
 
     .. warning:: Files are listed using function :func:`list_forecast_files`.
@@ -1465,13 +1526,15 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
     """
     # Get the list of files
     ncfiles = list_forecast_files(filepattern, time, sort=sort, nopat=nopat,
-        patfreq=patfreq, patfmtfunc=patfmtfunc, check=check)
-    if len(ncfiles)==0:
-        raise NcIterBestEstimateError('No valid file found with pattern: %s'%filepattern)
+                                  patfreq=patfreq, patfmtfunc=patfmtfunc, check=check)
+    if len(ncfiles) == 0:
+        raise NcIterBestEstimateError(
+            'No valid file found with pattern: %s' % filepattern)
     single = not isinstance(varname, list)
     varnames = [varname] if single else varname
     if verbose:
-        print('Reading best estimate variable(s): ', ', '.join([str(v) for v in varnames]), '; time:', time)
+        print('Reading best estimate variable(s): ', ', '.join(
+            [str(v) for v in varnames]), '; time:', time)
         print('Using files:')
         print('\n'.join([getattr(fn, 'id', fn) for fn in ncfiles]))
 
@@ -1489,10 +1552,11 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
     if not toffset and not bestestimate and (isinstance(time, slice) or time is None):
         iterator = NcIterTimeSlice(ncfiles, time, timeid=timeid)
     else:
-        iterator = NcIterBestEstimate(ncfiles, time, timeid=timeid, toffset=toffset, id=nibeid)
+        iterator = NcIterBestEstimate(
+            ncfiles, time, timeid=timeid, toffset=toffset, id=nibeid)
     # - undepsampling
     if samp is not None:
-        samp = [0 for s in samp if s==0 or not isinstance(s, int)]
+        samp = [0 for s in samp if s == 0 or not isinstance(s, int)]
         samp = [slice(None, None, s) for s in samp]
     # - output grid
     if grid is not None:
@@ -1500,15 +1564,15 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
     # - time
     time_units = None
     newgrid = None
-    tvars = [False]*len(varnames) # vars with time?
+    tvars = [False]*len(varnames)  # vars with time?
     itaxes = {}
 
     # Loop on files
     for ifile, (f, tslice) in enumerate(iterator):
 
         # Refine selector specs with time slice
-        kwseltime = {iterator.timeid:tslice} if iterator.timeid is not None and \
-            isinstance(tslice, slice) and not tslice==slice(None) else {}
+        kwseltime = {iterator.timeid: tslice} if iterator.timeid is not None and \
+            isinstance(tslice, slice) and not tslice == slice(None) else {}
 #        seltime = selector(**kwseltime)
         taxis = None
 
@@ -1522,28 +1586,35 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
             oldvn = vn
             vn = ncfind_var(f, vn, ignorecase=ignorecase)
             if vn is None:
-                if verbose: print('Skipping file %s for %s variable not found'%(f.id, oldvn))
+                if verbose:
+                    print('Skipping file %s for %s variable not found' %
+                          (f.id, oldvn))
                 continue
 
             # Check time
             if f[vn] is None:
                 continue
-            withtime = iterator.timeid is not None and iterator.timeid in f[vn].getAxisIds()
+            withtime = iterator.timeid is not None and iterator.timeid in f[vn].getAxisIds(
+            )
             if withtime:
                 itaxes[iv] = f[vn].getOrder().find('t')
                 tvars[iv] = True
                 if not tslice:
-                    if verbose: print('Skipping file %s for %s variable because time slice not compatible'%(f.id, oldvn))
+                    if verbose:
+                        print('Skipping file %s for %s variable because time slice not compatible' % (
+                            f.id, oldvn))
                     continue
-                sel = seltime # with time
+                sel = seltime  # with time
             else:
-                sel = selectors[iv] # no time
+                sel = selectors[iv]  # no time
 
             # Infos
             if verbose:
-                print('Processing file no', ifile, ' ', f, ', variable:', vn, ', time slice :', tslice)
+                print('Processing file no', ifile, ' ', f,
+                      ', variable:', vn, ', time slice :', tslice)
                 if withtime:
-                    if taxis is None: taxis = f[vn].getTime()
+                    if taxis is None:
+                        taxis = f[vn].getTime()
                     ctimes = taxis.asComponentTime()
                     print('  Available:', ctimes[0], ctimes[-1])
                     del ctimes
@@ -1554,11 +1625,13 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
             try:
                 var = ncread_var(f, vn, sel, ignorecase=True, torect=torect, squeeze=squeeze,
                                  grid=grid, samp=samp, searchmode=searchmode,
-                                 atts=atts[iv] if atts is not None and iv<len(atts) else None)
+                                 atts=atts[iv] if atts is not None and iv < len(atts) else None)
                 if verbose:
                     print('  Loaded:', var.shape)
             except Exception:
-                if verbose: print('Error when reading. Skipping. Message: \n'+format_exc())#e.message
+                if verbose:
+                    print('Error when reading. Skipping. Message: \n' +
+                          format_exc())  # e.message
                 continue
 
             # Regrid
@@ -1577,15 +1650,15 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
                         continue
 
             # Update
-            if withtime or ifile==0: # append first time or variables with time
+            if withtime or ifile == 0:  # append first time or variables with time
                 allvars[iv].append(var)
-            if True not in tvars and ifile==1: # no time for all variables
+            if True not in tvars and ifile == 1:  # no time for all variables
                 break
 
         gc.collect()
 
         # Read only one file if no variable with time
-        if ifile==0 and True not in tvars:
+        if ifile == 0 and True not in tvars:
             break
 
     iterator.close()
@@ -1594,15 +1667,15 @@ def ncread_files(filepattern, varname, time=None, timeid=None, toffset=None, sel
     for iv in range(nvar):
 
         # Check
-        if len(allvars[iv])==0:
+        if len(allvars[iv]) == 0:
             raise VACUMMError('No valid data found using varname(s): %s, '
-                'filepattern: %s, time: %s'%(varnames[iv], filepattern, time))
+                              'filepattern: %s, time: %s' % (varnames[iv], filepattern, time))
 
         # Reorder and merge
-        allvars[iv] = MV2_concatenate(allvars[iv], axis=itaxes.get(iv, 0), copy=False)
+        allvars[iv] = MV2_concatenate(
+            allvars[iv], axis=itaxes.get(iv, 0), copy=False)
 
     return allvars[0] if single else allvars
-
 
 
 def grib_get_names(gribfile):
@@ -1620,9 +1693,9 @@ def grib_get_names(gribfile):
 
 
 def grib_read_files(
-    filepattern, varname, time=None, select=None,
-    torect=None, samp=None, grid=None, squeeze=None, atts=None,
-    verbose=False, **kwargs):
+        filepattern, varname, time=None, select=None,
+        torect=None, samp=None, grid=None, squeeze=None, atts=None,
+        verbose=False, **kwargs):
     """
     Read cdms2 variables through one or a set of grib files.
 
@@ -1689,44 +1762,46 @@ def grib_read_files(
 
     """
     import pygrib
- 
+
     if not verbose:
-        verbose = lambda s:s
+        def verbose(s): return s
     if verbose and not callable(verbose):
-        verbose = lambda s: sys.stderr.write(('%s\n')%s)
+        def verbose(s): return sys.stderr.write(('%s\n') % s)
     # List of variables
-    single = not isinstance(varname, (list,tuple))
+    single = not isinstance(varname, (list, tuple))
     varnames = [varname] if single else varname
     verbose(
         'grib_read_files:\n'
         '  filepattern: %s\n'
         '  time: %s\n'
         '  varname: %s'
-    %(filepattern, time, '\n- '.join(['%r'%(v) for v in varnames])))
+        % (filepattern, time, '\n- '.join(['%r' % (v) for v in varnames])))
     # List of files
     if isinstance(filepattern, six.string_types):
         files = list_forecast_files(filepattern, time)
     else:
         if not isinstance(filepattern, (list, tuple)):
             filepattern = (filepattern,)
-        files = tuple(f for l in [glob.glob(p) for p in filepattern] for f in l)
-    if len(files)==0:
-        raise Exception('No valid file found with pattern %r and time %r'%(filepattern, time))
-    verbose('number of matching files: %s'%(len(files)))
+        files = tuple(f for l in [glob.glob(p)
+                                  for p in filepattern] for f in l)
+    if len(files) == 0:
+        raise Exception(
+            'No valid file found with pattern %r and time %r' % (filepattern, time))
+    verbose('number of matching files: %s' % (len(files)))
     #verbose('- %s'%('\n- '.join(files)))
     if time:
         time = list(map(datetime, time[:2]))
     vardict = dict()
     # Load grib data
     for f in files:
-        verbose('file: %s'%(f))
+        verbose('file: %s' % (f))
         with pygrib.open(f) as g:
             for n in varnames:
                 kw = n if isinstance(n, dict) else dict(shortName=n)
                 st = _time.time()
                 ms = g.select(**kw)
-                verbose('  select: %s message%s matching preselection %r (took %s)'%(
-                    len(ms), 's' if len(ms)>1 else '', kw, datetime.timedelta(seconds=_time.time()-st)))
+                verbose('  select: %s message%s matching preselection %r (took %s)' % (
+                    len(ms), 's' if len(ms) > 1 else '', kw, datetime.timedelta(seconds=_time.time()-st)))
                 for m in ms:
                     st = _time.time()
                     # use provided special datetime object if present
@@ -1734,35 +1809,40 @@ def grib_read_files(
                         dt = m.validDate
                     # use validityDate exposed as YYYYMMDD and validityTime exposed as HHMM (or HMM or HH or H)
                     elif m.validityDate != None and m.validityTime != None:
-                        dt = '%s%04d00'%(m.validityDate, m.validityTime) # pad validityTime and add 00 seconds
+                        # pad validityTime and add 00 seconds
+                        dt = '%s%04d00' % (m.validityDate, m.validityTime)
                     # or use dataDate & dataTime & forecastTime ??
                     else:
-                        raise Exception('Don\'t know how to handle datetime for message:\n%r'%(m))
+                        raise Exception(
+                            'Don\'t know how to handle datetime for message:\n%r' % (m))
                     if isinstance(dt, six.string_types):
                         dt = datetime.datetime.strptime(dt, '%Y%m%d%H%M%S')
                     if time and (dt < time[0] or dt >= time[1]):
                         continue
                     if m.gridType == 'regular_ll':
-                        latitudes,longitudes = m.distinctLatitudes, m.distinctLongitudes
+                        latitudes, longitudes = m.distinctLatitudes, m.distinctLongitudes
                     else:
-                        latitudes,longitudes = m.latlons()
+                        latitudes, longitudes = m.latlons()
                     kn = n
                     if isinstance(kn, dict):
-                        kn = n.get('shortName', n.get('name', n.get('parameterName', None)))
-                    if not kn: kn = m.shortName
-                    if not kn in vardict: vardict[kn] = []
+                        kn = n.get('shortName', n.get(
+                            'name', n.get('parameterName', None)))
+                    if not kn:
+                        kn = m.shortName
+                    if not kn in vardict:
+                        vardict[kn] = []
                     vardict[kn].append(dict(
                         datetime=dt,
                         latitudes=latitudes, longitudes=longitudes,
                         values=m.values
                     ))
-                    verbose('    message name: %r, shortName: %r, datetime: %s, gridType: %r, latitude%s, longitude%s (took %s)'%(
+                    verbose('    message name: %r, shortName: %r, datetime: %s, gridType: %r, latitude%s, longitude%s (took %s)' % (
                         m.name, m.shortName, dt, m.gridType, latitudes.shape, longitudes.shape, datetime.timedelta(seconds=_time.time()-st)))
                     del m
                 del ms
     # Transform loaded data into cdms2 variable
     kwgrid = kwfilter(kwargs, 'grid')
-    for n,p in six.iteritems(vardict):
+    for n, p in six.iteritems(vardict):
         if not p:
             vardict[n] = None
             continue
@@ -1799,13 +1879,15 @@ def grib2nc(filepattern, varname, ncoutfile=None):
             sys.exit(1)
         f = cdms2.open(ncoutfile, 'w')
         try:
-            for n,v in six.iteritems(varlist):
+            for n, v in six.iteritems(varlist):
                 if v is None:
-                    print('  %r not found'%(n), file=sys.stderr)
+                    print('  %r not found' % (n), file=sys.stderr)
                     continue
-                print('  %r (%r)'%(v.id, n), file=sys.stderr)
+                print('  %r (%r)' % (v.id, n), file=sys.stderr)
                 f.write(v)
-        finally: f.close()
+        finally:
+            f.close()
+
 
 SHAPES_POINTS = SHAPES_POINT = 0
 SHAPES_LINES = SHAPES_LINE = 1
@@ -1815,23 +1897,25 @@ SHAPEFILE_MULTIPOINTS = 8
 SHAPEFILE_POLYLINES = 3
 SHAPEFILE_POLYGONS = 5
 
+
 def read_shapefile(self, input, proj=False, inverse=False, clip=True,
-        shapetype=None, min_area=None, sort=True, reverse=True, samp=1,
-        clip_proj=True, m=None, getextended=False):
+                   shapetype=None, min_area=None, sort=True, reverse=True, samp=1,
+                   clip_proj=True, m=None, getextended=False):
     """Read geometries from a shapefile or a list of coordinates"""
 
     # Inits
     from_file = isinstance(input, str)
-    if hasattr(m, 'map'): m = m.map
+    if hasattr(m, 'map'):
+        m = m.map
     default_proj = None if m is None else m
-    
+
     if from_file:
 
         # From a shapefile
         if input.endswith('.shp') or input.endswith('.dbf'):
             input = input[:-4]
-        for ext in ('shp', ):#, 'dbf':
-            fname = '%s.%s'%(input, ext)
+        for ext in ('shp', ):  # , 'dbf':
+            fname = '%s.%s' % (input, ext)
             assert os.path.exists(fname), fname
         try:
             try:
@@ -1842,7 +1926,7 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
             shp = Reader(input)
             shapefile_type = shp.shapeType
         except Exception as e:
-            print('Cannot read %s:\n%s\nTrying with shapelib'%(input, e), file=sys.stderr)
+            print('Cannot read %s:\n%s\nTrying with shapelib' % (input, e), file=sys.stderr)
             from shapelib import ShapeFile
             newreader = False
             shp = ShapeFile(input)
@@ -1852,19 +1936,20 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
             default_proj = None
     #    self._info = []
 
-    elif isinstance(input, (list, N.ndarray)): # From coordinates
+    elif isinstance(input, (list, N.ndarray)):  # From coordinates
         in_coords = input
-        shapefile_type = 5 if not len(in_coords) or in_coords[0].ndim==2 else 1
+        shapefile_type = 5 if not len(
+            in_coords) or in_coords[0].ndim == 2 else 1
         self._info = []
 
     else:
 
         # From a Shapes (or super) instance
         in_coords = input.get_data(proj=False)
-        self._m = input._m # overwrite m keyword
+        self._m = input._m  # overwrite m keyword
         default_proj = input._proj
         shapefile_type = [SHAPEFILE_POINTS, SHAPEFILE_POLYLINES,
-            SHAPEFILE_POLYGONS][input._type]
+                          SHAPEFILE_POLYGONS][input._type]
         self._info = input._info
 
     # Get coordinates
@@ -1876,7 +1961,8 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
     else:
         nshapes = 1
     coords = []
-    if shapefile_type in [SHAPEFILE_POINTS, SHAPEFILE_MULTIPOINTS]: # A Point or MultiPoint file
+    # A Point or MultiPoint file
+    if shapefile_type in [SHAPEFILE_POINTS, SHAPEFILE_MULTIPOINTS]:
         if shapetype is not None and shapetype != SHAPES_POINTS:
             raise TypeError('Your shape type is not point')
         stype = SHAPES_POINTS
@@ -1897,16 +1983,18 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
 
 #               if from_file: self._info.append(dbf.read_record(iobj))
 
-    elif shapefile_type in [SHAPEFILE_POLYLINES, SHAPEFILE_POLYGONS]: # A Polyline or Polygon file
+    # A Polyline or Polygon file
+    elif shapefile_type in [SHAPEFILE_POLYLINES, SHAPEFILE_POLYGONS]:
 
         # Shape type
         if shapetype is not None:
             if shapetype == SHAPES_POINTS:
-                raise TypeError('Your shape type is point, not polyline or polygon')
+                raise TypeError(
+                    'Your shape type is point, not polyline or polygon')
             else:
                 stype = shapetype
         else:
-            if shapefile_type==SHAPEFILE_POLYLINES:
+            if shapefile_type == SHAPEFILE_POLYLINES:
                 stype = SHAPES_LINES
             else:
                 stype = SHAPES_POLYGONS
@@ -1917,14 +2005,16 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
                 if newreader:
                     obj = shp.shapeRecord(iobj).shape
                     all_points = obj.points
-                    if len(all_points)==0: continue
+                    if len(all_points) == 0:
+                        continue
                     nparts = len(obj.parts)
-                    if nparts==1:
+                    if nparts == 1:
                         all_polys = [all_points]
                     else:
                         all_polys = []
                         for ip in range(nparts-1):
-                            all_polys.append(all_points[obj.parts[ip]:obj.parts[ip+1]])#xxxxxxxx
+                            all_polys.append(
+                                all_points[obj.parts[ip]:obj.parts[ip+1]])  # xxxxxxxx
                 else:
                     all_polys = shp.read_object(iobj).vertices()
             else:
@@ -1938,7 +2028,7 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
         raise TypeError('Input shapefile must only contains 2D shapes')
 
     # Bounds
-    if xy.shape[0]>0:
+    if xy.shape[0] > 0:
         xmin = xy[:, 0].min()
         xmax = xy[:, 0].max()
         ymin = xy[:, 1].min()
@@ -1956,26 +2046,26 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
 
     # Projection
     # - projection function
-    if callable(proj): # direct
+    if callable(proj):  # direct
         proj = proj
     elif default_proj is not None and (proj is None or proj is True):
-        proj = default_proj # from basemap
+        proj = default_proj  # from basemap
     elif isinstance(proj, six.string_types):
-        gg = None if xmin>xmax else ([xmin, xmax], N.clip([ymin, ymax], -89.99, 89.99))
+        gg = None if xmin > xmax else (
+            [xmin, xmax], N.clip([ymin, ymax], -89.99, 89.99))
         kw = dict(proj=proj) if isinstance(proj, six.string_types) else {}
         proj = get_proj(gg, **kw)
     else:
         proj = False
     # - synchronisation of map instance
     m_projsync = None
-    if callable(m): # same projection as of map?
+    if callable(m):  # same projection as of map?
         if proj is False:
             m_projsync = N.allclose((1, 1), m(1, 1))
         elif proj is m:
             m_projsync = True
         elif callable(proj) and proj is not m:
             m_projsync = N.allclose(proj(1, 1), m(1, 1))
-
 
     # Clipping zone with projected coordinates
     clip = create_polygon(clip, proj=clip_proj)
@@ -1994,7 +2084,7 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
 
         # Projection
         if proj:
-            if coord[..., 1].max()<91 and coord[..., 1].min()>-91:
+            if coord[..., 1].max() < 91 and coord[..., 1].min() > -91:
                 coord[..., 1] = N.clip(coord[..., 1], -89.99, 89.99)
             coord = N.asarray(proj(coord[..., 0], coord[..., 1])).T
 
@@ -2013,7 +2103,6 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
 
         # Store
         all_shapes.extend(shapes)
-
 
     # Final bounds
     if clip is not None or min_area:
@@ -2034,7 +2123,6 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
     ypmax = max(ypmax, xyp[..., 1].max())
     del xyp
 
-
     # Finalize
 #    if from_file
     if not newreader:
@@ -2050,8 +2138,8 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
     if not getextended:
         return all_shapes
     return dict(shapes=all_shapes, shaper=shaper, proj=proj, m=m, xmin=xmin,
-        ymin=ymin, xmax=xmax, ymax=ymax, xpmin=xpmin, xpmax=xpmax, ypmin=ypmin,
-        ypmax=ypmax, clip=clip, sorted=sorted, m_projsync=m_projsync)
+                ymin=ymin, xmax=xmax, ymax=ymax, xpmin=xpmin, xpmax=xpmax, ypmin=ypmin,
+                ypmax=ypmax, clip=clip, sorted=sorted, m_projsync=m_projsync)
 
 
 def write_snx(objects, snxfile, type='auto', mode='w', z=99, xfmt='%g', yfmt='%g', zfmt='%g', close=True):
@@ -2060,9 +2148,10 @@ def write_snx(objects, snxfile, type='auto', mode='w', z=99, xfmt='%g', yfmt='%g
     if isinstance(objects, (LineString, Polygon)):
         objects = [objects]
     elif isinstance(objects[0], Point) or \
-        (not isinstance(objects[0], (LineString, Polygon)) and not hasattr(objects[0][0], '__len__')):
+            (not isinstance(objects[0], (LineString, Polygon)) and not hasattr(objects[0][0], '__len__')):
         objects = [objects]
-        if type =='auto' or isinstance(objects[0][0], Point): type = 'point'
+        if type == 'auto' or isinstance(objects[0][0], Point):
+            type = 'point'
 
     # File
 #    splitfile = False
@@ -2071,8 +2160,8 @@ def write_snx(objects, snxfile, type='auto', mode='w', z=99, xfmt='%g', yfmt='%g
     elif '%i' not in snxfile:
         f = open(snxfile, mode)
     else:
-#        splitfile = True
-        snxfile = snxfile.replace('%i', '%%0%ii'%int(N.log10(len(objects))))
+        #        splitfile = True
+        snxfile = snxfile.replace('%i', '%%0%ii' % int(N.log10(len(objects))))
 
     # Loop on objects
     for i, oo in enumerate(objects):
@@ -2101,7 +2190,7 @@ def write_snx(objects, snxfile, type='auto', mode='w', z=99, xfmt='%g', yfmt='%g
                 n = N.asarray(oo)
                 d = N.sqrt(N.diff(n[:, 0])**2+N.diff(n[:, 1])**2)
                 if d.mean() < 3*N.sqrt((n[0, 0]-n[-1, 0])**2+(n[0, 1]-n[-1, 1])**2):
-                    type='polygon'
+                    type = 'polygon'
                 else:
                     type = 'linestring'
                 del d, n
@@ -2109,20 +2198,21 @@ def write_snx(objects, snxfile, type='auto', mode='w', z=99, xfmt='%g', yfmt='%g
         # Write
         # - splited file
         if isinstance(snxfile, (str, six.text_type)) and '%' in snxfile:
-            f = open(snxfile%i, mode)
+            f = open(snxfile % i, mode)
         # - header
-        if type.startswith('point'): # Points
+        if type.startswith('point'):  # Points
             f.write("B S\nCN Semis\nCP 0 0\nCP 0\n")
-        elif type.startswith('line'): # LineString
+        elif type.startswith('line'):  # LineString
             f.write("B N\nCN Niveau\nCP 0 1\nCP 99\nCP 0\n")
-        elif type.startswith('poly'): # Polygon
+        elif type.startswith('poly'):  # Polygon
             f.write("B N\nCN Niveau\nCP 1 1\nCP 99\nCP 0\n")
         for o in oo:
             if len(o) == 2:
                 zz = z
             else:
                 zz = o[2]
-            f.write(('%s %s %s'%(xfmt, yfmt, zfmt)+' A\n')%(o[0], o[1], zz))
+            f.write(('%s %s %s' % (xfmt, yfmt, zfmt)+' A\n') %
+                    (o[0], o[1], zz))
         if isinstance(snxfile, (str, six.text_type)) and '%' in snxfile:
             f.close()
     if not f.closed and close:
@@ -2131,6 +2221,7 @@ def write_snx(objects, snxfile, type='auto', mode='w', z=99, xfmt='%g', yfmt='%g
 
 class ColoredFormatter(logging.Formatter):
     """Log formatter with colors"""
+
     def __init__(self, msg, full_line=False):
         logging.Formatter.__init__(self, msg)
         self.full_line = full_line
@@ -2142,17 +2233,18 @@ class ColoredFormatter(logging.Formatter):
         record.levelname = self.colorize(record.levelname, record.levelname)
         return logging.Formatter.format(self, record)
 
+
 class _Redirector_(object):
     def __init__(self, func, prefix=''):
         self.func = func
         self.prefix = prefix
+
     def write(self, buf):
         for line in buf.rstrip().splitlines():
             self.func(self.prefix+line.rstrip())
+
     def flush(self):
         pass
-
-
 
 
 class Logger(object):
@@ -2195,12 +2287,13 @@ class Logger(object):
     --------
     :mod:`logging` module
     """
+
     def __init__(self, name, logfile=None, console=True, maxlogsize=0, maxbackup=0,
-            cfmt='%(name)s [%(levelname)-8s] %(message)s',
-            ffmt='%(asctime)s: %(name)s [%(levelname)-8s] %(message)s',
-            asctime='%Y-%m-%d %H:%M',
-            level='debug', colors=True, full_line=False,
-            redirect_warnings=False, redirect_stdout=False, redirect_stderr=False):
+                 cfmt='%(name)s [%(levelname)-8s] %(message)s',
+                 ffmt='%(asctime)s: %(name)s [%(levelname)-8s] %(message)s',
+                 asctime='%Y-%m-%d %H:%M',
+                 level='debug', colors=True, full_line=False,
+                 redirect_warnings=False, redirect_stdout=False, redirect_stderr=False):
 
         # Create or get logger
         self.logger = logger = logging.getLogger(name)
@@ -2212,16 +2305,17 @@ class Logger(object):
                 [os.path.samefile(logfile,  l.baseFilename) for l in handlers
                     if isinstance(l, logging.handlers.RotatingFileHandler)]):
             checkdir(logfile, asfile=True)
-            file =  logging.handlers.RotatingFileHandler(logfile,
-                maxBytes=maxlogsize*1000, backupCount=maxbackup)
+            file = logging.handlers.RotatingFileHandler(logfile,
+                                                        maxBytes=maxlogsize*1000, backupCount=maxbackup)
             file.setFormatter(logging.Formatter(ffmt, asctime))
             logger.addHandler(file)
         # - console
         if console and not any([(isinstance(l, logging.StreamHandler) and
-                    not isinstance(l, logging.FileHandler)) for l in handlers]):
+                                 not isinstance(l, logging.FileHandler)) for l in handlers]):
             console = logging.StreamHandler()
             if colors:
-                console.setFormatter(ColoredFormatter(cfmt, full_line=full_line))
+                console.setFormatter(
+                    ColoredFormatter(cfmt, full_line=full_line))
             else:
                 console.setFormatter(logging.Formatter(cfmt))
             logger.addHandler(console)
@@ -2234,13 +2328,12 @@ class Logger(object):
             if not isinstance(redirect_stdout, str):
                 redirect_stdout = 'debug'
             sys.stdout = _Redirector_(getattr(self, redirect_stdout),
-                prefix='STDOUT: ')
+                                      prefix='STDOUT: ')
         if redirect_stderr:
             if not isinstance(redirect_stderr, str):
                 redirect_stderr = 'warning'
             sys.stderr = _Redirector_(getattr(self, redirect_stderr),
-                prefix='STDERR: ')
-
+                                      prefix='STDERR: ')
 
         # Announce
         logger.debug('*** Start log session ***')
@@ -2258,21 +2351,20 @@ class Logger(object):
         self.logger.warning(text, *args, **kwargs)
 
     def showwarning(self, message, category, filename, lineno,
-            file=None):
+                    file=None):
         self.warning(
             'REDIRECTED: %s:%s: %s:%s',
             filename, lineno,
             category.__name__, message,
         )
 
-
     def _log_and_exit_(self, slevel, text, *args, **kwargs):
         """Log a message and exit"""
         getattr(self.logger, slevel)(text, *args, **kwargs)
         mode = kwargs.pop('mode', None)
-        if mode=='exiterr':
+        if mode == 'exiterr':
             mode = sys.exit
-        elif mode=='exit':
+        elif mode == 'exit':
             mode = 1
         if isinstance(mode, Exception):
             raise mode(text)
@@ -2280,7 +2372,6 @@ class Logger(object):
             mode(text)
         elif isinstance(mode, int):
             sys.exit(mode)
-
 
     def error(self, text, *args, **kwargs):
         """Send an error message"""
@@ -2302,9 +2393,10 @@ class Logger(object):
             self.logger.setLevel(self._get_loglevel_(level))
         for handler in self.logger.handlers:
             if isinstance(handler, logging.handlers.RotatingFileHandler):
-                if file is not None: handler.setLevel(self._get_loglevel_(file))
+                if file is not None:
+                    handler.setLevel(self._get_loglevel_(file))
             elif console is not None and \
-                isinstance(handler, logging.StreamHandler):
+                    isinstance(handler, logging.StreamHandler):
                 handler.setLevel(self._get_loglevel_(console))
 
     def get_loglevel(self, asstring=False):
@@ -2317,10 +2409,12 @@ class Logger(object):
         return self.logger.level
 
     def _get_loglevel_(self, level):
-        if level is None: level = 'debug'
+        if level is None:
+            level = 'debug'
         if isinstance(level, str):
             level = getattr(logging, level.upper(), 'DEBUG')
         return level
+
 
 class TermColors(object):
     RED = ERROR = FAILURE = CRITICAL = '\033[31m'
@@ -2333,14 +2427,18 @@ class TermColors(object):
     RESET = '\033[0m'
 
     def __init__(self):
-        try: import curses
-        except ImportError: curses = None
+        try:
+            import curses
+        except ImportError:
+            curses = None
         import sys
         if curses:
             # This is a feature test which may end with an exception (eg. exec through ssh session, unset TERM env var)
             # We don't want to see this kind error (but we are masking other potential errors...)
-            try: curses.setupterm()
-            except: pass
+            try:
+                curses.setupterm()
+            except:
+                pass
         if not sys.stdout.isatty() or not curses or (curses.tigetstr('setf') is None and curses.tigetstr('setaf') is None):
             self.disable()
 
@@ -2359,8 +2457,10 @@ class TermColors(object):
         color or debug level
         """
         color = color.upper()
-        if not hasattr(self, color): return text
+        if not hasattr(self, color):
+            return text
         return getattr(self, color)+text+self.RESET
+
 
 def netcdf3():
     """Turn netcdf4 writing off with :mod:`cdms2`"""
@@ -2377,6 +2477,5 @@ def netcdf4(level=3, deflate=1, shuffle=1):
     cdms2.setNetcdfShuffleFlag(shuffle)
     cdms2.setNetcdfDeflateLevelFlag(level)
 
+
 netcdf4()
-
-

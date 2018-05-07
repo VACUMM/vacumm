@@ -42,7 +42,13 @@ __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
 __doc__ = 'Logging features'
 
-import fnmatch, logging, logging.handlers, os, sys, traceback, warnings
+import fnmatch
+import logging
+import logging.handlers
+import os
+import sys
+import traceback
+import warnings
 
 try:
     # location since Python 2.7
@@ -54,13 +60,15 @@ except ImportError:
     # in debugging mode, show which weakrefset module is in use
     if '--debug' in sys.argv:
         from . import weakrefset
-        warnings.warn('Using %s'%(weakrefset.__file__))
+        warnings.warn('Using %s' % (weakrefset.__file__))
 
 try:
     import curses
     curses.setupterm()
-except Exception: hascurses = False
-else: hascurses = True
+except Exception:
+    hascurses = False
+else:
+    hascurses = True
 
 logging.VERBOSE = logging.DEBUG + (logging.INFO - logging.DEBUG) / 2
 logging.NOTICE = logging.INFO + (logging.WARNING - logging.INFO) / 2
@@ -72,15 +80,22 @@ logging.addLevelName(logging.NOTICE, 'NOTICE')
 # NOTE: logging errors are not just printed, exception is raised
 #      (logging.raiseExceptions is used either to mean raise or print ...)
 _org_handle_error = logging.Handler.handleError
+
+
 def handle_error(self, *args, **kwargs):
     if logging.raiseExceptions:
         raise
+
+
 logging.Handler.handleError = handle_error
 del handle_error
 
+
 class LogLevelError(Exception):
     def __init__(self, level):
-        Exception.__init__(self, 'Invalid log level: "%s", available are: %s'%(level, ', '.join(get_str_levels())))
+        Exception.__init__(self, 'Invalid log level: "%s", available are: %s' % (
+            level, ', '.join(get_str_levels())))
+
 
 def check_level(level):
     if isinstance(level, six.string_types):
@@ -88,6 +103,7 @@ def check_level(level):
     if level not in list(logging._levelNames.keys()):
         raise LogLevelError(level)
     return level
+
 
 def convert_level(level):
     '''
@@ -97,11 +113,14 @@ def convert_level(level):
         level = level.strip().upper()
     return logging._levelNames[check_level(level)]
 
+
 def get_int_levels():
     return sorted([l for l in list(logging._levelNames.keys()) if isinstance(l, int)])
 
+
 def get_str_levels():
     return [get_str_level(l) for l in get_int_levels()]
+
 
 def get_int_level(level):
     '''
@@ -114,6 +133,7 @@ def get_int_level(level):
     else:
         raise LogLevelError(level)
 
+
 def get_str_level(level):
     '''
     Get the str level for the given int/str level
@@ -125,8 +145,9 @@ def get_str_level(level):
     else:
         raise LogLevelError(level)
 
+
 def filter_name(names, value, default):
-    if not isinstance(names, (list,tuple)):
+    if not isinstance(names, (list, tuple)):
         names = (names,)
     names = [six.text_type(n).lower().strip() for n in names]
     svalue = six.text_type(value)
@@ -142,42 +163,42 @@ def filter_name(names, value, default):
 
 class ColoredStreamHandler(logging.StreamHandler):
     colors = {
-        'blackf':30,
-        'redf':31,
-        'greenf':32,
-        'yellowf':33,
-        'bluef':34,
-        'purplef':35,
-        'cyanf':36,
-        'whitef':37,
-        'blackb':40,
-        'redb':41,
-        'greenb':42,
-        'yellowb':43,
-        'blueb':44,
-        'purpleb':45,
-        'cyanb':46,
-        'whiteb':47,
-        'boldon':1,
-        'boldoff':22,
-        'italicson':3,
-        'italicsoff':23,
-        'ulon':4,
-        'uloff':24,
-        'invon':7,
-        'invoff':27,
-        'reset':0,
+        'blackf': 30,
+        'redf': 31,
+        'greenf': 32,
+        'yellowf': 33,
+        'bluef': 34,
+        'purplef': 35,
+        'cyanf': 36,
+        'whitef': 37,
+        'blackb': 40,
+        'redb': 41,
+        'greenb': 42,
+        'yellowb': 43,
+        'blueb': 44,
+        'purpleb': 45,
+        'cyanb': 46,
+        'whiteb': 47,
+        'boldon': 1,
+        'boldoff': 22,
+        'italicson': 3,
+        'italicsoff': 23,
+        'ulon': 4,
+        'uloff': 24,
+        'invon': 7,
+        'invoff': 27,
+        'reset': 0,
     }
 
     level_colors = {
-        logging.NOTSET:'reset',
-        logging.DEBUG:'cyanf',
-        logging.VERBOSE:'bluef',
-        logging.INFO:'greenf',
-        logging.NOTICE:'greenf,boldon',
-        logging.WARNING:'yellowf,boldon',
-        logging.ERROR:'redf,boldon',
-        logging.CRITICAL:'purplef,boldon',
+        logging.NOTSET: 'reset',
+        logging.DEBUG: 'cyanf',
+        logging.VERBOSE: 'bluef',
+        logging.INFO: 'greenf',
+        logging.NOTICE: 'greenf,boldon',
+        logging.WARNING: 'yellowf,boldon',
+        logging.ERROR: 'redf,boldon',
+        logging.CRITICAL: 'purplef,boldon',
     }
 
     def __init__(self, stream, *args, **kwargs):
@@ -193,7 +214,8 @@ class ColoredStreamHandler(logging.StreamHandler):
         # setf: set foreground color
         # setaf: set foreground color using ansi escape
         # setb/setab: same for background
-        self.colorable = hascurses and stream.isatty() and (curses.tigetstr('setf') or curses.tigetstr('setaf'))
+        self.colorable = hascurses and stream.isatty() and (
+            curses.tigetstr('setf') or curses.tigetstr('setaf'))
         self.colorize = kwargs.pop('colorize', True) and self.colorable
         # TODO: add per log record components colorization
         logging.StreamHandler.__init__(self, stream, *args, **kwargs)
@@ -206,30 +228,39 @@ class ColoredStreamHandler(logging.StreamHandler):
         # Check if colorize cannot be done
         if not (self.colorable and self.colorize):
             return formatted
-        color = self.get_level_color(record.levelno) + getattr(record, 'color', '')
+        color = self.get_level_color(
+            record.levelno) + getattr(record, 'color', '')
         if color:
             colors = str(color).strip().lower().split(',')
-            formatted = '%s%s\033[%dm'%(
-                '\033[%sm'%(';'.join('%s'%self.colors.get(c, self.colors['reset']) for c in colors if c)),
+            formatted = '%s%s\033[%dm' % (
+                '\033[%sm' % (';'.join('%s' % self.colors.get(
+                    c, self.colors['reset']) for c in colors if c)),
                 formatted,
                 self.colors['reset'])
         return formatted
 
-class Formatter(logging.Formatter): pass
+
+class Formatter(logging.Formatter):
+    pass
+
 
 class _Redirector_(object):
     def __init__(self, func, prefix=''):
         self.func = func
         self.prefix = prefix
+
     def write(self, buf):
         self.func(self.prefix+buf.rstrip().strip('\n'))
+
     def flush(self):
         pass
+
 
 class Logger(logging.getLoggerClass()):
     '''Logger based on the standard python logging package.'''
 
-    initial_level = logging.INFO # The initial default level, which would not be changed by set_default_level
+    # The initial default level, which would not be changed by set_default_level
+    initial_level = logging.INFO
     default_level = initial_level
     default_format = dict(
         default='[%(asctime)s %(name)s %(levelname)s] %(message)s',
@@ -240,12 +271,12 @@ class Logger(logging.getLoggerClass()):
     # '%a %d %b %Y %H:%M:%S %Z'
     default_date_format = dict(
         default='%Y-%m-%d %H:%M:%S %Z',
-        console='',#%H:%M:%S',
+        console='',  # %H:%M:%S',
         logfile='%Y-%m-%d %H:%M:%S %Z',
     )
     default_max_file_size = (2**10) * 500
     default_max_file_backup = 0
-    default_encoding = None # 'utf-8'
+    default_encoding = None  # 'utf-8'
     default_colorize = True
     shared_handlers = []
 
@@ -255,13 +286,13 @@ class Logger(logging.getLoggerClass()):
     instances = WeakSet()
 
     def __init__(self,
-            name=None, level=None,
-            format=None, date_format=None,
-            console=True, colorize=True,
-            logfile=None,
-            redirect_warnings=False, redirect_stdout=False, redirect_stderr=False,
-            name_filters=None,
-            config=None):
+                 name=None, level=None,
+                 format=None, date_format=None,
+                 console=True, colorize=True,
+                 logfile=None,
+                 redirect_warnings=False, redirect_stdout=False, redirect_stderr=False,
+                 name_filters=None,
+                 config=None):
         '''
         Initialize the logger (level, formats) and its default handlers.
 
@@ -328,11 +359,16 @@ class Logger(logging.getLoggerClass()):
             )
 
         '''
-        if name is None: name = '%s(%s)'%(self.__class__.__name__, id(self))
-        if level is None: level = self.get_default_level()
-        if format is None: format = self.get_default_format()
-        if date_format is None: date_format = self.get_default_date_format()
-        if name_filters is None: name_filters = []
+        if name is None:
+            name = '%s(%s)' % (self.__class__.__name__, id(self))
+        if level is None:
+            level = self.get_default_level()
+        if format is None:
+            format = self.get_default_format()
+        if date_format is None:
+            date_format = self.get_default_date_format()
+        if name_filters is None:
+            name_filters = []
         self.__name_filters = name_filters
         self.__logger_class = logging.getLoggerClass()
 
@@ -340,9 +376,11 @@ class Logger(logging.getLoggerClass()):
         # because set_level will use get_level if filtered level doesn't match
         self.__logger_class.__init__(self, name, level=self.initial_level)
 
-        self.__format = format.get('default', self.default_format['default']) if isinstance(format, dict) else format
-        self.__date_format = date_format.get('default', self.default_date_format['default']) if isinstance(date_format, dict) else date_format
-        
+        self.__format = format.get(
+            'default', self.default_format['default']) if isinstance(format, dict) else format
+        self.__date_format = date_format.get(
+            'default', self.default_date_format['default']) if isinstance(date_format, dict) else date_format
+
         self.skipCaller((self.log, self.verbose, self.notice))
 
         # Setup stream handler (console)?
@@ -355,11 +393,12 @@ class Logger(logging.getLoggerClass()):
             else:
                 if not isinstance(console, dict):
                     console = {}
-                console.setdefault('colorize', colorize if colorize is not None else self.default_colorize)
+                console.setdefault(
+                    'colorize', colorize if colorize is not None else self.default_colorize)
                 console.setdefault('format',  format['console'] if isinstance(format, dict)
-                    and 'console' in format else self.default_format['console'])
+                                   and 'console' in format else self.default_format['console'])
                 console.setdefault('date_format',  date_format['console'] if isinstance(format, dict)
-                    and 'console' in date_format else self.default_date_format['console'])
+                                   and 'console' in date_format else self.default_date_format['console'])
                 self.console_handler = self.new_stream_handler(**console)
             self.add_handler(self.console_handler)
 
@@ -377,15 +416,16 @@ class Logger(logging.getLoggerClass()):
                 if not isinstance(logfile, dict):
                     logfile = {}
                 logfile.setdefault('format',  format['logfile'] if isinstance(format, dict)
-                    and 'logfile' in format else self.default_format['logfile'])
+                                   and 'logfile' in format else self.default_format['logfile'])
                 logfile.setdefault('date_format',  date_format['logfile'] if isinstance(format, dict)
-                    and 'logfile' in date_format else self.default_date_format['logfile'])
+                                   and 'logfile' in date_format else self.default_date_format['logfile'])
                 self.file_handler = self.new_rotating_file_handler(**logfile)
             self.add_handler(self.file_handler)
 
         #self.config(name=name, level=level, format=format, date_format=date_format)
         self.set_level(level, filter=True)
-        if config: self.config(config)
+        if config:
+            self.config(config)
 
         # Add global handlers: handlers registered for all Logger
         for hdlr in self.__class__.shared_handlers:
@@ -416,7 +456,7 @@ class Logger(logging.getLoggerClass()):
                 self._redirect_stdout = 'debug'
             self._old_sys_stdout = sys.stdout
             sys.stdout = _Redirector_(getattr(self, self._redirect_stdout),
-                prefix='STDOUT: ')
+                                      prefix='STDOUT: ')
             self._redirected_stdout = True
 
         if self._redirect_stderr and not self._redirected_stderr:
@@ -424,23 +464,23 @@ class Logger(logging.getLoggerClass()):
                 self._redirect_stderr = 'warning'
             self._old_sys_stderr = sys.stderr
             sys.stderr = _Redirector_(getattr(self, self._redirect_stderr),
-                prefix='STDERR: ')
+                                      prefix='STDERR: ')
             self._redirected_stderr = True
 
     def stop_redirections(self, which='all'):
         assert which in ['all', 'stdout', 'stderr', 'warnings']
 
         if (self._redirect_warnings and which in ['all', 'warnings'] and
-                 self._redirected_warnings):
+                self._redirected_warnings):
             warnings.showwarning = self._old_showwarnings
             self._redirected_warnings = False
 
         if (self._redirect_stdout and which in ['all', 'stdout'] and
-                 self._redirected_stdout):
+                self._redirected_stdout):
             sys.stdout = self._old_sys_stdout
             self._redirected_stdout = False
         if (self._redirect_stderr and which in ['all', 'stderr'] and
-                 self._redirected_stderr):
+                self._redirected_stderr):
             sys.stderr = self._old_sys_stderr
             self._redirected_stderr = False
 
@@ -472,17 +512,17 @@ class Logger(logging.getLoggerClass()):
             if 'logfile' in level and self.file_handler:
                 self.file_handler.setLevel(get_int_level(level['logfile']))
         else:
-            if filter: # warn: '=' character in fmt are not allowed ...
+            if filter:  # warn: '=' character in fmt are not allowed ...
                 level = self.filter_name(level, self.get_level_name())
             self.__logger_class.setLevel(self, get_int_level(level))
 
-    setLevel = set_level # do not delete, redefinition of logging.Logger.setLevel
+    setLevel = set_level  # do not delete, redefinition of logging.Logger.setLevel
 
     def set_level_console(self, level, filter=False):
-        self.set_level({'console':level}, filter=filter)
+        self.set_level({'console': level}, filter=filter)
 
     def set_level_logfile(self, level, filter=False):
-        self.set_level({'logfile':level}, filter=filter)
+        self.set_level({'logfile': level}, filter=filter)
 
     def get_level(self):
         return get_int_level(self.level)
@@ -493,11 +533,13 @@ class Logger(logging.getLoggerClass()):
     def set_format(self, format, filter=False):
         if isinstance(format, dict):
             if 'console' in format and self.console_handler:
-                self.set_handler_formats(self.console_handler, format=format['console'])
+                self.set_handler_formats(
+                    self.console_handler, format=format['console'])
             if 'logfile' in format and self.file_handler:
-                self.set_handler_formats(self.file_handler, format=format['logfile'])
+                self.set_handler_formats(
+                    self.file_handler, format=format['logfile'])
         else:
-            if filter: # warn: '=' character in fmt are not allowed ...
+            if filter:  # warn: '=' character in fmt are not allowed ...
                 format = self.filter_name(format, self.get_format())
             self.__format = format
             for h in self.handlers:
@@ -509,11 +551,13 @@ class Logger(logging.getLoggerClass()):
     def set_date_format(self, format, filter=False):
         if isinstance(format, dict):
             if 'console' in format and self.console_handler:
-                self.set_handler_formats(self.console_handler, date_format=format['console'])
+                self.set_handler_formats(
+                    self.console_handler, date_format=format['console'])
             if 'logfile' in format and self.file_handler:
-                self.set_handler_formats(self.file_handler, date_format=format['logfile'])
+                self.set_handler_formats(
+                    self.file_handler, date_format=format['logfile'])
         else:
-            if filter: # warn: '=' character in fmt are not allowed ...
+            if filter:  # warn: '=' character in fmt are not allowed ...
                 format = self.filter_name(format, self.get_date_format())
             self.__date_format = format
             for h in self.handlers:
@@ -538,7 +582,8 @@ class Logger(logging.getLoggerClass()):
 
     @classmethod
     def set_handler_formats(cls, handler, format=None, date_format=None):
-        f = cls.new_formatter(format=format, date_format=date_format, formatter=handler.formatter)
+        f = cls.new_formatter(
+            format=format, date_format=date_format, formatter=handler.formatter)
         handler.setFormatter(f)
         return f
 
@@ -554,14 +599,19 @@ class Logger(logging.getLoggerClass()):
         if kwargs.pop('shared', False):
             self.add_shared_handler(handler)
         self.__logger_class.addHandler(self, handler)
-    addHandler = add_handler # do not delete, redefinition of logging.Logger.addHandler
+    addHandler = add_handler  # do not delete, redefinition of logging.Logger.addHandler
 
     def remove_handler(self, hdlr):
-        try: hdlr.close()
-        except: print(traceback.format_exc(), file=sys.stderr)
-        try: self.__logger_class.removeHandler(self, hdlr)
-        except: print(traceback.format_exc(), file=sys.stderr)
-    removeHandler = remove_handler # do not delete, redefinition of logging.Logger.removeHandler
+        try:
+            hdlr.close()
+        except:
+            print(traceback.format_exc(), file=sys.stderr)
+        try:
+            self.__logger_class.removeHandler(self, hdlr)
+        except:
+            print(traceback.format_exc(), file=sys.stderr)
+    # do not delete, redefinition of logging.Logger.removeHandler
+    removeHandler = remove_handler
 
     def clean(self):
         for hdlr in list(self.handlers):
@@ -570,8 +620,11 @@ class Logger(logging.getLoggerClass()):
     @classmethod
     def new_stream_handler(cls, stream=sys.stderr, colorize=False, level=None, format=None, date_format=None, **kwargs):
         handler = ColoredStreamHandler(stream, colorize=colorize)
-        if level: handler.setLevel(get_int_level(level))
-        if format or date_format: cls.set_handler_formats(handler, format=format, date_format=date_format)
+        if level:
+            handler.setLevel(get_int_level(level))
+        if format or date_format:
+            cls.set_handler_formats(
+                handler, format=format, date_format=date_format)
         return handler
 
     def add_stream_handler(self, *args, **kwargs):
@@ -581,24 +634,34 @@ class Logger(logging.getLoggerClass()):
 
     def colorize(self, active=None):
         if self.console_handler and isinstance(self.console_handler, ColoredStreamHandler):
-            if active is not None: self.console_handler.colorize = bool(active)
+            if active is not None:
+                self.console_handler.colorize = bool(active)
             return self.console_handler.colorize
 
     @classmethod
     def new_rotating_file_handler(cls, filePath=None, mode='a', maxFileSize=None, maxFileBkp=None, encoding=None, level=None, format=None, date_format=None, **kwargs):
-        if maxFileSize is None: maxFileSize = cls.default_max_file_size
-        if maxFileBkp is None: maxFileBkp = cls.default_max_file_backup
-        if encoding is None: encoding = cls.default_encoding
+        if maxFileSize is None:
+            maxFileSize = cls.default_max_file_size
+        if maxFileBkp is None:
+            maxFileBkp = cls.default_max_file_backup
+        if encoding is None:
+            encoding = cls.default_encoding
         if not filePath:
-            if sys.argv[0] in ['', '-', '-c']: filePath = 'python'
-            else: filePath = os.path.splitext(os.path.basename(sys.argv[0]))[0]
+            if sys.argv[0] in ['', '-', '-c']:
+                filePath = 'python'
+            else:
+                filePath = os.path.splitext(os.path.basename(sys.argv[0]))[0]
             filePath += '.log'
         fileDir = os.path.dirname(filePath)
         if fileDir and not os.path.isdir(fileDir):
             os.makedirs(fileDir)
-        handler = logging.handlers.RotatingFileHandler(filename=filePath, mode=mode, maxBytes=maxFileSize, backupCount=maxFileBkp, encoding=encoding)
-        if level: handler.setLevel(get_int_level(level))
-        if format or date_format: cls.set_handler_formats(handler, format=format, date_format=date_format)
+        handler = logging.handlers.RotatingFileHandler(
+            filename=filePath, mode=mode, maxBytes=maxFileSize, backupCount=maxFileBkp, encoding=encoding)
+        if level:
+            handler.setLevel(get_int_level(level))
+        if format or date_format:
+            cls.set_handler_formats(
+                handler, format=format, date_format=date_format)
         return handler
 
     def add_rotating_file_handler(self, *args, **kwargs):
@@ -628,8 +691,8 @@ class Logger(logging.getLoggerClass()):
         file name, line number and function name.
         """
         f = logging.currentframe()
-        #On some versions of IronPython, currentframe() returns None if
-        #IronPython isn't run with -X:Frames.
+        # On some versions of IronPython, currentframe() returns None if
+        # IronPython isn't run with -X:Frames.
         if f is not None:
             f = f.f_back
         rv = "(unknown file)", 0, "(unknown function)"
@@ -648,7 +711,7 @@ class Logger(logging.getLoggerClass()):
             rv = (co.co_filename, f.f_lineno, co.co_name)
             break
         return rv
-     
+
     def skipCaller(self, caller=None, skip=True):
         '''
         Register a function, method, code or set/list/tuple of codes to be skipped by findCaller
@@ -668,7 +731,8 @@ class Logger(logging.getLoggerClass()):
         elif isinstance(caller, types.MethodType):
             func_code = caller.__func__.__code__
         else:
-            raise TypeError('skipCaller accept only function or method types, found %s'%type(caller))
+            raise TypeError(
+                'skipCaller accept only function or method types, found %s' % type(caller))
         if skip:
             skipCallers.add(func_code)
         else:
@@ -677,8 +741,10 @@ class Logger(logging.getLoggerClass()):
 
     @classmethod
     def set_default_level(cls, level, filter=False):
-        if filter: level = filter_name(cls.__name__, level, cls.get_default_level())
+        if filter:
+            level = filter_name(cls.__name__, level, cls.get_default_level())
         cls.default_level = get_int_level(level)
+
     @classmethod
     def get_default_level(cls):
         return cls.default_level
@@ -689,11 +755,17 @@ class Logger(logging.getLoggerClass()):
         Set the default format for the specified target.
         The target can be one or a list of: %s.
         If target is None, all default formats are changed.
-        '''%(', '.join(cls.default_format))
-        if filter: format = filter_name(cls.__name__, format, cls.get_default_format(target)) # warn: '=' character in fmt are then not allowed ...
-        if target is None: target = list(cls.default_format.keys())
-        if not isinstance(target, (list, tuple)): target = (target,)
-        for k in target: cls.default_format[k] = format
+        ''' % (', '.join(cls.default_format))
+        if filter:
+            # warn: '=' character in fmt are then not allowed ...
+            format = filter_name(cls.__name__, format,
+                                 cls.get_default_format(target))
+        if target is None:
+            target = list(cls.default_format.keys())
+        if not isinstance(target, (list, tuple)):
+            target = (target,)
+        for k in target:
+            cls.default_format[k] = format
 
     @classmethod
     def get_default_format(cls, target=None):
@@ -706,11 +778,17 @@ class Logger(logging.getLoggerClass()):
         Set the default date format for the specified target.
         The target can be one or a list of: %s.
         If target is None, all default date formats are changed.
-        '''%(', '.join(cls.default_date_format))
-        if filter: format = filter_name(cls.__name__, format, cls.get_default_date_format(target)) # warn: '=' character in fmt are then not allowed ...
-        if target is None: target = list(cls.default_date_format.keys())
-        if not isinstance(target, (list, tuple)): target = (target,)
-        for k in target: cls.default_date_format[k] = format
+        ''' % (', '.join(cls.default_date_format))
+        if filter:
+            # warn: '=' character in fmt are then not allowed ...
+            format = filter_name(cls.__name__, format,
+                                 cls.get_default_date_format(target))
+        if target is None:
+            target = list(cls.default_date_format.keys())
+        if not isinstance(target, (list, tuple)):
+            target = (target,)
+        for k in target:
+            cls.default_date_format[k] = format
 
     @classmethod
     def get_default_date_format(cls, target=None):
@@ -719,17 +797,24 @@ class Logger(logging.getLoggerClass()):
 
     @classmethod
     def set_default_max_file_size(cls, value, filter=False):
-        if filter: value = filter_name(cls.__name__, value, cls.get_default_max_file_size) # warn: '=' character in fmt are then not allowed ...
+        if filter:
+            # warn: '=' character in fmt are then not allowed ...
+            value = filter_name(cls.__name__, value,
+                                cls.get_default_max_file_size)
         cls.default_max_file_size = value
 
     @classmethod
     def set_default_max_file_backup(cls, value, filter=False):
-        if filter: value = filter_name(cls.__name__, value, cls.get_default_max_file_backup) # warn: '=' character in fmt are then not allowed ...
+        if filter:
+            # warn: '=' character in fmt are then not allowed ...
+            value = filter_name(cls.__name__, value,
+                                cls.get_default_max_file_backup)
         cls.default_max_file_backup = value
 
     @classmethod
     def default_colorize(cls, active=None):
-        if active is not None: cls.default_colorize = active
+        if active is not None:
+            cls.default_colorize = active
         return cls.default_colorize
     get_default_colorize = default_colorize
     set_default_colorize = default_colorize
@@ -741,18 +826,28 @@ class Logger(logging.getLoggerClass()):
     @classmethod
     def _add_parser_options(cls, parser, rename=None, prefix='', suffix=''):
         '''Add logging options to a optparse OptionParser'''
-        names = dict(((n,n) for n in ('debug', 'verbose', 'loglevel','logformat','logdateformat','lognocolor')))
-        if rename is not None: names.update(rename)
-        fmt = lambda n: '--%s%s%s'%(prefix, names[n], suffix)
+        names = dict(((n, n) for n in ('debug', 'verbose',
+                                       'loglevel', 'logformat', 'logdateformat', 'lognocolor')))
+        if rename is not None:
+            names.update(rename)
+
+        def fmt(n): return '--%s%s%s' % (prefix, names[n], suffix)
         import optparse
         # we must handle both optparse and argparse
-        add = getattr(parser, 'add_option' if isinstance(parser, optparse.OptionParser) else 'add_argument')
-        add(fmt('debug'), dest='_logger_debug', action='store_true', default=False, help='Set logging level to DEBUG')
-        add(fmt('verbose'), dest='_logger_verbose', action='store_true', default=False, help='Set logging level to VERBOSE')
-        add(fmt('loglevel'), dest='_logger_level', action='store', default=None, metavar='level', help='Set logging level, available levels are: %s. You may restrict this level for specific classes with filters: --loglevel=Class1=debug,Class2=warning'%(', '.join(get_str_levels())))
-        add(fmt('logformat'), dest='_logger_format', action='store', default=None, metavar='format', help='Set logging format. Can also use filters.')
-        add(fmt('logdateformat'), dest='_logger_dateformat', action='store', default=None, metavar='format', help='Set logging date format. Can also use filters.')
-        add(fmt('lognocolor'), dest='_logger_nocolor', action='store_true', default=None, help='Disable logging colors')
+        add = getattr(parser, 'add_option' if isinstance(
+            parser, optparse.OptionParser) else 'add_argument')
+        add(fmt('debug'), dest='_logger_debug', action='store_true',
+            default=False, help='Set logging level to DEBUG')
+        add(fmt('verbose'), dest='_logger_verbose', action='store_true',
+            default=False, help='Set logging level to VERBOSE')
+        add(fmt('loglevel'), dest='_logger_level', action='store', default=None, metavar='level',
+            help='Set logging level, available levels are: %s. You may restrict this level for specific classes with filters: --loglevel=Class1=debug,Class2=warning' % (', '.join(get_str_levels())))
+        add(fmt('logformat'), dest='_logger_format', action='store', default=None,
+            metavar='format', help='Set logging format. Can also use filters.')
+        add(fmt('logdateformat'), dest='_logger_dateformat', action='store', default=None,
+            metavar='format', help='Set logging date format. Can also use filters.')
+        add(fmt('lognocolor'), dest='_logger_nocolor', action='store_true',
+            default=None, help='Disable logging colors')
 
     @classmethod
     def add_optparser_options(cls, *args, **kwargs):
@@ -765,12 +860,18 @@ class Logger(logging.getLoggerClass()):
     @classmethod
     def _apply_class_parser_options(cls, options, instances=True):
         '''Apply logging options from a optparse OptionParser, to this class defaults and optionally all existing instances'''
-        if options._logger_debug: cls.set_default_level(logging.DEBUG)
-        if options._logger_verbose: cls.set_default_level(logging.VERBOSE)
-        if options._logger_level: cls.set_default_level(options._logger_level)
-        if options._logger_format: cls.set_default_format(options._logger_format)
-        if options._logger_dateformat: cls.set_default_date_format(options._logger_dateformat)
-        if options._logger_nocolor: cls.set_default_colorize(False)
+        if options._logger_debug:
+            cls.set_default_level(logging.DEBUG)
+        if options._logger_verbose:
+            cls.set_default_level(logging.VERBOSE)
+        if options._logger_level:
+            cls.set_default_level(options._logger_level)
+        if options._logger_format:
+            cls.set_default_format(options._logger_format)
+        if options._logger_dateformat:
+            cls.set_default_date_format(options._logger_dateformat)
+        if options._logger_nocolor:
+            cls.set_default_colorize(False)
         if instances:
             for logger in cls.instances:
                 logger.apply_optparser_options(options)
@@ -785,12 +886,18 @@ class Logger(logging.getLoggerClass()):
 
     def _apply_parser_options(self, options):
         '''Apply logging options from a optparse OptionParser, to this instance'''
-        if options._logger_debug: self.set_level(logging.DEBUG)
-        if options._logger_verbose: self.set_level(logging.VERBOSE)
-        if options._logger_level: self.set_level(options._logger_level, filter=True)
-        if options._logger_format: self.set_format(options._logger_format, filter=True)
-        if options._logger_dateformat: self.set_date_format(options._logger_dateformat, filter=True)
-        if options._logger_nocolor: self.colorize(False)
+        if options._logger_debug:
+            self.set_level(logging.DEBUG)
+        if options._logger_verbose:
+            self.set_level(logging.VERBOSE)
+        if options._logger_level:
+            self.set_level(options._logger_level, filter=True)
+        if options._logger_format:
+            self.set_format(options._logger_format, filter=True)
+        if options._logger_dateformat:
+            self.set_date_format(options._logger_dateformat, filter=True)
+        if options._logger_nocolor:
+            self.colorize(False)
 
     def apply_optparser_options(self, *args, **kwargs):
         return self._apply_parser_options(*args, **kwargs)
@@ -842,26 +949,33 @@ class Logger(logging.getLoggerClass()):
             if isinstance(arg, six.string_types):
                 c[arg] = getattr(self, 'get_'+arg)()
             elif isinstance(arg, dict):
-                for k,v in six.iteritems(arg):
+                for k, v in six.iteritems(arg):
                     getattr(self, 'set_'+k)(v)
             elif isinstance(arg, Logger):
                 self.config(arg.config())
             else:
-                raise ValueError('Cannot configure using objects of type %r'%(arg))
+                raise ValueError(
+                    'Cannot configure using objects of type %r' % (arg))
         return c
 
     # TODO: merge with config method above
     def load_config(self, cfgo=None, nested=True):
-        if cfgo is None: return
+        if cfgo is None:
+            return
         if nested:
-            cfgo = cfgo.get(isinstance(nested, six.string_types) and nested or self.__class__.__name__, cfgo)
-        if cfgo.get('level', None): self.set_level(cfgo['level'])
-        if cfgo.get('format', None): self.set_format(cfgo['format'])
-        if cfgo.get('date_format', None): self.set_date_format(cfgo['date_format'])
-        if cfgo.get('file', None): self.add_rotating_file_handler(filePath=cfgo['file'])
+            cfgo = cfgo.get(isinstance(nested, six.string_types)
+                            and nested or self.__class__.__name__, cfgo)
+        if cfgo.get('level', None):
+            self.set_level(cfgo['level'])
+        if cfgo.get('format', None):
+            self.set_format(cfgo['format'])
+        if cfgo.get('date_format', None):
+            self.set_date_format(cfgo['date_format'])
+        if cfgo.get('file', None):
+            self.add_rotating_file_handler(filePath=cfgo['file'])
 
     def showwarning(self, message, category, filename, lineno,
-            file=None):
+                    file=None):
         self.warning(
             'REDIRECTED: %s:%s: %s:%s',
             filename, lineno,
@@ -874,7 +988,7 @@ class Logger(logging.getLoggerClass()):
 #       cls.load_config(cls, *args, **kwargs)
 
 
-#class ClassFilter(logging.Filter):
+# class ClassFilter(logging.Filter):
 #   def __init__(self, obj):
 #       self.obj = obj
 #   def add_rule(self, rule):
@@ -888,13 +1002,14 @@ class Logger(logging.getLoggerClass()):
 
 # Fix logger adapter is not a new-style class in python < 2.7, resulting
 # in super() failures when inheriting LoggerAdapter
-if sys.version_info[:2] < (2,7):
+if sys.version_info[:2] < (2, 7):
     class _LoggerAdapter(object, logging.LoggerAdapter):
         def __init__(self, *a, **k):
             object.__init__(self)
             logging.LoggerAdapter.__init__(self, *a, **k)
 else:
-   _LoggerAdapter = logging.LoggerAdapter
+    _LoggerAdapter = logging.LoggerAdapter
+
 
 class LoggerAdapter(_LoggerAdapter):
     def __init__(self, **kwargs):
@@ -942,26 +1057,37 @@ class LoggerAdapter(_LoggerAdapter):
 # MAY HAVE SIDE EFFECTS WHEN DAEMONIZED, TOCHECK: DO NOT CLOSE STREAMS WHEN DAEMONIZING
 # bug can be reproduced when e.g. MySQLdb send warnings
 # Redirect stdout/stderr to a logger
+
+
 class StreamLogWrapper(object):
     def __init__(self, stream, logger, name=''):
         self.stream = stream
         self.logger = logger
         self.name = name
+
     def __getattr__(self, a):
         return getattr(self.stream, a)
+
     def write(self, s):
-        if s.endswith('\n'): s = s[:-1]
-        if not s: return
+        if s.endswith('\n'):
+            s = s[:-1]
+        if not s:
+            return
         self.logger.warning('%s: %s', self.name, s)
 
+
 # A default logger
-default = logger = Logger.default = Logger(name=os.path.basename(sys.argv[0] in ('', '-c') and 'python' or sys.argv[0]))
-if '--verbose' in sys.argv: default.set_level('verbose')
-if '--debug' in sys.argv: default.set_level('debug')
+default = logger = Logger.default = Logger(name=os.path.basename(
+    sys.argv[0] in ('', '-c') and 'python' or sys.argv[0]))
+if '--verbose' in sys.argv:
+    default.set_level('verbose')
+if '--debug' in sys.argv:
+    default.set_level('debug')
 # Register logging function using the default logger
 for l in map(str.lower, get_str_levels()):
     f = getattr(default, l, None)
-    if callable(f): globals()[l] = f
+    if callable(f):
+        globals()[l] = f
 del l
 # Plus the special exception log func
 exception = default.exception
@@ -973,22 +1099,26 @@ def _testLog():
     for i in sorted([l for l in list(logging._levelNames.keys()) if isinstance(l, int)]):
         levels.append(i)
         levels.append(get_str_level(i))
-    funcs = [l for l in levels if isinstance(l, six.string_types) and l != 'NOTSET']
+    funcs = [l for l in levels if isinstance(
+        l, six.string_types) and l != 'NOTSET']
     for lvl in levels:
-        log = Logger(name='Logger(level=%s)'%lvl, level=lvl, format='%(name)-30s : message sent with level %(levelname)-10s: %(message)s')
+        log = Logger(name='Logger(level=%s)' % lvl, level=lvl,
+                     format='%(name)-30s : message sent with level %(levelname)-10s: %(message)s')
         for f in funcs:
             getattr(log, f.lower())('Hello')
 
 #   Logger.parseOptions()
-    class A(Logger): pass
+    class A(Logger):
+        pass
     a = A()
     for f in funcs:
-        getattr(a, f.lower())('Hello log function %s'%f)
+        getattr(a, f.lower())('Hello log function %s' % f)
 
     class B(Logger):
         def __init__(self, **kwargs):
             pfx = 'log_'
-            lkw = dict([(k_v1[0][len(pfx):],k_v1[1]) for k_v1 in [k_v for k_v in six.iteritems(kwargs) if k_v[0].startswith(pfx)]])
+            lkw = dict([(k_v1[0][len(pfx):], k_v1[1]) for k_v1 in [
+                       k_v for k_v in six.iteritems(kwargs) if k_v[0].startswith(pfx)]])
             Logger.__init__(self, **lkw)
     B(log_level='notset').debug('Hello')
     B(log_level='info').debug('Hello')
@@ -997,5 +1127,3 @@ def _testLog():
 
 if __name__ == '__main__':
     _testLog()
-
-

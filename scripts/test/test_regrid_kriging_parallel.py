@@ -1,21 +1,21 @@
 """Test function :func:`~vacumm.misc.kriging.OrdinaryKriger` in parallel and multifit modes"""
 
-# Params
-npi = 2000 # number of input points
-npo = 200 # number of output points
-npmax = 500 # max size of clouds
-nproc = 2 # max number of procs
-
 # Imports
 from vcmq import P, N, OrdinaryCloudKriger
 from vacumm.misc.kriging import (gridded_gauss3, random_gauss3,
-    random_points)
+                                 random_points)
 from time import time
+
+# Params
+npi = 2000  # number of input points
+npo = 200  # number of output points
+npmax = 500  # max size of clouds
+nproc = 2  # max number of procs
 
 # Random and gridded input fields
 xg, yg, zzg = gridded_gauss3()
 xi, yi, zi = random_gauss3(np=npi)
-zi = N.vstack((zi, zi)) # simulate several time steps for multifit
+zi = N.vstack((zi, zi))  # simulate several time steps for multifit
 
 # Init kriger
 kriger = OrdinaryCloudKriger(xi, yi, zi, npmax=npmax, nproc=nproc)

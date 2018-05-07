@@ -49,73 +49,75 @@ from six.moves import range
 from six.moves import zip
 
 
-import numpy as N, cdms2, MV2
+import numpy as N
+import cdms2
+import MV2
 from cdms2.axis import AbstractAxis, FileAxis
 from cdms2.coord import TransientAxis2D
 
 from vacumm import VACUMMError
 from .misc import (check_def_atts, dict_check_defaults, match_atts,
-    set_atts, get_atts)
+                   set_atts, get_atts)
 
 
 __all__ = ['isaxis', 'islon', 'islat', 'islev', 'isdep', 'istime',
-    'check_axes', 'is_geo_axis', 'check_axis', 'get_axis_type', 'check_id',
-    'get_checker', 'is_geo_axis_type', 'axis_type',
-    'create_time', 'create_lon', 'create_lat', 'create_dep', 'create_depth',
-    'guess_timeid', 'get_order', 'set_order', 'order_match', 'merge_orders',
-    'check_order',  'create_axis', 'BASIC_AXIS_SPECS', 'BASIC_AXIS_DEFAULTS',
-    'create_axes2d', 'axes2d', 'num2axes2d']
+           'check_axes', 'is_geo_axis', 'check_axis', 'get_axis_type', 'check_id',
+           'get_checker', 'is_geo_axis_type', 'axis_type',
+           'create_time', 'create_lon', 'create_lat', 'create_dep', 'create_depth',
+           'guess_timeid', 'get_order', 'set_order', 'order_match', 'merge_orders',
+           'check_order',  'create_axis', 'BASIC_AXIS_SPECS', 'BASIC_AXIS_DEFAULTS',
+           'create_axes2d', 'axes2d', 'num2axes2d']
 
 
 BASIC_AXIS_SPECS = {
     'lon': dict(
-        id = 'lon',
-        standard_name = 'longitude',
-        units = ['degrees_east', 'degree_east', 'degree_e', 'degrees_e',
-            'degreee', 'degreese'],
-        long_name = 'longitude',
-        axis = 'X',
-        ),
+        id='lon',
+        standard_name='longitude',
+        units=['degrees_east', 'degree_east', 'degree_e', 'degrees_e',
+               'degreee', 'degreese'],
+        long_name='longitude',
+        axis='X',
+    ),
     'lat': dict(
-        id = 'lat',
-        standard_name = 'latitude',
-        units = ['degrees_north', 'degree_north', 'degree_n', 'degrees_n',
-            'degreen', 'degreesn'],
+        id='lat',
+        standard_name='latitude',
+        units=['degrees_north', 'degree_north', 'degree_n', 'degrees_n',
+               'degreen', 'degreesn'],
         long_name='latitude',
-        axis = 'Y',
+        axis='Y',
     ),
     'lev': dict(
-        id = ['dep','lev','plev'],
-        standard_name = ['depth','pressure_level'],
-        unit = ['m','meters','hpa'],
-        long_name = ['depth', 'pressure level', 'profondeur', 'pression',
-            'sigma', 'geopotential'],
-        axis = 'Z',
+        id=['dep', 'lev', 'plev'],
+        standard_name=['depth', 'pressure_level'],
+        unit=['m', 'meters', 'hpa'],
+        long_name=['depth', 'pressure level', 'profondeur', 'pression',
+                   'sigma', 'geopotential'],
+        axis='Z',
     ),
     'dep': dict(
-        id = ['dep'],
-        standard_name = ['depth'],
-        unit = ['m','meters'],
-        long_name = ['depth','profondeur'],
-        axis = 'Z',
+        id=['dep'],
+        standard_name=['depth'],
+        unit=['m', 'meters'],
+        long_name=['depth', 'profondeur'],
+        axis='Z',
     ),
     'time': dict(
-        id = ['time','date'],
-        standard_names = ['time'],
-        units = None,
-        long_names = ['time', 'temps', 'date'],
-        axis = 'T',
+        id=['time', 'date'],
+        standard_names=['time'],
+        units=None,
+        long_names=['time', 'temps', 'date'],
+        axis='T',
     ),
 }
 
 
 BASIC_AXIS_DEFAULTS = {
     'lon': dict(units='degrees_east', standard_name='longitude',
-        long_name='Longitude',axis='X'),
+                long_name='Longitude', axis='X'),
     'lat': dict(units='degrees_north', standard_name='latitude',
-        long_name='Latitude',axis='Y'),
-    'lev': dict(axis='Z',long_name='Levels'),
-    'dep': dict(axis='Z',long_name='Depth'),
+                long_name='Latitude', axis='Y'),
+    'lev': dict(axis='Z', long_name='Levels'),
+    'dep': dict(axis='Z', long_name='Depth'),
     'time': dict(axis='T', standard_name='time', long_name='Time'),
 }
 
@@ -123,25 +125,33 @@ BASIC_AXIS_DEFAULTS = {
 def isaxis(obj):
     if hasattr(obj, 'isAbstractCoordinate') and obj.isAbstractCoordinate():
         return True
-    return isinstance(obj,(AbstractAxis, FileAxis, TransientAxis2D))
+    return isinstance(obj, (AbstractAxis, FileAxis, TransientAxis2D))
 
-def islon(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+
+def islon(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
+          **attchecks):
     """Check if an object is of longitude type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['lon']
     dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['lon'])
-    return is_geo_axis_type(obj, 'x', defaults=defaults, ro=ro, checkatts=checkatts,
-        checkaxis=checkaxis, **attchecks)
+    return is_geo_axis_type(obj, 'x', defaults=defaults, ro=ro,
+                            checkatts=checkatts,
+                            checkaxis=checkaxis, **attchecks)
 
-def islat(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+
+def islat(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
+          **attchecks):
     """Check if an object is of latitude type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['lat']
     dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['lat'])
-    return is_geo_axis_type(obj, 'y', defaults=defaults, ro=ro, checkatts=checkatts,
-        checkaxis=checkaxis, **attchecks)
+    return is_geo_axis_type(obj, 'y', defaults=defaults, ro=ro,
+                            checkatts=checkatts,
+                            checkaxis=checkaxis, **attchecks)
 
-def islev(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+
+def islev(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
+          **attchecks):
     """Check if an object is of level type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['lev']
@@ -151,11 +161,16 @@ def islev(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attche
             del attchecks['units']
         if 'long_name' in attchecks:
             del attchecks['long_name']
-    return is_geo_axis_type(obj, 'z', defaults=defaults, ro=ro, checkatts=checkatts,
-        checkaxis=checkaxis, **attchecks)
+    return is_geo_axis_type(obj, 'z', defaults=defaults, ro=ro,
+                            checkatts=checkatts,
+                            checkaxis=checkaxis, **attchecks)
+
+
 islevel = islev
 
-def isdep(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+
+def isdep(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
+          **attchecks):
     """Check if an object is of depth type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['lev']
@@ -165,11 +180,16 @@ def isdep(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attche
             del attchecks['units']
         if 'long_name' in attchecks:
             del attchecks['long_name']
-    return is_geo_axis_type(obj, 'z', defaults=defaults, ro=ro, checkatts=checkatts,
-        checkaxis=checkaxis, **attchecks)
+    return is_geo_axis_type(obj, 'z', defaults=defaults, ro=ro,
+                            checkatts=checkatts,
+                            checkaxis=checkaxis, **attchecks)
+
+
 isdepth = isdep
 
-def istime(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attchecks):
+
+def istime(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
+           **attchecks):
     """Check if an object is of time type"""
     if defaults is None:
         defaults = BASIC_AXIS_DEFAULTS['time']
@@ -180,8 +200,9 @@ def istime(obj, defaults=None, ro=False, checkaxis=True, checkatts=True, **attch
     from .atime import are_good_units
     units.append(are_good_units)
     attchecks['units'] = units
-    myistime = is_geo_axis_type(obj, 't', defaults=defaults, ro=ro, checkatts=checkatts,
-        checkaxis=checkaxis, **attchecks)
+    myistime = is_geo_axis_type(obj, 't', defaults=defaults, ro=ro,
+                                checkatts=checkatts,
+                                checkaxis=checkaxis, **attchecks)
     if myistime and not ro:
         try:
             obj.calendar = 'gregorian'
@@ -222,8 +243,9 @@ def get_checker(name):
         return istime
     raise TypeError(errmsg)
 
+
 def is_geo_axis_type(obj, atype, defaults=None, ro=False, checkaxis=True,
-        checkatts=True, **attchecks):
+                     checkatts=True, **attchecks):
     """Check if an object is of a specific type
 
     Parameters
@@ -272,6 +294,7 @@ def is_geo_axis_type(obj, atype, defaults=None, ro=False, checkaxis=True,
         if getattr(obj, 'axis', '-').lower() not in ['-', atype]:
             return False
         isfunc = getattr(obj, 'is' + name)
+
         def valfunc():
             getattr(obj, 'designate'+name)()
             check_id(obj)
@@ -282,7 +305,7 @@ def is_geo_axis_type(obj, atype, defaults=None, ro=False, checkaxis=True,
             return True
 
         # Check axis attribute
-        if getattr(obj,'axis','') == atype.upper():
+        if getattr(obj, 'axis', '') == atype.upper():
             if not ro:
                 valfunc()
             return True
@@ -292,8 +315,8 @@ def is_geo_axis_type(obj, atype, defaults=None, ro=False, checkaxis=True,
         return False
     # TODO: merge with ncmatch_obj
     valid = match_atts(obj, attchecks, ignorecase=True,
-        transform=lambda ss: (re.compile(ss, re.I).match
-            if isinstance(ss, six.string_types) else None)) # transform=startswith
+                       transform=lambda ss: (re.compile(ss, re.I).match
+                                             if isinstance(ss, six.string_types) else None))  # transform=startswith
     if not valid:
         return False
     if not ro:
@@ -401,7 +424,7 @@ def create_axis(values, atype='-', **atts):
         axis = cdms2.createAxis(values)
     else:
         axis = values
-    for att,val in atts.items():
+    for att, val in atts.items():
         setattr(axis, att, val)
     axis.axis = atype.upper()
     check_axis(axis)
@@ -409,7 +432,9 @@ def create_axis(values, atype='-', **atts):
         del axis.axis
     return axis
 
+
 create = create_axis
+
 
 def create_time(values, units=None, **atts):
     """Create a time axis
@@ -418,7 +443,8 @@ def create_time(values, units=None, **atts):
     ----------
     values:
         Numeric values, or list of date objects
-        (:class:`~datetime.datetime`, :func:`~cdtime.comptime`, :func:`~cdtime.reltime`).
+        (:class:`~datetime.datetime`, :func:`~cdtime.comptime`,
+        :func:`~cdtime.reltime`).
     units: optional
         Time units like 'days since 2000-01-01'.
     **atts
@@ -433,23 +459,26 @@ def create_time(values, units=None, **atts):
     >>> from vacumm.misc.atime import create_time
     >>> from datetime import datetime
     >>> import cdtime
-    >>> taxis = create_time([1,2],units='months since 2000',long_name='My time axis')
+    >>> taxis = create_time([1,2],units='months since 2000',
+                            long_name='My time axis')
     >>> taxis = create_time(taxis)
     >>> create_time([datetime(2000,1,1),'2000-2-1'],units='months since 2000')
-    >>> create_time([cdtime.reltime(1,'months since 2000'),cdtime.comptime(2000,1)])
+    >>> create_time([cdtime.reltime(1,'months since 2000'),
+                     cdtime.comptime(2000,1)])
     """
+    if istime(values):
+        return values
     from .atime import are_valid_units, comptime, strftime
     for var in values, units:
         if hasattr(var, 'units'):
             units = var.units
             break
     if units is not None and not are_valid_units(units):
-        raise AttributeError('Bad time units: "%s"'%units)
-
+        raise AttributeError('Bad time units: "%s"' % units)
 
     istuple = isinstance(values, tuple)
-    if not istuple or (istuple and len(values)>3):
-        if isinstance(values,str) or not isinstance(values, Sequence):
+    if not istuple or (istuple and len(values) > 3):
+        if isinstance(values, str) or not isinstance(values, Sequence):
             if hasattr(values, 'next') and hasattr(values, '__iter__'):
                 values = [v for v in values]
             else:
@@ -463,7 +492,7 @@ def create_time(values, units=None, **atts):
                     units = value.units
                 value = comptime(value)
                 if units is None:
-                    units = strftime('hours since %Y-%m-%d %H:%M:%S',value)
+                    units = strftime('hours since %Y-%m-%d %H:%M:%S', value)
                 newvalues.append(value.torel(units).value)
     else:
         newvalues = values
@@ -471,7 +500,8 @@ def create_time(values, units=None, **atts):
     if units is None:
         raise ValueError('Unable to guess units. You must specify them.')
 
-    return create_axis(newvalues,'t',units=units,**atts)
+    return create_axis(newvalues, 't', units=units, **atts)
+
 
 def create_lon(values, **atts):
     """Create a longitude axis
@@ -492,7 +522,8 @@ def create_lon(values, **atts):
     if isinstance(values, N.ndarray) and len(values.shape) == 2 and not isaxis(values):
         atts.setdefault('long_name', 'Longitude')
         return create_axes2d(x=values, lonid=atts.pop('id', None), xatts=atts)
-    return create_axis(values,'x',**atts)
+    return create_axis(values, 'x', **atts)
+
 
 def create_lat(values, **atts):
     """Create a latitude axis
@@ -827,12 +858,12 @@ def get_order(var):
     if (var.getGrid() is not None and
             'z' not in order[-2:] and 't' not in order[-2:]):
         if order[-1] == '-' and 'x' not in order:
-#            lon = var.getLongitude()
-#            if len(lon.shape) == 2:
+            #            lon = var.getLongitude()
+            #            if len(lon.shape) == 2:
             order = order[:-1]+'x'
         if order[-2] == '-' and 'y' not in order:
-#            lat = var.getLatitude()
-#            if len(lat.shape) == 2:
+            #            lat = var.getLatitude()
+            #            if len(lat.shape) == 2:
             order = order[:-2]+'y'+order[-1]
     return order
 
@@ -872,25 +903,29 @@ def order_match(order1, order2, asscore=False, strict=False):
     """
     order1 = get_order(order1)
     order2 = get_order(order2)
-    if len(order1)!=len(order2):
-        if asscore: return 0
-        assert False, 'Both orders must have the same length (%s, %s)'%(order1, order2)
+    if len(order1) != len(order2):
+        if asscore:
+            return 0
+        assert False, 'Both orders must have the same length (%s, %s)' % (
+            order1, order2)
     score = 1
-    if strict is True: strict = "both"
+    if strict is True:
+        strict = "both"
     for ic in range(len(order1)):
         o1 = order1[ic]
         o2 = order2[ic]
         if '-' in o1+o2:
-            if o1!=o2 and (
+            if o1 != o2 and (
                 strict == "both" or
-                (strict == 'left' and o1!='-') or
-                (strict == 'right' and o2!='-')):
+                (strict == 'left' and o1 != '-') or
+                    (strict == 'right' and o2 != '-')):
                 return 0 if asscore else False
         elif o1 == o2:
-            score *=2
+            score *= 2
         else:
             return 0 if asscore else False
     return score if asscore else True
+
 
 def merge_orders(order1, order2, raiseerr=True):
     """Merge two axis orders
@@ -908,7 +943,7 @@ def merge_orders(order1, order2, raiseerr=True):
     """
     order1 = get_order(order1)
     order2 = get_order(order2)
-    rev = slice(None, None, 1-2*int(len(order2)<len(order1)))
+    rev = slice(None, None, 1-2*int(len(order2) < len(order1)))
     order1, order2 = (order1, order2)[rev]
 
     # Inner loop
@@ -924,7 +959,7 @@ def merge_orders(order1, order2, raiseerr=True):
             l = n1
             break
 
-    else: # Outerloops
+    else:  # Outerloops
 
         for ishift in range(1, min(n1, n2)):
             l = min(n1, n2)-ishift
@@ -938,7 +973,8 @@ def merge_orders(order1, order2, raiseerr=True):
                 break
         else:
             if raiseerr:
-                raise VACUMMError('orders are incompatible and cannot be safely merged: %s %s'%(order1, order2)[rev])
+                raise VACUMMError('orders are incompatible and cannot be safely merged: %s %s' % (
+                    order1, order2)[rev])
             return (order1, order2)[rev]
 
     # Merge
@@ -955,22 +991,23 @@ def merge_orders(order1, order2, raiseerr=True):
             neworder2 += c2
         else:
             if raiseerr:
-                raise VACUMMError('orders are incompatible and cannot be safely merged: %s %s'%(order1, order2)[rev])
+                raise VACUMMError('orders are incompatible and cannot be safely merged: %s %s' % (
+                    order1, order2)[rev])
             return (order1, order2)[rev]
     neworder1 += order1[i1+l:]
     neworder2 += order2[i2+l:]
 
     # Check multiples
     for c in 'xyztd':
-        if neworder1.count(c)>2 or neworder2.count(c)>2:
-            warn('Merging of orders (%s and %s) may have not '%(order1, order2) + \
-                'properly worked (multiple axes are of the same type)')
+        if neworder1.count(c) > 2 or neworder2.count(c) > 2:
+            warn('Merging of orders (%s and %s) may have not ' % (order1, order2) +
+                 'properly worked (multiple axes are of the same type)')
 
     return (neworder1, neworder2)[rev]
 
 
 def check_order(var, allowed, vertical=None, copy=False, reorder=False,
-    extended=None, getorder=False):
+                extended=None, getorder=False):
     """Check that the axis order of a variable is matches
     at least one the specifed valid orders
 
@@ -1002,7 +1039,8 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
     else:
         allowed = list(allowed)
     withd = 'd' in allowed[0]
-    get_rank = lambda o: len(o.replace('d', ''))
+
+    def get_rank(o): return len(o.replace('d', ''))
     rank = get_rank(allowed[0])
     for order in allowed:
         try:
@@ -1010,21 +1048,23 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
         except:
             raise VACUMMError("Wrong allowed order: "+order)
         if ('d' in order and not withd) or ('d' not in order and withd):
-            raise VACUMMError("'d' only partially present in allowed order: %s"%allowed)
-        if get_rank(order)!=rank:
-            raise VACUMMError("Inconsistent ranks between allowed orders: %s"%[get_rank(o) for o in allowed])
+            raise VACUMMError(
+                "'d' only partially present in allowed order: %s" % allowed)
+        if get_rank(order) != rank:
+            raise VACUMMError("Inconsistent ranks between allowed orders: %s" % [
+                              get_rank(o) for o in allowed])
     # - check extended mode
-    if extended is None: # extended?
+    if extended is None:  # extended?
         re_upper = re.compile('[XYZT]').search
         for order in allowed:
             if re_upper(order) is not None:
-                extended = True # force extended mode
+                extended = True  # force extended mode
                 break
         else:
             extended = False
-    if extended is False: # lower
+    if extended is False:  # lower
         allowed = [order.lower() for order in allowed]
-    else: #add tolerance for lower case orders
+    else:  # add tolerance for lower case orders
         re_sub = re.compile('[xyzt]').sub
         allowed = allowed+[re_sub('-', order) for order in allowed]
     # - unique and lower case
@@ -1044,44 +1084,45 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
 
         # Handle data case
         d = allowed_order.find('d')
-        if d!=-1: allowed_order = allowed_order.replace('d', '') # pure axis
+        if d != -1:
+            allowed_order = allowed_order.replace('d', '')  # pure axis
 
         # Check cdms order
-        allowed_cdms_order = allowed_order.lower() # lower case
-        if order_match(data_cdms_order, allowed_cdms_order, strict='right'): break # It is already good
+        allowed_cdms_order = allowed_order.lower()  # lower case
+        if order_match(data_cdms_order, allowed_cdms_order, strict='right'):
+            break  # It is already good
 
         # Try to reorder
         if reorder:
             from .grid import get_axis, var2d
             try:
-                reordered = cdms2.order2index(var.getAxisList(), allowed_cdms_order)
+                reordered = cdms2.order2index(
+                    var.getAxisList(), allowed_cdms_order)
                 new_var = var.reorder(allowed_cdms_order)
-                if allowed_cdms_order[-1] == 'x' and len(get_axis(new_var, -1).shape) == 2: # 2D axes
+                # 2D axes
+                if allowed_cdms_order[-1] == 'x' and len(get_axis(new_var, -1).shape) == 2:
                     del var
                     var = var2d(new_var,
-                        MV2.transpose(get_axis(new_var, 0)),
-                        MV2.transpose(get_axis(new_var, -1)), copy=0)
+                                MV2.transpose(get_axis(new_var, 0)),
+                                MV2.transpose(get_axis(new_var, -1)), copy=0)
                     set_order(new_var, allowed_cdms_order)
                 else:
                     del var
                     var = new_var
                 data_cdms_order = get_order(var)
-                break # No error so it worked and we leave
+                break  # No error so it worked and we leave
 
             except:
                 continue
 
     else:
-        raise VACUMMError('Wrong type of axes. Possible forms are: %s'%', '.join(allowed))
+        raise VACUMMError(
+            'Wrong type of axes. Possible forms are: %s' % ', '.join(allowed))
 
-    if not getorder: return var
-    if d!=-1:
+    if not getorder:
+        return var
+    if d != -1:
         data_cdms_order = cdms2.orderparse(data_cdms_order)
         data_cdms_order.insert(d, 'd')
         data_cdms_order = ''.join(data_cdms_order)
     return var, data_cdms_order, reordered
-
-
-
-
-

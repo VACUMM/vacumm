@@ -62,8 +62,12 @@ base class.
 
 
 '''
- 
-import inspect, os, pdb, pprint, sys
+
+import inspect
+import os
+import pdb
+import pprint
+import sys
 from argparse import ArgumentParser
 import configobj
 
@@ -116,7 +120,7 @@ def func_name(iframe=0):
     iframe:
         int: Get the iframe'th caller function name.
     '''
-    #return inspect.currentframe().f_back.f_code.co_name
+    # return inspect.currentframe().f_back.f_code.co_name
     return sys._getframe(1+iframe).f_code.co_name
 
 
@@ -141,6 +145,7 @@ def _set_ext_(fname, ext):
             fname = fname + suf
     return fname
 
+
 def code_file_name(iframe=0,  ext=True):
     '''
     Get the name of the file that hosts the code where it is called
@@ -157,6 +162,7 @@ def code_file_name(iframe=0,  ext=True):
     fname = _set_ext_(fname, ext)
     return fname
 
+
 def code_base_name(iframe=0, ext=True):
     '''
     Get the basename of the file that hosts the code where it is called
@@ -170,6 +176,7 @@ def code_base_name(iframe=0, ext=True):
         or leave it.
     '''
     return os.path.basename(code_file_name(iframe+1, ext))
+
 
 def code_dir_name(iframe=0):
     '''
@@ -185,15 +192,18 @@ def code_dir_name(iframe=0):
     '''
     return os.path.dirname(code_file_name(iframe+1))
 
+
 def stack_trace(iframe=0):
     def etrace(frame, pad=60):
-        o = frame.f_locals.get('self', '') # not the perfect way...
-        if o: o = '%s(%s).'%(o.__class__.__name__, id(o))
+        o = frame.f_locals.get('self', '')  # not the perfect way...
+        if o:
+            o = '%s(%s).' % (o.__class__.__name__, id(o))
         else:
-            o = frame.f_locals.get('cls', '') # not the perfect way...
-            if o: o = '%s.'%(o.__name__)
+            o = frame.f_locals.get('cls', '')  # not the perfect way...
+            if o:
+                o = '%s.' % (o.__name__)
         o += frame.f_code.co_name
-        return ('%%-%ds'%(pad)+'  (%s:%s)')%(o, frame.f_code.co_filename, frame.f_lineno)
+        return ('%%-%ds' % (pad)+'  (%s:%s)') % (o, frame.f_code.co_filename, frame.f_lineno)
     iframe = 1 + iframe
     stack = inspect.stack()
     frame = stack[iframe][0]
@@ -203,8 +213,9 @@ def stack_trace(iframe=0):
         try:
             iframe += 1
             frame = stack[iframe][0]
-            traces.append(' %s'%(etrace(frame)))
-        except: break
+            traces.append(' %s' % (etrace(frame)))
+        except:
+            break
     traces.reverse()
     traces.append(last)
     return 'Stack trace (innermost last):\n'+'\n'.join(traces)
@@ -213,25 +224,29 @@ def stack_trace(iframe=0):
 try:
     import psutil
     _psutil_process = psutil.Process(os.getpid())
+
     def psinfo():
         '''Get cpu and memory usage string (require **psutil** module)'''
         if hasattr(_psutil_process, 'get_cpu_percent'):
             cpu = _psutil_process.get_cpu_percent()
             mem = _psutil_process.get_memory_percent()
-            meminfo  = _psutil_process.get_memory_info()
+            meminfo = _psutil_process.get_memory_info()
         else:
             cpu = _psutil_process.cpu_percent()
             mem = _psutil_process.memory_percent()
             meminfo = _psutil_process.memory_info()
         rss, vsz = meminfo[:2]
-        ps = '[CPU: %d%%  MEM: %d%%  RSS: %dMo  VSZ: %dMo'%(cpu, mem, rss / 2**20, vsz / 2**20)
+        ps = '[CPU: %d%%  MEM: %d%%  RSS: %dMo  VSZ: %dMo' % (
+            cpu, mem, rss / 2**20, vsz / 2**20)
         if len(meminfo) >= 6:
-            ps += '  SHR: %dMo  DAT: %dMo'%(meminfo[2] / 2**20, meminfo[5] / 2**20)
+            ps += '  SHR: %dMo  DAT: %dMo' % (
+                meminfo[2] / 2**20, meminfo[5] / 2**20)
         ps += ']'
         return ps
 except Exception as e:
     Logger.default.verbose('psinfo disabled: %s', e)
-    psinfo = lambda:'Ressources informations not available (no module psutil)'
+
+    def psinfo(): return 'Ressources informations not available (no module psutil)'
 
 
 def describe(obj, stats=None, format=pprint.pformat):
@@ -251,38 +266,44 @@ def describe(obj, stats=None, format=pprint.pformat):
         - The object's summary string
     '''
     try:
-        import cdms2, MV2, numpy
+        import cdms2
+        import MV2
+        import numpy
         from cdms2.avariable import AbstractVariable
         from cdms2.axis import AbstractAxis
         if isinstance(obj, configobj.ConfigObj):
             obj = obj.dict()
         if not isinstance(obj, (cdms2.avariable.AbstractVariable, cdms2.axis.AbstractAxis, numpy.ndarray)):
             return format(obj)
-        otype = obj.__class__.__name__ # type(obj)
+        otype = obj.__class__.__name__  # type(obj)
         sh, sz = MV2.shape(obj), MV2.size(obj)
         mi = ma = av = co = None
         if stats and sz:
             try:
                 if hasattr(obj, 'typecode') and obj.typecode() not in ('c',):
-                    mi, ma, av, co = MV2.min(obj), MV2.max(obj), MV2.average(obj), MV2.count(obj)
-            except: logger.exception('Error getting statistics of object %s', type(obj))
+                    mi, ma, av, co = MV2.min(obj), MV2.max(
+                        obj), MV2.average(obj), MV2.count(obj)
+            except:
+                logger.exception(
+                    'Error getting statistics of object %s', type(obj))
         if isinstance(obj, AbstractVariable):
-            return '%s: %s, shape: (%s), order: %s%s'%(
+            return '%s: %s, shape: (%s), order: %s%s' % (
                 otype, obj.id,
-                ','.join('%s=%s'%(a.id, a.shape[0]) for a in obj.getAxisList()),
+                ','.join('%s=%s' % (a.id, a.shape[0])
+                         for a in obj.getAxisList()),
                 obj.getOrder(),
-                stats and ', min: %s, max: %s, avg: %s, count: %s'%(mi, ma, av, co) or '')
+                stats and ', min: %s, max: %s, avg: %s, count: %s' % (mi, ma, av, co) or '')
         elif isinstance(obj, AbstractAxis):
-            return '%s: %s, size: %s%s'%(
+            return '%s: %s, size: %s%s' % (
                 otype, obj.id, sz,
-                stats and ', min: %s, max: %s, avg: %s, count: %s'%(mi, ma, av, co) or '')
-        else:#if isinstance(obj, numpy.ndarray):
-            return '%s: shape: %s%s'%(
+                stats and ', min: %s, max: %s, avg: %s, count: %s' % (mi, ma, av, co) or '')
+        else:  # if isinstance(obj, numpy.ndarray):
+            return '%s: shape: %s%s' % (
                 otype, sh,
-                stats and ', min: %s, max: %s, avg: %s, count: %s'%(mi, ma, av, co) or '')
+                stats and ', min: %s, max: %s, avg: %s, count: %s' % (mi, ma, av, co) or '')
     except Exception:
         logger.exception('Error getting description of object %s', type(obj))
-        return '%s (error getting description)'%(type(obj))
+        return '%s (error getting description)' % (type(obj))
 
 
 ################################################################################
@@ -294,11 +315,13 @@ class _classinstancemethod_wrapper(object):
         self.func = func
         self.obj = obj
         self.type = type
+
     def __call__(self, *args, **kw):
         assert 'self' not in kw and 'cls' not in kw, (
             "You cannot use 'self' or 'cls' arguments to a "
             "classinstancemethod")
         return self.func(*((self.obj, self.type) + args), **kw)
+
     def __repr__(self):
         if self.obj is None:
             return ('<bound class method %s.%s>'
@@ -307,6 +330,7 @@ class _classinstancemethod_wrapper(object):
             return ('<bound method %s.%s of %r>'
                     % (self.type.__name__, self.func.__name__, self.obj))
 
+
 class classinstancemethod(object):
     """
     Decorator which acts like a class method when called from a class, like an
@@ -314,8 +338,10 @@ class classinstancemethod(object):
     take two arguments, 'self' and 'cls'; one of these will be None
     depending on how the method was called.
     """
+
     def __init__(self, func):
         self.func = func
+
     def __get__(self, obj, type=None):
         return _classinstancemethod_wrapper(self.func, obj=obj, type=type)
 
@@ -342,7 +368,7 @@ class Class(type):
     # </fix>
 
     # Not yet needed
-    #def __new__(mcs, name, bases, dct):
+    # def __new__(mcs, name, bases, dct):
     #    return type.__new__(mcs, name, bases, dct)
 
     def __init__(cls, name, bases, dct):
@@ -350,13 +376,16 @@ class Class(type):
         cls._init_class(name, bases, dct)
 
 
-_logging_proxies = list([(f.lower(),f.lower()) for f in get_str_levels()+['exception']])
+_logging_proxies = list([(f.lower(), f.lower())
+                         for f in get_str_levels()+['exception']])
 _logging_proxies += [
     ('get_loglevel', 'get_level_name'),
     ('set_loglevel', 'set_level'),
     ('is_verbose', 'is_verbose'),
     ('is_debug', 'is_debug'),
 ]
+
+
 def add_logging_proxies(cls):
     '''
     Register some Logger shortcuts for a given class (cls.<method> => cls.get_logger().<method>):
@@ -367,31 +396,38 @@ def add_logging_proxies(cls):
     which must return a :class:`Logger` instance, so this method must be callable from the class or its
     instances (you may use the :class:`classinstancemethod` decorator as of :meth:`Object.get_logger`)
     '''
-    def wrap_logging_function(cls , cfunc, lfunc=None):#, addextra=False):
-        if not lfunc: lfunc = cfunc
+    def wrap_logging_function(cls, cfunc, lfunc=None):  # , addextra=False):
+        if not lfunc:
+            lfunc = cfunc
+
         @classinstancemethod
         def wrapper(obj, cls, *a, **k):
-#            if addextra:
-#                k = k.copy()
-#                if lfunc != 'exception:'
-#                    k.setdefault('extra', {})
-#                    # We cannot overwrite funcName so add a new keyword
-#                    k['extra'].setdefault('funcname', func_name(1))
-            return getattr(obj.get_logger() if obj is not None else cls.get_logger(), lfunc)(*a,**k)
-            #return getattr(obj._logger if obj is not None else cls._class_logger, lfunc)(*a,**k)
+            #            if addextra:
+            #                k = k.copy()
+            #                if lfunc != 'exception:'
+            #                    k.setdefault('extra', {})
+            #                    # We cannot overwrite funcName so add a new keyword
+            #                    k['extra'].setdefault('funcname', func_name(1))
+            return getattr(obj.get_logger() if obj is not None else cls.get_logger(), lfunc)(*a, **k)
+            # return getattr(obj._logger if obj is not None else cls._class_logger, lfunc)(*a,**k)
         wrapper.__name__ = cfunc
-        wrapper.__doc__ = '''Wrapper to the %(lfunc)r method of this object logger (see :meth:`Logger.%(lfunc)s` )'''%vars()
+        wrapper.__doc__ = '''Wrapper to the %(lfunc)r method of this object logger (see :meth:`Logger.%(lfunc)s` )''' % vars(
+        )
         setattr(cls, cfunc, wrapper)
-        
+
         # Register code to be skipped when logging
         cls.get_logger().skipCaller(wrapper.func)
         # XXX because _classinstancemethod_wrapper is created on classinstancemethod.__get__(),
         # we directly use _classinstancemethod_wrapper.__call__
         cls.get_logger().skipCaller(_classinstancemethod_wrapper.__call__.__func__.__code__)
-        
+
     for args in _logging_proxies:
         wrap_logging_function(cls, *args)
-add_logging_proxies.__doc__ %= ('\n        - '.join(['%s => %s'%f for f in _logging_proxies]),)
+
+
+add_logging_proxies.__doc__ %= (
+    '\n        - '.join(['%s => %s' % f for f in _logging_proxies]),)
+
 
 class Object(six.with_metaclass(Class, object)):
     '''
@@ -451,7 +487,7 @@ class Object(six.with_metaclass(Class, object)):
     _log_obj_stats = False
 
     # Not yet needed
-    #def __new__(cls, *args, **kwargs):
+    # def __new__(cls, *args, **kwargs):
     #    #print '%s.%s (in Object): cls: %s, args: %s, kwargs: %s'%(cls.__name__, func_name(), cls, args, kwargs)
     #    #print '%s.%s (in Object): cls: %s'%(cls.__name__, func_name(), cls)
     #    #
@@ -509,12 +545,14 @@ class Object(six.with_metaclass(Class, object)):
         Set the :class:`Logger` instance bound to this class or instance,
         according to the way this method is called (from class or instance).
         '''
-        if obj is None: cls._class_logger = logger
-        else: obj._logger = logger
+        if obj is None:
+            cls._class_logger = logger
+        else:
+            obj._logger = logger
 
-    logger = property(lambda o,*a,**k:o.get_logger(*a,**k), lambda o,*a,**k:o.set_logger(*a,**k), None,
-        'A :class:`Logger` instance. You can use this object for all logging '
-        'operations related to this class')
+    logger = property(lambda o, *a, **k: o.get_logger(*a, **k), lambda o, *a, **k: o.set_logger(*a, **k), None,
+                      'A :class:`Logger` instance. You can use this object for all logging '
+                      'operations related to this class')
 
     # ==========================================================================
     # Configuration features
@@ -524,8 +562,9 @@ class Object(six.with_metaclass(Class, object)):
     def get_config_spec_file(cls):
         '''Return (and define) the class specification file path'''
         try:
-            cfgfile = '%s.ini'%(os.path.splitext(os.path.realpath(inspect.getfile(cls)))[0])
-        except TypeError: # occure if creating a subclass in interactive python shell
+            cfgfile = '%s.ini' % (os.path.splitext(
+                os.path.realpath(inspect.getfile(cls)))[0])
+        except TypeError:  # occure if creating a subclass in interactive python shell
             cfgfile = None
         return cfgfile
 
@@ -534,14 +573,14 @@ class Object(six.with_metaclass(Class, object)):
         '''Get the merged config specifications of all parents'''
         cfg = None
         for c in cls.__bases__:
-            if not hasattr(c, 'get_config_spec'): continue
+            if not hasattr(c, 'get_config_spec'):
+                continue
             cs = c.get_config_spec()
             if cfg is None:
                 cfg = cs
             else:
                 cfg = dict_merge(cfg, cs)
         return cfg
-
 
     @classmethod
     def get_config_spec(cls):
@@ -556,7 +595,8 @@ class Object(six.with_metaclass(Class, object)):
         if spec and os.path.isfile(spec):
 
             # Load (temporary) the file
-            cfg = configobj.ConfigObj(spec, list_values=False, interpolation=False)
+            cfg = configobj.ConfigObj(
+                spec, list_values=False, interpolation=False)
 
             # NOTE: list_values=False, interpolation=False are set because list values
             #       are handled by the manager (parse error otherwise)
@@ -574,7 +614,6 @@ class Object(six.with_metaclass(Class, object)):
         elif pcfg is not None:
             cfg = dict_merge(cfg, pcfg, mergesubdicts=False)
         return cfg
-
 
     @classmethod
     def get_config_section_name(cls):
@@ -601,7 +640,8 @@ class Object(six.with_metaclass(Class, object)):
             cfgmgr = ConfigManager(cfg, encoding=encoding)
             cls.__config_managers[cls] = cfgmgr
             if cls._cfg_debug:
-                cls.debug('Loaded config manager of class %s with spec:\n  %s', cls.__name__, '\n  '.join(cfgmgr._configspec.write()))
+                cls.debug('Loaded config manager of class %s with spec:\n  %s',
+                          cls.__name__, '\n  '.join(cfgmgr._configspec.write()))
 
         return cls.__config_managers[cls]
 
@@ -668,13 +708,16 @@ class Object(six.with_metaclass(Class, object)):
             - overriding this method will obviously shunt its default beahvior, you'll then have to call original method if needed
 
         '''
-        if config is None: config = cls.get_default_config(encoding=encoding)
+        if config is None:
+            config = cls.get_default_config(encoding=encoding)
         #cls.get_logger().load_config(config, nested=True)
-        loglvl = logger.get_level_name() #loglvl = cls.get_logger().get_level_name().lower()
-        isdbg = logger.is_debug() #isdbg = loglvl == 'debug'
+        # loglvl = cls.get_logger().get_level_name().lower()
+        loglvl = logger.get_level_name()
+        isdbg = logger.is_debug()  # isdbg = loglvl == 'debug'
         cls._log_level = loglvl
         cls._cfg_debug = config.get('cfg_debug', isdbg or cls._cfg_debug)
-        cls._log_obj_stats = config.get('log_obj_stats', isdbg or cls._log_obj_stats)
+        cls._log_obj_stats = config.get(
+            'log_obj_stats', isdbg or cls._log_obj_stats)
 
     @classmethod
     def from_config(cls, config, *args, **kwargs):
@@ -696,7 +739,8 @@ class Object(six.with_metaclass(Class, object)):
         The created object of class cls
 
         '''
-        loadkw = dict(((a,kwargs.pop(a)) for a in ('nested', 'apply') if a in kwargs))
+        loadkw = dict(((a, kwargs.pop(a))
+                       for a in ('nested', 'apply') if a in kwargs))
         obj = cls(*args, **kwargs)
         obj.load_config(config, **loadkw)
         return obj
@@ -730,16 +774,18 @@ class Object(six.with_metaclass(Class, object)):
         self._options = None
         if config is not None:
             if isinstance(nested, six.string_types):
-                    sec = nested
+                sec = nested
             if isinstance(config, ArgumentParser):
                 self._config, self._options = mgr.arg_parse(config,
-                    nested=nested and sec or nested, getargs=True, **kwargs)
+                                                            nested=nested and sec or nested, getargs=True, **kwargs)
             else:
-                cfg = configobj.ConfigObj(config, interpolation=False, encoding=encoding)
+                cfg = configobj.ConfigObj(
+                    config, interpolation=False, encoding=encoding)
                 # If a nested section lookup is required
                 # Otherwise, the whole passed config will be taken
-                if nested and sec and sec in cfg: # If not found, self._config remain unchanged
-                    cfg = configobj.ConfigObj(cfg[sec], interpolation=False, encoding=encoding)
+                if nested and sec and sec in cfg:  # If not found, self._config remain unchanged
+                    cfg = configobj.ConfigObj(
+                        cfg[sec], interpolation=False, encoding=encoding)
                 self._config = mgr.load(cfg)
         if cfgpatch is not None:
             if not isinstance(cfgpatch, list):
@@ -767,11 +813,11 @@ class Object(six.with_metaclass(Class, object)):
         config = configobj.ConfigObj(self._config)
         if nested:
             if isinstance(nested, six.string_types):
-                sec = nested 
+                sec = nested
             else:
                 sec = self.get_config_section_name()
             # XXX config.dict() is required, otherwise section will not be correctly written ([] missing)
-            config = configobj.ConfigObj({sec:config.dict()})
+            config = configobj.ConfigObj({sec: config.dict()})
         r = config.write(outfile)
         if close:
             outfile.close()
@@ -780,7 +826,8 @@ class Object(six.with_metaclass(Class, object)):
     def get_options(self):
         """Get :attr:`options`"""
         return getattr(self, '_options', None)
-    options = property(fget=get_options, doc='Options loaded from the commandline parser or None')
+    options = property(
+        fget=get_options, doc='Options loaded from the commandline parser or None')
 
     def get_config(self, copy=True):
         '''Get the instance's config'''
@@ -809,7 +856,6 @@ class Object(six.with_metaclass(Class, object)):
         '''
         self.logger.load_config(config, nested=True)
         # ...
-
 
     # ==========================================================================
     # Debugging/Introspection features
@@ -847,7 +893,7 @@ class Object(six.with_metaclass(Class, object)):
         For debugging purpose only: do not let trace calls in a production
         environment, even if an interactive test is done !
         '''
-        if sys.stdin.isatty():# and sys.stdout.isatty():
+        if sys.stdin.isatty():  # and sys.stdout.isatty():
             pdb.Pdb().set_trace(sys._getframe(1+iframe))
 
     @classmethod
@@ -872,7 +918,8 @@ class Object(six.with_metaclass(Class, object)):
         Shortcut to :func:`vacumm.misc.misc.kwfilter` with a filters argument which
         defaults to this class lowercase name.
         '''
-        if filters is None: filters = cls.__name__.lower()
+        if filters is None:
+            filters = cls.__name__.lower()
         return kwfilter(kwargs, filters, *args, **kwa)
 
     # ==========================================================================
@@ -891,20 +938,22 @@ class Object(six.with_metaclass(Class, object)):
 
         '''
         # Setup logging
-        lkw = kwfilter(kwargs, 'logger', {'name':self.__class__.__name__})
+        lkw = kwfilter(kwargs, 'logger', {'name': self.__class__.__name__})
         if isinstance(lkw.get('config', None), Object):
             lkw['config'] = lkw['config'].get_logger()
-        lkw['name_filters'] = list(lkw.get('name_filters', [])) + [self.__class__.__name__]
+        lkw['name_filters'] = list(
+            lkw.get('name_filters', [])) + [self.__class__.__name__]
         if 'logger' in lkw:
             self._logger = lkw['logger']
             if not isinstance(self._logger, Logger):
-                vacumm_warning(self.__class__.__name__.split('.')[-1]+
-                    '{} is initialised with an invalid logger type')
+                vacumm_warning(self.__class__.__name__.split('.')[-1] +
+                               '{} is initialised with an invalid logger type')
         else:
             self._logger = Logger(**lkw)
         self._logger.skipCaller(self.get_class_logger().skipCaller())
         # Load passed or default configuration
-        self.load_config(kwargs.get('config', None),  cfgpatch=kwargs.get('cfgpatch', None))
+        self.load_config(kwargs.get('config', None),
+                         cfgpatch=kwargs.get('cfgpatch', None))
 
 
 ################################################################################
@@ -915,9 +964,11 @@ import six.moves.builtins
 
 ###################### preliminary: two utility functions ######################
 
+
 def skip_redundant(iterable, skipset=None):
     'Redundant items are repeated items or items in the original skipset.'
-    if skipset is None: skipset = set()
+    if skipset is None:
+        skipset = set()
     for item in iterable:
         if item not in skipset:
             skipset.add(item)
@@ -926,36 +977,39 @@ def skip_redundant(iterable, skipset=None):
 
 def remove_redundant(metaclasses):
     skipset = set([type])
-    for meta in metaclasses: # determines the metaclasses to be skipped
+    for meta in metaclasses:  # determines the metaclasses to be skipped
         skipset.update(inspect.getmro(meta)[1:])
     return tuple(skip_redundant(metaclasses, skipset))
 
 ######### now the core of the module: two mutually recursive functions #########
 
+
 memorized_metaclasses_map = {}
 
+
 def get_noconflict_metaclass(bases, left_metas, right_metas):
-     '''Not intended to be used outside of this module, unless you know
-     what you are doing.'''
-     # make tuple of needed metaclasses in specified priority order
-     metas = left_metas + tuple(map(type, bases)) + right_metas
-     needed_metas = remove_redundant(metas)
-     # return existing confict-solving meta, if any
-     if needed_metas in memorized_metaclasses_map:
-       return memorized_metaclasses_map[needed_metas]
-     # nope: compute, memoize and return needed conflict-solving meta
-     elif not needed_metas: # wee, a trivial case, happy us
-         meta = type
-     elif len(needed_metas) == 1: # another trivial case
+    '''Not intended to be used outside of this module, unless you know
+    what you are doing.'''
+    # make tuple of needed metaclasses in specified priority order
+    metas = left_metas + tuple(map(type, bases)) + right_metas
+    needed_metas = remove_redundant(metas)
+    # return existing confict-solving meta, if any
+    if needed_metas in memorized_metaclasses_map:
+        return memorized_metaclasses_map[needed_metas]
+    # nope: compute, memoize and return needed conflict-solving meta
+    elif not needed_metas:  # wee, a trivial case, happy us
+        meta = type
+    elif len(needed_metas) == 1:  # another trivial case
         meta = needed_metas[0]
-     # check for recursion, can happen i.e. for Zope ExtensionClasses
-     elif needed_metas == bases:
-         raise TypeError('Incompatible root metatypes', needed_metas)
-     else: # gotta work ...
-         metaname = '_' + ''.join([m.__name__ for m in needed_metas])
-         meta = classmaker()(metaname, needed_metas, {})
-     memorized_metaclasses_map[needed_metas] = meta
-     return meta
+    # check for recursion, can happen i.e. for Zope ExtensionClasses
+    elif needed_metas == bases:
+        raise TypeError('Incompatible root metatypes', needed_metas)
+    else:  # gotta work ...
+        metaname = '_' + ''.join([m.__name__ for m in needed_metas])
+        meta = classmaker()(metaname, needed_metas, {})
+    memorized_metaclasses_map[needed_metas] = meta
+    return meta
+
 
 def classmaker(left_metas=(), right_metas=()):
     '''
@@ -974,7 +1028,3 @@ def classmaker(left_metas=(), right_metas=()):
     return make_class
 
 ################################################################################
-
-
-
-

@@ -35,7 +35,8 @@
 #
 from __future__ import absolute_import
 from __future__ import print_function
-import six.moves.cPickle, stat
+import six.moves.cPickle
+import stat
 import os
 
 import numpy as N
@@ -47,22 +48,23 @@ from vacumm import vacumm_warn, VACUMM_CFG
 from .misc import kwfilter, dict_check_defaults, dirsize, zoombox
 from .constants import EARTH_RADIUS
 
-__all__  = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_map',
-    'merc', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
-    'create_map', 'RSHPERE_WGS84', 'GSHHS_RESLIST']
+__all__ = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_map',
+           'merc', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
+           'create_map', 'RSHPERE_WGS84', 'GSHHS_RESLIST']
 
 #: Earth radius of wgs84 ellipsoid
 RSHPERE_WGS84 = (6378137.0, 6356752.3141)
-rshpere_wgs84 = RSHPERE_WGS84 # compat
+rshpere_wgs84 = RSHPERE_WGS84  # compat
 
 #: GSHHS shorelines letters
 GSHHS_RESLIST = ['f', 'h', 'i', 'l', 'c']
-gshhs_reslist = GSHHS_RESLIST # compat
+gshhs_reslist = GSHHS_RESLIST  # compat
+
 
 def gshhs_autores(lon_min, lon_max, lat_min, lat_max, asindex=False, shift=None):
     """Guess best resolution from lon/lat bounds"""
-    testresol=((lon_max-lon_min)+(lat_max-lat_min))/2.0
-    ires = N.array([-1.,1. ,5.,15.,50.]).searchsorted(testresol)-1
+    testresol = ((lon_max-lon_min)+(lat_max-lat_min))/2.0
+    ires = N.array([-1., 1., 5., 15., 50.]).searchsorted(testresol)-1
     if isinstance(shift, int):
         ires += shift
         ires = N.clip(ires, 0, len(GSHHS_RESLIST)-1)
@@ -71,6 +73,8 @@ def gshhs_autores(lon_min, lon_max, lat_min, lat_max, asindex=False, shift=None)
     return GSHHS_RESLIST[ires]
 
 # Cached maps
+
+
 def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
     """Check if we have a cached map
 
@@ -99,26 +103,33 @@ def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
         return m
     # Guess
     file = _cached_map_file_(mapdir=mapdir, **kwargs)
-    if file is None: return None
-    if verbose: print('Checking', file, os.path.exists(file))
-    if not os.path.exists(file): return None
-    if verbose: print('Loadind cached map from '+os.path.basename(file))
+    if file is None:
+        return None
+    if verbose:
+        print('Checking', file, os.path.exists(file))
+    if not os.path.exists(file):
+        return None
+    if verbose:
+        print('Loadind cached map from '+os.path.basename(file))
     try:
         f = open(file)
         m = six.moves.cPickle.load(f)
         f.close()
         return m
     except:
-        vacumm_warn('Error while loading cached basemap instance from dir: '+
-            os.path.dirname(file))
+        vacumm_warn('Error while loading cached basemap instance from dir: ' +
+                    os.path.dirname(file))
         os.remove(file)
         return None
 
+
 def cache_map(m, mapdir=None):
     """Cache a map if still not cached"""
-    if m is None or m.resolution is None: return
+    if m is None or m.resolution is None:
+        return
     file = _cached_map_file_(m, mapdir=mapdir)
-    if file is None: return
+    if file is None:
+        return
     if not os.path.exists(file):
 
         # Dump
@@ -128,13 +139,14 @@ def cache_map(m, mapdir=None):
             six.moves.cPickle.dump(m, f)
             f.close()
         except:
-            vacumm_warn('Error while trying to cache basemap instance into: '+
-                os.path.dirname(file))
+            vacumm_warn('Error while trying to cache basemap instance into: ' +
+                        os.path.dirname(file))
             return
 
         # Access to all if not in user directory
         if not file.startswith(os.path.expanduser("~")):
-            os.chmod(file, stat.S_IROTH+stat.S_IWOTH+stat.S_IWGRP+stat.S_IRGRP+stat.S_IWUSR+stat.S_IRUSR)
+            os.chmod(file, stat.S_IROTH+stat.S_IWOTH+stat.S_IWGRP +
+                     stat.S_IRGRP+stat.S_IWUSR+stat.S_IRUSR)
 
         # Clean
         clean_cache()
@@ -158,7 +170,7 @@ def clean_cache(mapdir=None, maxsize=None):
     cache_size = dirsize(mapdir)
     if maxsize is None:
         maxsize = VACUMM_CFG['vacumm.misc.basemap']['max_cache_size']
-    if cache_size>maxsize:
+    if cache_size > maxsize:
         files = [os.path.join(mapdir, ff) for ff in os.listdir(mapdir)]
         files.sort(key=lambda f1: os.stat(f1)[8])
         for ff in files:
@@ -166,10 +178,12 @@ def clean_cache(mapdir=None, maxsize=None):
             try:
                 os.remove(ff)
             except:
-                vacumm_warn('Error while trying to clean basemap cache in: '+
-                    os.path.dirname(ff))
+                vacumm_warn('Error while trying to clean basemap cache in: ' +
+                            os.path.dirname(ff))
                 return
-            if cache_size<=maxsize: break
+            if cache_size <= maxsize:
+                break
+
 
 def reset_cache(mapdir=None):
     """Remove all cached maps"""
@@ -177,11 +191,13 @@ def reset_cache(mapdir=None):
     for file in [os.path.join(mapdir, ff) for ff in os.listdir(mapdir)]:
         os.remove(file)
 
+
 def get_map_dir(mapdir=None):
     """Get the directory where cqched maps are stored"""
     if mapdir is None:
         mapdir = os.path.join(get_configdir(), 'basemap', 'cached_maps')
     return mapdir
+
 
 def _cached_map_file_(m=None, mapdir=None, **kwargs):
     mapdir = get_map_dir(mapdir)
@@ -198,34 +214,39 @@ def _cached_map_file_(m=None, mapdir=None, **kwargs):
     else:
         res = m.resolution
     srs = m.srs.replace(' ', '')+'+res='+res
-    szone = '+%.5f+%.5f+%.5f+%.5f' % (m.llcrnrlon, m.llcrnrlat, m.urcrnrlon, m.urcrnrlat)
+    szone = '+%.5f+%.5f+%.5f+%.5f' % (m.llcrnrlon,
+                                      m.llcrnrlat, m.urcrnrlon, m.urcrnrlat)
 #    bversion = '.'.join(basemap_version.split('.')[:2])
     return os.path.join(mapdir, 'basemap-%s.%s.%s.pyk' % (basemap_version, srs, szone))
 
 
 def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
-        projection='cyl', resolution='auto', epsg=None,
-        lon_center=None, lat_center=None, lat_ts=None, zoom=None, ax=None,
-        overlay=False, fullscreen=False, nocache=False, cache_dir=None, **kwargs):
+               projection='cyl', resolution='auto', epsg=None,
+               lon_center=None, lat_center=None, lat_ts=None, zoom=None, ax=None,
+               overlay=False, fullscreen=False, nocache=False, cache_dir=None, **kwargs):
     """Generic creation of a :class:`Basemap` instance with caching
 
     .. todo:: Merge :func:`get_map` with :func:`create_map`
     """
-    kwmap = kwfilter(kwargs, 'basemap', defaults={'area_thresh':0.})
+    kwmap = kwfilter(kwargs, 'basemap', defaults={'area_thresh': 0.})
     kwmap.update(kwfilter(kwargs, 'map_'))
 
     # Map arguments
     kwargs.setdefault('area_thresh', 0.)
-    kwargs.setdefault('rsphere', RSHPERE_WGS84) # WGS-84
-    if kwargs['rsphere'] in [None, False, True]: del kwargs['rsphere']
+    kwargs.setdefault('rsphere', RSHPERE_WGS84)  # WGS-84
+    if kwargs['rsphere'] in [None, False, True]:
+        del kwargs['rsphere']
     projection = kwargs.pop('proj', projection)
-    if lon_center is None: lon_center = .5*(lon_min+lon_max)
-    if lat_center is None: lat_center = .5*(lat_min+lat_max)
-    if lat_ts is None: lat_ts = lat_center
-    if lon_max-lon_min<1.e-5:
+    if lon_center is None:
+        lon_center = .5*(lon_min+lon_max)
+    if lat_center is None:
+        lat_center = .5*(lat_min+lat_max)
+    if lat_ts is None:
+        lat_ts = lat_center
+    if lon_max-lon_min < 1.e-5:
         lon_min = lon_center-1
         lon_max = lon_center+1
-    if lat_max-lat_min<1.e-5:
+    if lat_max-lat_min < 1.e-5:
         lat_min = N.clip(lat_center-1, 0, 90)
         lat_max = N.clip(lat_center+1, 0, 90)
     if isinstance(zoom, (int, float)):
@@ -245,11 +266,11 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
     res = kwargs.pop('res', resolution)
     if res is True:
         res = 'auto'
-    elif res is False or res=='None':
+    elif res is False or res == 'None':
         res = None
     elif isinstance(res, int):
         if res < 0:
-            res= 'auto'
+            res = 'auto'
         else:
             res = GSHHS_RESLIST[4-res]
     if res == 'auto':
@@ -260,10 +281,10 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
         kwargs['resolution'] = None
 
     # Basemap args
-    if isinstance(projection, str) and projection.lower() == 'rgf93' :
+    if isinstance(projection, str) and projection.lower() == 'rgf93':
         # RGF93
         kwargs.update(lon_0=3, lat_0=46.5, lat_1=44, lat_2=49,
-            rsphere=RSHPERE_WGS84, projection='lcc')
+                      rsphere=RSHPERE_WGS84, projection='lcc')
     else:
         # standard
         kwargs.setdefault('lon_0', lon_center)
@@ -292,9 +313,9 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
         mymap = Basemap(ax=ax, **kwargs)
 
         # Cache it?
-        if int(nocache)<=1:
+        if int(nocache) <= 1:
             if cache_dir is not None:
-                kwcache = {'mapdir':cache_dir}
+                kwcache = {'mapdir': cache_dir}
             else:
                 kwcache = {}
             cache_map(mymap, **kwcache)
@@ -303,11 +324,13 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
     mymap.res = res
     return mymap
 
+
 def _get_xy_(xy):
     """Get a tuple of (lon, lat) numeric axes"""
     if hasattr(xy, 'getLongitude'):
         xy = xy.getLongitude(), xy.getLatitude()
     return xy[0][:], xy[1][:]
+
 
 def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
     """Quickly create :class:`Basemap` instance
@@ -330,22 +353,22 @@ def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
         proj = 'merc'
     if auto is None:
         auto = res is not None
-    if gg is None: auto = False
+    if gg is None:
+        auto = False
     kwmap = dict(resolution=res, projection=proj)
     if auto:
         xx, yy = _get_xy_(gg)
         lat_center = yy.mean()
         lon_center = xx.mean()
         kwmap.update(
-            llcrnrlon = xx.min(),
-            urcrnrlon = xx.max(),
-            llcrnrlat = yy.min(),
-            urcrnrlat = yy.max())
+            llcrnrlon=xx.min(),
+            urcrnrlon=xx.max(),
+            llcrnrlat=yy.min(),
+            urcrnrlat=yy.max())
     else:
         lat_center = 0.
         lon_center = 0.
     return Basemap(lat_ts=lat_center, lat_0=lat_center, lon_0=lon_center,  **kwmap)
-
 
 
 def merc(lon=None, lat=None, **kwargs):
@@ -372,10 +395,11 @@ def merc(lon=None, lat=None, **kwargs):
         lat_ts = N.median(lat)
     else:
         lat_ts = 0.
-    kwargs.setdefault('lat_ts',lat_ts)
+    kwargs.setdefault('lat_ts', lat_ts)
     return Basemap(projection='merc', **kwargs)
 
 #proj = merc()
+
 
 def get_proj(gg=None, proj=None, **kwargs):
     """Setup a default projection using x,y coordinates and
@@ -423,10 +447,8 @@ def get_proj(gg=None, proj=None, **kwargs):
     if not isinstance(proj, str):
         proj = VACUMM_CFG['vacumm.misc.basemap']['proj']
     dict_check_defaults(projparams, R=EARTH_RADIUS, units='m',
-        proj=proj,
-        lat_ts = N.median(y) if len(y)>10 else N.mean(y),
-        lon_0 = N.median(x) if len(x)>10 else N.mean(x))
+                        proj=proj,
+                        lat_ts=N.median(y) if len(y) > 10 else N.mean(y),
+                        lon_0=N.median(x) if len(x) > 10 else N.mean(x))
     dict_check_defaults(projparams, lat_0=projparams['lat_ts'])
     return Proj(projparams, xmin, ymin, xmax, ymax)
-
-

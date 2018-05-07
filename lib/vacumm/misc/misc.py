@@ -55,7 +55,9 @@ from types import IntType, FloatType, LongType, ComplexType, GeneratorType
 import operator
 from warnings import warn
 
-import numpy as N, MV2, cdms2
+import numpy as N
+import MV2
+import cdms2
 from matplotlib import rcParams
 from cdms2 import isVariable
 from genutil import grower, minmax
@@ -72,20 +74,21 @@ MV = MV2
 MA = N.ma
 
 __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale',
-    'get_atts', 'cp_atts', 'set_atts', 'check_def_atts', 'iterable', 'isnumber',
-    'rm_html_tags', 'deg2str', 'lonlab', 'latlab', 'deplab', 'deg_from_dec', 'kwfilter',
-    'dict_filter','dict_aliases', 'dict_merge', 'mask_nan', 'write_ascii_time1d', 'xls_style',
-    'FileTree', 'geodir', 'main_geodir', 'intersect', 'Att', 'broadcast', 'makeiter',
-    'get_svn_revision', 'dirsize', 'Cfg2Att', 'closeto', 'cp_props',
-    'zoombox','scalebox','history', 'dict_check_defaults', 'is_iterable', 'squarebox',
-    'grow_variables', 'grow_depth', 'grow_lat', 'phaselab', 'ArgTuple',
-    'create_selector', 'selector2str', 'split_selector', 'squeeze_variable', 'dict_copy_items',
-    "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
-    'set_lang','set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out',
-    'kwfilterout', 'filter_selector', 'isempty', 'checkdir', 'splitidx',
-    'CaseChecker', 'check_case', 'indices2slices', 'filter_level_selector',
-    'match_atts', 'match_string', 'dicttree_get', 'dicttree_set',
-    'minbox']
+           'get_atts', 'cp_atts', 'set_atts', 'check_def_atts', 'iterable', 'isnumber',
+           'rm_html_tags', 'deg2str', 'lonlab', 'latlab', 'deplab', 'deg_from_dec', 'kwfilter',
+           'dict_filter', 'dict_aliases', 'dict_merge', 'mask_nan', 'write_ascii_time1d', 'xls_style',
+           'FileTree', 'geodir', 'main_geodir', 'intersect', 'Att', 'broadcast', 'makeiter',
+           'get_svn_revision', 'dirsize', 'Cfg2Att', 'closeto', 'cp_props',
+           'zoombox', 'scalebox', 'history', 'dict_check_defaults', 'is_iterable', 'squarebox',
+           'grow_variables', 'grow_depth', 'grow_lat', 'phaselab', 'ArgTuple',
+           'create_selector', 'selector2str', 'split_selector', 'squeeze_variable', 'dict_copy_items',
+           "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
+           'set_lang', 'set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out',
+           'kwfilterout', 'filter_selector', 'isempty', 'checkdir', 'splitidx',
+           'CaseChecker', 'check_case', 'indices2slices', 'filter_level_selector',
+           'match_atts', 'match_string', 'dicttree_get', 'dicttree_set',
+           'minbox']
+
 
 def broadcast(set, n, mode='last', **kwargs):
     """Broadcast ``set`` to the specified length ``n``
@@ -114,28 +117,33 @@ def broadcast(set, n, mode='last', **kwargs):
 
     """
     set = makeiter(set)
-    if n<=len(set): return set[:n]
+    if n <= len(set):
+        return set[:n]
     res = list(set)
     if 'fillvalue' in kwargs:
         fillvalue = makeiter(kwargs['fillvalue'])
-    elif mode=='cycle':
+    elif mode == 'cycle':
         fillvalue = set
-    elif mode=='first':
+    elif mode == 'first':
         fillvalue = set[:1]
     else:
         fillvalue = set[-1:]
     filliter = cycle(fillvalue)
     for i in range(n-len(set)):
         res.append(next(filliter))
-    if isinstance(set, list): return res
+    if isinstance(set, list):
+        return res
     return res.__class__(res)
+
 
 def makeiter(var):
     """Make var iterable as a list if not ietrable or a string"""
-    if isinstance(var, str) or not hasattr(var, '__len__') or not callable(var.__len__) or \
-        not hasattr(var, '__getslice__'):
+    if (isinstance(var, str) or not hasattr(var, '__len__')
+            or not callable(var.__len__) or
+            not hasattr(var, '__getslice__')):
         var = [var]
     return var
+
 
 class Att(dict):
     """Class to create a dictionnary and access and set keys as attributes.
@@ -162,12 +170,14 @@ class Att(dict):
     def __setattr__(self, att, val):
         self[att] = val
 
+
 def Cfg2Att(cfg):
     """Convert a :class:`~configobj.ConfigObj` object to an arborescence of
     :class:`~vacumm.misc.misc.Att` objects
     """
     from configobj import Section
-    if isinstance(cfg, Att): return cfg
+    if isinstance(cfg, Att):
+        return cfg
     assert isinstance(cfg, (Section, dict)), 'You must pass a ConfigObj object'
     a = Att()
     a.update(list(cfg.items()))
@@ -175,7 +185,6 @@ def Cfg2Att(cfg):
         if isinstance(cfg[sec], dict):
             a[sec] = Cfg2Att(cfg[sec])
     return a
-
 
 
 def ismasked(arr):
@@ -215,8 +224,8 @@ def bound_ops(bounds):
     return ops
 
 
-def auto_scale(data = None, nmax = None,vmin = None, vmax = None,
-               separators = None, fractions = False, symetric=False,
+def auto_scale(data=None, nmax=None, vmin=None, vmax=None,
+               separators=None, fractions=False, symetric=False,
                keepminmax=False, **kwargs):
     """Computes levels according to a dataset and its range of values. Locators are on a 10-base. Different scaling can be used with this version.
 
@@ -251,8 +260,6 @@ def auto_scale(data = None, nmax = None,vmin = None, vmax = None,
     :func:`basic_auto_scale` :func:`geo_scale`
     """
 
-
-
     vmin = kwargs.get('min_value', vmin)
     vmax = kwargs.get('max_value', vmax)
 
@@ -260,28 +267,31 @@ def auto_scale(data = None, nmax = None,vmin = None, vmax = None,
         'If data is not given, you must pass vmin and vmax as keywords'
 
     if data is not None:
-        try: minv,maxv = minmax(data)
-        except: minv,maxv = 0,1
+        try:
+            minv, maxv = minmax(data)
+        except:
+            minv, maxv = 0, 1
     if vmin is not None:
         minv = vmin
     if vmax is not None:
         maxv = vmax
 
     if symetric:
-        maxv = max([abs(maxv),abs(minv)])
+        maxv = max([abs(maxv), abs(minv)])
         minv = -maxv
 
-    if nmax is None: nmax = 7
+    if nmax is None:
+        nmax = 7
 
     if separators is None:
-        levels = basic_auto_scale(minv,maxv,nmax,**kwargs)
+        levels = basic_auto_scale(minv, maxv, nmax, **kwargs)
 
     else:
 
         try:
             separators.sort()
         except:
-            separators = [separators,]
+            separators = [separators, ]
         nsep = len(separators)
 
         if fractions:
@@ -293,13 +303,13 @@ def auto_scale(data = None, nmax = None,vmin = None, vmax = None,
 
         nint = nsep + 1
         nmax_sep = int(float(nmax)/float(nint))
-        separators.insert(0,minv)
+        separators.insert(0, minv)
         separators.append(maxv)
 
         for i in range(nint):
             these_levels = basic_auto_scale(separators[i],
-                                       separators[i+1],
-                                       nmax_sep,**kwargs)
+                                            separators[i+1],
+                                            nmax_sep, **kwargs)
             if i == 0:
                 levels = list(these_levels)
             else:
@@ -315,7 +325,8 @@ def auto_scale(data = None, nmax = None,vmin = None, vmax = None,
 
     return levels
 
-def basic_auto_scale(vmin,vmax,nmax=7,steps=[1,2,2.5,5,10],geo=False,minutes=False,**kwargs):
+
+def basic_auto_scale(vmin, vmax, nmax=7, steps=[1, 2, 2.5, 5, 10], geo=False, minutes=False, **kwargs):
     """Computes levels according to a dataset and its range of values. Locators are on a 10-base.
 
     Parameters
@@ -336,54 +347,58 @@ def basic_auto_scale(vmin,vmax,nmax=7,steps=[1,2,2.5,5,10],geo=False,minutes=Fal
     :func:`auto_scale` :func:`geo_scale`
     """
 
-
     from matplotlib.ticker import MaxNLocator
 
     if geo:
         mn = 1./60
         if (vmax-vmin) > 50.:
-            steps = [1,2,3,6, 10]
+            steps = [1, 2, 3, 6, 10]
         elif (vmax-vmin) > 3.:
-            steps = [1,2,2.5,3,5,10]
+            steps = [1, 2, 2.5, 3, 5, 10]
         elif minutes and vmax//mn != vmin//mn:
-#           # Minimal range
-#           if (vmax-vmin) < 1:
-#               vmax -= .5/60.
-#               vmin += .5/60.
+            #           # Minimal range
+            #           if (vmax-vmin) < 1:
+            #               vmax -= .5/60.
+            #               vmin += .5/60.
             # Minimal number of steps
             nmn = int(N.ceil((vmax-vmin)*60.))+1
 #           nmax = min(max(nmax, int(N.ceil((vmax-vmin)*60.))+1), 10)
             nmax = 10
             # Steps
             if nmn > nmax:
-                minutes_steps = [1, 10/6.,15/6.,20/6.,30/6.,10]
-            else: # Strictly every minutes or less
+                minutes_steps = [1, 10/6., 15/6., 20/6., 30/6., 10]
+            else:  # Strictly every minutes or less
                 # TODO: must again use basic_auto_scale for minutes and seconds
                 vmin = N.floor(vmin*60)
                 vmax = N.ceil(vmax*60)
-                if (vmax-vmin)<=2:
+                if (vmax-vmin) <= 2:
                     step = .5
                 else:
                     step = 1.
                 return N.arange(vmin, vmax+step, step)/60.
             # Try it
-            myloc = basic_auto_scale(vmin,vmax,nmax,steps=minutes_steps,geo=False,**kwargs)
+            myloc = basic_auto_scale(
+                vmin, vmax, nmax, steps=minutes_steps, geo=False, **kwargs)
             # Check that we really have minutes, ie not only degrees
-            if not N.allclose(N.array(myloc)%1., 0., atol=1.e-4):
+            if not N.allclose(N.array(myloc) % 1., 0., atol=1.e-4):
                 return myloc
 
-    if nmax < 2: nmax = 2
-    myloc = MaxNLocator(nmax+1,steps=steps,**kwargs)
+    if nmax < 2:
+        nmax = 2
+    myloc = MaxNLocator(nmax+1, steps=steps, **kwargs)
     myloc.create_dummy_axis()
     myloc.set_view_interval(vmin, vmax)
     myloc.set_data_interval(vmin, vmax)
 
     locs = myloc()
-    if len(locs)>1 and N.allclose(locs[1],  vmin): locs = locs[1:]
-    if len(locs)>1 and N.allclose(locs[-2], vmax): locs = locs[:-1]
+    if len(locs) > 1 and N.allclose(locs[1],  vmin):
+        locs = locs[1:]
+    if len(locs) > 1 and N.allclose(locs[-2], vmax):
+        locs = locs[:-1]
     return locs
 
-def geo_scale(*args,**kwargs):
+
+def geo_scale(*args, **kwargs):
     """ :func:`auto_scale()` with geo=True
 
     See also
@@ -410,9 +425,9 @@ def get_atts(var, id=True, extra=None, **kwargs):
     :func:`cp_atts` :func:`set_atts` :func:`check_def_atts`
     """
     atts = {}
-    if hasattr(var,'attributes'):
+    if hasattr(var, 'attributes'):
         atts.update(var.attributes)
-    if id and hasattr(var,'id'):
+    if id and hasattr(var, 'id'):
         atts['id'] = var.id
     if extra:
         for att in extra:
@@ -420,6 +435,7 @@ def get_atts(var, id=True, extra=None, **kwargs):
                 atts[att] = getattr(var, att)
     atts.update(kwargs)
     return atts
+
 
 def cp_atts(var1, var2, overwrite=True, select=None, exclude=None, extra=None, **kwargs):
     """ Copy all atributes from one variable to another
@@ -460,6 +476,7 @@ def cp_atts(var1, var2, overwrite=True, select=None, exclude=None, extra=None, *
     # Set
     set_atts(var2, atts, overwrite=overwrite)
 
+
 def set_atts(var, atts=None, overwrite=True, **kwargs):
     """Set attributes
 
@@ -478,12 +495,12 @@ def set_atts(var, atts=None, overwrite=True, **kwargs):
     --------
     :func:`cp_atts` :func:`get_atts` :func:`check_def_atts`
     """
-    if atts is None: atts = {}
+    if atts is None:
+        atts = {}
     atts.update(kwargs)
-    for att,val in atts.items():
+    for att, val in atts.items():
         if overwrite or not hasattr(var, att):
             setattr(var, att, val)
-
 
 
 def check_def_atts(obj, **defaults):
@@ -493,9 +510,9 @@ def check_def_atts(obj, **defaults):
     --------
     :func:`get_atts` :func:`cp_atts` :func:`set_atts`
     """
-    for att,val in defaults.items():
-        if not hasattr(obj,att):
-            setattr(obj,att,val)
+    for att, val in defaults.items():
+        if not hasattr(obj, att):
+            setattr(obj, att, val)
 
 
 def match_string(ss, checks, ignorecase=True, transform=None):
@@ -529,6 +546,7 @@ def match_string(ss, checks, ignorecase=True, transform=None):
         sss = list(map(str.lower, sss))
     return ss in sss
 
+
 def match_atts(obj, checks, id=True, ignorecase=True, transform=None):
     """Check that at least one of the attributes of an object matches check list
 
@@ -540,24 +558,26 @@ def match_atts(obj, checks, id=True, ignorecase=True, transform=None):
         return False
     for attname, attchecks in checks.items():
         if (hasattr(obj, attname) and match_string(getattr(obj, attname),
-                attchecks, ignorecase=ignorecase, transform=transform)):
+                                                   attchecks, ignorecase=ignorecase, transform=transform)):
             return True
     return False
 
+
 def _pospos_(i, n):
     if isinstance(i, int):
-        return i if i>=0 else (n-i)
+        return i if i >= 0 else (n-i)
     jj = []
     for j in i:
-        jj.append(j if j>=0 else (n-j))
+        jj.append(j if j >= 0 else (n-j))
     return type(i)(jj)
+
 
 def _negpos_(i, n):
     if isinstance(i, int):
-        return i if i<0 else (i-n)
+        return i if i < 0 else (i-n)
     jj = []
     for j in i:
-        jj.append(j if j<0 else (j-n))
+        jj.append(j if j < 0 else (j-n))
     return type(i)(jj)
 
 
@@ -606,7 +626,8 @@ def cp_props(var1, var2, axes=None, grid=True, atts=None, exaxes=None, exatts=No
             exaxes = _negpos_(exaxes, var1.ndim)
             axes = [axis for axis in axes if axis not in exaxes]
         for iaxis in axes:
-            if var1.ndim+iaxis <0 or var2.ndim+iaxis: continue
+            if var1.ndim+iaxis < 0 or var2.ndim+iaxis:
+                continue
             var2.setAxis(iaxis, var1.getAxis(iaxis))
 
     # Grid
@@ -622,6 +643,7 @@ def cp_props(var1, var2, axes=None, grid=True, atts=None, exaxes=None, exatts=No
 
     return var2
 
+
 def is_iterable(obj, nostr=True, nogen=True):
     """Check if an object is iterable or not.
 
@@ -635,18 +657,22 @@ def is_iterable(obj, nostr=True, nogen=True):
     bool
     """
 
-    if not nogen and type(obj) == GeneratorType: return True
-    #try: len(obj)
-    #except: return False
-    if not (hasattr(obj, '__len__') and callable(obj.__len__)): return False
-    if nostr: return not isinstance(obj, six.string_types)
+    if not nogen and type(obj) == GeneratorType:
+        return True
+    # try: len(obj)
+    # except: return False
+    if not (hasattr(obj, '__len__') and callable(obj.__len__)):
+        return False
+    if nostr:
+        return not isinstance(obj, six.string_types)
     return True
+
 
 iterable = is_iterable
 
-def isnumber(var):
-    return type(var) in [IntType,FloatType,LongType,ComplexType]
 
+def isnumber(var):
+    return type(var) in [IntType, FloatType, LongType, ComplexType]
 
 
 def rm_html_tags(str):
@@ -667,10 +693,7 @@ def rm_html_tags(str):
     """
 
     import re
-    return re.sub('<[^>]+>','',str)
-
-
-
+    return re.sub('<[^>]+>', '', str)
 
 
 phase_params = """decimal: optional
@@ -695,28 +718,33 @@ phase_params = """decimal: optional
         ``rcParams['text.usetex']`` are True.
 """
 
-def deg2str(*args,**kwargs):
-    return phaselab(*args,**kwargs)
+
+def deg2str(*args, **kwargs):
+    return phaselab(*args, **kwargs)
+
 
 def phaselab(vals, fmt='%.5g', label=None, decimal=True, tex=None, auto_minutes=False,
-            no_seconds=False, no_symbol=False, no_zeros=False, auto=False, bfdeg=False, **kwargs):
+             no_seconds=False, no_symbol=False, no_zeros=False, auto=False, bfdeg=False, **kwargs):
     """Return a nice label for degrees
 
     Inspired from Basemap toolkit of Matplotlib
 
 
     """
-    if 'nosec' in kwargs: no_seconds = kwargs['nosec']
-    if 'dec' in kwargs: decimal = kwargs['dec']
-    if 'nosym' in kwargs: no_symbol = kwargs['nosym']
+    if 'nosec' in kwargs:
+        no_seconds = kwargs['nosec']
+    if 'dec' in kwargs:
+        decimal = kwargs['dec']
+    if 'nosym' in kwargs:
+        no_symbol = kwargs['nosym']
 
     # Longitude/latitude/none
-    if label=='lon':
-        pstr,mstr = 'E','W'
-    elif label=='lat':
-        pstr,mstr = 'N','S'
+    if label == 'lon':
+        pstr, mstr = 'E', 'W'
+    elif label == 'lat':
+        pstr, mstr = 'N', 'S'
     else:
-        pstr,mstr = '',''
+        pstr, mstr = '', ''
         label = None
 
     # Use tex strings
@@ -740,67 +768,68 @@ def phaselab(vals, fmt='%.5g', label=None, decimal=True, tex=None, auto_minutes=
         ifmt = '%i'
     else:
         ifmt = '%02i'
-    if decimal: auto_minutes = False
+    if decimal:
+        auto_minutes = False
 
     # Values
     if not iterable(vals):
         it = False
-        vals = [vals,]
+        vals = [vals, ]
     else:
         it = True
     if auto:
         vals = minmax(vals)
-    in_one_degree = int(min(vals))!=int(max(vals))
-    if auto_minutes=='auto' or auto_minutes is None:
+    in_one_degree = int(min(vals)) != int(max(vals))
+    if auto_minutes == 'auto' or auto_minutes is None:
         auto_minutes = not in_one_degree
 
     # Bold degrees
     if not usetex:
         bfdeg = False
-    elif (bfdeg=='auto' or bfdeg is None): # not bold if degrees only
-        bfdeg = (N.array(vals)%1).ptp()!=0
+    elif (bfdeg == 'auto' or bfdeg is None):  # not bold if degrees only
+        bfdeg = (N.array(vals) % 1).ptp() != 0
 
     # Loop
     labs = []
     for val in vals:
 
-        if val == 0.: # Equator or Greenwich
+        if val == 0.:  # Equator or Greenwich
             if no_symbol:
                 labstr = fmt
             else:
                 labstr = fmt+sdeg
-            labs.append(labstr%(val))
+            labs.append(labstr % (val))
 
         else:
             if val > 180:
                 val -= 360.
             elif val < -180.:
                 val += 360.
-            if val<0:
+            if val < 0:
                 sig = mstr
                 if label is not None:
                     val = -val
             else:
                 sig = pstr
-            nodeg = auto_minutes and abs(val%1) > 1.e-4
-            if not decimal: # Minutes'(seconds'')
+            nodeg = auto_minutes and abs(val % 1) > 1.e-4
+            if not decimal:  # Minutes'(seconds'')
                 fmt = ifmt
                 if bfdeg:
-                    fmt = r'\textbf{%s}'%fmt
+                    fmt = r'\textbf{%s}' % fmt
 #                if usetex and not ifmt.startswith('$'):
 #                    ifmt = r'$%s$'%ifmt
-                dd,mm,ss = deg_from_dec(val)
-                if no_seconds: # Round seconds to minute
+                dd, mm, ss = deg_from_dec(val)
+                if no_seconds:  # Round seconds to minute
                     mm = int(round(mm+ss/60.))
                     ss = 0
-                if ifmt%ss != ifmt%0: # Seconds needed
-                    vv = "%(ifmt)s%(smin)s%(gfmt)s%(ssec)s"% vars()
-                elif ifmt%mm != ifmt%0: # Just minutes
+                if ifmt % ss != ifmt % 0:  # Seconds needed
+                    vv = "%(ifmt)s%(smin)s%(gfmt)s%(ssec)s" % vars()
+                elif ifmt % mm != ifmt % 0:  # Just minutes
                     vv = "%(ifmt)s%(smin)s" % vars()
-                else: # Nothing
+                else:  # Nothing
                     vv = ''
             else:
-                vv=''
+                vv = ''
             if nodeg:
                 labstr = vv
             elif no_symbol:
@@ -812,18 +841,20 @@ def phaselab(vals, fmt='%.5g', label=None, decimal=True, tex=None, auto_minutes=
                 if not nodeg:
                     cc = [dd]
                 if vv.endswith(ssec):
-                    cc.extend([mm,ss])
+                    cc.extend([mm, ss])
                 elif vv.endswith(smin):
                     cc.append(mm)
                 labstr = labstr % tuple(cc)
             else:
                 labstr = labstr % val
-            if not nodeg: labstr += sig
+            if not nodeg:
+                labstr += sig
             labs.append(labstr)
     if it:
         return labs
     else:
         return labs[0]
+
 
 def lonlab(longitudes, **kwargs):
     """Return nice longitude labels
@@ -844,10 +875,13 @@ def lonlab(longitudes, **kwargs):
     """
     kwargs['label'] = 'lon'
     return phaselab(longitudes, **kwargs)
+
+
 if lonlab.__doc__ is not None:
     lonlab.__doc__ = lonlab.__doc__ % phase_params
 
-def latlab(latitudes,**kwargs):
+
+def latlab(latitudes, **kwargs):
     """Return nice latitude labels
 
     Parameters
@@ -866,8 +900,11 @@ def latlab(latitudes,**kwargs):
     """
     kwargs['label'] = 'lat'
     return phaselab(latitudes, **kwargs)
+
+
 if latlab.__doc__ is not None:
     latlab.__doc__ = latlab.__doc__ % phase_params
+
 
 def deplab(depths, fmt='%gm', auto=False, nosign=False):
     """Return well formatted depth labels
@@ -889,19 +926,21 @@ def deplab(depths, fmt='%gm', auto=False, nosign=False):
     """
 
     single = not iterable(depths)
-    if single: depths = [depths,]
-    if auto:    depths = auto_scale(depths)
+    if single:
+        depths = [depths, ]
+    if auto:
+        depths = auto_scale(depths)
 
     labs = []
     for depth in depths:
-        if nosign: depth = abs(depth)
+        if nosign:
+            depth = abs(depth)
         labs.append(fmt % depth)
 
     if single:
         return labs[0]
     else:
         return labs
-
 
 
 def deg_from_dec(dec):
@@ -921,10 +960,10 @@ def deg_from_dec(dec):
         if minutes == 60:
             degrees += 1
 
-    return degrees,minutes,seconds
+    return degrees, minutes, seconds
 
 
-def dict_filter(kwargs,filters, defaults=None, copy=False, short=False, keep=False, **kwadd):
+def dict_filter(kwargs, filters, defaults=None, copy=False, short=False, keep=False, **kwadd):
     """Filter out kwargs (typically extra calling keywords)
 
     Parameters
@@ -951,7 +990,7 @@ def dict_filter(kwargs,filters, defaults=None, copy=False, short=False, keep=Fal
     {'quiet': False}
     """
 
-    if isinstance(filters,str):
+    if isinstance(filters, str):
         filters = [filters]
     if copy:
         kwread = kwargs.get
@@ -962,12 +1001,13 @@ def dict_filter(kwargs,filters, defaults=None, copy=False, short=False, keep=Fal
     kwout = {}
     for filter_ in filters:
         if not filter_.endswith('_') and filter_ in kwargs:
-            if isinstance(kwargs[filter_],dict):
+            if isinstance(kwargs[filter_], dict):
                 kwout.update(kwread(filter_))
             else:
                 kwout[filter_] = kwread(filter_)
-        if not short and not filter_.endswith('_'): filter_ += '_'
-        for att,val in kwargs.items():
+        if not short and not filter_.endswith('_'):
+            filter_ += '_'
+        for att, val in kwargs.items():
             if att.startswith(filter_) and att != filter_:
                 if keep:
                     kwout[att] = kwread(att)
@@ -979,13 +1019,15 @@ def dict_filter(kwargs,filters, defaults=None, copy=False, short=False, keep=Fal
 
     # Set some default values
     if defaults is not None:
-        for att,val in defaults.items():
-            kwout.setdefault(att,val)
+        for att, val in defaults.items():
+            kwout.setdefault(att, val)
     return kwout
+
 
 def kwfilter(*args, **kwargs):
     """Alias for :func:`dict_filter`"""
     return dict_filter(*args, **kwargs)
+
 
 def dict_filter_out(kwargs, filters, copy=False, mode='start'):
     """Remove entries from a dictionary
@@ -1007,10 +1049,11 @@ def dict_filter_out(kwargs, filters, copy=False, mode='start'):
         - ``"regexp"``: remove if key match regexp match filter.
         - else remove if key is exactly filter.
     """
-    if copy: kwargs = kwargs.copy()
-    if isinstance(filters,str):
+    if copy:
+        kwargs = kwargs.copy()
+    if isinstance(filters, str):
         filters = [filters]
-    if mode=="regexp":
+    if mode == "regexp":
         filters = [re.compile(filter_).match for filter_ in filters]
     for key in kwargs.keys():
         for filter_ in filters:
@@ -1018,13 +1061,16 @@ def dict_filter_out(kwargs, filters, copy=False, mode='start'):
                 break
             if mode in ['start', 'end'] and getattr(key, mode+'swith')(filter_):
                 break
-            if key==filter_:
+            if key == filter_:
                 break
         else:
             continue
         kwargs.pop(key)
     return kwargs
+
+
 kwfilterout = dict_filter_out
+
 
 def dict_aliases(kwargs, aliases):
     """Remove duplicate entries in a dictionnary according to a list of aliases.
@@ -1049,32 +1095,39 @@ def dict_aliases(kwargs, aliases):
             break
     return kwargs
 
+
 def dict_check_defaults(kwargs, **defs):
     """Check that a dictionary has some default values"""
-    if defs is None: defs = {}
+    if defs is None:
+        defs = {}
     for item in six.iteritems(defs):
         kwargs.setdefault(*item)
     return kwargs
+
 
 def lunique(mylist):
     """Uniquify a list to a new list"""
     ulist = []
     seen = {}
     for item in mylist:
-        if item in seen: continue
+        if item in seen:
+            continue
         seen[item] = True
         ulist.append(item)
     return ulist
+
 
 def tunique(mytuple):
     """Uniquify a tuple to a new tuple"""
     utuple = ()
     seen = {}
     for item in mytuple:
-        if item in list(seen.keys()): continue
+        if item in list(seen.keys()):
+            continue
         seen[item] = True
         utuple += item,
     return utuple
+
 
 def isempty(x):
     """Check if empty"""
@@ -1082,6 +1135,7 @@ def isempty(x):
         return not bool(x)
     except:
         return False
+
 
 def dict_merge(*dd, **kwargs):
     """Merge dictionaries
@@ -1175,20 +1229,26 @@ def dict_merge(*dd, **kwargs):
 
     # Loop
     for d in dd:
-        if not isinstance(d, dict): continue
+        if not isinstance(d, dict):
+            continue
 
         # Content
         for key, val in six.iteritems(d):
-            if skipnones and val is None: continue
-            if key not in outd or (overwriteempty and isempty(outd[key])): # Not set so we set
+            if skipnones and val is None:
+                continue
+            # Not set so we set
+            if key not in outd or (overwriteempty and isempty(outd[key])):
                 outd[key] = val
-            elif mergesubdicts and isinstance(outd[key], dict) and isinstance(val, dict): # Merge subdict
-                outd[key] = dict_merge(outd[key] , val, **kwargs)
-            elif mergelists and isinstance(outd[key], list) and isinstance(val, list): # Merge lists
+            # Merge subdict
+            elif mergesubdicts and isinstance(outd[key], dict) and isinstance(val, dict):
+                outd[key] = dict_merge(outd[key], val, **kwargs)
+            # Merge lists
+            elif mergelists and isinstance(outd[key], list) and isinstance(val, list):
                 outd[key] += val
                 if unique:
                     outd[key] = lunique(outd[key])
-            elif mergetuples and isinstance(outd[key], tuple) and isinstance(val, tuple): # Merge tuples
+            # Merge tuples
+            elif mergetuples and isinstance(outd[key], tuple) and isinstance(val, tuple):
                 outd[key] += val
                 if unique:
                     outd[key] = tunique(outd[key])
@@ -1196,15 +1256,15 @@ def dict_merge(*dd, **kwargs):
     # Comments for ConfigObj instances
     if cls is ConfigObj:
         if not outd.initial_comment and hasattr(d, 'initial_comment'):
-           outd.initial_comment = d.initial_comment
+            outd.initial_comment = d.initial_comment
         if not outd.final_comment and hasattr(d, 'final_comment'):
-           outd.final_comment = d.final_comment
+            outd.final_comment = d.final_comment
         if hasattr(d, 'inline_comments') and d.inline_comments:
             outd.inline_comments = dict_merge(outd.inline_comments, d.inline_comments,
-                overwriteempty=True)
-
+                                              overwriteempty=True)
 
     return outd
+
 
 def dict_copy_items(ddi, ddo, keys):
     """Copy existing items of an array to another one
@@ -1221,13 +1281,16 @@ def dict_copy_items(ddi, ddo, keys):
     if isinstance(keys, six.string_types):
         keys = [keys]
     single = isinstance(ddo, dict)
-    if single: ddo = [ddo]
+    if single:
+        ddo = [ddo]
     for key in keys:
         if key in ddi:
             for dd in ddo:
                 dd[key] = ddi[key]
-    if single: return ddo[0]
+    if single:
+        return ddo[0]
     return ddo
+
 
 def mask_nan(input):
     """Mask NaN from a variable
@@ -1285,7 +1348,8 @@ def mask_nan(input):
 #
 #   return output
 
-def write_ascii_time1d(var,file,fmt='%g'):
+
+def write_ascii_time1d(var, file, fmt='%g'):
     """Write an ascii file in the following format: YYY/MM/DD HH:MN:SS DATA where DATA is one column.
 
     Parameters
@@ -1302,19 +1366,21 @@ def write_ascii_time1d(var,file,fmt='%g'):
     try:
         time = var.getTime().asComponentTime()
     except:
-        raise Exception('[write_ascii1d] No axis time attached to this variable')
+        raise Exception(
+            '[write_ascii1d] No axis time attached to this variable')
 
     line_fmt = '%s '+fmt
 
-    f = open(file,'w')
+    f = open(file, 'w')
     var.setMissing(999.)
     var = MV.filled(var)
     for it in range(len(time)):
         stime = T.num_to_ascii(time[it])
-        f.write(line_fmt % (stime,var[it].flat[0])+'\n')
+        f.write(line_fmt % (stime, var[it].flat[0])+'\n')
     f.close()
 
-def xls_style(style=None,b=None,i=None,u=None,c=None,o=None,bd=None,fmt=None,va=None,ha=None, f=None, s=None, n=None, copy=True, **kwargs):
+
+def xls_style(style=None, b=None, i=None, u=None, c=None, o=None, bd=None, fmt=None, va=None, ha=None, f=None, s=None, n=None, copy=True, **kwargs):
     """Excel style sheet for pyExcelerator cell objects
 
     Parameters
@@ -1351,9 +1417,9 @@ def xls_style(style=None,b=None,i=None,u=None,c=None,o=None,bd=None,fmt=None,va=
     Tutorial: :ref:`user.tut.misc.io.xls`
     """
     try:
-        from pyExcelerator import XFStyle,Borders,Alignment, Font
+        from pyExcelerator import XFStyle, Borders, Alignment, Font
     except:
-        from xlwt import XFStyle,Borders,Alignment, Font
+        from xlwt import XFStyle, Borders, Alignment, Font
     # Style object
     if style is None:
         style = XFStyle()
@@ -1374,7 +1440,7 @@ def xls_style(style=None,b=None,i=None,u=None,c=None,o=None,bd=None,fmt=None,va=
     if o is not None:
         style.font.outline = bool(o)
     if c is not None:
-        style.font.colour_index = c#hex(c)
+        style.font.colour_index = c  # hex(c)
     if n is not None:
         style.font.name = n
     if s is not None:
@@ -1383,7 +1449,7 @@ def xls_style(style=None,b=None,i=None,u=None,c=None,o=None,bd=None,fmt=None,va=
     bdnames = 'top', 'left', 'right', 'bottom'
     if bd is not None and not isinstance(bd, dict):
         bd = int(bd)
-        bd = dict(bottom=bd,top=bd,left=bd,right=bd)
+        bd = dict(bottom=bd, top=bd, left=bd, right=bd)
     else:
         bd = {}
     for bdname in bdnames:
@@ -1393,19 +1459,16 @@ def xls_style(style=None,b=None,i=None,u=None,c=None,o=None,bd=None,fmt=None,va=
                 bd[bdname] = int(value)
     if not hasattr(style, 'borders'):
         style.borders = Borders()
-    for ik, (key,val) in enumerate(bd.items()):
-        setattr(style.borders,key,val)
+    for ik, (key, val) in enumerate(bd.items()):
+        setattr(style.borders, key, val)
     # Alignment
     if not hasattr(style, 'alignment'):
         style.alignment = Alignment()
     if va is not None:
-        style.alignment.vert = getattr(Alignment,'VERT_'+va.upper())
+        style.alignment.vert = getattr(Alignment, 'VERT_'+va.upper())
     if ha is not None:
-        style.alignment.horz = getattr(Alignment,'HORZ_'+ha.upper())
+        style.alignment.horz = getattr(Alignment, 'HORZ_'+ha.upper())
     return style
-
-
-
 
 
 class FileTree(object):
@@ -1424,79 +1487,82 @@ class FileTree(object):
     relative: optional
         : Return file names relative to input_dir [default: False]
     """
-    default_patterns = dict(patterns=['.*'],exclude=['~$','^CVS$/','^\.svn$/','^\.DS_Store$','\.db$','\.ini$'],include=[],)
+    default_patterns = dict(patterns=[
+                            '.*'], exclude=['~$', '^CVS$/', '^\.svn$/', '^\.DS_Store$', '\.db$', '\.ini$'], include=[],)
 
-    def __init__(self,input_dir,relative=False,scan=True,**kwargs):
+    def __init__(self, input_dir, relative=False, scan=True, **kwargs):
 
         if not os.path.exists(input_dir):
             raise 'Directory not found: '+input_dir
         self._input_dir = input_dir
         self._relative = relative
 
-        self._set_selectors_(patterns=True,exclude=True,include=True,update=False)
+        self._set_selectors_(patterns=True, exclude=True,
+                             include=True, update=False)
         self._tree = None
-        if scan: self.scan(**kwargs)
+        if scan:
+            self.scan(**kwargs)
 
-
-    def file_list(self,**kwargs):
+    def file_list(self, **kwargs):
         if self._tree is None:
             self.scan(**kwargs)
         return self._tree
 
-    def __call__(self,**kwargs):
+    def __call__(self, **kwargs):
         return self.file_list(**kwargs)
 
-    def __str__(self,sep='\n'):
+    def __str__(self, sep='\n'):
         return sep.join(self._tree)
 
-    def scan(self,**kwargs):
+    def scan(self, **kwargs):
         """Recursive scan to list files"""
         kwargs['update'] = False
         self._set_selectors_(**kwargs)
         self._tree = []
-        for current_dir,dirs,files in os.walk(self._input_dir):
-            for isfile,targets in enumerate((copy(dirs),copy(files))):
+        for current_dir, dirs, files in os.walk(self._input_dir):
+            for isfile, targets in enumerate((copy(dirs), copy(files))):
                 for target in targets:
-                    if (isfile and not self._check_target_(current_dir,'patterns',target)) or \
-                        (self._check_target_(current_dir,'exclude',target) and \
-                         not self._check_target_(current_dir,'include',target)) :
+                    if (isfile and not self._check_target_(current_dir, 'patterns', target)) or \
+                        (self._check_target_(current_dir, 'exclude', target) and
+                         not self._check_target_(current_dir, 'include', target)):
                         if not isfile:
                             dirs.remove(target)
                     else:
                         if isfile:
-                            this_file = os.path.join(current_dir,target)
+                            this_file = os.path.join(current_dir, target)
                             if self._relative:
                                 this_file = this_file[len(self._input_dir)+1:]
                             self._tree.append(this_file)
 
-    def _check_target_(self,current_dir,pattern_type,target):
-        for pat in getattr(self,'_'+pattern_type):
+    def _check_target_(self, current_dir, pattern_type, target):
+        for pat in getattr(self, '_'+pattern_type):
             thistarget = target
-            if pat.pattern.endswith('/$') :
-                if not os.path.isdir(os.path.join(current_dir,target)):
+            if pat.pattern.endswith('/$'):
+                if not os.path.isdir(os.path.join(current_dir, target)):
                     # Target must be a directory
                     continue
                 else:
                     thistarget += '/'
             if pat.pattern.startswith('^'+self._input_dir):
                 # Pattern is matched against full path to root dir
-                thistarget = os.path.join(current_dir,thistarget)
+                thistarget = os.path.join(current_dir, thistarget)
             if pat.search(thistarget) is not None:
                 return True
         return False
 
+    def set_patterns(self, value, **kwargs):
+        self._set_selector_('patterns', value, **kwargs)
 
-    def set_patterns(self,value,**kwargs):
-        self._set_selector_('patterns',value,**kwargs)
-    def set_exclude(self,value,**kwargs):
-        self._set_selector_('exclude',value,**kwargs)
-    def set_include(self,value,**kwargs):
-        self._set_selector_('include',value,**kwargs)
+    def set_exclude(self, value, **kwargs):
+        self._set_selector_('exclude', value, **kwargs)
 
-    def _set_selector_(self,seltype,values,update=True,append=False):
+    def set_include(self, value, **kwargs):
+        self._set_selector_('include', value, **kwargs)
+
+    def _set_selector_(self, seltype, values, update=True, append=False):
         if values is None:
             values = []
-        elif isinstance(values,str):
+        elif isinstance(values, str):
             values = [values]
         else:
             values = list(values)
@@ -1504,65 +1570,74 @@ class FileTree(object):
             append = True
             del values[0]
         if append:
-            vals = setattr(self,'_'+seltype)
+            vals = setattr(self, '_'+seltype)
         else:
             vals = []
         for val in values:
             if val.startswith('//'):
-                val = '^'+os.path.join(self._input_dir,val[2:])
-            if val.endswith('/'): val += '$'
+                val = '^'+os.path.join(self._input_dir, val[2:])
+            if val.endswith('/'):
+                val += '$'
             vals.append(re.compile(val))
-        setattr(self,'_'+seltype,vals)
-        if update: self.scan()
+        setattr(self, '_'+seltype, vals)
+        if update:
+            self.scan()
 
-    def _set_selectors_(self,update=True,**kwargs):
-        for key,val in kwargs.items():
-            if key not in list(self.default_patterns.keys()): continue
-            if val is True: val = self.default_patterns[key]
-            self._set_selector_(key,val,False)
-        if update: self.scan()
+    def _set_selectors_(self, update=True, **kwargs):
+        for key, val in kwargs.items():
+            if key not in list(self.default_patterns.keys()):
+                continue
+            if val is True:
+                val = self.default_patterns[key]
+            self._set_selector_(key, val, False)
+        if update:
+            self.scan()
+
 
 def geodir(direction, from_north=True, inverse=False):
     """Return a direction in degrees in the form 'WNW'"""
 
-    labels = ['E','ENE','NE','NNE','N','NNW','NW','WNW','W','WSW','SW','SSW','S','SSE','SE','ESE']
+    labels = ['E', 'ENE', 'NE', 'NNE', 'N', 'NNW', 'NW', 'WNW',
+              'W', 'WSW', 'SW', 'SSW', 'S', 'SSE', 'SE', 'ESE']
     nlab = len(labels)
     dtheta = 360./nlab
     if inverse:
         l = direction.strip().replace('-', '').lower()
         ll = [lb.lower() for lb in labels]
         if l not in ll:
-            raise VACUMMError("Wrong geographic direction: %s. Please use one of %s"%(
+            raise VACUMMError("Wrong geographic direction: %s. Please use one of %s" % (
                 direction, ' '.join(labels)))
         d = (N.arange(nlab)*dtheta)[ll.index(l)]
         if from_north:
             d = 90.-d
         return d
-    if from_north :
+    if from_north:
         direction = 90. - direction
     direction = (direction+360) % 360.
-    return labels[int((direction+dtheta/2)/dtheta)%nlab]
+    return labels[int((direction+dtheta/2)/dtheta) % nlab]
 
 
 def main_geodir(directions, amp=None, num=False, res=22.5, getamp=False, **kwargs):
     """Return the dominant direction from a set of directions in degrees"""
-    cartesian = isinstance(directions,tuple)
+    cartesian = isinstance(directions, tuple)
     if cartesian:
         kwargs['from_north'] = False
         directions = list(directions)
-        for i in 0,1:
+        for i in 0, 1:
             directions[i] = N.ravel(directions[i])
         if amp is None:
             amp = N.sqrt(directions[0]**2+directions[1]**2)
     else:
         directions = N.ravel(N.array(directions).astype('f'))
     if not num and amp is None:
-        assert int(360./res) == 360./res,'360. must be a multiple of your resolution: %g'%res
-        idirections = (((directions+360.+res/2) % 360.)/res).astype('i').tolist()
+        assert int(360./res) == 360. / \
+            res, '360. must be a multiple of your resolution: %g' % res
+        idirections = (((directions+360.+res/2) %
+                        360.)/res).astype('i').tolist()
         bincount = N.zeros(int(360./res))
         for id in idirections:
             bincount[id] += 1
-        return geodir(res*N.argmax(bincount),**kwargs)
+        return geodir(res*N.argmax(bincount), **kwargs)
     else:
         if amp is None:
             amp = 1.
@@ -1575,15 +1650,15 @@ def main_geodir(directions, amp=None, num=False, res=22.5, getamp=False, **kwarg
             xmean = N.average(amp*N.cos(directions*N.pi/180.))
             ymean = N.average(amp*N.sin(directions*N.pi/180.))
         assert xmean != 0 or ymean != 0, 'There is no dominant directions'
-        md = N.arctan2(ymean,xmean)*180./N.pi
+        md = N.arctan2(ymean, xmean)*180./N.pi
         if not num:
-            return geodir(md,**kwargs)
+            return geodir(md, **kwargs)
         if getamp:
-            return md,N.sqrt(xmean**2+ymean**2)
-        return N.arctan2(ymean,xmean)*180./N.pi
+            return md, N.sqrt(xmean**2+ymean**2)
+        return N.arctan2(ymean, xmean)*180./N.pi
 
 
-def intersect(seg1,seg2,length=False):
+def intersect(seg1, seg2, length=False):
     """Intersection of two segments
 
     Example
@@ -1593,11 +1668,14 @@ def intersect(seg1,seg2,length=False):
         [5, 10]
     """
     if max(seg1) < min(seg2) or min(seg2) > max(seg1):
-        if length: return 0.
+        if length:
+            return 0.
         return None
-    x0,x1 = max(min(seg1),min(seg2)),min(max(seg1),max(seg2))
-    if length: return x1-x0
-    return type(seg1)([x0,x1])
+    x0, x1 = max(min(seg1), min(seg2)), min(max(seg1), max(seg2))
+    if length:
+        return x1-x0
+    return type(seg1)([x0, x1])
+
 
 def get_svn_revision(path, max=False):
     """Get the revision number of a path
@@ -1617,16 +1695,16 @@ def get_svn_revision(path, max=False):
             revision = int(m.group('revision'))
             return revision
         from numpy.distutils.misc_util import njoin
-        if sys.platform=='win32' and os.environ.get('SVN_ASP_DOT_NET_HACK',None):
-            entries = njoin(path,'_svn','entries')
+        if sys.platform == 'win32' and os.environ.get('SVN_ASP_DOT_NET_HACK', None):
+            entries = njoin(path, '_svn', 'entries')
         else:
-            entries = njoin(path,'.svn','entries')
+            entries = njoin(path, '.svn', 'entries')
         if os.path.isfile(entries):
             f = open(entries)
             fstr = f.read()
             f.close()
             if fstr[:5] == '<?xml':  # pre 1.4
-                m = re.search(r'revision="(?P<revision>\d+)"',fstr)
+                m = re.search(r'revision="(?P<revision>\d+)"', fstr)
                 if m:
                     revision = int(m.group('revision'))
                 else:  # non-xml entries file --- check to be sure that
@@ -1637,8 +1715,10 @@ def get_svn_revision(path, max=False):
     if revision is None:
         import subprocess
         path = os.path.abspath(path)
-        revision = subprocess.Popen(["svnversion", path], stdout=subprocess.PIPE).communicate()[0].split(':')[-int(max)].split('\n')[0]
+        revision = subprocess.Popen(["svnversion", path], stdout=subprocess.PIPE).communicate()[
+            0].split(':')[-int(max)].split('\n')[0]
     return revision
+
 
 def dirsize(folder, units='b'):
     """Get the size of a directory
@@ -1667,6 +1747,7 @@ def dirsize(folder, units='b'):
     units = str(units).lower()
     uu = 'kmgt'.find(units[0])
     return folder_size/(1024.**(1+uu))
+
 
 def closeto(a, b, rtol=1.e-5, atol=1.e-8):
     """Check which values of a numeric array are close to those of another array
@@ -1697,7 +1778,7 @@ def closeto(a, b, rtol=1.e-5, atol=1.e-8):
     if not xinf.any():
         res = N.less_equal(N.absolute(x-y), atol + rtol * (N.absolute(y)))
     else:
-        b = x==y
+        b = x == y
         g = ~xinf
         x = x[g]
         y = y[g]
@@ -1711,35 +1792,46 @@ def closeto(a, b, rtol=1.e-5, atol=1.e-8):
 
 def MV2_concatenate(arrays, axis=0, axisid=None, axisattributes=None, copy=True):
     if cdms2.isVariable(arrays):
-        if copy: arrays = arrays.clone()
+        if copy:
+            arrays = arrays.clone()
         return arrays
-    if len(arrays)==1:
-        if copy: return arrays[0].clone()
+    if len(arrays) == 1:
+        if copy:
+            return arrays[0].clone()
         return arrays[0]
     var = MV2.concatenate(arrays, axis=axis, axisid=None, axisattributes=None)
     var.setAxis(0, MV2_axisConcatenate([v.getAxis(0) for v in arrays],
-        id=axisid, attributes=axisattributes, copy=copy))
-    if len(arrays)>1:
+                                       id=axisid, attributes=axisattributes, copy=copy))
+    if len(arrays) > 1:
         cp_atts(arrays[0], var)
     return var
+
+
 MV2_concatenate.__doc__ = MV2.concatenate.__doc__
+
 
 def MV2_axisConcatenate(axes, id=None, attributes=None, copy=True):
     """Advanced version of MV2.axisConcatenate"""
     from .axes import isaxis
     # Single
     if isaxis(axes):
-        if copy: axes = axes.clone()
-        if id is not None: axes.id = id
+        if copy:
+            axes = axes.clone()
+        if id is not None:
+            axes.id = id
         return axes
-    if len(axes)==1:
-        if copy: axes = [axes[0].clone()]
-        if id is not None: axes[0].id = id
+    if len(axes) == 1:
+        if copy:
+            axes = [axes[0].clone()]
+        if id is not None:
+            axes[0].id = id
         return axes[0]
 
     # Attributes
-    if id is None: id = axes[0].id
-    if attributes is None: attributes = axes[0].attributes
+    if id is None:
+        id = axes[0].id
+    if attributes is None:
+        attributes = axes[0].attributes
 
     # Time units
     if axes[0].isTime():
@@ -1747,12 +1839,14 @@ def MV2_axisConcatenate(axes, id=None, attributes=None, copy=True):
         if units is not None:
             for axis in axes[1:]:
                 un = getattr(axis, 'units', None)
-                if un is not None and un!=units:
+                if un is not None and un != units:
                     axis.toRelativeTime(units)
 
     # Basic concatenate
     axis = MV2.axisConcatenate(axes, id=id, attributes=attributes)
     return axis
+
+
 MV2_axisConcatenate.__doc__ = MV2.axisConcatenate.__doc__
 
 
@@ -1761,9 +1855,9 @@ def _box2xyminmax_(box):
         if box.getGrid() is None:
             raise TypeError('You must provide a variable with a valid grid')
         box = box.getGrid()
-    from .grid.misc import isgrid, get_xy
-    if isgrid(box):
-        lon, lat = get_xy(box, num=True)
+    if hasattr(box, 'getLongitude'):
+        lon = box.getLongitude()[:]
+        lat = box.getLatitude()[:]
         xmin = lon.min()
         xmax = lon.max()
         ymin = lat.min()
@@ -1781,12 +1875,12 @@ def _box2xyminmax_(box):
         xmin, ymin, xmax, ymax = box
     return xmin, ymin, xmax, ymax
 
+
 def _returnbox_(oldbox, newbox):
-    if isinstance(oldbox,(list, tuple)):
+    if isinstance(oldbox, (list, tuple)):
         return oldbox.__class__(newbox)
     if isinstance(oldbox, dict):
-        return dict(lon=(newbox[0], newbox[2]),
-            lat=(newbox[1], newbox[3]))
+        return dict(lon=(newbox[0], newbox[2]), lat=(newbox[1], newbox[3]))
     return N.array(newbox)
 
 
@@ -1827,12 +1921,17 @@ def scalebox(box, factor, square=False, xmargin=None, ymargin=None):
 
     return box
 
+
 def zoombox(box, factor, square=False, xmargin=None, ymargin=None):
     """Alias for :func:`scalebox` with ``1/factor`` as zoom factor."""
-    return scalebox(box, 1/factor, square=square, xmargin=xmargin, ymargin=ymargin)
+    return scalebox(box, 1/factor, square=square,
+                    xmargin=xmargin, ymargin=ymargin)
+
 
 def squarebox(box, scale=1):
-    """Get an approximate ``[xmin, ymin, xmax, ymax]`` that is square in meters"""
+    """Get an approximate ``[xmin, ymin, xmax, ymax]``
+    that is square in meters
+    """
     lonmin, latmin, lonmax, latmax = _box2xyminmax_(box)
     dlon = lonmax-lonmin
     dlat = latmax-latmin
@@ -1852,6 +1951,7 @@ def squarebox(box, scale=1):
     newbox = scalebox([lonmin, latmin, lonmax, latmax], scale, square=False)
     return _returnbox_(box, newbox)
 
+
 def minbox(box, dxmin=None, dymin=None):
     """Ensure that a box as minimal extents"""
     if dxmin is None and dymin is None:
@@ -1868,11 +1968,13 @@ def minbox(box, dxmin=None, dymin=None):
     newbox = xmin, ymin, xmax, ymax
     return _returnbox_(box, newbox)
 
+
 def history(nbcommand=None):
     """Display the command history for the interactive python."""
     import readline
-    if nbcommand != None:
-        index = list(range(readline.get_current_history_length()-nbcommand,readline.get_current_history_length()))
+    if nbcommand is not None:
+        index = list(range(readline.get_current_history_length()-nbcommand,
+                           readline.get_current_history_length()))
     else:
         index = list(range(readline.get_current_history_length()))
 
@@ -1904,17 +2006,20 @@ def create_selector(*args, **kwargs):
     """
     selector = cdms2.selectors.Selector()
     for arg in args:
-        if arg is None: continue
+        if arg is None:
+            continue
         if isinstance(arg, dict):
             selector.refine(**arg)
         elif isinstance(arg, list):
             selector.refine(*arg)
-        else:selector.refine(arg)
+        else:
+            selector.refine(arg)
     if kwargs:
         for key, val in kwargs.items():
             if val is not None:
-                selector.refine(**{key:val})
+                selector.refine(**{key: val})
     return selector
+
 
 def selector2str(selector):
     """Convert a selector to a generic string where <obj ...> labels are removed
@@ -1933,6 +2038,7 @@ def selector2str(selector):
         s = s[s.index('>')+1:]
         ss.append(s)
     return '('+','.join(ss)+')'
+
 
 def split_selector(selector):
     """Split a selector into (positionalComponents, axisComponents).
@@ -1964,8 +2070,11 @@ def split_selector(selector):
             named[c.id] = c.spec
     return tuple(posed), named
 
-def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False, noslice=False):
-    """Filter a :class:`cdms2.selectors.Selector` instance to keep or remove only a list of ids
+
+def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False,
+                    noslice=False):
+    """Filter a :class:`cdms2.selectors.Selector` instance to keep or
+    remove only a list of ids
 
     Parameters
     ----------
@@ -1985,25 +2094,29 @@ def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False, nos
     """
     if not isinstance(selector, cdms2.selectors.Selector):
         selector = create_selector(selector)
-    elif copy: selector = selector()
-    if selector is None or ids is None: selector
+    elif copy:
+        selector = selector()
+    if selector is None or ids is None:
+        selector
     ids = [_f for _f in ids if _f]
     ipos = -1
-    if isinstance(keeppos, int): keeppos = [keeppos]
+    if isinstance(keeppos, int):
+        keeppos = [keeppos]
     for comp in list(selector._Selector__components):
 
-         # Positional
+        # Positional
         if isinstance(comp, cdms2.selectors.positionalComponent):
             ipos += 1
             if keeppos is True:
                 continue
-            elif keeppos not in [False, None] and \
-                (ipos in keeppos and not out) or (ipos not in keeppos and out):
+            elif (keeppos not in [False, None] and
+                  (ipos in keeppos and not out) or
+                  (ipos not in keeppos and out)):
                 continue
 
         # Named
         elif hasattr(comp, 'id') and ((comp.id in ids and not out) or
-                (comp.id not in ids and out)):
+                                      (comp.id not in ids and out)):
             continue
 
         # Remove
@@ -2017,14 +2130,18 @@ def filter_selector(selector, ids=None, copy=True, out=False, keeppos=False, nos
 
     return selector
 
+
 def filter_level_selector(selector, ids=None, **kwargs):
-    """Filter a :class:`cdms2.selectors.Selector` instance to keep or remove z dimension
+    """Filter a :class:`cdms2.selectors.Selector`
+    instance to keep or remove z dimension
     """
-    if isinstance(ids, six.string_types): ids = [ids]
+    if isinstance(ids, six.string_types):
+        ids = [ids]
     ids = ids or []
     ids.extend(cdms2.axis.level_aliases)
     ids.extend(['lev', 'level', 'depth', 'dep'])
     return filter_selector(selector, ids, **kwargs)
+
 
 def squeeze_variable(var, spec=True, asmv=False):
     """Remove singleton axes from a MV2 variable
@@ -2052,7 +2169,7 @@ def squeeze_variable(var, spec=True, asmv=False):
     >>> squeeze_variable(var, spec='tx')
     """
     # Nothing to do
-    if spec is False or spec==0 or not isinstance(var, N.ndarray):
+    if spec is False or spec == 0 or not isinstance(var, N.ndarray):
         return var
 
     # Squeeze all singletons
@@ -2061,7 +2178,7 @@ def squeeze_variable(var, spec=True, asmv=False):
     atts = get_atts(var)
     from vacumm.misc.grid.misc import get_grid, set_grid
     grid = get_grid(var)
-    if spec is True or spec is None or spec==1:
+    if spec is True or spec is None or spec == 1:
         var = var(squeeze=1)
         if asmv and not cdms2.isVariable(var):
             var = MV2.asarray(var)
@@ -2073,9 +2190,10 @@ def squeeze_variable(var, spec=True, asmv=False):
     if isinstance(spec, six.string_types):
         for axtype in spec:
             order = var.getOrder()
-            if not axtype in order: continue
+            if axtype not in order:
+                continue
             iaxis = order.index(axtype)
-            if var.shape[iaxis]==1:
+            if var.shape[iaxis] == 1:
                 axes = var.getAxisList()
                 var = N.ma.take(var, 0, iaxis)
                 set_atts(var, atts)
@@ -2084,6 +2202,7 @@ def squeeze_variable(var, spec=True, asmv=False):
                 if grid is not None and axtype not in 'xy':
                     set_grid(var, grid)
     return var
+
 
 def grow_variables(var1, var2):
     """Grow dimensions of var1 and var2 until their match
@@ -2095,13 +2214,14 @@ def grow_variables(var1, var2):
     from .grid.misc import set_grid
     order1, order2 = merge_orders(var1, var2)
     if '-' in order1+order2:
-        raise VACUMMError("All axes must have a known type (xyzt) to grow variables")
+        raise VACUMMError("All axes must have a known type (xyzt) "
+                          "to grow variables")
     var1 = MV2.asarray(var1)
     var2 = MV2.asarray(var2)
     set_order(var1, order1)
     set_order(var2, order2)
-    rev = len(order1)<len(order2)
-    if rev: # reverse?
+    rev = len(order1) < len(order2)
+    if rev:  # reverse?
         var1, var2 = var2, var1
 
     # Grow variables
@@ -2113,9 +2233,10 @@ def grow_variables(var1, var2):
         ggrid2 = grid2 or grid1
         set_grid(var1, ggrid1)
         set_grid(var2, ggrid2)
-    if rev: # reverse?
+    if rev:  # reverse?
         var1, var2 = var2, var1
     return var1, var2
+
 
 def grow_depth(var, depth=None, mode=None, default=0., getvar=True):
     """Make depth and variable have the same shape
@@ -2148,19 +2269,22 @@ def grow_depth(var, depth=None, mode=None, default=0., getvar=True):
             depth = default
     if not N.isscalar(depth):
         depth = MV2.asarray(depth)
-        if depth.ndim==1:
+        if depth.ndim == 1:
             depth.getAxis(0).designateLevel()
-        if depth.shape!=var.shape:
+        if depth.shape != var.shape:
             s = var.shape
             var, depth = grow_variables(var, depth)
-            if var.shape!=s:
-                msg = 'Shape of variable has changed (%s->%s) when guessing depth'%(s, var.shape)
-                if mode=='warn':
+            if var.shape != s:
+                msg = ('Shape of variable has changed ({}->{}) '
+                       'when guessing depth').format(s, var.shape)
+                if mode == 'warn':
                     warn(msg)
-                elif mode=='raise':
+                elif mode == 'raise':
                     raise VACUMMError(msg)
-    if getvar: return var, depth
+    if getvar:
+        return var, depth
     return depth
+
 
 def grow_lat(var, lat=None, mode=None, default=None, getvar=True):
     """Make latitude and variable have the same shape
@@ -2193,17 +2317,19 @@ def grow_lat(var, lat=None, mode=None, default=None, getvar=True):
     if lat is not None and not N.isscalar(lat):
         lat = MV2.asarray(lat)
         lat.getAxis(0).designateLatitude()
-        if lat.ndim==2:
+        if lat.ndim == 2:
             lat.getAxis(1).designateLongitude()
         s = var.shape
         var, lat = grow_variables(var, lat)
-        if var.shape!=s:
-            msg = 'Shape of variable has changed (%s->%s) when guessing latitude'%(s, var.shape)
-            if mode=='warn':
+        if var.shape != s:
+            msg = ('Shape of variable has changed ({}->{}) '
+                   'when guessing latitude').format(s, var.shape)
+            if mode == 'warn':
                 warn(msg)
-            elif mode=='raise':
+            elif mode == 'raise':
                 raise VACUMMError(msg)
-    if getvar: return var, lat
+    if getvar:
+        return var, lat
     return lat
 
 
@@ -2223,16 +2349,17 @@ def N_choose(a, choices, out=None, mode='raise'):
         majority of cases.
     """
     a = N.asarray(a)
-    if mode=='wrap':
+    if mode == 'wrap':
         a = a % len(choices)
-    elif mode=='clip':
+    elif mode == 'clip':
         a = N.clip(a, 0, len(choices)-1)
     if out is None:
         out = choices[0].copy()+100
     N_where = N.ma.where if N.ma.isMA(choices[0]) else N.where
     for i in range(a.max()+1):
-        out[:] = N_where(a==i, choices[i], out)
+        out[:] = N_where(a == i, choices[i], out)
     return out
+
 
 class ArgList(object):
     """Utility to always manage arguments as list and return results as input
@@ -2254,6 +2381,7 @@ class ArgList(object):
     ['aa']
 
     """
+
     def __init__(self, argsi):
         self.single = not isinstance(argsi, list)
         self.argsi = argsi
@@ -2268,6 +2396,7 @@ class ArgList(object):
         if so and not self.single:
             return [argso]
         return argso[0]
+
 
 class ArgTuple(object):
     """Utility to always manage arguments as tuple and return results as input
@@ -2289,6 +2418,7 @@ class ArgTuple(object):
         ['aa']
 
     """
+
     def __init__(self, argsi):
         self.single = not isinstance(argsi, tuple)
         self.argsi = argsi
@@ -2304,20 +2434,25 @@ class ArgTuple(object):
             return (argso, )
         return argso[0]
 
+
 def set_lang(default='en_US.UTF-8', num=None):
     """Set the default and numeric languages
 
     The numeric language defaults to the default language.
     """
     import locale
-    if num is None: num = default
+    if num is None:
+        num = default
     os.environ['LANG'] = default
     locale.setlocale(locale.LC_ALL, default)
     os.environ['LC_NUMERIC'] = num
     locale.setlocale(locale.LC_NUMERIC, num)
 
+
 def set_lang_fr(ennum=True):
-    """Set lang to french, except the numeric lang which is set to english by default"""
+    """Set lang to french, except the numeric lang which
+    is set to english by default
+    """
     num = 'en_US.UTF-8' if ennum else 'fr_FR.UTF-8'
     set_lang(default='fr_FR.UTF-8', num=num)
 
@@ -2335,8 +2470,10 @@ def numod(*vv):
     """
     nm = N
     for v in vv:
-        if cdms2.isVariable(v): return MV2
-        if N.ma.isMA(v): nm = N.ma
+        if cdms2.isVariable(v):
+            return MV2
+        if N.ma.isMA(v):
+            nm = N.ma
     return nm
 
 
@@ -2364,10 +2501,12 @@ def checkdir(path, asfile=None, chmod=None):
     if not os.path.exists(path):
         os.makedirs(path)
     elif not os.path.isdir(path):
-        raise VACUMMError("Path exists but is not a directory: {}".format(path))
+        raise VACUMMError("Path exists but is not a directory: {}".format(
+            path))
     if chmod is not None:
         os.chmod(path, chmod)
     return path
+
 
 def nduniq(data, axis=0):
     """Remove duplicates in a numpy array along a given axis
@@ -2380,23 +2519,25 @@ def nduniq(data, axis=0):
     >>> b = uniq(a)
     """
     nd = N.ndim(data)
-    if axis<0:
+    if axis < 0:
         axis = nd + axis
     n = data.shape[axis]
-    if nd>2:
+    if nd > 2:
         wdata = N.rollaxis(data, 0).reshape(n, -1)
     else:
         wdata = data
     keep = N.ones(0, '?')
     for i, d in enumerate(wdata):
-        if not keep[i]: continue
+        if not keep[i]:
+            continue
         bad = wdata == d
-        if nd>1:
+        if nd > 1:
             bad = bad.all(axis=-1)
         bad[i] = False
         keep = keep & ~bad
     del wdata
     return N.compress(data, keep, axis=axis)
+
 
 def splitidx(arr, crit):
     """Return a list of split indices for a 1d array according to a criteria
@@ -2419,29 +2560,29 @@ def splitidx(arr, crit):
     """
     # Check array
     arr = N.asarray(arr[:])
-    if N.size(arr)==0:
+    if N.size(arr) == 0:
         return []
     nx = N.shape(arr)[0]
 
     # Positive integer = equal size
-    if isinstance(crit, int) and int>=0:
-        if crit<1:
+    if isinstance(crit, int) and int >= 0:
+        if crit < 1:
             return [0]
-        if crit>nx:
+        if crit > nx:
             return list(range(nx))
         return list(range(0, nx, crit))
 
     # Negative integer = fixed size
-    if isinstance(crit, int) and int<0:
+    if isinstance(crit, int) and int < 0:
         crit = -crit
-        if crit>nx:
+        if crit > nx:
             return [0]
         return list(range(0, nx, crit))
 
     # Float = equal value
     if isinstance(crit, float):
-        assert (N.diff(arr)>=0).all(), 'Array must be monotically increasing'
-        if crit>=arr.ptp():
+        assert (N.diff(arr) >= 0).all(), 'Array must be monotically increasing'
+        if crit >= arr.ptp():
             return [0]
         idx = [0]
         cum = arr[0]
@@ -2452,8 +2593,8 @@ def splitidx(arr, crit):
 
     # Direct list of ints
     idx = N.array(idx)
-    idx[idx<0] += nx
-    idx = idx[(idx>0)&(idx<nx)]
+    idx[idx < 0] += nx
+    idx = idx[(idx > 0) & (idx < nx)]
     return idx.tolist()
 
 
@@ -2467,7 +2608,7 @@ class CaseChecker(object):
             valid_cases = [valid_cases]
         else:
             valid_cases = list(valid_cases)
-        valid_cases = list(map(string.lower,valid_cases))
+        valid_cases = list(map(string.lower, valid_cases))
         self.ic = ic
         self.includes = []
         self.excludes = []
@@ -2491,7 +2632,7 @@ class CaseChecker(object):
 
         # Error mode
         assert errmode in ['raise', 'exit'] or callable(errmode), ('errmode must'
-            ' be either "raise",  "exit" or a callable')
+                                                                   ' be either "raise",  "exit" or a callable')
         self.errmode = errmode
         self.casename = casename
 
@@ -2542,41 +2683,42 @@ class CaseChecker(object):
             if emessage:
                 message.append(emessage)
             message = ("Invalid {self.casename} '{case}': " +
-                ' and '.join(message))
+                       ' and '.join(message))
             self.error(message.format(**locals()))
 
     __call__ = check
 
     def error(self, message):
         """Exit with an error"""
-        if self.errmode=='exit':
+        if self.errmode == 'exit':
             sys.exit(message)
         if callable(self.errmode):
             self.errmode(message)
         raise VACUMMError(message)
+
 
 def check_case(cases, case, **kwargs):
     """Check that case is valid using :class:``CaseChecker` and allowed cases"""
     return CaseChecker(cases, **kwargs)(case)
 
 
-
 def indices2slices(indices):
     """Convert a list of indices to a list of slices"""
-    if len(indices)==1:
+    if len(indices) == 1:
         return [slice(indices[0], indices[0]+1)]
     elif not indices:
         return []
     ii = N.sort(indices)
     slices = []
     dii = N.diff(ii)
-    iic = [-1] + (N.where(dii>1)[0]).tolist() + [-1]
+    iic = [-1] + (N.where(dii > 1)[0]).tolist() + [-1]
     slices = []
     for i, ic in enumerate(iic[1:]):
         i0 = indices[iic[i] + 1]
         i1 = indices[ic] + 1
         slices.append(slice(i0, i1))
     return slices
+
 
 def dicttree_get(dd, *keys, **kwargs):
     """Get value of tree of dicts"""
@@ -2628,6 +2770,7 @@ class MV2Wrapper(object):
     >>> mar = mw.get() # now you are sure to have a MV2.array
     >>> xar = mw.put(mar)
     """
+
     def __init__(self, ar):
         if hasattr(ar, 'to_cdms2'):
             self.atype = 'xarray'
@@ -2637,16 +2780,19 @@ class MV2Wrapper(object):
             raise VACUMMError('Array type not supported: {}'.format(type(ar)))
         self.ar = ar
 
-    def get(self):
+    def get(self, copy=False):
         """Convert input array to MV2.array"""
-        if self.atype=='mv2':
-            return self.ar
-        return self.ar.to_cdms2()
+        if self.atype == 'mv2':
+            ar = self.ar
+        else:
+            ar = self.ar.to_cdms2()
+        if copy:
+            ar = ar.clone()
+        return ar
 
     def put(self, mv2ar):
         """Convert MV2.array to input array type"""
-        if self.atype=='mv2':
+        if self.atype == 'mv2':
             return mv2ar
         import xarray
         return xarray.DataArray.from_cdms2(mv2ar)
-

@@ -1,10 +1,10 @@
 """Test function :func:`~vacumm.misc.kriging.krig`"""
 
+from vcmq import P, krign as krig
+from vacumm.misc.kriging import gridded_gauss3, random_gauss3, random_points
+
 npi = 500
 npo = 200
-
-from vcmq import P, krign as krig
-from vacumm.misc.grid.kriging import gridded_gauss3, random_gauss3, random_points
 
 # Generate random field
 xg, yg, zzg = gridded_gauss3()
@@ -18,7 +18,8 @@ zo = krig(xi, yi, zi, xo, yo)
 # - source data
 axis = [xg.min(), xg.max(), yg.min(), yg.max()]
 kw = dict(vmin=zzg.min(), vmax=zzg.max())
-kwim = dict(extent=axis, interpolation='bilinear', origin='lower', alpha=.2, **kw)
+kwim = dict(extent=axis, interpolation='bilinear', origin='lower',
+            alpha=.2, **kw)
 kwsc = dict(lw=0.2, **kw)
 P.figure(figsize=(6, 3.5))
 P.subplot(121)

@@ -41,6 +41,7 @@ import numpy as N
 from .misc import numod
 from .constants import EARTH_RADIUS
 
+
 def get_great_circle_angle(lon0, lat0, lon1, lat1, degrees=True, radius=None):
     """Get the great circle angular distance"""
     if degrees:
@@ -49,11 +50,12 @@ def get_great_circle_angle(lon0, lat0, lon1, lat1, degrees=True, radius=None):
         lon1 *= N.pi/180
         lat1 *= N.pi/180
     Nm = numod(lon0, lat0, lon1, lat1)
-    a = Nm.arccos(Nm.sin(lon0) * Nm.sin(lon1) + 
-        Nm.cos(lon0) * Nm.cos(lon1) * Nm.cos(lat0 - lat1))
+    a = Nm.arccos(Nm.sin(lon0) * Nm.sin(lon1) +
+                  Nm.cos(lon0) * Nm.cos(lon1) * Nm.cos(lat0 - lat1))
     if degrees:
         a *= 180 / N.pi
     return a
+
 
 def haversine(lon0, lat0, lon1, lat1, degrees=True, radius=None):
     """Compute the haversine distance for a known radius"""
@@ -65,8 +67,10 @@ def haversine(lon0, lat0, lon1, lat1, degrees=True, radius=None):
         lon1 *= N.pi/180
         lat1 *= N.pi/180
     Nm = numod(lon0, lat0, lon1, lat1)
-    a = Nm.sin((lat0-lat1)/2)**2 + Nm.cos(lat0) * Nm.cos(lat1) * Nm.sin((lon0-lon1)/2)**2
+    a = Nm.sin((lat0-lat1)/2)**2 + Nm.cos(lat0) * \
+        Nm.cos(lat1) * Nm.sin((lon0-lon1)/2)**2
     return EARTH_RADIUS * 2 * Nm.arcsin(Nm.sqrt(a))
+
 
 def get_bearing(lon0, lat0, lon1, lat1, degrees=True):
     """Compute the bearing angle (forward azimuth)"""
@@ -77,10 +81,11 @@ def get_bearing(lon0, lat0, lon1, lat1, degrees=True):
         lat1 *= N.pi/180
     Nm = numod(lon0, lat0, lon1, lat1)
     a = Nm.arctan2(Nm.cos(lat0)*Nm.sin(lat1) - Nm.sin(lat0)*Nm.cos(lat1)*Nm.cos(lon1-lon0),
-        Nm.sin(lon1-lon0)*Nm.cos(lat1)) 
+                   Nm.sin(lon1-lon0)*Nm.cos(lat1))
     if degrees:
-      a *= 180 / N.pi
+        a *= 180 / N.pi
     return a
+
 
 def beardist2loc(lon0, lat0, bearing, dist, degrees=True, radius=None):
     if radius:
@@ -91,13 +96,16 @@ def beardist2loc(lon0, lat0, bearing, dist, degrees=True, radius=None):
         bearing *= N.pi/180
     Nm = numod(lon0, lat0, bearing, dist)
     a = dist / EARTH_RADIUS
-    lat1 = Nm.asin(Nm.sin(lat0)*Nm.cos(a) + Nm.cos(lat0)*Nm.sin(a)*Nm.cos(bearing))
-    lon1 =lon0 + Nm.atan2(Nm.cos(a)-Nm.sin(lat0)*Nm.sin(lat1), Nm.sin(bearing)*Nm.sin(a)*Nm.cos(lat0)) 
+    lat1 = Nm.asin(Nm.sin(lat0)*Nm.cos(a) + Nm.cos(lat0)
+                   * Nm.sin(a)*Nm.cos(bearing))
+    lon1 = lon0 + Nm.atan2(Nm.cos(a)-Nm.sin(lat0)*Nm.sin(lat1),
+                           Nm.sin(bearing)*Nm.sin(a)*Nm.cos(lat0))
     if degrees:
         lon1 *= 180 / N.pi
         lat1 *= 180 / N.pi
     return lon1, lat1
-    
+
+
 def get_great_circle_points(lon0, lat0, lon1, lat1, npts, degrees=True, radius=None):
     """Get the great circle angle"""
     if radius:
@@ -111,14 +119,9 @@ def get_great_circle_points(lon0, lat0, lon1, lat1, npts, degrees=True, radius=N
     dists = N.reshape(N.linspace(0, 1, npts), N.shape(a)[::-1]+(1, )).T
     dists *= a * EARTH_RADIUS
     bearing = get_bearing(lon0, lat0, lon1, lat1, degrees=False)
-    lon1, lat1 = beardist2loc(lon0, lat0, bearing, dists, degrees=False, radius=radius)
+    lon1, lat1 = beardist2loc(
+        lon0, lat0, bearing, dists, degrees=False, radius=radius)
     if degrees:
         lon1 *= 180 / N.pi
         lat1 *= 180 / N.pi
     return lon1, lat1
-    
-    
-    
-    
-    
-    

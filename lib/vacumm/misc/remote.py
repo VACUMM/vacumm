@@ -37,7 +37,9 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
-import os, shutil, re
+import os
+import shutil
+import re
 from stat import *
 import glob
 from six.moves.urllib.parse import urlparse
@@ -46,7 +48,9 @@ import subprocess
 from six.moves import range
 filterwarnings('ignore', message='.*Not using mpz_powm_sec.*')
 
-__all__ = ['SSHBank', 'sshbank', 'WorkFile', 'InputWorkFiles', 'OutputWorkFile']
+__all__ = ['SSHBank', 'sshbank', 'WorkFile',
+           'InputWorkFiles', 'OutputWorkFile']
+
 
 class SSHBank(object):
     """Interface to handle a bank of SSH/SFTP connections
@@ -63,6 +67,7 @@ class SSHBank(object):
         >>> ssh2 = sshbank.ssh('myhost:4022')
         >>> ftp2 = sshbank.ftp('user@myhost')
     """
+
     def __init__(self):
         try:
             import paramiko
@@ -70,6 +75,7 @@ class SSHBank(object):
             raise('You need paramiko to use SSHBank')
         self.paramiko = paramiko
         self._bank = {}
+
     def __call__(self, host):
 
         # Check the bank
@@ -89,7 +95,8 @@ class SSHBank(object):
         # Connect
         ssh.set_missing_host_key_policy(self.paramiko.AutoAddPolicy())
         ssh.load_system_host_keys()
-        if port is not None: port = int(port)
+        if port is not None:
+            port = int(port)
         ssh.connect(host, port=port, username=username)
         ftp = ssh.open_sftp()
         self._bank[hostid] = dict(ssh=ssh, ftp=ftp)
@@ -103,6 +110,7 @@ class SSHBank(object):
         """Get the SFTP agent"""
         return self(host)['ftp']
 
+
 try:
     #: Ready to use SSH bank
     sshbank = SSHBank()
@@ -112,6 +120,7 @@ except:
 
 class WorkFileException(Exception):
     pass
+
 
 class WorkFile(object):
     """Base class for :class:`InputWorkFiles` and class:`OutputWorkFile`
@@ -131,22 +140,25 @@ class WorkFile(object):
     fmode: optional
         File unix mode (see :func:`os.chmod`)
     """
-    def __init__(self, logger, ssh, umask=0, dmode=S_IRWXU|S_IRWXG|S_IROTH|S_IXOTH,
-        fmode=S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH, raise_error=True):
+
+    def __init__(self, logger, ssh, umask=0, dmode=S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH,
+                 fmode=S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH, raise_error=True):
         self._raise_error = raise_error
-        self.logger  = logger
+        self.logger = logger
         if ssh is not False:
             self.ssh = ssh['ssh']
             self.ftp = ssh['ftp']
         else:
             self.ssh = self.ftp = None
-        if umask is not None: os.umask(umask)
+        if umask is not None:
+            os.umask(umask)
         self.fmode = fmode
         self.dmode = dmode
 
     def error(self, msg, warn=None):
         """Send an ERROR message and exit"""
-        if warn is None: warn = not self._raise_error
+        if warn is None:
+            warn = not self._raise_error
         if self.logger:
             if warn:
                 self.logger.warning(msg)
@@ -158,18 +170,21 @@ class WorkFile(object):
                 raise WorkFileException(msg)
             else:
                 print(msg)
+
     def debug(self, msg):
         """Send a DEBUG message"""
         if self.logger:
             self.logger.debug(msg)
         else:
             print(msg)
+
     def warning(self, msg):
         """Send a WARNING message"""
         if self.logger:
             self.logger.warning(msg)
         else:
             print(msg)
+
     def info(self, msg):
         """Send an INFO message"""
         if self.logger:
@@ -193,12 +208,13 @@ class WorkFile(object):
             return [line[:-1] for line in res[1].readlines()]
 
     def _host2ssh_(self, sshbank):
-        if  self.host:
+        if self.host:
             if sshbank is None:
                 from vacumm.misc.remote import sshbank
                 #sshbank = SSHBank()
                 if sshbank is None:
-                    raise WorkFileException("Can't import sshbank because paramiko is not found")
+                    raise WorkFileException(
+                        "Can't import sshbank because paramiko is not found")
             return sshbank(self.host)
         return False
 
@@ -221,8 +237,7 @@ class WorkFile(object):
             exps.setdefault(vn, os.environ[vn.upper()])
         if subst is not None:
             exps.update(subst)
-        return os.path.expanduser(path%exps)
-
+        return os.path.expanduser(path % exps)
 
     @classmethod
     def parse_path(cls, path, rootdir=None, subst=None, mode=None):
@@ -262,16 +277,16 @@ class WorkFile(object):
         """
         # Root prefix
         if isinstance(path, tuple):
-            if len(path)==0:
+            if len(path) == 0:
                 path = ''
-            elif len(path)==1:
+            elif len(path) == 1:
                 path = path[0]
-            elif len(path)==2:
-                path = '(%s,%s)'%path
-            elif len(path)==3:
-                path = '(%s>%s)%s'%path
+            elif len(path) == 2:
+                path = '(%s,%s)' % path
+            elif len(path) == 3:
+                path = '(%s>%s)%s' % path
             else:
-                path = '%s(%s>%s)%s'%path[:4]
+                path = '%s(%s>%s)%s' % path[:4]
         else:
             path = path.strip()
         if rootdir is not None:
@@ -279,7 +294,8 @@ class WorkFile(object):
 
         # Check '>' path separators
         if path.find('>') != -1 and path.rfind('>') != path.find('>'):
-            raise WorkFileException('There is more than one ">" in the specified formatted path: '+path)
+            raise WorkFileException(
+                'There is more than one ">" in the specified formatted path: '+path)
 
         # Substitutions
         path = cls.expand_path(path, subst=subst)
@@ -287,27 +303,32 @@ class WorkFile(object):
         # Split parts
         parsed = re_workdir_parse(path)
         if not parsed:
-            return None,None,path.strip()
+            return None, None, path.strip()
         spath = list(parsed[0])
         indir = os.path.join(spath[0], spath[1])
         outdir = os.path.join(spath[0], spath[2])
-        #if '>' in indir:
-            #raise WorkFileException('Input path must not contain a ">": %s'%indir)
-        #if '>' in outdir:
-            #raise WorkFileException('Output path must not contain a ">": %s'%outdir)
+        # if '>' in indir:
+        #raise WorkFileException('Input path must not contain a ">": %s'%indir)
+        # if '>' in outdir:
+        #raise WorkFileException('Output path must not contain a ">": %s'%outdir)
 
         # Check input and output dirs
         if mode is None:
-            if hasattr(cls, 'get'): mode = 'get'
-            elif hasattr(cls, 'put'): mode = 'put'
+            if hasattr(cls, 'get'):
+                mode = 'get'
+            elif hasattr(cls, 'put'):
+                mode = 'put'
         ppi = urlparse(indir)
         ppo = urlparse(outdir)
         if (mode == 'get' and ppo.hostname is not None) or \
            (mode == 'put' and ppi.hostname is not None):
-            indir,outdir = outdir,indir
+            indir, outdir = outdir, indir
         pattern = spath[3].strip(os.path.sep+' ')
         return indir, outdir, pattern
+
+
 re_workdir_parse = re.compile('^(.*)\(([^>]+)>([^>]+)\)(.*)$').findall
+
 
 class InputWorkFiles(WorkFile):
     """A class to deal with input remote files
@@ -340,21 +361,24 @@ class InputWorkFiles(WorkFile):
     >>> print wfile.remote_files()
 
     """
+
     def __init__(self, path, rootdir=None, logger=None, sshbank=None, transfer=False, subst=None, check=2, sort=None, filter=None, raise_error=True, **kwargs):
         # Parse path
         self._raise_error = raise_error
-        indir,outdir,path = self.parse_path(path, rootdir=rootdir, subst=subst)
+        indir, outdir, path = self.parse_path(
+            path, rootdir=rootdir, subst=subst)
         #print 's3',indir,outdir,path
         self.sort = sort
         self.filter = filter
-        if indir is None: # pure local with nothing to copy
+        if indir is None:  # pure local with nothing to copy
             self.host = ''
             self.local_pattern = self.remote_pattern = path
             self.cpmode = 0
             self.rem2loc = self.loc2rem = None
-            WorkFile.__init__(self, logger, False, raise_error=raise_error, **kwargs)
+            WorkFile.__init__(self, logger, False,
+                              raise_error=raise_error, **kwargs)
             return
-        self.remote_dir, self.local_dir, self.pattern = indir,outdir,path
+        self.remote_dir, self.local_dir, self.pattern = indir, outdir, path
         self.local_pattern = os.path.join(self.local_dir, self.pattern)
 
         # Extract host and port
@@ -393,36 +417,40 @@ class InputWorkFiles(WorkFile):
             - ``1``: only check the existence of the local file
             - ``2``: check existence and compare local and remote dates
         """
-        if check is None: check = self.check
-        if check is None: check = 2
+        if check is None:
+            check = self.check
+        if check is None:
+            check = 2
 
         # Direct access
-        if self.cpmode==0:
+        if self.cpmode == 0:
             locfiles = self.local_files(ifile)
             if not locfiles:
-                self.error('No input file found with this pattern: '+self.local_pattern)
+                self.error(
+                    'No input file found with this pattern: '+self.local_pattern)
             return locfiles
 
         # Copy/transfer
         locfiles = []
-        tag = 'Downloading %s:'%self.host if self.cpmode==2 else 'Copying '
+        tag = 'Downloading %s:' % self.host if self.cpmode == 2 else 'Copying '
         for i, remfile in enumerate(self.remote_files(ifile)):
 
-            ## Cache names
+            # Cache names
             #self.rem2loc[remfile] = locfile
             #self.loc2rem[locfile] = remfile
 
             # Theoretical local file name
-            locfile = os.path.join(self.local_dir, remfile[len(self.remote_dir)+1:])
+            locfile = os.path.join(
+                self.local_dir, remfile[len(self.remote_dir)+1:])
 
             # Check
             nothere = not os.path.exists(locfile)
-            if check==1 or (check and nothere):
+            if check == 1 or (check and nothere):
                 getit = nothere
                 msg = 'no local copy'
-            elif check==2:
+            elif check == 2:
                 loctime = os.stat(locfile)[8]
-                if self.cpmode==1:
+                if self.cpmode == 1:
                     remtime = os.stat(remfile)[8]
                 else:
                     remtime = self.ftp.stat(remfile).st_mtime
@@ -444,27 +472,29 @@ class InputWorkFiles(WorkFile):
                     os.remove(locfile)
 
                 # Transfer
-                self.debug('%s%s to %s (%s)'%(tag, remfile, locfile, msg))
-                if self.cpmode==1: # local
+                self.debug('%s%s to %s (%s)' % (tag, remfile, locfile, msg))
+                if self.cpmode == 1:  # local
                     shutil.copy2(remfile, locfile)
-                else: # remote
+                else:  # remote
                     #self.ftp.get(remfile, locfile)
-                    subprocess.check_call(['scp', '%s:%s'%(self.host, remfile), locfile],stdout=subprocess.PIPE)
+                    subprocess.check_call(
+                        ['scp', '%s:%s' % (self.host, remfile), locfile], stdout=subprocess.PIPE)
                 os.chmod(locfile, self.fmode)
 
             locfiles.append(locfile)
         if not locfiles:
-            self.error('No file found on remote host with current pattern (%s) and filter'%self.remote_pattern)
+            self.error(
+                'No file found on remote host with current pattern (%s) and filter' % self.remote_pattern)
         return locfiles
 
     def remote_files(self, ifile=None):
         """List of remote files"""
         # List
-        if self.cpmode<=1: # local copy
+        if self.cpmode <= 1:  # local copy
             files = glob.glob(self.remote_pattern)
-        else: #remote copy
+        else:  # remote copy
             files = [os.path.join(self.remote_dir, remfile)
-                for remfile in self.remote_exec('ls '+self.remote_pattern)]
+                     for remfile in self.remote_exec('ls '+self.remote_pattern)]
 
         # Selection
         if not len(files):
@@ -474,31 +504,32 @@ class InputWorkFiles(WorkFile):
                 files = self.filter(files)
             if self.sort is not None:
                 files.sort(self.sort if self.sort is not True else None)
-            if isinstance(ifile, int): return files[ifile]
+            if isinstance(ifile, int):
+                return files[ifile]
         return files
 
     def local_files(self, ifile=None, update=None):
         """List of local (working) files"""
         # List
-        if self.cpmode==0:
+        if self.cpmode == 0:
             files = glob.glob(self.local_pattern)
             if callable(self.filter):
                 files = self.filter(files)
             if self.sort is not None:
                 files.sort(self.sort if self.sort is not True else None)
-        elif self._local_files is None or update is not False: # Update copy
+        elif self._local_files is None or update is not False:  # Update copy
             files = self.get()
             self._local_files = files
-        else: # Direct access
+        else:  # Direct access
             files = self._local_files
         self._local_files = files
-
 
         # Selection
         if not len(files):
             self.warning('No local files')
         else:
-            if isinstance(ifile, int): return files[ifile]
+            if isinstance(ifile, int):
+                return files[ifile]
         return files
 
 
@@ -531,18 +562,21 @@ class OutputWorkFile(WorkFile):
     >>> wfile.put() # send or copy
 
 """
+
     def __init__(self, path, rootdir='', logger=None, sshbank=None, subst=None, raise_error=True, **kwargs):
         self._raise_error = raise_error
         # Parse path
-        locdir,remdir,basefile = self.parse_path(path, subst=subst, rootdir=rootdir)
+        locdir, remdir, basefile = self.parse_path(
+            path, subst=subst, rootdir=rootdir)
         if locdir is None:
             self.host = ''
             self.local_file = self.remote_file = basefile
             self.cpmode = 0
-            WorkFile.__init__(self, logger, False, raise_error=raise_error, **kwargs)
+            WorkFile.__init__(self, logger, False,
+                              raise_error=raise_error, **kwargs)
             locdir = os.path.dirname(self.local_file)
             if not os.path.exists(locdir):
-                os.makedirs(locdir, self.dmode) # local dir
+                os.makedirs(locdir, self.dmode)  # local dir
             return
         self.local_file = os.path.join(locdir, basefile)
 
@@ -564,10 +598,9 @@ class OutputWorkFile(WorkFile):
         WorkFile.__init__(self, logger, ssh, raise_error=raise_error, **kwargs)
 
         # Local dir
-        locdir = os.path.dirname(os.path.join(locdir,basefile))
+        locdir = os.path.dirname(os.path.join(locdir, basefile))
         if not os.path.exists(locdir):
             os.makedirs(locdir, self.dmode)
-
 
     def put(self, checkdir=True):
         """Send the file"""
@@ -580,15 +613,15 @@ class OutputWorkFile(WorkFile):
         # Check remote directory
         if checkdir:
             remdir = os.path.dirname(self.remote_file)
-            if self.cpmode==1: # local
+            if self.cpmode == 1:  # local
                 if not os.path.exists(remdir):
                     os.makedirs(remdir, self.dmode)
 
-            else: # remote
-                try: # first, check full path
+            else:  # remote
+                try:  # first, check full path
                     self.ftp.stat(remdir)
 
-                except: # now check all subdirs
+                except:  # now check all subdirs
                     remdirs = remdir.split(os.path.sep)
                     for i in range(1, len(remdirs)):
                         thisdir = os.path.join(os.path.sep, *remdirs[:i+1])
@@ -600,28 +633,32 @@ class OutputWorkFile(WorkFile):
                                 self.ftp.mkdir(thisdir)
                                 self.ftp.chmod(thisdir, self.dmode)
                             except:
-                                self.warning('Cannot create remote dir for transfer: %s:%s'%(self.host, thisdir))
+                                self.warning('Cannot create remote dir for transfer: %s:%s' % (
+                                    self.host, thisdir))
                                 return self.local_file
 
         # Transfer
-        if self.cpmode==1: # local
-            self.debug('Copying %s to %s'%(self.local_file, self.remote_file))
+        if self.cpmode == 1:  # local
+            self.debug('Copying %s to %s' %
+                       (self.local_file, self.remote_file))
             try:
                 shutil.copy(self.local_file, self.remote_file)
                 os.chmod(self.remote_file, self.fmode)
             except:
                 self.warning("Can't copy file")
-        else: # remote
+        else:  # remote
             remfile = self.remote_file
-            if not os.path.isabs(remfile): remfile = '/'+remfile
-            self.debug('Uploading %s to sftp://%s%s'%(self.local_file, self.host, remfile))
+            if not os.path.isabs(remfile):
+                remfile = '/'+remfile
+            self.debug('Uploading %s to sftp://%s%s' %
+                       (self.local_file, self.host, remfile))
             try:
                 self.ftp.remove(self.remote_file)
             except:
                 try:
                     self.ftp.stat(remfile)
                 except:
-                    pass # File does not exist so no warning
+                    pass  # File does not exist so no warning
                 else:
                     self.warning("Can't remove remote file")
             try:
@@ -633,4 +670,3 @@ class OutputWorkFile(WorkFile):
             except:
                 self.warning("Can't change permission of remote file")
         return self.local_file
-

@@ -1,5 +1,10 @@
 """Test :func:`~vacumm.misc.regridding.grid2xy` with interpolation in X, Y, Z and T"""
 
+# Imports
+from vcmq import (N, MV2, P, create_lon, create_lat, create_dep,
+                  create_time, lindates, create_axis, reltime, grid2xy,
+                  comptime, set_grid, rotate_grid, add_grid)
+
 # Inits
 np = 100
 nx = 20
@@ -18,12 +23,6 @@ ne = 4
 nez = 2
 
 
-
-# Imports
-from vcmq import (N, MV2, P, create_lon, create_lat, create_dep,
-    create_time, lindates, create_axis, reltime, grid2xy,
-    comptime, set_grid, rotate_grid, add_grid)
-
 # Rectangular xyzt with 1d z data and coords
 # - data
 lon = create_lon(N.linspace(lon0, lon1, nx))
@@ -31,19 +30,18 @@ lat = create_lat(N.linspace(lat0, lat1, ny))
 dep = create_dep(N.linspace(dep0, dep1, nz))
 time = create_time(lindates(time0, time1, nt))
 extra = create_axis(N.arange(ne), id='member')
-data = N.resize(lat[:], (ne, nt, nz, nx, ny)) # function of y
+data = N.resize(lat[:], (ne, nt, nz, nx, ny))  # function of y
 data = N.moveaxis(data, -1, -2)
 #data = N.arange(nx*ny*nz*nt*ne, dtype='d').reshape(ne, nt, nz, ny, nx)
-vi = MV2.array(data,
-                 axes=[extra, time, dep, lat, lon], copy=False,
-                 fill_value=1e20)
+vi = MV2.array(data, axes=[extra, time, dep, lat, lon], copy=False,
+               fill_value=1e20)
 N.random.seed(0)
 xo = N.random.uniform(lon0, lon1, np)
 yo = N.random.uniform(lat0, lat1, np)
 zo = N.random.uniform(dep0, dep1, np)
 to = comptime(N.random.uniform(reltime(time0, time.units).value,
-                      reltime(time1, time.units).value, np),
-                      time.units)
+                               reltime(time1, time.units).value, np),
+                time.units)
 
 # Rectangular xyzt with 1d z
 vo = grid2xy(vi, xo=xo, yo=yo, zo=zo, to=to, method='linear')

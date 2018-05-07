@@ -36,7 +36,11 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
-import fnmatch, math, os, re, shutil
+import fnmatch
+import math
+import os
+import re
+import shutil
 import datetime
 import six
 from six.moves import range
@@ -124,50 +128,60 @@ def rollover(filepath, count=1, suffix='.%d', keep=True, verbose=False):
         True if a backup occured, False otherwise (count is 0 or filepath does not exists)
 
     '''
-    if not count > 0: return False
-    if not os.path.exists(filepath): return False
-    fnt = '%s%s'%(filepath, suffix)
+    if not count > 0:
+        return False
+    if not os.path.exists(filepath):
+        return False
+    fnt = '%s%s' % (filepath, suffix)
     for i in range(count - 1, 0, -1):
-        sfn = fnt%(i)
-        dfn = fnt%(i + 1)
+        sfn = fnt % (i)
+        dfn = fnt % (i + 1)
         if os.path.exists(sfn):
             if os.path.exists(dfn):
                 os.remove(dfn)
-                if verbose: print('rollover remove %s'%(dfn))
+                if verbose:
+                    print('rollover remove %s' % (dfn))
             os.rename(sfn, dfn)
-            if verbose: print('rollover rename %s -> %s'%(sfn, dfn))
-    dfn = fnt%(1)
+            if verbose:
+                print('rollover rename %s -> %s' % (sfn, dfn))
+    dfn = fnt % (1)
     if os.path.exists(dfn):
         os.remove(dfn)
-        if verbose: print('rollover remove %s'%(dfn))
+        if verbose:
+            print('rollover remove %s' % (dfn))
     if keep:
         shutil.copy(filepath, dfn)
-        if verbose: print('rollover copy %s -> %s'%(filepath, dfn))
+        if verbose:
+            print('rollover copy %s -> %s' % (filepath, dfn))
     else:
         os.rename(filepath, dfn)
-        if verbose: print('rollover rename %s -> %s'%(filepath, dfn))
+        if verbose:
+            print('rollover rename %s -> %s' % (filepath, dfn))
     return True
 
 
-_sort_size_dict = lambda sd: sorted(list(sd.items()), lambda a, b: cmp(a[1],b[1]))
+def _sort_size_dict(sd): return sorted(
+    list(sd.items()), lambda a, b: cmp(a[1], b[1]))
+
 
 # Binary units : 1 kibioctet (Kio) = 2^10 = 1024
 _size_units = {
-    'K':2**10, 'M':2**20, 'G':2**30,
-    'T':2**40, 'P':2**50, 'E':2**60,
-    'Z':2**70, 'Y':2**80,
+    'K': 2**10, 'M': 2**20, 'G': 2**30,
+    'T': 2**40, 'P': 2**50, 'E': 2**60,
+    'Z': 2**70, 'Y': 2**80,
 }
 _sorted_size_units = _sort_size_dict(_size_units)
 
 # SI units : 1 kilooctet (Ko) = 10^3 = 1000
 _si_size_units = {
-    'K':10**3, 'M':10**6, 'G':10**9,
-    'T':10**12, 'P':10**15, 'E':10**18,
-    'Z':10**21, 'Y':10**24,
+    'K': 10**3, 'M': 10**6, 'G': 10**9,
+    'T': 10**12, 'P': 10**15, 'E': 10**18,
+    'Z': 10**21, 'Y': 10**24,
 }
 _sorted_si_size_units = _sort_size_dict(_si_size_units)
 
 _strfsize_doc_sorted_units = ', '.join([s[0] for s in _sorted_size_units])
+
 
 def strfsize(size, fmt=None, unit=None, si=False, suffix=True):
     '''
@@ -205,19 +219,24 @@ def strfsize(size, fmt=None, unit=None, si=False, suffix=True):
     else:
         unit = unit.upper().strip()
         if unit not in units_dict:
-            raise ValueError('Invalid unit, must be one of: %s'%(_strfsize_doc_sorted_units))
+            raise ValueError('Invalid unit, must be one of: %s' %
+                             (_strfsize_doc_sorted_units))
         fmt_unit, fmt_ratio = unit, units_dict[unit]
 
     fmt_size = size / fmt_ratio
     if fmt is None:
-        fmt = '%(size).3f %(unit)s' if float(fmt_size) % 1 else '%(size)d %(unit)s'
+        fmt = '%(size).3f %(unit)s' if float(
+            fmt_size) % 1 else '%(size)d %(unit)s'
     if suffix:
         fmt_unit += unit_suffix
-    return fmt%{'size':fmt_size, 'unit':fmt_unit}
+    return fmt % {'size': fmt_size, 'unit': fmt_unit}
 
-#strfsize.__doc__ %= _strfsize_doc_sorted_units # FIXME: strfsize: TypeError: format requires a mapping
+# strfsize.__doc__ %= _strfsize_doc_sorted_units # FIXME: strfsize: TypeError: format requires a mapping
 
-_strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?'%('|'.join(list(_size_units.keys()))), re.IGNORECASE)
+
+_strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?' % (
+    '|'.join(list(_size_units.keys()))), re.IGNORECASE)
+
 
 def strpsize(size, si=False):
     """Parse a size in Ko, Mo, Kio, Mio, ...
@@ -229,14 +248,15 @@ def strpsize(size, si=False):
     si:
         when unit does not ends with 'io' force interpretation as
         International System units (10^3, ...) instead of binary units (2^10, ...)
-        
+
 
     Return
     ------
     float
         the float number of bytes
     """
-    if not isinstance(size, six.string_types): size = '%s'%(size)
+    if not isinstance(size, six.string_types):
+        size = '%s' % (size)
     m = _strpsizerex.match(size)
     if m:
         d = m.groupdict()
@@ -253,7 +273,7 @@ def strpsize(size, si=False):
         else:
             r = n
         return int(math.ceil(r))
-    raise ValueError('Cannot parse size: %s'%(size))
+    raise ValueError('Cannot parse size: %s' % (size))
 
 
 def walk(top, topdown=True, onerror=None, followlinks=False, depth=None, onfile=None, ondir=None, _depth=0):
@@ -280,20 +300,25 @@ def walk(top, topdown=True, onerror=None, followlinks=False, depth=None, onfile=
     --------
     :func:`os.walk` for more details on other parameters.
     '''
-    if depth is not None and depth >= 0 and _depth > depth: return
-    try: names = os.listdir(top)
+    if depth is not None and depth >= 0 and _depth > depth:
+        return
+    try:
+        names = os.listdir(top)
     except os.error as err:
-        if onerror is not None: onerror(err)
+        if onerror is not None:
+            onerror(err)
         return
     dirs, nondirs = [], []
     for name in names:
         path = os.path.join(top, name)
         if os.path.isdir(path):
             dirs.append(name)
-            if ondir: ondir(path)
+            if ondir:
+                ondir(path)
         else:
             nondirs.append(name)
-            if onfile: onfile(path)
+            if onfile:
+                onfile(path)
     if topdown:
         yield top, dirs, nondirs, _depth
     for name in dirs:
@@ -306,7 +331,7 @@ def walk(top, topdown=True, onerror=None, followlinks=False, depth=None, onfile=
 
 
 def xfind(pattern, path=None, depth=0, files=True, dirs=False, matchall=False, abspath=True, exclude=None,
-         followlinks=False, expandpath=True, onerror=None, onfile=None, ondir=None, onmatch=None):
+          followlinks=False, expandpath=True, onerror=None, onfile=None, ondir=None, onmatch=None):
     '''
     Find paths matching the pattern wildcard.
 
@@ -343,22 +368,32 @@ def xfind(pattern, path=None, depth=0, files=True, dirs=False, matchall=False, a
     ['/path/to/data/data_2010-01-02.nc', '/path/to/data/grib/data_2010-01-01.grb', ...]
 
     '''
-    if not isinstance(pattern, (list, tuple)): pattern = (pattern,)
-    if not isinstance(exclude, (list, tuple)): exclude = (exclude,) if exclude is not None else tuple()
-    if not path: path = '.'
-    if expandpath: path = os.path.expanduser(os.path.expandvars(path))
-    if path.endswith(os.path.sep): path = path[:-1]
+    if not isinstance(pattern, (list, tuple)):
+        pattern = (pattern,)
+    if not isinstance(exclude, (list, tuple)):
+        exclude = (exclude,) if exclude is not None else tuple()
+    if not path:
+        path = '.'
+    if expandpath:
+        path = os.path.expanduser(os.path.expandvars(path))
+    if path.endswith(os.path.sep):
+        path = path[:-1]
     for r, d, f, n in walk(path, topdown=True, followlinks=followlinks, depth=depth, onerror=onerror, onfile=onfile, ondir=ondir):
         e = []
-        if files: e.extend(f)
-        if dirs: e.extend(d)
+        if files:
+            e.extend(f)
+        if dirs:
+            e.extend(d)
         for n in e:
             s = matchall and os.path.join(r, n) or n
             if any((fnmatch.fnmatch(s, p) for p in pattern)):
-                if any((fnmatch.fnmatch(s, x) for x in exclude)): continue
+                if any((fnmatch.fnmatch(s, x) for x in exclude)):
+                    continue
                 f = os.path.join(r, n)
-                if abspath: f = os.path.abspath(f)
-                if onmatch: onmatch(f)
+                if abspath:
+                    f = os.path.abspath(f)
+                if onmatch:
+                    onmatch(f)
                 yield f
 
 
@@ -368,8 +403,8 @@ def find(*args, **kwargs):
 
 
 def xefind(regex, path=None, depth=0, files=True, dirs=False, matchall=False, abspath=True, exclude=None,
-          followlinks=False, expandpath=True, onerror=None, onfile=None, ondir=None, onmatch=None,
-          getmatch=False, rexflags=None, xrexflags=None):
+           followlinks=False, expandpath=True, onerror=None, onfile=None, ondir=None, onmatch=None,
+           getmatch=False, rexflags=None, xrexflags=None):
     '''
     Find paths matching the regex regular expression.
 
@@ -414,27 +449,40 @@ def xefind(regex, path=None, depth=0, files=True, dirs=False, matchall=False, ab
     data/data_2010-01-1.nc : ('2010', '01', '1')
     data/data_2010-01-10.nc : ('2010', '01', '10')
     '''
-    if not path: path = '.'
-    if expandpath: path = os.path.expanduser(os.path.expandvars(path))
-    if path.endswith(os.path.sep): path = path[:-1]
-    if rexflags is not None: x = re.compile(regex, rexflags)
-    else: x = re.compile(regex)
-    if exclude and xrexflags is not None: X = re.compile(exclude, xrexflags)
-    elif exclude: X = re.compile(exclude)
-    else: X = None
+    if not path:
+        path = '.'
+    if expandpath:
+        path = os.path.expanduser(os.path.expandvars(path))
+    if path.endswith(os.path.sep):
+        path = path[:-1]
+    if rexflags is not None:
+        x = re.compile(regex, rexflags)
+    else:
+        x = re.compile(regex)
+    if exclude and xrexflags is not None:
+        X = re.compile(exclude, xrexflags)
+    elif exclude:
+        X = re.compile(exclude)
+    else:
+        X = None
     for r, d, f, n in walk(path, topdown=True, followlinks=followlinks, depth=depth, onerror=onerror, onfile=onfile, ondir=ondir):
         e = []
-        if files: e.extend(f)
-        if dirs: e.extend(d)
+        if files:
+            e.extend(f)
+        if dirs:
+            e.extend(d)
         for n in e:
             s = matchall and os.path.join(r, n) or n
             m = x.match(s)
             if m:
-                if X and X.match(s): continue
+                if X and X.match(s):
+                    continue
                 f = os.path.join(r, n)
-                if abspath: f = os.path.abspath(f)
-                if onmatch: onmatch(f)
-                yield getmatch and (f,m) or f
+                if abspath:
+                    f = os.path.abspath(f)
+                if onmatch:
+                    onmatch(f)
+                yield getmatch and (f, m) or f
 
 
 def efind(*args, **kwargs):
@@ -502,8 +550,10 @@ def tfind(regex, path=None, fmt='%Y-%m-%dT%H:%M:%SZ', min=None, max=None, group=
 
     '''
     # If min or max are strings, parse them to datetimes
-    if isinstance(min, six.string_types): min = datetime.datetime.strptime(min, fmt)
-    if isinstance(max, six.string_types): max = datetime.datetime.strptime(max, fmt)
+    if isinstance(min, six.string_types):
+        min = datetime.datetime.strptime(min, fmt)
+    if isinstance(max, six.string_types):
+        max = datetime.datetime.strptime(max, fmt)
     # Find paths, getting matched groups
     items = efind(regex, path, getmatch=True, **kwargs)
     # If group is not specified (or 0, meaning all groups), add concatenation of all groups
@@ -511,29 +561,37 @@ def tfind(regex, path=None, fmt='%Y-%m-%dT%H:%M:%SZ', min=None, max=None, group=
         items = list((i[0], i[1], ''.join(i[1].groups())) for i in items)
     # Else add concatenation of named/indexed groups
     else:
-        if isinstance(group, (six.string_types, int)): group = (group,)
-        m2s = lambda m: ''.join(isinstance(g, six.string_types) and m.groupdict()[g] or m.group(g) for g in group)
+        if isinstance(group, (six.string_types, int)):
+            group = (group,)
+
+        def m2s(m): return ''.join(isinstance(g, six.string_types)
+                                   and m.groupdict()[g] or m.group(g) for g in group)
         items = list((i[0], i[1], m2s(i[1])) for i in items)
     # Convert matched groups to parsed datetime
-    items = list((i[0], i[1], datetime.datetime.strptime(i[2], fmt)) for i in items)
+    items = list((i[0], i[1], datetime.datetime.strptime(i[2], fmt))
+                 for i in items)
     # Filter by min/max datetimes
     if min:
-        if xmin: items = [i for i in items if i[2] > min]
-        else: items = [i for i in items if i[2] >= min]
+        if xmin:
+            items = [i for i in items if i[2] > min]
+        else:
+            items = [i for i in items if i[2] >= min]
     if max:
-        if xmax: items = [i for i in items if i[2] < max]
-        else: items = [i for i in items if i[2] <= max]
+        if xmax:
+            items = [i for i in items if i[2] < max]
+        else:
+            items = [i for i in items if i[2] <= max]
     # Sort by dates
-    items = sorted(items, lambda a,b: cmp(a[2], b[2]))
+    items = sorted(items, lambda a, b: cmp(a[2], b[2]))
     # Remove non-requested fields
     if not getdate and not getmatch:
         items = list(i[0] for i in items)
     else:
         get = [0]
-        if getmatch: get.append(1)
-        if getdate: get.append(2)
+        if getmatch:
+            get.append(1)
+        if getdate:
+            get.append(2)
         if not getdate or not getmatch:
             items = list(tuple(i[g] for g in get) for i in items)
     return items
-
-

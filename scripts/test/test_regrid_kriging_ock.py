@@ -1,16 +1,15 @@
 """Test class :func:`~vacumm.misc.kriging.OrdinaryCloudKriger`"""
-
-npi = 50
-
 from vcmq import P, OrdinaryCloudKriger
 from vacumm.misc.kriging import (gridded_gauss3, random_gauss3)
+
+npi = 50
 
 # Generate random field
 xg, yg, zzg = gridded_gauss3()
 xi, yi, zi = random_gauss3(np=npi)
 
 # Setup kriger
-ock = OrdinaryCloudKriger(xi, yi, zi, n=0) # nugget = 0
+ock = OrdinaryCloudKriger(xi, yi, zi, n=0)  # nugget = 0
 
 # Interpolate to grid and get error
 xo, yo = P.meshgrid(xg[::4], yg[::4])

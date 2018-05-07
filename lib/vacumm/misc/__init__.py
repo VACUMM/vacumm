@@ -56,7 +56,8 @@ Misc tools
 #from . import plot
 #from . import sdata
 
-import os as _os, locale as _locale
+import os as _os
+import locale as _locale
 _os.environ['LC_NUMERIC'] = 'en_US.UTF-8'
 try:
     _locale.setlocale(_locale.LC_NUMERIC, 'en_US.UTF-8')

@@ -1,10 +1,10 @@
 import unittest
 import os
+import sys
 from matplotlib import use, rcdefaults
 use('Agg')
 from matplotlib import pyplot as P
-import sys
-#from vcmq import *
+from vcmq import *
 
 rcdefaults()
 
@@ -23,6 +23,7 @@ method_template = """def {0}(self):
     P.rcdefaults()
 """
 
+
 class VCTestCase(unittest.TestCase):
 
     def get_path(self, test_name):
@@ -40,8 +41,10 @@ class VCTestCase(unittest.TestCase):
 
     def handle_result(self, result=None):
         """Handle result from test scripts"""
-        if isinstance(result, dict): result = list(result.items())
-        if not isinstance(result, (list, tuple)): return
+        if isinstance(result, dict):
+            result = list(result.items())
+        if not isinstance(result, (list, tuple)):
+            return
 
         # Loop on content
         for key, values in result:

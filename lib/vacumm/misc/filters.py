@@ -37,7 +37,9 @@ from __future__ import absolute_import
 import warnings
 from six.moves import range
 
-import numpy as N,MV2, cdms2
+import numpy as N
+import MV2
+import cdms2
 from genutil.filters import *
 import scipy.signal as S
 #from scipy.signal import convolve2d
@@ -46,21 +48,22 @@ from pylab import meshgrid
 from .units import deg2m
 from .axes import islon, islat
 
-__all__ = ['generic1d', 'shapiro1d', 'gaussian1d', 'hamming1d','generic2d',
-    'shapiro2d', 'gaussian2d', 'deriv', 'deriv2d',
-    'norm_atan','running_average',
-    'bartlett1d', 'kaiser1d', 'hanning1d', 'blackman1d']
-
+__all__ = ['generic1d', 'shapiro1d', 'gaussian1d', 'hamming1d', 'generic2d',
+           'shapiro2d', 'gaussian2d', 'deriv', 'deriv2d',
+           'norm_atan', 'running_average',
+           'bartlett1d', 'kaiser1d', 'hanning1d', 'blackman1d']
 
 
 try:
     from numpy import ComplexWarning
     warnings.filterwarnings('ignore', 'Casting complex values', ComplexWarning)
-except ImportError: pass
+except ImportError:
+    pass
 
 MA = N.ma
 MV = MV2
 cdms = cdms2
+
 
 def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
     """Generic 1D filter applied to :mod:`MV2` variables using convolution.
@@ -110,10 +113,11 @@ def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
     # - data
     data = MV2.asarray(data)
     assert data.ndim, 'Input data array must be at least 1D'
-    if axis<0: axis += data.ndim
-    if axis!=data.ndim-1:
+    if axis < 0:
+        axis += data.ndim
+    if axis != data.ndim-1:
         init_order = data.getOrder(ids=1)
-        data = data.reorder('...%i'%axis)
+        data = data.reorder('...%i' % axis)
     datan = data.filled(0.).copy()
     nx = datan.shape[-1]
     datan.shape = -1, nx
@@ -124,7 +128,7 @@ def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
         weights = N.asarray(weights)
     assert weights.ndim, 'Input weights array must be at least 1D'
     assert weights.shape[-1] % 2 == 1, 'Shape of weights must be of odd size'
-    ww = (~N.ma.getmaskarray(data)).astype('i') #  = good 2D
+    ww = (~N.ma.getmaskarray(data)).astype('i')  # = good 2D
     nw2 = weights.shape[-1] / 2
     weights.shape = 1, -1
     ww.shape = datan.shape
@@ -134,7 +138,8 @@ def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
     # Cyclic case
     if cyclic:
         mode = 'valid'
-        fdatan = N.concatenate((datan[:, -nw2:], datan, datan[:, :nw2]), axis=1)
+        fdatan = N.concatenate(
+            (datan[:, -nw2:], datan, datan[:, :nw2]), axis=1)
         fww = N.concatenate((ww[:, -nw2:], ww, ww[:, :nw2]), axis=1)
         one1d = N.ones(datan.shape[-1]+nw2*2, 'i')
     else:
@@ -153,7 +158,7 @@ def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
     else:
         ww = S.convolve2d(fww, weights, **kwf)
     del fdatan, fww
-    bad = ww==0
+    bad = ww == 0
     ww[bad] = 1
     datan[:] = N.where(bad, datan, datan/ww.astype('d'))
     ww[bad] = 0
@@ -176,16 +181,17 @@ def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
                 mask = 0.
             else:
                 mask = float(mask)
-            bad |= (ww/one2d)<(1-mask) # threshold
+            bad |= (ww/one2d) < (1-mask)  # threshold
         datao[:] = N.ma.masked_where(bad, datan, copy=False)
         del ww, one2d, bad
     else:
         datao[:] = datan
 
-    if axis!=data.ndim-1:
+    if axis != data.ndim-1:
         init_order = cdms2.order2index(datao.getAxisList(), init_order)
         return datao.reorder(init_order)
     return datao
+
 
 def shapiro1d(data, **kwargs):
     """Shapiro (121) 1D filter
@@ -200,8 +206,9 @@ def shapiro1d(data, **kwargs):
     ------
     :class:`MV2.array`
     """
-    weights = N.array([1.,2.,1.],data.dtype.char)
+    weights = N.array([1., 2., 1.], data.dtype.char)
     return generic1d(data, weights, **kwargs)
+
 
 def hamming1d(data, M, **kwargs):
     """Hamming 1D filter
@@ -221,6 +228,7 @@ def hamming1d(data, M, **kwargs):
     weights = N.hamming(M).astype(data.dtype.char)
     return generic1d(data, weights, **kwargs)
 
+
 def hanning1d(data, M, **kwargs):
     """Hanning 1D filter
 
@@ -238,6 +246,7 @@ def hanning1d(data, M, **kwargs):
     """
     weights = N.hanning(M).astype(data.dtype.char)
     return generic1d(data, weights, **kwargs)
+
 
 def bartlett1d(data, M, **kwargs):
     """Bartlett 1D filter
@@ -257,6 +266,7 @@ def bartlett1d(data, M, **kwargs):
     weights = N.bartlett(M).astype(data.dtype.char)
     return generic1d(data, weights, **kwargs)
 
+
 def blackman1d(data, M, **kwargs):
     """Blackman 1D filter
 
@@ -274,6 +284,7 @@ def blackman1d(data, M, **kwargs):
     """
     weights = N.blackman(M).astype(data.dtype.char)
     return generic1d(data, weights, **kwargs)
+
 
 def kaiser1d(data, M, beta, **kwargs):
     """Kaiser 1D filter
@@ -295,7 +306,8 @@ def kaiser1d(data, M, beta, **kwargs):
     weights = N.kaiser(M, beta).astype(data.dtype.char)
     return generic1d(data, weights, **kwargs)
 
-def gaussian1d(data,nxw,**kwargs):
+
+def gaussian1d(data, nxw, **kwargs):
     """Gaussian 1D filter
 
     Parameters
@@ -311,10 +323,9 @@ def gaussian1d(data,nxw,**kwargs):
     ------
     :class:`MV2.array`
     """
-    assert nxw % 2 == 1 , 'nxw must be an odd number'
+    assert nxw % 2 == 1, 'nxw must be an odd number'
     xx = N.arange(nxw)-nxw/2.
     return generic1d(data, N.exp(-xx**2/nxw**2), **kwargs)
-
 
 
 def generic2d(data, weights, mask='same', copy=True):
@@ -362,13 +373,13 @@ def generic2d(data, weights, mask='same', copy=True):
 
     # Setup
     data = MV2.asarray(data)
-    assert data.ndim>1, 'Input data array must be at least 2D'
+    assert data.ndim > 1, 'Input data array must be at least 2D'
     if isinstance(weights, int):
         weights = N.ones((weights, weights))
     else:
         weights = N.asarray(weights)
     assert weights.ndim, 'Input weights array must be at least 2D'
-    for i in -2,-1:
+    for i in -2, -1:
         assert weights.shape[i] % 2 == 1, \
             'Shape of weights must be of odd size in the two directions'
     ww = -N.ma.getmaskarray(data).astype('f')+1
@@ -383,19 +394,19 @@ def generic2d(data, weights, mask='same', copy=True):
 
     # Filter
     kwf = dict(mode='same', boundary='fill', fillvalue=0.)
-    for i in range(datan.shape[0]): # TODO: multiproc filter2d
+    for i in range(datan.shape[0]):  # TODO: multiproc filter2d
         datan[i] = S.convolve2d(datan[i], weights, **kwf)
         if data.mask is MV2.nomask:
             ww[i] = S.convolve2d(one2d, weights, **kwf)
         else:
             ww[i] = S.convolve2d(ww[i], weights, **kwf)
-    if data.mask is not  MV2.nomask:
+    if data.mask is not MV2.nomask:
         one3d = S.convolve2d(one2d, weights, **kwf)
         one3d = N.resize(one3d, datan.shape)
-    bad = ww==0
-    ww[bad]=1.
+    bad = ww == 0
+    ww[bad] = 1.
     datan[:] = N.where(bad, datan, datan/ww)
-    ww[bad]=0
+    ww[bad] = 0
 #    del bad
 
     # Set
@@ -440,12 +451,11 @@ def shapiro2d(data, corners=.5, **kwargs):
     ------
     :class:`MV2.array`
     """
-    weights = N.empty((3,3),data.dtype.char)
+    weights = N.empty((3, 3), data.dtype.char)
     weights[:] = corners
-    weights[1,:] = [1.,2.,1.]
-    weights[:,1] = [1.,2.,1.]
+    weights[1, :] = [1., 2., 1.]
+    weights[:, 1] = [1., 2., 1.]
     return generic2d(data, weights, **kwargs)
-
 
 
 def gaussian2d(data, nxw, nyw=None, sxw=1/3., syw=1/3., rmax=3., **kwargs):
@@ -470,11 +480,12 @@ def gaussian2d(data, nxw, nyw=None, sxw=1/3., syw=1/3., rmax=3., **kwargs):
     **kwargs
         Keywords are passed to :func:`generic2d`.
     """
-    if nyw is None: nyw = nxw
+    if nyw is None:
+        nyw = nxw
     assert nxw % 2 == 1 and nyw % 2 == 1, 'nxw and nyw must be odd numbers'
     assert sxw > 0 and syw > 0,  'sxw and syw must be positive'
 
-    xx,yy = meshgrid(N.arange(nxw)-nxw/2, N.arange(nyw)-nyw/2)
+    xx, yy = meshgrid(N.arange(nxw)-nxw/2, N.arange(nyw)-nyw/2)
 
     if sxw < 1:
         sxw *= nxw/2
@@ -483,9 +494,10 @@ def gaussian2d(data, nxw, nyw=None, sxw=1/3., syw=1/3., rmax=3., **kwargs):
 
     weights = N.exp(-(xx**2/sxw**2 + yy**2/syw**2))
 
-    weights[weights<N.exp(-rmax**2)] = 0.
+    weights[weights < N.exp(-rmax**2)] = 0.
 
     return generic2d(data, weights, **kwargs)
+
 
 def deriv(data, axis=0, fast=True, fill_value=None, physical=True, lat=None):
     """Derivative along a given axis
@@ -513,7 +525,7 @@ def deriv(data, axis=0, fast=True, fill_value=None, physical=True, lat=None):
         init_order = data.getOrder(ids=1)
         data = data.reorder(str(axis)+'...')
     data_deriv = data.clone()
-    data_deriv.id += '_deriv%i'%axis
+    data_deriv.id += '_deriv%i' % axis
 
     # cdms or Numeric variable  to work on?
     if data.mask is MV.nomask:
@@ -535,25 +547,25 @@ def deriv(data, axis=0, fast=True, fill_value=None, physical=True, lat=None):
 
     # Physical derivative
     if physical:
-        pos = N.resize(data.getAxis(0)[:],data.shape[::-1]).transpose()
+        pos = N.resize(data.getAxis(0)[:], data.shape[::-1]).transpose()
         if islon(data.getAxis(0)):
             if lat is None:
-                for i,lataxis in enumerate(data.getAxisList()):
+                for i, lataxis in enumerate(data.getAxisList()):
                     if islat(lataxis):
                         sh = list(data.shape)
                         if i != data.ndim-1:
                             olen = sh[-1]
                             sh[-1] = len(lataxis)
                             sh[i] = olen
-                            lat = N.swapaxes(N.resize(lataxis[:],sh),i,-1)
+                            lat = N.swapaxes(N.resize(lataxis[:], sh), i, -1)
                         else:
-                            lat = N.resize(lataxis[:],sh)
+                            lat = N.resize(lataxis[:], sh)
                         break
         if islon(data.getAxis(0)) or islat(data.getAxis(0)):
-            pos = deg2m(pos,lat)
+            pos = deg2m(pos, lat)
             units = 'm-1'
         else:
-            units = getattr(data.getAxis(0),'units',None)
+            units = getattr(data.getAxis(0), 'units', None)
         data_deriv[1:-1] /= (pos[2:]-pos[:-2])
         data_deriv[0] /= (pos[1]-pos[0])
         data_deriv[-1] /= (pos[-2]-pos[-1])
@@ -565,11 +577,12 @@ def deriv(data, axis=0, fast=True, fill_value=None, physical=True, lat=None):
     if fast:
         mask = MV.getmaskarray(data)
         dmask = mask.copy()
-        dmask[1:-1] = N.logical_or(mask[2:],mask[:-2])
+        dmask[1:-1] = N.logical_or(mask[2:], mask[:-2])
 #       for i in 0,-1: dmask[i] = 1
-        data_deriv[:] = MV.masked_array(data_deriv,mask=dmask)
+        data_deriv[:] = MV.masked_array(data_deriv, mask=dmask)
     else:
-        for i in 0,-1: data_deriv[i] = MV.masked
+        for i in 0, -1:
+            data_deriv[i] = MV.masked
 
     # Reordering back
     if axis:
@@ -578,7 +591,7 @@ def deriv(data, axis=0, fast=True, fill_value=None, physical=True, lat=None):
 
     # Units
     if units is not None:
-        data_units = getattr(data_deriv,'units',None)
+        data_units = getattr(data_deriv, 'units', None)
         if data_units is None:
             data_deriv.units = units
         else:
@@ -587,6 +600,7 @@ def deriv(data, axis=0, fast=True, fill_value=None, physical=True, lat=None):
                 del data_deriv.units
 
     return data_deriv
+
 
 def deriv2d(data, direction=None, **kwargs):
     """Derivative in a 2D space
@@ -605,22 +619,22 @@ def deriv2d(data, direction=None, **kwargs):
     data_deriv = data.clone()
     data_deriv.id += '_deriv'
     assert data.ndim == 2, 'You need a 2D data set'
-    xdata_deriv = deriv(data,1,**kwargs)
-    ydata_deriv = deriv(data,0,**kwargs)
+    xdata_deriv = deriv(data, 1, **kwargs)
+    ydata_deriv = deriv(data, 0, **kwargs)
 ##  print '2d der'
     if direction is None:
         data_deriv[:] = MV.sqrt(xdata_deriv**2+ydata_deriv**2)
     else:
         aa = direction*MV.pi/180.
         data_deriv[:] = xdata_deriv*MV.cos(aa) + ydata_deriv*MV.sin(aa)
-    if hasattr(xdata_deriv,'units'):
+    if hasattr(xdata_deriv, 'units'):
         data_deriv.units = xdata_deriv.units
-    elif hasattr(data_deriv,'units'):
+    elif hasattr(data_deriv, 'units'):
         del data_deriv.units
     return data_deriv
 
 
-def norm_atan(var,stretch=1.):
+def norm_atan(var, stretch=1.):
     """Normalize using arctan (arctan(strecth*var/std(var))
 
     Parameters
@@ -635,7 +649,7 @@ def norm_atan(var,stretch=1.):
     """
     if cdms2.isVariable(var):
         var_norm = var.clone()
-        var_norm.id  += '_norm'
+        var_norm.id += '_norm'
         mm = MV
     elif MA.isMA(var):
         var_norm = var.copy()
@@ -645,6 +659,3 @@ def norm_atan(var,stretch=1.):
         mm = N
     var_norm[:] = mm.arctan(stretch*var/var.std())*2./N.pi
     return var_norm
-
-
-

@@ -50,34 +50,45 @@ __all__ = [
     'strfsize', 'strpsize', 'uuconvert',
 ]
 
+
 def uuconvert(value, oldunits, newunits):
     """Change units using unidata units connverter"""
     from unidata import udunits_wrap
     s, i = udunits_wrap.convert(oldunits, newunits)
     return value * s + i
+
+
 convert_units = uuconvert
 
 ############################################################
+
+
 def kt2ms(nd):
     """Convert nds to m/s"""
     return uuconvert(nd, 'kt', 'm/s')
+
 
 def ms2kt(ms):
     """Convert m/s to nds"""
     return uuconvert(ms, 'm/s', 'kt')
 
+
 ms2nd = ms2kt
 nd2ms = kt2ms
+
 
 def mph2ms(mph):
     """Convert from mph to m/s"""
     return 0.44704*mph
+
 
 def ms2mph(ms):
     """Convert from m/s to mph"""
     return 2.237*ms
 
 ############################################################
+
+
 def deg2m(degrees, lat=None):
     """Convert a distance in degrees to meters
 
@@ -99,6 +110,7 @@ def deg2m(degrees, lat=None):
         lat = N.array(lat)
 
     return R * N.pi * degrees * N.cos(N.pi*lat/180.)/180.
+
 
 def m2deg(meters, lat=None):
     """Convert a distance in meters to degrees
@@ -122,6 +134,7 @@ def m2deg(meters, lat=None):
 
     return meters / (R * N.pi * N.cos(N.pi*lat/180.)/180.)
 
+
 def basic_proj(lon, lat, inverse=False):
     """Convert a position from degrees to meters like a geographic projection
 
@@ -140,7 +153,6 @@ def basic_proj(lon, lat, inverse=False):
     return func(lon, lat), func(lat)
 
 
-
 def ms2bf(ms):
     """Convert from m/s to Beauforts (wind)
 
@@ -151,10 +163,11 @@ def ms2bf(ms):
 
         http://fr.wikipedia.org/wiki/%C3%89chelle_de_Beaufort
     """
-    ms *= 3.6 # km/h to m/s
+    ms *= 3.6  # km/h to m/s
     return int(round((ms**2/9)**(1/3.)))
 
-def dms2deg(d,m=0,s=0):
+
+def dms2deg(d, m=0, s=0):
     """Convert from degrees/minutes/seconds to degrees
 
     d:
@@ -168,7 +181,8 @@ def dms2deg(d,m=0,s=0):
 
         :func:`deg2dms`
     """
-    return (d < 0. and -1. or 1.) * (abs(d) + (m + s / 60.) /60.)
+    return (d < 0. and -1. or 1.) * (abs(d) + (m + s / 60.) / 60.)
+
 
 def deg2dms(deg):
     """Convert from degrees to degrees/minutes/seconds
@@ -187,6 +201,7 @@ def deg2dms(deg):
     s = (fm-m)*60.
     return n and -d or d, m, s
 
+
 def kel2degc(tk):
     """Convert from degrees Kelvin to degrees Celsius
 
@@ -197,8 +212,9 @@ def kel2degc(tk):
 
         http://fr.wikipedia.org/wiki/Kelvin
     """
-    #tk = tk - 273.15 # Kelvin to DegC
+    # tk = tk - 273.15 # Kelvin to DegC
     return tk - 273.15
+
 
 def degc2kel(dc):
     """Convert from degrees Celsius to degrees Kelvin
@@ -210,10 +226,10 @@ def degc2kel(dc):
 
         http://fr.wikipedia.org/wiki/Kelvin
     """
-    #dc = dc + 273.15 # DegC to Kelvin
+    # dc = dc + 273.15 # DegC to Kelvin
     return dc + 273.15
 
-#def unorm(units):
+# def unorm(units):
 #    """Try to normalize some units"""
 #    units = units.strip()
 #    if units.lower()=='m.p.h.': return 'mph'
@@ -221,6 +237,7 @@ def degc2kel(dc):
 #    if m is not None:
 #        return ''.join(m.groups())
 #    return units
+
 
 def tometric(units, value=1.,  munits=['m',  'm/s']):
     """Try to convert units to metric system using :mod:`~unidata.udunits.udunits`
@@ -237,43 +254,53 @@ def tometric(units, value=1.,  munits=['m',  'm/s']):
         except:
             pass
 
+
 def rad2deg(r):
     return MV2.fmod(180 * r / MV2.pi, 360)
+
 
 def deg2rad(d):
     return MV2.pi * MV2.fmod(d, 360) / 180
 
+
 def vect2mod(u, v):
     return MV2.sqrt(MV2.power(u, 2) + MV2.power(v, 2))
+
 
 def vect2dir(u, v):
     return rad2deg(MV2.arctan2(v, u))
 
+
 def vect2moddir(u, v):
     return vect2mod(u, v), vect2dir(u, v)
+
 
 def moddir2vectx(m, d):
     return MV2.multiply(m, MV2.cos(deg2rad(d)))
 
+
 def moddir2vecty(m, d):
     return MV2.multiply(m, MV2.sin(deg2rad(d)))
+
 
 def moddir2vectxy(m, d):
     return moddir2vectx(m, d), moddir2vecty(m, d)
 
+
 # 1 kilooctet (ko) = 10**3 octets = 1 000 octets
 sizeunits = {
-    'K':10**3, 'M':10**6, 'G':10**9,
-    'T':10**12, 'P':10**15, 'E':10**18,
-    'Z':10**21, 'Y':10**24,
+    'K': 10**3, 'M': 10**6, 'G': 10**9,
+    'T': 10**12, 'P': 10**15, 'E': 10**18,
+    'Z': 10**21, 'Y': 10**24,
 }
 
 # 1 kibioctet (Kio) = 2**10 octets = 1 024 octets
 sisizeunits = {
-    'K':2**10, 'M':2**20, 'G':2**30,
-    'T':2**40, 'P':2**50, 'E':2**60,
-    'Z':2**70, 'Y':2**80,
+    'K': 2**10, 'M': 2**20, 'G': 2**30,
+    'T': 2**40, 'P': 2**50, 'E': 2**60,
+    'Z': 2**70, 'Y': 2**80,
 }
+
 
 def strfsize(size, fmt=None, si=None):
     """Format a size in bytes using the appropriate unit multiplicator (Ko, Mo, Kio, Mio)
@@ -295,16 +322,24 @@ def strfsize(size, fmt=None, si=None):
     """
     if fmt is None:
         fmt = '%.3f %s' if float(size) % 1 else '%d %s'
-    sortsizedict = lambda sd: reversed(sorted(list(sd.items()), lambda a, b: cmp(a[1],b[1])))
-    if si is None: units,usfx = sortsizedict(sisizeunits),'o' # naive usage
-    else: units,usfx = (sortsizedict(sisizeunits),'io') if si else (sortsizedict(sizeunits),'o')
-    size = float(size)
-    for unit,thresh in units:
-        if size >= thresh:
-            return fmt%(size/thresh, unit) + usfx
-    return fmt%(size) + usfx
 
-_strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?'%('|'.join(list(sizeunits.keys()))), re.IGNORECASE)
+    def sortsizedict(sd): return reversed(
+        sorted(list(sd.items()), lambda a, b: cmp(a[1], b[1])))
+    if si is None:
+        units, usfx = sortsizedict(sisizeunits), 'o'  # naive usage
+    else:
+        units, usfx = (sortsizedict(sisizeunits), 'io') if si else (
+            sortsizedict(sizeunits), 'o')
+    size = float(size)
+    for unit, thresh in units:
+        if size >= thresh:
+            return fmt % (size/thresh, unit) + usfx
+    return fmt % (size) + usfx
+
+
+_strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?' % (
+    '|'.join(list(sizeunits.keys()))), re.IGNORECASE)
+
 
 def strpsize(size, si=True):
     """Parse a size in Ko, Mo, Kio, Mio, ...
@@ -321,7 +356,8 @@ def strpsize(size, si=True):
     ------
     the float number of bytes
     """
-    if not isinstance(size, six.string_types): size = '%s'%(size)
+    if not isinstance(size, six.string_types):
+        size = '%s' % (size)
     m = _strpsizerex.match(size)
     if m:
         d = m.groupdict()
@@ -329,10 +365,12 @@ def strpsize(size, si=True):
         u = (d.get('unit') or '').upper()
         s = (d.get('usfx') or '').lower()
         if u:
-            if s == 'io': return n * sisizeunits[u]
-            elif si: return n * sisizeunits[u]
-            else: return n * sizeunits[u]
-        else: return n
-    raise ValueError('Cannot parse size: %s'%(size))
-
-
+            if s == 'io':
+                return n * sisizeunits[u]
+            elif si:
+                return n * sisizeunits[u]
+            else:
+                return n * sizeunits[u]
+        else:
+            return n
+    raise ValueError('Cannot parse size: %s' % (size))

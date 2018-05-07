@@ -3,14 +3,12 @@
 from vcmq import P, N
 from nat import Natgrid
 
-
-
 # Generate data
 xr = N.arange(20.)
 yr = N.arange(10.)
 xxr, yyr = N.meshgrid(xr, yr)
-zzr = (N.sin(xxr*N.pi/6)*N.sin(yyr*N.pi/6) + \
-    N.exp(-((xxr-7.)**2+(yyr-7.)**2)/4.**2))*100.
+zzr = (N.sin(xxr*N.pi/6)*N.sin(yyr*N.pi/6) +
+       N.exp(-((xxr-7.)**2+(yyr-7.)**2)/4.**2))*100.
 zzr -= zzr.min()
 vminmax = dict(vmin=zzr.min(), vmax=zzr.max())
 ij = N.unique((N.random.rand(50)*zzr.size).astype('i'))

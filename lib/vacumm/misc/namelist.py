@@ -38,7 +38,10 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
-import os, re, StringIO, sys
+import os
+import re
+import StringIO
+import sys
 import six
 
 # ==================================================================================================
@@ -135,17 +138,18 @@ class Namelist(dict):
 
     '''
 
-    _maxreadsize = 2 * (2**20) # n * Mio
+    _maxreadsize = 2 * (2**20)  # n * Mio
 
     def __init__(self):
         dict.__init__(self)
 
     def __str__(self):
-        return '\n\n'.join('%s:\n%s'%(namelist, '\n'.join(('  %s = %s (%s)'%(k,v,v.__class__.__name__) for k,v in six.iteritems(variables)))) for namelist, variables in six.iteritems(self))
+        return '\n\n'.join('%s:\n%s' % (namelist, '\n'.join(('  %s = %s (%s)' % (k, v, v.__class__.__name__) for k, v in six.iteritems(variables)))) for namelist, variables in six.iteritems(self))
 
     def __setitem__(self, key, value):
         if not isinstance(value, dict):
-            raise ValueError('Cannot set a global variable in namelist, value must be a dict')
+            raise ValueError(
+                'Cannot set a global variable in namelist, value must be a dict')
         dict.__setitem__(self, key, value)
 
     @staticmethod
@@ -155,9 +159,10 @@ class Namelist(dict):
            If strip is True, also eliminate empty lines and leading and trailing spaces
         '''
         comment = r'^\s*[:|!|#].*$'
-        #comment = r'''(?<!(?:"|')).*?[:|!|#].*(?<!(?:"|'))'''
+        # comment = r'''(?<!(?:"|')).*?[:|!|#].*(?<!(?:"|'))'''
         lines = (re.sub(comment, '', l) for l in s.splitlines())
-        if strip: lines = (l.strip() for l in lines if l.strip())
+        if strip:
+            lines = (l.strip() for l in lines if l.strip())
         return '\n'.join(lines)
 
     @classmethod
@@ -181,14 +186,17 @@ class Namelist(dict):
         s = self.remove_comments(string)
         #print '[start of filtered namelist]\n%s\n[end of filtered namelist]'%(s)
         # Patterns
-        namelist = re.compile(r'''\s*&(?P<namelist>[a-zA-Z][a-zA-Z0-9_]*)\s+(?P<statements>(?:(?:"|').*?(?:"|')|[^/])*)/''', re.MULTILINE|re.DOTALL|re.VERBOSE)
-        variable = re.compile(r'\s*(?P<variable>[a-zA-Z][a-zA-Z0-9_]*)(?:\((?P<index>\d+)\))?\s*=\s*(?P<value>[^\s,]+)(?:\s+|,)', re.MULTILINE|re.DOTALL|re.VERBOSE)
+        namelist = re.compile(
+            r'''\s*&(?P<namelist>[a-zA-Z][a-zA-Z0-9_]*)\s+(?P<statements>(?:(?:"|').*?(?:"|')|[^/])*)/''', re.MULTILINE | re.DOTALL | re.VERBOSE)
+        variable = re.compile(
+            r'\s*(?P<variable>[a-zA-Z][a-zA-Z0-9_]*)(?:\((?P<index>\d+)\))?\s*=\s*(?P<value>[^\s,]+)(?:\s+|,)', re.MULTILINE | re.DOTALL | re.VERBOSE)
         boolean = re.compile(r'\.?(?P<boolean>true|false|t|f)\.?', re.I)
         integer = re.compile(r'(?P<integer>[-+]?\d+)')
-        real =  re.compile(r'(?P<real>[-+]?(\d+\.\d*|\.\d+)([eE][-+]?\d+)?)')
+        real = re.compile(r'(?P<real>[-+]?(\d+\.\d*|\.\d+)([eE][-+]?\d+)?)')
         string = re.compile(r'''(?:"|')(?P<string>.*?)(?:"|')''')
         # Values converters. Order is important !
-        casts = ((string,str), (boolean,lambda v: v.lower().strip().startswith('t') and True or False), (real,float), (integer,int))
+        casts = ((string, str), (boolean, lambda v: v.lower().strip().startswith(
+            't') and True or False), (real, float), (integer, int))
         # Loop on namelists
         for nm in namelist.finditer(s):
             ngd = nm.groupdict()
@@ -207,36 +215,39 @@ class Namelist(dict):
                 if index is not None and vgd['variable'] not in self[ngd['namelist']]:
                     self[ngd['namelist']][vgd['variable']] = {}
                 # Find and convert value
-                for p,c in casts:
+                for p, c in casts:
                     m = p.search(vgd['value'])
                     if m:
                         if index is not None:
-                            self[ngd['namelist']][vgd['variable']][index] = c(m.groups()[0])
+                            self[ngd['namelist']][vgd['variable']
+                                                  ][index] = c(m.groups()[0])
                         else:
-                            self[ngd['namelist']][vgd['variable']] = c(m.groups()[0])
+                            self[ngd['namelist']][vgd['variable']] = c(
+                                m.groups()[0])
                         break
 
     def save_string(self):
         '''Return the (fortran) formated namelists'''
         s = StringIO.StringIO()
-        for namelist,variables in six.iteritems(self):
-            s.write('&%s\n'%namelist)
-            for vn,vv in six.iteritems(variables):
+        for namelist, variables in six.iteritems(self):
+            s.write('&%s\n' % namelist)
+            for vn, vv in six.iteritems(variables):
                 if isinstance(vv, dict):
-                    for i,vi in six.iteritems(vv):
-                        if isinstance(vi, (str,six.text_type)):
-                            s.write('  %s(%s) = "%s"\n'%(vn,i,vi))
+                    for i, vi in six.iteritems(vv):
+                        if isinstance(vi, (str, six.text_type)):
+                            s.write('  %s(%s) = "%s"\n' % (vn, i, vi))
                         elif isinstance(vi, bool):
-                            s.write('  %s(%s) = .%s.\n'%(vn,i,str(vi).lower()))
+                            s.write('  %s(%s) = .%s.\n' %
+                                    (vn, i, str(vi).lower()))
                         else:
-                            s.write('  %s(%s) = %s\n'%(vn,i,vi))
+                            s.write('  %s(%s) = %s\n' % (vn, i, vi))
                 else:
-                    if isinstance(vv, (str,six.text_type)):
-                        s.write('  %s = "%s"\n'%(vn,vv))
+                    if isinstance(vv, (str, six.text_type)):
+                        s.write('  %s = "%s"\n' % (vn, vv))
                     elif isinstance(vv, bool):
-                        s.write('  %s = .%s.\n'%(vn,str(vv).lower()))
+                        s.write('  %s = .%s.\n' % (vn, str(vv).lower()))
                     else:
-                        s.write('  %s = %s\n'%(vn,vv))
+                        s.write('  %s = %s\n' % (vn, vv))
             s.write('/\n\n')
         r = s.getvalue()
         s.close()
@@ -303,7 +314,8 @@ if __name__ == '__main__':
     elif len(sys.argv) == 2:
         nf = Namelist.from_file(sys.argv[1])
     else:
-        print('usage: %(prog)s (namelistfile|--test)'%dict(prog=os.path.split(sys.argv[0])[1]))
+        print('usage: %(prog)s (namelistfile|--test)' %
+              dict(prog=os.path.split(sys.argv[0])[1]))
         sys.exit(1)
     print(' namelist as a descriptive string (__str__ method) '.center(80, '='))
     print(nf)
@@ -311,6 +323,3 @@ if __name__ == '__main__':
     print(' namelist as formated string (save_string method) '.center(80, '='))
     print(nf.save_string())
     print()
-
-
-

@@ -40,7 +40,8 @@ from six.moves import filter
 from six.moves import map
 from six.moves import range
 if __name__ == '__main__':
-    import sys; del sys.path[0]
+    import sys
+    del sys.path[0]
 
 __author__ = 'Stéphane Raynaud, Jonathan Wilkins'
 __email__ = 'raynaud@actimar.fr, wilkins@actimar.fr'
@@ -53,11 +54,17 @@ List of builtin validators for :mod:`validate`, along with their plural form: {}
 
 '''
 
-import datetime, inspect, os, re, sys, shutil, traceback
+import datetime
+import inspect
+import os
+import re
+import sys
+import shutil
+import traceback
 from collections import OrderedDict
 from optparse import (OptionParser, OptionGroup, OptionContainer, Option,
-    IndentedHelpFormatter, _)
-from argparse import (ArgumentParser, 
+                      IndentedHelpFormatter, _)
+from argparse import (ArgumentParser,
                       HelpFormatter as ArgHelpFormatter,
                       _HelpAction, Action as AP_Action)
 from warnings import warn
@@ -66,28 +73,34 @@ from configobj import ConfigObj, flatten_errors
 from validate import Validator, ValidateError, VdtTypeError, VdtValueTooSmallError, VdtValueTooBigError
 import validate
 
-try: import numpy
-except: numpy = None
+try:
+    import numpy
+except:
+    numpy = None
 
 __all__ = ['ConfigException', 'ValidationWarning', 'ConfigManager', 'print_short_help',
-    'opt2rst', 'cfg2rst', 'cfgargparse', 'cfgoptparse', 'get_spec', 'get_secnames',
-    'list_options', 'option2rst',  'filter_section', 'register_config_validator',
-    'get_validator',
-    'validator_bbox', 'validator_cdtime', 'validator_cmap', 'validator_color',
-    'validator_datetime', 'validator_dict', 'validator_eval',
-    'validator_figsize', 'validator_interval', 'validator_minmax',
-    'validator_numerics', 'validator_path', 'validator_timeunits',
-    'validator_workdir']
+           'opt2rst', 'cfg2rst', 'cfgargparse', 'cfgoptparse', 'get_spec', 'get_secnames',
+           'list_options', 'option2rst',  'filter_section', 'register_config_validator',
+           'get_validator',
+           'validator_bbox', 'validator_cdtime', 'validator_cmap', 'validator_color',
+           'validator_datetime', 'validator_dict', 'validator_eval',
+           'validator_figsize', 'validator_interval', 'validator_minmax',
+           'validator_numerics', 'validator_path', 'validator_timeunits',
+           'validator_workdir']
+
 
 class ConfigException(Exception):
     pass
 
+
 class ValidationWarning(Warning):
     pass
+
 
 class VdtSizeError(ValidateError):
     '''List size is incorrect (nmin, nmax, odd, even or shape)'''
     pass
+
 
 def _valwrap_(validator):
     '''
@@ -97,15 +110,15 @@ def _valwrap_(validator):
     '''
     # Already wrapped
     if (validator.__name__.startswith('validator_wrapper-') or
-        validator.__name__.startswith('list_validator_wrapper-')):
+            validator.__name__.startswith('list_validator_wrapper-')):
         return validator
 
     # Wrapper
     def validator_wrapper(value, *args, **kwargs):
         # Handle None and default
-#        if str(value) == 'None': return None
-#        default = args[0] if len(args) else kwargs.get('default', None)
-#        if value == '': return default
+        #        if str(value) == 'None': return None
+        #        default = args[0] if len(args) else kwargs.get('default', None)
+        #        if value == '': return default
         # Remove extraneous arguments the validator can't handle
         argspec = inspect.getargspec(validator)
         kwargs = kwargs.copy()
@@ -116,6 +129,7 @@ def _valwrap_(validator):
 
     validator_wrapper.__name__ += '-'+validator.__name__
     return validator_wrapper
+
 
 def _valwraplist_(validator):
     '''
@@ -146,7 +160,8 @@ def _valwraplist_(validator):
         if str(value) == 'None':
             return None
         default = args[0] if len(args) else kwargs.get('default', ())
-        if value == '': value = default
+        if value == '':
+            value = default
 
         # Handle single value
         if not isinstance(value, (list, tuple)):
@@ -155,19 +170,24 @@ def _valwraplist_(validator):
         # Do list checks
         n = kwargs.pop('n', None)
         if n is not None and len(value) != int(n):
-            raise VdtSizeError('Incorrect size: %s, %s values expected'%(len(value), n))
+            raise VdtSizeError(
+                'Incorrect size: %s, %s values expected' % (len(value), n))
         nmin = kwargs.pop('nmin', None)
         if nmin is not None and len(value) < int(nmin):
-            raise VdtSizeError('Incorrect size: %s, at least %s values expected'%(len(value), nmin))
+            raise VdtSizeError(
+                'Incorrect size: %s, at least %s values expected' % (len(value), nmin))
         nmax = kwargs.pop('nmax', None)
         if nmax is not None and len(value) > int(nmax):
-            raise VdtSizeError('Incorrect size: %s, at most %s values expected'%(len(value), nmax))
+            raise VdtSizeError(
+                'Incorrect size: %s, at most %s values expected' % (len(value), nmax))
         odd = validate.is_boolean(kwargs.pop('odd', False))
         if odd and not len(value) % 2:
-            raise VdtSizeError('Incorrect size: %s, odd number of values expected'%(len(value)))
+            raise VdtSizeError(
+                'Incorrect size: %s, odd number of values expected' % (len(value)))
         even = validate.is_boolean(kwargs.pop('even', False))
         if even and len(value) % 2:
-            raise VdtSizeError('Incorrect size: %s, even number of values expected'%(len(value)))
+            raise VdtSizeError(
+                'Incorrect size: %s, even number of values expected' % (len(value)))
 
         # TODO?: use numpy to also check min and max ? (applicable on number only...)
         shape = kwargs.pop('shape', None)
@@ -178,9 +198,11 @@ def _valwraplist_(validator):
                 try:
                     shape, vshape = list(map(int, shape)), numpy.shape(value)
                     if vshape != shape:
-                        raise VdtSizeError('Incorrect shape: %s, %s shape expected'%(vshape, shape))
+                        raise VdtSizeError(
+                            'Incorrect shape: %s, %s shape expected' % (vshape, shape))
                 except Exception:
-                    raise ValidateError('Cannot test value shape, this may be caused by an irregular array-like shape. Error was:\n%s'%traceback.format_exc())
+                    raise ValidateError(
+                        'Cannot test value shape, this may be caused by an irregular array-like shape. Error was:\n%s' % traceback.format_exc())
 
         # Preserve tuple type
         istuple = isinstance(value, tuple)
@@ -192,14 +214,19 @@ def _valwraplist_(validator):
     list_validator_wrapper.__name__ += '-'+validator.__name__
     return list_validator_wrapper
 
+
 def validator_bbox(value, default=None):
     '''Parse bbox coordinates with value format: x1,y1,x2,y2'''
-    if str(value) == 'None': return None
-    if value == '': value = default
+    if str(value) == 'None':
+        return None
+    if value == '':
+        value = default
     c = []
     # two possible delimiters: whitespaces and ','
-    for v in value.split(): c.extend(v.split(','))
-    if len(c) != 4: raise VdtTypeError(value)
+    for v in value.split():
+        c.extend(v.split(','))
+    if len(c) != 4:
+        raise VdtTypeError(value)
     return list(map(float, c))
 
 
@@ -207,7 +234,8 @@ def validator_numerics(value, default=None, min=None, max=None, type='float', n=
     """Validator of a tuple of numeric values"""
     if isinstance(value, six.string_types):
         value = value.strip('()[] ')
-    if str(value) == 'None': return None
+    if str(value) == 'None':
+        return None
     if isinstance(value, list):
         value = tuple(value)
     elif isinstance(value, six.string_types):
@@ -223,7 +251,7 @@ def validator_numerics(value, default=None, min=None, max=None, type='float', n=
     if n is not None:
         if isinstance(n, six.string_types):
             n = int(n)
-        if len(value)!=n:
+        if len(value) != n:
             raise VdtTypeError(value)
     out = ()
     type = eval(type)
@@ -237,43 +265,48 @@ def validator_numerics(value, default=None, min=None, max=None, type='float', n=
                 val = type(val)
             except:
                 raise VdtTypeError(value)
-        if min is not None and val<min:
+        if min is not None and val < min:
             val = type(min)
-        if max is not None and val>max:
+        if max is not None and val > max:
             val = type(max)
         out += val,
     return out
 
+
 def validator_minmax(value, min=None, max=None, default=(0, 100), type='float'):
     """Validator of a min,max pair"""
     value = validator_numerics(value, min=min, max=max, default=default,
-        type=type, n=2)
+                               type=type, n=2)
     if value is not None:
         out = list(value)
         out.sort()
         value = tuple(value)
     return value
 
+
 def validator_figsize(value, default=(6, 6), min=0, max=20):
     """Validator of a figure size (xsize,ysize)"""
     return validator_numerics(value, default=default, min=min, max=max,
-        type='float', n=2)
-
+                              type='float', n=2)
 
 
 def validator_interval(value, default=None):
     """Validator of an interval of coordinates (min, max [,bounds])"""
     if isinstance(value, six.string_types):
         value = value.strip('()[] ')
-    if str(value) == 'None': return None
+    if str(value) == 'None':
+        return None
     if not isinstance(value, six.string_types):
         if not isinstance(value, list):
             raise VdtTypeError(value)
         value = ','.join(value)
-    if value.startswith('('): value = value[1:]
-    if value.endswith(')'): value = value[:-1]
+    if value.startswith('('):
+        value = value[1:]
+    if value.endswith(')'):
+        value = value[:-1]
     values = value.split(',')
-    if len(values)<2 or len(values)>3: raise VdtTypeError(value)
+    if len(values) < 2 or len(values) > 3:
+        raise VdtTypeError(value)
     out = ()
     for val in values[:2]:
         try:
@@ -281,16 +314,18 @@ def validator_interval(value, default=None):
         except:
             pass
         out += val,
-    if len(values)==3 and values[2]:
-        m =  re.search('([co]{1,2}[ne]{0,2})', values[2])
+    if len(values) == 3 and values[2]:
+        m = re.search('([co]{1,2}[ne]{0,2})', values[2])
         if m is None:
             raise VdtTypeError(value)
         out += m.group(1),
     return out
 
+
 def validator_cmap(value, default=None):
     """Validator for colormaps"""
-    if str(value) == 'None': return None
+    if str(value) == 'None':
+        return None
     if isinstance(value, six.string_types) and value.startswith('['):
         value = eval(value)
     if isinstance(value, list):
@@ -299,34 +334,46 @@ def validator_cmap(value, default=None):
     from .color import get_cmap
     return get_cmap(value)
 
+
 class VdtDateTimeError(ValidateError):
     pass
 
+
 def validator_datetime(value, default=None, fmt='%Y-%m-%dT%H:%M:%S'):
     '''Parse value as a traditionnal python datetime object'''
-    if str(value) == 'None': return None
-    if value == '': value = default
-    try: return datetime.datetime.strptime(value, fmt)
-    except ValueError as e: raise VdtDateTimeError(e)
+    if str(value) == 'None':
+        return None
+    if value == '':
+        value = default
+    try:
+        return datetime.datetime.strptime(value, fmt)
+    except ValueError as e:
+        raise VdtDateTimeError(e)
+
 
 _re_validator_workdir_split_ = re.compile('\s*>\s*').split
-_re_validator_workdir_start_ =  re.compile('^[\[(]').search
-_re_validator_workdir_stop_ =  re.compile('[\])]').search
+_re_validator_workdir_start_ = re.compile('^[\[(]').search
+_re_validator_workdir_stop_ = re.compile('[\])]').search
+
+
 def validator_workdir(value, default=''):
-    if str(value) == 'None': return ''
+    if str(value) == 'None':
+        return ''
     value = value.strip()
     start = _re_validator_workdir_start_(value) is not None
     stop = _re_validator_workdir_stop_(value) is not None
     if (start and not stop) or (stop and not start):
         raise VdtTypeError(value)
     svalue = _re_validator_workdir_split_(value.strip('[]'))
-    if len(svalue)==3:
-        return '(%s>%s)%s'%tuple(svalue)
-    if len(svalue)==2:
-        return '(%s>%s)'%tuple(svalue)
+    if len(svalue) == 3:
+        return '(%s>%s)%s' % tuple(svalue)
+    if len(svalue) == 2:
+        return '(%s>%s)' % tuple(svalue)
     return svalue[0]
 
 # TODO: fix interpolation and expand !
+
+
 def validator_path(value, default='', expand=None):
     '''
     Parse a value as a path
@@ -336,17 +383,20 @@ def validator_path(value, default='', expand=None):
 
     **Warning: expand currently can't work with interpolation**
     '''
-    if str(value) == 'None': return None
-    if value == '': value = default
+    if str(value) == 'None':
+        return None
+    if value == '':
+        value = default
     if expand and isinstance(value, six.string_types):
         return os.path.expandvars(os.path.expanduser(value))
     return value
+
 
 def validator_timeunits(value, default='days since 1950-01-01'):
     """Validator of standard time units"""
     from .atime import are_valid_units
     value = str(value)
-    if value=='None' or not value:
+    if value == 'None' or not value:
         value = default
     if not are_valid_units(value):
         raise VdtTypeError(value)
@@ -357,14 +407,17 @@ def validator_cdtime(value, min=None, max=None, default=None):
     """Validator of a date (compatible with :func:`cdtime.s2c`)"""
     import cdtime
     value = str(value).strip()
-    if not value[0].isdigit(): return value.upper()
+    if not value[0].isdigit():
+        return value.upper()
     try:
         value = cdtime.s2c(value)
     except:
         raise VdtTypeError(value)
-    #not re.match('^\d+(-\d+(-\d+( \d+:(\d+(:\d+(\.(\d+)?)?)?)?)?)?)?$', value):
-    if min is not None and val<cdtime.s2c(min): raise VdtValueTooSmallError(value)
-    if max is not None and val>cdtime.s2c(max): raise VdtValueTooBigError(value)
+    # not re.match('^\d+(-\d+(-\d+( \d+:(\d+(:\d+(\.(\d+)?)?)?)?)?)?)?$', value):
+    if min is not None and val < cdtime.s2c(min):
+        raise VdtValueTooSmallError(value)
+    if max is not None and val > cdtime.s2c(max):
+        raise VdtValueTooBigError(value)
     return value
 
 
@@ -381,7 +434,8 @@ def validator_eval(value, default=None, unchanged_if_failed=True):
 
 
 def validator_color(value, default='k', alpha=False, as256=None):
-    if str(value) == 'None': return None
+    if str(value) == 'None':
+        return None
     if alpha:
         from .color import RGBA as CC
     else:
@@ -397,18 +451,22 @@ def validator_color(value, default='k', alpha=False, as256=None):
 
     raise VdtTypeError(value)
 
+
 def _check256_(val, as256=None):
     if isinstance(val, str):
         return val
     if as256 is None:
-        as256 = any([v>1 for v in val[:3]])
+        as256 = any([v > 1 for v in val[:3]])
     if as256:
         val = tuple([v/256. for v in val[:3]]) + tuple(val[3:])
     return val
 
-_re_funccall = re.compile(r'^\s*(\w+\(.*\))\s*$').match # func(...)
-_re_acc = re.compile(r'^\s*(\{.*\})\s*$').match # {...}
-_re_set = re.compile(r'^\s*(\w+)\s*=\s*(.+)\s*$').match # a=b
+
+_re_funccall = re.compile(r'^\s*(\w+\(.*\))\s*$').match  # func(...)
+_re_acc = re.compile(r'^\s*(\{.*\})\s*$').match  # {...}
+_re_set = re.compile(r'^\s*(\w+)\s*=\s*(.+)\s*$').match  # a=b
+
+
 def validator_dict(value, default={}, vtype=None):
     """validator for dictionaries
 
@@ -423,14 +481,14 @@ def validator_dict(value, default={}, vtype=None):
         - OrderedDict(b=2)
         - dict([("a",2),("b","x")])
     """
-    if str(value)=='None':
+    if str(value) == 'None':
         return None
     if isinstance(value, dict):
         return value
     if isinstance(value, list):
         value = ', '.join(value)
     value = value.strip()
-    if value=='':
+    if value == '':
         return {}
     m = _re_funccall(value) or _re_acc(value)
     if not m:
@@ -450,37 +508,37 @@ def validator_dict(value, default={}, vtype=None):
     raise VdtTypeError(value)
 
 
-
 # Define additionnal specifications
 # Value should be dict for internal use of this module (iterable, opttype, ...)
 # If value is not a dict, it is supposed to be the validator function
 
+
 #: Available VACUMM :mod:`configobj` validator specifications
 VALIDATOR_SPECS = {
-        # copy of some validate.Validator.functions to later build plural forms
-        'integer':validate.is_integer,
-        'float':validate.is_float,
-        'boolean':validate.is_boolean,
-        'string':validate.is_string,
-        # single value
-        'date':validator_cdtime,
-        'cdtime':validator_cdtime,
-        'timeunits':validator_timeunits,
-        'minmax':validator_minmax,
-        'numerics':validator_numerics,
-        'figsize':validator_figsize,
-        'workdir':validator_workdir,
-        'bbox':validator_bbox,
-        'datetime':validator_datetime,
-        'file':validator_path,
-        'path':validator_path,
-        'directory':validator_path,
-        'interval':validator_interval,
-        'eval':validator_eval,
-        'cmap':validator_cmap,
-        'color':validator_color,
-        'dict':validator_dict,
-        # lists validators for these scalars will be automatically generated
+    # copy of some validate.Validator.functions to later build plural forms
+    'integer': validate.is_integer,
+    'float': validate.is_float,
+    'boolean': validate.is_boolean,
+    'string': validate.is_string,
+    # single value
+    'date': validator_cdtime,
+    'cdtime': validator_cdtime,
+    'timeunits': validator_timeunits,
+    'minmax': validator_minmax,
+    'numerics': validator_numerics,
+    'figsize': validator_figsize,
+    'workdir': validator_workdir,
+    'bbox': validator_bbox,
+    'datetime': validator_datetime,
+    'file': validator_path,
+    'path': validator_path,
+    'directory': validator_path,
+    'interval': validator_interval,
+    'eval': validator_eval,
+    'cmap': validator_cmap,
+    'color': validator_color,
+    'dict': validator_dict,
+    # lists validators for these scalars will be automatically generated
 }
 
 #: Available VACUMM :mod:`configobj` validator functions as dict useful for :class:`validate.Validator`
@@ -492,6 +550,7 @@ VALIDATOR_TYPES = []
 # Aliases for backward compat
 _validator_specs_ = _VALIDATOR_SPECS_ = VALIDATOR_SPECS
 _validator_functions_ = _VALIDATOR_FUNCTIONS_ = VALIDATOR_FUNCTIONS
+
 
 def _update_registry_():
 
@@ -541,7 +600,8 @@ def _update_registry_():
     for key in VALIDATOR_FUNCTIONS.keys():
         del VALIDATOR_FUNCTIONS[key]
     VALIDATOR_FUNCTIONS.update(dict((k, v['func'])
-        for k,v in VALIDATOR_SPECS.items() if 'func' in v))
+                                    for k, v in VALIDATOR_SPECS.items() if 'func' in v))
+
 
 _update_registry_()
 
@@ -559,6 +619,7 @@ __doc__ = __doc__.format(' '.join(_for_doc))
 # Build the mapping suitable for Validator.functions
 #VALIDATOR_FUNCTIONS = dict((k, v['func']) for k,v in VALIDATOR_SPECS.iteritems() if 'func' in v)
 
+
 def register_config_validator(**kwargs):
     """Add a new configobj validator function
 
@@ -568,6 +629,7 @@ def register_config_validator(**kwargs):
     VALIDATOR_SPECS.update(**kwargs)
     _update_registry_()
     pass
+
 
 class ConfigManager(object):
     """A configuration management class based on a configuration specification file
@@ -584,9 +646,10 @@ class ConfigManager(object):
     :class:`configobj.ConfigObj` and :class:`validate.Validator`
 
     """
+
     def __init__(self, cfgspecfile=None, validator=None, interpolation='template',
-            encoding=None, boolean_false=True, splitsecdesc=False, cfgfilter=None,
-            cfgfilter_default=False, warn_empty_specs=False):
+                 encoding=None, boolean_false=True, splitsecdesc=False, cfgfilter=None,
+                 cfgfilter_default=False, warn_empty_specs=False):
         '''
         Parameters
         ----------
@@ -614,8 +677,8 @@ class ConfigManager(object):
             self._configspec = cfgspecfile
         else:
             self._configspec = ConfigObj(cfgspecfile, list_values=False,
-                interpolation=False, encoding=encoding, raise_errors=True,
-                file_error=True)
+                                         interpolation=False, encoding=encoding, raise_errors=True,
+                                         file_error=True)
         if not self._configspec:
             if warn_empty_specs:
                 warn('Empty Config specifications')
@@ -641,11 +704,11 @@ class ConfigManager(object):
         self._boolean_false = boolean_false
         if boolean_false:
             self._configspec.walk(_walker_set_boolean_false_by_default_,
-                validator=self._validator)
+                                  validator=self._validator)
 
         # Interpolation
         if interpolation is True:
-            interpolation='template'
+            interpolation = 'template'
         self._interpolation = interpolation
 
     @property
@@ -667,7 +730,7 @@ class ConfigManager(object):
         '''
         return get_spec((self._configspec[sec]
                          if isinstance(sec, six.string_types) else sec)[key],
-                         validator=self._validator)
+                        validator=self._validator)
     getspec = get_spec
 
     def defaults(self, nocomments=False, interpolation=None):
@@ -685,12 +748,14 @@ class ConfigManager(object):
         ------
         A :class:`~configobj.ConfigObj` instance
         """
-        if interpolation is None or interpolation is True: interpolation = self._interpolation
+        if interpolation is None or interpolation is True:
+            interpolation = self._interpolation
         cfg = ConfigObj(interpolation=interpolation, configspec=self._configspec,
-            encoding=self._encoding)
+                        encoding=self._encoding)
         cfg.validate(self._validator, copy=True)
         if nocomments:
-            cfg.walk(_walker_remove_all_comments_, call_on_sections=int(nocomments)==2)
+            cfg.walk(_walker_remove_all_comments_,
+                     call_on_sections=int(nocomments) == 2)
         elif self._configspec:
             cfg.inline_comments = self._configspec.inline_comments
         return cfg
@@ -731,13 +796,13 @@ class ConfigManager(object):
         cfg.filename = cfgfile
         cfg.write()
         if verbose:
-            print('Created default config file: %s'%cfgfile)
+            print('Created default config file: %s' % cfgfile)
             if backup:
-                print("Backuped old config file to: %s.bak"%cfgfile)
+                print("Backuped old config file to: %s.bak" % cfgfile)
         return cfg
 
     def load(self, cfgfile='config.cfg',
-        validate='fix', geterr=False, patch=None, force=True, cfgfilter=False, **kwpatch):
+             validate='fix', geterr=False, patch=None, force=True, cfgfilter=False, **kwpatch):
         """Get a :class:`~configobj.ConfigObj` instance loaded from a file
 
         Parameters
@@ -779,16 +844,15 @@ class ConfigManager(object):
         # Instantiate / Copy
         if not isinstance(cfgfile, ConfigObj) or force:
             cfg = ConfigObj(cfgfile, interpolation=self._interpolation,
-                configspec=self._configspec, encoding=self._encoding)
+                            configspec=self._configspec, encoding=self._encoding)
         else:
             cfg = cfgfile
-
 
         # Patch
         if kwpatch and not patch:
             patch = {}
         if patch is not None:
-            if kwpatch: # Patch the patch!
+            if kwpatch:  # Patch the patch!
                 patch = self.patch(patch, kwpatch, validate=False)
             self.patch(cfg, patch, validate=False)
 
@@ -818,11 +882,11 @@ class ConfigManager(object):
                         section = '['+']['.join(sections)+'] '
                     else:
                         section = ''
-                    msg = 'Config value error: %s%s: %s'%(section, key, getattr(error, 'message', error))
+                    msg = 'Config value error: %s%s: %s' % (
+                        section, key, getattr(error, 'message', error))
 
                     # Check what to do
                     if validate in ['fix', 'report']:
-
 
                         # Report
                         sec = cfg
@@ -834,8 +898,8 @@ class ConfigManager(object):
                                 break
                             secd = secd[subsec]
                         if secd is None:
-#                            sys.stderr.write(msg+"\nCan't set it to default value because"
-#                                " none available")
+                            #                            sys.stderr.write(msg+"\nCan't set it to default value because"
+                            #                                " none available")
                             continue
 
                         # Loop on keys
@@ -843,20 +907,21 @@ class ConfigManager(object):
                         for k in keys:
 
                             vdef = secd.get(k, None)
-                            sys.stderr.write(msg+'\nSetting it to default value: %s\n'%(vdef,))#,ValidationWarning)
+                            # ,ValidationWarning)
+                            sys.stderr.write(
+                                msg+'\nSetting it to default value: %s\n' % (vdef,))
 
                             # Reset to default
-                            if validate=='fix':
+                            if validate == 'fix':
                                 sec[k] = vdef
 
-                    else: # Raise an error
+                    else:  # Raise an error
                         raise ValidateError(msg)
 
             if geterr:
                 return cfg, err
 
         return cfg
-
 
     def patch(self, cfg, cfgpatch, validate=False):
         """Replace config values of ``cfg`` by those of ``cfgpatch``
@@ -873,12 +938,13 @@ class ConfigManager(object):
             If ``True``, validate configs if they have a valid config spec.
         """
         if not isinstance(cfg, ConfigObj):
-            cfg = ConfigObj(cfg, configspec=self._configspec, encoding=self._encoding)#, interpolation=False)
-        #else:
+            cfg = ConfigObj(cfg, configspec=self._configspec,
+                            encoding=self._encoding)  # , interpolation=False)
+        # else:
             #cfg.interpolation = False
         if not isinstance(cfgpatch, ConfigObj):
             cfgpatch = ConfigObj(cfgpatch, configspec=self._configspec, interpolation=False,
-                encoding=self._encoding)
+                                 encoding=self._encoding)
         else:
             cfgpatch.interpolation = False
 
@@ -887,7 +953,6 @@ class ConfigManager(object):
 
         # Merging of missing stuff
         cfgpatch.walk(_walker_patch_, cfg=cfg, cfgpatch=cfgpatch)
-
 
         if validate and cfg.configspec is not None:
             cfg.validate(self.validator)
@@ -985,18 +1050,18 @@ class ConfigManager(object):
         # Add short and long helps
         old_conflict_handler = parser._optionals.conflict_handler
         parser._optionals.conflict_handler = 'resolve'
-        parser.add_argument('-h','--help', action=AP_ShortHelpAction,
-            help='show a reduced help and exit')
+        parser.add_argument('-h', '--help', action=AP_ShortHelpAction,
+                            help='show a reduced help and exit')
         parser.add_argument('--long-help', action=_HelpAction,
-            help='show an extended help and exit')
+                            help='show an extended help and exit')
         parser.add_argument('--short-help', action=AP_VeryShortHelpAction,
-            help='show a very reduced help and exit')
+                            help='show a very reduced help and exit')
         parser._optionals.conflict_handler = old_conflict_handler
 
         # Add extra options first
         if extraopts:
             for eopt in extraopts:
-                if len(eopt)==1:
+                if len(eopt) == 1:
                     if not isinstance(eopt, dict):
                         eargs = eopt
                         ekwargs = {}
@@ -1011,34 +1076,37 @@ class ConfigManager(object):
         if cfgfileopt:
             if isinstance(cfgfileopt, six.string_types):
                 if not cfgfileopt.startswith('-'):
-                    if len(cfgfileopt)==1:
+                    if len(cfgfileopt) == 1:
                         cfgfileopt = '-'+cfgfileopt
                     else:
                         cfgfileopt = '--'+cfgfileopt
                 cfgfileopt = (cfgfileopt,)
             parser.add_argument(*cfgfileopt,
-                dest="cfgfile", help='user configuration file that overrides defauts'
-                    ' [default: "%(default)s"]', default=cfgfile)
+                                dest="cfgfile", help='user configuration file that overrides defauts'
+                                ' [default: "%(default)s"]', default=cfgfile)
 
         # Default config
         defaults = self.defaults()
 
         # Create global group of options from defaults
         # - inits
-        re_match_initcom = re.compile(r'#\s*-\*-\s*coding\s*:\s*\S+\s*-\*-\s*').match
-        if len(defaults.initial_comment)==0 or re_match_initcom(defaults.initial_comment[0]) is None:
+        re_match_initcom = re.compile(
+            r'#\s*-\*-\s*coding\s*:\s*\S+\s*-\*-\s*').match
+        if len(defaults.initial_comment) == 0 or re_match_initcom(defaults.initial_comment[0]) is None:
             desc = ['global configuration options']
         else:
-            re_match_initcom(defaults.initial_comment[0]), defaults.initial_comment[0]
-            icom = int(re_match_initcom(defaults.initial_comment[0]) is not None)
-            if len(defaults.initial_comment)>icom:
+            re_match_initcom(
+                defaults.initial_comment[0]), defaults.initial_comment[0]
+            icom = int(re_match_initcom(
+                defaults.initial_comment[0]) is not None)
+            if len(defaults.initial_comment) > icom:
                 desc = defaults.initial_comment[icom].strip('# ').split(':', 1)
         group = parser.add_argument_group(*desc)
         # - global options
         for key in defaults.scalars:
             if key not in exc:
                 _walker_argcfg_setarg_(defaults, key, group=group, exc=exc, nested=nested,
-                    boolean_false=self._boolean_false)
+                                       boolean_false=self._boolean_false)
 #                group.add_argument('--'+_cfg2optname_(key, nested), help=_shelp_(defaults, key))
             else:
                 pass
@@ -1046,7 +1114,7 @@ class ConfigManager(object):
         # Create secondary option groups from defaults
         for key in defaults.sections:
             desc = [key]
-            comment = defaults.inline_comments[key] # FIXME: always empty!
+            comment = defaults.inline_comments[key]  # FIXME: always empty!
             if comment is not None:
                 desc = comment.strip('# ')
                 if ':' in desc:
@@ -1055,27 +1123,30 @@ class ConfigManager(object):
                     desc = [key.lower(), desc]
             group = parser.add_argument_group(*desc)
             defaults[key].walk(_walker_argcfg_setarg_, raise_errors=True,
-                call_on_sections=False, group=group, exc=exc, nested=nested,
-                boolean_false=self._boolean_false)
+                               call_on_sections=False, group=group, exc=exc, nested=nested,
+                               boolean_false=self._boolean_false)
 
         # Now create a configuration instance from passed options
         if parse:
 
             # Which args ?
-            if args is None: args = sys.argv[1:]
+            if args is None:
+                args = sys.argv[1:]
 
             # Parse
             options = parser.parse_args(list(args))
 
             # Create a configuration to feed
-            cfg = ConfigObj(interpolation=self._interpolation, encoding=self._encoding)
+            cfg = ConfigObj(interpolation=self._interpolation,
+                            encoding=self._encoding)
 
             # Initial config from defaults or the one supplied
             if patch:
-                self.patch(cfg, patch if isinstance(patch, ConfigObj) else defaults)
+                self.patch(cfg, patch if isinstance(
+                    patch, ConfigObj) else defaults)
             if cfgfilepatch:
                 if (isinstance(cfgfilepatch, six.string_types)
-                and cfgfilepatch.strip().lower().startswith('a')):
+                        and cfgfilepatch.strip().lower().startswith('a')):
                     cfgfilepatch = 'after'
                 else:
                     cfgfilepatch = 'before'
@@ -1086,12 +1157,11 @@ class ConfigManager(object):
 
             # Feed config with command line options
             defaults.walk(_walker_argcfg_setcfg_, raise_errors=True,
-                call_on_sections=False, cfg=cfg, options=options, nested=nested)
+                          call_on_sections=False, cfg=cfg, options=options, nested=nested)
 
             # Feed config with cfgfile after command line options
             if cfgfilepatch == 'after' and getattr(options, 'cfgfile', None):
                 cfg = self.patch(cfg, self.load(options.cfgfile))
-
 
             if not getparser and not getargs:
                 return cfg
@@ -1116,7 +1186,8 @@ class ConfigManager(object):
         """
 
         # Create a patch configuration from commandline arguments
-        cfgpatch, args = self.arg_parse(parser, exc=exc, cfgfileopt=cfgfileopt, getargs=True)
+        cfgpatch, args = self.arg_parse(
+            parser, exc=exc, cfgfileopt=cfgfileopt, getargs=True)
 
         #  Load personal config file and default values
         cfg = self.load(args.cfgfile)
@@ -1125,7 +1196,6 @@ class ConfigManager(object):
         self.patch(cfg, cfgpatch)
 
         return cfg, args
-
 
     def opt_parse(
             self, parser=None, exc=[], parse=True, args=None,
@@ -1207,25 +1277,28 @@ class ConfigManager(object):
         # Add (or override!) option types checkers
         # Define a new Option class
         class option_class(Option):
-            TYPES = tuple(list(parser.option_class.TYPES) + list(self._validator.functions.keys()))
+            TYPES = tuple(list(parser.option_class.TYPES) +
+                          list(self._validator.functions.keys()))
             TYPE_CHECKER = parser.option_class.TYPE_CHECKER.copy()
         # Define the wrapping function for optparse option types which also handle list values
+
         def wrap_option_type_checker(func, islist):
             def wrapper_option_type_checker(opt, name, value):
-                if islist: # Use configobj list parser
-                    value,comment = ConfigObj(list_values=True, interpolation=False,
-                        encoding=self._encoding)._handle_value(value)
+                if islist:  # Use configobj list parser
+                    value, comment = ConfigObj(list_values=True, interpolation=False,
+                                               encoding=self._encoding)._handle_value(value)
                     return func(value)
                 else:
                     return func(value)
             wrapper_option_type_checker.__name__ += '-'+func.__name__
             return wrapper_option_type_checker
         # Setup type checkers  into the new Option class
-        for name,func in self._validator.functions.items():
+        for name, func in self._validator.functions.items():
             if name in option_class.TYPE_CHECKER:
-                pass # warn('Overriding Option type checker %s'%(name))
+                pass  # warn('Overriding Option type checker %s'%(name))
             islist = VALIDATOR_SPECS.get(name, {}).get('iterable', None)
-            option_class.TYPE_CHECKER[name] = wrap_option_type_checker(func, islist)
+            option_class.TYPE_CHECKER[name] = wrap_option_type_checker(
+                func, islist)
         # Replace the parser Option class
         parser.option_class = option_class
 
@@ -1234,27 +1307,30 @@ class ConfigManager(object):
             if isinstance(cfgfileopt, six.string_types):
                 cfgfileopt = (cfgfileopt,)
             parser.add_option(*cfgfileopt, action='store', type="string",
-                dest="cfgfile", help='Configuration file [default: "%s"]'%cfgfile, default=cfgfile)
+                              dest="cfgfile", help='Configuration file [default: "%s"]' % cfgfile, default=cfgfile)
 
         # Default config
         defaults = self.defaults()
 
         # Create global group of options from defaults
         # - inits
-        re_match_initcom = re.compile(r'#\s*-\*-\s*coding\s*:\s*\S+\s*-\*-\s*').match
-        if len(defaults.initial_comment)==0 or re_match_initcom(defaults.initial_comment[0]) is None:
+        re_match_initcom = re.compile(
+            r'#\s*-\*-\s*coding\s*:\s*\S+\s*-\*-\s*').match
+        if len(defaults.initial_comment) == 0 or re_match_initcom(defaults.initial_comment[0]) is None:
             desc = ['Global configuration options']
         else:
-            re_match_initcom(defaults.initial_comment[0]), defaults.initial_comment[0]
-            icom = int(re_match_initcom(defaults.initial_comment[0]) is not None)
-            if len(defaults.initial_comment)>icom:
+            re_match_initcom(
+                defaults.initial_comment[0]), defaults.initial_comment[0]
+            icom = int(re_match_initcom(
+                defaults.initial_comment[0]) is not None)
+            if len(defaults.initial_comment) > icom:
                 desc = defaults.initial_comment[icom].strip('# ').split(':', 1)
         group = OptionGroup(parser, *desc)
         # - global options
         for key in defaults.scalars:
             if key not in exc:
                 _walker_optcfg_setopt_(defaults, key, group=group, exc=exc, nested=nested,
-                    boolean_false=self._boolean_false)
+                                       boolean_false=self._boolean_false)
 #                group.add_option('--'+_cfg2optname_(key, nested), action='store', type="string",
 #                    dest=key, help=_shelp_(defaults, key))
             else:
@@ -1270,14 +1346,15 @@ class ConfigManager(object):
                 desc = comment.strip('# ').split(':', 1)
             group = OptionGroup(parser, *desc)
             defaults[key].walk(_walker_optcfg_setopt_, raise_errors=True,
-                call_on_sections=False, group=group, exc=exc, nested=nested,
-                boolean_false=self._boolean_false)
+                               call_on_sections=False, group=group, exc=exc, nested=nested,
+                               boolean_false=self._boolean_false)
             parser.add_option_group(group)
 
         # Now create a configuration instance from passed options
         if parse:
 
-            if args is None: args = sys.argv[1:]
+            if args is None:
+                args = sys.argv[1:]
             (options, args) = parser.parse_args(list(args))
 
             # Intercept helps
@@ -1289,14 +1366,16 @@ class ConfigManager(object):
                 sys.exit()
 
             # Create a configuration to feed
-            cfg = ConfigObj(interpolation=self._interpolation, encoding=self._encoding)
+            cfg = ConfigObj(interpolation=self._interpolation,
+                            encoding=self._encoding)
 
             # Initial config from defaults or the one supplied
             if patch:
-                self.patch(cfg, patch if isinstance(patch, ConfigObj) else defaults)
+                self.patch(cfg, patch if isinstance(
+                    patch, ConfigObj) else defaults)
             if cfgfilepatch:
                 if (isinstance(cfgfilepatch, six.string_types)
-                and cfgfilepatch.strip().lower().startswith('a')):
+                        and cfgfilepatch.strip().lower().startswith('a')):
                     cfgfilepatch = 'after'
                 else:
                     cfgfilepatch = 'before'
@@ -1307,7 +1386,7 @@ class ConfigManager(object):
 
             # Feed config with command line options
             defaults.walk(_walker_optcfg_setcfg_, raise_errors=True,
-                call_on_sections=False, cfg=cfg, options=options, nested=nested)
+                          call_on_sections=False, cfg=cfg, options=options, nested=nested)
 
             # Feed config with cfgfile after command line options
             if cfgfilepatch == 'after' and getattr(options, 'cfgfile', None):
@@ -1335,12 +1414,8 @@ class ConfigManager(object):
 
         return cfg
 
-
-
-
-
     def opt_long_help(self, rst=True, usage="Usage: [prog] [options] ...",
-        description="Long help based on config specs"):
+                      description="Long help based on config specs"):
         """Get the generic long help from config specs
 
         Parameters
@@ -1350,27 +1425,31 @@ class ConfigManager(object):
         """
 
         # Standard options
-        parser = OptionParser(usage=usage, description=description, add_help_option=False )
-        parser.add_option('-h','--help', action='store_true', dest="help",
-            help='show a reduced help')
+        parser = OptionParser(
+            usage=usage, description=description, add_help_option=False)
+        parser.add_option('-h', '--help', action='store_true', dest="help",
+                          help='show a reduced help')
         parser.add_option('--long-help', action='store_true', dest="long_help",
-            help='show an extended help')
+                          help='show an extended help')
 
         # Configuration options
         self.opt_parse(parser, parse=False)
         if rst:
-            formatter = IndentedHelpFormatter(width=1000)#max_help_position=0)
-            shelp = parser.format_option_help(formatter).encode(sys.getdefaultencoding(), 'replace')
+            formatter = IndentedHelpFormatter(
+                width=1000)  # max_help_position=0)
+            shelp = parser.format_option_help(formatter).encode(
+                sys.getdefaultencoding(), 'replace')
         else:
             shelp = parser.format_help().encode(sys.getdefaultencoding(), 'replace')
 
         # Convert to rst
-        if rst: shelp = opt2rst(shelp)
+        if rst:
+            shelp = opt2rst(shelp)
 
         return shelp
 
     def arg_long_help(self, rst=True, usage=None,
-        description="Long help based on config specs"):
+                      description="Long help based on config specs"):
         """Get the generic long help from config specs
 
         Parameters
@@ -1380,10 +1459,14 @@ class ConfigManager(object):
         """
 
         # Standard options
-        parser = ArgumentParser(usage=usage, description=description, add_help=False )
-        parser.add_argument('-h','--help', action='store_true', help='show a reduced help')
-        parser.add_argument('--long-help', action='store_true', help='show an extended help')
-        parser.add_argument('--short-help', action='store_true', help='show a very reduced help')
+        parser = ArgumentParser(
+            usage=usage, description=description, add_help=False)
+        parser.add_argument(
+            '-h', '--help', action='store_true', help='show a reduced help')
+        parser.add_argument('--long-help', action='store_true',
+                            help='show an extended help')
+        parser.add_argument('--short-help', action='store_true',
+                            help='show a very reduced help')
 
         # Configuration options
         self.arg_parse(parser, parse=False)
@@ -1402,13 +1485,15 @@ class ConfigManager(object):
         shelp = shelp.encode(sys.getdefaultencoding(), 'replace')
 
         # Convert to rst
-        if rst: shelp = opt2rst(shelp)
+        if rst:
+            shelp = opt2rst(shelp)
 
         return shelp
 
     def get_rst(self, mode='specs', **kwargs):
         """Convert the default configuration to rst declarations with :func:`cfg2rst`"""
         return cfg2rst(self, mode=mode, **kwargs)
+
 
 def filter_section(sec, cfgfilter, default=False):
     """Recursively filter a section according to a dict of specifications
@@ -1450,8 +1535,9 @@ def filter_section(sec, cfgfilter, default=False):
                 filter_section(sec[subsec],  cfgfilter[subsec])
     return sec
 
+
 def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
-        exc=[], extraopts=None, args=None, **kwargs):
+                exc=[], extraopts=None, args=None, **kwargs):
     """Merge configuration and commandline arguments
 
     Parameters
@@ -1492,8 +1578,9 @@ def cfgargparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
         parser, cfgfileopt=cfgfileopt, exc=exc, cfgfile=cfgfile, getargs=True,
         extraopts=extraopts, args=args)
 
+
 def cfgoptparse(cfgspecfile, parser, cfgfileopt='cfgfile', cfgfile='config.cfg',
-    exc=[], **kwargs):
+                exc=[], **kwargs):
     """Merge configuration and commandline arguments
 
     Parameters
@@ -1551,11 +1638,12 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
     rhelp = []
     multiline = False
     s_param = r'(?:\{[\w,]+\}|\w+)'
-    s_sopt = r'(?:-\w+(?: %(s_param)s)?)'%locals() # short option (-t)
-    s_lopt = r'(?:--[\w\-]+(?:[= ]+%(s_param)s)?)'%locals() # long option (--toto)
-    s_optsep = r'(?:, +)' # option separator
+    s_sopt = r'(?:-\w+(?: %(s_param)s)?)' % locals()  # short option (-t)
+    # long option (--toto)
+    s_lopt = r'(?:--[\w\-]+(?:[= ]+%(s_param)s)?)' % locals()
+    s_optsep = r'(?:, +)'  # option separator
     s_desc = r'(?:  (.+))'
-    s_tot = r'^  (?:  )?((?:%(s_sopt)s|%(s_lopt)s)(?:%(s_optsep)s(?:%(s_sopt)s|%(s_lopt)s))*)%(s_desc)s?$'%locals()
+    s_tot = r'^  (?:  )?((?:%(s_sopt)s|%(s_lopt)s)(?:%(s_optsep)s(?:%(s_sopt)s|%(s_lopt)s))*)%(s_desc)s?$' % locals()
 #    s_tot = r'^  (%(s_sopt)s|%(s_lopt)s)|%(s_sopt)s%(s_optsep)s%(s_lopt)s)%(s_desc)s?$'%locals()
     re_opt = re.compile(s_tot).match
     re_sec = re.compile(r'^(?:  )?([\w\s]+):(?: (.+))?$').match
@@ -1569,15 +1657,16 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
             secname = m.group(1).title().strip()
 
             # Usage
-            if secname=='Usage' and m.group(2) is not None:
+            if secname == 'Usage' and m.group(2) is not None:
                 usage = m.group(2).strip()
                 if prog is None:
                     prog = os.path.basename(usage.split()[0])
-                rhelp.append('.. program:: %s\n'%prog)
-                rhelp.extend([secfmt%locals(), "\n\t.. code-block:: bash\n\n\t\t%s"%usage])
+                rhelp.append('.. program:: %s\n' % prog)
+                rhelp.extend(
+                    [secfmt % locals(), "\n\t.. code-block:: bash\n\n\t\t%s" % usage])
                 multiline = True
             else:
-                rhelp.extend([secfmt%locals(), ''])
+                rhelp.extend([secfmt % locals(), ''])
                 if m.group(2) is not None:
                     rhelp.extend(['', '\t'+m.group(2)])
                     multiline = True
@@ -1587,40 +1676,41 @@ def opt2rst(shelp, prog=None, secfmt=':%(secname)s:', descname='Description'):
         m = re_opt(line)
         if m:
 
-            rhelp.extend(['','\t.. cmdoption:: '+m.group(1), ''])
+            rhelp.extend(['', '\t.. cmdoption:: '+m.group(1), ''])
             multiline = True
             if m.group(2) is not None:
                 rhelp.append('\t\t'+m.group(2).strip())
 
-        elif secname and secname.lower()=='positional arguments' and line.startswith(' '*2):
+        elif secname and secname.lower() == 'positional arguments' and line.startswith(' '*2):
 
             sline = line.split()
-            rhelp.extend(['','\t.. cmdoption:: '+sline[0], ''])
+            rhelp.extend(['', '\t.. cmdoption:: '+sline[0], ''])
             multiline = True
-            if len(sline)>1 is not None:
+            if len(sline) > 1 is not None:
                 rhelp.append('\t\t'+' '.join(sline[1:]))
 
         elif multiline and len(line.strip()) and line.startswith(' '*3):
 
             indent = '\t\t'
-            if secname=='Usage':
+            if secname == 'Usage':
                 indent += '\t'
             rhelp.append(indent+line.strip())
-        #elif secname==descname:
+        # elif secname==descname:
         #    rhelp.append('\t'+line)
 
         else:
 
             indent = ''
-            if secname and secname==descname:
+            if secname and secname == descname:
                 indent += '\t'
             rhelp.append(indent+line)
             multiline = False
-            if secname=='Usage':
+            if secname == 'Usage':
                 secname = descname
-                rhelp.extend([secfmt%locals(), ''])
+                rhelp.extend([secfmt % locals(), ''])
 
     return '\n'.join(rhelp)
+
 
 def _opt2cfgname_(name, nested):
     cfgkey = name.replace('-', '_')
@@ -1628,76 +1718,88 @@ def _opt2cfgname_(name, nested):
         cfgkey = cfgkey[len(nested+'_'):]
     return cfgkey
 
+
 _re_cfg2optname_sub = re.compile('[_\s]').sub
+
+
 def _cfg2optname_(name, nested=None):
     optkey = _re_cfg2optname_sub('-', name)
-    if nested: optkey = nested+'-'+optkey
+    if nested:
+        optkey = nested+'-'+optkey
     return optkey.lower()
+
 
 class _attdict_(dict):
     def __getattr__(self, name):
-        if name in self.__dict__: return object.__getattribute__(self, name)
-        else: return self[name]
+        if name in self.__dict__:
+            return object.__getattribute__(self, name)
+        else:
+            return self[name]
+
 
 def get_spec(spec, validator=None):
-        '''
-        Get an option specification.
+    '''
+    Get an option specification.
 
-        Parameters
-        ----------
-        spec:
-            the specification string
-        validator:
-            (optional) the validator to use
+    Parameters
+    ----------
+    spec:
+        the specification string
+    validator:
+        (optional) the validator to use
 
-        Return
-        ------
-        dict
-            A dict with keys:
-            funcname:
-                the validation function name
-            args:
-                the positionnal arguments
-            kwargs:
-                the named arguments
-            default:
-                the default value
-            iterable:
-                if the value is list-like
-            func:
-                the validation function
-            opttype:
-                the function used with :mod:`optparse`
-            argtype:
-                the function used with :mod:`argparse`
+    Return
+    ------
+    dict
+        A dict with keys:
+        funcname:
+            the validation function name
+        args:
+            the positionnal arguments
+        kwargs:
+            the named arguments
+        default:
+            the default value
+        iterable:
+            if the value is list-like
+        func:
+            the validation function
+        opttype:
+            the function used with :mod:`optparse`
+        argtype:
+            the function used with :mod:`argparse`
 
-        Read access to these keys can also be done as attribute of the returned dict
-        (d.funcname == d['funcname'], ...)
+    Read access to these keys can also be done as attribute of the returned dict
+    (d.funcname == d['funcname'], ...)
 
-        For example, a specification file containing::
+    For example, a specification file containing::
 
-            [section]
-                option = integer(default=0, min=-10, max=10)
+        [section]
+            option = integer(default=0, min=-10, max=10)
 
-        Would return::
+    Would return::
 
-            ``{'funcname': integer, 'args': [],
-            'kwargs': {'min': '-10', 'max': '10'}, 'default:' 0,
-            'opttype': 'int', 'argtype': int,
-            'func':is_integer, 'iterable': None}
+        ``{'funcname': integer, 'args': [],
+        'kwargs': {'min': '-10', 'max': '10'}, 'default:' 0,
+        'opttype': 'int', 'argtype': int,
+        'func':is_integer, 'iterable': None}
 
-        This can be usefull when you added extraneous named arguments into your
-        specification file for your own use.
+    This can be usefull when you added extraneous named arguments into your
+    specification file for your own use.
 
-        '''
-        if not validator:
-            validator = get_validator()
-        funcname, args, kwargs, default = validator._parse_with_caching(spec)
-        spec = VALIDATOR_SPECS.get(funcname, dict(func=None, iterable=None, opttype=None, argtype=None)).copy()
-        spec.update(dict(funcname=funcname, args=args, kwargs=kwargs, default=default))
-        return _attdict_(spec)
+    '''
+    if not validator:
+        validator = get_validator()
+    funcname, args, kwargs, default = validator._parse_with_caching(spec)
+    spec = VALIDATOR_SPECS.get(funcname, dict(
+        func=None, iterable=None, opttype=None, argtype=None)).copy()
+    spec.update(dict(funcname=funcname, args=args,
+                     kwargs=kwargs, default=default))
+    return _attdict_(spec)
+
 
 getspec = get_spec
+
 
 def get_validator(functions=None):
     """Get a default validator"""
@@ -1716,33 +1818,40 @@ def get_validator(functions=None):
     # This modules's validator functions are already wrapped
     validator.functions.update(VALIDATOR_FUNCTIONS)
 
-
     return validator
+
 
 def _walker_remove_all_comments_(sec, key):
     sec.comments[key] = ''
     sec.inline_comments[key] = ''
 
+
 def _walker_remove_comments_(sec, key):
     sec.comments[key] = ''
+
 
 def _walker_remove_inline_comments_(sec, key):
     sec.inline_comments[key] = ''
 
+
 def _walker_unchanged_options_(sec, key):
-    if not sec.configspec: return
+    if not sec.configspec:
+        return
     spec = getspec(sec.configspec.get(key, ''))
     return spec.default == sec[key]
 
+
 def remove_defaults(cfg):
     defaults = cfg.walk(_walker_unchanged_options_, call_on_sections=False)
+
     def remove(c, d):
-        for k,v in d.items():
+        for k, v in d.items():
             if isinstance(v, dict):
                 remove(c[k], v)
             elif v:
                 c.pop(k)
     remove(cfg, defaults)
+
 
 def _walker_optcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
     """Walker to set config values"""
@@ -1752,10 +1861,12 @@ def _walker_optcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
     for option, value in options.__dict__.items():
 
         # Option not set
-        if value is None: continue
+        if value is None:
+            continue
 
         # Option matches key?
-        if _opt2cfgname_(option, nested) != cfgkey.lower(): continue
+        if _opt2cfgname_(option, nested) != cfgkey.lower():
+            continue
 
         # Check or create cfg genealogy
         s = cfg
@@ -1764,6 +1875,7 @@ def _walker_optcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
                 s[p.name] = {}
             s = s[p.name]
         s[key] = value
+
 
 def _walker_optcfg_setopt_(sec, key, group=None, exc=None, nested=None, boolean_false=True):
     """Walker to set options"""
@@ -1774,12 +1886,13 @@ def _walker_optcfg_setopt_(sec, key, group=None, exc=None, nested=None, boolean_
     optkey = _cfg2optname_(varname, nested)
 
     # Check exceptions
-    if key in exc: return
+    if key in exc:
+        return
 
     # Add option to group
     spec = VALIDATOR_SPECS.get(sec.configspec[key].split('(', 1)[0], {})
     type = spec.get('opttype', 'string')
-    if boolean_false and type=='boolean':
+    if boolean_false and type == 'boolean':
         default = sec[key]
         action = 'store_false' if default else 'store_true'
         type = None
@@ -1788,13 +1901,14 @@ def _walker_optcfg_setopt_(sec, key, group=None, exc=None, nested=None, boolean_
         default = None
     group.add_option(
         '--'+optkey,
-            #action='append' if spec.get('iterable', None) else 'store',
-            action=action,
-            type=type,
-            dest=varname,
-            help=_shelp_(sec, key),
-            default=default,
+        #action='append' if spec.get('iterable', None) else 'store',
+        action=action,
+        type=type,
+        dest=varname,
+        help=_shelp_(sec, key),
+        default=default,
     )
+
 
 def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
     """Walker to set config values"""
@@ -1804,10 +1918,12 @@ def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
     for option, value in options._get_kwargs():
 
         # Option not set
-        if value is None: continue
+        if value is None:
+            continue
 
         # Option matches key?
-        if _opt2cfgname_(option, nested) != cfgkey.lower(): continue
+        if _opt2cfgname_(option, nested) != cfgkey.lower():
+            continue
 
         # Check or create cfg genealogy
         s = cfg
@@ -1817,8 +1933,9 @@ def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
             s = s[p.name]
         s[key] = value
 
+
 def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding=None,
-    boolean_false=True):
+                           boolean_false=True):
     """Walker to set options"""
     # Find option key and output var name
     key = key.strip('_')
@@ -1827,7 +1944,8 @@ def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding
     optkey = _cfg2optname_(varname, nested)
 
     # Check exceptions
-    if key in exc: return
+    if key in exc:
+        return
     if sec.configspec is None or key not in sec.configspec:
         return
     spec = VALIDATOR_SPECS.get(sec.configspec[key].split('(', 1)[0], {})
@@ -1835,9 +1953,9 @@ def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding
     # Define the wrapping function for argparse argument types which also handle list values
     def wrap_argparse_type(func, islist):
         def wrapper_argparse_type(value):
-            if islist: # Use configobj list parser
-                value,comment = ConfigObj(list_values=True, interpolation=False,
-                    encoding=encoding)._handle_value(value)
+            if islist:  # Use configobj list parser
+                value, comment = ConfigObj(list_values=True, interpolation=False,
+                                           encoding=encoding)._handle_value(value)
                 return func(value)
             else:
                 return func(value)
@@ -1845,9 +1963,10 @@ def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding
         return wrapper_argparse_type
 
     # Add argument to group
-    type = wrap_argparse_type(spec.get('func', lambda s:s), spec.get('iterable', None))
+    type = wrap_argparse_type(
+        spec.get('func', lambda s: s), spec.get('iterable', None))
     kw = {}
-    if boolean_false and spec.get('opttype', '')=='boolean':
+    if boolean_false and spec.get('opttype', '') == 'boolean':
         default = sec[key]
         action = 'store_true' if default is False else 'store_false'
     else:
@@ -1855,13 +1974,14 @@ def _walker_argcfg_setarg_(sec, key, group=None, exc=None, nested=None, encoding
         kw['type'] = type
     group.add_argument(
         '--'+optkey,
-            action=action,
-            help=_shelp_(sec, key),
-            **kw
+        action=action,
+        help=_shelp_(sec, key),
+        **kw
     )
 
+
 def _shelp_(sec, key, format='%(shelp)s [default: %(default)r]', mode='auto',
-    undoc='Undocumented', adddot=True):
+            undoc='Undocumented', adddot=True):
     """Get help string
 
     Parameters
@@ -1879,41 +1999,43 @@ def _shelp_(sec, key, format='%(shelp)s [default: %(default)r]', mode='auto',
     def strip(c):
         return c.strip().strip('#').strip()
     abcoms = list(map(strip, [c for c in sec.comments[key] if c is not None]))
-    incoms = list(map(strip, [c for c in [sec.inline_comments[key]] if c is not None]))
-
+    incoms = list(
+        map(strip, [c for c in [sec.inline_comments[key]] if c is not None]))
 
     # Merge comments above item and its inline comment
-    if mode=='merge':
+    if mode == 'merge':
         comments = abcoms+incoms
-    elif mode=='auto':
+    elif mode == 'auto':
         if not incoms:
             comments = abcoms
         else:
             comments = incoms
-    elif mode=='above':
+    elif mode == 'above':
         comments = abcoms
     else:
         comments = incoms
 
     # Force comments to end with a dot '.'
     if adddot:
-        comments = [c.endswith('.') and c or '%s.'%c for c in comments]
+        comments = [c.endswith('.') and c or '%s.' % c for c in comments]
     shelp = '\n'.join(comments)
 
     # If no comments
-    if not shelp: shelp = undoc
+    if not shelp:
+        shelp = undoc
     default = _sdefault_(sec, key)
-    return format%locals()
+    return format % locals()
+
 
 def _sdefault_(sec, key):
     """Get default string or None"""
     default = sec.get(key, None)
-    if isinstance(default, (list,tuple)):
+    if isinstance(default, (list, tuple)):
         default = ','.join(map(str, default))
     else:
         default = str(default).strip('()')
     default = default.replace('%', '%%')
-    if default=='None':
+    if default == 'None':
         default = None
     return default
 
@@ -1925,18 +2047,19 @@ def _parent_list_(sec, names=True):
         sec = sec.parent
     return parents
 
+
 def _walker_patch_(sec, patch_key, cfg, cfgpatch):
     """Walk through the patch to apply it"""
     psec = cfgpatch
     csec = cfg
     for key in _parent_list_(sec):
-        if not key in psec.sections: # nothing to patch
+        if not key in psec.sections:  # nothing to patch
             return
         if not key in csec.sections:
             csec[key] = {}
         csec = csec[key]
         psec = psec[key]
-    if patch_key not in psec: # nothing to patch
+    if patch_key not in psec:  # nothing to patch
         return
     if patch_key in csec:
         try:
@@ -1945,25 +2068,31 @@ def _walker_patch_(sec, patch_key, cfg, cfgpatch):
             pass
     csec[patch_key] = psec[patch_key]
 
+
 def _walker_set_boolean_false_by_default_(sec, key, validator=None):
-    if validator is None: return
+    if validator is None:
+        return
     check = sec[key]
-    fun_name, fun_args, fun_kwargs, default = validator._parse_with_caching(check)
-    if fun_name=='boolean' and default is None:
+    fun_name, fun_args, fun_kwargs, default = validator._parse_with_caching(
+        check)
+    if fun_name == 'boolean' and default is None:
         if fun_args or fun_kwargs:
             check = check[:-1]+', default=False)'
         else:
             check = check+'(default=False)'
         sec[key] = check
 
+
 def get_secnames(cfg):
     """Get section names as list from top to bottom ['sec0','sec1',...]"""
-    if cfg.depth==0: return []
+    if cfg.depth == 0:
+        return []
     secnames = [cfg.name]
     for i in range(cfg.depth-1):
         cfg = cfg.parent
         secnames.append(cfg.name)
     return secnames[::-1]
+
 
 def pathname(cfg, entry=None):
     '''
@@ -1986,22 +2115,23 @@ def pathname(cfg, entry=None):
         curcfg = curcfg.parent
     return '.'.join(reversed(ancestors))
 
+
 def list_options(sec, optlist=None, parents=None, values=False, sections=False):
     """Get the list of options of section tree
 
     Each list items has the format ``(sections, optname)`` or
     ``(sections, optname, optvalue)`` depending on the ``values`` keyword.
     """
-    if optlist is None: # new list
+    if optlist is None:  # new list
         optlist = []
-    if parents is None: # parent sections
+    if parents is None:  # parent sections
         parents = get_secnames(sec)
-    for key in sec.scalars: # add scalar items
+    for key in sec.scalars:  # add scalar items
         option = (parents, key)
         if values:
             option += sec[key],
         optlist.append(option)
-    for subsec in sec.sections: # deep into subsections
+    for subsec in sec.sections:  # deep into subsections
         value = (None, ) if values else ()
         subparents = parents+[subsec]
         if isinstance(sections, dict):
@@ -2014,8 +2144,9 @@ def list_options(sec, optlist=None, parents=None, values=False, sections=False):
                 optlist.append((subparents, None) + value)
             subsections = sections
         list_options(sec[subsec], optlist, parents=subparents,
-            values=values, sections=subsections)
+                     values=values, sections=subsections)
     return optlist
+
 
 def option2rst(option, optrole='confopt',  secrole='confsec'):
     """Format a tuple or ``(parents, optname)`` to a rst inline declaration"""
@@ -2024,6 +2155,7 @@ def option2rst(option, optrole='confopt',  secrole='confsec'):
     if optname is None:
         return ':{secrole}:`{parents}`'.format(**locals())
     return ':{optrole}:`{parents}{optname}`'.format(**locals())
+
 
 def redent(text, n=1, indent='    '):
     lines = text.split('\n')
@@ -2088,7 +2220,7 @@ def cfg2rst(cfg, mode='basic', optrole='confopt',  secrole='confsec', **kwargs):
     string
     """
     if isinstance(cfg, ConfigManager):
-        if mode=='specs':
+        if mode == 'specs':
             cfg = cfg.specs
         else:
             cfg = cfg.defaults()
@@ -2098,30 +2230,31 @@ def cfg2rst(cfg, mode='basic', optrole='confopt',  secrole='confsec', **kwargs):
              **kwargs)
     return '\n'.join(lines)
 
+
 def _walker_cfg2rst_(cfg, key, lines, optrole='cfgopt', secrole='cfgsec',
                      mode='basic', validator=None,
                      dir_fmt='.. {conftype}:: {name}\n\n{desc}\n',
                      desc_fmt_desc_item="| {key}: ``{val}``\n",
-#                     desc_fmt_values='| Default value: ``{value}``\n| {desc}',
-#                     desc_fmt_specs=('| Default value: ``{value}``\n'
-#                                     '| Type: ``{type}``\n| {desc}'),
-                                     ):
+                     #                     desc_fmt_values='| Default value: ``{value}``\n| {desc}',
+                     #                     desc_fmt_specs=('| Default value: ``{value}``\n'
+                     #                                     '| Type: ``{type}``\n| {desc}'),
+                     ):
 
     assert mode in ('basic', 'values', 'specs')
 
     # Name, values and type
     secnames = get_secnames(cfg)
     specs = OrderedDict()
-    if key in cfg.sections: # section
+    if key in cfg.sections:  # section
 
         secnames.append(key)
-        name = '[%s]'%(']['.join(secnames), )
+        name = '[%s]' % (']['.join(secnames), )
         conftype = secrole
 
-    else: # option
+    else:  # option
 
         if secnames:
-            name = '[%s] %s'%(']['.join(secnames), key)
+            name = '[%s] %s' % (']['.join(secnames), key)
         else:
             name = key
         conftype = optrole
@@ -2130,17 +2263,17 @@ def _walker_cfg2rst_(cfg, key, lines, optrole='cfgopt', secrole='cfgsec',
 
             specs['default'] = cfg[key]
 
-        elif mode=='specs':
+        elif mode == 'specs':
 
             spec = get_spec(cfg[key], validator=validator)
             specs['default'] = spec['default']
             specs['type'] = spec['funcname']
             if spec['args']:
-                skey = 'possible choices' if name=='choice' else 'args'
+                skey = 'possible choices' if name == 'choice' else 'args'
                 specs[skey] = spec['args']
             if spec['kwargs']:
                 specs.update(spec['kwargs'])
-    if specs: # join lists
+    if specs:  # join lists
         for k, v in specs.items():
             if isinstance(v, list):
                 specs[k] = ', '.join(map(str, v))
@@ -2156,7 +2289,7 @@ def _walker_cfg2rst_(cfg, key, lines, optrole='cfgopt', secrole='cfgsec',
     if specs:
         sdesc = ''
         for key, val in specs.items():
-            if val=='':
+            if val == '':
                 val = ' '
             sdesc = sdesc + desc_fmt_desc_item.format(**locals())
         desc = sdesc + '\n' + desc
@@ -2165,7 +2298,6 @@ def _walker_cfg2rst_(cfg, key, lines, optrole='cfgopt', secrole='cfgsec',
     text = dir_fmt.format(**locals())
     text = redent(text, cfg.depth)
     lines.append(text)
-
 
 
 def print_short_help(parser, formatter=None, compressed=False):
@@ -2184,7 +2316,8 @@ def print_short_help(parser, formatter=None, compressed=False):
         result.append(formatter.format_heading(_("Options")))
         formatter.indent()
         if parser.option_list:
-            result.append(OptionContainer.format_option_help(parser, formatter))
+            result.append(
+                OptionContainer.format_option_help(parser, formatter))
             result.append("\n")
         formatter.dedent()
         del result[-1]
@@ -2204,6 +2337,7 @@ def print_short_help(parser, formatter=None, compressed=False):
             compressed = [compressed]
         if compressed:
             fake_action = AP_Action(['other-options'], dest='')
+
             def valid_option(opt):
                 if not opt.option_strings:
                     return True
@@ -2241,6 +2375,7 @@ class AP_ShortHelpAction(_HelpAction):
         print_short_help(parser)
         parser.exit()
 
+
 class AP_VeryShortHelpAction(_HelpAction):
 
     def __call__(self, parser, namespace, values, option_string=None):
@@ -2248,8 +2383,8 @@ class AP_VeryShortHelpAction(_HelpAction):
         parser.exit()
 
 
-if __name__=='__main__':
-    shelp="""Usage: showtime.py [options] ncfile
+if __name__ == '__main__':
+    shelp = """Usage: showtime.py [options] ncfile
            [--logger-level LOGGER_LEVEL] [--logger-file LOGGER_FILE]
 
 Show time axis dates of netcdf file.
@@ -2282,5 +2417,3 @@ Options:
 #                        MARS version. [default: 'V8.11']
 #"""
     print(opt2rst(shelp))
-
-

@@ -68,58 +68,63 @@ import resource
 
 def timeit(f):
     """ Annotate a function with its elapsed execution time, number of calls...
-    
+
     Parameters
     ----------
     f: function
         function to annotate
-        
+
     Return
     ------
     function
         Annotated function
     """
 
-    #Create the annotated function
+    # Create the annotated function
     def timed_f(*args, **kwargs):
-        #Get current "real time" and "user processing" time
+        # Get current "real time" and "user processing" time
         t1 = time.time()
         user1 = __user_time__()
-        #Run f
+        # Run f
         try:
             res = f(*args, **kwargs)
-        #Get new "real time" and "user processing" time
+        # Get new "real time" and "user processing" time
         finally:
             t2 = time.time()
             user2 = __user_time__()
 
-        #Compute delta_t for "real time" and "user processing"
+        # Compute delta_t for "real time" and "user processing"
         dt = t2-t1
         duser = user2-user1
 
-        #Annotate f :
-        timed_f.fct_name=f.__name__
+        # Annotate f :
+        timed_f.fct_name = f.__name__
         timed_f.func_maxtime = max(dt, getattr(timed_f, 'func_maxtime', 0))
-        timed_f.func_mintime = min(dt, getattr(timed_f, 'func_mintime',sys.maxsize))
+        timed_f.func_mintime = min(dt, getattr(
+            timed_f, 'func_mintime', sys.maxsize))
         timed_f.user_maxtime = max(duser, getattr(timed_f, 'user_maxtime', 0))
-        timed_f.user_mintime = min(duser, getattr(timed_f, 'user_mintime',sys.maxsize))
-        timed_f.func_numcalls = getattr(timed_f, 'func_numcalls',0)+1
-        timed_f.func_avgtime = ((dt+((timed_f.func_numcalls-1) * getattr(timed_f, 'func_avgtime',0))) / timed_f.func_numcalls)
-        timed_f.user_avgtime = ((duser+((timed_f.func_numcalls-1) * getattr(timed_f, 'user_avgtime',0))) / timed_f.func_numcalls)
+        timed_f.user_mintime = min(duser, getattr(
+            timed_f, 'user_mintime', sys.maxsize))
+        timed_f.func_numcalls = getattr(timed_f, 'func_numcalls', 0)+1
+        timed_f.func_avgtime = (
+            (dt+((timed_f.func_numcalls-1) * getattr(timed_f, 'func_avgtime', 0))) / timed_f.func_numcalls)
+        timed_f.user_avgtime = ((duser+((timed_f.func_numcalls-1) *
+                                        getattr(timed_f, 'user_avgtime', 0))) / timed_f.func_numcalls)
 
         return res
 
-    #Init some annotations for the case where the function is never called
-    function=timed_f
-    function.func_numcalls = getattr(timed_f, 'func_numcalls',0)
-    function.fct_name=f.__name__
+    # Init some annotations for the case where the function is never called
+    function = timed_f
+    function.func_numcalls = getattr(timed_f, 'func_numcalls', 0)
+    function.fct_name = f.__name__
 
-    #Return the annotated function
+    # Return the annotated function
     return function
 
-def print_functimes(f,no_call=False):
+
+def print_functimes(f, no_call=False):
     """ Write to stdout timed function annotations
-    
+
     Parameters
     ----------
     f: function
@@ -128,28 +133,28 @@ def print_functimes(f,no_call=False):
         If "True" write  'Function not called',
         if f has not been called (else write nothing)
     """
-    #Format header
-    if f.func_numcalls>1:
+    # Format header
+    if f.func_numcalls > 1:
         line_length = 36
     else:
         line_length = 32
 
-    header='- fct : '+f.fct_name+' -'
+    header = '- fct : '+f.fct_name+' -'
     sep_line = '-'
-    while len(sep_line)<len(header):
-        sep_line+='-'
-    while len(header)<line_length:
-        header='-'+header+'-'
-        sep_line=sep_line+'--'
+    while len(sep_line) < len(header):
+        sep_line += '-'
+    while len(header) < line_length:
+        header = '-'+header+'-'
+        sep_line = sep_line+'--'
 
-    #Format results
-    if f.func_numcalls==0:
+    # Format results
+    if f.func_numcalls == 0:
         if no_call:
             print(sep_line)
             print(header)
             print('Function not called')
             print(sep_line)
-    elif f.func_numcalls==1:
+    elif f.func_numcalls == 1:
         print(sep_line)
         print(header)
         print('Running time: %.3f secs' % f.func_avgtime)
@@ -166,6 +171,7 @@ def print_functimes(f,no_call=False):
         print('Min running user time: %.3f secs' % f.user_mintime)
         print('Number of calls: %d' % f.func_numcalls)
         print(sep_line)
+
 
 def __user_time__():
     """Get the current user processing time"""
@@ -187,4 +193,3 @@ def __user_time__():
 
 # #Print annotations
 # print_functimes(timeme,no_call=True)
-

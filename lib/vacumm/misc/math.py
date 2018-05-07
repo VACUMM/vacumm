@@ -40,6 +40,7 @@ import numpy as np
 
 __all__ = ['cosd', 'sind']
 
+
 def cosd(x):
     """Cosine elementwise
     (same as numpy.cos but considering array in degrees instead of radians)
@@ -48,6 +49,7 @@ def cosd(x):
 
     return np.cos(x*np.pi/180)
 
+
 def sind(x):
     """Trigonometric sine, element-wise
     (same as numpy.sin but considering array in degrees instead of radians)
@@ -55,4 +57,3 @@ def sind(x):
     """
 
     return np.sin(x*np.pi/180)
-

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -38,19 +38,18 @@
 from __future__ import absolute_import
 from vacumm.data import register_dataset
 from vacumm.data.misc.dataset import OceanDataset, AtmosSurfaceDataset
-from vacumm.misc import dict_merge
-#from vacumm.data.cf import specs_def_loc
 
 
-class GlobCurrent(OceanDataset,AtmosSurfaceDataset):
+class GlobCurrent(OceanDataset, AtmosSurfaceDataset):
     """:class:`~vacumm.data.misc.dataset.Dataset` class to read the
     GlobCurrent satellite-derived currents
 
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
     name = 'globcurrent'
-    domain='ocean'
-    description = 'The GlobCurrent currents dataset (http://www.globcurrent.org/)'
+    domain = 'ocean'
+    description = ('The GlobCurrent currents dataset '
+                   '(http://www.globcurrent.org/)')
 
     #: Grid type
     arakawa_grid_type = 'A'

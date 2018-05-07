@@ -1,11 +1,10 @@
 """Test :func:`~vacumm.misc.grid.misc.coord2slice`"""
 
 from builtins import range
-from vcmq import P, N, create_lon
-from vacumm.misc.grid import coord2slice, create_grid, create_axes2d, meshbounds
-from vacumm.misc.plot import add_grid
+from vcmq import (N, create_lon, coord2slice, create_grid, create_axes2d)
 
 def plot(xx, yy, target, label, lon=None, lat=None, show=False):
+    from vcmq import P, coord2slice, add_grid, N, meshbounds
     xs, ys, mask = coord2slice(target, lon=lon, lat=lat)
     P.figure(figsize=(6, 3.5))
     P.title('Target=%(label)s / select: lon=%(lon)s, lat=%(lat)s'%locals())
@@ -57,7 +56,7 @@ result.append(('AssertEqual', (coord2slice(grid, lat=(21,21, 'ccb')),
     (slice(0, 10, 1), slice(1, 2, 1), None))))
 
 # 2D axis
-lon2d = N.empty((10, 10.))
+lon2d = N.empty((10, 10))
 for i in range(10):
     lon2d[i] = lon1d[:]+i
 lat2d = N.resize((N.arange(10)+20), (10, 10)).T

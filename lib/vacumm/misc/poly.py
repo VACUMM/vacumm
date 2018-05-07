@@ -55,6 +55,7 @@ SHAPES = (Point, LineString, Polygon)
 #:GEOS shape names
 SHAPE_NAMES = ['point', 'linestring', 'polygon']
 
+
 def get_geos_type(gtype, mode='int'):
     """Get the shape type from gtype
 
@@ -88,22 +89,26 @@ def get_geos_type(gtype, mode='int'):
         raise VACUMMError('Invalid geos shape type')
 
     # Return it
-    if mode=='int':
+    if mode == 'int':
         return gtype
-    if mode=='geos':
+    if mode == 'geos':
         return SHAPES[gtype]
-    if mode=='string':
+    if mode == 'string':
         return SHAPE_NAMES[gtype]
     raise VACUMMError('Invalid output mode')
+
 
 def is_point(gobj):
     return get_geos_type(gobj) == GEOS_POINT
 
+
 def is_linestring(gobj):
     return get_geos_type(gobj) == GEOS_LINESTRING
 
+
 def is_polygon(gobj):
     return get_geos_type(gobj) == GEOS_POLYGON
+
 
 def proj_shape(shape, proj):
     """Project a Point, a Polygon or a LineString shape using a geographical projection
@@ -116,7 +121,8 @@ def proj_shape(shape, proj):
 
     :Return: A similar instance with its coordinates converted to meters
     """
-    if not callable(proj): return shape
+    if not callable(proj):
+        return shape
 
     # Point
     if isinstance(shape, Point):
@@ -124,6 +130,7 @@ def proj_shape(shape, proj):
 
     # LineString and Polygon
     return shape.__class__(proj(*shape.boundary.T).T)
+
 
 def clip_shape(shape, clip=None):
     """Clip a :class:`Point`, a :class:`Polygon` or a :class:`LineString`
@@ -137,7 +144,8 @@ def clip_shape(shape, clip=None):
 
     :Return: A possible empty list of intersection shapes.
     """
-    if clip is None: return [shape]
+    if clip is None:
+        return [shape]
     clip = create_polygon(clip)
     shapes = []
     if shape.within(clip):
@@ -149,6 +157,7 @@ def clip_shape(shape, clip=None):
             pass
     return shapes
 
+
 def clip_shapes(shapes, clip=None):
     """Same as :func:`clip_shape` but applied to a list of shapes"""
     clip = create_polygon(clip)
@@ -156,6 +165,7 @@ def clip_shapes(shapes, clip=None):
     for shape in shapes:
         shapes.extend(clip_shape(shape, clip))
     return shapes
+
 
 def create_polygon(data, proj=False, mode='poly'):
     """Create a simple :class:`Polygon` instance using data
@@ -180,9 +190,11 @@ def create_polygon(data, proj=False, mode='poly'):
 
     # xmin,ymin,xmax,ymax form
     if data.ndim == 1:
-        assert len(data) == 4, '1D form must have 4 elements (xmin,ymin,xmax,ymax), not %i'%len(data)
+        assert len(
+            data) == 4, '1D form must have 4 elements (xmin,ymin,xmax,ymax), not %i' % len(data)
         xmin, ymin, xmax, ymax = data
-        data =  N.asarray([[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]])
+        data = N.asarray([[xmin, ymin], [xmax, ymin],
+                          [xmax, ymax], [xmin, ymax]])
 
     # Check order
     if data.shape[0] == 2:
@@ -195,9 +207,11 @@ def create_polygon(data, proj=False, mode='poly'):
 
     # Create Polygon or LineString
     mode = str(mode)
-    if mode.startswith('v'): return data
+    if mode.startswith('v'):
+        return data
     shaper = LineString if mode.startswith('l') else Polygon
     return shaper(data)
+
 
 def plot_polygon(poly, ax=None, **kwargs):
     """Simply plot a polygon on the current plot using :func:`matplotlib.pyplot.plot`
@@ -249,7 +263,8 @@ def create_polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     if isinstance(polys, (Polygon, N.ndarray, tuple)) or hasattr(polys, 'get_shapes'):
         polys = [polys]
 
-    if 'm' in kwargs: proj = kwargs['m']
+    if 'm' in kwargs:
+        proj = kwargs['m']
     kwclip = kwfilter(kwargs, 'clip_')
 
     # Numeric or geos polygons
@@ -260,7 +275,7 @@ def create_polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     else:
         shaper = Polygon
     if clip is not None:
-#        clipl = clip # degrees (backup)
+        #        clipl = clip # degrees (backup)
         kwclip.setdefault('proj', proj)
         clip = create_polygon(clip, **kwclip)
         del kwclip['proj']
@@ -273,13 +288,13 @@ def create_polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
 #    from axes import islon, islat
     for poly in polys:
 
-#        # Grid (cdms var, grid or tuple of axes) -> get envelop
-#        if (cdms2.isVariable(poly) or isgrid(poly) or
-#                (isinstance(poly, tuple) and len(poly)==2 and
-#                islon(poly[1]) and islat(poly[0]))):
-#            grid = get_grid(poly)
-#            if grid is None: continue
-#            poly = grid_envelop(grid)
+        #        # Grid (cdms var, grid or tuple of axes) -> get envelop
+        #        if (cdms2.isVariable(poly) or isgrid(poly) or
+        #                (isinstance(poly, tuple) and len(poly)==2 and
+        #                islon(poly[1]) and islat(poly[0]))):
+        #            grid = get_grid(poly)
+        #            if grid is None: continue
+        #            poly = grid_envelop(grid)
 
         # It's already a polygon
         if isinstance(poly, Polygon):
@@ -288,7 +303,7 @@ def create_polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
 #        # Polygon from GMT
 #        if isinstance(poly, (str, Basemap)):
 ##            poly = GSHHS_BM(poly)
-##           gmt_polys.append(poly)
+# gmt_polys.append(poly)
 #            out_polys.extend(GSHHS_BM(poly, clip=clipl, proj=proj).get_shapes())
 #            continue
 
@@ -308,7 +323,7 @@ def create_polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
 
         # Make sure to have a polygon with the right projection
         poly = create_polygon(poly, proj=proj,
-            mode='line' if shaper is LineString else 'poly')
+                              mode='line' if shaper is LineString else 'poly')
 
         # Clip
         if clip is not None:
@@ -318,7 +333,9 @@ def create_polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
 
     return out_polys
 
+
 polygons = create_polygons
+
 
 def sort_shapes(shapes, reverse=True):
     """Sort shapes according to their surface or length
@@ -344,6 +361,7 @@ def sort_shapes(shapes, reverse=True):
         sorted = 0
     return sorted
 
+
 def convex_hull(xy, poly=False, method='delaunay'):
     """Get the envelop of cloud of points
 
@@ -366,11 +384,11 @@ def convex_hull(xy, poly=False, method='delaunay'):
     if cdms2.isGrid(xy):
         xx = xy.getLongitude().getValue()
         yy = xy.getLatitude().getValue()
-        if xx.ndim==1:
+        if xx.ndim == 1:
             xx, yy = N.meshgrid(xx, yy)
     else:
         xx, yy = N.asarray(xy)
-    if xx.ndim>1:
+    if xx.ndim > 1:
         xx = xx.ravel()
         yy = yy.ravel()
 
@@ -395,8 +413,8 @@ def convex_hull(xy, poly=False, method='delaunay'):
 
         # SW
         while True:
-            good = xx>xe[-1]
-            if not good.any(): 
+            good = xx > xe[-1]
+            if not good.any():
                 break
             ip = N.argmin(yy[good])
             xe.append(xx[ip])
@@ -404,27 +422,30 @@ def convex_hull(xy, poly=False, method='delaunay'):
 
         # NW
         while True:
-            good = yy>ye[-1]
-            if not good.any(): 
+            good = yy > ye[-1]
+            if not good.any():
                 break
             ip = N.argmax(xx[good])
             xe.append(xx[ip])
             ye.append(yy[ip])
 
         pass
-        #TODO: finish convex_hull with quaters
+        # TODO: finish convex_hull with quaters
 
-    elif method=='angles':
+    elif method == 'angles':
 
         # Angles
         np = len(xx)
         xx0 = N.resize(xx, (np, np))
         xx1 = N.resize(xx, (np, np)).transpose()
-        dx = xx1-xx0 ; del xx0, xx1
+        dx = xx1-xx0
+        del xx0, xx1
         yy0 = N.resize(yy, (np, np))
         yy1 = N.resize(yy, (np, np)).transpose()
-        dy = yy1-yy0 ; del yy0, yy1
-        angles = N.arctan2(dx, dy) ; del dx, dy
+        dy = yy1-yy0
+        del yy0, yy1
+        angles = N.arctan2(dx, dy)
+        del dx, dy
         idx = N.arange(np)
         angles[idx, idx] = 10.
 
@@ -437,11 +458,13 @@ def convex_hull(xy, poly=False, method='delaunay'):
         ic = 0
         while True:
             ip = N.argmin(angles[ip])
-            if ip == ip0: break
+            if ip == ip0:
+                break
             xe.append(xx[ip])
             ye.append(yy[ip])
             ic += 1
-            if ic > np: break
+            if ic > np:
+                break
         xe = N.asarray(xe)
         ye = N.asarray(ye)
 
@@ -452,4 +475,3 @@ def convex_hull(xy, poly=False, method='delaunay'):
     if poly:
         return create_polygon((xe, ye))
     return xe, ye
-

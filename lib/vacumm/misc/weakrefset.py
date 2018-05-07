@@ -41,7 +41,6 @@ __all__ = ['WeakSet']
 __version__ = '1.0.0'
 
 
-
 class _IterationGuard(object):
     # This context manager registers itself in the current iterators of the
     # weak container, such as to delay all removals until the context manager
@@ -70,6 +69,7 @@ class _IterationGuard(object):
 class WeakSet(object):
     def __init__(self, data=None):
         self.data = set()
+
         def _remove(item, selfref=ref(self)):
             self = selfref()
             if self is not None:
@@ -177,6 +177,7 @@ class WeakSet(object):
             self.data.clear()
         else:
             self.data.difference_update(ref(item) for item in other)
+
     def __isub__(self, other):
         if self._pending_removals:
             self._commit_removals()
@@ -194,6 +195,7 @@ class WeakSet(object):
         if self._pending_removals:
             self._commit_removals()
         self.data.intersection_update(ref(item) for item in other)
+
     def __iand__(self, other):
         if self._pending_removals:
             self._commit_removals()
@@ -230,6 +232,7 @@ class WeakSet(object):
             self.data.clear()
         else:
             self.data.symmetric_difference_update(ref(item) for item in other)
+
     def __ixor__(self, other):
         if self._pending_removals:
             self._commit_removals()

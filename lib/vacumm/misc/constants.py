@@ -34,16 +34,16 @@
 #
 #: Volumetric radius of earth (m)
 R = EARTH_RADIUS = 6371006.
-earth_radius = EARTH_RADIUS # compat
+earth_radius = EARTH_RADIUS  # compat
 
 #: Gravitational constant (m3 kg-1 s-2)
 G = GRAVITATIONAL_CONSTANT = 6.67428e-11
-gravitational_constant = GRAVITATIONAL_CONSTANT # compat
+gravitational_constant = GRAVITATIONAL_CONSTANT  # compat
 
 #: Earth mass (kg)
 M = EARTH_MASS = 5.9736e24
-earth_mass = EARTH_MASS # compat
+earth_mass = EARTH_MASS  # compat
 
 #: Gravity (m s-2)
 g = GRAVITY = M*G/R**2
-gravity = GRAVITY # compat
+gravity = GRAVITY  # compat

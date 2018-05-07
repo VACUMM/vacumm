@@ -39,7 +39,9 @@ import six
 from six.moves import map
 from six.moves import range
 
-import numpy as N,numpy.ma as MA,MV2
+import numpy as N
+import numpy.ma as MA
+import MV2
 import cdms2
 import cdtime
 from genutil.statistics import percentiles
@@ -50,7 +52,8 @@ from .atime import comptime
 from .grid import get_grid, set_grid, cp_atts
 
 __all__ = ['corr_proba', 'ensrank', 'qtmin', 'qtmax', 'qtminmax',
-    'StatAccum', 'StatAccumError']
+           'StatAccum', 'StatAccumError']
+
 
 def corr_proba(r, ndata, ndataset=2, dof=False):
     """Probability of rejecting correlations
@@ -67,11 +70,11 @@ def corr_proba(r, ndata, ndataset=2, dof=False):
         This must be rewritten using :mod:`scipy.stats`
     """
     # TODO: use scipy for betai and _gamma?
-    from genutil.salstat import betai,_gammaln
+    from genutil.salstat import betai, _gammaln
 
     # Basic tests
-    ndata = MA.masked_equal(ndata,0,copy=0)
-    r = MV2.masked_where(MA.equal(MA.absolute(r),1.),r,copy=0)
+    ndata = MA.masked_equal(ndata, 0, copy=0)
+    r = MV2.masked_where(MA.equal(MA.absolute(r), 1.), r, copy=0)
 
     # Degree of freedom
     if dof:
@@ -82,20 +85,21 @@ def corr_proba(r, ndata, ndataset=2, dof=False):
     # Advanced test: prevent extreme values by locally decreasing the dof
     reduc = N.ones(r.shape)
     z = None
-    while z is None or MA.count(MA.masked_greater(z,-600.)):
+    while z is None or MA.count(MA.masked_greater(z, -600.)):
         if z is not None:
             imax = MA.argmin(z.ravel())
             reduc.flat[imax] += 1
         dfr = df/reduc
-        t = r*MV2.sqrt(dfr/((1.0-r)* (1.0+r)))
+        t = r*MV2.sqrt(dfr/((1.0-r) * (1.0+r)))
         a = 0.5*dfr
         b = 0.5
         x = df/(dfr+t**2)
         z = _gammaln(a+b)-_gammaln(a)-_gammaln(b)+a*MA.log(x)+b*MA.log(1.0-x)
 
     # Perfom the test and format the variable
-    prob = MV2.masked_array(betai(a,b,x),axes=r.getAxisList())*100
-    prob.id = 'corr_proba' ; prob.name = prob.id
+    prob = MV2.masked_array(betai(a, b, x), axes=r.getAxisList())*100
+    prob.id = 'corr_proba'
+    prob.name = prob.id
     prob.long_name = 'Probability of rejection'
     prob.units = '%'
 
@@ -124,13 +128,14 @@ def ensrank(obs, ens, gethist=False, getnrz=False, centered=False):
     ens = MV2.asarray(ens)
     obs = MV2.asarray(obs)
     nens = ens.shape[0]
-    assert nens>3, 'Your ensemble is too small (nens=%i)'%nens
+    assert nens > 3, 'Your ensemble is too small (nens=%i)' % nens
 
     # Inits
     rank = obs.clone()
     rank.id = 'rank'
     rank.long_name = 'Rank'
-    if hasattr(rank, 'units'): del rank.units
+    if hasattr(rank, 'units'):
+        del rank.units
     nrz = obs.clone()
     nrz.id = 'nrz'
     nrz.long_name = 'Non recovery zones'
@@ -140,22 +145,22 @@ def ensrank(obs, ens, gethist=False, getnrz=False, centered=False):
     bias = MV2.sort(ens, axis=0)-obs
     if centered:
         bias -= bias.mean(axis=0)
-    nrz[:] = MV2.where((bias[-1]<0.).astype('b'), bias[-1], nrz)
-    nrz[:] = MV2.where((bias[0]>0.).astype('b'), bias[0], nrz)
-
+    nrz[:] = MV2.where((bias[-1] < 0.).astype('b'), bias[-1], nrz)
+    nrz[:] = MV2.where((bias[0] > 0.).astype('b'), bias[0], nrz)
 
     # Index of member  = rank
-    rank[:] = (bias<0).astype('i').sum(axis=0)
+    rank[:] = (bias < 0).astype('i').sum(axis=0)
     del bias
 
-    ## Apply observation mask
+    # Apply observation mask
     #nrz[:] = MV2.masked_where(MV2.getmask(obs), nrz, copy=0)
     #rank[:] = MV2.masked_where(MV2.getmask(obs), rank, copy=0)
 
     # Rank histogram
     if gethist:
-        if N.ma.isMA(rank): rank = rank.compressed()
-        hist = N.histogram(rank, N.arange(0,nens+1))
+        if N.ma.isMA(rank):
+            rank = rank.compressed()
+        hist = N.histogram(rank, N.arange(0, nens+1))
 
     # Out
     ret = rank,
@@ -163,7 +168,7 @@ def ensrank(obs, ens, gethist=False, getnrz=False, centered=False):
         ret += hist,
     if getnrz:
         ret += nrz,
-    return ret[0] if len(ret)==1 else ret
+    return ret[0] if len(ret) == 1 else ret
 
 
 def qtminmax(var, qt=5.):
@@ -182,12 +187,14 @@ def qtminmax(var, qt=5.):
             - Single number: ``qt`` -> ``[qt, 100-qt]``
             - Two elements: used directly.
     """
-    if N.ma.isMA(var): var = var.compressed()
+    if N.ma.isMA(var):
+        var = var.compressed()
     if not hasattr(qt, '__len__'):
         qt = [qt, 100-qt]
     qt = N.sort(N.clip(N.asarray(qt), 0, 100.))
     vmin, vmax = percentiles(var.ravel(), qt)
     return vmin, vmax
+
 
 def qtmin(var, qt=5.):
     """Get min max using quantiles
@@ -202,10 +209,12 @@ def qtmin(var, qt=5.):
     qt: optional
         Percentile used to define min
     """
-    if N.ma.isMA(var): var = var.compressed()
+    if N.ma.isMA(var):
+        var = var.compressed()
     qt = N.clip([qt], 0, 100.)
     vmin = percentiles(var.ravel(), qt)
     return vmin
+
 
 def qtmax(var, qt=95.):
     """Get max using quantiles
@@ -220,7 +229,8 @@ def qtmax(var, qt=95.):
     qt: optional
         Percentile used to define max
     """
-    if N.ma.isMA(var): var = var.compressed()
+    if N.ma.isMA(var):
+        var = var.compressed()
     qt = N.clip([qt], 0, 100.)
     vmax = percentiles(var.ravel(), qt)
     return vmax
@@ -228,6 +238,7 @@ def qtmax(var, qt=95.):
 
 class StatAccumError(vacumm.VACUMMError):
     pass
+
 
 class StatAccum(object):
     """Statistics accumulator
@@ -273,13 +284,14 @@ class StatAccum(object):
     _single_accums = 'sum', 'sqr', 'min', 'max', 'hist'
     _dual_accums = 'prod',
     default_restart_file = 'stataccum_restart.nc'
+
     def __init__(self,
-        tall=False, tavail=None, tmean=None, tstd=None, smax=None, smin=None,
-        tbias=None, trms=None, tcrms=None, tcorr=None, shist=None, tcount=None,
-        sall=False, savail=None, smean=None, sstd=None, tmax=None, tmin=None,
-        sbias=None, srms=None, scrms=None, scorr=None, thist=None, scount=None,
-        bins=None, restart_file=None, restart=False,
-        withtime=None):
+                 tall=False, tavail=None, tmean=None, tstd=None, smax=None, smin=None,
+                 tbias=None, trms=None, tcrms=None, tcorr=None, shist=None, tcount=None,
+                 sall=False, savail=None, smean=None, sstd=None, tmax=None, tmin=None,
+                 sbias=None, srms=None, scrms=None, scorr=None, thist=None, scount=None,
+                 bins=None, restart_file=None, restart=False,
+                 withtime=None):
 
         # Restart?
         if restart:
@@ -293,7 +305,8 @@ class StatAccum(object):
                 activate = False
                 for stype in self.all_stats:
                     value = eval(st+stype)
-                    if value is None: value = eval(st+'all')
+                    if value is None:
+                        value = eval(st+'all')
                     setattr(self, st+stype, value)
                     activate |= value
                 setattr(self, st+'stats', activate)
@@ -309,7 +322,8 @@ class StatAccum(object):
                         self.thist = False
                     if self.shist and self.sall:
                         self.shist = False
-                self._baxis = cdms2.createAxis(0.5*(bins[:-1]+bins[1:]), id='hbin')
+                self._baxis = cdms2.createAxis(
+                    0.5*(bins[:-1]+bins[1:]), id='hbin')
                 self._baxis.long_name = 'Histogram bin centers'
                 self._baxis.setBounds(bins)
             else:
@@ -326,11 +340,11 @@ class StatAccum(object):
     def append(self, *items):
         """Append data to the accumulator"""
         # Initialization
-        if self.iterindex==0:
+        if self.iterindex == 0:
 
             # Two variables?
             self.nitems = len(items)
-            self.dual = self.nitems>1
+            self.dual = self.nitems > 1
 
             # Do we have time in input variables
             if self.withtime is None:
@@ -341,11 +355,11 @@ class StatAccum(object):
                 self.tbias = self.trms = self.tcrms = self.tcorr = False
                 self.sbias = self.srms = self.scrms = self.scorr = False
             self.tstats = (self.tmean or self.tstd or self.tbias or self.trms or
-                self.tcrms or self.tavail or self.tmin or self.tmax or self.thist or
-                self.tcount)
+                           self.tcrms or self.tavail or self.tmin or self.tmax or self.thist or
+                           self.tcount)
             self.sstats = (self.smean or self.sstd or self.sbias or self.srms or
-                self.scrms or self.savail or self.smin or self.smax or self.shist or
-                self.scount)
+                           self.scrms or self.savail or self.smin or self.smax or self.shist or
+                           self.scount)
             self.tsum = self.tmean or self.tbias or self.tstd or self.tcrms or self.tcorr
             self.tsqr = self.tstd or self.trms or self.tcrms or self.tcorr
             self.tprod = self.trms or self.tcrms or self.tcorr
@@ -356,7 +370,7 @@ class StatAccum(object):
                 self.nbins = self.bins.shape[0]-1
 
             # Check spatial statistics
-            if self.sstats and items[0].ndim<2:
+            if self.sstats and items[0].ndim < 2:
                 self.sstats = self.smean = self.sstd = self.sbias = self.srms = \
                     self.scrms = self.scorr = self.savail = self.smin = self.smax = \
                     self.shist = self.scount = False
@@ -381,7 +395,7 @@ class StatAccum(object):
                 self._tbase.shape = -1
                 if self.thist:
                     self._thbase = N.resize(self._tbase.astype('l'),
-                        (self.nbins, self._tbase.size))
+                                            (self.nbins, self._tbase.size))
 
             # Save some attributes
             self._atts = ()
@@ -392,7 +406,6 @@ class StatAccum(object):
                         attr[att] = getattr(var, att)
                 self._atts += attr,
 
-
             # Init accumulated variables
 
             # - temporal statistics
@@ -400,23 +413,28 @@ class StatAccum(object):
                 self._nts = []
                 if self.tsum:
                     self._tsum = self._tbase.copy(),
-                    if self.dual: self._tsum += self._tbase.copy(),
+                    if self.dual:
+                        self._tsum += self._tbase.copy(),
                 # - square
                 if self.tsqr:
                     self._tsqr = self._tbase.copy(),
-                    if self.dual: self._tsqr += self._tbase.copy(),
+                    if self.dual:
+                        self._tsqr += self._tbase.copy(),
                 # - product
-                if self.tprod: self._tprod = self._tbase.copy()
+                if self.tprod:
+                    self._tprod = self._tbase.copy()
                 # - count
                 self._tcount = self._tbase.copy().astype('l')
                 self.nt = 0
                 # - min/max
                 if self.tmin:
                     self._tmin = self._tbase.copy()+N.inf,
-                    if self.dual: self._tmin += self._tbase.copy()+N.inf,
+                    if self.dual:
+                        self._tmin += self._tbase.copy()+N.inf,
                 if self.tmax:
                     self._tmax = self._tbase.copy()-N.inf,
-                    if self.dual: self._tmax += self._tbase.copy()-N.inf,
+                    if self.dual:
+                        self._tmax += self._tbase.copy()-N.inf,
                 # - histograms
                 if self.thist:
                     self._thist = self._thbase.copy(),
@@ -429,18 +447,21 @@ class StatAccum(object):
 #                    if not getattr(self, 's'+name): continue
 #                    self._sstats[name] = []
 #                    setattr(self, '_s'+name, [])
-                self._stimes = tuple([[] for i in range(len(items))]) if self.withtime else None
+                self._stimes = tuple(
+                    [[] for i in range(len(items))]) if self.withtime else None
                 self._scount = []
             self.ns = items[0].size/items[0].shape[0]
 
         # Checks
         if not self.tstats and not self.sstats:
-            raise StatAccumError("Cant' accumulate statistics since they are all are OFF.")
+            raise StatAccumError(
+                "Cant' accumulate statistics since they are all are OFF.")
         if self.dual:
-            if len(items)!=2:
-                raise StatAccumError("You must always provide two variables for accumulating stats")
-            if items[0].shape!=items[1].shape:
-                raise StatAccumError("Compared variables must have the same shape: %s != %s"%(
+            if len(items) != 2:
+                raise StatAccumError(
+                    "You must always provide two variables for accumulating stats")
+            if items[0].shape != items[1].shape:
+                raise StatAccumError("Compared variables must have the same shape: %s != %s" % (
                     items[0].shape, items[1].shape))
 
         # As 2D (time-space) zero-filled arrays
@@ -472,25 +493,31 @@ class StatAccum(object):
             self.nt += items[0].shape[0]
             if self.tsum:
                 self._tsum[0][:] += item0.sum(axis=0)
-                if self.dual: self._tsum[1][:] += item1.sum(axis=0)
+                if self.dual:
+                    self._tsum[1][:] += item1.sum(axis=0)
             if self.tsqr:
                 self._tsqr[0][:] += (item0**2).sum(axis=0)
-                if self.dual: self._tsqr[1][:] += (item1**2).sum(axis=0)
+                if self.dual:
+                    self._tsqr[1][:] += (item1**2).sum(axis=0)
             if self.tprod:
                 self._tprod[:] += (item0*item1).sum(axis=0)
             if self.tmin:
                 vmin = item0m.min(axis=0)
-                self._tmin[0][:] = N.ma.where(vmin<self._tmin[0], vmin, self._tmin[0])
+                self._tmin[0][:] = N.ma.where(
+                    vmin < self._tmin[0], vmin, self._tmin[0])
                 if self.dual:
                     vmin = item1m.min(axis=0)
-                    self._tmin[1][:] = N.ma.where(vmin<self._tmin[1], vmin, self._tmin[1])
+                    self._tmin[1][:] = N.ma.where(
+                        vmin < self._tmin[1], vmin, self._tmin[1])
                 del vmin
             if self.tmax:
                 vmax = item0m.max(axis=0)
-                self._tmax[0][:] = N.ma.where(vmax>self._tmax[0], vmax, self._tmax[0])
+                self._tmax[0][:] = N.ma.where(
+                    vmax > self._tmax[0], vmax, self._tmax[0])
                 if self.dual:
                     vmax = item1m.max(axis=0)
-                    self._tmax[1][:] = N.ma.where(vmax>self._tmax[1], vmax, self._tmax[1])
+                    self._tmax[1][:] = N.ma.where(
+                        vmax > self._tmax[1], vmax, self._tmax[1])
                 del vmax
             if self.thist:
                 indices0 = N.digitize(item0.flat, self.bins)
@@ -499,16 +526,16 @@ class StatAccum(object):
                     indices1 = N.digitize(item1.flat, self.bins)
                     indices1[mask.ravel()] = 0
                 for ib in range(self.nbins):
-                    valid0 = indices0.reshape(item0.shape)==ib+1
+                    valid0 = indices0.reshape(item0.shape) == ib+1
                     valid0 &= ~mask
                     self._thist[0][ib] += valid0.sum(axis=0)
                     if self.dual:
-                        valid1 = indices1.reshape(item1.shape)==ib+1
+                        valid1 = indices1.reshape(item1.shape) == ib+1
                         valid1 &= ~mask
                         self._thist[1][ib] += valid1.sum(axis=0)
                 del indices0, valid0
-                if self.dual: del indices1, valid1
-
+                if self.dual:
+                    del indices1, valid1
 
         # - spatial statistics
         if self.sstats:
@@ -521,7 +548,8 @@ class StatAccum(object):
             # Base
             if self.ssum:
                 ssum = item0.sum(axis=1),
-                if self.dual: ssum += item1.sum(axis=1),
+                if self.dual:
+                    ssum += item1.sum(axis=1),
             if self.ssqr:
                 ssqr = (item0**2).sum(axis=1),
                 if self.dual:
@@ -544,27 +572,27 @@ class StatAccum(object):
                     indices1[mask.ravel()] = 0
 
                 shist = N.zeros(item0.shape[:1]+(self.nbins, ), 'l'),
-                if self.dual: shist += shist[0].copy(),
+                if self.dual:
+                    shist += shist[0].copy(),
 
                 for ib in range(self.nbins):
-                    valid0 = indices0.reshape(item0.shape)==ib+1
+                    valid0 = indices0.reshape(item0.shape) == ib+1
                     shist[0][:, ib] += valid0.sum(axis=1)
                     if self.dual:
-                        valid1 = indices1.reshape(item1.shape)==ib+1
+                        valid1 = indices1.reshape(item1.shape) == ib+1
                         shist[1][:, ib] += valid1.sum(axis=1)
-
 
             # Stats
             sstats = self._base2stats_(self.ns, scount, ssum if self.ssum else None,
-                ssqr if self.ssqr else None, sprod if self.sprod else None,
-                smin if self.smin else None, smax if self.smax else None,
-                shist if self.shist else None,
-                self.smean, self.sstd, self.sbias, self.srms, self.scrms,
-                self.scorr, self.savail, self.scount,
-                self.smin, self.smax, self.shist)
+                                       ssqr if self.ssqr else None, sprod if self.sprod else None,
+                                       smin if self.smin else None, smax if self.smax else None,
+                                       shist if self.shist else None,
+                                       self.smean, self.sstd, self.sbias, self.srms, self.scrms,
+                                       self.scorr, self.savail, self.scount,
+                                       self.smin, self.smax, self.shist)
             for key, val in six.iteritems(sstats):
-#                self._sstats[key].append(val)
-#                getattr(self, '_s'+key).append(val)
+                #                self._sstats[key].append(val)
+                #                getattr(self, '_s'+key).append(val)
                 if isinstance(val, tuple):
                     self._sstats.setdefault(key, ([], []))
                     for i, v in enumerate(val):
@@ -583,7 +611,6 @@ class StatAccum(object):
         if self.withtime:
             self.lasttime = items[0].getTime().asComponentTime()[-1]
 
-
     def __iadd__(self, items):
         if isinstance(items, tuple):
             self.append(*items)
@@ -592,7 +619,7 @@ class StatAccum(object):
         return self
 
     def isempty(self):
-        return self.iterindex==0
+        return self.iterindex == 0
 
     def _template_t2ht_(self, tpl):
         htpl = MV2.resize(tpl.astype('l'), (self.nbins,)+tpl.shape)
@@ -654,8 +681,10 @@ class StatAccum(object):
         for sname in self.all_stats + ('sum', 'sqr', 'prod', 'stats'):
             for st in 'st':
                 value = getattr(self, st+sname)
-                if value is None: continue
-                if isinstance(value, bool): value = int(value)
+                if value is None:
+                    continue
+                if isinstance(value, bool):
+                    value = int(value)
                 setattr(f, st+sname, value)
         # - current status
         f.iterindex = self.iterindex
@@ -667,7 +696,7 @@ class StatAccum(object):
             f.bin_edges = 0
         else:
             f.bin_edges = self.bins
-        if f.nitems==0: # Still no data
+        if f.nitems == 0:  # Still no data
             f.close()
             return
         # - already had some data
@@ -699,8 +728,8 @@ class StatAccum(object):
             for key, stats in self._sstats.items():
                 if isinstance(stats, tuple):
                     for i, stat in enumerate(stats):
-                        self._dump_array_(f, var=stat, id='s%s%s'%(key, str(i)),
-                            axis=taxes[i])
+                        self._dump_array_(f, var=stat, id='s%s%s' % (key, str(i)),
+                                          axis=taxes[i])
                 else:
                     self._dump_array_(f, var=stats, id='s'+key, axis=taxes[0])
 
@@ -715,14 +744,15 @@ class StatAccum(object):
 
             # Other stats
             for key in self._dual_accums+self._single_accums:
-                if not getattr(self, 't'+key): continue
+                if not getattr(self, 't'+key):
+                    continue
                 value = getattr(self, '_t'+key)
                 if key in self._dual_accums:
                     self._dump_array_(f, var=value, id='t'+key, axis=axis)
                 else:
                     for i, stat in enumerate(value):
-                        self._dump_array_(f, var=stat, id='t%s%s'%(key, str(i)), axis=axis)
-
+                        self._dump_array_(f, var=stat, id='t%s%s' %
+                                          (key, str(i)), axis=axis)
 
             # Templates
             ttemplates = [self._ttemplates]
@@ -730,18 +760,18 @@ class StatAccum(object):
 #                ttemplates.append(self._thtemplates)
             for ttpls in ttemplates:
                 for i, ttpl in enumerate(ttpls):
-#                    ttpl = ttpl.clone(copyData=0)
-#                    for ia, axis in enumerate(ttpl.getAxisList()): #FIXME:grid cloning
-#                        ttpl.setAxis(ia, axis.clone(copyData=0))
-                    _add_id_prefix_(ttpl, 'var%i_'%i, exc=self._baxis)
+                    #                    ttpl = ttpl.clone(copyData=0)
+                    #                    for ia, axis in enumerate(ttpl.getAxisList()): #FIXME:grid cloning
+                    #                        ttpl.setAxis(ia, axis.clone(copyData=0))
+                    _add_id_prefix_(ttpl, 'var%i_' % i, exc=self._baxis)
                     f.write(ttpl)
-                    _rm_id_prefix_(ttpl, 'var%i_'%i, exc=self._baxis)
+                    _rm_id_prefix_(ttpl, 'var%i_' % i, exc=self._baxis)
 
         # Attributes
         for ivar, atts in enumerate(self._atts):
             var = MV2.zeros(1)
             vacumm.misc.set_atts(var, atts)
-            var.id = 'var%i_atts'%ivar
+            var.id = 'var%i_atts' % ivar
             var.stataccum_id = atts['id']
             var.getAxis(0).id = 'var_att_axis'
             f.write(var)
@@ -750,7 +780,6 @@ class StatAccum(object):
 
         f.close()
         return f.id
-
 
     def load(self, restart_file=None, iterindex=None, nowtime=None):
         """Load the current instance from a netcdf file
@@ -780,26 +809,27 @@ class StatAccum(object):
         # - check status
         if iterindex is not None:
             self.iterindex = iterindex
-        if hasattr(self, 'iterindex') and f.iterindex<=self.iterindex:
+        if hasattr(self, 'iterindex') and f.iterindex <= self.iterindex:
             return -1
         if nowtime is not None:
             self.lasttime = comptime(nowtime)
-        if (hasattr(self, 'lasttime') and f.withtime>0 and self.lasttime
-                and comptime(f.lasttime)<=comptime(self.lasttime)):
+        if (hasattr(self, 'lasttime') and f.withtime > 0 and self.lasttime
+                and comptime(f.lasttime) <= comptime(self.lasttime)):
             return -1
         # - what was initially asked and some more
         for sname in self.all_stats + ('sum', 'sqr', 'prod', 'stats'):
             for st in 'st':
-                if not hasattr(f, st+sname): continue
+                if not hasattr(f, st+sname):
+                    continue
                 value = getattr(f, st+sname)
                 setattr(self, st+sname, bool(value))
         # - current status
         self.iterindex = int(f.iterindex)
         self.nitems = int(f.nitems)
-        if f.withtime==-1:
-           self.withtime  = None
+        if f.withtime == -1:
+            self.withtime = None
         else:
-            self.withtime  = bool(f.withtime)
+            self.withtime = bool(f.withtime)
         if f.withtime:
             self.lasttime = cdtime.s2c(f.lasttime)
         if N.isscalar(f.bin_edges):
@@ -808,7 +838,7 @@ class StatAccum(object):
             self.bins = N.asarray(f.bin_edges)
             self.nbins = self.bins.shape[0]-1
             self._baxis = f.getAxis('hbin').clone()
-        if self.nitems==0: # Still no data
+        if self.nitems == 0:  # Still no data
             f.close()
             return 0
         # - already had some data
@@ -832,8 +862,10 @@ class StatAccum(object):
                     tvalues = self._aslist_(taxis[:])
                     oldid = taxis.stataccum_oldid
                     for tvals in tvalues:
-                        tx = vacumm.misc.axes.create_time(tvals, taxis.units, id=oldid)
-                        vacumm.misc.cp_atts(taxis, tx, id=False, exclude=[oldid])
+                        tx = vacumm.misc.axes.create_time(
+                            tvals, taxis.units, id=oldid)
+                        vacumm.misc.cp_atts(
+                            taxis, tx, id=False, exclude=[oldid])
                         self._stimes[i].append(tx)
 
             # Count
@@ -842,20 +874,20 @@ class StatAccum(object):
             # Other stats
             self._sstats = {}
             for key in self.single_stats:
-                if not self.dual: # single var
+                if not self.dual:  # single var
                     vid = 's' + key
                     if vid not in f.variables:
                         continue
                     self._sstats[key] = self._load_array_(f, vid),
-                else: # two vars
+                else:  # two vars
                     for i in range(self.nitems):
-                        vid = 's%s%s'%(key, str(i))
+                        vid = 's%s%s' % (key, str(i))
                         if vid not in f.variables:
                             break
                         self._sstats.setdefault(key, ())
                         self._sstats[key] += self._load_array_(f, vid),
             for key in self.dual_stats:
-                vid = 's%s'%key
+                vid = 's%s' % key
                 if vid in f.variables:
                     self._sstats[key] = self._load_array_(f, vid)
 
@@ -868,7 +900,8 @@ class StatAccum(object):
             # Other stats
             for key in self._dual_accums+self._single_accums:
                 tid = 't'+key
-                if not getattr(self, tid): continue
+                if not getattr(self, tid):
+                    continue
                 if key in self._dual_accums:
                     value = self._load_array_(f, tid)
                     setattr(self, '_'+tid, value)
@@ -889,11 +922,12 @@ class StatAccum(object):
             if self.thist:
                 self._thtemplates = ()
             for i in range(self.nitems):
-                prefix = 'var%i_'%i
+                prefix = 'var%i_' % i
                 for vname in f.variables:
-                    if vname.startswith(prefix) and vname != prefix+'atts': break
+                    if vname.startswith(prefix) and vname != prefix+'atts':
+                        break
                 ttpl = f(vname)
-                _rm_id_prefix_(ttpl, 'var%i_'%i, exc=self._baxis)
+                _rm_id_prefix_(ttpl, 'var%i_' % i, exc=self._baxis)
                 self._ttemplates += ttpl,
                 if self.thist:
                     self._thtemplates += self._template_t2ht_(ttpl),
@@ -901,7 +935,7 @@ class StatAccum(object):
         # Attributes
         self._atts = ()
         for ivar in range(self.nitems):
-            attrs = f['var%i_atts'%ivar].attributes.copy()
+            attrs = f['var%i_atts' % ivar].attributes.copy()
             attrs['id'] = attrs['stataccum_id']
             del attrs['stataccum_id']
             self._atts += attrs,
@@ -909,20 +943,17 @@ class StatAccum(object):
         f.close()
         return self.iterindex
 
-
-
-
     @staticmethod
     def _base2stats_(size, count, sum, sqr, prod, vmin, vmax, hist,
-            domean, dostd, dobias, dorms, docrms, docorr, doavail,
-            docount, domin, domax,
-            dohist):
+                     domean, dostd, dobias, dorms, docrms, docorr, doavail,
+                     docount, domin, domax,
+                     dohist):
 
         # Denominators
         if isinstance(count, N.ndarray):
-            bad = count==0
+            bad = count == 0
             count_ = N.where(bad, 1, count)
-            countd =  N.where(bad, 0., 1./count_)
+            countd = N.where(bad, 0., 1./count_)
 #            bad = count<2
 #            count = N.where(bad, 2, count)
 #            countdm1 =  N.where(bad, 0., 1./(count-1))
@@ -932,17 +963,23 @@ class StatAccum(object):
 #            countdm1 = 0. if scount < 2 else 1./(count-1)
 
         # Check dual inputs
-        for vname in ('count',' sum',' sqr',' prod',' vmin',' vmax',' hist'):
+        for vname in ('count', ' sum', ' sqr', ' prod', ' vmin', ' vmax', ' hist'):
             val = eval(vname)
-            if val is None: continue
-            dual = len(val)==2
-            if dual: break
+            if val is None:
+                continue
+            dual = len(val) == 2
+            if dual:
+                break
         if dual:
-            if sum is not None: sum0, sum1 = sum
-            if sqr is not None: sqr0, sqr1 = sqr
+            if sum is not None:
+                sum0, sum1 = sum
+            if sqr is not None:
+                sqr0, sqr1 = sqr
         else:
-            if sum is not None: sum0 = sum[0]
-            if sqr is not None: sqr0 = sqr[0]
+            if sum is not None:
+                sum0 = sum[0]
+            if sqr is not None:
+                sqr0 = sqr[0]
 
         # Init
         results = {}
@@ -953,7 +990,7 @@ class StatAccum(object):
 
         # Availability
         if doavail:
-            results['avail'] = 1.* count / size
+            results['avail'] = 1. * count / size
 
        # Mean
         if domean:
@@ -961,23 +998,24 @@ class StatAccum(object):
             if dual:
                 results['mean'] = results['mean'], sum1 * countd
 
-
         # Standard deviation & sum(Xi'^2) & sum(Yi'^2)
         if dostd or docorr:
-            sqrp0 = - sum0**2 * countd # sum(Xi'^2)
+            sqrp0 = - sum0**2 * countd  # sum(Xi'^2)
             sqrp0 += sqr0
             if dostd:
                 try:
-                    results['std'] = N.sqrt(sqrp0 * countd)#m1)
+                    results['std'] = N.sqrt(sqrp0 * countd)  # m1)
                 except:
                     pass
-            if not docorr: del sqrp0
+            if not docorr:
+                del sqrp0
             if dual:
-                sqrp1 = - sum1**2 * countd # sum(Yi'^2)
+                sqrp1 = - sum1**2 * countd  # sum(Yi'^2)
                 sqrp1 += sqr1
                 if dostd:
                     results['std'] = results['std'], N.sqrt(sqrp1 * countd)
-                if not docorr: del sqrp1
+                if not docorr:
+                    del sqrp1
 
         # Bias
         if dobias:
@@ -987,7 +1025,7 @@ class StatAccum(object):
         if dorms:
             rms = sqr0 + sqr1
             rms -= prod * 2
-            results['rms'] = N.sqrt(rms * countd)#m1)
+            results['rms'] = N.sqrt(rms * countd)  # m1)
             del sqr0, sqr1, rms
 
         # sum(Xi'Yi')
@@ -998,8 +1036,9 @@ class StatAccum(object):
         if docrms:
             crms = sqrp0 + sqrp1
             crms -= prodp * 2
-            if not docorr: del prodp
-            results['crms'] = N.sqrt(crms * countd)#m1)
+            if not docorr:
+                del prodp
+            results['crms'] = N.sqrt(crms * countd)  # m1)
             del crms
 
         # Correlation
@@ -1020,15 +1059,17 @@ class StatAccum(object):
         return results
 
     def _checkstat_(self, name):
-        if self.iterindex==0:
-            raise StatAccumError("Can't get statistics '%s' since still nothing has been accumulated"%name)
+        if self.iterindex == 0:
+            raise StatAccumError(
+                "Can't get statistics '%s' since still nothing has been accumulated" % name)
         if not getattr(self, name):
-            raise StatAccumError("Can't get statistics '%s' since it set to OFF")
+            raise StatAccumError(
+                "Can't get statistics '%s' since it set to OFF")
 
     def _get_masks_(self, stats, count):
         masks = {}
         count = N.asarray(count)
-        mask0 = count<1
+        mask0 = count < 1
 #        mask1 = count<2
         del count
         for key in stats:
@@ -1040,11 +1081,9 @@ class StatAccum(object):
                 masks[key] = mask0
         return masks
 
-
-
     @staticmethod
     def _format_var_(vv, name, mask=None, prefix=True, suffix=True, templates=None,
-        htemplates=None, attributes=None, single=True, **kwargs):
+                     htemplates=None, attributes=None, single=True, **kwargs):
 
         # Some inits
         ist = name.startswith('t')
@@ -1063,7 +1102,7 @@ class StatAccum(object):
             vv = [vv]
             single = True
         elif single:
-            single = len(vv)==1
+            single = len(vv) == 1
         else:
             single = False
 #        dual = len(vv)==2
@@ -1078,23 +1117,23 @@ class StatAccum(object):
 
         # Long_name
         long_name = prefix
-        if name=='avail':
+        if name == 'avail':
             long_name += 'availability'
-        if name=='count':
+        if name == 'count':
             long_name += 'count'
-        elif name=='mean':
+        elif name == 'mean':
             long_name += 'average'
-        elif name=='std':
+        elif name == 'std':
             long_name += 'standard deviation'
-        elif name=='bias':
+        elif name == 'bias':
             long_name += 'bias'
-        elif name=='rms':
+        elif name == 'rms':
             long_name += 'absolute RMS difference'
-        elif name=='crms':
+        elif name == 'crms':
             long_name += 'centered RMS difference'
-        elif name=='corr':
+        elif name == 'corr':
             long_name += 'correlation'
-        elif name=='hist':
+        elif name == 'hist':
             long_name += 'histogram'
 
         # Type change
@@ -1106,14 +1145,14 @@ class StatAccum(object):
         for i, v in enumerate(vv):
 
             # From template or not
-            hvar = v.ndim==2 # Histogram-like variables: first axis = bins
+            hvar = v.ndim == 2  # Histogram-like variables: first axis = bins
             hist = htemplates and hvar
             if templates is not None:
 
                 # From axis (sstats)
                 if isaxis(templates[i]):
-#                    if hvar and not ist:
-#                        v = N.ma.transpose(v) # time first, not bins
+                    #                    if hvar and not ist:
+                    #                        v = N.ma.transpose(v) # time first, not bins
                     var = MV2.asarray(v)
                     var.setAxis(0, templates[i])
 #                    try:
@@ -1143,7 +1182,7 @@ class StatAccum(object):
 
             # Mask
             if mask is not None:
-                func = N.resize if var.size!=mask.size else N.reshape
+                func = N.resize if var.size != mask.size else N.reshape
                 var[:] = MV2.masked_where(func(mask, var.shape), var, copy=0)
 
             # Attributes
@@ -1160,10 +1199,10 @@ class StatAccum(object):
                     var.long_name += ' of '+attributes[i]['long_name']
             # - dual stats
             elif name in ['bias', 'rms', 'crms']:
-                for attr in attributes: # loop on both variables attributes
+                for attr in attributes:  # loop on both variables attributes
                     if "units" in attr and not hasattr(var, 'units'):
                         var.units = attr['units']
-                    if suffix is True and "long_name" in attr and var.long_name==long_name:
+                    if suffix is True and "long_name" in attr and var.long_name == long_name:
                         var.long_name += ' of '+attr['long_name']
             vv[i] = var
 
@@ -1171,33 +1210,33 @@ class StatAccum(object):
             return vv[0]
         return tuple(vv)
 
-
     def get_tstats(self, **kwargs):
         """Get all temporal statistics as a dictionary"""
-        if not self.tstats: return {}
+        if not self.tstats:
+            return {}
 
         # From cache
-        if getattr(self, '_cache_titerindex', -1)==self.iterindex:
+        if getattr(self, '_cache_titerindex', -1) == self.iterindex:
             return self._cache_tstats
 
         # Compute stats
         tstats = self._base2stats_(self.nt, self._tcount, self._tsum if self.tsum else None,
-            self._tsqr if self.tsqr else None, self._tprod if self.tprod else None,
-            self._tmin if self.tmin else None, self._tmax if self.tmax else None,
-            self._thist if self.thist else None,
-            self.tmean, self.tstd, self.tbias,
-            self.trms, self.tcrms, self.tcorr, self.tavail, self.tcount,
-            self.tmin, self.tmax, self.thist)
+                                   self._tsqr if self.tsqr else None, self._tprod if self.tprod else None,
+                                   self._tmin if self.tmin else None, self._tmax if self.tmax else None,
+                                   self._thist if self.thist else None,
+                                   self.tmean, self.tstd, self.tbias,
+                                   self.trms, self.tcrms, self.tcorr, self.tavail, self.tcount,
+                                   self.tmin, self.tmax, self.thist)
 
         # Masks
         masks = self._get_masks_(tstats, self._tcount)
 
         # Format and cache
         kwargs.update(templates=self._ttemplates, htemplates=self._thtemplates,
-            attributes=self._atts, single=True, baxis=self._baxis)
+                      attributes=self._atts, single=True, baxis=self._baxis)
         self._cache_tstats = dict([(name,
-            self._format_var_(var, 't'+name, mask=masks[name], **kwargs))
-            for name, var in six.iteritems(tstats)])
+                                    self._format_var_(var, 't'+name, mask=masks[name], **kwargs))
+                                   for name, var in six.iteritems(tstats)])
         self._cache_titerindex = self.iterindex
         del masks
         return self._cache_tstats
@@ -1249,17 +1288,19 @@ class StatAccum(object):
 
     def get_sstats(self, **kwargs):
         """Get all spatial statistics as a dictionary"""
-        if not self.sstats: return {}
+        if not self.sstats:
+            return {}
 
         # From cache
-        if getattr(self, '_cache_siterindex', None)==self.iterindex:
+        if getattr(self, '_cache_siterindex', None) == self.iterindex:
             return self._cache_sstats
 
         # Aggregate pure numeric stats
         sstats = {}
         for stype, vals in self._sstats.items():
             if isinstance(vals, tuple):
-                sstats[stype] = self._asarray_(vals[0]), self._asarray_(vals[1])
+                sstats[stype] = self._asarray_(
+                    vals[0]), self._asarray_(vals[1])
             else:
                 sstats[stype] = self._asarray_(vals)
 
@@ -1282,10 +1323,11 @@ class StatAccum(object):
             [vacumm.misc.MV2_axisConcatenate(stime) for stime in self._stimes]
 
         # Format and cache
-        kwargs.update(templates=stimes, htemplates=self._baxis, attributes=self._atts)
+        kwargs.update(templates=stimes, htemplates=self._baxis,
+                      attributes=self._atts)
         self._cache_sstats = dict([(name,
-            self._format_var_(var, 's'+name, masks[name], **kwargs))
-            for name, var in six.iteritems(sstats)])
+                                    self._format_var_(var, 's'+name, masks[name], **kwargs))
+                                   for name, var in six.iteritems(sstats)])
         self._cache_siterindex = self.iterindex
         del masks
         return self._cache_sstats
@@ -1347,24 +1389,29 @@ class StatAccum(object):
     def __getitem__(self, key):
         return self.get_stats()[key]
 
+
 def _get_var_and_axes_(var, exc=None):
     """Get a list of a variable and its axes"""
-    if exc is None: exc = []
+    if exc is None:
+        exc = []
     if not isinstance(exc, (list, tuple)):
         exc = [exc]
     out = [var]+var.getAxisList()
-    if var.getGrid() and var.getLongitude().id!=var.getAxis(-1).id:
+    if var.getGrid() and var.getLongitude().id != var.getAxis(-1).id:
         out.extend([var.getLongitude(), var.getLatitude()])
-    if not exc: return out
+    if not exc:
+        return out
     exc0 = list(map(id, exc))
     exc1 = [e.id for e in exc]
     return [o for o in out if id(o) not in exc0 and o.id not in exc1]
+
 
 def _rm_id_prefix_(var, prefix, exc=None):
     """Remove prefix in ids of a variable and its axes"""
     for obj in _get_var_and_axes_(var, exc=exc):
         if obj.id.startswith(prefix):
             obj.id = obj.id[len(prefix):]
+
 
 def _add_id_prefix_(var, prefix, exc=None):
     """Add prefix in ids of a variable and its axes when not present"""

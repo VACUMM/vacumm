@@ -1,11 +1,11 @@
 """Test function :func:`~vacumm.misc.kriging.krig` for grid refinement"""
 
+from vcmq import P, savefigs, N, auto_scale, add_grid, krign as krig
+from vacumm.misc.kriging import gridded_gauss3
+
 nxi = 15
 nyi = 10
 r = 3
-
-from vcmq import P, savefigs, N, auto_scale, add_grid, krign as krig
-from vacumm.misc.kriging import gridded_gauss3
 
 # Generate random gridded field
 xi, yi, zzi = gridded_gauss3(nx=nxi, ny=nyi)
@@ -25,13 +25,14 @@ P.figure(figsize=(8, 4))
 iyis = [3, 4]
 for iyi in iyis:
     label = iyi==iyis[0]
-    P.plot(xi, zzi[iyi], 'ob-', markersize=8, label='Original' if label else None)
-    P.plot(xo, zzo[iyi*r], 'or-', markersize=5, lw=.8, label='Interpolated' if label else None)
+    P.plot(xi, zzi[iyi], 'ob-', markersize=8,
+           label='Original' if label else None)
+    P.plot(xo, zzo[iyi*r], 'or-', markersize=5, lw=.8,
+           label='Interpolated' if label else None)
     P.legend(loc='best', framealpha=0.5)
 P.grid()
 P.title('Section')
 P.tight_layout()
-savefigs(code_file_name(ext='_0.png'), verbose=False, pdf=True)
 
 # Maps
 P.figure(figsize=(8, 4))
@@ -51,5 +52,3 @@ for iyi in iyis:
     P.axhline(yi[iyi], linestyle='--', color='k')
 P.title('Interpolated')
 P.tight_layout()
-savefigs(code_file_name(ext='_1.png'), verbose=False, pdf=True)
-P.close()

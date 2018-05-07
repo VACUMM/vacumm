@@ -1,5 +1,5 @@
 """Test the :func:`~vacumm.misc.regridding.regrid1d` function"""
-from vcmq import N,MV2, create_dep, P,meshcells, minmax, regrid1d
+from vcmq import N,MV2, create_dep, P, meshcells, minmax, regrid1d
 
 nt = 2
 nx = 4

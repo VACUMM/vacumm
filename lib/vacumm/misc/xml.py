@@ -37,7 +37,8 @@ from __future__ import absolute_import
 from __future__ import print_function
 import six
 if __name__ == '__main__':
-    import sys; del sys.path[0]
+    import sys
+    del sys.path[0]
 
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
@@ -146,22 +147,34 @@ To save a xml file from the loaded object above you can do:
 
 #__all__ = ['XmlConfig', 'XmlConfigList', 'XmlConfigDict']
 
-import codecs, os, re, sys, traceback, six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
+import codecs
+import os
+import re
+import sys
+import traceback
+import six.moves.urllib.request
+import six.moves.urllib.error
+import six.moves.urllib.parse
 
-try: import xml.etree.cElementTree as ElementTree
-except ImportError: import xml.etree.ElementTree as ElementTree
+try:
+    import xml.etree.cElementTree as ElementTree
+except ImportError:
+    import xml.etree.ElementTree as ElementTree
 
 
 # Debugging stuff
-_debug = len(os.environ.get('XML_DEBUG', ''))>0
-_debug_classes = os.environ.get('XML_DEBUG_CLASS').split(',') if 'XML_DEBUG_CLASS' in os.environ else None
+_debug = len(os.environ.get('XML_DEBUG', '')) > 0
+_debug_classes = os.environ.get('XML_DEBUG_CLASS').split(
+    ',') if 'XML_DEBUG_CLASS' in os.environ else None
 if _debug:
     import pprint
+
     def log(o, m, *a):
-        if o and _debug_classes and o.__class__.__name__ not in _debug_classes: return
-        sys.stderr.write('[XML %s] %s\n'%(
+        if o and _debug_classes and o.__class__.__name__ not in _debug_classes:
+            return
+        sys.stderr.write('[XML %s] %s\n' % (
             o.__class__.__name__,
-            m%tuple(pprint.pformat(aa, indent=2, depth=None) if isinstance(aa, (list,tuple,dict)) else aa for aa in a)))
+            m % tuple(pprint.pformat(aa, indent=2, depth=None) if isinstance(aa, (list, tuple, dict)) else aa for aa in a)))
 else:
     def log(*a, **k): pass
 log.__doc__ = '''Debugging log function'''
@@ -173,10 +186,11 @@ try:
     from xml.dom.ext.reader import Sax2
     from xml.dom.ext import PrettyPrint
     _xmldomext = True
-except: pass
+except:
+    pass
 
 
-def pretty_indent(elem, level=0, indent = '  '):
+def pretty_indent(elem, level=0, indent='  '):
     '''
     Indent an ElementTree element avoiding extraneous spaces around node text.
     '''
@@ -206,22 +220,24 @@ except Exception as e:
 
 _true = ['y', 'yes', 'true', 'on', '1']
 _false = ['n', 'no', 'false', 'off', '0']
+
+
 def parse_bool(s):
     '''
     Boolean string parser, accepts:
         - %s as True
         - %s as False
-    '''%(', '.join(_true), ', '.join(_false))
+    ''' % (', '.join(_true), ', '.join(_false))
     _s, s = s, str(s).lower().strip()
     if s in _true:
         return True
     if s in _false:
         return False
-    raise ValueError('Could not parse bool from string %r'%_s)
+    raise ValueError('Could not parse bool from string %r' % _s)
 
 
 # A "do nothing" function
-_emptyfunc = lambda x: x
+def _emptyfunc(x): return x
 
 
 def register(obj, attributes=None, elements=None, entries=None):
@@ -244,10 +260,12 @@ def register(obj, attributes=None, elements=None, entries=None):
     obj
     '''
     if attributes:
-        for k,v in six.iteritems(attributes):
+        for k, v in six.iteritems(attributes):
             setattr(obj, k, v)
-    if elements: obj.extend(elements)
-    if entries: obj.update(entries)
+    if elements:
+        obj.extend(elements)
+    if entries:
+        obj.update(entries)
     return obj
 
 
@@ -266,9 +284,8 @@ def usafe(o):
     if isinstance(o, six.string_types) and not isinstance(o, six.text_type):
         return six.text_type(o, encoding='UTF-8', errors='replace')
     elif not isinstance(o, six.string_types):
-        return six.text_type('%s'%o)
+        return six.text_type('%s' % o)
     return o
-
 
 
 def xml_element_name(name):
@@ -280,12 +297,12 @@ def xml_element_name(name):
     return re.sub(r'[^a-zA-Z0-1]+', '', ''.join([s[0].upper()+s[1:] for s in name.split()]))
 
 
-#def xml_attribute_name(name):
+# def xml_attribute_name(name):
 #    name = xml_element_name(name)
 #    return name[0].lower()+name[1:]
 
 
-#def create_xml_document():
+# def create_xml_document():
 #    return ElementTree.ElementTree()
 
 
@@ -311,14 +328,15 @@ def create_xml_element(name, attributes=None, childnodes=None, skipNone=True, **
     elt = ElementTree.Element(name)
     if attributes is not None:
         for attrName, attrValue in six.iteritems(attributes):
-            if attrValue is None and skipNone: continue
-            attrValue = '%s'%(attrValue,)
+            if attrValue is None and skipNone:
+                continue
+            attrValue = '%s' % (attrValue,)
             elt.set(attrName, attrValue)
     if childnodes is not None:
         if not isinstance(childnodes, (dict, list, tuple)):
             childnodes = (childnodes,)
         if isinstance(childnodes, dict):
-            for k,c in six.iteritems(childnodes):
+            for k, c in six.iteritems(childnodes):
                 elt.append(c)
         else:
             for c in childnodes:
@@ -353,11 +371,13 @@ def findchildren(elt, name):
     '''
     ns, name = splitns(name)
     for e in elt.getchildren():
-        if e.tag == name: yield e
+        if e.tag == name:
+            yield e
         elif e.tag[:1] == '{':
             namespace, tagname = e.tag[1:].rsplit('}', 1)
-            #if ns and ns != namespace: continue
-            if tagname == name: yield e
+            # if ns and ns != namespace: continue
+            if tagname == name:
+                yield e
 
 
 def getattribute(elt, name, default=None):
@@ -379,11 +399,13 @@ def getattribute(elt, name, default=None):
     '''
     ns, name = splitns(name)
     for an, av in six.iteritems(elt.attrib):
-        if an == name: return av
+        if an == name:
+            return av
         elif an[:1] == '{':
             namespace, attname = an[1:].rsplit('}', 1)
-            #if ns and ns != namespace: continue
-            if attname == name: return av
+            # if ns and ns != namespace: continue
+            if attname == name:
+                return av
     return default
 
 
@@ -407,6 +429,8 @@ def hasattribute(elt, name):
 
 # Internal name of the flag used to track if an attribute was loaded from xml element
 __loaded_from_elt__ = '__loaded_from_elt__'
+
+
 def load_xml_attributes(elt=None, attributes=None, dst=None, create=False):
     '''
     Deserialize attributes from an element
@@ -435,36 +459,45 @@ def load_xml_attributes(elt=None, attributes=None, dst=None, create=False):
     ------
     dict of deserialized attributes
     '''
-    if elt is None: elt = ElementTree.Element('')
+    if elt is None:
+        elt = ElementTree.Element('')
     m = Dict()
 # load all attributes as raw data ? must be configurable
 #    if attributes is None:
 #        for a in elt.attrib.keys():
 #            m[str(a)] = getattribute(elt, a)a)
 #    elif isinstance(attributes, (list,tuple)):
-    if isinstance(attributes, (list,tuple)):
+    if isinstance(attributes, (list, tuple)):
         for a in attributes:
-            if hasattribute(elt, a): m[str(a)] = getattribute(elt, a)
-            elif create: m[str(a)] = None
+            if hasattribute(elt, a):
+                m[str(a)] = getattribute(elt, a)
+            elif create:
+                m[str(a)] = None
     elif isinstance(attributes, dict):
-        for a,dspec in six.iteritems(attributes):
+        for a, dspec in six.iteritems(attributes):
             nsa = a
             ns, a = splitns(nsa)
-            if isinstance(dspec, (list,tuple)): dtype, ddef = dspec[:]
-            elif isinstance(dspec, dict): dtype, ddef = dspec.get('type', None), dspec.get('default', None)
-            else: dtype, ddef = dspec, None
+            if isinstance(dspec, (list, tuple)):
+                dtype, ddef = dspec[:]
+            elif isinstance(dspec, dict):
+                dtype, ddef = dspec.get(
+                    'type', None), dspec.get('default', None)
+            else:
+                dtype, ddef = dspec, None
             #if dtype is bool: dtype = parse_bool
-            log(dst, 'load_xml_attributes processing "%s" with spec %s', a, dspec) #####
+            log(dst, 'load_xml_attributes processing "%s" with spec %s', a, dspec)
             if hasattribute(elt, nsa):
                 try:
-                    m[str(a)] = (getattr(dtype, 'parse', dtype) or _emptyfunc)(getattribute(elt, nsa))
+                    m[str(a)] = (getattr(dtype, 'parse', dtype)
+                                 or _emptyfunc)(getattribute(elt, nsa))
                     dspec[__loaded_from_elt__] = True
                 except Exception as e:
-                    log(dst, '*** load_xml_attributes failed loading attribute "%s" of element "%s": %s', a, elt.tag, e) #####
+                    log(dst, '*** load_xml_attributes failed loading attribute "%s" of element "%s": %s', a, elt.tag, e)
                     if create:
-                        log(dst, '*** load_xml_attributes setting default value for "%s": "%s"', a, ddef) #####
+                        log(dst, '*** load_xml_attributes setting default value for "%s": "%s"', a, ddef)
                         m[str(a)] = ddef
-            elif create and dst is not None and not hasattr(dst, a): m[str(a)] = ddef
+            elif create and dst is not None and not hasattr(dst, a):
+                m[str(a)] = ddef
     if dst is not None:
         register(dst, m)
     return m
@@ -511,53 +544,74 @@ def load_xml_childnodes(elt=None, childnodes=None, dst=None, create=False):
     ------
     a tuple (attributes, elements, entries) of the loaded data
     '''
-    if elt is None: elt = ElementTree.Element(dst.__class__.__name__)
+    if elt is None:
+        elt = ElementTree.Element(dst.__class__.__name__)
     attrs, elements, entries = Dict(), [], Dict()
-    for dname,dspec in six.iteritems(childnodes):
+    for dname, dspec in six.iteritems(childnodes):
         dname = str(dname)
-        if isinstance(dspec, (list,tuple)):
+        if isinstance(dspec, (list, tuple)):
             (dtype, ddef), dcreate, dargs, dkwargs, dsingle, dself, dkey = (
                 dspec, False, [], {}, False, False, None)
         elif isinstance(dspec, dict):
             dtype, ddef, dcreate, dargs, dkwargs, dsingle, dself, dkey = (
                 dspec.get('type'), dspec.get('default', _no_default),
-                dspec.get('create', not dspec.get('single', False)), dspec.get('args', []), dspec.get('kwargs', {}),
+                dspec.get('create', not dspec.get('single', False)), dspec.get(
+                    'args', []), dspec.get('kwargs', {}),
                 dspec.get('single', False), dspec.get('self', False), dspec.get('key', None))
         else:
-            dtype, ddef, dcreate, dargs, dkwargs, dsingle, dself, dkey = dspec, _no_default, False, [], {}, False, False, None
-        if dsingle is True: isingle = 0
-        elif dsingle is not None and dsingle is not False: dsingle,isingle = True,int(dsingle)
-        else: isingle = 0
-        if not isinstance(dargs, (list, tuple)): dargs = [dargs]
-        log(dst, 'load_xml_childnodes processing "%s" with spec %s', dname, dspec) #####
-        l = [(getattribute(c, dkey) if dkey else None, c) for c in findchildren(elt, dtype.tag_name())]
+            dtype, ddef, dcreate, dargs, dkwargs, dsingle, dself, dkey = dspec, _no_default, False, [
+            ], {}, False, False, None
+        if dsingle is True:
+            isingle = 0
+        elif dsingle is not None and dsingle is not False:
+            dsingle, isingle = True, int(dsingle)
+        else:
+            isingle = 0
+        if not isinstance(dargs, (list, tuple)):
+            dargs = [dargs]
+        log(dst, 'load_xml_childnodes processing "%s" with spec %s', dname, dspec)
+        l = [(getattribute(c, dkey) if dkey else None, c)
+             for c in findchildren(elt, dtype.tag_name())]
         if len(l):
             if dsingle:
-                attrs[dname] = dtype.from_xml_elt(l[isingle][1], *dargs, **dkwargs)
+                attrs[dname] = dtype.from_xml_elt(
+                    l[isingle][1], *dargs, **dkwargs)
             else:
-                objs = [(k, dtype.from_xml_elt(c, *dargs, **dkwargs)) for k,c in l]
+                objs = [(k, dtype.from_xml_elt(c, *dargs, **dkwargs))
+                        for k, c in l]
                 if dself:
-                    if dkey: entries.update(Dict(objs))
-                    else: elements.extend([c for k,c in objs])
+                    if dkey:
+                        entries.update(Dict(objs))
+                    else:
+                        elements.extend([c for k, c in objs])
                 else:
-                    if dkey: attrs[dname] = Dict(objs)
-                    else: attrs[dname] = [c for k,c in objs]
+                    if dkey:
+                        attrs[dname] = Dict(objs)
+                    else:
+                        attrs[dname] = [c for k, c in objs]
         elif not dself:
-            if ddef is not _no_default: attrs[dname] = ddef
+            if ddef is not _no_default:
+                attrs[dname] = ddef
             elif create:
                 if dcreate:
                     # Create default except when same class (avoid recursion)
                     if dsingle:
                         if issubclass(dtype, type(dst)):
-                            print(__file__,'*** avoided recursion in creation of attribute "%s" with type "%s" on object with same type'%(dname, dtype))
-                        else: attrs[dname] = dtype(*dargs, **dkwargs)
-                    else: attrs[dname] = Dict() if dkey else []
+                            print(
+                                __file__, '*** avoided recursion in creation of attribute "%s" with type "%s" on object with same type' % (dname, dtype))
+                        else:
+                            attrs[dname] = dtype(*dargs, **dkwargs)
+                    else:
+                        attrs[dname] = Dict() if dkey else []
                 else:
-                    if dsingle: attrs[dname] = None
-                    else: attrs[dname] = Dict() if dkey else []
+                    if dsingle:
+                        attrs[dname] = None
+                    else:
+                        attrs[dname] = Dict() if dkey else []
     if dst is not None:
         register(dst, attrs, elements, entries)
-    log(dst, 'load_xml_childnodes done:\n  attributes: %s\n  elements: %s\n  entries: %s', attrs, elements, entries) #####
+    log(dst, 'load_xml_childnodes done:\n  attributes: %s\n  elements: %s\n  entries: %s',
+        attrs, elements, entries)
     return attrs, elements, entries
 
 
@@ -600,37 +654,50 @@ def load_xml_textnodes(elt=None, textnodes=None, dst=None, create=False, xml_ele
     ------
     None
     '''
-    if elt is None: elt = ElementTree.Element(dst.__class__.__name__)
-    for name,spec in six.iteritems(textnodes):
-        log(dst, 'load_xml_textnodes processing "%s" with spec %s', name, spec) #####
-        tagName, factory, default, single = xml_element_name(name), _emptyfunc, _no_default, False
-        if isinstance(spec, (list,tuple)):
+    if elt is None:
+        elt = ElementTree.Element(dst.__class__.__name__)
+    for name, spec in six.iteritems(textnodes):
+        log(dst, 'load_xml_textnodes processing "%s" with spec %s', name, spec)
+        tagName, factory, default, single = xml_element_name(
+            name), _emptyfunc, _no_default, False
+        if isinstance(spec, (list, tuple)):
             tagName, default = spec
         elif isinstance(spec, dict):
             tagName, factory, default, single = (spec.get('tagName', tagName),
-                spec.get('type', factory), spec.get('default', default), spec.get('single', single))
+                                                 spec.get('type', factory), spec.get('default', default), spec.get('single', single))
         elif spec:
             tagName = spec
-        if not factory: factory = _emptyfunc
-        if factory is bool: factory = parse_bool
-        if single is True: isingle = 0
-        elif single is not None and single is not False: single,isingle = True,int(single)
-        else: isingle = 0
+        if not factory:
+            factory = _emptyfunc
+        if factory is bool:
+            factory = parse_bool
+        if single is True:
+            isingle = 0
+        elif single is not None and single is not False:
+            single, isingle = True, int(single)
+        else:
+            isingle = 0
         childElements = [c for c in findchildren(elt, tagName)]
         if childElements:
             if single:
-                setattr(dst, name, factory(childElements[isingle].text if childElements[isingle].text else ''))
+                setattr(dst, name, factory(
+                    childElements[isingle].text if childElements[isingle].text else ''))
             else:
-                setattr(dst, name, [factory(c.text if c.text else '') for c in childElements])
+                setattr(dst, name, [factory(c.text if c.text else '')
+                                    for c in childElements])
         elif default is not _no_default:
             setattr(dst, name, default)
         elif create:
-            if single: setattr(dst, name, None)
-            else: setattr(dst, name, [])
+            if single:
+                setattr(dst, name, None)
+            else:
+                setattr(dst, name, [])
 
 
 # Internal name used to pass the xml element from XmlConfig.from_xml_elt to XmlConfig.__init__ through XmlConfigMetaClass.__call__
 __load_xml_elt__ = '__load_xml_elt__'
+
+
 class XmlConfigMetaClass(type):
     '''
     Metaclass used to pass the xml element from XmlConfig.from_xml_elt to
@@ -687,17 +754,19 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
 
         This class also maintain the currently loaded/saved file if any, see set_current_file and get_current_file
         '''
-        log(self, '__init__:\n  args: %s\n  kwargs: %s)', args, kwargs) #####
+        log(self, '__init__:\n  args: %s\n  kwargs: %s)', args, kwargs)
         # Attributes
         self.xml_attributes = self.xml_attributes_specs(self.xml_attributes)
         xml_attributes = kwargs.pop('xml_attributes', None)
         if xml_attributes:
-            self.xml_attributes.update(self.xml_attributes_specs(xml_attributes))
+            self.xml_attributes.update(
+                self.xml_attributes_specs(xml_attributes))
         # Child nodes
         self.xml_childnodes = self.xml_childnodes_specs(self.xml_childnodes)
         xml_childnodes = kwargs.pop('xml_childnodes', None)
         if xml_childnodes:
-            self.xml_childnodes.update(self.xml_childnodes_specs(xml_childnodes))
+            self.xml_childnodes.update(
+                self.xml_childnodes_specs(xml_childnodes))
         # Text nodes
         self.xml_textnodes = self.xml_textnodes_specs(self.xml_textnodes)
         xml_textnodes = kwargs.pop('xml_textnodes', None)
@@ -708,8 +777,9 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
         if kwargs.pop('xml_create_attributes', True):
             load_xml_attributes(None, self.xml_attributes, self, True)
             load_xml_childnodes(None, self.xml_childnodes, self, True)
-            load_xml_textnodes(None, self.xml_textnodes, self, True, xml_element_name=self.xml_element_name)
-        for nsa,s in self.xml_attributes.items():
+            load_xml_textnodes(None, self.xml_textnodes, self,
+                               True, xml_element_name=self.xml_element_name)
+        for nsa, s in self.xml_attributes.items():
             ns, a = splitns(nsa)
             if a in kwargs:
                 v = kwargs[a]
@@ -718,36 +788,43 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
                     try:
                         v = t(v)
                     except:
-                        raise TypeError('Unsupported type %r, %s required'%(v.__class__, t))
+                        raise TypeError(
+                            'Unsupported type %r, %s required' % (v.__class__, t))
                 setattr(self, a, v)
-        for a,s in self.xml_childnodes.items():
+        for a, s in self.xml_childnodes.items():
             if a in kwargs:
                 v = kwargs[a]
                 t = s.get('type', None)
                 if s.get('single', None):
                     if t and not isinstance(v, t):
-                        raise TypeError('Unsupported type %r, %s required'%(v.__class__, t))
+                        raise TypeError(
+                            'Unsupported type %r, %s required' % (v.__class__, t))
                 else:
                     if s.get('key', None):
                         if t and not isinstance(v, dict):
-                            raise TypeError('Unsupported type %r, %r required'%(v.__class__, dict))
+                            raise TypeError(
+                                'Unsupported type %r, %r required' % (v.__class__, dict))
                         for vv in v.values():
                             if t and not isinstance(vv, t):
-                                raise TypeError('Unsupported type %r, %r required'%(vv.__class__, t))
+                                raise TypeError(
+                                    'Unsupported type %r, %r required' % (vv.__class__, t))
                     else:
-                        if t and not isinstance(v, (list,tuple)):
-                            raise TypeError('Unsupported type %r, %r required'%(v.__class__, (list,tuple)))
+                        if t and not isinstance(v, (list, tuple)):
+                            raise TypeError('Unsupported type %r, %r required' % (
+                                v.__class__, (list, tuple)))
                         for i, vv in enumerate(v):
                             if isinstance(vv, dict):
                                 v[i] = t(**vv)
                             elif t and not isinstance(vv, t):
-                                raise TypeError('Unsupported type %r, %r required'%(vv.__class__, t))
+                                raise TypeError(
+                                    'Unsupported type %r, %r required' % (vv.__class__, t))
                 setattr(self, a, v)
-        for a,s in self.xml_textnodes.items():
+        for a, s in self.xml_textnodes.items():
             if a in kwargs:
                 setattr(self, a, kwargs[a])
         #import pdb; pdb.set_trace()
-        log(self, '__init__ done:\n  xml_attributes: %s\n  xml_childnodes: %s\n  xml_textnodes: %s', self.xml_attributes, self.xml_childnodes, self.xml_textnodes) #####
+        log(self, '__init__ done:\n  xml_attributes: %s\n  xml_childnodes: %s\n  xml_textnodes: %s',
+            self.xml_attributes, self.xml_childnodes, self.xml_textnodes)
         # Check if we are created from factory function from_xml_elt, then load the element here,
         # allowing the implementation to use some loaded data in its __init__ constructor
         e = getattr(self, __load_xml_elt__, None)
@@ -756,7 +833,7 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
             delattr(self, __load_xml_elt__)
 
     # TODO: validate modifications using setattr; more actions needed for nested lists/dicts (for children)
-    #def __setattr__(self, k, v):
+    # def __setattr__(self, k, v):
 
     @classmethod
     def dict(cls, *a, **k):
@@ -764,20 +841,24 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
         return Dict(*a, **k)
 
     @classmethod
-    def xml_attributes_specs(cls, attrs, copy=True): # copy=False has odd side effects depending on usages ... !
+    # copy=False has odd side effects depending on usages ... !
+    def xml_attributes_specs(cls, attrs, copy=True):
         '''Fix attrs as used internally'''
         if isinstance(attrs, dict):
-            if copy: attrs = attrs.copy()
-        elif isinstance(attrs, (list,tuple)):
-            attrs = Dict([(a,{}) if isinstance(a, six.string_types) else a for a in attrs])
+            if copy:
+                attrs = attrs.copy()
+        elif isinstance(attrs, (list, tuple)):
+            attrs = Dict([(a, {}) if isinstance(
+                a, six.string_types) else a for a in attrs])
         else:
-            raise TypeError('%s: Invalid attributes specifications: %r'%(cls, attrs))
-        for a,spec in six.iteritems(attrs):
+            raise TypeError(
+                '%s: Invalid attributes specifications: %r' % (cls, attrs))
+        for a, spec in six.iteritems(attrs):
             d = spec
             if isinstance(spec, (list, tuple)):
-                d = {'type':spec[0], 'default':spec[1]}
+                d = {'type': spec[0], 'default': spec[1]}
             elif not isinstance(spec, dict):
-                d = {'type':spec, 'default':None}
+                d = {'type': spec, 'default': None}
             if d.get('type', None) is bool:
                 d['type'] = parse_bool
                 d['formatter'] = lambda b: str(b).lower()
@@ -785,35 +866,42 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
         return attrs
 
     @classmethod
-    def xml_childnodes_specs(cls, childnodes, copy=True): # copy=False has odd side effects depending on usages ... !
+    # copy=False has odd side effects depending on usages ... !
+    def xml_childnodes_specs(cls, childnodes, copy=True):
         '''Fix childnodes as used internally'''
         if isinstance(childnodes, dict):
-            if copy: childnodes = childnodes.copy()
+            if copy:
+                childnodes = childnodes.copy()
         else:
-            raise TypeError('%s: Invalid childnodes specifications: %r'%(cls, childnodes))
-        for c,spec in six.iteritems(childnodes):
+            raise TypeError(
+                '%s: Invalid childnodes specifications: %r' % (cls, childnodes))
+        for c, spec in six.iteritems(childnodes):
             d = spec
             if isinstance(spec, (list, tuple)):
-                d = {'type':spec[0], 'default':spec[1]}
+                d = {'type': spec[0], 'default': spec[1]}
             elif not isinstance(spec, dict):
-                d = {'type':spec}
+                d = {'type': spec}
             childnodes[c] = d
         return childnodes
 
     @classmethod
-    def xml_textnodes_specs(cls, textnodes, copy=True): # copy=False has odd side effects depending on usages ... !
+    # copy=False has odd side effects depending on usages ... !
+    def xml_textnodes_specs(cls, textnodes, copy=True):
         '''Fix textnodes as used internally'''
         if isinstance(textnodes, dict):
-            if copy: textnodes = textnodes.copy()
+            if copy:
+                textnodes = textnodes.copy()
         else:
-            raise TypeError('%s: Invalid textnodes specifications: %r'%(cls, textnodes))
-        for t,spec in six.iteritems(textnodes):
+            raise TypeError(
+                '%s: Invalid textnodes specifications: %r' % (cls, textnodes))
+        for t, spec in six.iteritems(textnodes):
             d = spec
             if isinstance(spec, (list, tuple)):
-                d = {'type':spec[0], 'default':spec[1]}
+                d = {'type': spec[0], 'default': spec[1]}
             elif not isinstance(spec, dict):
-                d = {'type':spec, 'default':None}
-            if d.get('type', None) is bool: d['type'] = parse_bool
+                d = {'type': spec, 'default': None}
+            if d.get('type', None) is bool:
+                d['type'] = parse_bool
             textnodes[t] = d
         return textnodes
 
@@ -831,7 +919,8 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
         Return the xml element name for this class or instance.
         If cls.xml_tag_name is not set, return class name formatted by :func:`xml_element_name`
         '''
-        if cls.xml_tag_name: return cls.xml_tag_name
+        if cls.xml_tag_name:
+            return cls.xml_tag_name
         return cls.xml_element_name((isinstance(cls, type) and cls or cls.__class__).__name__)
 
     @classmethod
@@ -846,7 +935,7 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
     @classmethod
     def from_xml_file(cls, f, *a, **k):
         '''Factory method instanciating from xml file.'''
-        log(cls, 'from_xml_file "%s"', f) #####
+        log(cls, 'from_xml_file "%s"', f)
         o = cls.from_xml_doc(ElementTree.parse(f), *a, **k)
         o.set_current_file(f)
         return o
@@ -871,8 +960,9 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
             tb = traceback.format_exc()
             try:
                 xml = ElementTree.tostring(e)[:xmlmax]
-            except Exception as ee: xml = '[%s]'%ee
-            raise x.__class__('Failed to create %s from xml element:\n%s\n\n%s'%(
+            except Exception as ee:
+                xml = '[%s]' % ee
+            raise x.__class__('Failed to create %s from xml element:\n%s\n\n%s' % (
                 cls.__name__, xml, tb))
         return o
 
@@ -883,7 +973,7 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
 
     def load_xml_file(self, f, *a, **k):
         '''Load from a file'''
-        log(self, 'load_xml_file "%s"', f) #####
+        log(self, 'load_xml_file "%s"', f)
         self.load_xml_doc(ElementTree.parse(f), *a, **k)
         self.set_current_file(f)
 
@@ -897,8 +987,10 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
             self.pre_load_xml(e, *a, **k)
         load_xml_attributes(e, self.xml_attributes, self)
         load_xml_childnodes(e, self.xml_childnodes, self)
-        load_xml_textnodes(e, self.xml_textnodes, self, xml_element_name=self.xml_element_name)
-        log(self, 'load_xml_elt done:\n  elt: %s\n  args: %s\n  kwargs: %s\n  vars:%s', e, a, k, vars(self)) #####
+        load_xml_textnodes(e, self.xml_textnodes, self,
+                           xml_element_name=self.xml_element_name)
+        log(self, 'load_xml_elt done:\n  elt: %s\n  args: %s\n  kwargs: %s\n  vars:%s',
+            e, a, k, vars(self))
         if not hasattr(self, __load_xml_elt__):
             self.post_load_xml(e, *a, **k)
 
@@ -912,8 +1004,10 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
 
     def to_xml_elt(self, **kwargs):
         '''Dump object to an xml element.'''
-        dumpnonloaded = kwargs.get('dumpnonloaded', True) # can be overriden in attr spec
-        dumpdefault = kwargs.get('dumpdefault', True) # can be overriden in attr spec
+        dumpnonloaded = kwargs.get(
+            'dumpnonloaded', True)  # can be overriden in attr spec
+        # can be overriden in attr spec
+        dumpdefault = kwargs.get('dumpdefault', True)
         # Attributes
         attributes = Dict()
         for a, spec in six.iteritems(self.xml_attributes):
@@ -921,65 +1015,78 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
             ns, a = splitns(nsa)
             if hasattr(self, a):
                 v = getattr(self, a)
-                if v is None: continue
-                if not spec.get(__loaded_from_elt__, spec.get('dumpnonloaded', dumpnonloaded)): continue
+                if v is None:
+                    continue
+                if not spec.get(__loaded_from_elt__, spec.get('dumpnonloaded', dumpnonloaded)):
+                    continue
                 d = spec.get('default', None)
-                if v == d and not spec.get('dumpdefault', dumpdefault): continue
+                if v == d and not spec.get('dumpdefault', dumpdefault):
+                    continue
                 f = spec.get('formatter', None)
-                if f: v = f(v)
+                if f:
+                    v = f(v)
                 #attributes['{%s}%s'%(ns,a) if ns else a] = usafe(v)
-                attributes['%s:%s'%(ns,a) if ns else a] = usafe(v)
+                attributes['%s:%s' % (ns, a) if ns else a] = usafe(v)
         childnodes = []
         # Text nodes
-        for name,spec in six.iteritems(self.xml_textnodes):
+        for name, spec in six.iteritems(self.xml_textnodes):
             v = getattr(self, name, None)
-            if v is None: continue
-            if not spec: spec = {}
+            if v is None:
+                continue
+            if not spec:
+                spec = {}
             tagName = spec.get('tagName', self.xml_element_name(name))
             f = spec.get('formatter', None)
             if spec.get('single', False):
-                if f: v = f(v)
+                if f:
+                    v = f(v)
                 e = ElementTree.Element(tagName)
                 e.text = usafe(v)
                 childnodes.append(e)
             else:
                 if not isinstance(v, (list, tuple)):
-                    raise TypeError('List of textnodes values expected for %s.%s (spec: %r), got %r'%(self.tag_name(), name, spec, type(v)))
+                    raise TypeError('List of textnodes values expected for %s.%s (spec: %r), got %r' % (
+                        self.tag_name(), name, spec, type(v)))
                 for t in v:
-                    if f: t = f(t)
+                    if f:
+                        t = f(t)
                     e = ElementTree.Element(tagName)
                     e.text = usafe(t)
                     childnodes.append(e)
         # Child nodes
-        for child,spec in six.iteritems(self.xml_childnodes):
+        for child, spec in six.iteritems(self.xml_childnodes):
             tmpchildnodes = []
-            log(self, 'to_xml_elt\n  %s', vars(self)) #####
+            log(self, 'to_xml_elt\n  %s', vars(self))
             if spec.get('self', False):
                 if spec.get('key', None):
-                    for k,o in six.iteritems(self):
+                    for k, o in six.iteritems(self):
                         e = o.to_xml_elt(**kwargs)
                         if spec['key'] not in e.attrib:
                             e.set(spec['key'], usafe(k))
                         tmpchildnodes.append(e)
                 else:
-                    tmpchildnodes.extend((o.to_xml_elt(**kwargs) for o in self))
+                    tmpchildnodes.extend(
+                        (o.to_xml_elt(**kwargs) for o in self))
             elif hasattr(self, child):
                 if spec.get('single', False):
                     if getattr(self, child) is not None:
                         #print self, child, getattr(self, child)
-                        tmpchildnodes.append(getattr(self, child).to_xml_elt(**kwargs))
+                        tmpchildnodes.append(
+                            getattr(self, child).to_xml_elt(**kwargs))
                 else:
                     if spec.get('key', None):
-                        for k,o in six.iteritems(getattr(self, child)):
+                        for k, o in six.iteritems(getattr(self, child)):
                             e = o.to_xml_elt(**kwargs)
                             if spec['key'] not in e.attrib:
                                 e.set(spec['key'], k)
                             tmpchildnodes.append(e)
                     else:
                         #print self, child, spec, getattr(self, child), kwargs
-                        tmpchildnodes.extend((o.to_xml_elt(**kwargs) for o in getattr(self, child)))
+                        tmpchildnodes.extend(
+                            (o.to_xml_elt(**kwargs) for o in getattr(self, child)))
             # Exclude empty nodes (no attributes and no child)
-            childnodes.extend(c for c in tmpchildnodes if len(c.attrib) or len(c.getchildren()))
+            childnodes.extend(c for c in tmpchildnodes if len(
+                c.attrib) or len(c.getchildren()))
         return create_xml_element(self.tag_name(), attributes=attributes, childnodes=childnodes, **kwargs)
 
     def to_xml_doc(self, **kwargs):
@@ -991,26 +1098,31 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
         close = False
         if isinstance(stream, six.string_types):
             close = True
-            if _xmldomext: stream = open(stream, 'w')
-            else: stream = codecs.open(stream, mode='w', encoding=encoding, errors='replace')
+            if _xmldomext:
+                stream = open(stream, 'w')
+            else:
+                stream = codecs.open(
+                    stream, mode='w', encoding=encoding, errors='replace')
         try:
             e = self.to_xml_elt(**kwargs)
             if pretty:
                 if _xmldomext:
                     PrettyPrint(Sax2.Reader().fromString(ElementTree.tostring(e)),
-                        stream=stream, encoding=encoding, indent=indent, preserveElements=None)
+                                stream=stream, encoding=encoding, indent=indent, preserveElements=None)
                 else:
-#                    minidom.parseString(
-#                        ElementTree.tostring(e)).writexml(
-#                            stream, addindent=indent, newl='\n')
+                    #                    minidom.parseString(
+                    #                        ElementTree.tostring(e)).writexml(
+                    #                            stream, addindent=indent, newl='\n')
                     pretty_indent(e)
                     stream.write(ElementTree.tostring(e))
             else:
                 d = ElementTree.ElementTree(e)
                 #d.write(stream, xml_declaration=True, method="xml")
-                d.write(stream, encoding=encoding, xml_declaration=True, method="xml")
+                d.write(stream, encoding=encoding,
+                        xml_declaration=True, method="xml")
         finally:
-            if close: stream.close()
+            if close:
+                stream.close()
         return e
 
     def to_xml_str(self, **kwargs):
@@ -1022,26 +1134,27 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
 
     def to_xml_file(self, f, **kwargs):
         '''Dump object to a xml file.'''
-        log(self, 'to_xml_file "%s"', f) #####
+        log(self, 'to_xml_file "%s"', f)
         e = self.to_xml_stream(f, **kwargs)
         self.set_current_file(f)
         return e
 
-    def to_obj(self):#def to_obj(self, obj=None):
+    def to_obj(self):  # def to_obj(self, obj=None):
         def to_obj(obj):
             if isinstance(obj, XmlConfig):
                 d = dict()
-                for a,s in six.iteritems(obj.xml_attributes):
+                for a, s in six.iteritems(obj.xml_attributes):
                     if hasattr(obj, a):
                         v = getattr(obj, a)
                         f = s.get('formatter', None)
-                        if f: v = f(v)
+                        if f:
+                            v = f(v)
                         d[a] = v
-                for a,s in six.iteritems(obj.xml_childnodes):
+                for a, s in six.iteritems(obj.xml_childnodes):
                     if s.get('self', None):
                         if s.get('key', None):
                             dd = {}
-                            for aa,vv in six.iteritems(obj):
+                            for aa, vv in six.iteritems(obj):
                                 dd[aa] = vv.to_obj()
                             d['__items__'] = dd
                         else:
@@ -1050,39 +1163,45 @@ class XmlConfig(six.with_metaclass(XmlConfigMetaClass, object)):
                                 l.append(vv.to_obj())
                             d['__items__'] = l
                     elif hasattr(obj, a):
-                            if s.get('single', None):
-                                d[a] = getattr(obj, a).to_obj()
+                        if s.get('single', None):
+                            d[a] = getattr(obj, a).to_obj()
+                        else:
+                            if s.get('key', None):
+                                d[a] = dict((kk, vv.to_obj())
+                                            for kk, vv in six.iteritems(getattr(obj, a)))
                             else:
-                                if s.get('key', None):
-                                    d[a] = dict((kk, vv.to_obj()) for kk,vv in six.iteritems(getattr(obj, a)))
-                                else:
-                                    d[a] = [vv.to_obj() for vv in getattr(obj, a)]
-                for a,s in six.iteritems(obj.xml_textnodes):
+                                d[a] = [vv.to_obj() for vv in getattr(obj, a)]
+                for a, s in six.iteritems(obj.xml_textnodes):
                     d[a] = getattr(obj, a)
                     if s:
                         f = s.get('formatter', None)
-                        if f: d[a] = f(d[a])
+                        if f:
+                            d[a] = f(d[a])
                 return d
-            if isinstance(obj, (list,tuple)):
+            if isinstance(obj, (list, tuple)):
                 return [to_obj(o) for o in obj]
             if isinstance(obj, dict):
-                return dict(((k,to_obj(v)) for k,v in six.iteritems(obj)))
+                return dict(((k, to_obj(v)) for k, v in six.iteritems(obj)))
             return obj
         return to_obj(self)
 
     def set_obj(self, obj):
-        for k,s in self.xml_attributes.items():
+        for k, s in self.xml_attributes.items():
             if k in obj:
                 v = obj[k]
-                if v is None: pass
-                elif s.get('type', None): v = s['type'](v)
+                if v is None:
+                    pass
+                elif s.get('type', None):
+                    v = s['type'](v)
                 setattr(self, k, v)
         # TODO: childnodes ?
-        for k,s in self.xml_textnodes.items():
+        for k, s in self.xml_textnodes.items():
             if k in obj:
                 v = obj[k]
-                if v is None: pass
-                elif s.get('type', None): v = s['type'](v)
+                if v is None:
+                    pass
+                elif s.get('type', None):
+                    v = s['type'](v)
                 setattr(self, k, v)
         return obj
 
@@ -1133,7 +1252,8 @@ class XmlConfigList(list, XmlConfig):
 class XmlConfigDict(Dict, XmlConfig):
     '''Convenient class inheriting Dict and XmlConfig to avoid metaclasses conflict when Dict is collections.OrderedDict'''
     if hasattr(Dict, '__metaclass__'):
-        class XmlConfigDictMeta(Dict.__metaclass__, XmlConfig.__metaclass__): pass
+        class XmlConfigDictMeta(Dict.__metaclass__, XmlConfig.__metaclass__):
+            pass
         __metaclass__ = XmlConfigDictMeta
 
     def __init__(self, *args, **kwargs):
@@ -1143,24 +1263,29 @@ class XmlConfigDict(Dict, XmlConfig):
 
 def _test():
     print(' TEST XML '.center(80, '='))
-    class SKlass(XmlConfig): pass
+
+    class SKlass(XmlConfig):
+        pass
+
     class Klass(XmlConfig):
         def __init__(self):
             XmlConfig.__init__(self,
-                xml_attributes=self.dict([
-                    ('name',(None,None)),
-                    ('default',(None,'default')),
-                    ('boolean',(bool,False)),
-                ]),
-                xml_childnodes=self.dict([
-                    ('childnodes',{'type':Klass, 'create':True}),
-                    ('single_childnode',{'type':SKlass, 'single':True, 'create':True}),
-                ]),
-                xml_textnodes=self.dict([
-                    ('textnode1', {'single':True}),
-                    ('textnodes', None),
-                ]),
-            )
+                               xml_attributes=self.dict([
+                                   ('name', (None, None)),
+                                   ('default', (None, 'default')),
+                                   ('boolean', (bool, False)),
+                               ]),
+                               xml_childnodes=self.dict([
+                                   ('childnodes', {
+                                    'type': Klass, 'create': True}),
+                                   ('single_childnode', {
+                                    'type': SKlass, 'single': True, 'create': True}),
+                               ]),
+                               xml_textnodes=self.dict([
+                                   ('textnode1', {'single': True}),
+                                   ('textnodes', None),
+                               ]),
+                               )
     x = '''
 <Klass>
     <Klass name="a"/>
@@ -1174,17 +1299,18 @@ def _test():
     print(' xml '.center(80, '-'))
     print(x)
     o = Klass.from_xml_str(x)
-    print((' object from_xml_str %s '%(id(o))).center(80, '-'))
-    print('\n'.join('%-20s : %-20s : %s'%(k,type(v),repr(v)) for k,v in six.iteritems(o.__dict__) if not k.startswith('xml_')))
-    print((' object to_xml_str %s '%(id(o))).center(80, '-'))
+    print((' object from_xml_str %s ' % (id(o))).center(80, '-'))
+    print('\n'.join('%-20s : %-20s : %s' % (k, type(v), repr(v))
+                    for k, v in six.iteritems(o.__dict__) if not k.startswith('xml_')))
+    print((' object to_xml_str %s ' % (id(o))).center(80, '-'))
     print(o.to_xml_str())
-    print((' object to_obj %s '%(id(o))).center(80, '-'))
+    print((' object to_obj %s ' % (id(o))).center(80, '-'))
     import pprint
     print(pprint.pformat(o.to_obj()))
-    print((' object from_xml_str(to_xml_str).to_xml_str %s '%(id(o))).center(80, '-'))
+    print((' object from_xml_str(to_xml_str).to_xml_str %s ' %
+           (id(o))).center(80, '-'))
     print(Klass.from_xml_str(o.to_xml_str()).to_xml_str())
+
 
 if __name__ == '__main__':
     _test()
-
-

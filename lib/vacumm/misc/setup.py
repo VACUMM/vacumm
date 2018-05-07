@@ -33,7 +33,9 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 from __future__ import absolute_import
-def configuration(parent_package='',top_path=None):
+
+
+def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration('misc', parent_package, top_path)
 #    config.add_data_files('logo_vacumm.gif')
@@ -46,7 +48,7 @@ def configuration(parent_package='',top_path=None):
     config.add_data_files('Makefile')
     return config
 
+
 if __name__ == '__main__':
     from numpy.distutils.core import setup
     setup(configuration=configuration)
-

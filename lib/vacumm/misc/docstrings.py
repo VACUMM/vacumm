@@ -48,17 +48,22 @@ from sphinx.ext.napoleon import NumpyDocstring
 
 from vacumm import VACUMM_CFG
 
+
 def get_indent_int(line):
     for i, s in enumerate(line):
         if not s.isspace():
             return i
     return len(line)
+
+
 def get_indent_str(line):
     return ' '*get_indent_int(line)
+
 
 class FieldsGetter(NumpyDocstring):
     """A crude derivation of :class:`NumpyDocstring` to intercept field declarations"""
     vacumm_fields = []
+
     def _parse_parameters_section(self, section):
         fields = self.vacumm_fields = self._consume_fields()
         if self._config.napoleon_use_param:
@@ -72,17 +77,18 @@ class FieldsGetter(NumpyDocstring):
         else:
             return self._format_fields('Parameters', fields)
 
+
 class Docstring2Params(dict):
     """Inspect a docstring to retreive and format field declarations"""
+
     def __init__(self, obj, select=None, prefix=None):
 
-#        fg = FieldsGetter(prepare_docstring(getattr(obj, '__doc__', '')))
+        #        fg = FieldsGetter(prepare_docstring(getattr(obj, '__doc__', '')))
         doc = inspect.getdoc(obj) or ''
         fg = FieldsGetter(doc)
         prefix = prefix or ''
         for _name, _type, _desc in fg.vacumm_fields:
             self[prefix+_name] = (_type, _desc)
-
 
     def format(self, select=None, indent=1):
         """Reformat one or several fields
@@ -121,32 +127,34 @@ class Docstring2Params(dict):
             indent = 1
         elif not indent:
             indent = ''
-        if not isinstance(indent, (six.string_types, int)): # object
+        if not isinstance(indent, (six.string_types, int)):  # object
             indent = get_indent_str(inspect.getsource(indent))
         if isinstance(indent, int):
             indent = indent_unit * indent
-        indent = indent + indent_unit # obj indentation + 1 unit
+        indent = indent + indent_unit  # obj indentation + 1 unit
 
         # Loop on params
         out = []
         for param in select:
-            if param not in self: continue
+            if param not in self:
+                continue
             _type, desc = self[param]
             ss = param
             if _type:
                 ss = ss + ': ' + _type
             ss = ss + '\n'
             if desc:
-                ss = ss + indent + indent_unit + ('\n'+indent+indent_unit).join(desc)
+                ss = ss + indent + indent_unit + \
+                    ('\n'+indent+indent_unit).join(desc)
             out.append(ss)
         return ('\n'+indent).join(out)
-
 
     def asfmtdict(self, indent=1, select=None):
         """Get parameters as a dictionary of formatted descriptions"""
         out = {}
         for param in self:
-            if select is not None and param not in select: continue
+            if select is not None and param not in select:
+                continue
             out[param] = self.format(param, indent)
         return out
 
@@ -182,15 +190,17 @@ class DocFiller(object):
                 {MyClass2[parc]}
                 {myfync1[pard]}
     '''
+
     def __init__(self, *objs, **aobjs):
         self.content = {}
         self.verbose = aobjs.pop('verbose', True)
-        if objs: self.scan(*objs, **aobjs)
+        if objs:
+            self.scan(*objs, **aobjs)
 
     def scan(self, *objs, **aobjs):
         aliases = dict([(o, a) for a, o in aobjs.items()])
         for obj in objs+tuple(aliases.keys()):
-            key =  obj.__name__
+            key = obj.__name__
             if inspect.ismethod(obj):
                 key = obj.__self__.__class__.__name__+"_"+key
             prefix = aliases[obj] if obj in aliases else ''
@@ -227,17 +237,20 @@ class DocFiller(object):
         try:
             obj.__doc__ = obj.__doc__.format(**self.formatted(indent))
         except KeyError as e:
-            if self.verbose: print('Missing key for docfill: '+e.message)
+            if self.verbose:
+                print('Missing key for docfill: '+e.message)
         except Exception as e:
-            if self.verbose: print('Docfill error:', e.message)
+            if self.verbose:
+                print('Docfill error:', e.message)
         return obj
 
     __call__ = docfill
 
+
 docfiller = DocFiller(verbose=VACUMM_CFG['vacumm.misc.docstrings']['verbose'])
 docfill = docfiller.docfill
 
-if __name__=='__main__':
+if __name__ == '__main__':
 
     df = DocFiller(Docstring2Params.format)
     print(df.content)
@@ -254,5 +267,3 @@ if __name__=='__main__':
         pass
 
     print(myfunc.__doc__)
-
-
