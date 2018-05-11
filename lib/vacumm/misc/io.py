@@ -60,23 +60,28 @@ from _geoslib import Point, LineString, Polygon
 from vacumm import VACUMMError
 from .misc import (split_selector, kwfilter, squeeze_variable, is_iterable,
                    match_atts, set_atts, broadcast, create_selector,
-                   MV2_concatenate, checkdir)
+                   MV2_concatenate, checkdir, get_atts, set_atts)
 from .poly import create_polygon, clip_shape, sort_shapes
 from .axes import (get_checker, islon, islat, istime, islevel,
                    create_lat, create_lon)
 from .basemap import get_proj
+from .grid import curv2rect, isgrid, create_grid, set_grid
 from .atime import (has_time_pattern, is_time, round_date, add_margin,
                     strptime, comptime, are_same_units, itv_union, ch_units,
-                    create_time, tsel2slice,  pat2freq, IterDates, strftime, is_interval,
+                    create_time, tsel2slice,  pat2freq, IterDates,
+                    strftime, is_interval,
                     pat2glob, filter_time_selector, add_time)
+from .cf import filter_search
 
-from .grid import curv2rect, isgrid, create_grid, set_grid
 
-
-__all__ = ['list_forecast_files', 'NcIterBestEstimate', 'NcIterBestEstimateError', 'NcFileObj',
-           'ncfind_var', 'ncfind_axis', 'ncfind_obj', 'ncget_var', 'ncread_var', 'ncread_files', 'ncread_best_estimate',
-           'ncget_grid', 'ncget_time', 'ncget_lon', 'ncget_lat', 'ncget_level', 'ncmatch_obj',
-           'ncget_axis', 'netcdf3', 'netcdf4', 'ncread_axis', 'ncread_obj', 'ncget_fgrid',
+__all__ = ['list_forecast_files', 'NcIterBestEstimate',
+           'NcIterBestEstimateError', 'NcFileObj',
+           'ncfind_var', 'ncfind_axis', 'ncfind_obj', 'ncget_var',
+           'ncread_var', 'ncread_files', 'ncread_best_estimate',
+           'ncget_grid', 'ncget_time', 'ncget_lon',
+           'ncget_lat', 'ncget_level', 'ncmatch_obj',
+           'ncget_axis', 'netcdf3', 'netcdf4', 'ncread_axis',
+           'ncread_obj', 'ncget_fgrid',
            'grib_read_files', 'nccache_get_time', 'grib2nc', 'grib_get_names',
            'write_snx', 'ColoredFormatter', 'Logger',
            'TermColors', 'read_shapefile', 'NcIterTimeSlice',
@@ -944,7 +949,9 @@ def ncget_axis(f, checker, ids=None, ro=False, checkaxis=False, **kwargs):
     if axis is None:
         return
     if hasattr(axis, 'clone'):
+        atts = get_atts(axis)  # to fix a cdms bug
         axis = axis.clone()
+        set_atts(axis, atts)
     else:
         axis = axis()
     del nfo
