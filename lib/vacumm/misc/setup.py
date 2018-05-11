@@ -38,14 +38,12 @@ from __future__ import absolute_import
 def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration
     config = Configuration('misc', parent_package, top_path)
-#    config.add_data_files('logo_vacumm.gif')
     config.add_subpackage('axml')
     config.add_subpackage('cfgui')
-#   config.add_subpackage('easyPypar')
-#    config.add_data_files('vacumm.cfg')
     config.add_data_files('cpt/*')
-#    config.add_extension('_interp_',  sources=['interp.f90'])
     config.add_data_files('Makefile')
+    config.add_data_files('cf.cfg')
+    config.add_data_files('cf.ini')
     return config
 
 
