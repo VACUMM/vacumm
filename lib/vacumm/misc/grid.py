@@ -2712,7 +2712,7 @@ def isrect(gg, tol=1.e-2, mode="real", f=None, nocache=False):
 
     # File grid
     if not nocache and f is not None:
-        from vcio import ncget_fgrid
+        from .io import ncget_fgrid
         fgrid = ncget_fgrid(f, gg)
     else:
         fgrid = None

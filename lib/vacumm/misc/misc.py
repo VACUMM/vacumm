@@ -427,6 +427,8 @@ def get_atts(var, id=True, extra=None, **kwargs):
     atts = {}
     if hasattr(var, 'attributes'):
         atts.update(var.attributes)
+    if hasattr(var, 'units'):
+        atts['units'] = var.units
     if id and hasattr(var, 'id'):
         atts['id'] = var.id
     if extra:
@@ -2176,8 +2178,7 @@ def squeeze_variable(var, spec=True, asmv=False):
     if not cdms2.isVariable(var):
         return var.squeeze()
     atts = get_atts(var)
-    from vacumm.misc.grid.misc import get_grid, set_grid
-    grid = get_grid(var)
+    grid = var.getGrid()
     if spec is True or spec is None or spec == 1:
         var = var(squeeze=1)
         if asmv and not cdms2.isVariable(var):
@@ -2200,6 +2201,7 @@ def squeeze_variable(var, spec=True, asmv=False):
                 axes.pop(iaxis)
                 var.setAxisList(axes)
                 if grid is not None and axtype not in 'xy':
+                    from .grid import get_grid, set_grid
                     set_grid(var, grid)
     return var
 
