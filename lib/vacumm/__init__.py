@@ -69,6 +69,7 @@ Content:
 
 docfiller_verbose = False
 
+
 def help(text=None, recent=False):
     """Open VACUMM website in a web browser and optionally search for a string
 
@@ -79,7 +80,8 @@ def help(text=None, recent=False):
     """
     key = 'url_recent' if recent else 'url'
     url = VACUMM_CFG['vacumm'][key]
-    if url is None: url = 'http://www.ifremer.fr/vacumm'
+    if url is None:
+        url = 'http://www.ifremer.fr/vacumm'
     from webbrowser import open
     if text is not None:
         if not isinstance(text, six.string_types):
@@ -88,19 +90,23 @@ def help(text=None, recent=False):
             else:
                 text = text.__class__.__name__
         if not text.startswith('/'):
-            text = '/search.html?q=%s&check_keywords=yes&area=default'%text
+            text = '/search.html?q=%s&check_keywords=yes&area=default' % text
         url += text
-    open(url,  new=2)
+    open(url, new=2)
+
 
 class VACUMMError(Exception):
-     """Standard VACUMM error (exception)"""
+    """Standard VACUMM error (exception)"""
+
 
 class VACUMMWarning(UserWarning):
     """Standard VACUMM warning"""
 
+
 def vacumm_warn(message, stacklevel=2):
     """Issue a :class:`VACUMMWarning`"""
     warn(message, VACUMMWarning, stacklevel=stacklevel)
+
 
 vcwarn = vacumm_warning = vacumm_warn
 

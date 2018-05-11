@@ -36,9 +36,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-_shoreline_list = ['Histolitt', 'EUROSION', 'GSHHS_SF', 'GSHHS','GSHHSBM']
-__all__ = _shoreline_list+['ShoreLine', 'get_best', 'get_shoreline', 'list_shorelines', 'get_bestres']
-
 import numpy as N
 
 from vacumm import VACUMMError, VACUMM_CFG
@@ -46,6 +43,10 @@ from vacumm.config import check_data_file
 from vacumm.misc.grid import get_xy
 from vacumm.misc.basemap import gshhs_reslist, gshhs_autores
 from vacumm.misc.sdata import Shapes, GSHHSBM
+
+_shoreline_list = ['Histolitt', 'GSHHS_SF', 'GSHHS','GSHHSBM']
+__all__ = _shoreline_list+['ShoreLine', 'get_best', 'get_shoreline', 'list_shorelines', 'get_bestres']
+
 
 
 class VACUMMShorelineError(VACUMMError):
@@ -182,13 +183,6 @@ class Histolitt2(ShoreLine):
         if clip is not None and clip is not False:
             self.clip(clip, copy=False)
 
-class EUROSION(ShoreLine):
-    """Shoreline of Europe at 1/100000 from shapefile of LineStrings
-    .. warning::
-
-        Must not be used for masking, only for coastal interpolations
-    """
-    _name = 'eurosion'
 
 class GSHHS_SF(ShoreLine):
     """Fine world shoreline from USGS shapefile

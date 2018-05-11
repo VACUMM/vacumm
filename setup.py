@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -53,8 +53,9 @@ release_sphinx = release
 name="vacumm"
 version = release
 description = 'A library for ocean science'
-long_description = ("A library and a collection of scripts for ocean science, "
-    "mainly designed for data analysis and model validation")
+long_description = ("A library and a collection of scripts "
+                    "for ocean science, mainly designed for "
+                    "data analysis and model validation")
 author = 'Actimar / IFREMER'
 author_email = 'raynaud@actimar.fr or charria@ifremer.fr'
 maintainer = "Actimar / IFREMER"
@@ -66,6 +67,7 @@ classifiers = ["Development Status :: 4 - Beta",
                "Intended Audience :: Science/Research",
                "License :: CeCiLL",
                "Programming Language :: Python :: 2",
+               "Topic :: Scientific/Engineering :: GIS",
                "Topic :: Scientific/Engineering :: Physics",
                "Topic :: Scientific/Engineering :: Mathematics",
                "Topic :: Scientific/Engineering :: Atmospheric Science",
@@ -110,7 +112,7 @@ def configuration(parent_package='',top_path=None):
     config.add_data_dir(('vacumm/vacumm-scripts/test', 'scripts/test')) # test scripts
     config.add_data_dir(('vacumm/vacumm-scripts/tutorials', 'scripts/tutorials')) # tutorials
     config.add_data_dir(('vacumm/vacumm-scripts/courses', 'scripts/courses')) # courses
-    
+
     # Add extensions
     config.add_extension('vacumm.fortran.interp', ['src/interp.f90'])
 
@@ -194,7 +196,7 @@ if __name__ == '__main__':
         classifiers = classifiers,
         cmdclass={'install':vacumm_install, 'install_data':vacumm_install_data,
             'bdist_rpm':vacumm_bdist_rpm},
-        configuration=configuration, 
+        configuration=configuration,
 #        ext_modules = [ext_interp]
 
     )

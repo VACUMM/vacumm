@@ -32,15 +32,13 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-def configuration(parent_package='',top_path=None):
+
+
+def configuration(parent_package='', top_path=None):
     from numpy.distutils.misc_util import Configuration
-    import os
     config = Configuration('data', parent_package, top_path)
     config.add_subpackage('model')
     config.add_subpackage('satellite')
     config.add_subpackage('misc')
     config.add_subpackage('in_situ')
-    config.add_data_files('cf.cfg')
-    config.add_data_files('cf.ini')
     return config
-

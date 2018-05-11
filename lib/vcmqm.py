@@ -262,4 +262,11 @@ from vacumm.misc.kriging import (
 
 
 
+from vacumm.misc.arakawa import *
 
+from vacumm.misc.cf import *
+match_obj = match_known_cf_obj
+match_known_var = match_var = match_known_cf_var
+match_known_axis = match_known_cf_axis
+
+from vacumm.misc.sigma import *

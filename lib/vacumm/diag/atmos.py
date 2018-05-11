@@ -33,8 +33,10 @@
 #
 from __future__ import absolute_import
 from __future__ import print_function
-import numpy as N, MV2
+import numpy as N
+import MV2
 from vacumm.data.cf import format_var
+
 
 def wind_stress(u, v, rhoa=1.25, cd=0.016, format_axes=False, alongxy=None):
     """Compute the sea surface zonal and meridional wind stress from 10m wind components
@@ -65,7 +67,7 @@ def wind_stress(u, v, rhoa=1.25, cd=0.016, format_axes=False, alongxy=None):
     us = MV2.asarray(u).clone()
     vs = MV2.asarray(v).clone()
     if alongxy is None:
-        alongxy =  hasattr(u, 'long_name') and 'x' in u.long_name.lower()
+        alongxy = hasattr(u, 'long_name') and 'x' in u.long_name.lower()
     if alongxy:
         usname, vsname = 'taux', 'tauy'
     else:
@@ -74,11 +76,12 @@ def wind_stress(u, v, rhoa=1.25, cd=0.016, format_axes=False, alongxy=None):
     format_var(vs, vsname, format_axes=format_axes)
 
     # Compute
-    uvmod = N.ma.sqrt(u**2+v**2)
-    us.assignValue(cd*rhoa*uvmod*u)
-    vs.assignValue(cd*rhoa*uvmod*v)
+    uvmod = N.ma.sqrt(u**2 + v**2)
+    us.assignValue(cd * rhoa * uvmod * u)
+    vs.assignValue(cd * rhoa * uvmod * v)
     del uvmod
     return us, vs
+
 
 def ws2w(us, vs, rhoa=1.25, cd=0.016, format_axes=False, alongxy=None):
     """Convert from wind stress to 10m wind components
@@ -112,7 +115,7 @@ def ws2w(us, vs, rhoa=1.25, cd=0.016, format_axes=False, alongxy=None):
     u = MV2.asarray(us).clone()
     v = MV2.asarray(vs).clone()
     if alongxy is None:
-        alongxy =  hasattr(u, 'long_name') and 'x' in us.long_name.lower()
+        alongxy = hasattr(u, 'long_name') and 'x' in us.long_name.lower()
     if alongxy:
         uname, vname = 'ux10m', 'vy10m'
     else:
@@ -121,24 +124,23 @@ def ws2w(us, vs, rhoa=1.25, cd=0.016, format_axes=False, alongxy=None):
     format_var(v, vname, format_axes=format_axes)
 
     # Compute
-    zero =  us.filled(1)==0.
-    zero &= vs.filled(1)==0.
-    uvsmod = (us**2+vs**2)**-0.25
-    uvsmod /= N.sqrt(rhoa*cd)
-    u.assignValue(uvsmod*us)
-    v.assignValue(uvsmod*vs)
+    zero = us.filled(1) == 0.
+    zero &= vs.filled(1) == 0.
+    uvsmod = (us**2 + vs**2)**-0.25
+    uvsmod /= N.sqrt(rhoa * cd)
+    u.assignValue(uvsmod * us)
+    v.assignValue(uvsmod * vs)
     u.assignValue(MV2.where(zero, 0., u))
     v.assignValue(MV2.where(zero, 0., v))
     del uvsmod
     return u, v
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     import MV2
     u = MV2.arange(3.)
-    v = 2*u
+    v = 2 * u
     us, vs = wind_stress(u, v)
     U, V = ws2w(us, vs)
     print(u, v)
     print(U, V)
-
