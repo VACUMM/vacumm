@@ -36,28 +36,46 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
-import os, sys
-import subprocess,  shlex
+from __future__ import division
+from builtins import str
+from builtins import input
+from builtins import object
+from past.utils import old_div
+import os
+import sys
+import subprocess
+import shlex
 from warnings import warn
-import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
+import six.moves.urllib.request
+import six.moves.urllib.parse
+import six.moves.urllib.error
 import six
 from six.moves import input
+import traceback
 
 from configobj import ConfigObj
 from validate import Validator, VdtMissingValue
 
 import vacumm
-from vacumm import VACUMMError
+from vacumm import VACUMMError, vcwarn
 
-__all__ = ['VACUMM_CFGSPECS', 'VACUMM_CFGSPECS_FILE', 'VACUMM_VDT', 'VACUMM_VDT_LIVE',
-    'VCValidator', 'check_data_file', 'download_file', 'edit_file', 'get_cfg_checked',
-    'get_cfg_path', 'get_com_conf_dir', 'get_com_conf_file', 'get_data_dir',
-    'get_default_config', 'get_dir_dict', 'get_dist_dir', 'get_dl_dir',
-    'get_home_conf_dir', 'get_scripts_dir', 'get_tut_dir', 'get_user_conf_file',
-    'get_user_conf_dir', 'load_cfg', 'save_config_value', 'set_config_value',
-    'edit_user_conf_file', 'print_config', 'get_config_value', 'data_sample',
-    'write_default_config', 'get_lib_dir', 
-    ]
+__all__ = ['VACUMM_CFGSPECS', 'VACUMM_CFGSPECS_FILE',
+           'VACUMM_VDT', 'VACUMM_VDT_LIVE',
+           'VCValidator', 'check_data_file', 'download_file',
+           'edit_file', 'get_cfg_checked',
+           'get_cfg_path', 'get_com_conf_dir',
+           'get_com_conf_file', 'get_data_dir',
+           'get_default_config', 'get_dir_dict',
+           'get_dist_dir', 'get_dl_dir',
+           'get_home_conf_dir', 'get_scripts_dir',
+           'get_tut_dir', 'get_user_conf_file',
+           'get_user_conf_dir', 'load_cfg',
+           'save_config_value', 'set_config_value',
+           'edit_user_conf_file', 'print_config',
+           'get_config_value', 'data_sample',
+           'write_default_config', 'get_lib_dir',
+           ]
+
 
 def get_lib_dir():
     """Directory of the :mod:`vacumm` package"""
@@ -68,8 +86,10 @@ def get_dist_dir():
     """Upper directory of VACUMM distribution tree or ``None`` for an installed package"""
     lib_dir = get_lib_dir()
     dist_dir = os.path.abspath(os.path.join(lib_dir, '../..'))
-    if not os.path.exists(os.path.join(dist_dir, 'setup.py')): return
+    if not os.path.exists(os.path.join(dist_dir, 'setup.py')):
+        return
     return dist_dir
+
 
 def get_data_dir(raiseerr=False):
     """Get the data directory absolute path
@@ -87,6 +107,18 @@ def get_data_dir(raiseerr=False):
         and if ``raiseerr`` is True, else return ''.
 
     """
+    # From VACUMM_DATA_DIR env var
+    if 'VACUMM_DATA_DIR' in os.environ:
+        data_dir = os.environ['VACUMM_DATA_DIR']
+        if not os.path.exists(data_dir):
+            vcwarn('Invalid vacumm data directory: '+data_dir)
+        return data_dir
+
+    # Share folder
+    data_dir = os.path.join(sys.prefix, 'share', 'vacumm')
+    if os.path.exists(data_dir):
+        return data_dir
+
     # Installed librairy
     lib_dir = get_lib_dir()
     data_dir = os.path.join(lib_dir, 'vacumm-data')
@@ -100,8 +132,10 @@ def get_data_dir(raiseerr=False):
         if os.path.exists(data_dir):
             return data_dir
 
-    if raiseerr: raise VACUMMError("Can't find a valid data directory")
+    if raiseerr:
+        raise VACUMMError("Can't find a valid data directory")
     return ''
+
 
 def data_sample(data_file, mode='all'):
     """Transform the relative path of a sample file to an absolute path
@@ -121,17 +155,21 @@ def data_sample(data_file, mode='all'):
             - ``"uvcdat"``: Look only into the UVCDAT data dir only.
 
     """
-    if mode is None: mode = 'all'
+    if mode is None:
+        mode = 'all'
     mode = str(mode)
 
     # VACUMM
     if mode.startswith('a') or not mode.startswith('u'):
-        path = vacpath = os.path.join(get_data_dir(raiseerr=True), data_file)
-        if os.path.exists(path) or not mode.startswith('a'): return path
+        path = vacpath = os.path.join(get_data_dir(raiseerr=True), 'samples',
+                                      data_file)
+        if os.path.exists(path) or not mode.startswith('a'):
+            return path
 
     # UVCDAT
     path = os.path.join(sys.prefix, 'sample_data', data_file)
-    if os.path.exists(path) or mode.startswith('u'): return path
+    if os.path.exists(path) or mode.startswith('u'):
+        return path
     return vacpath
 
 
@@ -153,25 +191,29 @@ def get_scripts_dir(subdir=None, raiseerr=False):
     # Installed librairy
     lib_dir = get_lib_dir()
     scripts_dir = os.path.join(lib_dir, 'vacumm-scripts')
-    if not os.path.exists(scripts_dir): scripts_dir = None
+    if not os.path.exists(scripts_dir):
+        scripts_dir = None
 
     # Distributed library (dev)
     if scripts_dir is None:
         dist_dir = get_dist_dir()
         if dist_dir is not None:
             scripts_dir = os.path.join(dist_dir, 'scripts')
-            if not os.path.exists(scripts_dir): scripts_dir = None
+            if not os.path.exists(scripts_dir):
+                scripts_dir = None
 
     # Not found
     if scripts_dir is None:
-        if raiseerr: raise VACUMMError("Can't find a valid scripts directory")
+        if raiseerr:
+            raise VACUMMError("Can't find a valid scripts directory")
         return ''
 
     # Subdir
     if subdir and isinstance(subdir, six.string_types):
         scripts_dir = os.path.join(scripts_dir, subdir)
         if not os.path.exists(scripts_dir):
-            raise VACUMMError("Invalid subdirectory of the scripts directory: "+subdir)
+            raise VACUMMError(
+                "Invalid subdirectory of the scripts directory: " + subdir)
 
     return scripts_dir
 
@@ -206,6 +248,7 @@ def get_home_conf_dir():
         base_dir = os.path.expanduser(os.path.join('~', '.config'))
     return base_dir
 
+
 def get_user_conf_dir():
     """Get directory that contains user configuration files
 
@@ -218,6 +261,7 @@ def get_user_conf_dir():
     if conf_dir is None:
         conf_dir = os.path.join(get_home_conf_dir(), 'vacumm')
     return conf_dir
+
 
 def get_user_conf_file(fname=None):
     """Get main user configuration file
@@ -235,10 +279,14 @@ def get_user_conf_file(fname=None):
 
     :See also: :func:`get_user_conf_dir`, :func:`edit_user_conf_file`
     """
-    if fname is None: fname = os.environ.get('VACUMM_CONFIG_FILE')
-    if fname is None: fname = 'vacumm.cfg'
-    if os.path.isabs(fname): return fname
+    if fname is None:
+        fname = os.environ.get('VACUMM_CONFIG_FILE')
+    if fname is None:
+        fname = 'vacumm.cfg'
+    if os.path.isabs(fname):
+        return fname
     return os.path.join(get_user_conf_dir(), fname)
+
 
 def get_com_conf_dir():
     """Get directory of common alternate configuration files
@@ -266,6 +314,7 @@ def get_com_conf_dir():
     # Fall back to the use config dir
     return get_user_conf_dir()
 
+
 def get_com_conf_file():
     """Get common user configuration file
     Shortcut for::
@@ -288,76 +337,81 @@ def get_dir_dict():
     """
 
     return dict(data_dir=get_data_dir(), lib_dir=get_lib_dir(),
-        tut_dir=get_tut_dir(), dist_dir=get_dist_dir(),
-        com_conf_dir=get_com_conf_dir(),
-        user_conf_dir=get_user_conf_dir(), scripts_dir=get_scripts_dir())
+                tut_dir=get_tut_dir(), dist_dir=get_dist_dir(),
+                com_conf_dir=get_com_conf_dir(),
+                user_conf_dir=get_user_conf_dir(), scripts_dir=get_scripts_dir())
+
 
 def get_dl_dir(suggest=None, filedesc=None, quiet=False):
     """Get the download directory"""
     # Try what is suggested
     if suggest is not None:
-        if not os.access(suggest, os.W_OK|os.R_OK|os.X_OK):
+        if not os.access(suggest, os.W_OK | os.R_OK | os.X_OK):
             try:
                 os.makedirs(suggest)
                 return suggest
-            except:
+            except BaseException:
                 pass
         else:
             return suggest
 
     # Already chosen?
     dl_dir = vacumm.VACUMM_CFG['vacumm'].get('dl_dir')
-    if dl_dir and os.path.exists(dl_dir): return dl_dir
+    if dl_dir and os.path.exists(dl_dir):
+        return dl_dir
 
     # Download
     user_data_dir = os.path.join(get_user_conf_dir(), 'data')
-    if quiet: # Into config dir
+    if quiet:  # Into config dir
         dl_dir = user_data_dir
-    else: # Ask
+    else:  # Ask
 
         # Possible directories
         home_data_dir = os.path.expanduser(os.path.join('~', 'data'))
         dl_dirs = [user_data_dir, home_data_dir]
         vacumm_data_dir = get_data_dir()
-        if os.access(vacumm_data_dir, os.W_OK|os.R_OK|os.X_OK):
+        if os.access(vacumm_data_dir, os.W_OK | os.R_OK | os.X_OK):
             dl_dirs.append(vacumm_data_dir)
         nc = max([len(p) for p in dl_dirs])
 
         # Message
-        if filedesc is None: filedesc = 'missing data file'
-        msg = 'Please specifiy or choose a directory where to download %s:\n'%filedesc
+        if filedesc is None:
+            filedesc = 'missing data file'
+        msg = 'Please specifiy or choose a directory where to download %s:\n' % filedesc
         msg += '- specify it -> enter a valid path\n'
         for i, p in enumerate(dl_dirs):
-            default = '*' if i==0 else ''
-            msg += '- %s -> %i%s\n'%(p.ljust(nc), i+1, default)
+            default = '*' if i == 0 else ''
+            msg += '- %s -> %i%s\n' % (p.ljust(nc), i + 1, default)
         msg += "? "
 
         # Ask choice
         choice = None
-        while True: #in range(1, len(dl_dirs)+1):
+        while True:  # in range(1, len(dl_dirs)+1):
             choice = input(msg).strip()
-            if len(choice)==0:
+            if len(choice) == 0:
                 choice = '1'
                 print('1')
-            if len(choice)==1 and choice.isdigit(): # choose within the list of dirs
+            if len(choice) == 1 and choice.isdigit(
+            ):  # choose within the list of dirs
                 choice = int(choice)
-                if choice<1 or choice>nc:
-                    print("Wrong choice: %i"%choice)
+                if choice < 1 or choice > nc:
+                    print("Wrong choice: %i" % choice)
                     continue
                 break
-            elif choice: # specifiy dir
-                if not os.path.isdir(choice): # does not exist
+            elif choice:  # specifiy dir
+                if not os.path.isdir(choice):  # does not exist
                     try:
                         os.makedirs(choice)
-                    except:
-                        print("Can't create directory: "+choice)
+                    except BaseException:
+                        print("Can't create directory: " + choice)
                         continue
-                if not os.access(choice, os.W_OK|os.R_OK|os.X_OK): # no access
-                    print("No write access to directory: "+choice)
+                if not os.access(choice, os.W_OK | os.R_OK |
+                                 os.X_OK):  # no access
+                    print("No write access to directory: " + choice)
                     continue
                 break
         if isinstance(choice, int):
-            dl_dir = dl_dirs[choice-1]
+            dl_dir = dl_dirs[choice - 1]
         else:
             dl_dir = choice
 
@@ -371,10 +425,13 @@ def get_dl_dir(suggest=None, filedesc=None, quiet=False):
 
 
 #: Config specifications file
-VACUMM_CFGSPECS_FILE = os.path.join(os.path.dirname(__file__),  'vacumm.ini')
+VACUMM_CFGSPECS_FILE = os.path.join(os.path.dirname(__file__), 'vacumm.ini')
 
 #: Config specifications
-VACUMM_CFGSPECS = ConfigObj(VACUMM_CFGSPECS_FILE, interpolation=False, list_values=False)
+VACUMM_CFGSPECS = ConfigObj(
+    VACUMM_CFGSPECS_FILE,
+    interpolation=False,
+    list_values=False)
 
 
 class VCValidator(Validator):
@@ -383,10 +440,10 @@ class VCValidator(Validator):
 
         self._vc_checkmode = kwargs.pop('checkmode', 'warn')
         self._vc_warnmsg = kwargs.pop('warnmsg',
-                'Bad configuration value: {value}. '
-                'Error: "{error}". '
-                'It must conform the follwing specs: {check}. '
-                'Switching to default value: {default}.')
+                                      'Bad configuration value: {value}. '
+                                      'Error: "{error}". '
+                                      'It must conform the follwing specs: {check}. '
+                                      'Switching to default value: {default}.')
         Validator.__init__(self, *args, **kwargs)
 
     def check(self, check, value, missing=False, warnmsg=None):
@@ -394,7 +451,8 @@ class VCValidator(Validator):
         Unlike the original validator, it replaces the value by its default
         when an error occurs.
         """
-        fun_name, fun_args, fun_kwargs, default = self._parse_with_caching(check)
+        fun_name, fun_args, fun_kwargs, default = self._parse_with_caching(
+            check)
 
         if missing:
             if default is None:
@@ -405,11 +463,13 @@ class VCValidator(Validator):
         if value is None:
             return None
 
-        if self._vc_checkmode=='normal':
-            return self._check_value(value, fun_name, fun_args, fun_kwargs)
+#        if self._vc_checkmode == 'normal':
+#            return self._check_value(value, fun_name, fun_args, fun_kwargs)
         try:
-            return self._check_value(value, fun_name, fun_args, fun_kwargs)
-        except Exception as  e:
+            value = self._check_value(value, fun_name, fun_args, fun_kwargs)
+        except Exception as e:
+            if self._vc_checkmode == 'normal':
+                raise
             if default is None:
                 raise VdtMissingValue()
             error = e.message
@@ -417,22 +477,26 @@ class VCValidator(Validator):
                 warnmsg = self._vc_warnmsg
             warn(warnmsg.format(**locals()))
             return self._check_value(default, fun_name, fun_args, fun_kwargs)
+        finally:
+            return value
+
 
 #: VCValidator default instance
 VACUMM_VDT = VCValidator(checkmode='warn',
-    warnmsg='Bad configuration value: {value}. '
-        'Error message: "{error}". '
-        'It must conform the follwing specs: {check}. '
-        'Switching to default value: {default}. '
-        'Please refer to the documentation to fix your configuration: '
-        'http://wwww.ifremer.fr/vacumm/user.install.config.html')
+                         warnmsg='Bad configuration value: {value}. '
+                         'Error message: "{error}". '
+                         'It must conform the follwing specs: {check}. '
+                         'Switching to default value: {default}. '
+                         'Please refer to the documentation to fix your configuration: '
+                         'http://wwww.ifremer.fr/vacumm/user.install.config.html')
 
 #: VCValidator special instance to check individual values
 VACUMM_VDT_LIVE = VCValidator(checkmode='warn',
-    warnmsg='Bad value: {value}. '
-        'Error message: "{error}". '
-        'It must conform the follwing specs: {check}. '
-)
+                              warnmsg='Bad value: {value}. '
+                              'Error message: "{error}". '
+                              'It must conform the follwing specs: {check}. '
+                              )
+
 
 def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
     """Load the configuration
@@ -455,19 +519,22 @@ def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
     """
 
     # Load
-    if cfgfile=='user' or cfgfile is None:
+    if cfgfile == 'user' or cfgfile is None:
         cfgfile = get_user_conf_file()
-    elif cfgfile=='com':
+    elif cfgfile == 'com':
         cfgfile = get_com_conf_file()
-    elif cfgfile=='default':
+    elif cfgfile == 'default':
         cfgfile = False
     if cfgfile is None:
         cfgfile = get_user_conf_file()
-    if (not isinstance(cfgfile, ConfigObj)  or not isinstance(cfgfile, str) or
+    if (not isinstance(cfgfile, ConfigObj) or not isinstance(cfgfile, str) or
             not os.path.exists(cfgfile)):
         cfgfile = ""
 #        warn('Invalid cfgfile passed to load_cfg. Skipping.')
-    cfg = ConfigObj(cfgfile, configspec=VACUMM_CFGSPECS, interpolation='template')
+    cfg = ConfigObj(
+        cfgfile,
+        configspec=VACUMM_CFGSPECS,
+        interpolation='template')
 
     # Default section
     cfg.setdefault('DEFAULT', get_dir_dict())
@@ -477,7 +544,8 @@ def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
         cfg.validate(VACUMM_VDT)
 
     # Merge with currently loaded config?
-    if not hasattr(vacumm, 'CFG') or vacumm.CFG is None: # nothing to merge with
+    if not hasattr(
+            vacumm, 'CFG') or vacumm.CFG is None:  # nothing to merge with
         merge = False
     if merge:
         oldcfg = vacumm.CFG
@@ -492,11 +560,13 @@ def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
 
     return cfg
 
+
 def _get_parent_sections_(sec):
     secs = []
     while sec.parent is not sec:
         secs.append(sec.name)
     return secs[::-1]
+
 
 def _get_sections_(sec):
     """Get current section and parent names
@@ -511,7 +581,7 @@ def _get_sections_(sec):
         - ``sec``: Current :class:`~configobj.Section`.
         - ``sections``: Parent section names.
     """
-    if isinstance(sec,  str):
+    if isinstance(sec, six.string_types):
         sec = [sec]
     if isinstance(sec, list):
         sections = sec
@@ -521,6 +591,7 @@ def _get_sections_(sec):
     else:
         sections = _get_parent_sections_(sec)
     return sec, sections
+
 
 def get_config_value(sec, option):
     """Get a config value
@@ -535,6 +606,7 @@ def get_config_value(sec, option):
     """
     sec, sections = _get_sections_(sec)
     return sec[option]
+
 
 def set_config_value(sec, option, value):
     """Set a config value
@@ -591,7 +663,8 @@ def get_cfg_checked(sec, option, value=None):
     for secname in sections:
         sec = sec[secname]
     check = sec[option]
-    return VACUMM_VDT_LIVE.check(value, check)
+    return VACUMM_VDT_LIVE.check(check, value)
+
 
 def get_cfg_path(sec, option, expand=True):
     """Get and interpret a config value as a path with expansions"""
@@ -603,13 +676,15 @@ def get_cfg_path(sec, option, expand=True):
             path = op(path)
     return path
 
+
 def _print_header_(text, nc):
-    print('#'*nc)
+    print('#' * nc)
     print('##  {:nc-4}'.format(text))
-    print('#'*nc)
+    print('#' * nc)
+
 
 def print_config(section=None, system=True, direc=True, config=True, packages=True,
-        extended=False, user=True, headers=True):
+                 extended=False, user=True, headers=True):
     """Print current configuration
 
     :Params:
@@ -626,28 +701,33 @@ def print_config(section=None, system=True, direc=True, config=True, packages=Tr
 
     """
     nc = 70
-    if extended: 
+    if extended:
         config = packages = True
     if user:
-        if headers: _print_header_('System', nc)
-        print('Python executable: '+sys.executable)
-        print('Python version: '+' '.join(sys.version.splitlines()))
-        print('Platform: '+sys.platform)
+        if headers:
+            _print_header_('System', nc)
+        print('Python executable: ' + sys.executable)
+        print('Python version: ' + ' '.join(sys.version.splitlines()))
+        print('Platform: ' + sys.platform)
     if direc:
-        if headers: _print_header_('VACUMM directories', nc)
-        for dd in get_dir_dict().items():
-            print('%s: %s'%dd)
+        if headers:
+            _print_header_('VACUMM directories', nc)
+        for dd in list(get_dir_dict().items()):
+            print('%s: %s' % dd)
     if config:
-        if headers: _print_header_('VACUMM configuration', nc)
+        if headers:
+            _print_header_('VACUMM configuration', nc)
         cfg = vacumm.VACUMM_CFG
         if section and section in vacumm.VACUMM_CFG:
             cfg = vacumm.VACUMM_CFG[section]
         print(cfg)
     if packages:
-        if headers: _print_header_('Versions', nc)
+        if headers:
+            _print_header_('Versions', nc)
         from .__init__ import __version__
-        print('VACUMM: '+__version__)
-        for mname in 'numpy', 'matplotlib', ('mpl_toolkits.basemap', 'basemap'), 'scipy':
+        print('VACUMM: ' + __version__)
+        for mname in 'numpy', 'matplotlib', (
+                'mpl_toolkits.basemap', 'basemap'), 'scipy':
             try:
                 if isinstance(mname, tuple):
                     m = getattr(__import__(mname[0]), mname[1])
@@ -655,9 +735,10 @@ def print_config(section=None, system=True, direc=True, config=True, packages=Tr
                     m = __import__(mname)
                 v = m.__version__
             except ImportError as e:
-                v = 'ERROR: '+e.message
-            if isinstance(mname, tuple): mname = mname[0]
-            print('%s: %s'%(mname.split('.')[-1], v))
+                v = 'ERROR: ' + e.message
+            if isinstance(mname, tuple):
+                mname = mname[0]
+            print('%s: %s' % (mname.split('.')[-1], v))
 
 
 def get_default_config():
@@ -669,13 +750,14 @@ def get_default_config():
     """
     return load_cfg(cfgfile=get_com_conf_file(), merge=False, live=True)
 
+
 def write_default_config(cfgfile):
     """Write the defaults config (see :func:`get_default_config`) to a file"""
     get_default_config().write(cfgfile)
 
 
 def check_data_file(section,
-        quiet=None, suffix=None, avail=False, check_license=True):
+                    quiet=None, suffix=None, avail=False, check_license=True):
     """Check the existence of a file whose path is stored in a configuration file
 
     The path is given by ``section["file"]``.
@@ -736,7 +818,7 @@ def check_data_file(section,
         paths = []
         for i, suf in enumerate(suffix):
             paths.append(check_data_file(section, quiet=quiet, suffix=suf,
-                check_license=i==0))
+                                         check_license=i == 0))
         return paths
     elif not isinstance(suffix, six.string_types):
         suffix = ''
@@ -746,55 +828,63 @@ def check_data_file(section,
     url = section['url']
     license = section['license']
     path += suffix
-    if url is not None: url += suffix
+    if url is not None:
+        url += suffix
 
     # Only check availability
     if os.path.exists(path):
-        if avail: return 2
+        if avail:
+            return 2
         return path
     if avail:
-       return 0 if url is None else 1
+        return 0 if url is None else 1
 
     # Ask for this path
     if not quiet:
-        print("Can't find data file: "+path)
+        print("Can't find data file: " + path)
         guessed = input("If you know what is this file and where it is on your system,\n"
-            "please enter its name here, or leave it empty: \n").strip()
+                        "please enter its name here, or leave it empty: \n").strip()
         if guessed:
             if not os.path.exists(guessed):
                 print('File not found')
             else:
-                save_config_value(section, 'file', path[:len(path)-len(suffix)])
+                save_config_value(
+                    section, 'file', path[:len(path) - len(suffix)])
                 return guessed
 
     # Check url
     if not url:
-        if quiet: return
-        raise VACUMMError('Data file not found and not url provided for downloading it: '+path)
+        if quiet:
+            return
+        raise VACUMMError(
+            'Data file not found and not url provided for downloading it: ' + path)
 
     # License for downloading
     if license and check_license:
-        nc = len(license)+4
-        lic = '#'*nc+'\n'
-        lic += '# %s #\n'%license
-        lic += '#'*nc
-        print("VACUMM is about to download this data file: %s\n"%url + \
-            "We suppose you have requested the authorization and are not responsible for your choice.\n" + \
-            "If you're not sure you are allowed to do it, please abort.\n" + \
-            "For more information about this data file and associated distribution license, check this:\n"+lic)
+        nc = len(license) + 4
+        lic = '#' * nc + '\n'
+        lic += '# %s #\n' % license
+        lic += '#' * nc
+        print("VACUMM is about to download this data file: %s\n" % url +
+              "We suppose you have requested the authorization and are not responsible for your choice.\n" +
+              "If you're not sure you are allowed to do it, please abort.\n" +
+              "For more information about this data file and associated distribution license, check this:\n" + lic)
         while True:
             try:
-                c = input("Would you like to download it? [y/N]\n")
-            except:
+                c = eval(input("Would you like to download it? [y/N]\n"))
+            except BaseException:
                 c = 'n'
-            if not c: c='n'
+            if not c:
+                c = 'n'
             if c.startswith('n'):
-                raise VACUMMError("Download interrupted -> can't access to data")
-            if c.startswith('y'): break
+                raise VACUMMError(
+                    "Download interrupted -> can't access to data")
+            if c.startswith('y'):
+                break
 
     # Download directory
     dl_dir = path and os.path.dirname(path)
-    if not path or not os.access(dl_dir, os.W_OK|os.R_OK|os.X_OK):
+    if not path or not os.access(dl_dir, os.W_OK | os.R_OK | os.X_OK):
         dl_dir = get_dl_dir(quiet=quiet, suggest=dl_dir)
 
     # Download
@@ -803,15 +893,14 @@ def check_data_file(section,
     download_file(url, dl_path, quiet=quiet)
 
     # Fix configuration
-    if path!=dl_path:
-        save_config_value(section, 'file', dl_path[:len(path)-len(suffix)])
+    if path != dl_path:
+        save_config_value(section, 'file', dl_path[:len(path) - len(suffix)])
     return dl_path
-
 
 
 # UTILITIES
 
-class URLLibProgressBar:
+class URLLibProgressBar(object):
     """Progress bar compatible with :func:`urllib.urlretrieve`
 
     It looks like::
@@ -835,35 +924,39 @@ class URLLibProgressBar:
         self(0, 1, 1)  # Init
 
     def __call__(self, count, blocksize, totalsize):
-        amount = int(count*blocksize*100./totalsize)
-        if amount==self.amount: return
-        end =  amount>=100
+        amount = int(count * blocksize * 100. / totalsize)
+        if amount == self.amount:
+            return
+        end = amount >= 100
         amount = min(amount, 100)
         pwidth = self.width - 2
-        np = max(int(round((amount / 100.0) * pwidth)), 1)
-        if self.np==np: return
+        np = max(int(round((old_div(amount, 100.0)) * pwidth)), 1)
+        if self.np == np:
+            return
         self.np = np
         if np == pwidth:
-            prog = "[%s]" % ('='*pwidth)
+            prog = "[%s]" % ('=' * pwidth)
         else:
-            prog = "[%s>%s]" % ('='*(np-1), ' '*(pwidth-np))
-        percentPlace = (len(prog) / 2) - len(str(amount))
+            prog = "[%s>%s]" % ('=' * (np - 1), ' ' * (pwidth - np))
+        percentPlace = (old_div(len(prog), 2)) - len(str(amount))
         percentString = str(amount) + "%"
         prog = ''.join([prog[0:percentPlace], percentString,
-            prog[percentPlace+len(percentString):]])
-        sys.stdout.write("\r%s"%prog)
-        if end: sys.stdout.write("\n")
-
+                        prog[percentPlace + len(percentString):]])
+        sys.stdout.write("\r%s" % prog)
+        if end:
+            sys.stdout.write("\n")
 
 
 def download_file(url, locfile, quiet=False):
     """Download a file with a progress bar using :func:`urllib.urlretrieve`"""
     locfile = os.path.realpath(locfile)
     if not quiet:
-        print('Downloading %s to %s'%(url, locfile))
+        print('Downloading %s to %s' % (url, locfile))
     dl_dir = os.path.dirname(locfile)
-    if not os.path.exists(dl_dir): os.makedirs(dl_dir)
-    six.moves.urllib.request.urlretrieve(url, locfile, reporthook=URLLibProgressBar() if not quiet else None)
+    if not os.path.exists(dl_dir):
+        os.makedirs(dl_dir)
+    six.moves.urllib.request.urlretrieve(
+        url, locfile, reporthook=URLLibProgressBar() if not quiet else None)
     return locfile
 
 
@@ -880,17 +973,20 @@ def edit_file(fname, editor=None, verbose=True):
     """
     # File name
     if not os.path.exists(fname):
-        raise IOError('File not found: '+fname)
+        raise IOError('File not found: ' + fname)
 
     # Guess editor
     if editor is None:
         editor = os.environ.get("VISUAL") or os.environ.get("EDITOR", "vi")
 
     # Run editor
-    if verbose: print('Editing user configuration file: '+fname)
+    if verbose:
+        print('Editing user configuration file: ' + fname)
     if subprocess.call(shlex.split("%s \"%s\"" % (editor, fname))):
-        raise VACUMMError("Error editing file: "+fname)
-    if verbose: print('End of file edition')
+        raise VACUMMError("Error editing file: " + fname)
+    if verbose:
+        print('End of file edition')
+
 
 def edit_user_conf_file(fname='vacumm.cfg', editor=None, verbose=True):
     """Edit the user configuration file
@@ -920,14 +1016,10 @@ def handle_print_args(args):
 
     # Print
     print_config(system=args.system, direc=args.direc, config=args.config,
-        packages=args.packages, headers=not args.no_header)
+                 packages=args.packages, headers=not args.no_header)
+
 
 def handle_edit_args(args):
     """Handle argparse args from ``vacumm_config.py edit ...``"""
 
     edit_user_conf_file(editor=args.editor)
-
-
-
-
-
