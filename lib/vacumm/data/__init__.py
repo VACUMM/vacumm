@@ -49,6 +49,7 @@ except:
     pass
 
 from vacumm import VACUMMError, vcwarn
+import vacumm.misc.cf as cf  # compat
 from . import satellite
 
 #: Specifications of available dataset types

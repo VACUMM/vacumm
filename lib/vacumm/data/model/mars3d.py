@@ -43,20 +43,18 @@ __date__ = '2011-01-17'
 __doc__ = 'MARS3D model data manipulation'
 
 
-from vacumm.misc import dict_merge
 from vacumm.data import register_dataset
 from vacumm.data.misc.dataset import OceanDataset, AtmosSurfaceDataset
-#from vacumm.data.cf import specs_def_loc
 
 
-class Mars3D(OceanDataset,AtmosSurfaceDataset):
+class Mars3D(OceanDataset, AtmosSurfaceDataset):
     """:class:`~vacumm.data.misc.dataset.Dataset` class to read the
     MARS3D ocean model (IFREMER) outputs
 
     Read the :class:`~vacumm.data.misc.dataset.Dataset` for more information
     """
     name = 'mars'
-    domain='ocean'
+    domain = 'ocean'
     description = "The MARS3D ocean model from IFREMER"
 
     #: Grid type
@@ -128,7 +126,7 @@ class Mars3D(OceanDataset,AtmosSurfaceDataset):
             [[select]]
                 level:slice(-1, None)
         """
-    
+
 
 #: Alias for :class:`Mars3D`
 MARS3D = Mars3D

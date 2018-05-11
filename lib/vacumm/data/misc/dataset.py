@@ -75,40 +75,40 @@ from traceback import format_exc
 from collections import OrderedDict
 
 import cdms2, MV2, numpy, seawater
-N = numpy
 
 from vacumm import VACUMMError
-from vacumm.misc.misc import (auto_scale, MV2_concatenate, 
-    MV2_axisConcatenate, create_selector, kwfilter, squeeze_variable, 
-    split_selector, dict_merge, dict_check_defaults, broadcast, 
+from vacumm.misc.misc import (auto_scale, MV2_concatenate,
+    MV2_axisConcatenate, create_selector, kwfilter, squeeze_variable,
+    split_selector, dict_merge, dict_check_defaults, broadcast,
     dict_filter_out, get_atts, set_atts, grow_variables)
 from vacumm.misc.phys.constants import GRAVITY
 from vacumm.misc.axes import (create_dep,
     get_axis_type, isaxis, islon, islat, isdep)
 from vacumm.misc.bases import Object
 from vacumm.misc.grid import( meshweights, resol, create_grid, set_grid,
-    dz2depth, depth2dz, isdepthup, gridsel, makedepthup, curv2rect, isgrid, 
+    dz2depth, depth2dz, isdepthup, gridsel, makedepthup, curv2rect, isgrid,
     coord2slice, clone_grid, get_axis_slices, makealtitudeup)
 import vacumm.misc.color as C
 from vacumm.misc.io import (ncfind_var, ncfind_obj, ncfind_axis,
     list_forecast_files, ncread_files, ncmatch_obj,
     NcIterBestEstimate, NcIterTimeSlice)
 from vacumm.misc.regridding import shift1d, extend1d, transect, regrid1d
-from vacumm.misc.atime import (comptime, datetime as adatetime, Intervals, 
+from vacumm.misc.atime import (comptime, datetime as adatetime, Intervals,
     itv_intersect, strftime)
 from vacumm.misc.plot import map2, curve2, section2, hov2, add_map_lines
-from vacumm.data import register_dataset
-from vacumm.data.misc.sigma import NcSigma
-from vacumm.data.misc.arakawa import (ArakawaGrid, 
-    ARAKAWA_LOCATIONS as arakawa_locations, 
-    set_grid_type, _cdms2_atts as cdms2_arakawa_atts)
-from vacumm.data.cf import (VAR_SPECS, AXIS_SPECS, cf2search, cf2atts,
+from vacumm.misc.cf import (VAR_SPECS, AXIS_SPECS, cf2search, cf2atts,
     CF_AXIS_SPECS, CF_VAR_SPECS, format_axis, format_var, get_loc, no_loc_single,
     DEFAULT_LOCATION, change_loc, HIDDEN_CF_ATTS, change_loc_single, format_grid,
     CF_DICT_MERGE_KWARGS)
+from vacumm.misc.sigma import NcSigma
+from vacumm.misc.arakawa import (ArakawaGrid,
+    ARAKAWA_LOCATIONS as arakawa_locations,
+    set_grid_type, _cdms2_atts as cdms2_arakawa_atts)
+from vacumm.data import register_dataset
 from vacumm.diag.dynamics import barotropic_geostrophic_velocity, kinetic_energy
 from vacumm.diag.thermdyn import mixed_layer_depth, density
 
+N = numpy
 
 # Kwargs which are pop'ed from intermediate plots
 # (e.g. plot section, then trajectory map, then post plot using these kwargs)
@@ -855,7 +855,7 @@ class Dataset(Object):
                 datasets[i] = cdms2.open(d)
                 self.info('- %s', datasets[i].id)
 
-        # If append mode, extend internal list
+        # If append mode, extend internal list
         if append:
             self.dataset.extend(datasets)
 

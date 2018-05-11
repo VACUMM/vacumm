@@ -35,3 +35,5 @@
 #
 
 
+import vacumm.misc.sigma as sigma  # compat
+import vacumm.misc.arakawa as arakawa  # compat
