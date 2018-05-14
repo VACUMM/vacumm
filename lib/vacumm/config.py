@@ -51,7 +51,7 @@ import six.moves.urllib.parse
 import six.moves.urllib.error
 import six
 from six.moves import input
-import traceback
+import site
 
 from configobj import ConfigObj
 from validate import Validator, VdtMissingValue
@@ -83,7 +83,8 @@ def get_lib_dir():
 
 
 def get_dist_dir():
-    """Upper directory of VACUMM distribution tree or ``None`` for an installed package"""
+    """Upper directory of VACUMM distribution tree or ``None``
+    for an installed package"""
     lib_dir = get_lib_dir()
     dist_dir = os.path.abspath(os.path.join(lib_dir, '../..'))
     if not os.path.exists(os.path.join(dist_dir, 'setup.py')):
@@ -114,10 +115,11 @@ def get_data_dir(raiseerr=False):
             vcwarn('Invalid vacumm data directory: '+data_dir)
         return data_dir
 
-    # Share folder
-    data_dir = os.path.join(sys.prefix, 'share', 'vacumm')
-    if os.path.exists(data_dir):
-        return data_dir
+    # Share folders
+    for base in site.getuserbase(), sys.prefix:
+        data_dir = os.path.join(base, 'share', 'vacumm')
+        if os.path.exists(data_dir):
+            return data_dir
 
     # Installed librairy
     lib_dir = get_lib_dir()
@@ -161,10 +163,16 @@ def data_sample(data_file, mode='all'):
 
     # VACUMM
     if mode.startswith('a') or not mode.startswith('u'):
-        path = vacpath = os.path.join(get_data_dir(raiseerr=True), 'samples',
-                                      data_file)
-        if os.path.exists(path) or not mode.startswith('a'):
-            return path
+        data_dir = get_data_dir(raiseerr=True)
+        pnew = os.path.join(data_dir, 'samples', data_file)
+        if os.path.exists(pnew):
+            return pnew
+        pold = os.path.join(data_dir, data_file)
+        if os.path.exists(pold):
+            return pold
+        if not mode.startswith('a'):
+            return pnew
+        vacpath = pnew
 
     # UVCDAT
     path = os.path.join(sys.prefix, 'sample_data', data_file)
