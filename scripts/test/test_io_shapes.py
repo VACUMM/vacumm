@@ -1,5 +1,5 @@
 """Test the :func:`~vacumm.misc.grid.io.Shapes` class"""
-from vcmq import data_sample, Shapes
+from vcmqm import data_sample, Shapes
 result = []
 
 # Shapefile

@@ -43,7 +43,17 @@ from _geoslib import Point, Polygon, LineString
 import cdms2
 
 from vacumm import VACUMMError
-from .misc import nduniq, kwfilter
+from .misc import nduniq, kwfilter, ArgList
+
+__all__ = ['get_geos_type', 'is_point', 'is_linestring', 'is_polygon',
+           'proj_shape', 'clip_shapes', 'clip_shapes', 'create_polygon',
+           'create_polygons', 'plot_polygon', 'sort_shapes',
+           'convex_hull', 'get_shapes_bounds', 'get_convex_hull',
+           'undepsamp_shapes',
+           'GEOS_POINT', 'GEOS_POINTS', 'GEOS_LINESTRING', 'GEOS_LINES',
+           'GEOS_POLYLINE', 'GEOS_POLYLINES',
+           'GEOS_POLYGON', 'GEOS_POLYGONS', 'GEOS_POLYS', 'GEOS_POLY',
+           'SHAPES', 'SHAPE_NAMES']
 
 GEOS_POINT = GEOS_POINTS = 0
 GEOS_LINESTRING = GEOS_LINES = GEOS_LINE = GEOS_POLYLINE = GEOS_POLYLINES = 1
@@ -343,26 +353,46 @@ def sort_shapes(shapes, reverse=True):
     Params
     ------
     reverse: optional, boolean
-        Reverse the sorted order with smallest first.
+        Reverse the sorting order with smallest first.
     """
     gtype = get_geos_type(shapes)
+
+    if is_point(gtype):
+        return 0
+
+    shapes.sort(key=get_shape_size, reverse=reverse)
+
+    return 1
+
+
+def get_shape_size(shape):
+    """Get the size of shape, depending on its type
+
+    - A Point: 0.
+    - A Linestring: total length
+    - A Polygon: area
+
+    Parameter
+    ---------
+    shape: a Geos shape
+
+    Return
+    ------
+    float
+        The "size"
+    """
+    gtype = get_geos_type(shape)
+
+    if is_point(gtype):
+        return 0
+
     if is_polygon(gtype):
+        return shape.area()
 
-        shapes.shapes.sort(key=lambda p: p.area(), reverse=reverse)
-        sorted = 1-2*int(reverse)
-
-    elif is_linestring(gtype):
-
-        shapes.sort(cmp=lambda p: N.diff(p.boundary).sum(), reverse=reverse)
-        sorted = 1-2*int(reverse)
-
-    else:
-
-        sorted = 0
-    return sorted
+    return N.diff(shape.boundary).sum()
 
 
-def convex_hull(xy, poly=False, method='delaunay'):
+def get_convex_hull(xy, poly=False, method='delaunay'):
     """Get the envelop of cloud of points
 
     :Params:
@@ -475,3 +505,64 @@ def convex_hull(xy, poly=False, method='delaunay'):
     if poly:
         return create_polygon((xe, ye))
     return xe, ye
+
+convex_hull = get_convex_hull
+
+def get_shapes_bounds(shapes):
+    """Get the coordinates bounds of shapes
+
+
+    Parameters
+    ----------
+    shapes: list of shapes or shape
+        A single shape or a list of themes.
+        A shape must have the :attr:`boundary` attribute.
+
+    Return
+    ------
+    tuple
+        ``xmin,ymin,xmax,ymax``
+    """
+    al = ArgList(shapes)
+    ss = al.get()
+    xmin = min([shape.boundary[..., 0].min() for shape in ss])
+    xmax = max([shape.boundary[..., 0].max() for shape in ss])
+    ymin = min([shape.boundary[..., 1].min() for shape in ss])
+    ymax = max([shape.boundary[..., 1].max() for shape in ss])
+    return xmin, ymin, xmax, ymax
+
+
+def undepsamp_shapes(shapes, samp):
+    """Undersample shapes
+
+
+    Parameters
+    ----------
+    shapes: list of geos shapes or shape
+        A single shape or a list of themes.
+        A shape must have the :attr:`boundary` attribute.
+    samp: int
+
+    Return
+    ------
+    geos shape or list of them
+    """
+    al = ArgList(shapes)
+    ss = al.get()
+
+    if not shapes:
+        return al.put([])
+    if not samp:
+        return al.put(list(ss))
+
+    gtype = get_geos_type(shapes, mod='geos')
+
+    outss = []
+    for shape in ss:
+
+        if samp > 1 and shape.shape[0] > (2*samp+1):
+            shape = gtype(shape.coord[::samp])
+
+        outss.append(shape)
+
+    return al.put(outss)
