@@ -1,12 +1,12 @@
 """Test functions :func:`~vacumm.misc.kriging.variogram`"""
 
+from vcmq import N, P, variogram, variogram_fit
+from vacumm.misc.kriging import gridded_gauss3, random_gauss3
+
 nx = ny = 50
 np = 500
 mtype = 'gauss'
 distmax = 2.5
-
-from vcmq import N, P, variogram, variogram_fit
-from vacumm.misc.grid.kriging import gridded_gauss3, random_gauss3
 
 # Generate random field
 xxg, yyg, zzg = gridded_gauss3(nx=nx, ny=ny)
@@ -24,8 +24,6 @@ V = vm(D)
 P.figure(figsize=(6, 4))
 P.title('Variogram')
 P.plot(d, v, 'ob', label='From data')
-P.plot(D, V, '-r', label='Fitted model (%s)'%mtype)
+P.plot(D, V, '-r', label='Fitted model (%s)' % mtype)
 P.legend(loc='best')
 P.ylim(ymin=0)
-
-

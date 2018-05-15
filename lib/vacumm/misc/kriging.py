@@ -48,6 +48,14 @@ import pylab as P
 from .misc import kwfilter, closeto
 from .grid import get_distances
 
+
+__all__ = ['OrdinaryCloudKriger', 'SimpleCloudKriger',
+           'variogram', 'variogram_fit', 'OrdinaryKriger',
+           'variogram_model', 'variogram_model_type', 'variogram_multifit',
+           'cloud_split', 'KrigingError', 'VariogramModel', 'krig',
+           'VariogramModelError',
+           'VARIOGRAM_MODEL_TYPES', 'DEFAULT_VARIOGRAM_MODEL_TYPE']
+
 if not hasattr(N, 'isclose'):
     isclose = closeto
 else:

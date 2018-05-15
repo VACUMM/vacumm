@@ -145,7 +145,8 @@ To save a xml file from the loaded object above you can do:
 
 '''
 
-#__all__ = ['XmlConfig', 'XmlConfigList', 'XmlConfigDict']
+__all__ = ['XmlConfig', 'XmlConfigDict', 'XmlConfigList']
+
 
 import codecs
 import os

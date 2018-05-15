@@ -1,16 +1,13 @@
 """Test the fortran function :f:func:`nearest2d`"""
-print 1
 from vcmqm import N, P, rotate_grid, add_grid, meshbounds
-print 2
 from vacumm.fortran.interp import nearest2d
-print 3
 
 
 # Input grid
 gridi = rotate_grid((N.arange(5), N.arange(4)), 30)
 xxi = gridi.getLongitude()[:].filled()
 yyi = gridi.getLatitude()[:].filled()
-vari = N.resize(yyi, (20, )+ yyi.shape)
+vari = N.resize(yyi, (20, ) + yyi.shape)
 nb = 10
 xxbi, yybi = meshbounds(xxi, yyi)
 
@@ -21,9 +18,7 @@ yyo = grido.getLatitude()[:].filled()
 xxbo, yybo = meshbounds(xxo, yyo)
 
 # Nearest
-print '+'
 varo = nearest2d(vari, xxi, yyi, xxo, yyo, nb)
-print '-'
 
 # Plot
 vmin = varo.min()

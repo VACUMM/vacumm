@@ -2535,27 +2535,27 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
     elif method in ['bilinear', 'dstwgt']:
 
         if curvedi:
-            wrapper = getattr(finterp, '_regrid2d_{}_c2c_'.format(method))
+            wrapper = eval('_regrid2d_{}_c2c_'.format(method))
             varo3d, rgdr = wrapper(vari3d, xxi, yyi, xxo, yyo, mv, rgdr)
 
         elif curvedo:
-            wrapper = getattr(finterp, '_regrid2d_{}_r2c_'.format(method))
+            wrapper = eval('_regrid2d_{}_r2c_'.format(method))
             varo3d = wrapper(vari3d, xi, yi, xxo, yyo, mv)
 
         else:
-            wrapper = getattr(finterp, '_regrid2d_{}_r2r_'.format(method))
+            wrapper = eval('_regrid2d_{}_r2r_'.format(method))
             varo3d = wrapper(vari3d, xi, yi, xo, yo, mv, geo)
 
     elif method == ['mixt']:
 
         # Method
-        wrapper = getattr(finterp, '_regrid2d_{}_'.format(method))
+        wrapper = eval('_regrid2d_{}_'.format(method))
 
         # Interpolation
         varo3d = wrapper(vari3d, xi, yi, xo, yo, mv, geo, ext=0)
 
     else:
-        raise RuntimeError("Invalid meth: " + method)
+        raise VACUMMError("Invalid meth: " + method)
 
     # Back to rights dims
     if vari.ndim != 3:
@@ -2735,14 +2735,17 @@ def _regrid2d_natgridlist_(vari3d, xi, yi, xxo, yyo, ext, **kwargs):
     nyo, nxo = xxo.shape
     vari2d = vari3d.rehape(nzi, nxi*nyi)
     # Restrict zone
-    dxo = xxo.ptp()/10.
-    dyo = yyo.ptp()/10.
+#    dxo = xxo.ptp()/10.
+#    dyo = yyo.ptp()/10.
     # TODO: add dxo,dxy natgridlist in regrid2d
-    border = list(zip(xxo[0], yyo[0]))+list(zip(xxo[1:-1, -1], yyo[1:-1, -1])) +\
-        list(zip(xxo[-1], yyo[-1]))+list(zip(xxo[1:-1, 0], yyo[1:-1, 0]))
+    border = (list(zip(xxo[0], yyo[0])) +
+              list(zip(xxo[1:-1, -1], yyo[1:-1, -1])) +
+              list(zip(xxo[-1], yyo[-1])) +
+              list(zip(xxo[1:-1, 0], yyo[1:-1, 0])))
     poly = Polygon(N.array(border))
     good = N.ones(xxo.shape, '?')
-    if hasattr(vari3d, 'mask') and vari3d.mask is not MV2.nomask and ~vari3d.mask.all():
+    if (hasattr(vari3d, 'mask') and vari3d.mask is not MV2.nomask
+            and ~vari3d.mask.all()):
         good &= ~vari2d.mask
     for i in range(nxi):
         for j in range(nyi):
@@ -3338,7 +3341,8 @@ def extendgrid(gg, iext=0, jext=0, mode='extrap'):
 class CDATRegridder(object):
     """Regridding using CDAT regridders
 
-    .. note:: This code is adapted from the :meth:`regrid` method of MV2 arrays.
+    .. note:: This code is adapted from the :meth:`regrid`
+        method of MV2 arrays.
 
     Parameters
     ----------
@@ -3353,7 +3357,8 @@ class CDATRegridder(object):
         One of ``"linear"``, ``"path"``, ``"conservative"`` and ``"cellave"``.
     """
 
-    def __init__(self, fromgrid, togrid, missing=None, order=None, mask=None, **keywords):
+    def __init__(self, fromgrid, togrid, missing=None, order=None, mask=None,
+                 **keywords):
 
         if cdms2.isVariable(fromgrid) and not isgrid(fromgrid):
             fromvar = fromgrid
@@ -3651,7 +3656,7 @@ class CurvedInterpolator(object):
                               ', '.join(self.valid_methods))
         if method == 'bilinear':
             method = 'bilin'
-        func = getattr(finterp, method+'2dto1dc_reduc' % method)
+        func = getattr(finterp, method+'2dto1dc_reduc')
 
         # Interpolate
         mv = vari.get_fill_value()

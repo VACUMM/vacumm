@@ -2,7 +2,7 @@
 from builtins import zip
 from builtins import range
 from vcmq import N, P, meshbounds
-from vacumm.misc.grid._interp_ import curv2rel_single
+from vacumm.fortran.interp import curv2rel_single
 
 
 # Input grid
@@ -50,4 +50,3 @@ P.pcolor(xxbi, yybi, zzi, vmin=vmin, vmax=vmax)
 P.scatter(xxo, yyo, c=zzo, vmin=vmin, vmax=vmax, s=80)
 P.grid()
 P.title('curv2rel_single')
-

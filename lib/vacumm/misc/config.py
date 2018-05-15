@@ -78,11 +78,15 @@ try:
 except:
     numpy = None
 
-__all__ = ['ConfigException', 'ValidationWarning', 'ConfigManager', 'print_short_help',
-           'opt2rst', 'cfg2rst', 'cfgargparse', 'cfgoptparse', 'get_spec', 'get_secnames',
-           'list_options', 'option2rst',  'filter_section', 'register_config_validator',
+__all__ = ['ConfigException', 'ValidationWarning',
+           'ConfigManager', 'print_short_help',
+           'opt2rst', 'cfg2rst', 'cfgargparse', 'cfgoptparse',
+           'get_spec', 'get_secnames',
+           'list_options', 'option2rst',  'filter_section',
+           'register_config_validator',
            'get_validator',
-           'validator_bbox', 'validator_cdtime', 'validator_cmap', 'validator_color',
+           'validator_bbox', 'validator_cdtime',
+           'validator_cmap', 'validator_color',
            'validator_datetime', 'validator_dict', 'validator_eval',
            'validator_figsize', 'validator_interval', 'validator_minmax',
            'validator_numerics', 'validator_path', 'validator_timeunits',

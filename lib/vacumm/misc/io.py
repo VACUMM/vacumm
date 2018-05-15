@@ -60,7 +60,7 @@ from _geoslib import Point, LineString, Polygon
 from vacumm import VACUMMError
 from .misc import (split_selector, kwfilter, squeeze_variable, is_iterable,
                    match_atts, set_atts, broadcast, create_selector,
-                   MV2_concatenate, checkdir, get_atts, set_atts)
+                   MV2_concatenate, checkdir, get_atts)
 from .poly import create_polygon, clip_shape, sort_shapes
 from .axes import (get_checker, islon, islat, istime, islevel,
                    create_lat, create_lon)
@@ -69,7 +69,7 @@ from .grid import curv2rect, isgrid, create_grid, set_grid
 from .atime import (has_time_pattern, is_time, round_date, add_margin,
                     strptime, comptime, are_same_units, itv_union, ch_units,
                     create_time, tsel2slice,  pat2freq, IterDates,
-                    strftime, is_interval,
+                    strftime, is_interval, datetime as adatetime,
                     pat2glob, filter_time_selector, add_time)
 from .cf import filter_search
 
@@ -83,7 +83,7 @@ __all__ = ['list_forecast_files', 'NcIterBestEstimate',
            'ncget_axis', 'netcdf3', 'netcdf4', 'ncread_axis',
            'ncread_obj', 'ncget_fgrid',
            'grib_read_files', 'nccache_get_time', 'grib2nc', 'grib_get_names',
-           'write_snx', 'ColoredFormatter', 'Logger',
+           'write_snx', 'ColoredFormatter', 'SimpleLogger',
            'TermColors', 'read_shapefile', 'NcIterTimeSlice',
            ]
 
@@ -125,7 +125,8 @@ class ColPrinter(object):
     Example
     -------
 
-        >>> p = ColPrinter([['Year',6,'%i'],['Value',7,'%4.1f']], headsep='=',align='center',frame=True)
+        >>> p = ColPrinter([['Year',6,'%i'],['Value',7,'%4.1f']],
+        ... headsep='=',align='center',frame=True)
         ------------------
         |  Year   Value  |
         |================|
@@ -138,13 +139,15 @@ class ColPrinter(object):
     """
 
     def __init__(self, columns, headsep=True, align='left',
-                 left=None, right=None, top=None, bottom=None, frame=None, colsep=' ',
+                 left=None, right=None, top=None, bottom=None,
+                 frame=None, colsep=' ',
                  print_header=True, file=None):
         # Inputs
         if not isinstance(columns, (list, tuple)):
             raise TypeError('Input must be a list or tuple of 3-element lists')
-        elif len(columns) == 3 and type(columns[0]) is type('s') and \
-                type(columns[1]) is type(1) and type(columns[2]) is type('s'):
+        elif (len(columns) == 3 and isinstance(columns[0], six.string_types)
+              and isinstance(columns[1], int)
+              and isinstance(columns[2], six.string_types)):
             columns = [columns, ]
         if align not in ['left', 'right', 'center']:
             align = 'left'
@@ -169,7 +172,7 @@ class ColPrinter(object):
         else:
             self._headsep = str(headsep)
 
-         # Loop on columns
+        # Loop on columns
         headers = []
         self._width = []
         self._fmt = []
@@ -178,8 +181,10 @@ class ColPrinter(object):
             if not isinstance(col, (list, tuple)) or \
                     len(col) != 3 or type(col[0]) is not type('s') or type(col[1]) != type(1) or \
                     type(col[2]) is not type('s') or col[2].find('%') < 0:
-                raise TypeError(
-                    'This description of column must contain the column title (string), the column width (int) and the string format for data (string): %s' % col)
+                raise TypeError(('This description of column must contain '
+                                 'the column title (string), the column '
+                                 'width (int) and the string format for '
+                                 'data (string): {}').format(col))
             width = col[1]
             if width < len(col[0]):
                 width = len(col[0])
@@ -275,7 +280,8 @@ col_printer = ColPrinter  # compat
 
 
 def list_forecast_files(filepattern, time=None, check=True,
-                        nopat=False, patfreq=None, patfmtfunc=None, patmargin=None, verbose=False, sort=True):
+                        nopat=False, patfreq=None, patfmtfunc=None,
+                        patmargin=None, verbose=False, sort=True):
     """Get a list of forecast files according to a file pattern
 
     Parameters
@@ -293,7 +299,8 @@ def list_forecast_files(filepattern, time=None, check=True,
         A time selector (``('2000', '2001', 'co')``).
 
         .. warning::
-              This argument is *mandatory* if ``filepattern`` is a date pattern,
+              This argument is *mandatory* if ``filepattern``
+              is a date pattern,
               and *not used* if ``filepattern`` is of another type.
 
     check: optional
@@ -309,7 +316,8 @@ def list_forecast_files(filepattern, time=None, check=True,
            It must take as arguments a date pattern and a CDAT component time.
     sort: optional
         If True, files are sorted alphabetically after being listed;
-        if a callable function, they are sorted using this function (``files=sort(files)``).
+        if a callable function, they are sorted using this function
+        (``files=sort(files)``).
 
         .. warning:: Files are sorted alphabetically by default!
 
@@ -317,16 +325,21 @@ def list_forecast_files(filepattern, time=None, check=True,
     --------
 
         >>> 'Prefered way'
-        >>> list_forecast_files('mrsPRVMR_r0_%Y-%m-%d_00.nc', ('2010-08-06', '2010-08-15'))
-        >>> list_forecast_files('http://www.ifremer.fr/data/mrsPRVMR_r0_%Y-%m-%d_00.nc', ('2010-08-06', '2010-08-15'))
-        >>> list_forecast_files('mrsPRVMR_r0_%Y-%m-%d_*.nc', ('2010-08-06', '2010-08-15'))
+        >>> list_forecast_files('mrsPRVMR_r0_%Y-%m-%d_00.nc',
+        ... ('2010-08-06', '2010-08-15'))
+        >>> list_forecast_files('http://www.ifremer.fr/data/mrsPRVMR_r0_%Y-%m-%d_00.nc',
+        ... ('2010-08-06', '2010-08-15'))
+        >>> list_forecast_files('mrsPRVMR_r0_%Y-%m-%d_*.nc',
+        ... ('2010-08-06', '2010-08-15'))
 
         >>> 'Possible way'
         >>> list_forecast_files('mrsPRVMR_r0_2010-05-??_00.nc')
-        >>> list_forecast_files(['mrsPRVMR_r0_2010-05-??_00.nc', 'mrsPRVMR_r0_2010-05-??_60.nc'])
+        >>> list_forecast_files(['mrsPRVMR_r0_2010-05-??_00.nc',
+        ... 'mrsPRVMR_r0_2010-05-??_60.nc'])
 
         >>> 'Just ot filter in existing files'
-        >>> list_forecast_files(['mrsPRVMR_r0_2010-05-06_00.nc', 'mrsPRVMR_r0_2010-05-07_00.nc'])
+        >>> list_forecast_files(['mrsPRVMR_r0_2010-05-06_00.nc',
+        ... 'mrsPRVMR_r0_2010-05-07_00.nc'])
 
         >>> 'Simple conversion to list'
         >>> list_forecast_files('http://www.ifremer.fr/data/mrsPRVMR_r0_2010-05-06_00.nc')
@@ -344,8 +357,11 @@ def list_forecast_files(filepattern, time=None, check=True,
         files = []
         for filepat in filepattern:
             files.extend(list_forecast_files(filepat, time=time, check=check,
-                                             patfreq=patfreq, patfmtfunc=patfmtfunc, patmargin=patmargin,
-                                             verbose=False, nopat=nopat, sort=False))
+                                             patfreq=patfreq,
+                                             patfmtfunc=patfmtfunc,
+                                             patmargin=patmargin,
+                                             verbose=False, nopat=nopat,
+                                             sort=False))
 
     # Date pattern
     elif not nopat and has_time_pattern(filepattern):
@@ -370,8 +386,10 @@ def list_forecast_files(filepattern, time=None, check=True,
             if is_time(time):
                 time = (time, time, 'ccb')
             else:
-                raise ValueError('Your file pattern contains date pattern (like "%Y"), '
-                                 'so you must provide a valid absolute time interval such as (date1,date2,"co")'
+                raise ValueError('Your file pattern contains date '
+                                 'pattern (like "%Y"), '
+                                 'so you must provide a valid absolute '
+                                 'time interval such as (date1,date2,"co")'
                                  ' or at least a valid single date')
         time = tuple(time)
         patfmtfunc = patfmtfunc if callable(patfmtfunc) else strftime
@@ -381,8 +399,8 @@ def list_forecast_files(filepattern, time=None, check=True,
         if patfreq is None:
             patfreq = pat2freq(filepattern)
             if verbose:
-                print(
-                    'Detected frequency for looping on possible dates: '+patfreq.upper())
+                print('Detected frequency for looping on possible dates: ' +
+                      patfreq.upper())
         if not isinstance(patfreq, tuple):
 
             #  Reform
@@ -399,17 +417,19 @@ def list_forecast_files(filepattern, time=None, check=True,
                     try:
                         date0 = strptime(gfiles[i], filepattern)
                         date1 = strptime(gfiles[i+1], filepattern)
-                    except:
+                    except Exception:
                         continue
                     if date0 >= time[0] or date1 <= time[1]:
                         break
                 if None not in [date0, date1]:
-                    dt = datetime(date1)-datetime(date0)
+                    dt = adatetime(date1) - adatetime(date0)
                     if dt.seconds != 0:
-                        lmargin = comptime('2000').add(dt.seconds, cdtime.Seconds).torel(
+                        lmargin = comptime('2000').add(
+                                dt.seconds, cdtime.Seconds).torel(
                             patfreq[1]+' since 2000').value
                     else:
-                        lmargin = comptime('2000').add(dt.days, cdtime.Days).torel(
+                        lmargin = comptime('2000').add(
+                                dt.days, cdtime.Days).torel(
                             patfreq[1]+' since 2000').value
                 else:
                     lmargin = 1
@@ -434,7 +454,8 @@ def list_forecast_files(filepattern, time=None, check=True,
         itertime = (round_date(time[0], patfreq[1], 'floor'), time[1])
         itertime = add_margin(itertime, (lmargin-1, patfreq[1]), False)
         iterdates = IterDates(itertime, patfreq,
-                              closed=len(time) == 3 and time[2][1] == 'c' or True)
+                              closed=len(time) == 3 and
+                              time[2][1] == 'c' or True)
         files = []
         for date in iterdates:
             file = patfmtfunc(filepattern, date)
@@ -446,7 +467,8 @@ def list_forecast_files(filepattern, time=None, check=True,
                 files.append(file)
 
     # Simple remote file or file object
-    elif isinstance(filepattern, cdms2.dataset.CdmsFile) or '://' in filepattern:
+    elif (isinstance(filepattern, cdms2.dataset.CdmsFile)
+            or '://' in filepattern):
 
         files = [filepattern]
 
@@ -463,8 +485,8 @@ def list_forecast_files(filepattern, time=None, check=True,
     # Count
     if verbose:
         if not files:
-            print('No file found with this file pattern "%s" and time interval %s' % (
-                filepattern, time))
+            print(('No file found with this file pattern "{}" '
+                   'and time interval {}').format(filepattern, time))
         else:
             print('Found %i files' % len(files))
 
@@ -512,7 +534,8 @@ def ncfind_obj(f, specs, ignorecase=True, regexp=False, ids=None,
     or matching attributes such as standard_name, long_name and units.
 
     Objects are checked using :func:`ncmatch_obj`.
-    It first checks the standard_name, then the names (ids), the axis, and finally
+    It first checks the standard_name, then the names (ids),
+    the axis, and finally
     the long_names and units.
 
     Example
@@ -1905,8 +1928,9 @@ SHAPEFILE_POLYLINES = 3
 SHAPEFILE_POLYGONS = 5
 
 
-def read_shapefile(self, input, proj=False, inverse=False, clip=True,
-                   shapetype=None, min_area=None, sort=True, reverse=True, samp=1,
+def read_shapefile(input, proj=False, inverse=False, clip=True,
+                   shapetype=None, min_area=None, sort=True,
+                   reverse=True, samp=1,
                    clip_proj=True, m=None, getextended=False):
     """Read geometries from a shapefile or a list of coordinates"""
 
@@ -1941,23 +1965,23 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
     #           dbf = dbflib.open(input)
         if default_proj and (1, 1) == default_proj(1, 1):
             default_proj = None
-    #    self._info = []
+            info = []
 
     elif isinstance(input, (list, N.ndarray)):  # From coordinates
         in_coords = input
         shapefile_type = 5 if not len(
             in_coords) or in_coords[0].ndim == 2 else 1
-        self._info = []
+        info = []
 
     else:
 
         # From a Shapes (or super) instance
         in_coords = input.get_data(proj=False)
-        self._m = input._m  # overwrite m keyword
+        m = input._m  # overwrite m keyword
         default_proj = input._proj
         shapefile_type = [SHAPEFILE_POINTS, SHAPEFILE_POLYLINES,
                           SHAPEFILE_POLYGONS][input._type]
-        self._info = input._info
+        info = input._info
 
     # Get coordinates
     if from_file:
@@ -1968,6 +1992,7 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
     else:
         nshapes = 1
     coords = []
+
     # A Point or MultiPoint file
     if shapefile_type in [SHAPEFILE_POINTS, SHAPEFILE_MULTIPOINTS]:
         if shapetype is not None and shapetype != SHAPES_POINTS:
@@ -2111,24 +2136,24 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
         # Store
         all_shapes.extend(shapes)
 
-    # Final bounds
-    if clip is not None or min_area:
-
-        # Normal coordinates
-        xy = self.get_xy(proj=False)
-        xmin = min(xmin, xy[..., 0].min())
-        xmax = max(xmax, xy[..., 0].max())
-        ymin = min(ymin, xy[..., 1].min())
-        ymax = max(ymax, xy[..., 1].max())
-        del xy
-
-    # Projected coordinates
-    xyp = self.get_xy(proj=None)
-    xpmin = min(xpmin, xyp[..., 0].min())
-    xpmax = max(xpmax, xyp[..., 0].max())
-    ypmin = min(ypmin, xyp[..., 1].min())
-    ypmax = max(ypmax, xyp[..., 1].max())
-    del xyp
+        # Update min/max
+        for shape in shapes:
+            xyp = shape.boundary
+            xpmin = min(xpmin, xyp[..., 0].min())
+            xpmax = max(xpmax, xyp[..., 0].max())
+            ypmin = min(ypmin, xyp[..., 1].min())
+            ypmax = max(ypmax, xyp[..., 1].max())
+            if proj:
+                x, y = proj(xyp[..., 0], xyp[..., 1], inverse=True)
+                xpmin = min(xpmin, x.min())
+                xpmax = max(xpmax, x.max())
+                ypmin = min(ypmin, y.min())
+                ypmax = max(ypmax, y.max())
+            else:
+                xmin = xpmin
+                xmax = xpmax
+                ymin = ypmin
+                ymax = ypmax
 
     # Finalize
 #    if from_file
@@ -2145,7 +2170,8 @@ def read_shapefile(self, input, proj=False, inverse=False, clip=True,
     if not getextended:
         return all_shapes
     return dict(shapes=all_shapes, shaper=shaper, proj=proj, m=m, xmin=xmin,
-                ymin=ymin, xmax=xmax, ymax=ymax, xpmin=xpmin, xpmax=xpmax, ypmin=ypmin,
+                ymin=ymin, xmax=xmax, ymax=ymax, xpmin=xpmin,
+                xpmax=xpmax, ypmin=ypmin,
                 ypmax=ypmax, clip=clip, sorted=sorted, m_projsync=m_projsync)
 
 
@@ -2236,7 +2262,8 @@ class ColoredFormatter(logging.Formatter):
 
     def format(self, record):
         if self.full_line:
-            return self.colorize(logging.Formatter.format(self, record), record.levelname)
+            return self.colorize(logging.Formatter.format(self, record),
+                                 record.levelname)
         record.levelname = self.colorize(record.levelname, record.levelname)
         return logging.Formatter.format(self, record)
 
@@ -2254,7 +2281,7 @@ class _Redirector_(object):
         pass
 
 
-class Logger(object):
+class SimpleLogger(object):
     """Class for logging facilities when subclassing.
     Logging may be sent to the console and/or a log file
 
@@ -2295,12 +2322,14 @@ class Logger(object):
     :mod:`logging` module
     """
 
-    def __init__(self, name, logfile=None, console=True, maxlogsize=0, maxbackup=0,
+    def __init__(self, name, logfile=None, console=True,
+                 maxlogsize=0, maxbackup=0,
                  cfmt='%(name)s [%(levelname)-8s] %(message)s',
                  ffmt='%(asctime)s: %(name)s [%(levelname)-8s] %(message)s',
                  asctime='%Y-%m-%d %H:%M',
                  level='debug', colors=True, full_line=False,
-                 redirect_warnings=False, redirect_stdout=False, redirect_stderr=False):
+                 redirect_warnings=False, redirect_stdout=False,
+                 redirect_stderr=False):
 
         # Create or get logger
         self.logger = logger = logging.getLogger(name)
@@ -2318,7 +2347,8 @@ class Logger(object):
             logger.addHandler(file)
         # - console
         if console and not any([(isinstance(l, logging.StreamHandler) and
-                                 not isinstance(l, logging.FileHandler)) for l in handlers]):
+                                 not isinstance(l, logging.FileHandler))
+                for l in handlers]):
             console = logging.StreamHandler()
             if colors:
                 console.setFormatter(
@@ -2409,7 +2439,8 @@ class Logger(object):
     def get_loglevel(self, asstring=False):
         """Get the log level as an integer or a string"""
         if asstring:
-            for label in 'NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL', 'FATAL':
+            for label in ('NOTSET', 'DEBUG', 'INFO', 'WARNING', 'ERROR',
+                          'CRITICAL', 'FATAL'):
                 if self.logger.level == getattr(logging, label):
                     return label
             return 'NOTSET'
@@ -2421,6 +2452,9 @@ class Logger(object):
         if isinstance(level, str):
             level = getattr(logging, level.upper(), 'DEBUG')
         return level
+
+
+Logger = SimpleLogger
 
 
 class TermColors(object):

@@ -50,7 +50,7 @@ from .axes import islon, islat
 
 __all__ = ['generic1d', 'shapiro1d', 'gaussian1d', 'hamming1d', 'generic2d',
            'shapiro2d', 'gaussian2d', 'deriv', 'deriv2d',
-           'norm_atan', 'running_average',
+           'norm_atan',
            'bartlett1d', 'kaiser1d', 'hanning1d', 'blackman1d']
 
 

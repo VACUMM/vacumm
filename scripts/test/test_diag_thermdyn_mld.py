@@ -19,14 +19,13 @@ mld = {}
 mld['deltatemp'] = mixed_layer_depth(temp, mode='deltatemp',**kw)
 mld['deltadens'] = mixed_layer_depth((temp,sal), mode='deltadens', **kw)
 mld['kz'] = mixed_layer_depth(kz, mode='kz', **kw)
-vmin = min([v.min() for v in list(mld.values())])
 vmax = max([v.max() for v in list(mld.values())])
 
 # Plot it
 rc('font', size=8)
 for i,(mode, var) in enumerate(mld.items()):
-    m = map2(var, fill='pcolormesh', nmax=20, vmin=vmin, vmax=vmax,
+    m = map2(var, fill='pcolormesh', nmax=20, vmin=0, vmax=vmax,
         subplot=(len(mld),1,i+1), figsize=(4.1,8), fig='new',
-        contour_linewidths=0.7, cmap='vacumm_rnb2_hymex', hspace=0.25, bottom=0.08,
+        contour_linewidths=0.7, cmap='tempo', hspace=0.25, bottom=0.08,
         title='%%(long_name)s: mode = "%s"'%mode, show=False)
 

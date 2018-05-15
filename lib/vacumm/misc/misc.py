@@ -65,7 +65,6 @@ from configobj import ConfigObj, Section
 
 from vacumm import VACUMMError
 import six
-#from six.moves import filter
 from six.moves import map
 from six.moves import range
 
@@ -73,19 +72,29 @@ from six.moves import range
 MV = MV2
 MA = N.ma
 
-__all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale',
-           'get_atts', 'cp_atts', 'set_atts', 'check_def_atts', 'iterable', 'isnumber',
-           'rm_html_tags', 'deg2str', 'lonlab', 'latlab', 'deplab', 'deg_from_dec', 'kwfilter',
-           'dict_filter', 'dict_aliases', 'dict_merge', 'mask_nan', 'write_ascii_time1d', 'xls_style',
-           'FileTree', 'geodir', 'main_geodir', 'intersect', 'Att', 'broadcast', 'makeiter',
+__all__ = ['ismasked', 'bound_ops', 'auto_scale',
+           'basic_auto_scale', 'geo_scale',
+           'get_atts', 'cp_atts', 'set_atts', 'check_def_atts',
+           'iterable', 'isnumber',
+           'rm_html_tags', 'deg2str', 'lonlab', 'latlab', 'deplab',
+           'deg_from_dec', 'kwfilter',
+           'dict_filter', 'dict_aliases', 'dict_merge', 'mask_nan',
+           'write_ascii_time1d', 'xls_style',
+           'FileTree', 'geodir', 'main_geodir', 'intersect', 'Att',
+           'broadcast', 'makeiter',
            'get_svn_revision', 'dirsize', 'Cfg2Att', 'closeto', 'cp_props',
-           'zoombox', 'scalebox', 'history', 'dict_check_defaults', 'is_iterable', 'squarebox',
-           'grow_variables', 'grow_depth', 'grow_lat', 'phaselab', 'ArgTuple',
-           'create_selector', 'selector2str', 'split_selector', 'squeeze_variable', 'dict_copy_items',
+           'zoombox', 'scalebox', 'history', 'dict_check_defaults',
+           'is_iterable', 'squarebox',
+           'grow_variables', 'grow_depth', 'grow_lat',
+           'phaselab', 'ArgTuple',
+           'create_selector', 'selector2str',
+           'split_selector', 'squeeze_variable', 'dict_copy_items',
            "N_choose", 'MV2_concatenate', 'MV2_axisConcatenate', 'ArgList',
-           'set_lang', 'set_lang_fr', 'lunique', 'tunique', 'numod', 'dict_filter_out',
+           'set_lang', 'set_lang_fr', 'lunique', 'tunique',
+           'numod', 'dict_filter_out',
            'kwfilterout', 'filter_selector', 'isempty', 'checkdir', 'splitidx',
-           'CaseChecker', 'check_case', 'indices2slices', 'filter_level_selector',
+           'CaseChecker', 'check_case', 'indices2slices',
+           'filter_level_selector',
            'match_atts', 'match_string', 'dicttree_get', 'dicttree_set',
            'minbox']
 
@@ -190,13 +199,14 @@ def Cfg2Att(cfg):
 def ismasked(arr):
     try:
         return ((arr.mask is None) or (arr.mask is N.ma.nomask))
-    except:
+    except Exception:
         return arr.mask is N.ma.nomask
 
 
 def bound_ops(bounds):
     """Get operators that must be used for checking inclusion within boundaries.
-    Returned operators (ops) must be used in the following way to return True if value is inside bounds:
+    Returned operators (ops) must be used in the following way
+    to return True if value is inside bounds:
 
     Parameters
     ----------
@@ -211,7 +221,8 @@ def bound_ops(bounds):
     Return
     ------
     A 2-element tuple
-        Operators taken within (operator.ge,operator.gt,operator.le,operator.lt).
+        Operators taken within (operator.ge,operator.gt,
+        operator.le,operator.lt).
     """
     if bounds[0] == 'c':
         ops = (operator.ge, )
@@ -227,7 +238,8 @@ def bound_ops(bounds):
 def auto_scale(data=None, nmax=None, vmin=None, vmax=None,
                separators=None, fractions=False, symetric=False,
                keepminmax=False, **kwargs):
-    """Computes levels according to a dataset and its range of values. Locators are on a 10-base. Different scaling can be used with this version.
+    """Computes levels according to a dataset and its range of values.
+    Locators are on a 10-base. Different scaling can be used with this version.
 
     Parameters
     ----------
@@ -238,7 +250,7 @@ def auto_scale(data=None, nmax=None, vmin=None, vmax=None,
     vmin: optional
         //   min(data)
     symetric: optional
-        min_value and max_value are made symetric with respect to zero [default: False]
+        min_value and max_value are made symetric with respect to zero
     nmax: optional
         Maximal number of levels
     separators: optional
@@ -246,9 +258,9 @@ def auto_scale(data=None, nmax=None, vmin=None, vmax=None,
     fractions: optional
         Consider separators as fractions (]0.,1.[)
     steps: optional
-        Base 10 steps for finding levels [default: [1,2,2.5,5,10]]
+        Base 10 steps for finding levels
     geo: optional
-        Treat levels as geographical degrees [default: False]
+        Treat levels as geographical degrees
     - Other parameters are given to MaxNLocator
 
     Return
@@ -269,7 +281,7 @@ def auto_scale(data=None, nmax=None, vmin=None, vmax=None,
     if data is not None:
         try:
             minv, maxv = minmax(data)
-        except:
+        except Exception:
             minv, maxv = 0, 1
     if vmin is not None:
         minv = vmin
@@ -290,7 +302,7 @@ def auto_scale(data=None, nmax=None, vmin=None, vmax=None,
 
         try:
             separators.sort()
-        except:
+        except Exception:
             separators = [separators, ]
         nsep = len(separators)
 
@@ -326,8 +338,10 @@ def auto_scale(data=None, nmax=None, vmin=None, vmax=None,
     return levels
 
 
-def basic_auto_scale(vmin, vmax, nmax=7, steps=[1, 2, 2.5, 5, 10], geo=False, minutes=False, **kwargs):
-    """Computes levels according to a dataset and its range of values. Locators are on a 10-base.
+def basic_auto_scale(vmin, vmax, nmax=7, steps=[1, 2, 2.5, 5, 10],
+                     geo=False, minutes=False, **kwargs):
+    """Computes levels according to a dataset and its range of values.
+    Locators are on a 10-base.
 
     Parameters
     ----------
@@ -336,11 +350,12 @@ def basic_auto_scale(vmin, vmax, nmax=7, steps=[1, 2, 2.5, 5, 10], geo=False, mi
     nmax: optional
         Maximal number of steps.
     steps: optional
-        Base 10 steps for finding levels [default: [1,2,2.5,5,10]]
+        Base 10 steps for finding levels.
     geo: optional
-        Assume longitude or latitude degrees [default: False].
+        Assume longitude or latitude degrees.
     minutes: optional
-        If geo, find suitable levels to match nice minutes locations when locations have floating values (like 1.2) [default: False].
+        If geo, find suitable levels to match nice minutes
+        locations when locations have floating values (like 1.2).
 
     See also
     --------
@@ -439,7 +454,8 @@ def get_atts(var, id=True, extra=None, **kwargs):
     return atts
 
 
-def cp_atts(var1, var2, overwrite=True, select=None, exclude=None, extra=None, **kwargs):
+def cp_atts(var1, var2, overwrite=True, select=None, exclude=None,
+            extra=None, **kwargs):
     """ Copy all atributes from one variable to another
 
     Parameters
@@ -559,8 +575,9 @@ def match_atts(obj, checks, id=True, ignorecase=True, transform=None):
     if obj is None or checks is None:
         return False
     for attname, attchecks in checks.items():
-        if (hasattr(obj, attname) and match_string(getattr(obj, attname),
-                                                   attchecks, ignorecase=ignorecase, transform=transform)):
+        if (hasattr(obj, attname) and
+            match_string(getattr(obj, attname), attchecks,
+                         ignorecase=ignorecase, transform=transform)):
             return True
     return False
 
@@ -583,7 +600,8 @@ def _negpos_(i, n):
     return type(i)(jj)
 
 
-def cp_props(var1, var2, axes=None, grid=True, atts=None, exaxes=None, exatts=None, owatts=True):
+def cp_props(var1, var2, axes=None, grid=True, atts=None, exaxes=None,
+             exatts=None, owatts=True):
     """Copy properties of a variable to another variabes
 
     Proporties are attributes, axes and grid.
@@ -714,7 +732,8 @@ phase_params = """decimal: optional
     auto: optional, bool
         If True, find the ticks according to the range of values
     auto_minutes: optional, bool
-        Automatically suppress degrees if value is not exactly a degree (just display minutes and seconds) else display degree
+        Automatically suppress degrees if value is not exactly a degree
+        (just display minutes and seconds) else display degree
     bfdeg: optional, bool
         Use bold face for degrees when alone if auto_minutes and
         ``rcParams['text.usetex']`` are True.
@@ -725,8 +744,9 @@ def deg2str(*args, **kwargs):
     return phaselab(*args, **kwargs)
 
 
-def phaselab(vals, fmt='%.5g', label=None, decimal=True, tex=None, auto_minutes=False,
-             no_seconds=False, no_symbol=False, no_zeros=False, auto=False, bfdeg=False, **kwargs):
+def phaselab(vals, fmt='%.5g', label=None, decimal=True, tex=None,
+             auto_minutes=False, no_seconds=False, no_symbol=False,
+             no_zeros=False, auto=False, bfdeg=False, **kwargs):
     """Return a nice label for degrees
 
     Inspired from Basemap toolkit of Matplotlib
@@ -867,13 +887,9 @@ def lonlab(longitudes, **kwargs):
         Value of longitudes
     %s
 
-<<<<<<< HEAD
     See also
     --------
-    :func:`latlab` :func:`deplab`
-=======
-        :func:`phaselab` :func:`latlab` :func:`deplab`
->>>>>>> master
+    :func:`phaselab` :func:`latlab` :func:`deplab`
     """
     kwargs['label'] = 'lon'
     return phaselab(longitudes, **kwargs)
@@ -892,13 +908,9 @@ def latlab(latitudes, **kwargs):
         Value of latitudes
     %s
 
-<<<<<<< HEAD
     See also
     --------
-    :func:`lonlab` :func:`deplab`
-=======
-        :func:`phaselab` :func:`lonlab` :func:`deplab`
->>>>>>> master
+    :func:`phaselab` :func:`lonlab` :func:`deplab`
     """
     kwargs['label'] = 'lat'
     return phaselab(latitudes, **kwargs)
@@ -916,9 +928,9 @@ def deplab(depths, fmt='%gm', auto=False, nosign=False):
     depths:
         Numerical depths
     fmt: optional
-        Numeric format of the string (including units) [default: '%gm']
+        Numeric format of the string (including units)
     auto: optional
-        If True, find the ticks according to the range of depths [default: False]
+        If True, find the ticks according to the range of depths
     nosign: optional
         Absolute values are used.
 
@@ -965,7 +977,8 @@ def deg_from_dec(dec):
     return degrees, minutes, seconds
 
 
-def dict_filter(kwargs, filters, defaults=None, copy=False, short=False, keep=False, **kwadd):
+def dict_filter(kwargs, filters, defaults=None, copy=False, short=False,
+                keep=False, **kwadd):
     """Filter out kwargs (typically extra calling keywords)
 
     Parameters
@@ -985,9 +998,12 @@ def dict_filter(kwargs, filters, defaults=None, copy=False, short=False, keep=Fa
 
     Example
     -------
-    >>> kwargs = {'basemap':'f', 'basemap_fillcontinents':True, 'quiet':False,'basemap_plot':False}
-    >>> print kwfilter(kwargs,'basemap', defaults=dict(drawcoastlines=True,plot=True),good=True)
-    {'plot': False, 'fillcontinents': True, 'good': True, 'basemap': 'f', 'drawcoastlines': True}
+    >>> kwargs = {'basemap':'f', 'basemap_fillcontinents':True,
+    ... 'quiet':False,'basemap_plot':False}
+    >>> print kwfilter(kwargs,'basemap',
+    ... defaults=dict(drawcoastlines=True,plot=True), good=True)
+    {'plot': False, 'fillcontinents': True, 'good': True, 'basemap': 'f',
+    'drawcoastlines': True}
     >>> print kwargs
     {'quiet': False}
     """
@@ -1061,7 +1077,8 @@ def dict_filter_out(kwargs, filters, copy=False, mode='start'):
         for filter_ in filters:
             if callable(filter_) and list(filter_(key)):
                 break
-            if mode in ['start', 'end'] and getattr(key, mode+'swith')(filter_):
+            if (mode in ['start', 'end'] and
+                    getattr(key, mode+'swith')(filter_)):
                 break
             if key == filter_:
                 break
@@ -1144,10 +1161,9 @@ def dict_merge(*dd, **kwargs):
 
     First dictionaries have priority over next
 
-<<<<<<< HEAD
     Parameters
     ----------
-    *dd:
+    dd:
         Argument are interpreted as dictionary to merge.
         Those who are not dictionaries are skipped.
     mergesubdicts: optional
@@ -1170,34 +1186,10 @@ def dict_merge(*dd, **kwargs):
 
     Example
     -------
-
     >>> d1 = dict(a=3, b=5)
     >>> d2 = dict(a=5, c=7)
     >>> print dict_merge(d1,d2)
     {'a': 3, 'c': 7, 'b': 5}
-=======
-    :Params:
-
-        - **dd**: Argument are interpreted as dictionary to merge.
-          Those who are not dictionaries are skipped.
-        - **mergesubdicts**, optional: Also merge dictionary items
-          (like in a tree) [default: True].
-        - **mergetuples**, optional: Also merge tuple items [default: False].
-        - **mergelists**, optional: Also merge list items [default: False].
-        - **unique**, optional: Uniquify lists and tuples [default: True].
-        - **skipnones**, optional: Skip Nones [default: True].
-        - **skipempty**, optional: Skip everything that is not converted to False
-          using bool [default: False].
-        - **cls**, optional: Class to use. Default to the first class found in arguments
-          that is not a :class:`dict`, else defaults to :class:`dict`.
-
-    :Example:
-
-        >>> d1 = dict(a=3, b=5)
-        >>> d2 = dict(a=5, c=7)
-        >>> print dict_merge(d1,d2)
-        {'a': 3, 'c': 7, 'b': 5}
->>>>>>> master
 
     """
     # Options
@@ -1242,15 +1234,18 @@ def dict_merge(*dd, **kwargs):
             if key not in outd or (overwriteempty and isempty(outd[key])):
                 outd[key] = val
             # Merge subdict
-            elif mergesubdicts and isinstance(outd[key], dict) and isinstance(val, dict):
+            elif (mergesubdicts and isinstance(outd[key], dict)
+                    and isinstance(val, dict)):
                 outd[key] = dict_merge(outd[key], val, **kwargs)
             # Merge lists
-            elif mergelists and isinstance(outd[key], list) and isinstance(val, list):
+            elif (mergelists and isinstance(outd[key], list)
+                    and isinstance(val, list)):
                 outd[key] += val
                 if unique:
                     outd[key] = lunique(outd[key])
             # Merge tuples
-            elif mergetuples and isinstance(outd[key], tuple) and isinstance(val, tuple):
+            elif (mergetuples and isinstance(outd[key], tuple)
+                    and isinstance(val, tuple)):
                 outd[key] += val
                 if unique:
                     outd[key] = tunique(outd[key])
@@ -1262,7 +1257,8 @@ def dict_merge(*dd, **kwargs):
         if not outd.final_comment and hasattr(d, 'final_comment'):
             outd.final_comment = d.final_comment
         if hasattr(d, 'inline_comments') and d.inline_comments:
-            outd.inline_comments = dict_merge(outd.inline_comments, d.inline_comments,
+            outd.inline_comments = dict_merge(outd.inline_comments,
+                                              d.inline_comments,
                                               overwriteempty=True)
 
     return outd
@@ -1308,10 +1304,9 @@ def mask_nan(input):
 
     Example
     -------
-
-        >>> var = N.array([1,N.nan])
-        >>> print mask_nan(var)
-        [1.0 --]
+    >>> var = N.array([1,N.nan])
+    >>> print mask_nan(var)
+    [1.0 --]
     """
     isma = isVariable(input) or MA.isMA(input)
     if isma:
@@ -1352,7 +1347,8 @@ def mask_nan(input):
 
 
 def write_ascii_time1d(var, file, fmt='%g'):
-    """Write an ascii file in the following format: YYY/MM/DD HH:MN:SS DATA where DATA is one column.
+    """Write an ascii file in the following format:
+    YYY/MM/DD HH:MN:SS DATA where DATA is one column.
 
     Parameters
     ----------
@@ -1367,7 +1363,7 @@ def write_ascii_time1d(var, file, fmt='%g'):
     import vacumm.misc.atime as T
     try:
         time = var.getTime().asComponentTime()
-    except:
+    except Exception:
         raise Exception(
             '[write_ascii1d] No axis time attached to this variable')
 
@@ -1382,7 +1378,9 @@ def write_ascii_time1d(var, file, fmt='%g'):
     f.close()
 
 
-def xls_style(style=None, b=None, i=None, u=None, c=None, o=None, bd=None, fmt=None, va=None, ha=None, f=None, s=None, n=None, copy=True, **kwargs):
+def xls_style(style=None, b=None, i=None, u=None, c=None, o=None, bd=None,
+              fmt=None, va=None, ha=None, f=None, s=None, n=None, copy=True,
+              **kwargs):
     """Excel style sheet for pyExcelerator cell objects
 
     Parameters
@@ -1398,7 +1396,8 @@ def xls_style(style=None, b=None, i=None, u=None, c=None, o=None, bd=None, fmt=N
     u: optional
         Underline [True/False].
     c: optional
-        Colour index [from 0 to 82!, with 0=black, 1=white, 2=red, 3=green, 4=blue, 5=yellow, 6=magenta, 7=cyan].
+        Colour index [from 0 to 82!, with 0=black, 1=white, 2=red, 3=green,
+        4=blue, 5=yellow, 6=magenta, 7=cyan].
     o: optional
         Outline [True/False].
     bd: optional
@@ -1420,7 +1419,7 @@ def xls_style(style=None, b=None, i=None, u=None, c=None, o=None, bd=None, fmt=N
     """
     try:
         from pyExcelerator import XFStyle, Borders, Alignment, Font
-    except:
+    except Exception:
         from xlwt import XFStyle, Borders, Alignment, Font
     # Style object
     if style is None:
@@ -1481,16 +1480,22 @@ class FileTree(object):
     input_dir:
         Input directory.
     patterns: optional
-        A string (or a list of strings) indicating which REGULAR EXPRESSION patterns files must match (using glob.glob) [default: '.*']
+        A string (or a list of strings) indicating which REGULAR EXPRESSION
+        patterns files must match (using glob.glob)
     exclude: optional
-        : A string (or a list of strings) indicating which REGULAR EXPRESSION patterns files must not match (using re.search) [default: ['CVS/','.svn/']]
+        : A string (or a list of strings) indicating which REGULAR EXPRESSION
+        patterns files must not match (using re.search)
     include: optional
-        : A string (or a list of strings) indicating which REGULAR EXPRESSION patterns files must match if they are excluded by 'exclude' patterns (using re.search) [default: None]
+        : A string (or a list of strings) indicating which REGULAR EXPRESSION
+        patterns files must match if they are excluded by 'exclude' patterns
+        (using re.search)
     relative: optional
         : Return file names relative to input_dir [default: False]
     """
-    default_patterns = dict(patterns=[
-                            '.*'], exclude=['~$', '^CVS$/', '^\.svn$/', '^\.DS_Store$', '\.db$', '\.ini$'], include=[],)
+    default_patterns = dict(patterns=['.*'],
+                            exclude=['~$', '^CVS$/', '^\.svn$/',
+                                     '^\.DS_Store$', '\.db$', '\.ini$'],
+                            include=[],)
 
     def __init__(self, input_dir, relative=False, scan=True, **kwargs):
 
@@ -1524,9 +1529,13 @@ class FileTree(object):
         for current_dir, dirs, files in os.walk(self._input_dir):
             for isfile, targets in enumerate((copy(dirs), copy(files))):
                 for target in targets:
-                    if (isfile and not self._check_target_(current_dir, 'patterns', target)) or \
-                        (self._check_target_(current_dir, 'exclude', target) and
-                         not self._check_target_(current_dir, 'include', target)):
+                    if ((isfile and not self._check_target_(current_dir,
+                                                            'patterns',
+                                                            target)) or
+                        (self._check_target_(current_dir,
+                                             'exclude', target) and
+                         not self._check_target_(current_dir,
+                                                 'include', target))):
                         if not isfile:
                             dirs.remove(target)
                     else:
@@ -1607,8 +1616,9 @@ def geodir(direction, from_north=True, inverse=False):
         l = direction.strip().replace('-', '').lower()
         ll = [lb.lower() for lb in labels]
         if l not in ll:
-            raise VACUMMError("Wrong geographic direction: %s. Please use one of %s" % (
-                direction, ' '.join(labels)))
+            raise VACUMMError(("Wrong geographic direction: {}. "
+                               "Please use one of {}").format(
+                                       direction, ' '.join(labels)))
         d = (N.arange(nlab)*dtheta)[ll.index(l)]
         if from_north:
             d = 90.-d
@@ -1619,7 +1629,8 @@ def geodir(direction, from_north=True, inverse=False):
     return labels[int((direction+dtheta/2)/dtheta) % nlab]
 
 
-def main_geodir(directions, amp=None, num=False, res=22.5, getamp=False, **kwargs):
+def main_geodir(directions, amp=None, num=False, res=22.5, getamp=False,
+                **kwargs):
     """Return the dominant direction from a set of directions in degrees"""
     cartesian = isinstance(directions, tuple)
     if cartesian:
@@ -1691,13 +1702,14 @@ def get_svn_revision(path, max=False):
         try:
             sin, sout = os.popen4('svnversion')
             m = re.match(r'(?P<revision>\d+)', sout.read())
-        except:
+        except Exception:
             pass
         if m:
             revision = int(m.group('revision'))
             return revision
         from numpy.distutils.misc_util import njoin
-        if sys.platform == 'win32' and os.environ.get('SVN_ASP_DOT_NET_HACK', None):
+        if (sys.platform == 'win32' and
+                os.environ.get('SVN_ASP_DOT_NET_HACK', None)):
             entries = njoin(path, '_svn', 'entries')
         else:
             entries = njoin(path, '.svn', 'entries')
@@ -1792,7 +1804,8 @@ def closeto(a, b, rtol=1.e-5, atol=1.e-8):
     return res
 
 
-def MV2_concatenate(arrays, axis=0, axisid=None, axisattributes=None, copy=True):
+def MV2_concatenate(arrays, axis=0, axisid=None, axisattributes=None,
+                    copy=True):
     if cdms2.isVariable(arrays):
         if copy:
             arrays = arrays.clone()
@@ -1803,7 +1816,8 @@ def MV2_concatenate(arrays, axis=0, axisid=None, axisattributes=None, copy=True)
         return arrays[0]
     var = MV2.concatenate(arrays, axis=axis, axisid=None, axisattributes=None)
     var.setAxis(0, MV2_axisConcatenate([v.getAxis(0) for v in arrays],
-                                       id=axisid, attributes=axisattributes, copy=copy))
+                                       id=axisid, attributes=axisattributes,
+                                       copy=copy))
     if len(arrays) > 1:
         cp_atts(arrays[0], var)
     return var
@@ -2201,7 +2215,7 @@ def squeeze_variable(var, spec=True, asmv=False):
                 axes.pop(iaxis)
                 var.setAxisList(axes)
                 if grid is not None and axtype not in 'xy':
-                    from .grid import get_grid, set_grid
+                    from .grid import set_grid
                     set_grid(var, grid)
     return var
 
@@ -2213,7 +2227,7 @@ def grow_variables(var1, var2):
     """
     # Guess and merge orders
     from .axes import merge_orders, set_order
-    from .grid.misc import set_grid
+    from .grid import set_grid
     order1, order2 = merge_orders(var1, var2)
     if '-' in order1+order2:
         raise VACUMMError("All axes must have a known type (xyzt) "
@@ -2627,14 +2641,9 @@ class CaseChecker(object):
             else:
                 self.includes.append(case.strip('+'))
 
-#        print self.includes
-#        print self.iglobs
-#        print self.excludes
-#        print self.eglobs
-
         # Error mode
-        assert errmode in ['raise', 'exit'] or callable(errmode), ('errmode must'
-                                                                   ' be either "raise",  "exit" or a callable')
+        assert errmode in ['raise', 'exit'] or callable(errmode), (
+                'errmode must  be either "raise",  "exit" or a callable')
         self.errmode = errmode
         self.casename = casename
 
@@ -2642,7 +2651,8 @@ class CaseChecker(object):
     def _isvalid_single_(case, valids, globs):
         if valids and case in valids:
             return True
-        if globs and any([fnmatch.fnmatch(case, pattern) for pattern in globs]):
+        if (globs and any([fnmatch.fnmatch(case, pattern)
+                           for pattern in globs])):
             return True
         return False
 
@@ -2665,7 +2675,8 @@ class CaseChecker(object):
         return self._isvalid_single_(case, self.includes, self.iglobs)
 
     def check(self, case):
-        """Check that case is a valid string or None and make an error if not"""
+        """Check that case is a valid string or None and make an error if not
+        """
         if not self.isvalid(case):
             message = []
             imessage = []
@@ -2700,7 +2711,8 @@ class CaseChecker(object):
 
 
 def check_case(cases, case, **kwargs):
-    """Check that case is valid using :class:``CaseChecker` and allowed cases"""
+    """Check that case is valid using :class:``CaseChecker` and allowed cases
+    """
     return CaseChecker(cases, **kwargs)(case)
 
 

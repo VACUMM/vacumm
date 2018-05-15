@@ -36,10 +36,11 @@
 
 from __future__ import absolute_import
 import re
-from .constants import *
 import numpy as N
 import MV2
 import six
+
+from .constants import R
 
 __all__ = [
     'kt2ms', 'ms2kt', 'deg2m', 'm2deg', 'ms2bf', 'dms2deg', 'deg2dms',

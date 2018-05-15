@@ -66,6 +66,9 @@ from .core_plot import Map
 from .plot import map2, _colorbar_, savefigs as Savefigs
 
 
+__all__ = ['Shapes', 'GSHHSBM', 'XYZ', 'XYZMerger', 'GriddedMerger']
+
+
 class Shapes(object):
     """A class to read shapefiles and return GEOS objects
     Inspired from basemap.readshapefile
@@ -82,7 +85,8 @@ class Shapes(object):
     input:
         Refers to a shapefile or is a shapes isntance ;
         if a shapefile, it assumes that <input>.shp contains points,
-        multipoints, lines or polygons, and that <input>.dbf contains their attributes.
+        multipoints, lines or polygons, and that <input>.dbf
+        contains their attributes.
     proj: optional
         A projection function to convert coordinates. It must accept
         the "inverse" keyword.
@@ -115,12 +119,15 @@ class Shapes(object):
     INPUT_POLYGONS = 5
 
     def __init__(self, input, m=None, proj=False, inverse=False, clip=True,
-                 shapetype=None, min_area=None, sort=True, reverse=True, samp=1,
+                 shapetype=None, min_area=None, sort=True,
+                 reverse=True, samp=1,
                  clip_proj=True):
 
         # Load data
-        sdata = read_shapefile(input, m=m, proj=proj, inverse=inverse, clip=clip,
-                               shapetype=shapetype, min_area=min_area, sort=sort, samp=samp,
+        sdata = read_shapefile(input, m=m, proj=proj, inverse=inverse,
+                               clip=clip,
+                               shapetype=shapetype, min_area=min_area,
+                               sort=sort, samp=samp,
                                clip_proj=clip_proj)
 
         # Set attributes
@@ -141,8 +148,9 @@ class Shapes(object):
         copy: optional
             If ``True``, make a copy of current instance,
             else simply rehandled the list of shapes.
-            - If ``copy==True``, Other parameters are passed to the initialization
-              of the new instance.
+            If ``copy==True``, Other parameters are passed
+            to the initialization
+            of the new instance.
         """
         if not copy:
             zone = self._clip_zone_(zone)
@@ -154,7 +162,8 @@ class Shapes(object):
                     if zone.intersects(shape):
                         intersections = shape.intersection(zone)
                         newshapes.extend(
-                            [s for s in intersections if isinstance(s,  self._shaper)])
+                            [s for s in intersections
+                             if isinstance(s,  self._shaper)])
                 self._shapes = newshapes
                 if sort:
                     self.sort(reverse=reverse)

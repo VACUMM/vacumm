@@ -77,6 +77,12 @@ from .exception import getDetailedExceptionInfo
 from .misc import kwfilter, dict_merge
 from .log import logger, Logger, get_str_levels
 
+__all__ = ['psinfo', 'code_base_name', 'code_file_name', 'code_dir_name',
+           'describe', 'Class', 'Object', 'add_logging_proxies',
+           'func_name', 'get_noconflict_metaclass', 'get_prog_dir',
+           'remove_redundant', 'skip_redundant', 'stack_trace', 'classmaker',
+           'classinstancemethod', 'isfreezed', 'prog']
+
 # Test application origin: a python script or an executable (py2exe/cx_freeze)
 isfreezed = os.path.basename(sys.executable) == os.path.basename(sys.argv[0])
 

@@ -60,6 +60,9 @@ This module provides various file related features:
 - directory creation without error on existing directory
 '''
 
+__all__ = ['mkdirs', 'mkfdirs', 'rollover', 'strfsize', 'strpsize',
+           'walk', 'xefind', 'xfind', 'find', 'efind']
+
 
 def mkdirs(d):
     '''

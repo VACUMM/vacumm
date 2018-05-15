@@ -48,8 +48,8 @@ from genutil.statistics import percentiles
 
 import vacumm
 from .axes import isaxis
-from .atime import comptime
 from .grid import get_grid, set_grid, cp_atts
+from .atime import comptime
 
 __all__ = ['corr_proba', 'ensrank', 'qtmin', 'qtmax', 'qtminmax',
            'StatAccum', 'StatAccumError']

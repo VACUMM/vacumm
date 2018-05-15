@@ -70,6 +70,10 @@ except Exception:
 else:
     hascurses = True
 
+__all__ = ['Logger', 'ColoredStreamHandler', 'LoggerAdapter',
+           'StreamLogWrapper', 'get_str_level', 'get_int_level']
+
+
 logging.VERBOSE = logging.DEBUG + (logging.INFO - logging.DEBUG) / 2
 logging.NOTICE = logging.INFO + (logging.WARNING - logging.INFO) / 2
 
@@ -683,8 +687,8 @@ class Logger(logging.getLoggerClass()):
         level = get_int_level(level)
         return self.__logger_class.log(self, level, msg, *args, **kwargs)
 
-    # redefine findCaller to ignore certain callers,
-    # used to support the new levels (verbose/notice)
+    # redefine findCaller to ignore certain callers,
+    # used to support the new levels (verbose/notice)
     def findCaller(self):
         """
         Find the stack frame of the caller so that we can note the source
@@ -833,7 +837,7 @@ class Logger(logging.getLoggerClass()):
 
         def fmt(n): return '--%s%s%s' % (prefix, names[n], suffix)
         import optparse
-        # we must handle both optparse and argparse
+        # we must handle both optparse and argparse
         add = getattr(parser, 'add_option' if isinstance(
             parser, optparse.OptionParser) else 'add_argument')
         add(fmt('debug'), dest='_logger_debug', action='store_true',

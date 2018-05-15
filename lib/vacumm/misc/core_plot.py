@@ -6947,12 +6947,12 @@ class Map(Plot2D):
 
                 # elif m.res == 's': # SHOM
                 else:
-                    from .io import Shapes
                     if self.map.res == 's':
                         from vacumm.bathy.shorelines import Histolitt
                         shoreline = Histolitt(m=self.map, proj=True)
                     else:
                         shoreline = self.map.res
+                    from .sdata import Shapes
                     if isinstance(shoreline, Shapes):
                         try:
                             kwshoreline = {}
