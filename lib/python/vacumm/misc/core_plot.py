@@ -6486,6 +6486,10 @@ def get_axis_scale(axis, type=None):
 
 def get_quiverkey_value(data, mode=80):
     """Get a decent value for a quiver key"""
+    # Scalar
+    if N.isscalar(data):
+        return data
+
     # From components
     if isinstance(data, tuple):
         data = N.ma.sqrt(data[0]**2+data[1]**2)
