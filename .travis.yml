@@ -13,7 +13,7 @@ install:
   - conda config --add channels cdat
   - conda config --add channels conda-forge
 #  - travis_wait 30 conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION uvcdat configobj paramiko xlutils seawater pytz cmocean basemap-data-hires matplotlib>=2.0 scipy
-  - travis_wait 30 conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION cdms2 cdutil genutil configobj paramiko xlutils seawater pytz cmocean basemap-data-hires matplotlib>=2.0 scipy
+  - travis_wait 30 conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION cdms2 cdutil genutil esmpy libgfortran gcc configobj paramiko xlutils seawater pytz cmocean basemap-data-hires matplotlib>=2.0 scipy
   - source activate test-environment
   - python setup.py install
   - python setup.py build_ext --inplace
