@@ -678,7 +678,10 @@ def ncread_axis(f, name, select=None, ignorecase=True, mode='raise'):
         if mode=='raise':
             raise IOError('Axis not found %s in file %s'%(name, f.id))
         return
-    axis = f.getAxis(ncname).clone()
+    axis = f.getAxis(ncname)
+    atts = get_atts(axis)
+    axis = axis.clone()
+    set_atts(axis, atts)
     del nfo
     return axis
 
@@ -825,7 +828,10 @@ def ncget_axis(f, checker, ids=None, ro=False, checkaxis=False, **kwargs):
     elif isinstance(checker, (list, tuple, dict)):
         axid = ncfind_obj(f, checker, ids=ids, checkaxis=checkaxis, ro=ro, **kwargs)
         if axid is None: return
-        axis = f[axid].clone()
+        axis = f[axid]
+        atts = get_atts(axis)  # to fix a cdms bug
+        axis = axis.clone()
+        set_atts(axis, atts)
         nfo.close()
         return axis
 
@@ -857,7 +863,9 @@ def ncget_axis(f, checker, ids=None, ro=False, checkaxis=False, **kwargs):
     if axis is None:
         return
     if hasattr(axis, 'clone'):
+        atts = get_atts(axis)  # to fix a cdms bug
         axis = axis.clone()
+        set_atts(axis, atts)
     else:
         axis = axis()
     del nfo
@@ -1957,7 +1965,10 @@ class CachedRecord:
 
             # Check cache time range
             f = cdms2.open(self._cache_file)
-            cache_time = f.getAxis('time').clone()
+            cache_time = f.getAxis('time')
+            atts = get_atts(cache_time)
+            cache_time = cache_time.clone()
+            set_atts(cache_time, atts)
             f.close()
             t0_good, t1_good, t0_cache, t1_cache = self._check_time_range_(time_range, cache_time, getbounds=True)
 
@@ -4473,7 +4484,7 @@ from .grid.masking import polygons, convex_hull, rsamp, polygon_mask, create_pol
 from .grid.regridding import griddata, xy2xy
 from .grid.basemap import get_proj
 from .misc import is_iterable,  broadcast, kwfilter, set_atts, create_selector, \
-    squeeze_variable, checkdir, match_atts
+    squeeze_variable, checkdir, match_atts, get_atts, set_atts
 from .phys.units import deg2m, m2deg
 from .plot import map2, _colorbar_, savefigs as Savefigs, markers as Markers
 
