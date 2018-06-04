@@ -39,7 +39,6 @@ class TSF(VCTestCase):
         'test_regrid_regrid2d',
         'test_regrid_transect_curvgrid',
         'test_regrid_transect_mld',
-        'test_regrid_transect_split',
         'test_regrid_transect_xyt',
         ]:
         exec(method_template.format(test_name))
