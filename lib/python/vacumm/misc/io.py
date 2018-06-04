@@ -341,13 +341,15 @@ def list_forecast_files(filepattern, time=None, check=True,
                 lmargin = 1
             elif not glob.has_magic(filepattern):
                 date0 = date1 = None
+                tu = 'seconds since 200'
                 for i in xrange(len(gfiles)-1):
                     try:
-                        date0 = strptime(gfiles[i], filepattern)
-                        date1 = strptime(gfiles[i+1], filepattern)
+                        date0 = strptime(gfiles[i], filepattern).torel(tu)
+                        date1 = strptime(gfiles[i+1], filepattern).torel(tu)
                     except:
                         continue
-                    if date0>=time[0] or date1<=time[1]: break
+                    if (date0.torel(tu).value>=time[0].torel(tu).value
+                        or date1.torel(tu).value<=time[1].torel(tu).value): break
                 if None not in [date0, date1]:
                     dt = adatetime(date1)-adatetime(date0)
                     if dt.seconds!=0:
@@ -381,8 +383,10 @@ def list_forecast_files(filepattern, time=None, check=True,
         iterdates = IterDates(itertime, patfreq,
             closed = len(time)==3 and time[2][1]=='c' or True)
         files = []
+        print gfiles
         for date in iterdates:
             file = patfmtfunc(filepattern, date)
+            print date,file
             if '://' in file:
                 files.append(file)
             elif check or glob.has_magic(file):

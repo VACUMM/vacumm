@@ -189,24 +189,26 @@ def lindates(first, last, incr, units=None):
 
         - list of :func:`cdtime.comptime` dates
     """
-    first = comptime(first)
-    last = comptime(last)
-    if last<first: return []
+    ct0 = comptime(first)
+    ct1 = comptime(last)
+    tunits = 'hours since 2000'
+    rt0 = ct0.torel(tunits).value
+    rt1 = ct1.torel(tunits).value
+    if rt1 < rt0:
+        return []
 
     # Fixed number of steps
     if units is None:
-        tunits = 'days since 2000'
-        t0 = first.torel(tunits).value
-        t1 = last.torel(tunits).value
-        tt = N.linspace(t0,  t1, int(incr))
+        tt = N.linspace(rt0,  rt1, int(incr))
         return [cdtime.reltime(t, tunits).tocomp() for t in tt]
 
     # Fixed step
     units = unit_type(units)
-    dates = [first]
-    while dates[-1]<last:
+    dates = [ct0]
+    while dates[-1].torel(tunits).value < rt1:
         dates.append(add_time(dates[-1], incr, units))
-    if dates[-1]>last: del dates[-1]
+    if dates[-1].torel(tunits).value > rt1:
+        del dates[-1]
     return dates
 
 def now(utc=False):
@@ -2470,7 +2472,8 @@ class IterDates(object):
             next_date = self.round(add_time(self._current_date, *self._dt))
 
         # Iterator is consumed
-        if self._oper(next_date, self._last_date):
+        tu = 'seconds since 2000'
+        if self._oper(next_date.torel(tu).value, self._last_date.torel(tu).value):
             raise StopIteration
 
         # Save and return
@@ -2532,12 +2535,14 @@ def time_split(what, how, roundit=None, bb='co'):
     # Date iterator
     elif isinstance(how, IterDates):
         how = [date for date in IterDates]
+    tu = 'hours since 2000'
     if isinstance(how, list):
         if not len(how): return [tminmax]
         if not isinstance(how[0], tuple):
             how = comptime(how)
-            if len(how)==1: # single date
-                if tmin<=how[0] and tmax>=how[0]:
+            if len(how) == 1:  # single date
+                if (tmin.torel(tu).value <= how[0].torel(tu).value and
+                        tmax.torel(tu).value >= how[0].torel(tu).value):
                     how = [tmin, how, tmax]
             how = [(how[i], how[i+1], 'co') for i in xrange(len(how)-1)]
     else:
@@ -2591,7 +2596,7 @@ def itv_intersect(itv1, itv2, bb=None, aslogical=False):
     # Comptime
     itv1 = [comptime(d) for d in itv1[:2]]
     itv2 = [comptime(d) for d in itv2[:2]]
-
+    tu = 'hours since 2000'
 
     # Min
     bbi = b1[0]+b2[0]
@@ -2599,7 +2604,7 @@ def itv_intersect(itv1, itv2, bb=None, aslogical=False):
         itv = itv1[0],
         if not bb: bbo = 'c' if 'c' in bbi else 'o'
     else:
-        imin = itv1[0]<itv2[0]
+        imin = itv1[0].torel(tu).value < itv2[0].torel(tu).value
         itv = (itv1[0], itv2[0])[imin],
         if not bb: bbo = bbi[imin]
 
@@ -2609,15 +2614,18 @@ def itv_intersect(itv1, itv2, bb=None, aslogical=False):
         itv += itv1[1],
         if not bb: bbo = 'c' if 'c' in bbi else 'o'
     else:
-        imax = itv1[1]>itv2[1]
+        imax = itv1[1].torel(tu).value > itv2[1].torel(tu).value
         itv += (itv1[1], itv2[1])[imax],
         if not bb: bbo += bbi[imax]
     if bb is None:
         bb = bbo
 
     # Check
-    if itv[1]<itv[0]: return False
-    if itv[0]==itv[1] and bb is not False and 'o' in bb: return False
+    if itv[1].torel(tu).value < itv[0].torel(tu).value:
+        return False
+    if (itv[0].torel(tu).value == itv[1].torel(tu).value and bb is not False
+            and 'o' in bb):
+        return False
 
     if aslogical: return True
 
@@ -2628,8 +2636,9 @@ def itv_union(itv1, itv2, bb=None):
     """Return the union of 2 time intervals"""
 
     # Check bounds
-    b1 = 'cc' if len(itv1)==2 else itv1[2]
-    b2 = 'cc' if len(itv2)==2 else itv2[2]
+    b1 = 'cc' if len(itv1) == 2 else itv1[2]
+    b2 = 'cc' if len(itv2) == 2 else itv2[2]
+    tu = 'hours since 2000'
 
     # Comptime
     itv1 = [comptime(d) for d in itv1[:2]]
@@ -2642,17 +2651,17 @@ def itv_union(itv1, itv2, bb=None):
         itv = itv1[0],
         if not bb is None: bbo = 'c' if 'c' in bbi else 'o'
     else:
-        imin = itv1[0]>itv2[0]
+        imin = itv1[0].torel(tu).value > itv2[0].torel(tu).value
         itv = (itv1[0], itv2[0])[imin],
         if not bb: bbo = bbi[imin]
 
     # Max
     bbi = b1[1]+b2[1]
-    if itv1[1]==itv2[1]:
+    if itv1[1].torel(tu).value == itv2[1].torel(tu).value:
         itv += itv1[1],
         if not bb: bbo = 'c' if 'c' in bbi else 'o'
     else:
-        imax = itv1[1]<itv2[1]
+        imax = itv1[1].torel(tu).value < itv2[1].torel(tu).value
         itv += (itv1[1], itv2[1])[imax],
         if not bb: bbo += bbi[imax]
     if bb is None:
