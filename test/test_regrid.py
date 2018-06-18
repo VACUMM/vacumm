@@ -27,7 +27,7 @@ class TSF(VCTestCase):
         'test_regrid_fortran_nearest2dto1d',
         'test_regrid_fortran_nearest2dto1dc',
         'test_regrid_grid2xy',
-        'test_regrid_griddata_bases',
+        'test_regrid_griddata',
         'test_regrid_kriging_cloud_split',
         'test_regrid_kriging_krig',
         'test_regrid_kriging_parallel',
