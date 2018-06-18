@@ -348,8 +348,8 @@ def list_forecast_files(filepattern, time=None, check=True,
                         date1 = strptime(gfiles[i+1], filepattern).torel(tu)
                     except:
                         continue
-                    if (date0.torel(tu).value>=time[0].torel(tu).value
-                        or date1.torel(tu).value<=time[1].torel(tu).value): break
+                    if (date0.value>=reltime(time[0], tu).value
+                        or date1.value<=reltime(time[1], tu).value): break
                 if None not in [date0, date1]:
                     dt = adatetime(date1)-adatetime(date0)
                     if dt.seconds!=0:
@@ -383,10 +383,8 @@ def list_forecast_files(filepattern, time=None, check=True,
         iterdates = IterDates(itertime, patfreq,
             closed = len(time)==3 and time[2][1]=='c' or True)
         files = []
-        print gfiles
         for date in iterdates:
             file = patfmtfunc(filepattern, date)
-            print date,file
             if '://' in file:
                 files.append(file)
             elif check or glob.has_magic(file):
@@ -4479,7 +4477,7 @@ netcdf4()
 
 from .atime import ch_units, round_date, are_same_units, now, has_time_pattern, \
     tsel2slice, is_time, time_selector, itv_union, add_margin, strptime, \
-    datetime as adatetime, comptime,  filter_time_selector
+    datetime as adatetime, comptime,  filter_time_selector, reltime
 from .axes import get_checker, istime, islon, islat, islevel
 from .color import land, simple_colors, get_cmap
 from .grid import create_grid, get_xy, curv2rect, isgrid

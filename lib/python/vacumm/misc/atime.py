@@ -1853,6 +1853,9 @@ class DateSorter(object):
         else:
             date1 = comptime(arg1)
             date2 = comptime(arg2)
+        tu = 'seconds since 2000'
+        date1 = date1.torel(tu).value
+        date2 = date2.torel(tu).value
         if date1 == date2:return 0
         if date1 < date2:return -1
         return 1
@@ -2386,8 +2389,8 @@ class Intervals(object):
         next_date = self.round(add_time(self._current_date, *self._dt))
 
         # We just passed the end
-        if (self._reverse and next_date < self._last_date) or \
-            (not self._reverse and next_date > self._last_date):
+        if ((self._reverse and next_date.cmp(self._last_date) < 0) or
+                (not self._reverse and next_date.comp(self._last_date) > 0)):
             next_date = self._last_date
 
         # Save new state
@@ -2397,10 +2400,14 @@ class Intervals(object):
         # Return interval
         if self._reverse:
             out = next_date, current_date
-            bounds = self._lastbounds if current_date==self._first_date else self._innerbounds
+            bounds = (self._lastbounds
+                      if current_date.comp(self._first_date) == 0
+                      else self._innerbounds)
         else:
             out = current_date, next_date
-            bounds = self._lastbounds if next_date==self._last_date else self._innerbounds
+            bounds = (self._lastbounds
+                      if next_date.cmp(self._last_date)
+                      else self._innerbounds)
         if bounds is not False:
             out += (bounds, )
         if self.lmargin!=0 and self.rmargin is not None:
