@@ -49,13 +49,14 @@ from cdms2.axis import TransientAxis
 import genutil
 from _geoslib import Point, Polygon
 
-from ...__init__ import VACUMMError, VACUMMWarning, vacumm_warn
+from ...__init__ import VACUMMError, VACUMMWarning, vacumm_warn, vcwarn
 from .kriging import krig as _krig_
 from .misc import (axis1d_from_bounds, get_xy, isgrid, t2uvgrids, get_grid,
     set_grid, bounds1d, bounds2d, get_axis,
     meshgrid, create_grid, resol, meshcells, curv2rect, merge_axis_slice,
     get_axis_slices, get_axis, transect_specs, create_axes2d,
-    get_distances)
+    get_distances,
+    get_tri, get_grid_type)
 from .. import axes as A
 from ...misc.misc import (cp_atts, intersect, kwfilter, get_atts, set_atts, closeto,
     splitidx, MV2_concatenate)
@@ -107,10 +108,10 @@ except Exception, e:
 
 
 # Interpolation methods
-_griddata_methods = ['nat', 'natgrid', 'css', 'splines', 'carg', 'krig']
+_griddata_methods = ['nearest', 'linear', 'cubic', 'krig', 'carg']
 _cellave_methods = ['conservative', 'remap', 'cellave', 'conserv']
 _cdat_methods = _cellave_methods+['bilinear', 'patch']
-_regrid2d_methods = ['nearest', 'mixt', 'interp', 'bining']+_griddata_methods+_cdat_methods
+_regrid2d_methods = ['nearest', 'mixt', 'interp', 'bining'] + _cdat_methods
 _interp1d_methods = ['nearest', 'linear', 'cubic', 'hermit']
 _regrid1d_methods = _interp1d_methods+_cellave_methods+['cellerr']
 
@@ -1290,35 +1291,31 @@ class GridData(object):
     def __init__(self, xi, yi, ggo, nl=False, ext=False, geo=None, method='nat',
         sub=30, margin=.5, compress=False, **kwargs):
 
+        vcdwarn('GridData will no longer be supported in future version')
+
         # Helper
         self._GDH = _GridDataHelper_(xi, yi, ggo, geo=geo, compress=compress)
 
         # Init interpolator
         if method in ['css', 'splines']:
-            assert not self._GDH.curv, 'css method does not work with curvilinear output grids'
-            from css.css import Cssgrid
-            self.r = Cssgrid
-            self.sub = None
-            self.method = 'css'
+            raise VACUMMError('css/spline method is no longer supported')
         elif method in ['nat', None, 'natgrid']:
             from nat import Natgrid
             self.r = Natgrid
-            if self._GDH.curv:
-                self.sub = None
-            else:
-                self.sub = sub
+            self.sub = sub
             self.method = 'nat'
+
         self.margin = margin
 
         # Attributes of interpolator
-        if self._GDH.curv:
-            kwargs['igr'] = 0
-        else:
-            kwargs.setdefault('igr', nl)
+        kwargs['igr'] = 0
         kwargs['ext'] = ext
         kwargs.setdefault('hor', -1)
         kwargs.setdefault('ver', -1)
         self.ratts = kwargs
+        if self.sub is not None:
+            self._GDH.xo.shape = self._GDH.grid.shape
+            self._GDH.yo.shape = self._GDH.grid.shape
 
     def __call__(self, zi, missing_value=None, **kwargs):
         """Interpolate zi on output grid
@@ -1327,7 +1324,7 @@ class GridData(object):
         """
 
         # Init
-        zi2d, zo3d, mo3d, nex, compress, missing_value = self._GDH.init(zi, missing_value)
+        zi2d, zo3d, mo3d, nex = self._GDH.init_data(zi, missing_value)
 
         # Prepare sub-blocks
         if not self.sub:
@@ -1341,7 +1338,7 @@ class GridData(object):
         for iex in xrange(nex):
 
             # Get data and mask
-            get = self._GDH.get(zi2d, iex, compress, missing_value)
+            get = self._GDH.get(zi2d, iex)
             if get is None: continue
             xi, yi, zzi, mmi = get
             constant = N.allclose(zzi, zzi[0])
@@ -1357,12 +1354,8 @@ class GridData(object):
                     else:
                         xslice = slice(ib*self.sub,(ib+1)*self.sub)
                         yslice = slice(jb*self.sub,(jb+1)*self.sub)
-                    if self._GDH.curv:
-                        xo = self._GDH.x[yslice, xslice].ravel().astype('d')
-                        yo = self._GDH.y[yslice, xslice].ravel().astype('d')
-                    else:
-                        xo = self._GDH.x[xslice].astype('d')
-                        yo = self._GDH.y[yslice].astype('d')
+                    xo = self._GDH.xo[yslice, xslice].ravel().astype('d')
+                    yo = self._GDH.yo[yslice, xslice].ravel().astype('d')
 
                     # Restriction of input data around output grid
                     if self.margin > 0:
@@ -1391,44 +1384,26 @@ class GridData(object):
                         goodi = slice(None)
 
                     # Interpolator
-                    if self._GDH.curv: # Curvilinear
-                        interpolator = self.r(xi[goodi], yi[goodi], xo, yo, listOutput = 'yes')
-                    else: # Rectangular
-                        interpolator = self.r(xi[goodi], yi[goodi], xo, yo)
+                    interpolator = self.r(xi[goodi], yi[goodi], xo, yo, listOutput = 'yes')
                     for att, val in self.ratts.items():
                         setattr(interpolator, att, val)
                     interpolator.nul = missing_value
 
                     # Interpolation
                     if constant:
-                        if self._GDH.curv:
-                            sh = self._GDH.x[yslice, xslice].shape
-                        else:
-                            sh = len(self._GDH.y[yslice]), len(self._GDH.x[xslice])
+                        sh = self._GDH.xo[yslice, xslice].shape
                         zzo = N.zeros(sh)
                         zzo += zzi[0]
                         if mmi is not None:
                             mmo = N.zeros(sh)
                             mmo += mmi[0]
-                    elif self._GDH.curv: # Curvilinear
+                    else:
 
-                        sh = self._GDH.x[yslice, xslice].shape
+                        sh = self._GDH.xo[yslice, xslice].shape
                         zzo = interpolator.rgrd(zzi[goodi]).reshape(sh)
                         if mmi is not None:
                             mmo = interpolator.rgrd(mmi[goodi]).reshape(sh)
 
-                    else: # Rectangular
-                        try:
-                            zzo = interpolator.rgrd(zzi[goodi])
-                            if mmi is not None:
-                                mmo = interpolator.rgrd(mmi[goodi])
-                        except:
-                            continue
-                        del interpolator
-                        if self.method == 'nat':
-                            zzo = zzo.T
-                            if mmi is not None:
-                                mmo = mmo.T
                     zo3d[iex, yslice, xslice] = zzo
                     if mmi is not None:
                         mo3d[iex, yslice, xslice] = mmo
@@ -1441,7 +1416,7 @@ class GridData(object):
 
         del zi2d
 
-        return self._GDH.format(zi, zo3d, mo3d, missing_value, **kwargs)
+        return self._GDH.format(zo3d, mo3d, **kwargs)
 
     rgrd = __call__
     regrid = __call__
@@ -1457,31 +1432,33 @@ def cargen(xi, yi, zi, ggo, mask=None, geo=None, compress=False, missing_value=N
         - **mask**, optional: Mask to apply to output data [default: None]
     """
     # Helper
-    GDH = _GridDataHelper_(xi, yi, ggo, geo=geo, mask=mask, compress=compress)
-    assert not GDH.curv, 'cargen does not work with output curvilinear grids'
+    GDH = _GridDataHelper_(xi, yi, ggo, geo=geo, mask=mask, compress=compress,
+                           proj=False)
+    assert GDH.grid_type == 'rect', 'cargen works only with rectangular grids'
 
     # Init data
-    zi2d, zo3d, mo3d, nex, compress, missing_value = GDH.init(zi, missing_value)
+    zo3d, mo3d = GDH.init_data(zi, missing_value)
 
     # Loop on supplementary dims
-    for iex in xrange(nex):
+    for iex in xrange(self.nex):
 
         # Get data and mask
-        get = GDH.get(zi2d, iex, compress, missing_value)
+        get = GDH.get(self.zi2d, iex)
         if get is None: continue
         xi, yi, zzi, mmi = get
 
         # Interpolate
-        zo3d[iex] = _cargen_(xi, yi, zzi, GDH.x[:], GDH.y[:], 1.e20).transpose()
+        zo3d[iex] = _cargen_(GDH.xi, GDH.yi, zzi, GDH.xo, GDH.yo,
+            GDH.missing_value).T
         if mmi is not None:
-            mo3d[iex] = _cargen_(xi, yi, mmi, GDH.x[:], GDH.y[:], 1.).transpose()
+            mo3d[iex] = _cargen_(GDH.xi, GDH.yi, mmi, GDH.xo, GDH.yo, 1.).T
 
     # Format output
-    return GDH.format(zi, zo3d, mo3d, missing_value, **kwargs)
+    return GDH.format(zo3d, mo3d, **kwargs)
 
 krigdata = cargen
 
-def krig(xi, yi, zi, ggo, mask=True, geo=None, missing_value=None, **kwargs):
+def krig(xi, yi, zi, ggo, mask=True, proj=True, missing_value=None, **kwargs):
     """Kriging interpolator to a grid
 
     :Params:
@@ -1493,29 +1470,30 @@ def krig(xi, yi, zi, ggo, mask=True, geo=None, missing_value=None, **kwargs):
         - **mask**, optional: Mask to apply to output data [default: None]
     """
     # Helper
-    GDH = _GridDataHelper_(xi, yi, ggo, geo=geo, mask=mask, compress=True)
+    assert proj is not False
+    GDH = _GridDataHelper_(xi, yi, ggo, proj=proj, mask=mask, compress=True)
 
     # Init data
-    zi2d, zo3d, mo3d, nex, compress, missing_value = GDH.init(zi, missing_value)
-    xo, yo = N.meshgrid(GDH.x[:], GDH.y[:])
-    xo.shape = -1
-    yo.shape = -1
+    zo3d, mo3d  = GDH.init_data(zi, missing_value)
     distfunc = 'haversine' if GDH.geo else 'simple'
 
     # Get data and mask
     get = GDH.get(zi2d, Ellipsis, compress, missing_value)
     if get is not None:
-        xi, yi, zzi, mmi = get
+        gxi, gyi, zzi, mmi = get
 
         # Interpolate
-        zo3d[:] = _krig_(xi, yi, zzi, xo, yo, distfunc=distfunc).reshape(zo3d.shape)
+        zo3d[:] = _krig_(gxi, gyi, zzi, GDH.xo, GDH.yo,
+                         distfunc=distfunc).reshape(zo3d.shape)
+        del gxi, gyi, zzi, mmi
 
     # Format output
-    return GDH.format(zi, zo3d, mo3d, missing_value, **kwargs)
+    return GDH.format(zo3d, mo3d, **kwargs)
 
 
 
-def griddata(xi, yi, zi, ggo, method='carg', cgrid=False, **kwargs):
+def griddata(xi, yi, zi, ggo, method='linear', cgrid=False, cache=None,
+             proj=True, **kwargs):
     """Interpolation in one single shot using GridData
 
     :Params:
@@ -1532,42 +1510,104 @@ def griddata(xi, yi, zi, ggo, method='carg', cgrid=False, **kwargs):
     :See also: :class:`GridData` and :func:`cargen`
     """
     if cgrid:
-        ggu, ggv = t2uvgrids(ggo)
+        return tuple([griddata(xi, yi, zi, gg, method=method, cgrid=False,
+                               **kwargs) for gg in t2uvgrids(ggo)])
 
-    if method in ('nat', 'css', 'spline'):
-        kwout = {}
-        for att in 'outtype', 'missing_value', 'clipval':
-            if kwargs.has_key(att):
-                kwout[att] = kwargs.pop(att)
-        if cgrid:
-            zou = GridData(xi, yi, ggu, method=method, **kwargs)(zi, **kwout)
-            zov = GridData(xi, yi, ggv, method=method, **kwargs)(zi, **kwout)
-            return zou, zov
-        return GridData(xi, yi, ggo, method=method, **kwargs)(zi, **kwout)
+    # Method
+    if method in ('css', 'spline', 'nat'):
+        vcdwarn('Interpolation method other than nearest, linear or cubic'
+                ' will not be supported in future versions')
+        if method == 'nat':
+            method = 'linear'
+        elif method in ('css', 'spline'):
+            method = 'cubic'
+    assert method in _griddata_methods, ('Invalid interpolation method {}.'
+                                         ' Please choose one of:').format(
+                                                 method,
+                                                 ' '.join(_griddata_methods))
+    assert proj is not False
+
+    # Scipy
+    if method in ['nearest', 'linear', 'cubic']:
+
+        # Helper
+        GDH = _GridDataHelper_(xi, yi, ggo, compress=False, proj=proj)
+
+        # Data
+        GDH.init_data(zi, initout=False)
+        if GDH.masked and not GDH.compress and method == 'cubic':
+            vcwarn("Can't interpolate masked with cubic method "
+                   "without compression. Switching compression on.")
+            GDH.compress = True
+
+        # Interpolator
+        import scipy.interpolate as SI
+        interpolator = {'nearest': SI.NearestNDInterpolator,
+                        'linear': SI.LinearNDInterpolator,
+                        'cubic': SI.CloughTocher2DInterpolator}[method]
+        # Get stuff
+        xi, yi, zi, mi = GDH.get()
+        xyi = N.array([xi, yi]).T
+        if method != 'nearest':
+            xyi = get_tri(xyi, ttype='scipy', cache=cache)  # triangulation
+        xyo = N.array([GDH.xo, GDH.yo]).T
+
+        # Interpolate
+        kw = {}
+        if method != 'nearest':
+            kw['fill_value'] = GDH.missing_value
+        zo3d = interpolator(xyi, zi.T, **kw)(xyo).T
+        if GDH.masked and not GDH.compress and method != 'nearest':
+#            if method != 'nearest':
+#                kw['fill_value'] = 1.
+            mo3d = interpolator(xyi, mi.T, **kw)(xyo).T
+        else:
+            mo3d = None
+
+        # Format output
+        return GDH.format(zo3d, mo3d, **kwargs)
 
     if method=='krig':
         return krig(xi, yi, zi, ggo, **kwargs)
 
-    if cgrid:
-        zou = cargen(xi, yi, zi, ggu,**kwargs)
-        zov = cargen(xi, yi, zi, ggv,**kwargs)
-        return zou, zov
     return cargen(xi, yi, zi, ggo, **kwargs)
 
 
 class _GridDataHelper_(object):
-    def __init__(self, xi, yi, ggo, geo=None, mask=None, compress=False, outtype=-1):
+
+    def __init__(self, xi, yi, ggo, mask=None, compress=False, proj=None,
+                 gtype=None):
+
         # Input grid
         assert xi.shape == yi.shape and xi.ndim == 1,   'xi and yi must be 1d arrays'
         xi = N.asarray(xi,dtype='d')
         yi = N.asarray(yi,dtype='d')
+        proj = get_proj((xi, yi), proj=proj)
         self.mi = N.ones(len(xi), '?')
-        #self.mi = N.zeros(len(xi), '?')
-        #xy = []
-        #for i, (x, y) in enumerate(zip(xi, yi)): # Check unicity
-            #if (x, y) not in xy:
-                #xy.append((x, y))
-                #self.mi[i] = True
+        if proj:
+            self.xi, self.yi = proj(xi, yi)
+        else:
+            self.xi, self.yi = xi, yi
+
+
+        # - grid and axes
+        self.ongrid = isgrid(ggo)
+        self.grid = get_grid(ggo, gtype=gtype)
+        self.grid_type = get_grid_type(self.grid)
+        self.x = self.grid.getLongitude()
+        self.y = self.grid.getLatitude()
+        self.xo = self.x[:]
+        self.yo = self.y[:]
+        if self.grid_type == "rect" and proj:
+            self.xo, self.yo = N.meshgrid(self.xo, self.yo)
+        if self.grid_type != 'unstruct':
+            self.xo.shape = -1,
+            self.yo.shape = -1,
+        if proj:
+            self.xo, self.yo = proj(self.xo, self.yo)
+        self.axes = []
+        self.nx = self.grid.shape[-1]
+        self.ny = self.grid.shape[0]
 
         # - mask
         if mask is True:
@@ -1577,65 +1617,40 @@ class _GridDataHelper_(object):
                 mask = ggo.mask
         if mask is False or mask is None:
             mask = N.ma.nomask
-        if mask.ndim>2:
+        if mask.ndim > 2:
             mask = mask[(0,)*(mask.ndim-2)]
-
-        # - axes
-        self.x, self.y = get_xy(ggo, m=False)
-        if geo: # Force geographic grid
-            if self.x[:].ndim == 2 or self.y[:].ndim == 2:
-                self.x, self.y = axes2d(self.x, self.y)
-            else:
-                self.x = A.create_lon(self.x)
-                self.y = A.create_lat(self.y)
-        if A.isaxis(self.x) or A.isaxis(self.y): # Real axes
-            ggo = get_grid(ggo)
-            self.x = get_axis(ggo, -1)
-            self.y = get_axis(ggo, -2)
-            self.outtype = 2
-        elif outtype == -1:
-            if mask is not N.ma.nomask:
-                self.outtype = 1
-            else:
-                self.outtype = -1
-        else:
-            self.outtype = outtype
-
-        # - grid object
-        if isgrid(ggo):
-            self.grid = ggo
-        elif A.islon(self.x) and A.islat(self.y):
-            self.grid = create_grid(self.x, self.y, mask=mask)
-            self.geo = True
-        else:
-            self.grid = None
-        self.gridshape = (self.y[:].shape[0], self.x[:].shape[-1])
-        self.curv = self.x[:].ndim == 2 and self.y[:].ndim == 2
-
-        self.geo = geo
         self.mask = mask
         self.compress = compress
-        self.xi = xi
-        self.yi = yi
-        self.axes = []
-        self.nx = self.x.shape[-1]
-        self.ny = self.y.shape[0]
+        self.inited = False
 
-    def init(self, zi, missing_value):
+    def init_data(self, zi, missing_value=None, initout=True):
         """Init input before regridding"""
+
         # Convert to right dims
+        self.inited = True
+        self.zi = zi
         nex = zi.size/zi.shape[-1]
-        if cdms2.isVariable(zi): zi = zi.asma()
-        zi2d = zi.reshape(nex, zi.shape[-1]).astype('d')
+        if cdms2.isVariable(zi):
+            zi = zi.asma()
+        self.zi2d = zi.reshape(nex, zi.shape[-1]).astype('d').copy()
+
+        # Masking
+        if missing_value is None:
+            if N.ma.isMA(zi):
+                missing_value = zi.get_fill_value()
+            else:
+                missing_value = N.ma.default_fill_value(zi)
+        self.missing_value = missing_value
+        unmasked = (not hasattr(self.zi2d, 'mask')
+                    or self.zi2d.mask is N.ma.nomask
+                    or not self.zi2d.mask.any())
+        self.masked = not unmasked
+        self.nex = nex
+        if not initout:
+            return
 
         # Initialize output
-        if missing_value is None:
-            try:
-                missing_value = zi.getMissing()
-            except:
-                missing_value = 1.e20
-        zo3d = N.zeros(zi2d.shape[:1]+self.gridshape, zi.dtype)+missing_value
-        unmasked = not hasattr(zi2d, 'mask') or zi2d.mask is N.ma.nomask or not zi2d.mask.any()
+        zo3d = N.zeros(self.zi2d.shape[:1]+self.grid.shape, zi.dtype) + missing_value
         if unmasked:
             compress = False
         else:
@@ -1645,43 +1660,52 @@ class _GridDataHelper_(object):
         else:
             mo3d = zo3d*0.
         del unmasked
-        return zi2d, zo3d, mo3d, nex, compress, missing_value
 
-    def get(self, zi2d, iex, compress, missing_value):
+        return zo3d, mo3d
+
+    def get(self, iex=None):
         """Get a slice"""
+        if not self.inited:
+            raise VACUMMError('Please call .init_data() before calling .get()')
+
+        if iex is None:
+            iex = Ellipsis
+
         # Remove compress values or fill them
-        good = self.mi
+        good = self.mi # 1D
         mmi = None
-        if hasattr(zi2d, 'mask') and zi2d[iex].mask is not N.ma.nomask and zi2d[iex].mask.any():
-            if not compress: # No compression => interpolation of mask
-                mmi = zi2d[iex].mask.astype('f')
-                zi2d[iex] = zi2d[iex].filled(missing_value)
+        if self.masked and self.zi2d[iex].mask.any():
+            if not self.compress: # No compression => interpolation of mask
+                mmi = self.zi2d[iex].mask.astype('f')
+                self.zi2d[iex] = self.zi2d[iex].filled(self.missing_value)
             else:
-                good = good & ~zi2d[iex].mask
+                good = good & ~self.zi2d[iex].mask
         if good.ndim==2:
-            good = N.reduce.logical_and(good, axis=0)
+            good = good.all(axis=0)
 
         # All data are bad
         if not good.any(): return None
 
         if not good.all(): # Some are good
-            zzi = zi2d[iex][..., good]
+            zzi = self.zi2d[iex][..., good]
             xi = self.xi[good]
             yi = self.yi[good]
             if mmi is not None:
                 mmi = mmi[good]
         else: # There are all good
-            zzi = zi2d[iex]
+            zzi = self.zi2d[iex]
             xi = self.xi
             yi = self.yi
+        if N.ma.isMA(zzi):
+            zzi = zzi.filled(self.missing_value)
         del good
         return xi, yi, zzi, mmi
 
 
-    def format(self, zi, zo3d, mo3d, missing_value, clipval=False, **kwargs):
+    def format(self, zo3d, mo3d, clipval=False, asmv=None, **kwargs):
         """Format output variable"""
         # Shape
-        sho = zi.shape[:-1]+zo3d.shape[-2:]
+        sho = self.zi.shape[:-1] + self.grid.shape
         if zo3d.shape != sho:
             zo = zo3d.reshape(sho)
             del zo3d
@@ -1691,47 +1715,35 @@ class _GridDataHelper_(object):
             zo = zo3d
             mo = mo3d
 
-
         # Masking
         if self.mask is not N.ma.nomask:
-
             mask = self.mask
             if mask.shape != zo.shape:
                 mask = N.resize(mask, zo.shape)
-            zo[mask] = missing_value
+            zo[mask] = self.missing_value
         if mo3d is not None and mo is not None:
-            zo[mo!=0.] = missing_value
-        missing = closeto(zo, missing_value)
-        if missing.any() and self.outtype==-1:
-            self.outtype = 1
-        if self.outtype==-1:
-            self.outtype = 0
+            zo[mo>0.] = self.missing_value
+        missing = closeto(zo, self.missing_value)
 
         # Value clipping
         if clipval:
-            valmax = zi.max()
-            valmin = zi.min()
+            valmax = self.zi.max()
+            valmin = self.zi.min()
             good = ~missing
             zo[good&(zo>valmax)] = valmax
             zo[good&(zo<valmin)] = valmin
 
-        # Pure numeric
-        if self.outtype == 0: return zo
-
-        # Masking
-        zo = N.ma.masked_values(zo, missing_value, copy=0)
-        if self.outtype == 1: return zo
-
-        # Gridding
-        zo = cdms.createVariable(zo)
-        if self.grid is not None:
-            set_grid(zo, self.grid)
-        else:
-            zo.setAxis(-1, self.x)
-            zo.setAxis(-2, self.y)
-        if cdms.isVariable(zi):
-            cp_atts(zi, zo, id=True)
-            for i, axis in enumerate(zi.getAxisList()[:-2]):
+        # Format
+        zo = N.ma.masked_where(missing, zo, copy=0)
+        if asmv is None:
+            asmv = self.ongrid or self.grid_type in ('rect', 'curv')
+        if not asmv:
+            return zo
+        zo = MV2.asarray(zo)
+        set_grid(zo, self.grid)
+        if cdms.isVariable(self.zi):
+            cp_atts(self.zi, zo, id=True)
+            for i, axis in enumerate(self.zi.getAxisList()[:-len(self.grid.shape)]):
                 zo.setAxis(i, axis)
         return zo
 
@@ -1744,119 +1756,160 @@ def xy2grid(*args, **kwargs):
     """
     return griddata(*args, **kwargs)
 
-def xy2xy(xi, yi, zi, xo, yo, nl=False, proj=True, **kwargs):
-    """Interpolation between to unstructured grids using :mod:`Natgrid`
+def xy2xy(xi, yi, zi, xo, yo, method='linear', proj=True, cache=None, **kwargs):
+    """Interpolation between to unstructured grids using scipy
 
     :Params:
 
         - **xi/yi**: 1D input positions
         - **zi**: atleast-1D input values
         - **xo,yo**: 1D output positions
-        - *nl*: Non linear interpolation using natural neighbours
         - *proj*: convert positions to meters using mercator projection
     """
-    # Check input positions
-    xi = N.asarray(xi, 'd')
-    yi = N.asarray(yi, 'd')
-    xo = N.asarray(xo, 'd')
-    yo = N.asarray(yo, 'd')
-    proj = kwargs.pop('geo', proj)
-    if proj:
-        if not callable(proj):
-            proj = get_proj((xi,yi))
-        xi, yi = proj(xi, yi)
-        xo, yo = proj(xo, yo)
+    # Helper
+    assert method in ('nearest', 'linear', 'cubic')
+    assert proj is not False
+    GDH = _GridDataHelper_(xi, yi, (xo, yo), compress=False, proj=proj,
+                           gtype='unstruct')
 
-    # Check input type
-    outtype = 0
-    if cdms2.isVariable(zi):
-        outtype = 2
-        axes = zi.getAxisList()
-        atts = get_atts(zi)
-        zi = zi.asma()
-    elif N.ma.isMA(zi):
-        if zi.mask is not N.ma.nomask and zi.mask.any():
-            outtype = 1
+    # Data
+    GDH.init_data(zi, initout=False)
+    if GDH.masked and not GDH.compress and method == 'cubic':
+        vcwarn("Can't interpolate masked with cubic method "
+               "without compression. Switching compression on.")
+        GDH.compress = True
 
-    # Check shapes
-    zi = zi.copy()
-    si = zi.shape
-    nsi = zi.shape[-1]
-    nex = zi.size/nsi
-    zi.shape = (nex, nsi)
-    nso = len(xo)
-    zo = N.zeros((nex, nso))
-    zo[:] = N.nan
-    if outtype:
-        mo = N.zeros((nex, nso))
-        goodi = ~zi.mask
+    # Interpolator
+    import scipy.interpolate as SI
+    interpolator = {'nearest': SI.NearestNDInterpolator,
+                    'linear': SI.LinearNDInterpolator,
+                    'cubic': SI.CloughTocher2DInterpolator}[method]
+
+    # Get stuff
+    xi, yi, zi, mi = GDH.get()
+    xyi = N.array([xi, yi]).T
+    if method != 'nearest':
+        xyi = get_tri(xyi, ttype='scipy', cache=cache)  # triangulation
+    xyo = N.array([GDH.xo, GDH.yo]).T
+
+    # Interpolate
+    kw = {}
+    if method != 'nearest':
+        kw['fill_value'] = GDH.missing_value
+    zo3d = interpolator(xyi, zi.T, **kw)(xyo).T
+    if GDH.masked and not GDH.compress and method != 'nearest':
+#        if method != 'nearest':
+#            kw['fill_value'] = 1.
+        mo3d = interpolator(xyi, mi.T, **kw)(xyo).T
     else:
-        mo = None
+        mo3d = None
 
-    # Loop on extra dim
-    from masking import convex_hull, polygon_select
-    for iex in xrange(nex):
+    # Format output
+    kwargs.setdefault('asmv', False)
+    return GDH.format(zo3d, mo3d, **kwargs)
 
-        if outtype:
-            gi = goodi[iex]
-            mi = zi.mask[iex].astype('f')
-        else:
-            gi = slice(None)
-
-        # Build regridder only when needed
-        if iex==0 or (outtype and N.any(goodi[iex-1]!=goodi[iex])):
-
-            # Check that output points are inside convex hull
-            hull = convex_hull((xi[gi], yi[gi]), poly=True)
-            go = polygon_select(xo, yo, [hull], mask=2) ; del hull
-            if go.all():
-                del go
-                go = slice(None)
-
-            # Regridder
-            from nat import Natgrid
-            r = Natgrid(xi[gi], yi[gi], xo[go], yo[go], listOutput='yes')
-            r.igr = int(nl)
-            if outtype:
-                rm = Natgrid(xi, yi, xo[go], yo[go], listOutput='yes')
-                rm.igr = int(nl)
-
-        # Regridding
-        # - values
-        zin = zi[iex][gi]
-        if N.ma.isMA(zin): zin = zin.filled()
-        zo[iex][go] = r.rgrd(zin)
-        # - mask
-        if outtype:
-            mo[iex][go] = rm.rgrd(mi)
-    del zi
-
-    # Missing points
-    mnan = N.isnan(zo)
-    if mnan.any():
-        outtype = max(1, outtype)
-        zo = N.ma.masked_where(mnan, zo)
-        del mnan
-
-    # Return pure numeric
-    zo.shape = si[:-1]+(nso, )
-    if outtype==0: return zo
-
-    # Masking
-    if mo is not None:
-        mo.shape = zo.shape
-        zo = N.ma.masked_where(mo>.5, zo)
-        del mo, mi
-
-    # Masked arrays
-    if outtype == 1: return zo
-
-    # cdms
-    zo = MV2.asarray(zo)
-    set_atts(zo, atts)
-    for i, ax in axes[:-1]:
-        zo.setAxis(i, ax)
-    return zo
+#    # Check input positions
+#    xi = N.asarray(xi, 'd')
+#    yi = N.asarray(yi, 'd')
+#    xo = N.asarray(xo, 'd')
+#    yo = N.asarray(yo, 'd')
+#    proj = kwargs.pop('geo', proj)
+#    if proj:
+#        if not callable(proj):
+#            proj = get_proj((xi,yi))
+#        xi, yi = proj(xi, yi)
+#        xo, yo = proj(xo, yo)
+#
+#    # Check input type
+#    outtype = 0
+#    if cdms2.isVariable(zi):
+#        outtype = 2
+#        axes = zi.getAxisList()
+#        atts = get_atts(zi)
+#        zi = zi.asma()
+#    elif N.ma.isMA(zi):
+#        if zi.mask is not N.ma.nomask and zi.mask.any():
+#            outtype = 1
+#
+#    # Check shapes
+#    zi = zi.copy()
+#    si = zi.shape
+#    nsi = zi.shape[-1]
+#    nex = zi.size/nsi
+#    zi.shape = (nex, nsi)
+#    nso = len(xo)
+#    zo = N.zeros((nex, nso))
+#    zo[:] = N.nan
+#    if outtype:
+#        mo = N.zeros((nex, nso))
+#        goodi = ~zi.mask
+#    else:
+#        mo = None
+#
+#    # Loop on extra dim
+#    from masking import convex_hull, polygon_select
+#    for iex in xrange(nex):
+#
+#        if outtype:
+#            gi = goodi[iex]
+#            mi = zi.mask[iex].astype('f')
+#        else:
+#            gi = slice(None)
+#
+#        # Build regridder only when needed
+#        if iex==0 or (outtype and N.any(goodi[iex-1]!=goodi[iex])):
+#
+#            # Check that output points are inside convex hull
+#            hull = convex_hull((xi[gi], yi[gi]), poly=True)
+#            go = polygon_select(xo, yo, [hull], mask=2) ; del hull
+#            if go.all():
+#                del go
+#                go = slice(None)
+#
+#            # Regridder
+#            from nat import Natgrid
+#            r = Natgrid(xi[gi], yi[gi], xo[go], yo[go], listOutput='yes')
+#            r.igr = int(nl)
+#            if outtype:
+#                rm = Natgrid(xi, yi, xo[go], yo[go], listOutput='yes')
+#                rm.igr = int(nl)
+#
+#        # Regridding
+#        # - values
+#        zin = zi[iex][gi]
+#        if N.ma.isMA(zin): zin = zin.filled()
+#        zo[iex][go] = r.rgrd(zin)
+#        # - mask
+#        if outtype:
+#            mo[iex][go] = rm.rgrd(mi)
+#    del zi
+#
+#    # Missing points
+#    mnan = N.isnan(zo)
+#    if mnan.any():
+#        outtype = max(1, outtype)
+#        zo = N.ma.masked_where(mnan, zo)
+#        del mnan
+#
+#    # Return pure numeric
+#    zo.shape = si[:-1]+(nso, )
+#    if outtype==0: return zo
+#
+#    # Masking
+#    if mo is not None:
+#        mo.shape = zo.shape
+#        zo = N.ma.masked_where(mo>.5, zo)
+#        del mo, mi
+#
+#    # Masked arrays
+#    if outtype == 1: return zo
+#
+#    # cdms
+#    zo = MV2.asarray(zo)
+#    set_atts(zo, atts)
+#    for i, ax in axes[:-1]:
+#        zo.setAxis(i, ax)
+#    return zo
 
 
 
