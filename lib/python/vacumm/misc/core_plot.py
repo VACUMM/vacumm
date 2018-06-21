@@ -498,7 +498,7 @@ class Plot(object):
                     if self.rank==1:
                         ax = dat.getAxis(0)
                     else:
-                        ax = get_axis(dat, i, strict=True, geo=False)
+                        ax = get_axis(dat, i, strict=False)#, geo=False)
                     if hasattr(ax, att):
                         setattr(axis, att, getattr(ax, att))
                         break
