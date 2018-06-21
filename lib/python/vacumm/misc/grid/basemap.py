@@ -48,6 +48,7 @@ import cPickle, stat
 from ...misc.io import Shapes
 from misc import get_xy
 from ...misc.phys.constants import R as rsphere_mean
+from ...misc.phys.units import deg2m, m2deg
 from ...misc.misc import kwfilter, dict_check_defaults,  zoombox
 from vacumm.config import get_config_value
 from ...__init__ import vacumm_warn
@@ -522,11 +523,20 @@ def merc(lon=None, lat=None, **kwargs):
 
 #proj = merc()
 
+def basic_proj(xx, yy, inverse=False):
+    """A basic projection using :func:`vacumm.misc.phys.units.deg2m`
+    and :func:`vacumm.misc.phys.units.deg2m`
+    """
+    if inverse:
+        yy = m2deg(yy)
+        return m2deg(xx, yy), yy
+    return deg2m(xx, yy), deg2m(yy)
+
 def get_proj(gg=None, proj=None, **kwargs):
     """Setup a default projection using x,y coordinates and
-    :class:`~mpl_toolkits.basemap.proj.Proj`
+    :class:`~mpl_toolkits.basemap.proj.Proj` or :func:`basic_proj`
 
-    Projection is set by default to "laea" and cover the coordinates.
+    Projection is set by default to "basic".
 
     :Params:
 
@@ -536,7 +546,9 @@ def get_proj(gg=None, proj=None, **kwargs):
           them is the projection type, which defaults to configuration option
           :confopt:`[vacumm.misc.grid.basemap] proj`.
 
-    :Return: A :class:`mpl_toolkits.basemap.proj.Proj` instance.
+    :Return:
+        A :class:`mpl_toolkits.basemap.proj.Proj` instance
+        or :func:`basic_proj`
 
     :Examples:
 
@@ -550,6 +562,12 @@ def get_proj(gg=None, proj=None, **kwargs):
 
         >>> proj = get_proj(R=6000000.)
     """
+    if proj is False:
+        return False
+    if proj is None or proj is True:
+        proj = 'basic'
+    if proj == 'basic':
+        return basic_proj
     if callable(proj): return proj
     if gg is not None:
         x,y = get_xy(gg, num=True)
