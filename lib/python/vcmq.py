@@ -214,6 +214,8 @@ from vacumm.misc.grid.misc import (
     get_geo_area, get_grid_axes, get_resolution, get_zdim, isoslice, mask2ind,
     merge_axis_slice, merge_axis_slices, num2axes2d, t2uvgrids, xextend,
     xshift, clone_grid, haversine, are_same_grids,
+    get_tri, get_tri_mask, get_tri_type, create_ugrid,
+    create_curv_grid, create_aux_axes, issgrid, isugrid,
     )
 
 from vacumm.misc.grid.regridding import (

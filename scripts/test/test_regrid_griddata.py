@@ -10,7 +10,7 @@ yr = N.arange(10.) + 43.
 xxr, yyr = N.meshgrid(xr, yr)
 zzr = (N.sin(xxr*N.pi/6)*N.sin(yyr*N.pi/6) + \
     N.exp(-((xxr-7.)**2+(yyr-7.)**2)/4.**2))*100.
-zzr -= zzr.min()
+zzr -= zzr.mean()
 zzr = N.ma.asarray(zzr)
 zzr[5:, 10:] = N.ma.masked
 # - input at random locations
@@ -28,10 +28,10 @@ set_grid(zzr, ggo)
 
 # Call and plot
 kw = dict(vmin=zzr.min(), vmax=zzr.max(),
-          lon=(xr[0], xr[-1]),
+          lon=(xr[0], xr[-1]), cmap_lum=0.7, linewidth=.5,
           lat=(yr[0], yr[-1]), show=False, colorbar=False)
 m = map2(zzr, title='Original', subplot=221, figsize=(8, 5), **kw)
-m.add_point(xi, yi)
+m.add_point(xi, yi, color='k')
 for i, method in enumerate(['nearest', 'linear', 'cubic']):
 
     # Interp
@@ -39,6 +39,6 @@ for i, method in enumerate(['nearest', 'linear', 'cubic']):
 
     # Plot
     m = map2(zo, title=method.title(), subplot=(2, 2, i+2), **kw)
-    m.add_point(xi, yi)
+    m.add_point(xi, yi, color='k')
 
 m.savefig(code_file_name(ext='png'))
