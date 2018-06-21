@@ -35,7 +35,6 @@ cc[zi.mask] = '.5'
 P.scatter(xi, yi, c=cc, s=7, marker='o')
 P.title('Input')
 for i, method in enumerate(['nearest', 'linear', 'cubic']):
-    print method
 
     # Interp
     zo = xy2xy(xi, yi, zi, xo, yo, method=method)#[0]

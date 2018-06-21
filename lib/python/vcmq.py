@@ -215,7 +215,7 @@ from vacumm.misc.grid.misc import (
     merge_axis_slice, merge_axis_slices, num2axes2d, t2uvgrids, xextend,
     xshift, clone_grid, haversine, are_same_grids,
     get_tri, get_tri_mask, get_tri_type, create_ugrid,
-    create_curv_grid, create_aux_axes, issgrid, isugrid,
+    create_curv_grid, create_aux_axes, issgrid, isugrid, get_grid_type,
     )
 
 from vacumm.misc.grid.regridding import (

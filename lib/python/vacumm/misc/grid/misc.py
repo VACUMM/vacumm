@@ -1245,12 +1245,20 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
     elif isinstance(x, TransientAxis2D):
         hasx = 2
     else:
+        if isinstance(x, tuple):
+            x = N.arange(*x)
+        else:
+            x = N.ma.asarray(x)
         hasx = 1
     if y is None:
         hasy = 0
     elif isinstance(y, TransientAxis2D):
         hasy = 2
     else:
+        if isinstance(y, tuple):
+            y = N.arange(*y)
+        else:
+            y = N.ma.asarray(y)
         hasy = 1
 
     # - ids
@@ -1701,7 +1709,7 @@ def create_ugrid(xaxis, yaxis, **kwargs):
     xaxis, yaxis = create_aux_axes(xaxis, yaxis, **xykw)
     return TransientGenericGrid(yaxis, xaxis, **kwargs)
 
-def create_grid(lon, lat, mask=None, lonatts={}, latatts={}, gtype=None, **kwargs):
+def create_grid(lon, lat, gtype=None, mask=None, lonatts={}, latatts={}, **kwargs):
     """Create a cdms rectangular or curvilinear grid from axes
 
     :Params:
@@ -1789,7 +1797,7 @@ def clone_grid(grid):
         lon.setAxisList([jaxis, iaxis])
         lat.setAxisList([jaxis, iaxis])
 
-    grid = create_grid(lon, lat, curv=len(lon.shape)==2)
+    grid = create_grid(lon, lat, gtype=get_grid_type(grid))
     grid.id = id
     return grid
 
@@ -2492,7 +2500,7 @@ def rotate_grid(ggi, angle, pivot='center', **kwargs):
     if isinstance(pivot, tuple):
         xpivot, ypivot = pivot
     else:
-        nx, ny = xxi.shape
+        ny, nx = xxi.shape
         pivot = pivot.lower()
         if pivot == 'center':pivot = 'center center'
         sxpivot, sypivot = pivot.split()
@@ -2506,7 +2514,7 @@ def rotate_grid(ggi, angle, pivot='center', **kwargs):
     xxo = xpivot + (xxi-xpivot)*N.cos(angle) - (yyi-ypivot)*N.sin(angle)
     yyo = ypivot + (xxi-xpivot)*N.sin(angle) + (yyi-ypivot)*N.cos(angle)
 
-    return curv_grid(xxo, yyo, **kwargs)
+    return create_curv_grid(xxo, yyo, **kwargs)
 
 def monotonic(xx, xref=None):
     """Make monotonic an array of longitudes
@@ -2697,8 +2705,7 @@ def curv2rect(gg, mode="warn", tol=1.e-2, f=None):
 
     # MV2 variable
     if cdms2.isVariable(gg):
-        grid = get_grid(gg)
-        if not isgrid(grid, curv=True): return gg
+        grid = gg.getGrid()
         rgrid = curv2rect(grid, mode=mode, tol=tol, f=f)
         if rgrid is not None and grid is not rgrid:
             set_grid(gg, rgrid)
@@ -2706,10 +2713,12 @@ def curv2rect(gg, mode="warn", tol=1.e-2, f=None):
 
     # Is it rectangular?
     gg = get_grid(gg)
-    if gg is None: return
-    if not isrect(gg, tol=tol, f=f):
+    gtype = get_grid_type(gg)
+    if gtype == 'rect':
+        return gg
+    elif gtype != 'curv' or not isrect(gg, tol=tol, f=f):
         if mode=="warn":
-            vcwarn("Grid seems not trully rectangular. Not converted.")
+            vcwarn("Grid seems not rectangular. Not converted.")
             return gg
         elif mode=="raise":
             raise VACUMMError('Cannot convert to rectangular grid')
@@ -2720,7 +2729,7 @@ def curv2rect(gg, mode="warn", tol=1.e-2, f=None):
     xx, yy = get_xy(gg, mesh=True, num=True)
     x = xx.mean(axis=0)
     y = yy.mean(axis=1)
-    grido =  create_grid(x, y)
+    grido =  create_grid(x, y, 'rect')
     cp_atts(gg.getLongitude(), grido.getLongitude())
     cp_atts(gg.getLatitude(), grido.getLatitude())
     return grido
@@ -2744,11 +2753,17 @@ def isrect(gg, tol=1.e-2, mode="real", f=None, nocache=False):
 
     # Check that it's a grid
     gg = get_grid(gg, intercept=False)
+    if gg is None:
+        return False
 
-    # Already a rectangular
-    is1d = isgrid(gg, curv=False)
-    if not mode.startswith('r'): return is1d
-    if is1d: return True
+    # Already rectangular
+    gtype = get_grid_type(gg)
+#    if not mode.startswith('r'):
+#        return gtype == 'rect'
+    if gtype == 'rect':
+        return True
+    elif gtype == 'unstruct':
+        return False
 
     # File grid
     if not nocache and f is not None:
@@ -2764,24 +2779,30 @@ def isrect(gg, tol=1.e-2, mode="real", f=None, nocache=False):
                 return grid._vacumm_isrect
 
     # Check if this grid is really rectangular
-    # - resolution from cache
-    for grid in fgrid, gg:
-        if grid is None: continue
-        res = resol(grid, cache=2)
-        if res is not None:
-            break
-    else:
-        res = resol(gg)
-        if fgrid is not None:
-            fgrid._res = res
-    dx, dy = res
-    # - relative resolution variations
-    xx, yy = get_xy(gg, num=True)
-    xx = N.ma.masked_outside(xx, -720., 720., copy=False)
-    yy = N.ma.clip(yy, -90, 90.)
-    Dx = N.ma.median(xx.ptp(axis=0))
-    Dy = N.ma.median(yy.ptp(axis=-1))
-    res = Dx < tol*dx and Dy < tol*dy
+    xx = gg.getLongitude().asma()
+    yy = gg.getLatitude().asma()
+    res = ((xx.std(axis=0)[1:] <
+            tol * N.ma.diff(xx, axis=1).mean(axis=0)).all() and
+           (yy.std(axis=1)[1:] <
+            tol * N.ma.diff(yy, axis=0).mean(axis=1)).all())
+#    # - resolution from cache
+#    for grid in fgrid, gg:
+#        if grid is None: continue
+#        res = resol(grid, cache=2)
+#        if res is not None:
+#            break
+#    else:
+#        res = resol(gg)
+#        if fgrid is not None:
+#            fgrid._res = res
+#    dx, dy = res
+#    # - relative resolution variations
+#    xx, yy = get_xy(gg, num=True)
+#    xx = N.ma.masked_outside(xx, -720., 720., copy=False)
+#    yy = N.ma.clip(yy, -90, 90.)
+#    Dx = N.ma.median(xx.ptp(axis=0))
+#    Dy = N.ma.median(yy.ptp(axis=-1))
+#    res = Dx < tol*dx and Dy < tol*dy
 
     # Cache result
     for grid in gg, fgrid:
