@@ -1731,8 +1731,10 @@ def create_grid(lon, lat, mask=None, lonatts={}, latatts={}, gtype=None, **kwarg
     if isinstance(lat, list): lat = N.asarray(lat)
 
     # Curvilinear 2D axes?
-    if gtype is None and not isinstance(lon, tuple) and not isinstance(lat, tuple):
-        curv = lon[:].ndim != 1 or lat[:].ndim != 1
+    if (gtype is None and not isinstance(lon, tuple)
+            and not isinstance(lat, tuple) and
+            (lon[:].ndim != 1 or lat[:].ndim != 1)):
+        gtype = 'curv'
 
     if gtype != 'curv': # 1D axes: rect or unstruct
 
@@ -1742,11 +1744,11 @@ def create_grid(lon, lat, mask=None, lonatts={}, latatts={}, gtype=None, **kwarg
                     or  lon[:].size != lat[:].size):
                 gtype = 'rect'
             else:
-                dxp = N.diff(xx[:])>0
+                dxp = N.diff(lon[:])>0
                 if dxp.any() and ~dxp.any():
                     gtype = 'unstruct'
                 if not gtype:
-                    dyp = N.diff(yy[:])>0
+                    dyp = N.diff(lat[:])>0
                     if dyp.any() and ~dyp.any():
                         gtype = 'unstruct'
         if gtype is None:
