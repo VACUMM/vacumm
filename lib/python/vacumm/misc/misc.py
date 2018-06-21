@@ -2349,9 +2349,15 @@ class CaseChecker(object):
             self.errmode(message)
         raise VACUMMError(message)
 
-def check_case(cases, case, **kwargs):
+def check_case(cases, case, mode='isvalid', **kwargs):
     """Check that case is valid using :class:``CaseChecker` and allowed cases"""
-    return CaseChecker(cases, **kwargs)(case)
+    assert mode in ('isvalid', 'raise', 'exit')
+    if mode != 'isvalid':
+        kwargs.setdefault('errmode', mode)
+    cs = CaseChecker(cases, **kwargs)
+    if mode == 'isvalid':
+        return cs.isvalid(case)
+    cs.check(case)
 
 
 
