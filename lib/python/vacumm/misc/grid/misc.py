@@ -45,10 +45,12 @@ from gc import collect
 
 import numpy as N, MV2 ,cdms2
 from numpy import ma as MA
-from cdms2.coord import TransientAxis2D,TransientVirtualAxis, FileAxis2D
+from cdms2.coord import TransientAxis2D, TransientVirtualAxis, FileAxis2D
+from cdms2.auxcoord import TransientAuxAxis1D
 from cdms2.axis import TransientAxis
 from cdms2.hgrid import AbstractCurveGrid, TransientCurveGrid
-from cdms2.grid import AbstractGrid
+from cdms2.grid import AbstractGrid, AbstractRectGrid
+from cdms2.gengrid import AbstractGenericGrid, TransientGenericGrid
 from genutil import minmax
 cdms = cdms2
 MV = MV2
@@ -69,7 +71,9 @@ __all__ = ['isoslice','isgrid', 'get_resolution', 'get_distances', 'get_closest'
     'depth2dz', 'isdepthup', 'makedepthup', 'makealtitudeup', 'dz2depth', 'get_axis_slices',
     'xextend', 'xshift', 'curv2rect',  'isrect', 'create_grid2d', 'create_var2d', 'create_axes2d',
     'merge_axis_slice', 'merge_axis_slices', 'get_zdim', 'coord2slice', 'mask2ind',
-    'varsel', 'haversine', 'clone_grid', 'are_same_grids']
+    'create_aux_axes', 'create_ugrid', 'istri', 'get_tri',
+    'varsel', 'haversine', 'create_curv_grid',
+    'issgrid', 'isugrid', 'get_grid_type']
 __all__.sort()
 
 
@@ -125,19 +129,50 @@ def isoslice(var,prop,isoval=0,axis=0,masking=True):
     return(result)
 
 
-def isgrid(gg, curv=None):
+def get_grid_type(grid):
+    """Get the grid type as one of "rect", "curv", "unstruct" or None"""
+    if isinstance(grid, AbstractRectGrid):
+        return "rect"
+    if isinstance(grid, AbstractCurveGrid):
+        return "curv"
+    if isinstance(grid, AbstractGenericGrid):
+        return "unstruct"
+
+
+def isgrid(grid, gtype=None, curv=None):
     """Check if gg is a grid
 
     :Params:
 
         - **gg**: A cdms grid.
-        - **curv**, optional: If True, restrict to curvilinear grids.
+        - **gtype**, optional, strings, None: Grid type as one of "rect",
+          "curv", "unstruct". Prepend a "-" to inverse the test. You can also
+          provide a list of choices.
+        - **curv**, optional: If True, restrict to curvilinear grids. DEPRECATED
+
+    :Example:
+    >>> isgrid(grid) # is it a grid?
+    >>> isgrid(grid, "curv") # is a curved grid?
+    >>> isgrid(grid, "-curv") # is a grid but not a curved grid?
+    >>> isgrid(grid, ["rect", "unstruct"]) # is a rectangular or unstructured grid?
     """
     if curv:
-        return isinstance(gg, AbstractCurveGrid)
-    if curv is False:
-        return isinstance(gg, AbstractGrid) and not isinstance(gg, AbstractCurveGrid)
-    return isinstance(gg, AbstractGrid)
+        gtype = 'curv'
+    if not gtype:
+        return cdms2.isGrid(grid)
+    grid_type = get_grid_type(grid)
+    if grid_type is None:
+        return False
+    return check_case(gtype, grid_type)
+
+
+def issgrid(grid):
+    """Check if a grid in structured"""
+    return isgrid(grid, ['rect', 'curv'])
+
+def isugrid(grid):
+    """Check if a grid in unstructured"""
+    return isgrid(grid, 'unstruct')
 
 def get_resolution(mygrid, lon_range=None,lat_range=None):
     """Get the mean resolution of a grid
@@ -1322,7 +1357,112 @@ def axes2d(*args, **kwargs):
     """Alias for :func:`create_axes2d`"""
     return create_axes2d(*args, **kwargs)
 
-def get_axis(gg, iaxis=0, geo=True, strict=False):
+def create_aux_axes(x=None, y=None, bounds=False, numeric=False,
+        lonid=None, latid=None, iid='points',
+        xatts=None, yatts=None, xbounds=None, ybounds=None, nobounds=False):
+    """Create auxilary 1d axes
+
+    :Example:
+
+        >>> lon1d, lat1d = create_aux_axes(x1d, y1d)
+
+    :Params:
+
+        - **xaxis**, optional: 1D axis or array
+        - **xaxis**, optional: 1D axis or array
+        - *xatts*, optional: Attributes for output auxilary X axis
+        - *yatts*, optional: Attributes for output auxilary Y axis
+        - **lonid**, optional: Id of longitude axis [defaut='lon'].
+        - **latid**, optional: Id of latitude axis [defaut='lat'].
+        - **iid**, optional: Id of i axis [defaut='iid'].
+        - **jid**, optional: Id of j axis [defaut='jid'].
+        - **xbounds2d**, optional: 2D bounds of input xaxis
+        - **ybounds2d**, optional: 2D bounds of input yaxis
+        - **nobounds**, optional: create (True) or not (False - default) bounds of axis
+
+
+    :Return: ``xaxis2d,yaxis2d``
+    """
+    if x is None:
+        hasx = 0
+    elif isinstance(x, TransientAuxAxis1D):
+        hasx = 2
+    else:
+        hasx = 1
+    if y is None:
+        hasy = 0
+    elif isinstance(y, TransientAuxAxis1D):
+        hasy = 2
+    else:
+        hasy = 1
+
+    # - ids
+    if hasx:
+        lonid = getattr(x, 'id', lonid)
+    if hasy:
+        latid = getattr(y, 'id', latid)
+
+    # Numeric part
+    if hasx:
+        xn = N.ma.asarray(x[:])
+        if xn.ndim!=1:
+            raise VACUMMError("xaxis data is not 1D")
+    if hasy:
+        yn = N.ma.asarray(y[:])
+        if yn.ndim!=1 and x is None:
+            raise VACUMMError("yaxis data is not 1D")
+    xx = xn if hasx else None
+    yy = yn if hasy else None
+    if hasx: del xn
+    if hasy: del yn
+
+    # Auxilary cdms axes
+    if hasx == 2:
+        xaxis = x
+    elif hasx:
+        xaxis = TransientAuxAxis1D(xx)
+    if hasy == 2:
+        yaxis = y
+    else:
+        yaxis = TransientAuxAxis1D(yy)
+
+    # bounds
+    if not nobounds:
+        if hasx and xbounds is not None:
+            xaxis.setBounds(xbounds)
+        if hasy and ybounds is not None:
+            yaxis.setBounds(ybounds)
+
+    # Format
+    if hasx:
+        xaxis.id = lonid or 'lon'
+        xaxis.designateLongitude()
+        if xatts is not None:
+            xa = get_atts(x)
+            xa.update(xatts)
+            set_atts(xaxis, xatts)
+    if hasy:
+        yaxis.id = latid or 'lat'
+        yaxis.designateLatitude()
+        if yatts is not None:
+            ya = get_atts(y)
+            ya.update(yatts)
+            set_atts(yaxis, yatts)
+    if hasx and hasy and xaxis.getAxis(0) is not yaxis.getAxis(0):
+        yaxis.setAxis(0, xaxis.getAxis(0))
+    if hasx and xaxis.getAxis(0).id.startswith('axis'):
+        xaxis.getAxis(0).id = iid
+    if hasy and yaxis.getAxis(0).id.startswith('axis'):
+        yaxis.getAxis(0).id = iid
+
+    # Output
+    if not hasx and not hasy: return
+    if not hasx: return yaxis
+    if not hasy: return xaxis
+    return xaxis, yaxis
+
+
+def get_axis(gg, iaxis=0, strict=False):
     """A robust way to get an axis from a variable or a grid
 
     This is a generic way to get a 1D and 2D axes: the only
@@ -1343,22 +1483,22 @@ def get_axis(gg, iaxis=0, geo=True, strict=False):
     :Returns: The requested axis
     """
 
-    grid = get_grid(gg, intercept=False, geo=geo, strict=strict)
+    grid = get_grid(gg, intercept=False, strict=strict)
     if grid is not None:
         getfrom = grid
     else:
         getfrom = gg
     ndim = len(getfrom.shape)
-    if iaxis < 0:
-        iaxis = ndim+iaxis
-    if iaxis <= 2 and isgrid(grid,curv=True):
-        if iaxis == 1:
+    if iaxis >= 0:
+        iaxis -= ndim
+    if iaxis >= -2 and isgrid(grid, ['curv', 'unstruct']):
+        if iaxis == -1:
             return getfrom.getLongitude()
         else:
             return getfrom.getLatitude()
     return getfrom.getAxis(iaxis)
 
-def get_grid(gg, geo=True, intercept=False, strict=False):
+def get_grid(gg, intercept=False, strict=False, gtype=None):
     """Get a cdms grid from gg
 
     :Examples:
@@ -1370,14 +1510,20 @@ def get_grid(gg, geo=True, intercept=False, strict=False):
     :Params:
 
         - **g**: A cdms variable with a grid OR cdms grid OR a tuple like (xx,yy) where xx and yy are numpy arrays or cdms axes
-        - **geo**, optional: Output grid must have longitude and latitude
         - **intercept**, optional: Raise an error in case of problem
     """
+    # From triangulation
+    if istri(gg) and not strict:
+        return create_ugrid(gg.x, gg.y, tempmask=gg.mask)
+
     # From a grid
     if isgrid(gg):
-        gg.getAxis(-1).designateLongitude()
-        gg.getAxis(-2).designateLatitude()
+        if len(gg.shape)==2:
+            gg.getAxis(-1).designateLongitude()
+            gg.getAxis(-2).designateLatitude()
         return gg
+    elif strict:
+        raise VACUMMError("gg must be a valid grid")
 
     # From a variable
     if cdms.isVariable(gg):
@@ -1409,18 +1555,7 @@ def get_grid(gg, geo=True, intercept=False, strict=False):
             yy.designateLatitude()
 
         # Create grid
-        if (isinstance(xx,  tuple) or xx[:].ndim == 1) and \
-            (isinstance(yy, tuple) or yy[:].ndim == 1): # Rectangular
-
-            return create_grid(xx, yy)
-
-        elif xx[:].ndim == 2 or yy[:].ndim == 2: # Curvilinear
-
-            return curv_grid(xx, yy)
-
-        else: # Generic
-
-            return cdms.createGenericGrid(yy[:].ravel(), xx[:].ravel())
+        return create_grid(xx, yy, gtype=gtype)
 
     if intercept:
         raise VACUMMError('No way to guess the grid')
@@ -1441,9 +1576,11 @@ def set_grid(var, gg, axes=True, intercept=False):
         var = MV.asarray(var)
     gg = get_grid(gg, intercept=intercept)
     if gg is not None:
-        for i in -2, -1:
+        ndim = len(gg.shape)
+        for i in xrange(-ndim, 0):
             axis = gg.getAxis(i)
-            setattr(axis, 'axis', ['Y', 'X'][i])
+            if ndim==2:
+                setattr(axis, 'axis', ['Y', 'X'][i])
             var.setAxis(i, axis)
     var.setGrid(gg)
     return var
@@ -1459,11 +1596,12 @@ def get_grid_axes(gg, raw=False):
     :Return: ``(lon, lat)``
     """
     gg = get_grid(gg)
-    if raw: return gg.getAxis(0), gg.getAxis(1)
+    if raw:
+        return tuple(gg.getAxisList())
     return gg.getLatitude(), gg.getLongitude()
 
 
-def curv_grid(xaxis, yaxis, xatts=None, yatts=None, id=None, mask=None, **kwargs):
+def create_curv_grid(xaxis, yaxis, xatts=None, yatts=None, id=None, mask=None, **kwargs):
     """Create a curvilinear 2D grid from 1D or 2D axes
 
     :Params:
@@ -1486,13 +1624,17 @@ def curv_grid(xaxis, yaxis, xatts=None, yatts=None, id=None, mask=None, **kwargs
     if id is None: id = 'grid2d'
     return TransientCurveGrid(yaxis2d, xaxis2d, id=id, tempmask=mask)
 
+def curv_grid(*args, **kwargs):
+    """Alias for :func:`create_curv_grid`"""
+    return create_curv_grid(*args, **kwargs)
+
 def create_grid2d(*args, **kwargs):
     """Alias for :func:`curv_grid`"""
-    return curv_grid(*args, **kwargs)
+    return create_curv_grid(*args, **kwargs)
 
 def grid2d(*args, **kwargs):
     """Alias for :func:`curv_grid`"""
-    return create_grid2d(*args, **kwargs)
+    return create_curv_grids(*args, **kwargs)
 
 def create_var2d(var, xaxis=None, yaxis=None, xatts=None, yatts=None, gid=None, copy=1,
     lonid=None, latid=None, iid=None, jid=None, **kwargs):
@@ -1551,7 +1693,15 @@ def num2axes2d(*args, **kwargs):
     return axes2d(*args, **kwargs)
 
 
-def create_grid(lon, lat, mask=None, lonatts={}, latatts={}, curv=None, **kwargs):
+def create_ugrid(xaxis, yaxis, **kwargs):
+    """Create a unstructured grid from axes"""
+    xykw = kwfilter(kwargs, 'x', keep=True, short=True)
+    xykw.update(kwfilter(kwargs, 'y', keep=True, short=True))
+    assert xaxis is not None and yaxis is not None
+    xaxis, yaxis = create_aux_axes(xaxis, yaxis, **xykw)
+    return TransientGenericGrid(yaxis, xaxis, **kwargs)
+
+def create_grid(lon, lat, mask=None, lonatts={}, latatts={}, gtype=None, **kwargs):
     """Create a cdms rectangular or curvilinear grid from axes
 
     :Params:
@@ -1560,10 +1710,7 @@ def create_grid(lon, lat, mask=None, lonatts={}, latatts={}, curv=None, **kwargs
         - **lat**: Array or axis of latitudes or any argument passed to :func:`~vacumm.misc.axes.create_lat`.
         - **mask**, optional: Grid mask.
         - **(lon/lat)atts**, optional: Attributes to set for axes.
-        - **curv**, optional:
-
-            - ``None``: If one axis is 2D, the grid will be curvilinear.
-            - ``True|False``: Force the grid to be or not to be curvilinear.
+        - **gtype**, optional, string: grid type as one of None, 'rect', 'curv', 'unstruct'
 
     :Return: A :mod:`cdms2` grid object.
 
@@ -1575,26 +1722,55 @@ def create_grid(lon, lat, mask=None, lonatts={}, latatts={}, curv=None, **kwargs
     :See also: :func:`~vacumm.misc.axes.create_lon` :func:`~vacumm.misc.axes.create_lat`
                :func:`get_grid` :func:`set_grid`
     """
+    if kwargs.get('curv', None):
+        gtype = 'curv'
+    assert gtype in [None, 'rect', 'curv', 'unstruct']
 
     # Arrays
     if isinstance(lon, list): lon = N.asarray(lon)
     if isinstance(lat, list): lat = N.asarray(lat)
 
-    # Rectangular or curvilinear?
-    if curv is None and not isinstance(lon, tuple) and not isinstance(lat, tuple):
+    # Curvilinear 2D axes?
+    if gtype is None and not isinstance(lon, tuple) and not isinstance(lat, tuple):
         curv = lon[:].ndim != 1 or lat[:].ndim != 1
 
-    if not curv: # Rectangular
+    if gtype != 'curv': # 1D axes: rect or unstruct
+
+        # Guess if auxilary
+        if gtype is None:
+            if (isinstance(lon, tuple) or isinstance(lat, tuple)
+                    or  lon[:].size != lat[:].size):
+                gtype = 'rect'
+            else:
+                dxp = N.diff(xx[:])>0
+                if dxp.any() and ~dxp.any():
+                    gtype = 'unstruct'
+                if not gtype:
+                    dyp = N.diff(yy[:])>0
+                    if dyp.any() and ~dyp.any():
+                        gtype = 'unstruct'
+        if gtype is None:
+            vcwarn("Can't guess the type of the grid to create."
+                   " Falling back to rect.")
+
+        # Unstructured
+        if gtype == 'unstruct':
+            return create_ugrid(lon, lat, xatts=lonatts, yatts=latatts,
+                                **kwargs)
+
         # Get axes
         if not islon(lon):
             lon = create_lon(lon, **lonatts)
         if not islat(lat):
             lat = create_lat(lat, **latatts)
-        # Create grid
+
+        # Create rectangular grid
         return cdms2.createRectGrid(lat, lon, mask=mask, **kwargs)
 
     else: # Curvilinear
-        return create_grid2d(lon, lat, xatts=lonatts, yatts=latatts, mask=mask, **kwargs)
+
+        return create_curv_grid(lon, lat, xatts=lonatts, yatts=latatts,
+                                mask=mask, **kwargs)
 
 
 def clone_grid(grid):
@@ -1849,6 +2025,12 @@ def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
     # Get axes
     if hasattr(gg, 'xy') and callable(gg.xy):
         xx, yy = gg.xy()
+    elif hasattr(gg, 'x') and hasattr(gg, 'y'):
+        xx = gg.x
+        yy = gg.y
+        if callable(xx):
+            xx = xx()
+            yy = yy()
     elif isinstance(gg, (tuple, list)):
         if len(gg)==4:
             xmin, ymin, xmax, ymax = gg
@@ -1983,11 +2165,11 @@ def _dist2x2d_(xx, yy, mode):
         get_distances(xx[:-1], yy[:-1], xx[1:], yy[1:],  **kw))
 
 
-#def _dist1x1d_(xxyy, xy, axis, mode):
-#    kw = dict(pairwise=True, mode=mode)
-#    dslices = get_axis_slices(xxyy, axis)
-#    if axis==-1:
-#        return
+def _dist1x1d_(xxyy, xy, axis, mode):
+    kw = dict(pairwise=True, mode=mode)
+    dslices = get_axis_slices(xxyy, axis)
+    if axis==-1:
+        return
 
 def resol(axy, mode='median',  axis=None, meters=False, cache=True, lat=None,
         checklims=True, **kwargs):
@@ -2607,8 +2789,7 @@ def isrect(gg, tol=1.e-2, mode="real", f=None, nocache=False):
     return res
 
 
-def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False,
-        m=None, getmap=False, **kwargs):
+def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=False):
     """Get specs for a transect given a grid and starting and ending points
 
     :Params:
@@ -2616,8 +2797,7 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False,
         - **lon/lat0/1**: Coordinates of first and last point in degrees.
         - **subsamp**, optional: Subsampling with respect to grid cell.
         - **getxy**, optional: Also return projected coordinates.
-        - **m**, optional: Basemap map used to compute great circle points.
-        - **getmap**, optional: Also return projection map.
+        - **getproj**, optional: Also return projection map.
 
     :Return: lons, lats[, xx, yy][, proj]
 
@@ -2626,8 +2806,7 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False,
 
     # Bounds and resolution
     dx, dy = resol(gg, proj='merc')
-    if m is None:
-        m = get_map(gg, resol=None, proj='merc')
+    m = get_map(gg, resol=None, proj='merc')
     x0, y0 = m(lon0, lat0)
     x1, y1 = m(lon1, lat1)
     Dx = N.abs(x1-x0)
@@ -2645,12 +2824,8 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False,
     xx, yy = m.gcpoints(lon0, lat0, lon1, lat1, npts)
     lons, lats = m(xx, yy, inverse=True)
     ret = N.array(lons), N.array(lats)
-    if getxy:
-        ret += N.array(xx), N.array(yy)
-    if 'getproj' in kwargs:
-        getmap = kwargs['getproj']
-    if getmap:
-        ret += m
+    if getxy: ret += N.array(xx), N.array(yy)
+    if getproj: ret += m
     return ret
 
 
@@ -3182,10 +3357,110 @@ def are_same_grids(grid0, grid1):
     return True
 
 
+#def get_triangles(x1d, y1d):
+#    """Get delaunay triangles of random positions"""
+#    return _qhull.delaunay(x1d, y1d)[0]
+
+def get_tri(xy, ttype='scipy', triangles=None, mask=None, cache=None):
+    """Get a :class:`scipy.spatial.Delaunay` (scipy) or
+    a :class:`matplotlib.tri.Triangulation` (mpl) instance"""
+    assert ttype in ['scipy', 'mpl']
+    if isinstance(cache, dict) and 'tri' in cache:
+        return cache['tri']
+
+    # Scipy Delaunay
+    if ttype == 'scipy':
+
+        if istri(xy, 'scipy'):
+            return xy
+        if istri(xy, 'mpl'):
+            xy = N.array([xy.x, xy.y]).T
+        elif isugrid(xy):
+            x = xy.getLongitude()[:]
+            y = xy.getLatitude()[:]
+            xy = N.asarray(xy).T
+        else:
+            xy = N.asarray(xy)
+            if xy.shape[1] != 2:
+                xy = xy.T
+        import scipy.spatial as S
+        tri = S.Delaunay(xy)
+
+    # Matplotlib Triangulation
+    else:
+
+        if istri(xy, 'mpl'):
+            return xy
+        if istri(xy, 'scipy'):
+            triangles = xy.simplices
+            x = xy.points[:, 0]
+            y = xy.points[:, 1]
+        elif isugrid(xy):
+            x = xy.getLongitude()[:]
+            y = xy.getLatitude()[:]
+        elif isinstance(xy, N.ndarray) and xy.shape[1] == 2:
+            x = xy[:, 0]
+            y = xy[:, 1]
+        else:
+            x, y = xy
+        from matplotlib.tri import Triangulation
+        tri = Triangulation(x, y, triangles=triangles)
+        if mask is not None:
+            if mask.ndim != 2 or mask.shape[-1] == x.size:
+                mask = get_tri_mask(tri, mask)
+            if mask.any():
+                tri.set_mask(mask)
+
+    if isinstance(cache, dict):
+        cache['tri'] = tri
+    return tri
+
+
+def istri(tri, ttype='scipy'):
+    """Check if tri is a :class:`scipy.spatial.Delaunay` (scipy) or
+    a :class:`matplotlib.tri.Triangulation` instance (mpl)"""
+    assert ttype in ['scipy', 'mpl']
+    if ttype == 'scipy':
+        import scipy.spatial as S
+        return isinstance(tri, S.Delaunay)
+    elif ttype == 'mpl':
+        from matplotlib.tri import Triangulation
+        return isinstance(tri, Triangulation)
+    return False
+
+
+def get_tri_type(tri):
+    """Get the triangulation instance type, either 'scipy', 'mpl' or None"""
+    from matplotlib.tri import Triangulation
+    if isinstance(tri, Triangulation):
+        return "mpl"
+    import scipy.spatial as S
+    if isinstance(tri, S.Delaunay):
+        return "scipy"
+
+
+def get_tri_mask(tri, dmask):
+    """Get the triangulation mask from points mask"""
+    if hasattr(tri, 'simplices'):
+        triangles = tri.simplices
+    else:
+        triangles = tri.triangles
+    tmask = N.zeros(triangles.shape[0], '?')
+    if N.ma.isMA(dmask):
+        dmask = dmask.mask
+    while dmask.ndim > 1:
+        dmask = dmask.any(axis=0)
+    if dmask.all():
+        tmask[:] = True
+    elif dmask.any():
+        for i in range(triangles.shape[1]):
+            tmask |= dmask[triangles[:, i]]
+    return tmask
+
 ######################################################################
 ######################################################################
 from ...misc.atime import ch_units,compress
-from ...misc import cp_atts,get_atts,set_atts,intersect, numod
+from ...misc import cp_atts,get_atts,set_atts,intersect, numod,  check_case, kwfilter
 from ...misc.axes import (check_axes, islon, islat, islev, istime, create_lon,
     create_lat, isaxis, isdep)
 from ...misc.phys import units, constants

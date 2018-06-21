@@ -4712,8 +4712,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
                 set_order(self.data[ivar], order)
                 self.data[ivar]._nogridorder = True
         if self.has_data():
-            xax = get_axis(self.data[0], 1, strict=True, geo=False)
-            yax = get_axis(self.data[0], 0, strict=True, geo=False)
+            xax = get_axis(self.data[0], -1, strict=False)
+            yax = get_axis(self.data[0], -2, strict=False)
         if xaxis is None:
             if self.has_data():
                 xaxis = xax
