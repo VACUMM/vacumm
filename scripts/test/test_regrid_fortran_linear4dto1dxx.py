@@ -166,7 +166,6 @@ mv = 1e20
 vo_interp = linear4dto1dxx(xi,yi,zi,ti,vi,xo,yo,zo,to,mv=mv)
 vo_interp = N.ma.masked_values(vo_interp, mv)
 
-print N.isnan(vo_interp).sum()
 #N.testing.assert_almost_equal(vo_interp[0], vo_truth)
 
 

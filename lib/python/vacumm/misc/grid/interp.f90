@@ -2306,7 +2306,6 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                     i = nxi
                     npi = 1
                     a = 0d0
-                    print*, 'same x',xxi(nxi,1),xo(io)
                 else
                     i = minloc(xxi(1,:), dim=1, mask=xxi(1,:)>xo(io))-1
 !                    print*,'i',i
@@ -2466,11 +2465,6 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                             do kk=0,npk(iez+1)-1
                                 do jj=0,npj-1
                                     do ii=0,npi-1
-                                        if(npi==1)print*, vi(ie0+iez,l+ll, k(iez+1)+kk, j+jj, i+ii), &
-                                        &((1-a) * (1-ii) + a * ii), &
-                                            & ((1-b) * (1-jj) + b * jj), &
-                                            & ((1-c(iez+1)) * (1-kk) + c(iez+1) * kk), &
-                                            & ((1-d) * (1-ll) + d * ll)
 !                                        print*,'one'
                                         vo(ie0+iez,io) = vo(ie0+iez,io) +vi(ie0+iez,l+ll, k(iez+1)+kk, j+jj, i+ii) * &
                                             & ((1-a) * (1-ii) + a * ii)* &
