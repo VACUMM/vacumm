@@ -1408,8 +1408,9 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nogeo, nxi, nyi, nxo, n
         ! Scan all input points everytime
         do ixo = 1, nxo
             do iyo = 1, nyo
-                call closest2d(xxi,yyi,xxo(iyo,ixo),yyo(iyo,ixo),nxi,nyi,imin,jmin,.not. geo)
-                varo(:,iyo,ixo) = vari(:,jmin,imin)
+                call closest2d(xxi, yyi, xxo(iyo,ixo), yyo(iyo,ixo), &
+                    & nxi, nyi, imin, jmin,.not. geo)
+                varo(:,iyo,ixo) = vari(:, jmin, imin)
             enddo
 !             exit
         enddo
@@ -1429,22 +1430,24 @@ subroutine nearest2d(vari, xxi, yyi, varo, xxo, yyo, nb, nogeo, nxi, nyi, nxo, n
             do iyo = 1, nyo
 
                 ! Try a small block
-                ixmin = max(1,ixlast-znb2)
-                ixmax = min(nxi,ixlast+znb2)
-                iymin = max(1,iylast-znb2)
-                iymax = min(nyi,iylast+znb2)
-                call closest2d(xxi(iymin:iymax,ixmin:ixmax), &
-                    & yyi(iymin:iymax,ixmin:ixmax),xxo(iyo,ixo),yyo(iyo,ixo),nxi,nyi,imin,jmin,.not. geo)
+                ixmin = max(1, ixlast-znb2)
+                ixmax = min(nxi, ixlast+znb2)
+                iymin = max(1, iylast-znb2)
+                iymax = min(nyi, iylast+znb2)
+                call closest2d(xxi(iymin:iymax, ixmin:ixmax), &
+                    & yyi(iymin:iymax, ixmin:ixmax), xxo(iyo, ixo), yyo(iyo, ixo), &
+                    & ixmax-ixmin+1, iymax-iymin+1, imin, jmin, .not. geo)
                 imin = imin+ixmin-1
                 jmin = jmin+iymin-1
 
                 ! Fall on bounds so use full block
                 if((imin==ixmin.and.ixmin/=1).or.(imin==ixmax.and.ixmax/=nxi).or.&
                     & (jmin==iymin.and.iymin/=1).or.(jmin==iymax.and.iymax/=nyi))&
-                    & call closest2d(xxi,yyi,xxo(iyo,ixo),yyo(iyo,ixo),nxi,nyi,imin,jmin,.not. geo)
+                    & call closest2d(xxi, yyi, xxo(iyo, ixo), yyo(iyo, ixo), &
+                    &   nxi, nyi, imin, jmin, .not. geo)
 
                 ! Store value
-                varo(:,iyo,ixo) = vari(:,jmin,imin)
+                varo(:,iyo,ixo) = vari(:, jmin, imin)
 
                 ! Update min/max positions
                 if(ixo==nxo)then
@@ -2303,6 +2306,7 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                     i = nxi
                     npi = 1
                     a = 0d0
+                    print*, 'same x',xxi(nxi,1),xo(io)
                 else
                     i = minloc(xxi(1,:), dim=1, mask=xxi(1,:)>xo(io))-1
 !                    print*,'i',i
@@ -2318,7 +2322,7 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                     j = 1
                     b = 0d0
                     npj = 1
-                else if(yyi(1,nyi)==yo(io))then
+                else if(yyi(nyi,1)==yo(io))then
                     j = nyi
                     b  = 0d0
                     npj = 1
@@ -2462,6 +2466,11 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,mv,&
                             do kk=0,npk(iez+1)-1
                                 do jj=0,npj-1
                                     do ii=0,npi-1
+                                        if(npi==1)print*, vi(ie0+iez,l+ll, k(iez+1)+kk, j+jj, i+ii), &
+                                        &((1-a) * (1-ii) + a * ii), &
+                                            & ((1-b) * (1-jj) + b * jj), &
+                                            & ((1-c(iez+1)) * (1-kk) + c(iez+1) * kk), &
+                                            & ((1-d) * (1-ll) + d * ll)
 !                                        print*,'one'
                                         vo(ie0+iez,io) = vo(ie0+iez,io) +vi(ie0+iez,l+ll, k(iez+1)+kk, j+jj, i+ii) * &
                                             & ((1-a) * (1-ii) + a * ii)* &

@@ -2101,33 +2101,33 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
             vo = func(xi, yi, vi, xo, yo, mv)
 
 
-    elif method.startswith('nat'):
-
-        # Build regridder
-        from nat import Natgrid
-        nz = vi.shape[0]
-        vo = N.zeros((nz, len(xo)))+mv
-        if xi.ndim==1:
-            xxi, yyi = xi, yi
-        else:
-            xxi, yyi = N.meshgrid(xi, yi)
-        r = Natgrid(xxi.ravel(), yyi.ravel(), xo, yo, listOutput='yes')
-        if mi is not None:
-            mo = N.zeros(len(xo))
-
-        # Z loop interpolation
-        for iz in xrange(nz):
-
-            # Base
-            vo[iz] = r.rgrd(vi[iz].ravel())
-
-            # Mask
-            if mi is not None:
-                mo[:] = r.rgrd(mi[iz].ravel())
-                vo[iz] = N.where(mo!=0., vonear[iz], vo[iz])
-
-        if mi is not None:
-            del mi, mo, vonear
+#    elif method.startswith('nat'):
+#
+#        # Build regridder
+#        from nat import Natgrid
+#        nz = vi.shape[0]
+#        vo = N.zeros((nz, len(xo)))+mv
+#        if xi.ndim==1:
+#            xxi, yyi = xi, yi
+#        else:
+#            xxi, yyi = N.meshgrid(xi, yi)
+#        r = Natgrid(xxi.ravel(), yyi.ravel(), xo, yo, listOutput='yes')
+#        if mi is not None:
+#            mo = N.zeros(len(xo))
+#
+#        # Z loop interpolation
+#        for iz in xrange(nz):
+#
+#            # Base
+#            vo[iz] = r.rgrd(vi[iz].ravel())
+#
+#            # Mask
+#            if mi is not None:
+#                mo[:] = r.rgrd(mi[iz].ravel())
+#                vo[iz] = N.where(mo!=0., vonear[iz], vo[iz])
+#
+#        if mi is not None:
+#            del mi, mo, vonear
 
     elif method != 'nearest':
         raise NotImplementedError, 'Method yet not implemented: '+method

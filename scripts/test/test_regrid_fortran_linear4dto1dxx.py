@@ -4,7 +4,7 @@ from vcmq import N, P, meshcells, minmax, code_file_name, os
 from vacumm.misc.grid._interp_ import linear4dto1dxx
 # vo = linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,mv,[nxi,nyi,nyix,nxiy,nyiz,nxiz,nzi,nti,ntiz,no,nex])
 
-# Bases
+# %% Bases
 
 nex = 4
 nexz = 2
@@ -25,7 +25,7 @@ zzi = zzi[None]
 zzi = N.repeat(zzi, nexz, axis=0)
 
 
-# Pure 1D axes
+# %% Pure 1D axes
 
 xi = xxi[0, 0, 0:1, :] # (nyix=1,nxi)
 yi = yyi[0, 0, :, 0:1] # (nyi,nxiy=1)
@@ -49,7 +49,7 @@ vo_interp = N.ma.masked_values(vo_interp, mv)
 N.testing.assert_almost_equal(vo_interp[0], vo_truth)
 
 
-# Single point in space
+# %% Single point in space
 
 xi = xxi[0, 0, 0:1, :1] # (nyix=1,nxi)
 yi = yyi[0, 0, :1, 0:1] # (nyi,nxiy=1)
@@ -73,7 +73,7 @@ vo_interp = N.ma.masked_values(vo_interp, mv)
 N.testing.assert_almost_equal(vo_interp[0], vo_truth)
 
 
-# Constant time
+# %% Constant time
 
 xi = xxi[0, 0, 0:1, :] # (nyix=1,nxi)
 yi = yyi[0, 0, :, 0:1] # (nyi,nxiy=1)
@@ -97,7 +97,7 @@ vo_interp = N.ma.masked_values(vo_interp, mv)
 N.testing.assert_almost_equal(vo_interp[0], vo_truth)
 
 
-# Variable depth with 1D X/Y + T
+# %% Variable depth with 1D X/Y + T
 
 xi = xxi[0, 0, 0:1, :] # (nyix=1,nxi)
 yi = yyi[0, 0, :, 0:1] # (nyi,nxiy=1)
@@ -121,7 +121,7 @@ vo_interp = N.ma.masked_values(vo_interp, mv)
 N.testing.assert_almost_equal(vo_interp[0], vo_truth)
 
 
-# 2D X/Y with no other axes (pure curvilinear)
+# %% 2D X/Y with no other axes (pure curvilinear)
 
 xi = xxi[0, 0] # (nyix=nyi,nxi)
 yi = yyi[0, 0]# (nyi,nxiy=nxi)
@@ -145,6 +145,29 @@ vo_interp_rect = linear4dto1dxx(xi[:1],yi[:, :1],zi,ti,vi,xo,yo,zo,to,mv=mv)
 
 N.testing.assert_almost_equal(vo_interp[0], vo_truth)
 N.testing.assert_almost_equal(vo_interp_rect[0], vo_truth)
+
+# %% Same coordinates
+
+xi = xxi[0, 0, 0:1, :] # (nyix=1,nxi)
+yi = yyi[0, 0, :, 0:1] # (nyi,nxiy=1)
+zi = zzi[0:1, 0:1, :, 0:1, 0:1] # (nexz=1,ntiz=1,nzi,nyiz=1,nxiz=1)
+ti = tti[:, 0, 0, 0] # (nti)
+vi = vfunc(tti, zzi, yyi, xxi)
+vi = N.resize(vi, (nex, )+vi.shape[1:]) # (nex,nti,nzi,nyi,nxi)
+
+xyzo = N.meshgrid(xi, yi, zi, ti, indexing='ij')
+xo = xyzo[0].ravel()
+yo = xyzo[1].ravel()
+zo = xyzo[2].ravel()
+to = xyzo[3].ravel()
+vo_truth = N.ma.array(vfunc(to, zo, yo, xo))
+
+mv = 1e20
+vo_interp = linear4dto1dxx(xi,yi,zi,ti,vi,xo,yo,zo,to,mv=mv)
+vo_interp = N.ma.masked_values(vo_interp, mv)
+
+print N.isnan(vo_interp).sum()
+#N.testing.assert_almost_equal(vo_interp[0], vo_truth)
 
 
 
