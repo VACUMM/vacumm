@@ -5,7 +5,7 @@
 
     Tutorials: :ref:`user.tut.misc.grid.regridding`
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2016)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -46,6 +46,7 @@ from copy import deepcopy
 
 import numpy as N, cdms2,  MV2,  regrid2
 from cdms2.axis import TransientAxis
+import cdtime
 import genutil
 from _geoslib import Point, Polygon
 
@@ -612,9 +613,11 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None, iaxo=None, iaxi=None
             not are_same_units(axi.units, axo.units)):
         axi = ch_units(axi, axo.units, copy=True)
         if errl is not None:
-            axou = axo.units.split(1)[0] + axi.units.split(1)[1]
-            dxi2o = cdtime.reltime(1, axou)-cdtime.reltime(0, axou)
-            dxi2o /= cdtime.reltime(1, axi.units)-cdtime.reltime(0, axi.units)
+            axou = axo.units  #.split(1)[0] + axi.units.split(1)[1]
+            dxi2o = (cdtime.reltime(1, axou).value -
+                     cdtime.reltime(0, axou).value)
+            dxi2o /= (cdtime.reltime(1, axi.units).value -
+                      cdtime.reltime(0, axi.units).value)
     # - numeric version
     axin = axi[:]
     if N.ma.isMA(axin):
