@@ -1424,7 +1424,7 @@ class GridData(object):
     rgrd = __call__
     regrid = __call__
 
-def cargen(xi, yi, zi, ggo, mask=None, geo=None, compress=False, missing_value=None, **kwargs):
+def cargen(xi, yi, zi, ggo, mask=None, compress=False, missing_value=None, **kwargs):
     """Interpolator from IFREMER
 
     :Params:
@@ -1435,7 +1435,7 @@ def cargen(xi, yi, zi, ggo, mask=None, geo=None, compress=False, missing_value=N
         - **mask**, optional: Mask to apply to output data [default: None]
     """
     # Helper
-    GDH = _GridDataHelper_(xi, yi, ggo, geo=geo, mask=mask, compress=compress,
+    GDH = _GridDataHelper_(xi, yi, ggo, mask=mask, compress=compress,
                            proj=False)
     assert GDH.grid_type == 'rect', 'cargen works only with rectangular grids'
 
@@ -1443,10 +1443,10 @@ def cargen(xi, yi, zi, ggo, mask=None, geo=None, compress=False, missing_value=N
     zo3d, mo3d = GDH.init_data(zi, missing_value)
 
     # Loop on supplementary dims
-    for iex in xrange(self.nex):
+    for iex in xrange(GDH.nex):
 
         # Get data and mask
-        get = GDH.get(self.zi2d, iex)
+        get = GDH.get(iex)
         if get is None: continue
         xi, yi, zzi, mmi = get
 
