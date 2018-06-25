@@ -50,7 +50,10 @@ __all__ = [
 
 def uuconvert(value, oldunits, newunits):
     """Change units using unidata units connverter"""
-    from unidata import udunits_wrap
+    try:
+        from genutil.udunits import udunits_wrap
+    except:
+        from unidata import udunits_wrap
     s, i = udunits_wrap.convert(oldunits, newunits)
     return value * s + i
 convert_units = uuconvert
