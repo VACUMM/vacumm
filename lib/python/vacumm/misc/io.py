@@ -3658,7 +3658,7 @@ class XYZ(object):
 
         # Interpolation
         kwmask = kwfilter(kwargs, 'mask_')
-        kwargs.setdefault('method', 'carg')
+        kwargs.setdefault('method', 'linear')
         kwargs.setdefault('ext', True)
         var = griddata(self.x, self.y, self.z, grid, mask=None, cgrid=cgrid, **kwargs)
         if not cgrid: var = var,

@@ -2,7 +2,7 @@
 """
 Bathmetry tools
 """
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -485,7 +485,7 @@ class XYZBathy(XYZ):
                 self._z[:] *= -1.
 
 
-    def togrid(self, grid=None, mask=None, cgrid=False,  proj=False, **kwargs):
+    def togrid(self, grid=None, mask=None, cgrid=False,  proj=None, **kwargs):
 
 
         # Shoreline for masking
