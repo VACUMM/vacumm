@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Classes for all plots"""
-# Copyright or © or Copr. Actimar/IFREMER (2012-2017)
+# Copyright or © or Copr. Actimar/IFREMER (2012-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -904,8 +904,8 @@ class Plot(object):
             self.axes.set_frame_on(False)
         if bgcolor is not None:
             try:
-                self.axes.set_face_color(bgcolor)
-            except:
+                self.axes.set_facecolor(bgcolor)
+            except ImportError:
                 self.axes.set_axis_bgcolor(bgcolor)
 
     def plot(self, **kwargs):

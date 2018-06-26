@@ -89,6 +89,9 @@ ENV/
 .eric4project/
 *.e4p
 
+# Pytest
+.pytest_cache/
+
 # Misc
 *~
 *.bak
