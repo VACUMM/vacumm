@@ -216,6 +216,7 @@ from vacumm.misc.grid.misc import (
     xshift, clone_grid, haversine, are_same_grids,
     get_tri, get_tri_mask, get_tri_type, create_ugrid,
     create_curv_grid, create_aux_axes, issgrid, isugrid, get_grid_type,
+    get_unstruct_indices, get_gridded_selector,
     )
 
 from vacumm.misc.grid.regridding import (

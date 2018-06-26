@@ -4712,8 +4712,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
                 set_order(self.data[ivar], order)
                 self.data[ivar]._nogridorder = True
         if self.has_data():
-            xax = get_axis(self.data[0], -1, strict=False)
-            yax = get_axis(self.data[0], -2, strict=False)
+            xax = get_axis(self.data[0], -1, strict=True)
+            yax = get_axis(self.data[0], -2, strict=True)
         if xaxis is None:
             if self.has_data():
                 xaxis = xax
@@ -4863,20 +4863,20 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
             """)
 
     @staticmethod
-    def _fill_method_(fill='pcolor', pcolor=None, nofill=None, **kwargs):
+    def _fill_method_(fill='pcolormesh', pcolor=None, nofill=None, **kwargs):
         if fill is None:
             fill = get_config_value('vacumm.misc.plot', 'fill')
             if fill is not None:
                 if fill.isdigit():
                     fill = int(fill)
                 elif fill in ['True', 'None', 'False']:
-                    fill = eva(fill)
-        if fill is True:
-            fill = 'pcolor'
+                    fill = eval(fill)
+        if fill is True or str(fill).startswith('pcolor'):
+            fill = 'pcolormesh'
         if nofill:
             fill = 0
         elif pcolor:
-            fill = 'pcolor'
+            fill = 'pcolormesh'
         elif pcolor in (False, 0, 2):
             fill = 'contourf'
         elif pcolor == 3:
