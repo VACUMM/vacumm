@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 """Installation script"""
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -42,6 +42,7 @@ def configuration(parent_package='',top_path=None):
     config.add_subpackage('markup')
     config.add_subpackage('bathy')
     config.add_subpackage('tide')
+    config.add_subpackage('report')
     config.add_subpackage('validator')
     config.add_data_files('vacumm.cfg')
     return config
