@@ -74,7 +74,7 @@ __all__ = ['isoslice','isgrid', 'get_resolution', 'get_distances', 'get_closest'
     'create_aux_axes', 'create_ugrid', 'istri', 'get_tri',
     'varsel', 'haversine', 'create_curv_grid',
     'issgrid', 'isugrid', 'get_grid_type',
-    'get_unstruct_indices', 'get_gridded_selector']
+    'get_unstruct_indices', 'GriddedSelector']
 __all__.sort()
 
 
@@ -1417,17 +1417,15 @@ def create_aux_axes(x=None, y=None, bounds=False, numeric=False,
 
     # Numeric part
     if hasx:
-        xn = N.ma.asarray(x[:])
-        if xn.ndim!=1:
-            raise VACUMMError("xaxis data is not 1D")
+        xn = N.ma.asarray(x[:]).ravel()
     if hasy:
-        yn = N.ma.asarray(y[:])
-        if yn.ndim!=1 and x is None:
-            raise VACUMMError("yaxis data is not 1D")
+        yn = N.ma.asarray(y[:]).ravel()
     xx = xn if hasx else None
     yy = yn if hasy else None
     if hasx: del xn
     if hasy: del yn
+    if hasx and hasy:
+        assert xx.size == yy.size, 'Incompatible sizes for auxiliary axes'
 
     # Auxilary cdms axes
     if hasx == 2:
@@ -1751,6 +1749,9 @@ def create_grid(lon, lat, gtype=None, mask=None, lonatts={}, latatts={}, **kwarg
             if (isinstance(lon, tuple) or isinstance(lat, tuple)
                     or  lon[:].size != lat[:].size):
                 gtype = 'rect'
+            elif (cdms2.isVariable(lon) and cdms2.isVariable(lat) and
+                  lon.getAxis(0).id == lat.getAxis(0).id):
+                gtype = 'rect'
             else:
                 dxp = N.diff(lon[:])>0
                 if dxp.any() and ~dxp.any():
@@ -1836,35 +1837,98 @@ def get_unstruct_indices(grid, lon=None, lat=None):
     return N.nonzero(valid)[0]
 
 
-def get_gridded_selector(grid, lon=None, lat=None, mode='selector',
-                         getmask=False):
-    """Get a :class:`cdms2.selectors.Selector` applied to a grid and based
-    on lon and lat selection"""
-    assert mode in ('selector', 'dict'), ('mode must be one of dict or '
-                                          'selector')
+#def get_gridded_selector(grid, lon=None, lat=None, mode='selector',
+#                         getmask=False):
+#    """Class to help XY selections on grids"""
+#    assert mode in ('selector', 'dict'), ('mode must be one of dict or '
+#                                          'selector')
+#
+#    # Grid
+#    grid = get_grid(grid, intercept=False, strict=False)
+#
+#    # Init selector
+#    sel = {}
+#
+#    # Selections
+#    if grid is not None:
+#
+#        assert isgrid(grid, ['rect', 'curv'])
+#        islice, jslice, mask = coord2slice(grid, lon=lon, lat=lat)
+#        sel[grid.getAxis(1).id] = islice
+#        sel[grid.getAxis(0).id] = jslice
+#        if mode == 'selector' and getmask:
+#            sel['mask'] = mask
+#
+#    # Output
+#    if mode == 'dict':
+#        return sel
+#    return cdms2.selectors.Selector(**sel)
 
-    # Grid
-    grid = get_grid(grid, intercept=False, strict=False)
 
-    # Init selector
-    sel = {}
+class GriddedSelector(object):
+    """A :class:`cdms2.selectors.Selector` with grid preprocessing"""
+    def __init__(self, grid, lon=None, lat=None, update_kwargs=False,
+                 apply_mask=True):
 
-    # Selections
-    if grid is not None:
+        # Grid
+        self.grid = grid = get_grid(grid, intercept=False, strict=False)
+        self.grid_type = grid_type = get_grid_type(grid)
 
-        assert isgrid(grid, ['rect', 'curv'])
-        islice, jslice, mask = coord2slice(grid, lon=lon, lat=lat)
-        sel[grid.getAxis(1).id] = islice
-        sel[grid.getAxis(0).id] = jslice
-        if mode == 'selector' and getmask:
-            sel['mask'] = mask
+        # Selection specs
+        if grid_type in ['rect', 'curv']:
 
-    # Output
-    if mode == 'dict':
-        return sel
-    return cdms2.selectors.Selector(**sel)
+            self.islice, self.jslice, self.mask = coord2slice(grid,
+                                                              lon=lon, lat=lat)
 
+        elif grid_type == 'unstruct':
 
+            self.indices = get_unstruct_indices(grid, lon=lon, lat=lat)
+
+        self.update_kwargs = update_kwargs
+        self.apply_mask = apply_mask
+
+    def select(self, var, *args, **kwargs):
+        """Apply selection"""
+
+        # No grid
+        if not self.grid_type:
+            return var(*args, **kwargs)
+
+        # Unstructured
+        if self.grid_type == 'unstruct':
+
+            var = MV2.take(var, self.indices, axis=-1)
+            lons = self.grid.getLongitude()
+            lats = self.grid.getLatitude()
+            grid = create_grid(lons.asma()[self.indices],
+                               lats.asma()[self.indices],
+                               gtype='unstruct',
+                               lonatts=lons.attributes,
+                               latatts=lats.attributes)
+            var = var(*args, **kwargs)
+            set_grid(var, grid)
+            return var
+
+        # Rectangular and curvilinear
+        set_grid(var, self.grid)
+        sel = {var.getAxis(-1).id: self.islice,
+               var.getAxis(-2).id: self.jslice}
+        if self.update_kwargs:
+            kwargs.update(sel)
+        else:
+            sel.update(kwargs)
+            kwargs = sel
+        var = var(*args, **kwargs)
+        if self.apply_mask and self.mask is not None and self.mask.any():
+            if self.mask.shape == var.shape:
+                mask = self.mask
+            else:
+                mask = N.resize(self.mask, var.shape)
+            var[:] = MV2.masked_where(mask, var, copy=0)
+            del mask
+        return var
+
+    __call__ = select
 
 
 
@@ -1911,8 +1975,10 @@ def gridsel(gg, lon=None, lat=None):
 
         lons = gg.getLongitude()
         lats = gg.getLatitude()
-        ii = get_unstruct_indices(gg)
-        ggo = create_grid(lons[ii], lats[ii], 'unstruct')
+        ii = get_unstruct_indices(gg, lon=lon, lat=lat)
+        ggo = create_grid(lons.asma()[ii], lats.asma()[ii], gtype='unstruct',
+                          lonatts=lons.attributes,
+                          latatts=lats.attributes)
         ggo.id = gg.id
         return ggo
 
@@ -1963,7 +2029,7 @@ def gridsel(gg, lon=None, lat=None):
 select_region = gridsel
 
 
-def varsel(var, lon=None, lat=None, grid=None, **kwargs):
+def varsel(var, lon=None, lat=None, grid=None, cache=None, **kwargs):
     """Extract a subregion of a variable
 
     Lat and lon generic selection are used for
@@ -1983,30 +2049,41 @@ def varsel(var, lon=None, lat=None, grid=None, **kwargs):
         - Extra keywords are passed to the variable.
 
     """
-    ext_grid = grid is not None
-    if not ext_grid:
-        grid = var.getGrid()
-    if grid is None:
-        return var(**kwargs)
+    # Gridded selector with caching
+    if isinstance(cache, dict) and 'gridded_selector' in cache:
+        gs = cache['gridded_selector']
+        grid = gs.grid
+    else:
+        if grid is None:
+            grid = var.getGrid()
+        if grid is None:
+            return var(**kwargs)
+        gs = GriddedSelector(grid, lon=lon, lat=lat)
+    if isinstance(cache, dict):
+        cache['gridded_selector'] = gs
 
-    # Rectangular grid
-    if isgrid(grid, 'rect') and not ext_grid:
-        return var(lon=lon, lat=lat, **kwargs)
 
-    # Unstructured grid
-    if isgrid(grid, 'unstruct'):
-        indices = get_unstruct_indices(grid, lon=lon, lat=lat)
-        lons = grid.getLongitude()[indices]
-        lats = grid.getLatitude()[indices]
-        var = MV2.take(var, indices, axis=-1)
-        set_grid(var, create_grid(lons, lats))  # FIXME: grid attributes
-        return var(**kwargs)
+    # Apply it
+    return gs(var, **kwargs)
 
-    # Curved grid
-    kw = get_gridded_selector(grid, lon=lon, lat=lat, getmask=True,
-                              mode='dict')
-    kw.update(kwargs)
-    return var(**kw)
+#    # Rectangular grid
+#    if isgrid(grid, 'rect') and not ext_grid:
+#        return var(lon=lon, lat=lat, **kwargs)
+#
+#    # Unstructured grid
+#    if isgrid(grid, 'unstruct'):
+#        indices = get_unstruct_indices(grid, lon=lon, lat=lat)
+#        lons = grid.getLongitude()[indices]
+#        lats = grid.getLatitude()[indices]
+#        var = MV2.take(var, indices, axis=-1)
+#        set_grid(var, create_grid(lons, lats))  # FIXME: grid attributes
+#        return var(**kwargs)
+#
+#    # Curved grid
+#    kw = get_gridded_selector(grid, lon=lon, lat=lat, getmask=True,
+#                              mode='dict')
+#    kw.update(kwargs)
+#    return var(**kw)
 
 
 def axis1d_from_bounds(axis1d,atts=None,numeric=False):

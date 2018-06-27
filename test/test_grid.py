@@ -10,6 +10,8 @@ class TSF(VCTestCase):
         'test_grid_resol',
         'test_grid_rotate_grid',
         'test_grid_isrect',
+        'test_grid_griddedselector',
+        'test_grid_varsel',
         ]:
         exec(method_template.format(test_name))
 

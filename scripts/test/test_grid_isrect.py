@@ -1,7 +1,7 @@
 """Test :func:`~vacumm.misc.grid.misc.isrect`"""
 
 # %% Imports
-from vcmq import N, isrect, create_grid, rotate_grid
+from vcmq import isrect, create_grid, rotate_grid
 
 # %% Trully rectangular
 rgrid = create_grid((0., 25, .25), (0., 10, .25), 'rect')
