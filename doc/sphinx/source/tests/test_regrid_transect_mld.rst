@@ -2,5 +2,7 @@
 ============================================================================================
 
 
+.. figure:: ../../../../scripts/test/test_regrid_transect_mld.png
+
 .. literalinclude:: ../../../../scripts/test/test_regrid_transect_mld.py
 

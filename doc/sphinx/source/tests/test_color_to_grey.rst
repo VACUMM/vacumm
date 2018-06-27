@@ -2,5 +2,7 @@
 =============================================================================
 
 
+.. figure:: ../../../../scripts/test/test_color_to_grey.png
+
 .. literalinclude:: ../../../../scripts/test/test_color_to_grey.py
 

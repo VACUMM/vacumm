@@ -2,7 +2,5 @@
 =========================================================================================================
 
 
-.. figure:: ../../../../scripts/test/test_regrid_kriging_ock.png
-
 .. literalinclude:: ../../../../scripts/test/test_regrid_kriging_ock.py
 
