@@ -1627,7 +1627,8 @@ class Plot(object):
     def _transform_(self, transform, default=None):
         return _transform_(transform, default, ax=self.axes, fig=self.fig)
 
-    def get_xy(self, x, y, transform=None, xyscaler=None, default_transform=None):
+    def get_xy(self, x, y, transform=None, xyscaler=None,
+               default_transform=None, atleast_1d=False):
         """Convert (x,y) in data coordinates
 
         :Params:
@@ -2172,8 +2173,8 @@ class Plot(object):
             udata, vdata = u,v
 
         # Coordinates
-        x = _asnum_(x)
-        y = _asnum_(y)
+        x = _asnum_(x, atleast_1d=True)
+        y = _asnum_(y, atleast_1d=True)
         if xyscaler is None and hasattr(self, 'xyscaler'): xyscaler = self.xyscaler
         if callable(xyscaler):
             x, y = xyscaler(x, y)
@@ -2340,10 +2341,8 @@ class Plot(object):
         :See also: :func:`matplotlib.pyplot.scatter`
         """
         # Coordinates
-        x = _asnum_(x)
-        y = _asnum_(y)
-        x = N.asarray(x)
-        y = N.asarray(y)
+        x = _asnum_(x, atleast_1d=True)
+        y = _asnum_(y, atleast_1d=True)
         if xyscaler is None and hasattr(self, 'xyscaler'): xyscaler = self.xyscaler
         if callable(xyscaler):
             x, y = xyscaler(x, y)
@@ -2443,8 +2442,8 @@ class Plot(object):
         :See also: :func:`matplotlib.pyplot.plot`
         """
         # Positions
-        xx = N.ma.ravel(_asnum_(xx))
-        yy = N.ma.ravel(_asnum_(yy))
+        xx = N.ma.ravel(_asnum_(xx, atleast_1d=True))
+        yy = N.ma.ravel(_asnum_(yy, atleast_1d=True))
         if xx.size!=yy.size:
             raise PlotError('xx and yy must have the same number of elements (%i!=%i)'%(xx.size,yy.size))
         if xyscaler is None and hasattr(self, 'xyscaler'): xyscaler = self.xyscaler
@@ -7437,7 +7436,7 @@ def hlitvs(color='.95', axis='x', units='ticks', axes=None, maxticks=10, **kwarg
         if axes is None: axes = P.gca()
         axis = getattr(axes, axis+'axis')
     xy = 'xy'[isinstance(axis, YAxis)]
-    axes= axis.get_axes()
+    axes = axis.axes
 
     # Locators and ticks
     kwloc = kwfilter(kwargs, 'locator_')
@@ -7719,7 +7718,7 @@ def add_compass(x, y, size=40, facecolor1='k', facecolor2='w', edgecolor='k',
 
     return patches, texts
 
-def _asnum_(xy):
+def _asnum_(xy, atleast_1d=False):
     """Get xy as a number
 
     If it is a number or a numpy array, it not converted,
@@ -7727,7 +7726,8 @@ def _asnum_(xy):
 
     xy can also be a list, a list of lists, etc.
     """
-    if isinstance(xy, N.ndarray): return xy
+    if isinstance(xy, N.ndarray):
+        return xy
     single = not isinstance(xy, list)
     xys = xy if not single else [xy]
     out = []
@@ -7740,7 +7740,10 @@ def _asnum_(xy):
             continue
         xy = numtime(xy)
         out.append(xy)
-    if single: return out[0]
+    if atleast_1d:
+        return N.ma.atleast_1d(out)
+    if single:
+        return out[0]
     return out
 
 

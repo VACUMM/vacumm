@@ -14,7 +14,7 @@ m.add_point([0, -2], [45, 44], color='k', marker='^', size=40)
 
 # Add text
 m.add_text(0.1, 0.1, 'My text', color='r', shadow=True, weight='bold')
-m.add_text(-2, 50.5, 'My text with transform', transform='data', ha='center', 
+m.add_text(-2, 50.5, 'My text with transform', transform='data', ha='center',
     bbox=dict(facecolor='y', alpha=.3))
 m.add_lon_label(-8, 47.5, -8, va='center', ha='center', transform='data', fmt='%g')
 m.add_lat_label(-8, 47, 47, va='center', ha='center', transform='data')
@@ -29,7 +29,6 @@ m.add_lines([-8, -1, -4, -8], [45, 45, 47, 45], color='r', linewidth=2, shadow=T
 m.add_box([-8, 46, -1, 50], color='c')
 
 m.savefig(figfile%0)
-m.show()
 m.close()
 
 
