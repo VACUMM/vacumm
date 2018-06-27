@@ -46,39 +46,36 @@ useful  packages that can be install using :program:`pip` or
    * - Package
      - Necessary?
      - Description
-   * - :pypi:`configobj (4.7.2)`
+   * - **configobj (4.7.2)**
      - Yes
      - Manipulate advanced configuration files
-   * - :pypi:`pytz`
+   * - **pytz**
      - Only for time zone support
      - Work with time zones
-   * - :pypi:`paramiko`
+   * - **paramiko**
      - Only for :mod:`~vacumm.misc.remote`
      - Use SSH2 protocol.
-   * - :pypi:`seawater`
+   * - **seawater**
      - Yes for advanced diags.
      - Sea water properties
-   * - :pypi:`xlwt`
+   * - **xlwt**
      - Only for :func:`~vacumm.misc.misc.xls_style`.
-     - Write excel files (better: :pypi:`xlutils`)
-   * - :pypi:`cmocean`
+     - Write excel files (better: **xlutils**)
+   * - **cmocean**
      - Only if you want cmocean colormaps
      - Make these colormaps available like ``cmocean_thermal``
-   * - :pypi:`PIL (1.1.7)`
+   * - **PIL (1.1.7)**
      - Only sometimes for :func:`~vacumm.misc.plot.add_logo`.
      - Manipulate images
-   * - :pypi:`sphinx_fortran (1.0)`
+   * - **sphinx_fortran (1.0)**
      - Doc
-     - Extension to :pypi:`sphinx`: Documenting fortran codes
-   * - :pypi:`sphinxcontrib-cheeseshop (0.2)`
+     - Extension to **sphinx**: Documenting fortran codes
+   * - **sphinxcontrib-cheeseshop (0.2)**
      - Doc
-     - Extension to :pypi:`sphinx`: Linking to Cheese Shop (Python Package Index) packages
-   * - :pypi:`sphinxcontrib-ansi (0.6)`
+     - Extension to **sphinx**: Linking to Cheese Shop (Python Package Index) packages
+   * - **sphinxcontrib-programoutput (0.8)**
      - Doc
-     - Extension to :pypi:`sphinx`: Parse ANSI control sequences
-   * - :pypi:`sphinxcontrib-programoutput (0.8)`
-     - Doc
-     - Extension to :pypi:`sphinx`: Include program output
+     - Extension to **sphinx**: Include program output
 
 
 .. rubric:: Documentation generation
@@ -91,7 +88,7 @@ These utilities are needed to fully compile the documentation.
     sphinx extension :mod:`sphinx.ext.graphviz`.
     See for instance module :mod:`~vacumm.misc.core_plot`.
     The program :program:`dot` may be also needed.
-    You can install both with the :pypi:`pydot` package.
+    You can install both with the **pydot** package.
 
 `dvipng <http://savannah.nongnu.org/projects/dvipng>`_
     Used to compile latex formula of the documentation.
@@ -160,7 +157,7 @@ Using :program:`conda`::
 Using pip::
 
     $ pip install configobj PIL paramiko xlutils seawater pytz
-    $ pip install sphinxcontrib-cheeseshop sphinxcontrib-ansi sphinxcontrib-programoutput sphinx-fortran
+    $ pip install sphinxcontrib-cheeseshop sphinxcontrib-programoutput sphinx-fortran
 
 
 

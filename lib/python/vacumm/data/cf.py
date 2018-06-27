@@ -50,7 +50,7 @@ from vacumm.data.misc.arakawa import ARAKAWA_LOCATIONS
 
 __all__ = ['VAR_SPECS', 'AXIS_SPECS',
     'format_var', 'format_axis', 'format_grid', 'match_obj',
-    'cf2atts', 'cf2search', 'cp_suffix', 'specs_def_loc', 'get_loc',
+    'cf2atts', 'cf2search', 'cp_suffix', 'get_loc',
     'change_loc', 'change_loc_single', 'dupl_loc_specs', 'no_loc_single',
     'change_loc_specs', 'squeeze_loc_single', 'squeeze_loc', 'get_physloc',
     'HIDDEN_CF_ATTS', 'set_loc', 'match_known_var', 'match_known_axis',

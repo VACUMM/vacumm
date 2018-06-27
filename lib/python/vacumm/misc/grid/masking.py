@@ -694,7 +694,7 @@ def create_polygon(data, proj=False, mode='poly'):
 
     # xmin,ymin,xmax,ymax form
     if data.ndim == 1:
-        assert len(data) == 4, '1D form must have 4 elements (xmin,ymin,xmax,ymax), not %i'%len(poly)
+        assert len(data) == 4, '1D form must have 4 elements (xmin,ymin,xmax,ymax), not %i'%len(data)
         xmin,ymin,xmax,ymax = data
         data =  N.asarray([[xmin, ymin], [xmax, ymin], [xmax, ymax], [xmin, ymax]])
 
@@ -969,11 +969,11 @@ def convex_hull(xy, poly=False, method='delaunay'):
     if method.startswith('delau'):
 
         # Delaunay
-        from matplotlib.delaunay import Triangulation
+        from scipy.spatial import ConvexHull
         xy = uniq(N.asarray([xx, yy]).transpose())
-        hull = Triangulation(xy[:, 0], xy[:, 1]).hull
-        xe = xy[:, 0][hull]
-        ye = xy[:, 1][hull]
+        indices = ConvexHull(xy).vertices
+        xe = xy[indices, 0]
+        ye = xy[indices, 1]
 
     elif method == 'quarters':
 

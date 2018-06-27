@@ -3,6 +3,12 @@
 # generate a thumbnail gallery of examples
 #
 # Directly inspired from matplotlib gen_gallery.py
+import os, glob, re, sys, warnings
+import matplotlib.image as image
+from matplotlib import rcParams
+from sphinx.util import status_iterator
+from codecs import open
+
 template = """\
 {%% extends "layout.html" %%}
 {%% set title = "Thumbnail gallery" %%}
@@ -38,10 +44,6 @@ header_template = u"""<div class="section" id="%(subdir)s">\
 toc_template = """\
 <li><a class="reference internal" href="#%(subdir)s">%(title)s</a></li>"""
 
-import os, glob, re, sys, warnings
-import matplotlib.image as image
-from matplotlib import rcParams
-from codecs import open
 
 multiimage_match = re.compile('(.*?)(_\d+)$').match
 
@@ -164,7 +166,7 @@ def gen_gallery(app, doctree):
     # Inform about thumbnail generation
     old = rcParams['image.origin']
     rcParams['image.origin'] = 'upper'
-    for key in app.builder.status_iterator(
+    for key in status_iterator(
             thumbnails.iterkeys(), "generating thumbnails... ",
             length=len(thumbnails)):
         image.thumbnail(key, thumbnails[key], 0.3)

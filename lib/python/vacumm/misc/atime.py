@@ -1525,7 +1525,7 @@ def daily(data, hstart=0, **kwargs):
 
         >>> dsst = daily(sst, hstart=12)
 
-    :See also: :func:`daily_bounds` :fun:`reduce`
+    :See also: :func:`daily_bounds` :func:`reduce`
 
     :Return: A cdms variable on a daily time axis
     """

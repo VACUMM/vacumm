@@ -61,17 +61,17 @@ from matplotlib.ticker import FormatStrFormatter, Formatter, FixedLocator
 import matplotlib.image as mpimg
 from mpl_toolkits.basemap import Basemap
 
-from .misc import (dict_aliases, latlab, lonlab, deplab, 
+from .misc import (dict_aliases, latlab, lonlab, deplab,
     geo_scale, kwfilter, dict_check_defaults, auto_scale)
-from .atime import (mpl, time, axis_add, compress, SpecialDateFormatter, 
+from .atime import (mpl, time, axis_add, compress, SpecialDateFormatter,
     )
 from .axes import check_axes, isaxis, istime, axis_type
 from .color import simple_colors, Scalar2RGB, get_cmap
 from .color import get_cmap, Scalar2RGB
-from .core_plot import (add_glow, add_shadow, add_agg_filter, hlitvs, 
-    AutoDateFormatter2,  DualDateFormatter, add_lightshading, 
+from .core_plot import (add_glow, add_shadow, add_agg_filter, hlitvs,
+    AutoDateFormatter2,  DualDateFormatter, add_lightshading,
     AutoDateLocator2, AutoDateMinorLocator, AutoDualDateFormatter, add_compass,
-    add_right_label, add_left_label, add_top_label, add_bottom_label, 
+    add_right_label, add_left_label, add_top_label, add_bottom_label,
     add_lightshading, add_param_label, get_quiverkey_value)
 from .docstrings import docfill
 from .grid.misc import (meshgrid, meshbounds, var2d)
@@ -610,19 +610,19 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
 
 
         # Boundary standard deviation arc
-        arc = Arc((0., 0.), stdmax*2, stdmax*2, fill=False,zorder=0, facecolor='none')
+        arc = Circle((0., 0.), stdmax, fill=False, zorder=0, facecolor='none')
         ax.add_patch(arc)
 
         # Intermediates standard deviation arcs
         for radius in sticks[1:-1]:
-            pstd = Arc((0., 0.), radius*2, radius*2, linestyle='dashed',
+            pstd = Circle((0., 0.), radius, linestyle='dashed',
                 linewidth=P.rcParams['grid.linewidth'], fill=False, edgecolor='b',zorder=0)
             ax.add_patch(pstd)
 
         # RMS (red) for first ref only
         rmax = N.sqrt(stdmax**2+stdref[0]**2)
         for r in sticksref[1:-1]:
-            prms = Arc((stdref[0], 0.), r*2, r*2,
+            prms = Circle((stdref[0], 0.), r,
                 linestyle='dashed', fill=False, linewidth=P.rcParams['grid.linewidth'],
                 edgecolor='r',zorder=0)
             ax.add_patch(prms)
@@ -745,6 +745,8 @@ def dtarget(bias, rmsc, stdmod, stdref=None, colors='cyan', sizes=20,
         - **title**, optional: Title of the plot.
         - **scatter_<keyword>**, optional: ``<keyword>`` is passed
           to :func:`matplotlib.pyplot.scatter`.
+        - **circle_<keyword>**, optional: ``<keyword>`` is passed
+          change the properties of circles.
 
     .. todo::
 
@@ -756,6 +758,7 @@ def dtarget(bias, rmsc, stdmod, stdref=None, colors='cyan', sizes=20,
     kwscat = kwfilter(kwargs, 'scatter_')
     kwscat.setdefault('cmap', cmap)
     kwcb =kwfilter(kwargs, 'colorbar_')
+    kwcir = kwfilter(kwargs, 'circle_')
 
     # Convert to masked arrays
     bias = N.ma.asarray(bias)
@@ -797,13 +800,14 @@ def dtarget(bias, rmsc, stdmod, stdref=None, colors='cyan', sizes=20,
     P.axis([-xmax, xmax, -xmax, xmax])
 
     # Arcs
-    kwarc = dict(linestyle='dashed', edgecolor='r',
+    dict_check_defaults(kwcir, linestyle='dotted', edgecolor='r',
             linewidth=P.rcParams['grid.linewidth'], fill=False, zorder=0)
     for radius in P.xticks()[0]:
-        pstd = Arc((0., 0.), radius*2, radius*2, **kwarc)
-        ax.add_patch(pstd)
-    kwarc['linestyle'] = 'solid'
-    ax.add_patch(Arc((0., 0.), 1., 1., **kwarc))
+        if radius > 0:
+            pstd = Circle((0., 0.), radius, **kwcir)
+            ax.add_patch(pstd)
+    kwcir['linestyle'] = 'solid'
+    ax.add_patch(Circle((0., 0.), 1., **kwcir))
 
     # Colorbar
     if colorbar and isinstance(colors, N.ndarray):
@@ -2472,7 +2476,7 @@ def colorbar_new(sm=None, vars=None, drawedges=False, levels=None, horizontal=Fa
             if not standalone: gca = P.gca()
             cax = P.axes(cax)
     elif position is not None:
-        if osition in [True,1,'auto']:
+        if position in [True,1,'auto']:
             if horizontal:
                 position = 0.5
             else:

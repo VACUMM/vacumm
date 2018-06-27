@@ -7520,7 +7520,7 @@ class _PPatch(Patch):
         if size is None: size=self.size
         transform = Artist.get_transform(self) if self.is_transform_set() else None
         return _transform_pixrot_(self.center, size, self.angle, self.anglemode,
-            ax = self.get_axes(), posref=self.posref, transform=transform)
+            ax = self.axes, posref=self.posref, transform=transform)
 
     def get_patch_transform(self):
         self._update_transform_()

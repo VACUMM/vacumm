@@ -5,6 +5,16 @@ Test scripts
 
 To add a new test, see :ref:`user.dev.test`.
 
+Misc
+-----
+
+Testing :mod:`~vacumm.misc.misc` module.
+
+.. toctree::
+    :glob:
+
+    test_misc_*
+
 Grids
 -----
 
@@ -77,6 +87,16 @@ Testing :mod:`~vacumm.misc.grid.masking` module.
 
     test_mask_*
 
+Config
+------
+
+Testing :mod:`~vacumm.misc.config` module.
+
+.. toctree::
+    :glob:
+
+    test_config_*
+
 Filters
 -------
 
@@ -97,24 +117,33 @@ Testing :mod:`~vacumm.diag` module.
 
     test_diag_*
 
-The :class:`~vacumm.data.misc.dataset.Dataset` class
-----------------------------------------------------
+The :class:`~vacumm.data.cf` module
+-----------------------------------
+
+.. toctree::
+    :glob:
+
+    test_cf_*
+
+
+The :class:`~vacumm.data.misc.dataset.Dataset` classes
+------------------------------------------------------
 
 .. toctree::
     :glob:
 
     test_dataset_*
 
-The :class:`~vacumm.data.misc.dataset.arakawa` module
------------------------------------------------------
+The :mod:`~vacumm.data.misc.dataset.arakawa` module
+---------------------------------------------------
 
 .. toctree::
     :glob:
 
     test_arakawa_*
 
-The :class:`~vacumm.report.ifroco` module
------------------------------------------
+The :mod:`~vacumm.report.ifroco` module
+---------------------------------------
 
 .. toctree::
     :glob:

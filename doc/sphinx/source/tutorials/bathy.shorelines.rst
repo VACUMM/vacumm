@@ -9,4 +9,4 @@ Voir : :mod:`~vacumm.bathy.shorelines`
 
     bathy.shorelines.readplot
     bathy.shorelines.compare
-..    bathy.shorelines.sealevel
+    bathy.shorelines.sealevel

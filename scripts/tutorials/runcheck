@@ -110,6 +110,8 @@ warnings.showwarning = Warner(logger).showwarning
 
 
 # Run them all
+from matplotlib import use ; use('Agg')
+from matplotlib.pyplot import close
 import subprocess, traceback
 igood = 0
 ibad = 0
@@ -128,6 +130,7 @@ for script in files:
 #    execfile(script, {'__file__':script})
     try:
         execfile(script, {'__file__':script})
+        close()
         igood +=1
         result = 'OK'
         report_func = logger.info

@@ -1030,8 +1030,8 @@ def fill1d(vari, axis=0, method='linear', maxgap=0):
         keep[:] = ~xmask
         if maxgap >=1:
             dd[:] = N.diff(xmask.astype('i'))
-            gapstart = ii[dd==1]+1
-            gapend = ii[dd==-1]
+            gapstart = ii[:-1][dd==1]+1
+            gapend = ii[1:][dd==-1]
             ie0 = int(gapend[0]<gapstart[0])
             is1 = (gapstart[-1]>gapend[-1]) and -1 or nx
             for istart, iend in zip(gapstart[:is1], gapend[ie0:]):

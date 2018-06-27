@@ -329,7 +329,7 @@ def getvar_fmtdoc(func, **kwargs):
     kwargs_params = ('- '+kwargs_params) if kwargs_params else ''
 
     # Format using template
-    func.__doc__ = getvar_fmtdoc_tpl%locals()
+    func.__doc__ = getvar_fmtdoc_tpl%locals() + '\n'
     return func
 
 
@@ -853,7 +853,7 @@ class Dataset(Object):
                 datasets[i] = cdms2.open(d)
                 self.info('- %s', datasets[i].id)
 
-        # If append mode, extend internal list
+        # If append mode, extend internal list
         if append:
             self.dataset.extend(datasets)
 

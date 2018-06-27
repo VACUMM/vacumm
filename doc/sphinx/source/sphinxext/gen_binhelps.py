@@ -1,9 +1,10 @@
 import os
 import glob
-import sys
 import subprocess
 from sphinx.util.console import bold
+from sphinx.util import status_iterator
 from vacumm.misc.config import opt2rst
+
 
 def write_helps(app):
 
@@ -19,7 +20,8 @@ def write_helps(app):
         scripts_patterns = [scripts_patterns]
     scripts = []
     for ss in scripts_patterns:
-        for script in glob.glob(os.path.abspath(os.path.join(scripts_bindir, ss))):
+        for script in glob.glob(os.path.abspath(
+                os.path.join(scripts_bindir, ss))):
 
             # Is it executable?
             if not os.path.isfile(script) or not os.access(script, os.X_OK):
@@ -31,12 +33,12 @@ def write_helps(app):
 
             # Checks time
             if (os.path.exists(rstfile) and
-                os.stat(script).st_mtime < os.stat(rstfile).st_mtime):
+                    os.stat(script).st_mtime < os.stat(rstfile).st_mtime):
                 continue
 
             scripts.append((rstfile, script))
 
-    for rstfile, script in app.status_iterator(
+    for rstfile, script in status_iterator(
             scripts, bold('generating help for bin scripts... '),
             length=len(scripts),
             stringify_func=lambda x: os.path.basename(x[0])):

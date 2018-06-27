@@ -1,4 +1,4 @@
-# Construction des jeux de donnees
+# %% Make fake data
 import MV2, numpy as N
 nt = 50
 # - reference
@@ -10,7 +10,7 @@ model1.long_name = 'Model 1'
 model2 = ref/2.+N.random.rand(nt)*15.
 model2.long_name = 'Model 2'
 
-# Plot
+# %% Plot
 from vacumm.misc.plot import taylor
 taylor([model1, model2], ref, figsize=(8, 8), label_size='large', size=15,
     labels = ['Good model', None], colors='cyan', title_size=18,

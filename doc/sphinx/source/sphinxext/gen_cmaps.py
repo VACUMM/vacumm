@@ -5,6 +5,7 @@
 import os
 import vacumm.misc.color
 from sphinx.util.console import bold
+from sphinx.util import status_iterator
 
 def gen_cmaps(app, rstfile):
 
@@ -27,7 +28,7 @@ def gen_cmaps(app, rstfile):
     # Plot individual colormaps
     from matplotlib import rc, rcdefaults
     outdir = os.path.join(app.builder.srcdir, os.path.dirname(rstfile))
-    for cmap_name in app.builder.status_iterator(
+    for cmap_name in status_iterator(
             cmaps.iterkeys(), "generating colormaps... ",
             length=len(cmaps),
             stringify_func=lambda x: os.path.basename(x),

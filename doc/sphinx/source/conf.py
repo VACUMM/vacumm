@@ -25,7 +25,7 @@ for path in ('../../../lib/python', '../../../lib/python/vacumm',
     path = os.path.abspath(os.path.join(cdir, path))
     sys.path.insert(0, path)
 
-# -- General configuration -----------------------------------------------------
+# %% General configuration
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
@@ -39,7 +39,7 @@ extensions = [
         'sphinx.ext.ifconfig',
         'sphinx.ext.extlinks',
         'sphinx.ext.viewcode',
-        'sphinxcontrib.cheeseshop',
+#        'sphinxcontrib.cheeseshop',
 #        'sphinxcontrib.ansi',
         'sphinxcontrib.programoutput',
         'sphinxfortran.fortran_domain',
@@ -121,7 +121,7 @@ trim_footnote_reference_space = True
 
 numfig = True
 
-# -- Options for HTML output ---------------------------------------------------
+# %% Options for HTML output
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
@@ -200,7 +200,7 @@ html_additional_pages = {'index':'index.html', 'gallery':'gallery.html'}
 htmlhelp_basename = 'VACUMMdoc'
 
 
-# -- Options for LaTeX output --------------------------------------------------
+# %% Options for LaTeX output
 
 # The paper size ('letter' or 'a4').
 latex_paper_size = 'a4'
@@ -237,7 +237,7 @@ latex_additional_files = ['static/vacumm.sty']
 #latex_use_modindex = True
 
 
-# Intersphinx
+# %% Intersphinx
 intersphinx_mapping = {
     'python':('https://docs.python.org/2', None),
     'matplotlib':('http://matplotlib.org',None),
@@ -245,10 +245,11 @@ intersphinx_mapping = {
     'numpy':('https://docs.scipy.org/doc/numpy', None),
     'scipy':('https://docs.scipy.org/doc/scipy/reference', None),
     'sphinx':('http://www.sphinx-doc.org/en/stable', None),
+    'cdms2':('https://cdms.readthedocs.io/en/latest', None),
     'http://docs.python.org/dev': None,
     }
 
-# Extlinks
+# %% Extlinks
 extlinks = {
     'basemap': ('http://matplotlib.github.com/basemap/%s', None),
     'sphinx': ('http://sphinx.pocoo.org/%s', None),
@@ -256,12 +257,12 @@ extlinks = {
     }
 
 
-# Python overview
+# %% Python overview
 overview_title_overview = False
 overview_title_content = False
 overview_columns = 3
 
-# VACUMM config
+# %% VACUMM config
 if callfromsphinx:
     from vacumm.config import write_default_config
     write_default_config('vacumm.cfg')
@@ -270,7 +271,7 @@ unused_docs = ['tutorials/bathy.shorelines.sealevel.rst']
 
 todo_include_todos = True
 
-# Inheritance diagram
+# %% Inheritance diagram
 inheritance_graph_attrs = dict(rankdir="TB", size='"6.0, 8.0"', ratio='compress')
 inheritance_node_attrs = dict(shape='ellipse', fontsize=10, height=.6,
                               color='orange', style='filled')
@@ -326,7 +327,7 @@ gen_gallery_paths = {
 #gen_gallery_skips = [] # basenames to skip
 #gen_gallery_nmax = 3 # max number of muti-figures
 
-# Colormaps
+# %% Colormaps
 gen_cmaps_prefix = 'misc-color-'
 gen_cmaps_extra_list = [
     # (function name, kwargs, figfile short name (no prefix+no ext)),
@@ -340,17 +341,17 @@ gen_cmaps_extra_list = [
     ('cmap_rainbow', dict(n=5, stretcher='reduced_green'), 'vacumm_rainbow'),
 ]
 
-# Autodoc (python)
+# %% Autodoc (python)
 autodoc_default_flags = ['members', 'show-inheritance', 'undoc-members']
 
-# Configuration for programoutput extension
+# %% Configuration for programoutput extension
 #doesn't works...#programoutput_prompt_template = '[user@host ~]$ %(command)s\n\n%(output)s' # default is: '$ %%(command)s\n%%(output)s'
 programoutput_use_ansi = False # default is: False
 
-# Fortran autodoc
+# %% Fortran autodoc
 fortran_src = [os.path.abspath('../../../lib/python/vacumm/misc/grid/interp.f90')]
 
-# Docversions
+# %% Docversions
 docversions_subpath_doc = 'doc/sphinx'
 docversions_index_html = 'contents.html'
 
