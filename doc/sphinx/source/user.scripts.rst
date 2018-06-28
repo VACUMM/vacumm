@@ -30,8 +30,8 @@ Technical scripts
     user.scripts.make_movie
 
 
-Physics
-=======
+Physics (french)
+================
 
 .. toctree::
     :maxdepth: 1
@@ -46,8 +46,8 @@ Physics
     user.scripts.stratif
     user.scripts.warmpool
 
-Validation
-==========
+Validation (french)
+===================
 
 .. toctree::
     :maxdepth: 1

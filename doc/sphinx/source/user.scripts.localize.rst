@@ -27,9 +27,9 @@ Usage
 ~~~~~
 
 .. code-block:: none
-    
+
     Usage: localize.py [options]
-    
+
     Options:
       --version             show program's version number and exit
       -h, --help            show this help message and exit
@@ -62,7 +62,7 @@ Usage
                             Output files pattern  (default:
                             %(plot)s-%(op)s-%(var)s-%(tmin)s-%(tmax)s.png)
       --show                Show figures
-    
+
 
 
 Aperçu des sorties
@@ -70,12 +70,12 @@ Aperçu des sorties
 
 **Localisation du minimum dans le temps:**
 
-.. image:: localize_loc.png
+.. image:: images/localize_loc.png
     :width: 90%
 
 **Valeur du minimum dans le temps:**
 
-.. image:: localize_val.png
+.. image:: images/localize_val.png
     :width: 90%
 
 

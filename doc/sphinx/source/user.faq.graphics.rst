@@ -3,165 +3,182 @@
 Graphiques
 ==========
 
-Comment modifier les paramètres de tracé ?
-------------------------------------------
+How to modify the plot parameters?
+----------------------------------
 
-Modifiez le fichier de configuration de Matplotlib.
-Il est typiquement situé ici : :file:`~/.matplotlib/matplotlibrc`.
+Edit the Matplotlib configuration file.
+It is typically located here: :file:`~/.matplotlib/matplotlibrc`.
 
-Pour en savoir plus : http://matplotlib.sourceforge.net/users/customizing.html
+For more information: http://matplotlib.sourceforge.net/users/customizing.html
 
 
-La tracé de ma carte prend du temps !
--------------------------------------
+My map takes time to draw
+-------------------------
 
-Les tracés de carte qui prennent du temps sont ceux d'une zone réduite
-qui font appel à un trait de côte à haute résolution ("f" du GSHHS ou "s" pour Histolitt du SHOM).
-Dans le cas des traîts du GSHHS, un système de mise en cache des cartes 
-tracées avec :mod:`~mpl_toolkits.basemap` est utilisé 
-(voir :mod:`vacumm.misc.grid.basemap`) : si une carte utilisant le même zoom et la même résolution
-de traît de côte doit être retracée, celle-ci est chargée à partir du cache.
-Pour info, les cartes en cache sont stockées dans le répertoire donné par
-la fonction :func:`~vacumm.misc.grid.basemap.get_map_dir` (a priori
+The map layouts that take time are those of a reduced area
+which use a high resolution coastline ("f" from GSHHS or "s" for Histolitt from SHOM).
+In the case of GSHHS traîts, a card caching system
+plotted with mod:`~mpl_toolkits.basemap` is used
+(see :mod:`vacumm.misc.grid.basemap`):
+if a map using the same zoom and resolution
+must be traced, it is loaded from the cache.
+For your information, cached maps are stored in the directory given by
+the function :func:`~vacumm.misc.grid.basemap.get_map_dir` (a priori
 :file:`~/.matplotlib/basemap/cached_maps`).
 
 .. note::
-    
-    Ce système de cache peut générer des erreurs au moment de l'utilisation
-    d'une carte sauvegardée. Voir :ref:`user.faq.graphics.err_basemap`.
-    
-En outre, il se peut qu'une carte veuille s'afficher à l'écran
-alors que vous faites un tracé à distance, ce qui peut prendre du temps.
-Si vous désirez désactiver cet affichage, lisez :
+
+    This cache system can generate errors during use
+    of a saved card. See:`user.faq.graphics.err_basemap`.
+
+In addition, a map may want to appear on the screen
+while you're doing a remote plot, which can take time.
+If you want to disable this display, read :
 :ref:`user.faq.graphics.window`.
 
 
 
-Comment tuner un graphique à tracer ?
--------------------------------------
+How to tuner a graph to plot?
+-----------------------------
 
-Les routines graphiques de VACUMM transfèrent des mots clés vers 
-la plupart des fonctions de matplotlib utilisées.
-On spécifie un mot-clé à transférer un préfixant celui-ci du nom de
-la fonction suffixé avec un "_" (on utilise :func:`~vacumm.misc.misc.kwfilter` pour
-filtrer les mots clés).
+VACUMM's graphical routines transfer keywords to
+most of the matplotlib functions used.
+We specify a keyword to transfer a prefixing this one of the name of
+the function suffixed with a"_" (use: func:`~vacumm.misc.misc.kwfilter` to
+filter keywords).
 
-Par exemple, il est possible de changer la taille du titre d'un graphique,
-ainsi que l'épaisseur des contours en procédant ainsi :
-    
+For example, it is possible to change the size of the title of a graph,
+and the thickness of the contours as follows::
+
     >>> map2(sst, title_size=20, contour_linewidths=3)
 
-Dans ce cas précis, pour avoir la liste des autres options possibles
-on se réfère à la documentation des fonctions :func:`matplotlib.pyplot.title`
-et :func:`matplotlib.pyplot.contour`.
+In this specific case, to have the list of the other possible options
+we refer to the documentation of functions :func:`matplotlib.pyplot.title`
+and func:`matplotlib.pyplot.contour`.
 
+In addition, Matplotlib plotted objects are often accessible using
+the :meth:`~vacumm.misc.core_plot.Plot.get_obj` method that returns a list::
 
-Comment placer soit-même une colorbar ?
----------------------------------------
-
-Désactivez le tracé automatique de la colorbar et l'affichage de la figure, 
-puis tracez-la en spécifiant sa position (cf. :func:`matplotlib.pyplot.axes`) :
-    
-    >>> m = map2(data, colorbar=False, right=.9, show=False)
-    >>> m.colorbar(cax=[.91, .2, .3, .6])
+    >>> m = map2((u, v), show=False)
+    >>> myquiver = m.get_obj('quiver')[0]
+    >>> mycontour = m.get_obj('contour')[0]
+    >>> myquiver.set_zorder(10)
     >>> m.show()
-    
-ou directement
 
-    >>> map2(data, colorbar_cax==[.91, .2, .3, .6], right=.9, show=False)
-    
-Voir :func:`matplotlib.pyplot.colorbar` pour les options de tracé.
+Note you must set the ``show`` parameter to ``False`` if your
+want to tune your plot (write mode), which is not necessary if you just
+want to gather come parameters.
+
+How to place a colorbar yourself?
+---------------------------------
+
+Turn off the automatic colorbar plot and figure display,
+then draw it by specifying its position (cf. : func:`matplotlib.pyplot.axes`) :
+
+    m = map2(data, colorbar=False, right=.9, show=False)
+    m.colorbar(cax=[.91, .2, .3, .6])
+    m.show()
+
+or directly
+
+    map2(data, colorbar_cax==[.91, .2, .3, .6], right=.9, show=False)
+
+See: func:`matplotlib.pyplot.colorbar` for plotting options.
 
 
 .. _user.faq.graphics.window:
 
-Ma figure ne s'affiche pas / désactiver l'affichage des figures
----------------------------------------------------------------
+My figure is not displayed / turn off the display of figures like in batch mode
+-------------------------------------------------------------------------------
 
-La créations des figures nécessite de faire appel à une couche logicielle graphique.
+The creation of figures requires the use of a graphical software layer.
 
-Ces couches logicielles sont appellées backends. Le minimum pour la
-sauvegarde des figures est d'utiliser le backend ``Agg``, cela permet
-aussi de contourner les erreurs lors de l'utilisation de scripts en batch
-lorsque l'affichage n'est pas disponible.
+These software layers are called backends. The minimum for the
+saving the figures is to use the backend ``Agg``, this allows
+also to bypass errors when using batch scripts
+when the display is not available.
 
-Les autres backends nécesitent un affichage, le backend ``TkAgg``
-est presque systématiquemnt disponible.
-Le backend ``qt4agg`` est également disponible avec UVCDAT.
+The other backends require a display, the ``TkAgg`` backend
+is almost systematically available.
+The qt4agg backend is also available with UVCDAT.
 
-Si vous voulez faire un affichage de vos figures, utilisez donc ``qt4agg``,
-si vous utiliser ``Agg``, aucun affichage ne sera fait.
+If you want to make a display of your figures, use ``qt4agg``,
+if you use ``Agg``, no display will be made.
 
-Il y a deux manières de faire pour modifier le backend:
-    
-    1) Celle permanente consiste à modifier la ligne correspondante
-       dans le fichier de configuration de Matplotlib ::
-           
-           backend      : Agg
-           
-    2) La deuxième manière consiste à le faire à la volée,
-       au début d'un script (avant tout chargement de :mod:`matplotlib`
-       et :mod:`vacumm`) ::
-           
+There are two ways to modify the backend:
+
+    1) The permanent one consists in modifying the corresponding line
+       in the Matplotlib configuration file::
+
+           backend : Agg
+
+    2) The second way is to do it on the fly,
+       at the beginning of a script (before any loading of :mod:`matplotlib`)
+       and :mod:`vacumm`)::
+
            from matplotlib import use
            use('Agg')
 
-Comment désactiver le zoom automatique ?
-----------------------------------------
+How to disable automatic zoom?
+------------------------------
 
-Par exemple quand vous tracez une carte avec :func:`~vacumm.misc.plot.map2`,
-si les données non masquées ne couvrent pas tout le domaine, 
-un zoom automatique évitera de tracer les zones non couvertes.
+For example when you draw a map with func:`~vacumm.misc.plot.map2`,
+if the unmasked data does not cover the entire domain,
+automatic zoom will avoid drawing areas that are not covered.
 
-Vous pouvez éviter cela en utilisant les options ``xmasked=False``,
-``ymasked=False``, voir ``xymasked=False`` pour désactiver le zoom sur les deux axes
-(dans le cas d'un plot 2D).
+You can avoid this by using the ``xmasked=False`` options,
+symasked=False`, see ``xymasked=False`` to disable zoom on both axes
+(in the case of a 2D plot)::
 
-    >>> map(sst, xymasked=False)
+    map(sst, xymasked=False)
 
-Comment ajouter des effets de type ombre ou glow ?
+How to add shadow or glow effects?
 --------------------------------------------------
 
-La plupart du temps, des mots clés sont prévus à cet effet pour les
-fonctions de tracer. Par exemple, si vous tracez des contours, vous
-pouvez procéder ainsi pour ajouter une ombre à ces derniers et un effets
-glow aux labels :
-    
-    >>> map2(data, contour_shadow=True, clabel_glow=True)
+Most of the time, keywords are provided for this purpose for the
+plotting functions. For example, if you draw contours, you
+can do this to add a shadow to these and an effect
+glow to labels::
 
-Vous pouvez passer des mots clés pour modifier les effets (voir
+    map2(data, contour_shadow=True, clabel_glow=True)
+
+You can pass keywords to modify effects (see
 :func:`~vacumm.misc.core_plot.add_shadow` and :func:`~vacumm.misc.core_plot.add_glow`
-pour connaitre les options) :
-    
-    >>> map2(data, contour_shadow_width=4, contour_shadow_xoffset=3)
-    
-Vous pouvez procéder aussi à la main pour un tracé externe :
-    
-    >>> m = map2(data, show=False)
-    >>> m.add_shadow(m.axes.plot(x,y)) # m.axes.plot ou pylab.plot
-    
-voire :
-    
-    >>> from vacumm.misc.core_plot import add_shadow
-    >>> add_shadow(P.plot(x,y))
+to know the options)::
+
+    map2(data, contour_shadow_width=4, contour_shadow_xoffset=3)
+
+You can also proceed manually for an external trace::
+
+    m = map2(data, show=False)
+    m.add_shadow(m.axes.plot(x,y)) # m.axes.plot or pylab.plot
+
+or::
+
+    from vacumm.misc.core_plot import add_shadow
+    add_shadow(P.plot(x,y))
+
+
 
 
 .. _user.faq.graphics.err_basemap:
 
-J'ai une erreur liée à la classe :class:`~mpl_toolkits.basemap.Basemap`
------------------------------------------------------------------------
+I have an error with class :class:`~mpl_toolkits.basemap.Basemap`
+-----------------------------------------------------------------
 
-Il se peut que l'utilisation d'une carte (typiquement lors d'une tracé avec
-:func:`~vacumm.misc.plot.map2`) produise une erreur (par exemple un attribut manquant,
-tel que :attr:`celestial`` ou :attr:`_mapboundarydrawn`).
-C'est probablement lié à la mise en cache automatique des cartes déjà tracées.
-Ce procédé permet de gagner du temps lors du tracé d'une carte ayant exactement les mêmes
-caractéristiques (domaine, projection, trait de côte).
-Or, la carte mise en cache n'est peut-être pas compatible avec la version actuelle de 
-:mod:`~mpl_toolkits.basemap`, suite à une mise à jour des paquets python.
-Pour régler le problème radicalement, vous pouvez supprimer toutes les cartes en cache.
-Elles se trouvent par défaut dans le répertoire donné par la fonction :func:`~vacumm.misc.grid.basemap.get_map_dir`.
-Il existe une fonction pour effectuer cette opération :
-    
+It may be that the use of a map (typically when plotting with
+:func:`~vacumm.misc.plot.map2`) produces an error (for example a missing attribute,
+such as :attr:`celestial` or :attr:`_mapboundarydrawn`).
+This is probably related to the automatic caching of already drawn maps.
+This process saves time when plotting a map with exactly the same
+characteristics (domain, projection, coastline).
+However, the cached card may not be compatible with the current version of
+:mod:`~mpl_toolkits.basemap`, following a python package update.
+To solve the problem radically, you can delete all cached cards.
+They are found by default in the directory given by the function
+:func:`~vacumm.misc.grid.basemap.get_map_dir`.
+
+There is a function to perform this operation::
+
     >>> from vacumm.misc.grid.basemap import reset_cache
     >>> reset_cache()

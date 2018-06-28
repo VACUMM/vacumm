@@ -186,7 +186,7 @@ class Profile(Object):
             self.variables[n] = v
         self.__str__ = self.__newstr__
 
-    # Replace __str__ once all __init__ actions are completed
+    # Replace __str__ once all __init__ actions are completed
     def __newstr__(self):
         return '<%s %s, depth shape: %s, variables: %s'%(
             self.__class__.__name__,
@@ -803,7 +803,7 @@ class Profiles(AbstractProfiles):
         latrange = kwargs.get('latrange', self.latrange)
         qtype = 'c' # int # lambda o:str(o).strip()
         #qualities = map(qtype, qualities)
-        qualities = MV2.array(qualities, dtype=qtype).tolist()
+        qualities = MV2z.array(qualities, dtype=qtype).tolist()
         # TODO: quality types in vars and in self ???
         self.verbose('Valid quality flags: %s', qualities)
         self.verbose('Requested variables identifiers: %s', varids)
@@ -1569,13 +1569,13 @@ class ProfilesMerger(Object):
             if not loadkw['variables']:
                 cls.warning('No variables were specified')
 
-            # Create the merger with the load configuration (variables, qualities, time/lon/lat range, ...)
+            # Create the merger with the load configuration (variables, qualities, time/lon/lat range, ...)
             merger = cls(spec=loadkw)
 
             # Load profiles specified as command line arguments
             merger.load(args)
 
-            # Load profiles from explicit list of config file or command line option
+            # Load profiles from explicit list of config file or command line option
             input_files = cfgo[cfgsec].get('input_files', [])
             if input_files:
                 merger.load(input_files)
@@ -1597,7 +1597,7 @@ class ProfilesMerger(Object):
                 cls.info('Found %s file%s', len(files), ('','s')[len(files)>1])
                 merger.load(files)
 
-            # Now merge the profiles with filters specified in configuration (e.g. duplicates filtering)
+            # Now merge the profiles with filters specified in configuration (e.g. duplicates filtering)
             merger.merge(**cfgo[cfgsec]['merge'])
 
             return 0

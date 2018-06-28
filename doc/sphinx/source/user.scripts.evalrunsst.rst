@@ -11,7 +11,7 @@ Préalables
 ----------
 
 Les données d'entrée nécessaires au script sont:
-    
+
 - les résultats de simulation numériques disponibles au format NetCDF.
 - les observations satellites disponibles au format NetCDF. Le script actuel est capable de récupérer les données satellites SEVIRI et NAR sur site ftp.
 
@@ -19,7 +19,7 @@ Fonctionnement
 --------------
 
 Ce script permet de calculer et d'afficher:
-    
+
 - les différences de SST entre le modèle et les observations satellites,
 - les moyennes temporelles et spatiales,
 - l'écart type pour le modèle et les observations(et la différence des deux) pour chaque pas de temps,
@@ -41,31 +41,31 @@ Les réglages s'effectuent au moyen d'un fichier config.cfg. Les attributs suiva
           Définit les statistiques à compiler.
         [Domain]
           Définit le domaine étudié
-        [Model Description] 
+        [Model Description]
           Définit le type de modèle considéré et son mode de rapatriement.
         [MARS F1]
           Répertoire où récupérer les sorties du modèle.
         [Observations]
           Définit le type d'observations considérées et leur mode de rapatriement
         [Report]
-          Générer ou non un rapport html avec les fichiers image (.png) produits. 
+          Générer ou non un rapport html avec les fichiers image (.png) produits.
         [Output]
-          Générer ou non un fichier NetCDF par statistique et le répertoire où ils seront écrits. 
+          Générer ou non un fichier NetCDF par statistique et le répertoire où ils seront écrits.
         [Time Period]
           Les dates (année, mois, jours, heures) de début et de fin de la période considérée.
         [Env]
-          Répertoire de travail, où sont écrits et chargés les fichiers NetCDF. 
+          Répertoire de travail, où sont écrits et chargés les fichiers NetCDF.
 
 .. warning::
- Pour le bon fonctionnement de ce script il faut que soient présents dans le même répertoire les fichiers suivants: 
+ Pour le bon fonctionnement de ce script il faut que soient présents dans le même répertoire les fichiers suivants:
 
-         init_eval_run_sst_op_previmer.py; 
+         init_eval_run_sst_op_previmer.py;
 
-         eval_run_sst_op_previmer.py ; 
+         eval_run_sst_op_previmer.py ;
 
-         global_stat.py ; 
+         global_stat.py ;
 
-         config.cfg ; 
+         config.cfg ;
 
          congig_r.cfg
 
@@ -177,8 +177,8 @@ Le code peut être exécuté de la manière suivante sur caparmor:
 Aperçu des sorties
 ~~~~~~~~~~~~~~~~~~
 
-.. image:: result_mean_bias_all_20120221_20120228.png 
+.. image:: images/result_mean_bias_all_20120221_20120228.png
     :width: 80%
 
-.. image:: result_spatial_statmean_manche_est_20120221_20120228.png 
+.. image:: images/result_spatial_statmean_manche_est_20120221_20120228.png
     :width: 80%

@@ -14,10 +14,10 @@ Prerequisites
 List of packages
 -----------------
 
-UV-CDAT
-^^^^^^^
+CDAT
+^^^^
 
-`UV-CDAT <http://uv-cdat.llnl.gov/>`_ is a meta-package containing:
+`CDAT <http://uv-cdat.llnl.gov/>`_ is a meta-package containing:
 
     - a version of python;
     - standard and specialized python packages
@@ -28,13 +28,26 @@ UV-CDAT
       and specialized for manipulation and visualization of ocean/atmosphere data;
     - numerous other libraries and tools.
 
+The packages installed by CDAT and that are needed are the following::
+
+- python
+- numpy
+- libgfortran
+- cdms2
+- cdutil
+- genutil
+- matplotlib
+- basemap
+- basemap-data-hires
+- scipy
+
 
 Other packages
 ^^^^^^^^^^^^^^
 
 .. rubric:: Python
 
-When you have installed UV-CDAT, here is a list of necessary or
+When you have installed CDAT or the , here is a list of necessary or
 useful  packages that can be install using :program:`pip` or
 :program:`easy_install`:
 

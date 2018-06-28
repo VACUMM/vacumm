@@ -29,9 +29,9 @@ Usage
 ~~~~~
 
 .. code-block:: none
-    
+
     Usage: hovmoller.py [options]
-    
+
     Options:
       --version             show program's version number and exit
       -h, --help            show this help message and exit
@@ -60,12 +60,12 @@ Usage
                             Output files pattern (default:
                             hovmoller-%(var)s-%(tmin)s-%(tmax)s.png)
       --show                Show figures
-    
+
 
 Aperçu des sorties
 ~~~~~~~~~~~~~~~~~~
 
-.. image:: hovmoller.png
+.. image:: images/hovmoller.png
     :width: 90%
 
 

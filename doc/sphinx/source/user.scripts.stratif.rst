@@ -23,9 +23,9 @@ Usage
 ~~~~~
 
 .. code-block:: none
-    
+
     Usage: stratif.py [options]
-    
+
     Options:
       --version             show program's version number and exit
       -h, --help            show this help message and exit
@@ -47,7 +47,7 @@ Usage
       -o pattern, --output=pattern
                             Output files pattern (default:
                             %(plot)s-%(tmin)s-%(tmax)s.png)
-      
+
 
 
 Aperçu des sorties
@@ -55,43 +55,43 @@ Aperçu des sorties
 
 **Tracé de la profondeur de la couche de mélange en eaux peu profondes sans colocalisation:**
 
-.. image:: stratif_mld.png
+.. image:: images/stratif_mld.png
     :width: 90%
 
 **Tracé de la profondeur de la couche de mélange en eaux peu profondes avec colocalisation par plus proche voisin:**
 
-.. image:: stratif_mld_nearest.png
+.. image:: images/stratif_mld_nearest.png
     :width: 90%
 
 **Tracé de la profondeur de la couche de mélange en eaux peu profondes avec colocalisation par interpolation:**
 
-.. image:: stratif_mld_interp.png
+.. image:: images/stratif_mld_interp.png
     :width: 90%
 
 **Tracé de la profondeur de la couche de mélange en eaux profondes avec colocalisation par plus proche voisin:**
 
-.. image:: stratif_mld_deep_nearest.png
+.. image:: images/stratif_mld_deep_nearest.png
     :width: 90%
 
 **Tracé de la profondeur de la couche de mélange en eaux profondes avec colocalisation par interpolation:**
 
-.. image:: stratif_mld_deep_interp.png
+.. image:: images/stratif_mld_deep_interp.png
     :width: 90%
 
 
 **Tracé du déficit d'énergie potentielle sans colocalisation:**
 
-.. image:: stratif_ped.png
+.. image:: images/stratif_ped.png
     :width: 90%
 
 **Tracé du déficit d'énergie potentielle avec colocalisation par plus proche voisin:**
 
-.. image:: stratif_ped_nearest.png
+.. image:: images/stratif_ped_nearest.png
     :width: 90%
 
 **Tracé du déficit d'énergie potentielle avec colocalisation par interpolation:**
 
-.. image:: stratif_ped_interp.png
+.. image:: images/stratif_ped_interp.png
     :width: 90%
 
 

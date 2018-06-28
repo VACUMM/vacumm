@@ -2653,7 +2653,7 @@ class Plot(object):
         """Get :attr:`uvlat`
 
         If a latitude axis is available on X or Y plot axis,
-        its mean value is used, else it defaults to ``default`
+        its mean value is used, else it defaults to ``default``
         """
         lat = self.get_obj('uvlat')
         if self.has_data() and 'y' in self.order:

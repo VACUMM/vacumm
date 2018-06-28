@@ -1,0 +1,16 @@
+python==2.7
+numpy
+libgfortran
+cdms2
+cdutil
+genutil
+matplotlib>=2.0
+cmocean
+basemap
+basemap-data-hires
+configobj
+pytz
+paramiko
+xlutils
+seawater
+scipy

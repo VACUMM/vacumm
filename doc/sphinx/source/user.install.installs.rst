@@ -1,4 +1,4 @@
-.. _user.install.install:
+.. _user.install.installs:
 
 Installations
 =============
@@ -7,8 +7,8 @@ Installations
 .. highlight:: bash
 
 
-Quick installation with :program`conda`
----------------------------------------
+Quick installation with :program:`conda`
+----------------------------------------
 
 Conda is a package manager that provides pre-compiled binaries
 for Windows, OSX and Linux.
@@ -19,7 +19,7 @@ Miniconda is a mini installer it is good to start with.
 
 Then, you can install vacumm and its dependecies::
 
-    $ conda install -c conda-forge -c uvcdat -c vacumm -c acme vacumm
+    $ conda install -c vacumm -c conda-forge -c cdat vacumm
 
 For more option, please read the conda documentation.
 
@@ -29,7 +29,7 @@ From sources
 In short
 ........
 
-Here is an example of basic installation inside UV-CDAT, 
+Here is an example of basic installation inside CDAT,
 with some OpenMP parallelisation::
 
     $ cp setup.cfg.omp setup.cfg
@@ -39,7 +39,7 @@ For all users
 .............
 
 This installation puts the library within the python tree.
-The :program:`python` excutable must be the one provided by UV-CDAT
+The :program:`python` excutable must be the one provided by CDAT
 (see :ref:`user.install.prereq`).
 
 One compile and install VACUMM from the main directory of the package with::
@@ -59,9 +59,9 @@ In this case, the library is installed in the user's directory.
 First, compile::
 
     $ python setup.py build
-    
-Then, install in the default user's directory 
-(typically  :file:`/home/<user>/.local/lib/python2.{x}/site-packages`)::
+
+Then, install in the default user's directory
+(typically  :file:`$HOME/.local/lib/python2.{x}/site-packages`)::
 
     $ python setup.py install --user
 
@@ -77,7 +77,7 @@ and to the executables::
 
 
 .. _user.install.install.dev:
-    
+
 Local installation for a developper
 ...................................
 
@@ -87,7 +87,7 @@ compiling the extensions and setting the variables::
     $ make lib # or python setup.py build_ext --inplace
     $ export PATH=~/path/to/vacumm-trunk/bin
     $ export PYTHONPATH=~/path/to/vacumm-trunk/lib/python
-    
+
 
 You can also use the environment module provided
 with the package as presented at section :ref:`user.install.modenv.dev`.
@@ -96,8 +96,8 @@ with the package as presented at section :ref:`user.install.modenv.dev`.
 Tuning the installation
 -----------------------
 
-You can tune the installation with the :file:`setup.cfg` file, 
-following the instruction of the official documentations 
+You can tune the installation with the :file:`setup.cfg` file,
+following the instruction of the official documentations
 (`here <https://docs.python.org/2/distutils/configfile.html#writing-the-setup-configuration-file>`_).
 Two examples are provided, which differ in the way the fortran extension
 is compilated:
@@ -112,18 +112,18 @@ is compilated:
   .. literalinclude:: ../../../setup.cfg.omp
         :language: ini
 
-For example, to quickly allow OpenMP parallelisation, 
+For example, to quickly allow OpenMP parallelisation,
 link to the right setup configuration file before installing::
 
     $ cp setup.cfg.omp setup.cfg
     $ python setup.py build_ext --force # to force the recompilation
-    
-    
+
+
 .. note:: If the :file:`setup.cfg` file doesn't exist, the :program:`setup.py`
     will copy file:`setup.cfg.simple` into :file:`setup.cfg`.
 
 .. _user.install.install.config:
-    
+
 User configuration of the modules
 ---------------------------------
 
@@ -131,7 +131,7 @@ Some of the modules can be configured to change their default behaviour.
 Configurations store for instance default paths.
 
 The library is configured by default for a use on the supercomputer
-from IFREMER (CAPARMOR).
+from IFREMER (datarmor).
 If you are on your own system or you want to change your configuration,
 please check the documentation section :ref:`user.install.config`.
 
@@ -145,24 +145,25 @@ module makes a reference to a secondary configuration file
 refered in the config section ``[vacumm.bathy.bathy]`` with the
 key ``cfgfile_gridded``.
 To alter this configuration, proceed in this way:
-    
+
     #. Specify the name of the secondary config file in the main config file by prefixing it with ``%(conf_dir)s``, which is the directory where config files will be installed (see :ref:`user.install.config`):
-        
+
        .. code-block:: ini
-       
+
            [vacumm.bathy.bathy]
            cfgfile_gridded=%(conf_dir)s/bathy.gridded.cfg
-           
+
     #. Then specify the list of config files as comandline option::
-       
+
             $ python setup.py install --cfgfiles=myconfig.cfg,path/to/bathy.gridded.cfg
-            
- 
+
+
 Check your installation
 -----------------------
 
 Run::
 
-    $ vacumm_print_config.py
+    $ vacumm_config.py print
+    $ python -c 'import vcmq'
 
-    
+

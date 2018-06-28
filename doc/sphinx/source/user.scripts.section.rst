@@ -28,11 +28,11 @@ Usage
 ~~~~~
 
 .. code-block:: none
-    
+
     Usage: section.py [options]
-    
+
     Produce vertical section plots
-    
+
     Options:
       --version             show program's version number and exit
       -h, --help            show this help message and exit
@@ -60,7 +60,7 @@ Usage
 Aperçu des sorties
 ~~~~~~~~~~~~~~~~~~
 
-.. image:: section.png
+.. image:: images/section.png
     :width: 90%
 
 

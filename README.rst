@@ -53,7 +53,12 @@ Dependencies
 ------------
 
 Mandatory:
-`UV-CDAT <http://uvcdat.llnl.gov>`_,
+`CDAT <http://uvcdat.llnl.gov>`_ (or more specifically
+`cdms2 <http://uvcdat.llnl.gov>`_,
+`cdutil <http://uvcdat.llnl.gov>`_,
+`genutil <http://uvcdat.llnl.gov>`_ from CDAT, and
+`matplotlib <https://matplotlib.org>`_,
+`basemap <https://matplotlib.org/basemap>`_),
 `configobj <http://www.voidspace.org.uk/python/configobj.html>`_.
 
 Optional:
@@ -82,7 +87,7 @@ From sources::
 
 Using `conda <http://conda.pydata.org/docs/index.html>`_::
 
-    $ conda install -c vacumm -c uvcdat -c conda-forge  vacumm
+    $ conda install -c vacumm -c conda-forge -c cdat  vacumm
 
 For more information, please go to this:
 http://www.ifremer.fr/vacumm/user.install.installations.html
@@ -104,7 +109,7 @@ http://www.ifremer.fr/vacumm
 License
 -------
 
-VACUMM is under the CeCiLL license,
+VACUMM is under the :ref:`CeCiLL <appendix.license>` license,
 which is compatible with well knwon GPL license.
 
 
@@ -115,7 +120,7 @@ You can submit `issues <https://github.com/VACUMM/vacumm/issues>`_
 and `pull requests <https://github.com/VACUMM/vacumm/issues>`_
 from the GitHub site.
 
-Stephane Raynaud (raynaud (at) actimar.fr),
+Stephane Raynaud (raynaud (at) gmail.com),
 Guillaume Charria (Guillaume.Charria (at) ifremer.fr).
 
 See the contact page:

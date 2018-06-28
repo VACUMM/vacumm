@@ -7,7 +7,7 @@
 
 Il s'agit du script permettant la visualisation d'un champs de données à une certaine profondeur.
 
-Ce script permet la visualisation conjointe de variables de données 
+Ce script permet la visualisation conjointe de variables de données
 grillées (modèle,climatologie) et d'observation (profils in situ).
 
 La description des données à représenter est définie par le fichier de configuration.
@@ -20,11 +20,11 @@ Usage
 ~~~~~
 
 .. code-block:: none
-    
+
     Usage: layer.py [options]
-    
+
     Produce horizontal layer plots
-    
+
     Options:
       --version             show program's version number and exit
       -h, --help            show this help message and exit
@@ -49,24 +49,24 @@ Usage
                             Output files pattern (default:
                             layer-%(var)s-%(depth)s-%(tmin)s-%(tmax)s.png)
       --show                Show figures
-    
+
 
 Aperçu des sorties
 ~~~~~~~~~~~~~~~~~~
 
 **Tracé d'une couche sans colocalisation:**
 
-.. image:: layer.png
+.. image:: images/layer.png
     :width: 90%
 
 **Tracé d'une couche avec colocalisation par plus proche voisin:**
 
-.. image:: layer_nearest.png
+.. image:: images/layer_nearest.png
     :width: 90%
 
 **Tracé d'une couche avec colocalisation par interpolation:**
 
-.. image:: layer_interp.png
+.. image:: images/layer_interp.png
     :width: 90%
 
 

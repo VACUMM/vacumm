@@ -11,15 +11,15 @@ Préalables
 ----------
 
 Les données d'entrée nécessaires au script sont:
-    
+
 - les résultats de simulation numériques disponibles au format NetCDF.
-- les observations RECOPESCA disponibles au format .csv. 
+- les observations RECOPESCA disponibles au format .csv.
 
 Fonctionnement
 --------------
 
 Ce script permet de calculer et d'afficher:
-    
+
 - les différences de température dans la colonne d'eau entre le modèle et les observations RECOPESCA,
 - les différence en salinité dans la colonne d'eau entre le modèle et les observations RECOPESCA,
 - les moyennes temporelles et spatiales,
@@ -34,7 +34,7 @@ Utilisation
 Les réglages s'effectuent au moyen du fichier config_profiles.cfg. Les attributs suivants de ce fichiers sont à vérifier avant de lancer une évaluation: ::
     [Time Period]
 	Les dates (année, mois, jours, heures) de début et de fin de la période considérée.
-    [Action] 
+    [Action]
 	Définit les statistiques et les figures à génerer.
     [Output]
 	Définit le répertoire cible où seront enregistrés les fichiers binaires .nc
@@ -44,20 +44,20 @@ Les réglages s'effectuent au moyen du fichier config_profiles.cfg. Les attribut
     [Env]
 	Prise en compte des sorties modèles.
 
-    [Domain] 
+    [Domain]
 	Définit le domaine étudié
 
     [SubArea]
 	Définit le sous-domaine étudié
 
 .. warning::
- Pour le bon fonctionnement de ce script il faut que soient présents dans le même répertoire les fichiers suivants: 
+ Pour le bon fonctionnement de ce script il faut que soient présents dans le même répertoire les fichiers suivants:
 
-         cprofile.py; 
+         cprofile.py;
 
-         config_profiles.cfg ; 
+         config_profiles.cfg ;
 
-         config_profiles.ini; 
+         config_profiles.ini;
 
 
 
@@ -77,7 +77,7 @@ Configuration du Config.cfg pour générer toutes les stats possibles globalemen
     jfin=10
     anfin=2012
 
-    [Action] 
+    [Action]
 
     single_profiles=False
     map_profiles=True
@@ -97,9 +97,9 @@ Configuration du Config.cfg pour générer toutes les stats possibles globalemen
 
     [Env]
 
-    use_model=True	
+    use_model=True
 
-    [Domain] 
+    [Domain]
 
     Lamax = 52
     Lomax = 4.25
@@ -128,12 +128,12 @@ Le code doit être exécuté de la manière suivante sur caparmor:
 Aperçu des sorties
 ~~~~~~~~~~~~~~~~~~
 
-.. image:: Map_RECOPESCA_profile_20120609172349_1-72099995613W_43-4146995544N.png 
+.. image:: images/Map_RECOPESCA_profile_20120609172349_1-72099995613W_43-4146995544N.png
     :width: 80%
 
-.. image:: Vertical_Section_temp2012060100000020120610230000.png 
+.. image:: images/Vertical_Section_temp2012060100000020120610230000.png
     :width: 80%
 
-.. image:: Control_stats2012060100000020120610230000.png 
+.. image:: images/Control_stats2012060100000020120610230000.png
     :width: 80%
 

@@ -74,9 +74,9 @@ $CONDA_INSTALLER -p $PREFIX -b || ( echo "Installation of conda failed" && exit 
 export PATH=$PREFIX/bin:$PATH
 
 # Install vacumm and dependencies
-conda install -y -c uvcdat uvcdat || ( echo "Installation of uvcdat failed" && exit 1 )
-conda install -y -c conda-forge configobj PIL paramiko xlutils seawater pytz cmocean || ( echo "Installation of other dependencies failed" && exit 1 )
-conda install -y -c vacumm vacumm || ( echo "Installation of vacumm failed" && exit 1 )
+#conda install -y -c cdat cdat || ( echo "Installation of cdat failed" && exit 1 )
+#conda install -y -c conda-forge configobj PIL paramiko xlutils seawater pytz cmocean || ( echo "Installation of other dependencies failed" && exit 1 )
+conda install -y vacumm || ( echo "Installation of vacumm failed" && exit 1 )
 
 echo
 echo "To test it:"
