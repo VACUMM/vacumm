@@ -3,6 +3,8 @@
 # Imports
 from vcmq import MV2, N
 from vacumm.misc.stats import StatAccum
+import warnings
+warnings.filterwarnings('error', "boolean index did not match", N.VisibleDeprecationWarning)
 
 # Setup masked data
 nt, ny, nx = 20, 15, 10
@@ -17,7 +19,7 @@ mask = var1.mask|var2.mask # common mask
 vmax = var2.max()
 bins = N.linspace(-0.1*vmax, 0.9*vmax, 14)
 nbins = len(bins)
-maskyx = mask.all(axis=1)
+maskyx = mask.all(axis=0)
 maskt = mask.reshape((nt, -1)).all(axis=1)
 
 # Direct
@@ -57,7 +59,7 @@ for ivar, varm in enumerate([varm1, varm2]):
         dstats['thist'][ivar][ibin] = valid.filled(False).sum(axis=0)
         dstats['shist'][ivar][:, ibin] = valid.filled(False).reshape((nt, -1)).sum(axis=1)
     dstats['thist'][ivar][:, maskyx] = N.ma.masked
-    dstats['shist'][ivar][:, maskt] = N.ma.masked
+    dstats['shist'][ivar][maskt, :] = N.ma.masked
 
 # Indirect using StatAccum
 sa = StatAccum(tall=True, sall=True, bins=bins)

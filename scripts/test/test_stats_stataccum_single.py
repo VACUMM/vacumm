@@ -13,7 +13,7 @@ var.getAxis(0).units = 'months since 2000'
 vmax = var.max()
 bins = N.linspace(-0.1*vmax, 0.9*vmax, 14)
 nbins = len(bins)
-maskyx = var.mask.all(axis=1)
+maskyx = var.mask.all(axis=0)
 maskt = var.mask.reshape((nt, -1)).all(axis=1)
 
 # Direct
@@ -38,7 +38,7 @@ for ibin in xrange(nbins-1):
     dstats['thist'][ibin] = valid.filled(False).sum(axis=0)
     dstats['shist'][:, ibin] = valid.filled(False).reshape((nt, -1)).sum(axis=1)
 dstats['thist'][:, maskyx] = N.ma.masked
-dstats['shist'][:, maskt] = N.ma.masked
+dstats['shist'][maskt, :] = N.ma.masked
 
 
 # Indirect using StatAccum

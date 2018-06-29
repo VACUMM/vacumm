@@ -1,6 +1,6 @@
 """Test :func:`~vacumm.misc.grid.misc.coord2slice`"""
 
-from vcmq import code_file_name, P, os, N, create_lon, code_file_name
+from vcmq import P, os, N, create_lon
 from vacumm.misc.grid import coord2slice, create_grid, create_axes2d, meshbounds
 from vacumm.misc.plot import add_grid
 
@@ -65,7 +65,7 @@ result.append(('AssertEqual', (coord2slice(grid, lat=(21,21, 'ccb')),
     (slice(0, 10, 1), slice(1, 2, 1), None))))
 
 # 2D axis
-lon2d = N.empty((10, 10.))
+lon2d = N.empty((10, 10))
 for i in xrange(10):
     lon2d[i] = lon1d[:]+i
 lat2d = N.resize((N.arange(10)+20), (10, 10)).T
