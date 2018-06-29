@@ -46,7 +46,7 @@ from vacumm.misc.axes import isaxis, create_time
 from vacumm.misc.grid import get_grid, set_grid
 from vacumm.misc import MV2_axisConcatenate, set_atts, cp_atts
 from vacumm.misc.io import netcdf4
-from vacumm.misc.atime import comptime
+from vacumm.misc.atime import comptime, reltime
 
 __all__ = ['corr_proba', 'ensrank', 'qtmin', 'qtmax', 'qtminmax',
     'StatAccum', 'StatAccumError']
@@ -757,7 +757,8 @@ class StatAccum(object):
         if nowtime is not None:
             self.lasttime = comptime(nowtime)
         if (hasattr(self, 'lasttime') and f.withtime>0 and self.lasttime
-                and comptime(f.lasttime)<=comptime(self.lasttime)):
+                and reltime(f.lasttime, 'hours since 2000').value <=
+                reltime(self.lasttime, 'hours since 2000').value):
             return -1
         # - what was initially asked and some more
         for sname in self.all_stats + ('sum', 'sqr', 'prod', 'stats'):

@@ -1,7 +1,7 @@
 """Test :class:`~vacumm.misc.stats.StatAccum` with dumping and loading """
 
 # Imports
-from vcmq import MV2, N, code_file_name, StatAccum
+from vcmq import MV2, N, code_file_name, StatAccum, cdms2
 from numpy.testing import assert_array_almost_equal
 from numpy.random import seed
 
@@ -26,7 +26,7 @@ var1[3:13, :1, :1] = MV2.masked
 var2[5:15, -1:, -1:] = MV2.masked
 var2.long_name = 'Sea level'
 var2.id = 'sla'
-mask = var1.mask|var2.mask # common mask
+mask = var1.mask | var2.mask  # common mask
 vmax = var2.max()
 bins = N.linspace(-0.1*vmax, 0.9*vmax, 14)
 nbins = len(bins)
@@ -77,4 +77,3 @@ for sname in sab_stats.keys():
 #    result.append(('assertTrue', N.ma.allclose(sab_stats[sname], sa1_stats[sname])))
 #    print sname, N.ma.allclose(sab_stats[sname], sa1_stats[sname])
 
-print 'Done'
