@@ -1,6 +1,37 @@
 Release notes
 #############
 
+Version 3.6.0
+=============
+
+- Added support for scipy interpolations in griddata and xy2xy
+  with use of projected coordinates
+- Added tuple support to create_axes2d
+- Added basic_proj and use it as default projection
+- Added GriddedSelector
+- Added some support for unstructured grids: create_ugrid, get_tri,
+  get_tri_mask, get_tri_type, create_ugrid, create_aux_axes,
+  get_unstruct_indices, create_grid, get_grid_type, issgrid, isugrid
+- Added are_same_grids
+- Added fill support to Plot.Add_box
+- Removed support for css and nat interpolations in griddata and xy2xy
+- Fixed time cdtimes comparisons
+- Fixed core_plot x/y attr check
+- Fixed call to udunits
+- Fixed linear4dto1dxx
+- Fixed check_case
+- Fixed Fix XYZ.togrid
+- Fixed bugs due to new MPL
+- Fixed regrid1d with cellave
+- Fixed quiverkey_value
+- Fixed import in stats
+- Fixed gaussian2d
+- Fixed extend1d inner slice and cyclic conditions
+- Fixed cellerr1d errm slices
+- Fixed output dim check in grid2xy
+- Fixed lat/lon in Map
+- Fixed coord2slice with e/n bounds specs
+
 Version 3.5.1
 =============
 

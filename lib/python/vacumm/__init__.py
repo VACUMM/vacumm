@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2010-2017)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -37,11 +37,11 @@
 from warnings import warn
 
 __project__ = 'vacumm'
-__version__ = '3.5.1'
+__version__ = '3.6.0'
 __release__ = '0'
-__date__ = '2017-12-12'
+__date__ = '2018-07-02'
 __author__ = u'Stéphane Raynaud, Jonathan Wilkins, Guillaume Charria'
-__email__ = 'raynaud@actimar.fr, wilkins@actimar.fr, charria@ifremer.fr'
+__email__ = 'stephane.raynaud@gmail.com, wilkins@actimar.fr, charria@ifremer.fr'
 __copyright__ = 'Copyright (c) 2010-2016 Actimar/IFREMER'
 __description__ = """
 VACUMM library
@@ -96,8 +96,18 @@ class VACUMMError(Exception):
 class VACUMMWarning(UserWarning):
     """Standard VACUMM warning"""
 
+class VACUMMDepWarning(DeprecationWarning, VACUMMWarning):
+    """Deprecation VACUMM warning"""
+
+
 def vacumm_warn(message, stacklevel=2):
     """Issue a :class:`VACUMMWarning`"""
     warn(message, VACUMMWarning, stacklevel=stacklevel)
 
 vcwarn = vacumm_warning = vacumm_warn
+
+def vacumm_dep_warn(message, stacklevel=2):
+    """Issue a :class:`VACUMMDepWarning`"""
+    warn(message, VACUMMDepWarning, stacklevel=stacklevel)
+
+vcdwarn = vacumm_dep_warning = vacumm_dep_warn
