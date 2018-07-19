@@ -1,6 +1,7 @@
 include Makefile
 include test/Makefile
 include CHANGES.rst
+include requirements.txt
 include setup.cfg.*
 exclude setup.cfg
 exclude scripts/tutorials/check.log

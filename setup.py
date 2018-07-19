@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -31,62 +31,63 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-# Inits
-import sys, os, shutil
+# %% Inits
+import re, os, shutil
+from numpy.distutils.core import setup
+from numpy.distutils.misc_util import Configuration
+from glob import glob
+from numpy.distutils.command.install_data import install_data as numpy_install_data
+from numpy.distutils.command.install import install as numpy_install
+import distutils.command.bdist_rpm
 rootdir = os.path.dirname(__file__)
 #sys.path.insert(0, os.path.abspath(os.path.join(rootdir, 'doc/sphinx/source')))
 
-# Revision number
+# %% Parse info from __init__
 # - from __init__.py
+info = {}
 f = open(os.path.join(rootdir, 'lib/python/vacumm/__init__.py'))
 for line in f:
-    line = line[:-1].strip()
-    if line.startswith('__version__'):
-        exec(line)
-        release = __version__
-        break
+    line = line[:-1].rstrip()
+    m = re.match(r'__(?P<name>(author|email|version))__\s*=\s*(?P<value>.*$)',
+                 line)
+    if m is not None:
+        info[m.groupdict()['name']] = eval(m.groupdict()['value'])
 f.close()
-version_sphinx = release
-release_sphinx = release
 
-# Infos
-name="vacumm"
-version = release
+# %% Infos
+name = "vacumm"
+version_sphinx = release_sphinx = version = info['version']
 description = 'A library for ocean science'
 long_description = ("A library and a collection of scripts for ocean science, "
     "mainly designed for data analysis and model validation")
-author = 'Actimar / IFREMER'
-author_email = 'raynaud@actimar.fr or charria@ifremer.fr'
-maintainer = "Actimar / IFREMER"
-maintainer_email = author_email
-plateform = 'Linux/UNIX/BSD'
-license = "CeCiLL"
+author = info['author']
+author_email = info['email']
+maintainer = "Stephane Raynaud"
+maintainer_email = "stephane.raynaud@gmail.com"
+license = "CeCILL-2.1"
 url = "http://www.ifremer.fr/vacumm"
-classifiers = ["Development Status :: 4 - Beta",
+classifiers = [#"Development Status :: 4 - Beta",
                "Intended Audience :: Science/Research",
-               "License :: CeCiLL",
+               ("License :: OSI Approved :: CEA CNRS Inria Logiciel "
+                       "Libre License, version 2.1 (CeCILL-2.1)"),
                "Programming Language :: Python :: 2",
                "Topic :: Scientific/Engineering :: Physics",
                "Topic :: Scientific/Engineering :: Mathematics",
                "Topic :: Scientific/Engineering :: Atmospheric Science",
                "Topic :: Software Development :: Libraries :: Python Modules",
                "Operating System :: POSIX",
-               "Operating System :: UNIX",
                "Operating System :: MacOS :: MacOS X",
                ]
+#with open('requirements.txt') as f:
+#    install_requires = [dep[:-1] for dep in f.readlines()]
 
-# Setup
-from numpy.distutils.core import setup
-from numpy.distutils.misc_util import Configuration
-from glob import glob
+
+# %% Setup
 def configuration(parent_package='',top_path=None):
-    from numpy.distutils.misc_util import Configuration
 
     # Initialize
-    config = Configuration(None,
-        parent_package=parent_package,
-        top_path=top_path,
-    )
+    config = Configuration(None, parent_package=parent_package,
+                           top_path=top_path)
 
     # Set options
     config.set_options(
@@ -115,10 +116,8 @@ def configuration(parent_package='',top_path=None):
 
     return config
 
-# Add the --cfgfile option to install command
-from numpy.distutils.command.install_data import install_data as numpy_install_data
-#from numpy.distutils.command.sdist import sdist as numpy_sdist
 
+# %% Add the --cfgfile option to install command
 class vacumm_install_data(numpy_install_data):
     user_options = numpy_install_data.user_options + [
         ('cfgfiles=', 'c', "VACUMM main and secondary "
@@ -138,7 +137,6 @@ class vacumm_install_data(numpy_install_data):
                 cfgfiles.extend(glob(os.path.abspath(path)))
             self.data_files.append(('vacumm/vacumm-config', cfgfiles)) # FIXME: CFG INSTALL DIR NOT CLEAN
 
-from numpy.distutils.command.install import install as numpy_install
 class vacumm_install(numpy_install):
     user_options = numpy_install.user_options + [
         ('cfgfiles=', None, "VACUMM main and secondary "
@@ -151,7 +149,6 @@ class vacumm_install(numpy_install):
         numpy_install.finalize_options(self)
         self.distribution.cfgfiles = self.cfgfiles
 
-import distutils.command.bdist_rpm
 class vacumm_bdist_rpm(distutils.command.bdist_rpm.bdist_rpm):
     def initialize_options (self, *args, **kwargs):
         distutils.command.bdist_rpm.bdist_rpm.initialize_options(self)
@@ -170,6 +167,8 @@ class vacumm_bdist_rpm(distutils.command.bdist_rpm.bdist_rpm):
         #self.post_install = 'rpm-post-install'
         #self.pre_uninstall = 'rpm-pre-uninstall'
 
+
+# %% Exec
 if __name__ == '__main__':
 
     # Setup config file
@@ -184,8 +183,9 @@ if __name__ == '__main__':
         long_description = long_description,
         author = author,
         author_email = author_email,
-        maintainer = author,
-        maintainer_email = author_email,
+        maintainer = "Stephane Raynaud",
+        maintainer_email = "stephane.raynaud@gmail.com",
+#        install_requires = install_requires,
         license = license,
         url=url,
         package_dir= {'':'lib/python'},
@@ -196,6 +196,3 @@ if __name__ == '__main__':
         configuration=configuration
 
     )
-
-
-
