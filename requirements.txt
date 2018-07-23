@@ -5,7 +5,7 @@ genutil
 matplotlib>=2.0
 cmocean
 basemap
-basemap-data-hires
+# basemap-data-hires
 configobj
 pytz
 paramiko

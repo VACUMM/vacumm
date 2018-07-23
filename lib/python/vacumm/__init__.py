@@ -37,12 +37,12 @@
 from warnings import warn
 
 __project__ = 'vacumm'
-__version__ = '3.6.0'
+__version__ = '3.6.2'
 __release__ = '0'
-__date__ = '2018-07-02'
+__date__ = '2018-07-23'
 __author__ = 'Stephane Raynaud, Jonathan Wilkins, Guillaume Charria'
 __email__ = 'stephane.raynaud@gmail.com, wilkins@actimar.fr, charria@ifremer.fr'
-__copyright__ = 'Copyright (c) 2010-2016 Actimar/IFREMER'
+__copyright__ = 'Copyright (c) 2010-2018 Actimar/IFREMER'
 __description__ = """
 VACUMM library
 

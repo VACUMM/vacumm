@@ -1,9 +1,14 @@
 include Makefile
 include test/Makefile
+include test/utils.py
 include CHANGES.rst
 include requirements.txt
 include setup.cfg.*
 exclude setup.cfg
-exclude scripts/tutorials/check.log
-recursive-exclude scripts *.so *.png *.pdf *.nc *.log
+recursive-include scripts/test *.py *.cfg Makefile
+recursive-include scripts/tutorials *.py *.cfg *.ini Makefile
+exclude scripts/tutorials/bathy.bathy.xyz.bathybank.bank.cfg
+recursive-include scripts/courses *.py *.cfg *.ini *.sh *.f90  Makefile
+recursive-exclude scripts *.so *.png *.pdf *.nc *.log *.gif *.snx *.xls *.log *.xyz
+include scripts/test/logo2_previmer_cetmef.png
 recursive-include etc *

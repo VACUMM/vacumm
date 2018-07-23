@@ -78,8 +78,8 @@ classifiers = [#"Development Status :: 4 - Beta",
                "Operating System :: POSIX",
                "Operating System :: MacOS :: MacOS X",
                ]
-#with open('requirements.txt') as f:
-#    install_requires = [dep[:-1] for dep in f.readlines()]
+with open('requirements.txt') as f:
+    install_requires = [dep[:-1] for dep in f.readlines()]
 
 
 # %% Setup
@@ -109,9 +109,9 @@ def configuration(parent_package='',top_path=None):
     config.add_subpackage('vacumm', 'lib/python/vacumm')
     config.add_data_dir(('vacumm/vacumm-config', 'config')) # not needed
     config.add_data_dir(('vacumm/vacumm-data', 'data')) # all data files
-    config.add_data_dir(('vacumm/vacumm-scripts/test', 'scripts/test')) # test scripts
-    config.add_data_dir(('vacumm/vacumm-scripts/tutorials', 'scripts/tutorials')) # tutorials
-    config.add_data_dir(('vacumm/vacumm-scripts/courses', 'scripts/courses')) # courses
+#    config.add_data_dir(('vacumm/vacumm-scripts/test', 'scripts/test')) # test scripts
+#    config.add_data_dir(('vacumm/vacumm-scripts/tutorials', 'scripts/tutorials')) # tutorials
+#    config.add_data_dir(('vacumm/vacumm-scripts/courses', 'scripts/courses')) # courses
 
 
     return config
@@ -185,7 +185,7 @@ if __name__ == '__main__':
         author_email = author_email,
         maintainer = "Stephane Raynaud",
         maintainer_email = "stephane.raynaud@gmail.com",
-#        install_requires = install_requires,
+        install_requires = install_requires,
         license = license,
         url=url,
         package_dir= {'':'lib/python'},
