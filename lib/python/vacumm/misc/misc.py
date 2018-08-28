@@ -79,7 +79,7 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'kwfilterout', 'filter_selector', 'isempty', 'checkdir', 'splitidx',
     'CaseChecker', 'check_case', 'indices2slices', 'filter_level_selector',
     'match_atts', 'match_string', 'dicttree_get', 'dicttree_set',
-    'minbox']
+    'minbox', 'bivariate_normal']
 __all__.sort()
 
 def broadcast(set, n, mode='last', **kwargs):
@@ -2416,3 +2416,19 @@ def dicttree_set(dd, *keys, **items):
         dd = dd[key]
     dd.update(**items)
     return basedd
+
+def bivariate_normal(X, Y, sigmax=1.0, sigmay=1.0,
+                     mux=0.0, muy=0.0, sigmaxy=0.0):
+    """
+    Bivariate Gaussian distribution for equal shape *X*, *Y*.
+    See `bivariate normal
+    <http://mathworld.wolfram.com/BivariateNormalDistribution.html>`_
+    at mathworld.
+    """
+    Xmu = X-mux
+    Ymu = Y-muy
+
+    rho = sigmaxy/(sigmax*sigmay)
+    z = Xmu**2/sigmax**2 + Ymu**2/sigmay**2 - 2*rho*Xmu*Ymu/(sigmax*sigmay)
+    denom = 2*N.pi*sigmax*sigmay*N.sqrt(1-rho**2)
+    return N.exp(-z/(2*(1-rho**2))) / denom

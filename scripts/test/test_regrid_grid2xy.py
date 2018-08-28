@@ -49,7 +49,7 @@ to = comptime(N.random.uniform(reltime(time0, time.units).value,
 vo = grid2xy(vi, xo=xo, yo=yo, zo=zo, to=to, method='linear')
 von = grid2xy(vi, xo=xo, yo=yo, zo=zo, to=to, method='nearest')
 assert vo.shape==(ne, np)
-N.testing.assert_allclose(vo[0], yo)
+N.testing.assert_allclose(vo[0].asma(), yo)
 kwp = dict(vmin=vi.min(), vmax=vi.max())
 P.figure(figsize=(6, 3))
 P.subplot(121)
@@ -68,42 +68,42 @@ P.close()
 # %% Reversed z and y
 vi_revz = vi[:, :, ::-1, ::-1, :]
 vo = grid2xy(vi_revz, xo=xo, yo=yo, zo=zo, to=to, method='linear')
-N.testing.assert_allclose(vo[0], yo)
+N.testing.assert_allclose(vo[0].asma(), yo)
 
 
 # %% Rectangular xyt only
 vi_xyt = vi[:, :, 0]
 vo = grid2xy(vi_xyt, xo=xo, yo=yo, to=to, method='linear')
 assert vo.shape==(ne, np)
-N.testing.assert_allclose(vo[0], yo)
+N.testing.assert_allclose(vo[0].asma(), yo)
 
 # %% Rectangular xy only
 vi_xy = vi[:, 0, 0]
 vo = grid2xy(vi_xy, xo=xo, yo=yo, method='linear')
 assert vo.shape==(ne, np)
-N.testing.assert_allclose(vo[0], yo)
+N.testing.assert_allclose(vo[0].asma(), yo)
 
 # %% Rectangular xyzt with 5d z
 zi_5d = N.resize(dep[:], (nez, nt, ny, nx, nz))
 zi_5d = N.moveaxis(zi_5d, -1, 2)
 vo = grid2xy(vi, zi=zi_5d, xo=xo, yo=yo, zo=zo, to=to, method='linear')
 assert vo.shape==(ne, np)
-N.testing.assert_allclose(vo[0], yo)
+N.testing.assert_allclose(vo[0].asma(), yo)
 
 # %% Reversed 5d z
 zi_5d_rev = zi_5d[:, :, ::-1, :, :]
 vo = grid2xy(vi_revz, zi=zi_5d_rev, xo=xo, yo=yo, zo=zo, to=to, method='linear')
-N.testing.assert_allclose(vo[0], yo)
+N.testing.assert_allclose(vo[0].asma(), yo)
 
 # %% Zi present but not requested
 vo = grid2xy(vi, xo=xo, yo=yo, to=to, method='linear')
 assert vo.shape==(ne, nz, np)
-N.testing.assert_allclose(vo[0, 0], yo)
+N.testing.assert_allclose(vo[0, 0].asma(), yo)
 
 # Zi and Ti present but not requested
 vo = grid2xy(vi, xo=xo, yo=yo, method='linear')
 assert vo.shape==(ne, nt, nz, np)
-N.testing.assert_allclose(vo[0, 0, 0], yo)
+N.testing.assert_allclose(vo[0, 0, 0].asma(), yo)
 
 # %% Curvilinear xy only
 vi_xyc = vi[:, 0, 0]

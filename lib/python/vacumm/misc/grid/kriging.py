@@ -47,7 +47,7 @@ if not hasattr(N, 'isclose'):
     from vacumm.misc import closeto as isclose
 else:
     isclose = N.isclose
-
+from vacumm.misc import bivariate_normal
 
 #from scipy.optimize import curve_fit
 def get_blas_func(name):
@@ -867,9 +867,9 @@ def gauss3(x, y,
     x2=0, y2=-1.5, dx2=.5, dy2=.5, f2=-.3,
     **kwargs):
     """Create data sample as function position and 3-gaussian function"""
-    g = P.bivariate_normal(x, y, dx0, dy0, x0, y0)*f0
-    g+= P.bivariate_normal(x, y, dx1, dy1, x1, y1)*f1
-    g+= P.bivariate_normal(x, y, dx2, dy2, x2, y2)*f2
+    g = bivariate_normal(x, y, dx0, dy0, x0, y0)*f0
+    g+= bivariate_normal(x, y, dx1, dy1, x1, y1)*f1
+    g+= bivariate_normal(x, y, dx2, dy2, x2, y2)*f2
     g *= 10.
     return g
 

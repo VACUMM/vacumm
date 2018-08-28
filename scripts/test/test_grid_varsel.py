@@ -18,10 +18,10 @@ set_grid(var, rgrid)
 
 # %% Without grid specification
 rvar1 = varsel(var,  lon=(-9, -6, 'co'), lat=(44.1, 48.2))
-N.testing.assert_allclose(rvar0, rvar1)
+N.testing.assert_allclose(rvar0.asma(), rvar1.asma())
 
 # %% With cached gridded selector
 assert 'gridded_selector' in cache
 rvar2 = varsel(var_.clone(),  lon=(-9, -6, 'co'), lat=(44.1, 48.2),
                cache=cache)
-N.testing.assert_allclose(rvar0, rvar2)
+N.testing.assert_allclose(rvar0.asma(), rvar2.asma())
