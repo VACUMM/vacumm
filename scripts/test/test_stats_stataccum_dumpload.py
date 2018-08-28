@@ -1,13 +1,13 @@
 """Test :class:`~vacumm.misc.stats.StatAccum` with dumping and loading """
 
-# Imports
+# %% Imports
 from vcmq import MV2, N, code_file_name, StatAccum, cdms2
 from numpy.testing import assert_array_almost_equal
 from numpy.random import seed
 
 cdms2.setAutoBounds('off')
 
-# Setup masked data
+# %% Setup masked data
 seed(0)
 nt, ny, nx = 20, 3, 3
 var1 = MV2.array(N.random.random((nt, ny, nx)))
@@ -34,46 +34,47 @@ restart_file5 = code_file_name(ext='5.nc')
 restart_file7 = code_file_name(ext='7.nc')
 print restart_file5
 
-# Normal
+# %% Normal
 sab = StatAccum(tall=True, sall=True, bins=bins)
 sab += var1[:5], var2[:5]
-#print sab.get_tmean()
 
-# Dump
+# %% Dump
 sab.dump(restart_file5)
 sab += var1[5:7], var2[5:7]
 sab.dump(restart_file7)
 
-# Load from scratch
+# %% Load from scratch
 sa5 = StatAccum(restart=True, restart_file=restart_file5)
 sa7 = StatAccum(restart=True, restart_file=restart_file7)
 
-# Intermediate loads
+# %% Intermediate loads
 sai = StatAccum(tall=True, sall=True, bins=bins)
 sai += var1[:5], var2[:5]
-print sai.load(restart_file7) # erase
+print sai.load(restart_file7)  # erase
 saw = StatAccum(tall=True, sall=True, bins=bins)
 saw += var1[:7], var2[:7]
-print saw.load(restart_file5) # not loaded
+print saw.load(restart_file5)  # not loaded
 
-# Finish stats
+# %% Finish stats
 sab += var1[7:], var2[7:]
 sa5 += var1[5:], var2[5:]
 sa7 += var1[7:], var2[7:]
 sai += var1[7:], var2[7:]
 
-# Get stats
+# %% Get stats
 sab_stats = sab.get_stats()
 sa5_stats = sa5.get_stats()
 sa7_stats = sa7.get_stats()
 sai_stats = sai.get_stats()
 
-# Result
+# %% Result
 result = []
 for sname in sab_stats.keys():
-    assert_array_almost_equal(sab_stats[sname], sa5_stats[sname])
-    assert_array_almost_equal(sab_stats[sname], sa7_stats[sname])
-    assert_array_almost_equal(sab_stats[sname], sai_stats[sname])
-#    result.append(('assertTrue', N.ma.allclose(sab_stats[sname], sa1_stats[sname])))
-#    print sname, N.ma.allclose(sab_stats[sname], sa1_stats[sname])
-
+    for sat_stats in sa5_stats, sa7_stats, sai_stats:
+        vrefs = sab_stats[sname]
+        vtests = sat_stats[sname]
+        if not isinstance(sab_stats[sname], tuple):
+            vrefs = vrefs,
+            vtests = vtests,
+    for vref, vtest in zip(vrefs, vtests):
+        assert_array_almost_equal(vref.asma(), vtest.asma())
