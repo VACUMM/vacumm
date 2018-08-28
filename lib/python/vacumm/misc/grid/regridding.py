@@ -3653,11 +3653,12 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
         else:
             if mode=='extrap':
                 dv = varm[ss['first']]-varm[ss['firstp1']]
+            ss['extleft'] = list(ss['extleft'])
             for i in xrange(1, ext[0]+1):
                 ss['extleft'][axis] = ext[0]-i
-                varf[ss['extleft']] = varm[ss['first']]
+                varf[tuple(ss['extleft'])] = varm[ss['first']]
                 if mode=='extrap':
-                    varf[ss['extleft']] += i*dv
+                    varf[tuple(ss['extleft'])] += i*dv
 
     # Right boundary
     if ext[1]:
@@ -3668,11 +3669,12 @@ def extend1d(var, ext=0, mode=None, axis=-1, copy=False, num=False):
         else:
             if mode=='extrap':
                 dv = varm[ss['last']]-varm[ss['lastm1']]
+            ss['extright'] = list(ss['extright'])
             for i in xrange(1, ext[1]+1):
                 ss['extright'][axis] = ext[0]+ni+i-1
-                varf[ss['extright']] = varm[ss['last']]
+                varf[tuple(ss['extright'])] = varm[ss['last']]
                 if mode=='extrap':
-                    varf[ss['extright']] += i*dv
+                    varf[tuple(ss['extright'])] += i*dv
     del varm
 
     # Format

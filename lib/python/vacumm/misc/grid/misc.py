@@ -3085,7 +3085,7 @@ def get_axis_slices(ndim, axis, **kwargs):
                 val = slice(*val)
             ksel = list(sel)
             ksel[axis] = val
-            kwargs[key] = ksel
+            kwargs[key] = tuple(ksel)
     return dict(all=sel, mid=selmid, lasts=sellasts, firsts=selfirsts,
         lastsp1=sellastsp1, firstsm1=selfirstsm1,
         last=sellast, first=selfirst, lastm1=sellastm1, firstp1=selfirstp1,
