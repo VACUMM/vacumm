@@ -2477,7 +2477,7 @@ def resol(axy, mode='median',  axis=None, meters=False, cache=True, lat=None,
             m = mode[ik]
             if m.startswith('ave'): m = 'mean'
             if isinstance(m, str):
-                func = getattr(N, m)
+                func = getattr(N.ma, m)
             else: func = m
             eres.append(func(dcell))
         res = tuple(eres)
