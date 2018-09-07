@@ -78,7 +78,7 @@ classifiers = [#"Development Status :: 4 - Beta",
                "Operating System :: POSIX",
                "Operating System :: MacOS :: MacOS X",
                ]
-with open('requirements.txt') as f:
+with open(os.path.join(rootdir,'requirements.txt')) as f:
     install_requires = [dep[:-1] for dep in f.readlines()]
 
 
