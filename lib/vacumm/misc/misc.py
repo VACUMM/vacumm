@@ -442,6 +442,8 @@ def get_atts(var, id=True, extra=None, **kwargs):
     atts = {}
     if hasattr(var, 'attributes'):
         atts.update(var.attributes)
+    elif hasattr(var, 'attrs'):
+        atts.update(var.attrs)
     if hasattr(var, 'units'):
         atts['units'] = var.units
     if id and hasattr(var, 'id'):
