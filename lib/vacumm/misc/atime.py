@@ -1985,6 +1985,9 @@ class DateSorter(object):
         else:
             date1 = comptime(arg1)
             date2 = comptime(arg2)
+        tu = 'seconds since 2000'
+        date1 = date1.torel(tu).value
+        date2 = date2.torel(tu).value
         return cmp(date1, date2)
 
 
@@ -2682,7 +2685,9 @@ class IterDates(object):
             next_date = self.round(add_time(self._current_date, *self._dt))
 
         # Iterator is consumed
-        if self._oper(next_date, self._last_date):
+        tu = 'seconds since 2000'
+        if self._oper(next_date.torel(tu).value,
+                      self._last_date.torel(tu).value):
             raise StopIteration
 
         # Save and return
