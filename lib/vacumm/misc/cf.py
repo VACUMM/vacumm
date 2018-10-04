@@ -51,9 +51,6 @@ import MV2
 from vacumm import VACUMMError, vcwarn
 from .misc import kwfilter, dict_merge, match_atts
 from .config import ConfigManager
-from .axes import isaxis
-from .color import get_cmap
-from .grid import create_axes2d
 from .arakawa import ARAKAWA_LOCATIONS
 
 __all__ = ['VAR_SPECS', 'AXIS_SPECS',
@@ -602,6 +599,7 @@ def change_loc(var, toloc, axes=True, squeeze=True):
                 if axismet() is not None:
                     change_loc(axismet(), toloc, squeeze=squeeze)
         # - 2d axes
+        from .axes import isaxis
         if cdms2.isVariable(var) and isaxis(var) and var.ndim > 2:
             for i in -1, -2:
                 change_loc(var.getAxis(i), toloc, squeeze=squeeze)
@@ -1260,12 +1258,14 @@ def format_axis(axis, name=None, force=True, recreate=False,
     # Always a MV2 axis (1D or 2D)
     axis._oldid = axis.id
     kwaxed2d = kwfilter(kwargs, 'axes2d_')
+    from .axes import isaxis
     if not isaxis(axis) or recreate:
         if len(axis.shape) == 1:
             axis = cdms2.createAxis(axis)
         else:
             xy = specs['axis'].lower()
             kwaxed2d[xy] = axis
+            from .grid import create_axes2d
             axis = create_axes2d(**kwaxed2d)
             return axis
     axis2d = len(axis.shape) == 2
@@ -1409,7 +1409,7 @@ def match_known_cf_obj(obj, name, searchmode=None, **kwargs):
     :Params:
 
         - **obj**: a numpy or cdms2 axis or variable.
-        - **name**: A generic names.
+        - **name**: A generic name.
         - **searchmode**, optional: Passed to
           :func:`~vacumm.misc.match_cf_obj`.
     """
@@ -1467,6 +1467,7 @@ def get_cf_cmap(vname):
     if hasattr(vname, 'id'):
         vname = vname.id
     if vname in CF_VAR_SPECS and 'cmap' in CF_VAR_SPECS[vname]:
+        from .color import get_cmap
         cmap = get_cmap(CF_VAR_SPECS[vname]['cmap'])
         if cmap.name != CF_VAR_SPECS[vname]['cmap']:
             vcwarn("Can't get cmap '{}' for standard variable '{}'".format(
