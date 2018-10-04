@@ -932,7 +932,9 @@ def cf2search(name, mode=None, raiseerr=True, **kwargs):
         'units':['degrees_celsius']}
     """
     # Get specs
-    if name in CF_VAR_SPECS:
+    if isinstance(name, dict):
+        specs = name.copy()
+    elif name in CF_VAR_SPECS:
         specs = CF_VAR_SPECS[name]
     elif name in CF_AXIS_SPECS:
         specs = CF_AXIS_SPECS[name]

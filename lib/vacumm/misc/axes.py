@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
-"""Generic tools dealing with information about longitude, latitude, depth and time axes
+"""Generic tools dealing with information about longitude,
+latitude, depth and time axes
 
 
 .. seealso::
@@ -58,68 +59,22 @@ from cdms2.coord import TransientAxis2D
 from vacumm import VACUMMError
 from .misc import (check_def_atts, dict_check_defaults, match_atts,
                    set_atts, get_atts)
+from .cf import CF_AXIS_SPECS, cf2atts, cf2search
 
-
-__all__ = ['isaxis', 'islon', 'islat', 'islev', 'isdep', 'istime',
-           'check_axes', 'is_geo_axis', 'check_axis', 'get_axis_type', 'check_id',
+__all__ = ['isaxis', 'islon', 'islat', 'islev', 'islevel',
+           'islongitude', 'islatitude',
+           'isdep', 'isdepth', 'istime',
+           'isforecast', 'isalt',
+           'check_axes', 'is_geo_axis', 'check_axis',
+           'get_axis_type', 'check_id',
            'get_checker', 'is_geo_axis_type', 'axis_type',
-           'create_time', 'create_lon', 'create_lat', 'create_dep', 'create_depth',
-           'guess_timeid', 'get_order', 'set_order', 'order_match', 'merge_orders',
-           'check_order',  'create_axis', 'BASIC_AXIS_SPECS', 'BASIC_AXIS_DEFAULTS',
+           'create_time', 'create_lon', 'create_lat',
+           'create_dep', 'create_depth', 'create_forecast',
+           'create_altitude', 'create_alt',
+           'guess_timeid', 'get_order', 'set_order',
+           'order_match', 'merge_orders',
+           'check_order',  'create_axis',
            'create_axes2d', 'axes2d', 'num2axes2d']
-
-
-BASIC_AXIS_SPECS = {
-    'lon': dict(
-        id='lon',
-        standard_name='longitude',
-        units=['degrees_east', 'degree_east', 'degree_e', 'degrees_e',
-               'degreee', 'degreese'],
-        long_name='longitude',
-        axis='X',
-    ),
-    'lat': dict(
-        id='lat',
-        standard_name='latitude',
-        units=['degrees_north', 'degree_north', 'degree_n', 'degrees_n',
-               'degreen', 'degreesn'],
-        long_name='latitude',
-        axis='Y',
-    ),
-    'lev': dict(
-        id=['dep', 'lev', 'plev'],
-        standard_name=['depth', 'pressure_level'],
-        unit=['m', 'meters', 'hpa'],
-        long_name=['depth', 'pressure level', 'profondeur', 'pression',
-                   'sigma', 'geopotential'],
-        axis='Z',
-    ),
-    'dep': dict(
-        id=['dep'],
-        standard_name=['depth'],
-        unit=['m', 'meters'],
-        long_name=['depth', 'profondeur'],
-        axis='Z',
-    ),
-    'time': dict(
-        id=['time', 'date'],
-        standard_names=['time'],
-        units=None,
-        long_names=['time', 'temps', 'date'],
-        axis='T',
-    ),
-}
-
-
-BASIC_AXIS_DEFAULTS = {
-    'lon': dict(units='degrees_east', standard_name='longitude',
-                long_name='Longitude', axis='X'),
-    'lat': dict(units='degrees_north', standard_name='latitude',
-                long_name='Latitude', axis='Y'),
-    'lev': dict(axis='Z', long_name='Levels'),
-    'dep': dict(axis='Z', long_name='Depth'),
-    'time': dict(axis='T', standard_name='time', long_name='Time'),
-}
 
 
 def isaxis(obj):
@@ -128,34 +83,43 @@ def isaxis(obj):
     return isinstance(obj, (AbstractAxis, FileAxis, TransientAxis2D))
 
 
-def islon(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
-          **attchecks):
+def islongitude(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
+                **attchecks):
     """Check if an object is of longitude type"""
+    specs = CF_AXIS_SPECS['lon']
     if defaults is None:
-        defaults = BASIC_AXIS_DEFAULTS['lon']
-    dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['lon'])
+        defaults = cf2atts(specs)
+    dict_check_defaults(attchecks, **cf2search(specs))
     return is_geo_axis_type(obj, 'x', defaults=defaults, ro=ro,
                             checkatts=checkatts,
                             checkaxis=checkaxis, **attchecks)
 
 
-def islat(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
-          **attchecks):
+islon = islongitude
+
+
+def islatitude(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
+               **attchecks):
     """Check if an object is of latitude type"""
+    specs = CF_AXIS_SPECS['lat']
     if defaults is None:
-        defaults = BASIC_AXIS_DEFAULTS['lat']
-    dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['lat'])
+        defaults = cf2atts(specs)
+    dict_check_defaults(attchecks, **cf2search(specs))
     return is_geo_axis_type(obj, 'y', defaults=defaults, ro=ro,
                             checkatts=checkatts,
                             checkaxis=checkaxis, **attchecks)
 
 
-def islev(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
-          **attchecks):
+islat = islatitude
+
+
+def islevel(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
+            **attchecks):
     """Check if an object is of level type"""
+    specs = CF_AXIS_SPECS['level']
     if defaults is None:
-        defaults = BASIC_AXIS_DEFAULTS['lev']
-    dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['lev'])
+        defaults = cf2atts(specs)
+    dict_check_defaults(attchecks, **cf2search(specs))
     if not checkaxis:
         if 'units' in attchecks:
             del attchecks['units']
@@ -166,15 +130,16 @@ def islev(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
                             checkaxis=checkaxis, **attchecks)
 
 
-islevel = islev
+islev = islevel
 
 
-def isdep(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
-          **attchecks):
+def isdepth(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
+            **attchecks):
     """Check if an object is of depth type"""
+    specs = CF_AXIS_SPECS['depth']
     if defaults is None:
-        defaults = BASIC_AXIS_DEFAULTS['lev']
-    dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['dep'])
+        defaults = cf2atts(specs)
+    dict_check_defaults(attchecks, **cf2search(specs))
     if not checkaxis:
         if 'units' in attchecks:
             del attchecks['units']
@@ -185,15 +150,36 @@ def isdep(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
                             checkaxis=checkaxis, **attchecks)
 
 
-isdepth = isdep
+isdep = isdepth
+
+
+def isaltitude(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
+               **attchecks):
+    """Check if an object is of altitude type"""
+    specs = CF_AXIS_SPECS['altitude']
+    if defaults is None:
+        defaults = cf2atts(specs)
+    dict_check_defaults(attchecks, **cf2search(specs))
+    if not checkaxis:
+        if 'units' in attchecks:
+            del attchecks['units']
+        if 'long_name' in attchecks:
+            del attchecks['long_name']
+    return is_geo_axis_type(obj, 'z', defaults=defaults, ro=ro,
+                            checkatts=checkatts,
+                            checkaxis=checkaxis, **attchecks)
+
+
+isalt = isaltitude
 
 
 def istime(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
            **attchecks):
     """Check if an object is of time type"""
+    specs = CF_AXIS_SPECS['time']
     if defaults is None:
-        defaults = BASIC_AXIS_DEFAULTS['time']
-    dict_check_defaults(attchecks, **BASIC_AXIS_SPECS['time'])
+        defaults = cf2atts(specs)
+    dict_check_defaults(attchecks, **cf2search(specs))
     units = attchecks.setdefault('units', [])
     if not isinstance(units, (list, tuple)):
         units = [units]
@@ -206,9 +192,21 @@ def istime(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
     if myistime and not ro:
         try:
             obj.calendar = 'gregorian'
-        except:
+        except Exception:
             pass
     return myistime
+
+
+def isforecast(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
+               **attchecks):
+    """Check if an object is of level type"""
+    specs = CF_AXIS_SPECS['forecast']
+    if defaults is None:
+        defaults = cf2atts(specs)
+    dict_check_defaults(attchecks, **cf2search(specs))
+    return is_geo_axis_type(obj, 'f', defaults=defaults, ro=ro,
+                            checkatts=checkatts,
+                            checkaxis=checkaxis, **attchecks)
 
 
 def get_checker(name):
@@ -234,13 +232,24 @@ def get_checker(name):
         raise TypeError(errmsg)
     name = name.lower()
     if name in ('x', 'lon', 'longitude'):
-        return islon
+        return islongitude
     if name in ('y', 'lat', 'latitude'):
-        return islat
-    if name in ('z', 'level', 'depth', 'dep'):
-        return islev
+        return islatitude
+    if name in ('dep', 'depth'):
+        return isdepth
+    if name in ('alt', 'altitude'):
+        return isaltitude
+    if name in ('lev', 'level'):
+        return islevel
+    if name in ('z', ):
+        return lambda *args, **kwargs: (
+                islevel(*args, **kwargs) or
+                isdepth(*args, **kwargs) or
+                isaltitude(*args, **kwargs))
     if name in ('t', 'time'):
         return istime
+    if name in ('f', 'forecast'):
+        return isforecast
     raise TypeError(errmsg)
 
 
@@ -253,7 +262,7 @@ def is_geo_axis_type(obj, atype, defaults=None, ro=False, checkaxis=True,
     axis:
         CDAT 1D or 2D axis.
     atype:
-        Axis type as one of 'x', 'y', 'z' or 'z'.
+        Axis type as one of 'x', 'y', 'z', 't' or 'f'.
     ids: optional
         List od ids to check.
     ro: optional
@@ -282,7 +291,9 @@ def is_geo_axis_type(obj, atype, defaults=None, ro=False, checkaxis=True,
         # Use for instance obj.isLongitude()
         if atype in ['t', 'time']:
             name = 'Time'
-        elif atype in ['z', 'lev', 'dep']:
+        elif atype in ['f', 'forecast']:
+            name = 'Forecast'
+        elif atype in ['z', 'lev', 'dep', 'level', 'depth']:
             name = 'Level'
         elif atype in ['y', 'lat']:
             name = 'Latitude'
@@ -296,7 +307,9 @@ def is_geo_axis_type(obj, atype, defaults=None, ro=False, checkaxis=True,
         isfunc = getattr(obj, 'is' + name)
 
         def valfunc():
-            getattr(obj, 'designate'+name)()
+            designate = getattr(obj, 'designate'+name, None)
+            if designate:
+                designate()
             check_id(obj)
             check_def_atts(obj, **defaults)
         if isfunc():
@@ -316,7 +329,7 @@ def is_geo_axis_type(obj, atype, defaults=None, ro=False, checkaxis=True,
     # TODO: merge with ncmatch_obj
     valid = match_atts(obj, attchecks, ignorecase=True,
                        transform=lambda ss: (re.compile(ss, re.I).match
-                                             if isinstance(ss, six.string_types) else None))  # transform=startswith
+                             if isinstance(ss, six.string_types) else None))
     if not valid:
         return False
     if not ro:
@@ -410,7 +423,8 @@ def create_axis(values, atype='-', **atts):
     Example
     -------
     >>> lon = create_axis(N.arange(-10., 0, 2), 'x')
-    >>> lon = create_axis((-10., 0, 2), 't', id='temps', units='seconds since 2000')
+    >>> lon = create_axis((-10., 0, 2), 't', id='temps',
+    ...     units='seconds since 2000')
     """
     if N.isscalar(values):
         values = [values]
@@ -424,12 +438,16 @@ def create_axis(values, atype='-', **atts):
         axis = cdms2.createAxis(values)
     else:
         axis = values
+    if atype in CF_AXIS_SPECS:
+        defaults = cf2atts(CF_AXIS_SPECS[atype])
+        dict_check_defaults(atts, **defaults)
     for att, val in atts.items():
         setattr(axis, att, val)
-    axis.axis = atype.upper()
-    check_axis(axis)
-    if axis.axis == '-':
-        del axis.axis
+    if atype in 'xyztf-':
+        axis.axis = atype.upper()
+        check_axis(axis)
+        if axis.axis == '-':
+            del axis.axis
     return axis
 
 
@@ -500,7 +518,25 @@ def create_time(values, units=None, **atts):
     if units is None:
         raise ValueError('Unable to guess units. You must specify them.')
 
-    return create_axis(newvalues, 't', units=units, **atts)
+    return create_axis(newvalues, 'time', units=units, **atts)
+
+
+def create_forecast(values, **atts):
+    """Create a forecast axis
+
+    Parameters
+    ----------
+    values:
+        Numeric values
+    **atts
+        Keywords are passed as attributes to the axis.
+
+    Example
+    -------
+    >>> create_forceast(numpy.arange(-18., -5.), units='hours')
+
+    """
+    return create_axis(values, 'forecast', **atts)
 
 
 def create_lon(values, **atts):
@@ -519,10 +555,14 @@ def create_lon(values, **atts):
     >>> create_lon(numpy.arange(-18., -5.), long_name='original_longitude')
 
     """
-    if isinstance(values, N.ndarray) and len(values.shape) == 2 and not isaxis(values):
+    if (isinstance(values, N.ndarray) and len(values.shape) == 2 and
+            not isaxis(values)):
         atts.setdefault('long_name', 'Longitude')
         return create_axes2d(x=values, lonid=atts.pop('id', None), xatts=atts)
-    return create_axis(values, 'x', **atts)
+    return create_axis(values, 'lon', **atts)
+
+
+create_longitude = create_lon
 
 
 def create_lat(values, **atts):
@@ -538,18 +578,21 @@ def create_lat(values, **atts):
     Example
     -------
     >>> create_lat(numpy.arange(40., 48., 1.5))
-    >>> create_lat(numpy.arange(40., 48., 1.5),long_name='strange_latitude')
+    >>> create_lat(numpy.arange(40., 48., 1.5), long_name='strange_latitude')
 
     """
     if (isinstance(values, N.ndarray) and len(values.shape) == 2
             and not isaxis(values)):
         atts.setdefault('long_name', 'Latitude')
         return create_axes2d(y=values, latid=atts.pop('id', None), yatts=atts)
-    return create_axis(values, 'y', **atts)
+    return create_axis(values, 'lat', **atts)
 
 
-def create_dep(values, **atts):
-    """Create a depthaxis
+create_latitude = create_lat
+
+
+def create_depth(values, **atts):
+    """Create a depth axis
 
      Parameters
      ----------
@@ -561,13 +604,34 @@ def create_dep(values, **atts):
     Example
     -------
     >>> create_dep(numpy.arange(-1000., -500., 10.))
-    >>> create_dep(numpy.arange(-1000., -500., 10.),long_name='deep_depth')
+    >>> create_dep(numpy.arange(-1000., -500., 10.), long_name='deep depths')
 
     """
-    return create_axis(values, 'z', **atts)
+    return create_axis(values, 'depth', **atts)
 
 
-create_depth = create_dep
+create_dep = create_depth
+
+
+def create_altitude(values, **atts):
+    """Create an altitude axis
+
+     Parameters
+     ----------
+     values:
+        Numeric values
+    **atts
+        Keywords are passed as attributes to the axis.
+
+    Example
+    -------
+    >>> create_altitude(numpy.arange(0., 1000.))
+
+    """
+    return create_axis(values, 'altitude', **atts)
+
+
+create_alt = create_altitude
 
 
 def create_axes2d(x=None, y=None, bounds=False, numeric=False,
@@ -888,8 +952,8 @@ def order_match(order1, order2, asscore=False, strict=False):
             - ``False``: Not strict.
             - ``True`` or ``"both"``: Fail even with ``-``.
             - ``"left"`` or ``"right"``: Designate the reference order, where
-              the other one is not allowed to be different, except when the former
-              has a ``-``.
+              the other one is not allowed to be different,
+              except when the former has a ``-``.
 
     Examples
     --------
@@ -906,8 +970,8 @@ def order_match(order1, order2, asscore=False, strict=False):
     if len(order1) != len(order2):
         if asscore:
             return 0
-        assert False, 'Both orders must have the same length (%s, %s)' % (
-            order1, order2)
+        assert False, ('Both orders must have the same length '
+                       '({}, {})'.format(order1, order2))
     score = 1
     if strict is True:
         strict = "both"
@@ -956,31 +1020,32 @@ def merge_orders(order1, order2, raiseerr=True):
         if order_match(order1, order2[j:j+n1]):
             i1 = 0
             i2 = j
-            l = n1
+            ll = n1
             break
 
     else:  # Outerloops
 
         for ishift in range(1, min(n1, n2)):
-            l = min(n1, n2)-ishift
-            if order_match(order1[:l], order2[ishift:ishift+l]):
+            ll = min(n1, n2)-ishift
+            if order_match(order1[:ll], order2[ishift:ishift+ll]):
                 i1 = 0
                 i2 = ishift
                 break
-            if order_match(order2[:l], order1[ishift:ishift+l]):
+            if order_match(order2[:ll], order1[ishift:ishift+ll]):
                 i1 = ishift
                 i2 = 0
                 break
         else:
             if raiseerr:
-                raise VACUMMError('orders are incompatible and cannot be safely merged: %s %s' % (
-                    order1, order2)[rev])
+                raise VACUMMError('orders are incompatible and cannot be '
+                                  'safely merged: {} {}'.format(
+                                          *(order1, order2)[rev]))
             return (order1, order2)[rev]
 
     # Merge
     neworder1 = order1[:i1]
     neworder2 = order2[:i2]
-    for i in range(l):
+    for i in range(ll):
         c1 = order1[i1+i]
         c2 = order2[i2+i]
         if c1 == c2 or c2 == '-':
@@ -991,17 +1056,19 @@ def merge_orders(order1, order2, raiseerr=True):
             neworder2 += c2
         else:
             if raiseerr:
-                raise VACUMMError('orders are incompatible and cannot be safely merged: %s %s' % (
-                    order1, order2)[rev])
+                raise VACUMMError('orders are incompatible and cannot be '
+                                  'safely merged: {} {}'.format(
+                                          *(order1, order2)[rev]))
             return (order1, order2)[rev]
-    neworder1 += order1[i1+l:]
-    neworder2 += order2[i2+l:]
+    neworder1 += order1[i1+ll:]
+    neworder2 += order2[i2+ll:]
 
     # Check multiples
-    for c in 'xyztd':
+    for c in 'xyztdf':
         if neworder1.count(c) > 2 or neworder2.count(c) > 2:
-            warn('Merging of orders (%s and %s) may have not ' % (order1, order2) +
-                 'properly worked (multiple axes are of the same type)')
+            warn('Merging of orders ({} and {}) may have not '
+                 'properly worked (multiple axes are '
+                 'of the same type)'.format(order1, order2))
 
     return (neworder1, neworder2)[rev]
 
@@ -1045,7 +1112,7 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
     for order in allowed:
         try:
             cdms2.orderparse(order.lower().replace('d', ''))
-        except:
+        except Exception:
             raise VACUMMError("Wrong allowed order: "+order)
         if ('d' in order and not withd) or ('d' not in order and withd):
             raise VACUMMError(
@@ -1100,7 +1167,8 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
                     var.getAxisList(), allowed_cdms_order)
                 new_var = var.reorder(allowed_cdms_order)
                 # 2D axes
-                if allowed_cdms_order[-1] == 'x' and len(get_axis(new_var, -1).shape) == 2:
+                if (allowed_cdms_order[-1] == 'x' and
+                        len(get_axis(new_var, -1).shape) == 2):
                     del var
                     var = var2d(new_var,
                                 MV2.transpose(get_axis(new_var, 0)),
@@ -1112,7 +1180,7 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
                 data_cdms_order = get_order(var)
                 break  # No error so it worked and we leave
 
-            except:
+            except Exception:
                 continue
 
     else:
