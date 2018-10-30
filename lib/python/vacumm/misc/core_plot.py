@@ -7145,14 +7145,14 @@ def twinxy(xy, ax=None, fig=None):
     if not isinstance(xy, str): return ax
     fig = ax.figure
     twinx = 'x' in xy
-    twiny = 'y' is xy
+    twiny = 'y' in xy
     if not twinx and not twiny:
         return ax
     kw = dict(frameon=False)
     if twinx and not twiny:
         kw.update(sharex=ax)
     if twiny and not twinx:
-        kw.update(sharex=ax)
+        kw.update(sharey=ax)
     nax = fig.add_axes(ax.get_position(True), **kw)
     if twinx:
         nax.yaxis.tick_right()
@@ -7160,9 +7160,9 @@ def twinxy(xy, ax=None, fig=None):
         ax.yaxis.tick_left()
         if not twiny: nax.xaxis.set_visible(False)
     if twiny:
-        nax.xaxis.tick_right()
-        nax.xaxis.set_label_position('right')
-        ax.xaxis.tick_left()
+        nax.xaxis.tick_top()
+        nax.xaxis.set_label_position('top')
+        ax.xaxis.tick_bottom()
         if not twinx: nax.yaxis.set_visible(False)
     return nax
 
