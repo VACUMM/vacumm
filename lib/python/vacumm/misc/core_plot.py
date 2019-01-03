@@ -905,7 +905,7 @@ class Plot(object):
         if bgcolor is not None:
             try:
                 self.axes.set_facecolor(bgcolor)
-            except ImportError:
+            except AttributeError:
                 self.axes.set_axis_bgcolor(bgcolor)
 
     def plot(self, **kwargs):
