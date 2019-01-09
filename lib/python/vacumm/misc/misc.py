@@ -79,7 +79,7 @@ __all__ = ['ismasked', 'bound_ops', 'auto_scale', 'basic_auto_scale', 'geo_scale
     'kwfilterout', 'filter_selector', 'isempty', 'checkdir', 'splitidx',
     'CaseChecker', 'check_case', 'indices2slices', 'filter_level_selector',
     'match_atts', 'match_string', 'dicttree_get', 'dicttree_set',
-    'minbox', 'bivariate_normal']
+    'minbox', 'bivariate_normal', 'scan_format_string']
 __all__.sort()
 
 def broadcast(set, n, mode='last', **kwargs):
@@ -2432,3 +2432,45 @@ def bivariate_normal(X, Y, sigmax=1.0, sigmay=1.0,
     z = Xmu**2/sigmax**2 + Ymu**2/sigmay**2 - 2*rho*Xmu*Ymu/(sigmax*sigmay)
     denom = 2*N.pi*sigmax*sigmay*N.sqrt(1-rho**2)
     return N.exp(-z/(2*(1-rho**2))) / denom
+
+def scan_format_string(format_string):
+    """Scan a format string using :class:`string.Formatter`
+
+    Source: SONAT
+
+    Parameters
+    ----------
+    format_string: string
+
+    Return
+    ------
+    dict:
+        Positional and keyword fields with their properties in a dict
+    dict:
+        Dictionary of properties with the following keys:
+        - positional: list of positional field keys
+        - keyword: list of keyword field keys
+        - with_time: list of keys that have a date pattern format
+    """
+    fields = {}
+    props = {'with_time': [], 'positional': [], 'keyword': []}
+    f = Formatter()
+    for literal_text, field_name, format_spec, conversion in \
+            f.parse(format_string):
+        if field_name is None:
+            continue
+        first, _ = type(field_name)._formatter_field_name_split(field_name)
+
+        scan = dict(field_name=field_name, format_spec=format_spec,
+                    conversion=conversion)
+        fields[first] = scan
+
+        if isinstance(first, (int, long)):
+            props['positional'].append(first)
+        else:
+            props['keyword'].append(first)
+        if '%' in format_spec:
+            props['with_time'].append(first)
+
+    return fields, props
+

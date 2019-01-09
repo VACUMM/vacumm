@@ -109,10 +109,6 @@ def configuration(parent_package='',top_path=None):
     config.add_subpackage('vacumm', 'lib/python/vacumm')
     config.add_data_dir(('vacumm/vacumm-config', 'config')) # not needed
     config.add_data_dir(('vacumm/vacumm-data', 'data')) # all data files
-#    config.add_data_dir(('vacumm/vacumm-scripts/test', 'scripts/test')) # test scripts
-#    config.add_data_dir(('vacumm/vacumm-scripts/tutorials', 'scripts/tutorials')) # tutorials
-#    config.add_data_dir(('vacumm/vacumm-scripts/courses', 'scripts/courses')) # courses
-
 
     return config
 

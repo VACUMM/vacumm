@@ -66,7 +66,7 @@ from vacumm.misc.misc import (
     tunique, split_selector, xls_style, Att, splitidx, CaseChecker, check_case,
     indices2slices, filter_level_selector, filter_selector, match_atts,
     match_string, ArgTuple, dicttree_get, dicttree_set, minbox,
-    bound_ops, squarebox)
+    bound_ops, squarebox, scan_format_string, bivariate_normal)
 
 from vacumm.misc.axes import (
     create_lon, create_lat, create_time, create_depth,
