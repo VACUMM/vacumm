@@ -2390,7 +2390,7 @@ class Intervals(object):
 
         # We just passed the end
         if ((self._reverse and next_date.cmp(self._last_date) < 0) or
-                (not self._reverse and next_date.comp(self._last_date) > 0)):
+                (not self._reverse and next_date.cmp(self._last_date) > 0)):
             next_date = self._last_date
 
         # Save new state
@@ -2401,7 +2401,7 @@ class Intervals(object):
         if self._reverse:
             out = next_date, current_date
             bounds = (self._lastbounds
-                      if current_date.comp(self._first_date) == 0
+                      if current_date.cmp(self._first_date) == 0
                       else self._innerbounds)
         else:
             out = current_date, next_date
