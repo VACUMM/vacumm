@@ -20,4 +20,4 @@ install:
 
 
 
-script: pytest test
+script: pytest -W ignore -x test
