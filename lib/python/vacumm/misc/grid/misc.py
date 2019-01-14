@@ -1270,22 +1270,22 @@ def create_axes2d(x=None, y=None, bounds=False, numeric=False,
     xaxis1d = yaxis1d = None
     if hasx:
         lonid = getattr(x, 'id', lonid)
-        if x[:].ndim==2 and hasattr(x, 'getAxis'):
+        if N.ndim(x)==2 and hasattr(x, 'getAxis'):
             xaxis1d = x.getAxis(-1)
             yaxis1d = x.getAxis(-2)
     if hasy:
         latid = getattr(y, 'id', latid)
-        if y[:].ndim==2 and hasattr(x, 'getAxis') and xaxis1d is None:
+        if N.ndim(y)==2 and hasattr(x, 'getAxis') and xaxis1d is None:
             xaxis1d = y.getAxis(-1)
             yaxis1d = y.getAxis(-2)
 
     # Numeric part
     if hasx:
-        xn = N.asarray(x[:])
+        xn = N.asarray(x)
         if xn.ndim==1 and y is None:
             raise VACUMMError("Can't create 2D from a single 1D X axis")
     if hasy:
-        yn = N.asarray(y[:])
+        yn = N.asarray(y)
         if yn.ndim==1 and x is None:
             raise VACUMMError("Can't create 2D from a single 1D Y axis")
     if hasx and hasy:
@@ -1640,7 +1640,7 @@ def create_grid2d(*args, **kwargs):
 
 def grid2d(*args, **kwargs):
     """Alias for :func:`curv_grid`"""
-    return create_curv_grids(*args, **kwargs)
+    return create_curv_grid(*args, **kwargs)
 
 def create_var2d(var, xaxis=None, yaxis=None, xatts=None, yatts=None, gid=None, copy=1,
     lonid=None, latid=None, iid=None, jid=None, **kwargs):
@@ -1739,7 +1739,7 @@ def create_grid(lon, lat, gtype=None, mask=None, lonatts={}, latatts={}, **kwarg
     # Curvilinear 2D axes?
     if (gtype is None and not isinstance(lon, tuple)
             and not isinstance(lat, tuple) and
-            (lon[:].ndim != 1 or lat[:].ndim != 1)):
+            (N.ndim(lon) != 1 or N.ndim(lat) != 1)):
         gtype = 'curv'
 
     if gtype != 'curv': # 1D axes: rect or unstruct
@@ -1747,7 +1747,7 @@ def create_grid(lon, lat, gtype=None, mask=None, lonatts={}, latatts={}, **kwarg
         # Guess if auxilary
         if gtype is None:
             if (isinstance(lon, tuple) or isinstance(lat, tuple)
-                    or  lon[:].size != lat[:].size):
+                    or N.size(lon) != N.size(lat)):
                 gtype = 'rect'
             elif (cdms2.isVariable(lon) and cdms2.isVariable(lat) and
                   lon.getAxis(0).id == lat.getAxis(0).id):
@@ -2198,18 +2198,22 @@ def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
 
     # Check limits of 2D axes
     if checklims:
-        if xxn[:].ndim==2:
-            if isaxis(xx):
-                xx = xx.clone()
-                xx[:] = N.ma.masked_outside(xx[:], -720., 720., copy=False)
-            else:
-                xx = N.ma.masked_outside(xx[:], -720., 720., copy=False)
-        if yyn[:].ndim==2:
-            if isaxis(yy):
-                yy = yy.clone()
-                yy[:] = N.ma.clip(yy[:], -720., 720.)
-            else:
-                yy = N.ma.clip(yy[:], -90., 90.)
+        if N.ndim(xxn)==2:
+            bad = (xxn<-720)&(xxn>720)
+            if bad.any():
+                if isaxis(xx):
+                    xx = xx.clone()
+                    xx[:] = N.ma.masked_where(bad, xx, copy=False)
+                else:
+                    xx = N.ma.masked_where(bad, xx, copy=False)
+        if N.ndim(yyn)==2:
+            bad = (xxn<-90)&(xxn>90)
+            if bad.any():
+                if isaxis(yy):
+                    yy = yy.clone()
+                    yy[:] = N.ma.clip(yy[:], -90., 90.)
+                else:
+                    yy = N.ma.clip(yy[:], -90., 90.)
 
     # Convert to meters?
     proj = kwargs.pop('m', proj)
@@ -2220,11 +2224,11 @@ def get_xy(gg, proj=False, mesh=None, num=False, checklims=True, **kwargs):
 
     # Mesh ?
     if mesh is True:# and (xx[:].ndim == 1 or  yy[:].ndim == 1):
-        return meshgrid(xx[:], yy[:])
+        return meshgrid(N.asarray(xx), N.asarray(yy))
     elif mesh is False:
-        if xxn[:].ndim == 2:
+        if N.ndim(xxn) == 2:
             xx = xxn[0]
-        if yyn[:].ndim == 2:
+        if N.ndim(yyn) == 2:
             yy = xxn[:, 0]
 
     return  xx, yy
@@ -2390,7 +2394,7 @@ def resol(axy, mode='median',  axis=None, meters=False, cache=True, lat=None,
     warnlatmsg = ("Your axis resolution along X is computed with a default "
         "latitude of 45. You should also provide a valid Y axis or "
         "at least set this latitude properly with the lat parameter.")
-    if len(xy)==2 and (xy[0][:].ndim == 2 or xy[1][:].ndim == 2) : # 2x2D
+    if len(xy)==2 and (N.ndim(xy[0]) == 2 or N.ndim(xy[1]) == 2) : # 2x2D
 
         xy = meshgrid(*xy)
         res = _dist2x2d_(*xy,  **kwdist)
@@ -2720,7 +2724,8 @@ def xextend(vari, n, mode=None):
                 varo[..., nxo-iright-1] = vari[..., -1]
 
     # Insert axes
-    xo = cdms2.createAxis(N.concatenate((xleft, xi[:], xright)).astype(xi[:].dtype))
+    xin = N.asarray(xi)
+    xo = cdms2.createAxis(N.concatenate((xleft, xin, xright)).astype(xin.dtype))
     cp_atts(xi, xo)
     axes[-1] = xo
     varo.setAxisList(axes)

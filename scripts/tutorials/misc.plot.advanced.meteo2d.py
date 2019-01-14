@@ -38,5 +38,6 @@ u[:] = ms2kt(u*5)
 v[:] = ms2kt(v*5)
 m = map2((u[::3, ::3], v[::3, ::3]), fill=False, contour=False, barbs=True, projection='merc',
     quiver_sizes=dict(height=.2, spacing=.15), quiver_linewidths=.8, zorder=10,
-    shadow=True, quiver_alpha=.5, savefigs=__file__, show=False, savefigs_pdf=True,
+    shadow=True, quiver_alpha=.5, savefigs=__file__, show=False,
+    savefigs_pdf=False,
     fillcontinents=False)

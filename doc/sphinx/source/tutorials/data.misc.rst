@@ -7,5 +7,4 @@ See the :mod:`~vacumm.data.misc` module.
 
 .. toctree::
 
-    data.misc.profile
     data.misc.sigma

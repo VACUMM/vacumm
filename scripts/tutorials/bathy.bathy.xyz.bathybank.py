@@ -11,13 +11,13 @@ def gene_bathy(xc, yc, r, n):
     return N.asarray([x, y, N.exp(-(x-xc)**2/r**2-(y-yc)**2/r**2)*30.+noise]).transpose()
 # - bathy sud
 fsouth = __file__[:-2]+'bathy_south.xyz'
-N.savetxt(fsouth, gene_bathy(-5.1, 48.1, .15, 200.))
+N.savetxt(fsouth, gene_bathy(-5.1, 48.1, .15, 200))
 # - bathy nord
 fnorth = __file__[:-2]+'bathy_north.xyz'
-N.savetxt(fnorth, gene_bathy(-5.1, 48.3, .15, 100.))
+N.savetxt(fnorth, gene_bathy(-5.1, 48.3, .15, 100))
 # - bathy large
 flarge = __file__[:-2]+'bathy_large.xyz'
-N.savetxt(flarge, gene_bathy(-5.2, 48., .4, 300.))
+N.savetxt(flarge, gene_bathy(-5.2, 48., .4, 300))
 
 # On stocke dans une banque
 # - from scratch
