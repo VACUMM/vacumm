@@ -1793,8 +1793,8 @@ def clone_grid(grid):
     lon = grid.getLongitude().clone()
     lat = grid.getLatitude().clone()
     if cdms2.isVariable(lon):
-        iaxis = lon.getAxis(1)#.clone()
-        jaxis = lon.getAxis(0)#.clone()
+        iaxis = TransientAxis(lon.getAxis(1), copy=True)#.clone()
+        jaxis = TransientAxis(lon.getAxis(0), copy=True)#.clone()
         lon.setAxisList([jaxis, iaxis])
         lat.setAxisList([jaxis, iaxis])
 
