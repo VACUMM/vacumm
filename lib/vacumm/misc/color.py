@@ -581,6 +581,7 @@ def auto_cmap_topo(varminmax=(0., 1.), gzoom=1., xzoom=1., **kwargs):
         topomax = N.asarray(varminmax, 'f').max()
     topomin = float(min(topomin, 0))
     topomax = float(max(topomax, 0))
+
     # More land or ocean?
     xzoom = N.clip(xzoom, 0., 1.)
     if abs(topomin) < topomax:
@@ -599,13 +600,19 @@ def auto_cmap_topo(varminmax=(0., 1.), gzoom=1., xzoom=1., **kwargs):
         zero = 1/(1.+xzoom)
         start = 0.
         stop = zero*(1+alpha)
+
     # Global zoom
     if gzoom < 1:
         gzoom = 1.
     start = zero - (zero-start)/gzoom
     stop = zero + (stop-zero)/gzoom
+
+    # Create the cmap
     kwargs.setdefault('register', False)
-    return cmap_topo(start, stop, 'vacumm_auto_cmap_topo', zero=zero, **kwargs)
+    cmap = cmap_topo(start, stop, 'vacumm_auto_cmap_topo', zero=zero, **kwargs)
+    cmap._vacumm_topomin = topomin
+    cmap._vacumm_topomax = topomax
+    return cmap
 
 
 def cmap_jete(name='vacumm_jete', **kwargs):
@@ -711,7 +718,7 @@ def _stretch_(value, stretch):
     -1 = black
     1 = white
     """
-    stretch = N.clip(stretch, -1, 1)
+    stretch = max(min(stretch, 1), -1)
     if stretch == 0:
         return value
     if stretch < 0:
@@ -1184,7 +1191,7 @@ def cmap_nice_gfdl(name='vacumm_nice_gfdl', **kwargs):
     Source: http://www.ncl.ucar.edu/Document/Graphics/ColorTables/nice_gfdl.shtml (included by G. Charria)
     """
 
-    d = N.array([0.996078, 0.984314, 0.964706,
+    d = [0.996078, 0.984314, 0.964706,
                  0.925490, 0.929412, 0.945098,
                  0.905882, 0.909804, 0.925490,
                  0.862745, 0.882353, 0.901961,
@@ -1408,7 +1415,7 @@ def cmap_nice_gfdl(name='vacumm_nice_gfdl', **kwargs):
                  0.023529, 0.015686, 0.000000,
                  0.023529, 0.015686, 0.000000,
                  0.000000, 0.000000, 0.000000,
-                 0.000000, 0.000000, 0.000000])
+                 0.000000, 0.000000, 0.000000]
     r = d[0::3]
     g = d[1::3]
     b = d[2::3]
@@ -1426,7 +1433,7 @@ def cmap_eke(name='vacumm_eke', **kwargs):
     Added by G. Charria
     """
 
-    r = N.array([1,
+    r = [1,
                  0.98792,
                  0.97584,
                  0.96376,
@@ -1681,8 +1688,8 @@ def cmap_eke(name='vacumm_eke', **kwargs):
                  0.082353,
                  0.054902,
                  0.027451,
-                 0])
-    g = N.array([1,
+                 0]
+    g = [1,
                  0.97749,
                  0.95498,
                  0.93247,
@@ -1937,8 +1944,8 @@ def cmap_eke(name='vacumm_eke', **kwargs):
                  0,
                  0,
                  0,
-                 0])
-    b = N.array([1,
+                 0]
+    b = [1,
                  0.99424,
                  0.98847,
                  0.98271,
@@ -2193,12 +2200,13 @@ def cmap_eke(name='vacumm_eke', **kwargs):
                  0,
                  0,
                  0,
-                 0])
-
-    colors = list(zip(r, g, b))
-    cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
-    cmap.set_under(colors[0])
-    cmap.set_over(colors[-1])
+                 0]
+    cdict = {'red': r[1:-1], 'green': g[1:-1], 'blue': b[1:-1]}
+    cmap = LinearSegmentedColormap(name, cdict)
+#    colors = list(zip(r, g, b))
+#    cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
+    cmap.set_under((r[0], g[0], b[0]))
+    cmap.set_over((r[-1], g[-1], b[-1]))
     return cmap
 
 
@@ -2207,7 +2215,8 @@ def _local_cmap_cpt_(name, **kwargs):
     if name in cmap_d:
         return cmap_d[name]
     sname = name[7:] if name.startswith('vacumm_') else name
-    return cmap_gmt(os.path.join(_cpt_dir, sname+'.cpt'), register='vacumm_'+sname, **kwargs)
+    return cmap_gmt(os.path.join(_cpt_dir, sname+'.cpt'),
+                    register='vacumm_'+sname, **kwargs)
 
 
 def cmap_currents(name='vacumm_currents', **kwargs):
