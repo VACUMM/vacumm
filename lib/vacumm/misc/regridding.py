@@ -55,7 +55,7 @@ from scipy import interpolate
 
 from vacumm import VACUMMError, VACUMMWarning, vacumm_warn
 from vacumm.fortran import interp as finterp
-from .misc import (cp_atts, get_atts, closeto, set_atts,
+from .misc import (cp_atts, get_atts, closeto, set_atts, kwfilter,
                    )
 from .axes import (check_axes, isaxis, axis_type, create_lon, istime,
                    create_lat, create_time, create_axis, islon, islat,
@@ -83,7 +83,7 @@ __all__ = ['fill1d', 'regular', 'regular_fill1d',
            'extendgrid', 'regrid2d_method_name', 'fill1d2',
            'krig', 'CurvedInterpolator',
            'regrid2d_tool_name', 'regrid2dnew', 'regrid1d_method_name',
-           'cellerr1d']
+           'cellerr1d', 'GriddedMerger']
 
 
 # Interpolation methods
@@ -398,7 +398,8 @@ def regrid1d(vari, axo, method='auto', axis=None, axi=None,
             not are_same_units(axi.units, axo.units)):
         axi = ch_units(axi, axo.units, copy=True)
         if errl is not None:
-            axou = axo.units.split(1)[0] + axi.units.split(1)[1]
+            axou = (axo.units.split(maxsplit=1)[0] +
+                    axi.units.split(maxsplit=1)[1])
             dxi2o = cdtime.reltime(1, axou)-cdtime.reltime(0, axou)
             dxi2o /= cdtime.reltime(1, axi.units)-cdtime.reltime(0, axi.units)
     # - numeric version
@@ -817,7 +818,7 @@ def fill1d(vari, axis=0, method='linear', maxgap=0):
         return vari.clone()
     iaxis = vari.getAxis(axis)
     nx = len(iaxis)
-    ny = vari.size/nx
+    ny = int(vari.size/nx)
 
     if vari.getMissing() is None:
         vari.setMissing(1.e20)
@@ -852,7 +853,6 @@ def fill1d(vari, axis=0, method='linear', maxgap=0):
     varo2d = vari2d.clone()
     if maxgap >= 1:
         ii = N.arange(nx)
-        dd = N.ones(nx-1)
     keep = N.ones(nx, '?')
     vari2dm = N.ma.ones(nx)
     for iy in range(ny):
@@ -866,15 +866,15 @@ def fill1d(vari, axis=0, method='linear', maxgap=0):
         # - check gaps
         keep[:] = ~xmask
         if maxgap >= 1:
-            dd[:] = N.diff(xmask.astype('i'))
-            gapstart = ii[dd == 1]+1
-            gapend = ii[dd == -1]
+            dd = N.diff(xmask.astype('i'))
+            gapstart = ii[:-1][dd == 1]+1
+            gapend = ii[:-1][dd == -1]
             ie0 = int(gapend[0] < gapstart[0])
             is1 = (gapstart[-1] > gapend[-1]) and -1 or nx
             for istart, iend in zip(gapstart[:is1], gapend[ie0:]):
                 if (iend-istart+1) > maxgap:
                     keep[istart:iend+1] = True
-            del gapstart, gapend
+            del gapstart, gapend, dd
 
         # Compressed axis
         caxis = cdms2.createAxis(iaxis[keep])
@@ -893,7 +893,7 @@ def fill1d(vari, axis=0, method='linear', maxgap=0):
         del caxis, vari2dc
 
     if maxgap >= 1:
-        del ii, dd
+        del ii
     del keep, vari2dm
 
     # Back to correct dims
@@ -955,7 +955,7 @@ def fill2d(var, xx=None, yy=None, mask=None, copy=True, **kwargs):
     assert xx.shape == var.shape[-2:], ('2D axes and variable are not '
                                 'compatible in shape (%s against %s)') % (
                                         xx.shape, var.shape)
-    nex = var.size/(var.shape[-1]*var.shape[-2])
+    nex = int(var.size/(var.shape[-1]*var.shape[-2]))
     if var.ndim != 3:
         var3d = var.reshape(nex, var.shape[-2],  var.shape[-1])
     else:
@@ -1208,8 +1208,8 @@ class GridData(object):
             jbs = range(1)
             ibs = range(1)
         else:
-            jbs = range((self._GDH.ny-1)/self.sub+1)
-            ibs = range((self._GDH.nx-1)/self.sub+1)
+            jbs = range(int((self._GDH.ny-1)/self.sub)+1)
+            ibs = range(int((self._GDH.nx-1)/self.sub)+1)
 
         # Loop on supplementary dims
         for iex in range(nex):
@@ -1529,7 +1529,7 @@ class _GridDataHelper_(object):
     def init(self, zi, missing_value):
         """Init input before regridding"""
         # Convert to right dims
-        nex = zi.size/zi.shape[-1]
+        nex = int(zi.size/zi.shape[-1])
         if cdms2.isVariable(zi):
             zi = zi.asma()
         zi2d = zi.reshape(nex, zi.shape[-1]).astype('d')
@@ -1538,7 +1538,7 @@ class _GridDataHelper_(object):
         if missing_value is None:
             try:
                 missing_value = zi.getMissing()
-            except:
+            except Exception:
                 missing_value = 1.e20
         zo3d = N.zeros(zi2d.shape[:1]+self.gridshape, zi.dtype)+missing_value
         unmasked = not hasattr(
@@ -1698,7 +1698,7 @@ def xy2xy(xi, yi, zi, xo, yo, nl=False, proj=True, **kwargs):
     zi = zi.copy()
     si = zi.shape
     nsi = zi.shape[-1]
-    nex = zi.size/nsi
+    nex = int(zi.size/nsi)
     zi.shape = (nex, nsi)
     nso = len(xo)
     zo = N.zeros((nex, nso))
@@ -1798,9 +1798,12 @@ def grid2xy(vari, xo, yo, zo=None, to=None, zi=None, method='linear', outaxis=No
             - ``nearest``: Nearest neighbor
             - ``linear``: Linear interpolation
 
-        - **zo**, optional: Output depths (negative in the ocean).
-        - **to**, optional: Output times.
-        - **zi**, optional: Input depths when variable in space.
+    zo: optional
+        Output depths (negative in the ocean).
+    to: optional
+        Output times.
+    zi: optional
+        Input depths when variable in space.
 
     outaxis: optional
         Output spatial axis
@@ -2433,7 +2436,7 @@ def regrid2d(vari, ggo, method='auto', tool=None, rgdr=None, getrgdr=False,
     mv = vari.getMissing()
     ggi = curv2rect(get_grid(vari), mode='none')
     nyi, nxi = ggi.shape
-    nzi = vari.size/(nxi*nyi)
+    nzi = int(vari.size/(nxi*nyi))
     ggo = get_grid(ggo)
     ggor = curv2rect(ggo, mode='none')
     nyo, nxo = ggo.shape
@@ -2584,7 +2587,7 @@ regrid2dnew = regrid2d
 
 def _regrid2d_nearest2d_(vari3d, xxi, yyi, xxo, yyo, mv, geo, maskoext):
     """Wrapper to fortran _nearest2d_"""
-    nb = min(xxi.shape)/50
+    nb = int(round(min(xxi.shape)/50))
     if nb == 1:
         nb = 0
 #    nb = -1
@@ -2843,6 +2846,288 @@ def regrid_method(gridi, grido, ratio=.55, iaxi=-1, iaxo=-1):
 
     # Check the ratio
     return 'cellave' if resi <= ratio*reso else 'linear'
+
+
+class GriddedMerger(object):
+    """Merge several gridded variables onto a grid
+
+    Parameters
+    ----------
+
+    grid**:
+        Output grid
+    id: optional
+        Output id
+    long_name: optional:
+        Output long name
+    units: optional:
+        Output units
+    **kwargs
+        Other keywords are set a output attributes
+
+    Example
+    -------
+    >>> gm = GriddedMerger(mygrid)
+    >>> gm += var1
+    >>> gm.append(var2)
+    >>> gm += var3
+    >>> gm -= var3
+    >>> gm.insert(0, var3)
+    >>> print len(gm)
+    3
+    >>> print gm
+    ....
+    >>> myvar = gm.merge(res_ratio=.4, pad=3)
+    """
+    # TODO: GriddedMerger must be generalized to all grids using ESMP
+    def __init__(self, grid, id=None, long_name=None, units=None, **kwargs):
+        self._vars = []
+        self.long_name = long_name
+        self.units = units
+        self.id = id
+        self._var = None
+        self.set_grid(grid)
+        for att, val in kwargs.items():
+            setattr(self, '_'+att, val)
+
+    def set_grid(self, grid):
+        """Set the grid for merging"""
+        self._grid = get_grid(grid)
+        self._xres, self._yres = resol(self._grid)
+        del self._var
+        self._var = None
+
+    def get_grid(self):
+        """Get the grid for merging"""
+        assert hasattr(self, '_grid'), "Grid to set"
+        return self._grid
+
+    grid = property(get_grid, set_grid, doc='Final grid')
+
+    def get_lon(self):
+        """Get the longitudes of the grid"""
+        return self.grid.getAxis(1)
+
+    lon = property(get_lon, doc='Final grid longitudes')
+
+    def get_lat(self):
+        """Get the loatitudes of the grid"""
+        return self._grid.getAxis(0)
+
+    lat = property(get_lat, doc='Final grid latitudes')
+
+    def __len__(self):
+        return len(self._vars)
+
+    def _load_(self, var, method):
+        # Check grid
+        grid = var.getGrid()
+        assert grid is not None, 'Your variable must have a grid'
+        # Check dims
+        if len(self):
+            firstdims = tuple([len(a) for a in var.getAxisList()[:-2]])
+            assert self._firstdims == firstdims, (
+                    "Incompatible number  "
+                    "of dimension: %s. It should be: %s." % \
+                (self._firstdims, firstdims))
+        else:
+            self._firstaxes = var.getAxisList()[:-2]
+            self._firstdims = tuple([len(a) for a in self._firstaxes])
+        # Method and resolution
+        var._gm_method = regrid1d_method_name(method)
+        grid._xres, grid._yres = resol(grid)
+        # Bounds
+        for axis in var.getAxisList()[-2:]:
+            axis.setBounds(bounds1d(axis))
+        return var
+
+    def add(self, *args, **kwargs):
+        """Alias for :meth:`append`"""
+        self.append(*args, **kwargs)
+
+    def append(self, var, method='auto', **kwargs):
+        """Append a bathymetry to the top of the merger"""
+        self._vars.append(self._load_(var, method, **kwargs))
+
+    def __iadd__(self, var):
+        self.add(var)
+        return self
+
+    def remove(self, var):
+        if isinstance(var, int):
+            del self._vars[i]
+        assert var in self._vars, 'Variable not in merger'
+        self._vars.remove(var)
+
+    def __isub__(self, var):
+        self.remove(var)
+        return self
+
+    def __getitem__(self, idx):
+        return self._vars[idx]
+
+    def __setitem__(self, idx, var):
+        self._vars[idx] = self._load_(var)
+
+    def __delitem__(self, idx):
+        del self._vars[idx]
+
+    def insert(self, idx, var):
+        self._vars.insert(idx, self._load_(var))
+
+    def __str__(self):
+        if not len(self): return 'No variables in the merger'
+        ret = ''
+        for i, var in enumerate(self._vars):
+            print('\n%i) %s_n'%(i, var.id))
+            for att in 'long_name', 'units', '_gm_method':
+                if hasattr(var, att):
+                    ret += '  %s = %s'%(att, getattr(var, att))
+            for att in '_gm_xres', '_gm_yres':
+                if hasattr(var.getGrid(), att):
+                    ret += '  %s = %s'%(att, getattr(var.getGrid(), att))
+        ret += '\n--\nTotal: %i variable(s)'%len(self)
+        return ret
+
+    def merge(self, res_ratio=.5, pad=5, **kwargs):
+        """Merge all the variables on to a grid
+
+
+        grid
+            Out put grid or axes.
+        res_ratio
+            Resolution ratio for choosing between cell
+            averaging and bilinear interpolation (see: :func:`regrid_method`).
+        regrid_<kwparam>
+            *<kwparam>* is passed to :func:`regrid2d` for interpolation.
+        """
+        assert len(self), 'You must add at least one variable to the merger'
+
+        # Some useful info if the output grid
+        xo = self.lon[:]
+        yo = self.lat[:]
+        xbo = meshcells(xo)
+        ybo = meshcells(yo)
+        xmino = xo.min()
+        xmaxo = xo.max()
+        ymino = yo.min()
+        ymaxo = yo.max()
+        xbmino = xbo.min()
+        xbmaxo = xbo.max()
+        ybmino = ybo.min()
+        ybmaxo = ybo.max()
+        grid = self.get_grid()
+        nyo, nxo = grid.shape
+
+        # Inits
+#        outmask2d = N.ones(grid.shape, '?')
+        varo = MV2.zeros(self._firstdims+grid.shape)
+        set_grid(varo, grid)
+        total_cover = N.zeros(grid.shape)
+        cover = N.zeros(grid.shape)
+#        weight = N.zeros(grid.shape)
+#        wnd = N.zeros(varo.shape)
+        vo = N.ma.zeros(varo.shape)
+        mask = N.ones(varo.shape, '?')
+        kwregrid = kwfilter(kwargs, 'regrid')
+        for var in self._vars[::-1]:
+
+            # Axes
+            loni = var.getLongitude()
+            xi = loni.getValue()
+            lati = var.getLatitude()
+            yi = lati.getValue()
+            nyi, nxi = var.getGrid().shape
+
+            # Guess the interpolation method
+            if var._gm_method != 'auto':
+                method = var._gm_method
+            else:
+                method = regrid_method(var.getGrid(), grid, ratio=res_ratio)
+
+            # Guess the grid bounds according to the method
+            if method == 'linear':
+                ximin, ximax = xi.min(), xi.max()
+                yimin, yimax = yi.min(), yi.max()
+                xo_, yo_ = xo, yo
+                xomin, xomax, yomin, yomax = xmino, xmaxo, ymino, ymaxo
+            else:
+                ximin = loni.getBounds().min()
+                ximax = loni.getBounds().max()
+                yimin = lati.getBounds().min()
+                yimax = lati.getBounds().max()
+                xo_, yo_ = xbo, ybo
+                xomin, xomax, yomin, yomax = xbmino, xbmaxo, ybmino, ybmaxo
+
+            # Cell covering
+            cover[:] = 0.
+            # - limits
+            if (ximin>=xomax or ximax<=xomin or
+                yimin>=yomax or yimax<=yomin):
+                continue
+            if method == 'linear':
+                ix0 = N.searchsorted(xo, ximin, 'left')  # >=
+                ix1 = N.searchsorted(xo, ximax, 'right')-1  # <=
+                iy0 = N.searchsorted(yo, yimin, 'left')  # >=
+                iy1 = N.searchsorted(yo, yimax, 'right')-1  # <=
+            else:
+                ix0 = N.searchsorted(xbo, ximin, 'right')-1  # >=
+                ix1 = N.searchsorted(xbo, ximax, 'left')-1  # <=
+                iy0 = N.searchsorted(ybo, yimin, 'right')-1  # >=
+                iy1 = N.searchsorted(ybo, yimax, 'left')-1  # <=
+            # - partial+full cells
+            cslice = (slice(max(iy0, 0), iy1+1), slice(max(ix0, 0), ix1+1))
+            cover[cslice] = 1.
+            # - partial cells
+            if ix0 >= 0:
+                cover[:, ix0] *= min((xbo[ix0+1]-ximin)/(xbo[ix0+1]-xbo[ix0]), 1.)
+            if ix1 < nxo:
+                cover[:, ix1] *= min((ximax-xbo[ix1])/(xbo[ix1+1]-xbo[ix1]), 1.)
+            if iy0 >= 0:
+                cover[iy0, :] *= min((ybo[iy0+1]-yimin)/(ybo[iy0+1]-ybo[iy0]), 1.)
+            if iy1 < nyo:
+                cover[iy1, :] *= min((yimax-ybo[iy1])/(ybo[iy1+1]-ybo[iy1]), 1.)
+#            # - borders
+#            xpad = N.ones(nyo)
+#            ypad = N.ones(nxo)
+#            ipadmax = min(ix1, nxo-1)-max(ix0, 0)
+#            for ipad in xrange(min(pad, ipadmax+1)):
+#                xcov = (ipad+.5)*xpad/(ipadmax+.5)
+#                cover[:, ipad] *= xcov
+#                cover[:, nxo-ipad-1] *= xcov
+#                del xcov
+#            jpadmax = min(iy1, nyo-1)-max(iy0, 0)
+#            for jpad in xrange(min(pad, jpadmax+1)):
+#                ycov = (jpad+.5)*ypad/(jpadmax+.5)
+#                cover[jpad] *= ycov
+#                cover[nyo-jpad-1] *= ycov
+#                del ycov
+#            del xpad, ypad
+
+            # Regridding
+            vo[:] = regrid2d(var, grid, method, **kwregrid).asma()
+
+            # Contribution to varo
+            cover *= 1 - total_cover
+#            cover[total_cover == 1] = 0.
+            total_cover += cover
+#            wnd[:] = N.resize(cover, varo.shape)
+            covernd = N.resize(cover, varo.shape)
+            mask[:] &= (covernd == 0.) | N.ma.getmaskarray(vo)
+            vo[:] *= covernd  # N.resize(cover, varo.shape)  # wnd
+            varo[(Ellipsis,) + cslice] += vo[(Ellipsis,) + cslice].filled(0.)
+
+        varo[:] = N.ma.masked_where(mask, varo.asma()/total_cover, copy=False)
+        del self._var, cover, total_cover, vo#, wnd
+        self._var = varo
+        return varo
+
+    def plot(self, **kwargs):
+        """Merge and plot"""
+        from .plot import map2
+        if self._var is None:
+            self.merge()
+        return map2(self._var, **kwargs)
 
 
 def _shiftslicenames_(shift):
