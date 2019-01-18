@@ -48,12 +48,16 @@ from six.moves import zip
 from scipy.ndimage.filters import convolve1d
 import cdtime, numpy as N, MV2, cdms2
 
-from vacumm.misc import cp_atts
+from vacumm.misc.misc import cp_atts
 from vacumm.misc.axes import check_axes, create_time
-from vacumm.misc.atime import unit_type,  compress,strftime
-from vacumm.misc.filters import running_average
+from vacumm.misc.atime import unit_type,  compress, strftime
+from vacumm.misc.filters import generic1d
 from vacumm.misc.grid import isregular
 from vacumm.misc.regridding import interp1d
+
+__all__ = ['demerliac', 'godin', 'zeros', 'extrema', 'generic',
+           'get_tidal_zeros', 'get_tidal_extrema',
+           'generic_tidal_filter']
 
 
 _filter_doc = """- *units*: Units of coefficient spacings (like 'hours' or cdms2.Hour) [default: 'hours']
@@ -81,7 +85,7 @@ def demerliac(var,**kwargs):
       55, 45, 32, 21, 15,  8,  3,  1],dtype='f')
 
 
-    return generic(var,coefs,filter_name='Demerliac',**kwargs)
+    return generic_tidal_filter(var,coefs,filter_name='Demerliac',**kwargs)
 if demerliac.__doc__ is not None:
     demerliac.__doc__ = demerliac.__doc__ % _filter_doc
 
@@ -102,13 +106,15 @@ def godin(var,**kwargs):
       0.0001],'f')
 
 
-    return generic(var,coefs,filter_name='Godin',**kwargs)
+    return generic_tidal_filter(var,coefs,filter_name='Godin',**kwargs)
 if godin.__doc__ is not None:
     godin.__doc__ = godin.__doc__ % _filter_doc
 
 
-def generic(var,coefs,units='hours',get_tide=False,only_tide=False,filter_name='Generic',
-    check_regular=False,strict=True, interp_method='cubic', axis=None):
+def generic_tidal_filter(var, coefs,units='hours', get_tide=False,
+                         only_tide=False, filter_name='Generic',
+                         check_regular=False, strict=True,
+                         interp_method='cubic', axis=None):
     """Apply a filter to signal (cdms2 variable) using symetric coefficients. First axis is supposed to be time and regular.
 
     - **var**: Data to filter with first axis supposed to be time.
@@ -214,8 +220,10 @@ def generic(var,coefs,units='hours',get_tide=False,only_tide=False,filter_name='
         return res[0]
     else:
         return res
-if generic.__doc__ is not None:
-    generic.__doc__ = generic.__doc__ % _filter_doc
+if generic_tidal_filter.__doc__ is not None:
+    generic_tidal_filter.__doc__ = generic_tidal_filter.__doc__ % _filter_doc
+
+generic = generic_tidal_filter
 
 #########################################################################
 
@@ -229,7 +237,7 @@ def _get_anomaly_(var,ref='mean',mean=None):
     if ref is None: ref = 'mean'
     nt = len(var)
     if isinstance(ref,int):
-        var_ref = running_average(var,ref)
+        var_ref = generic1d(var, ref)
     elif ref in ['demerliac','godin']:
         var_ref = eval(ref)(var,get_tide=False)
     elif ref == 'mean':
@@ -258,7 +266,7 @@ def _get_anomaly_(var,ref='mean',mean=None):
     return vara, var_ref
 
 
-def zeros(var, ref='mean',mean=None, getref=True, **kwargs):
+def get_tidal_zeros(var, ref='mean',mean=None, getref=True, **kwargs):
     """Get the zeros of a tidal signal
 
     :Returns: A :mod:`cdms2` variable of signs (-1,1) with a time axis
@@ -307,7 +315,8 @@ def zeros(var, ref='mean',mean=None, getref=True, **kwargs):
     return ret
 
 
-def extrema(var,ref='mean',mean=None,getmax=True,getmin=True,getsign=False,getidx=False,spline=True,**kwargs):
+def get_tidal_extrema(var, ref='mean', mean=None, getmax=True, getmin=True,
+                      getsign=False, getidx=False, spline=True, **kwargs):
     """Find extrema of 1D array using a reference. This is suited for detecting low and high tides.
 
     - **var**: 1D :mod:`cdms2` array of sea level with a time axis.
@@ -434,4 +443,5 @@ def _extrema_var_(extrem,units=None,indices=False,**kwargs):
     return var
 
 
-
+extrema = get_tidal_extrema
+zeros = get_tidal_zeros

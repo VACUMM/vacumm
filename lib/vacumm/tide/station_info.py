@@ -46,15 +46,32 @@ import numpy as N
 import six
 from six.moves import range
 
-from vacumm.config import VACUMM_CFG
+from vacumm import VACUMM_CFG
+from vacumm.config import get_data_file
+from vacumm.misc.geo import haversine
+from vacumm.misc.misc import lonlab, latlab
+from vacumm.misc.sdata import XYZ
 from vacumm.bathy.bathy import XYZBathy
 
+__all__ = ['SeaLevelStationInfoError', 'SeaLevelStationInfo',
+           'SeaLevelStation',
+           'MeanSeaLevelError', 'MeanSeaLevel',
+           'StationInfoError', 'StationInfo', 'Station',  # compat
+           ]
 
-class StationInfoError(Exception):
+
+class SeaLevelStationInfoError(Exception):
     pass
-class _StationPlot_(object):
+
+
+StationInfoError = SeaLevelStationInfoError
+
+
+class _SeaLevelStationPlot_(object):
+
     def plot(self,lon=None,lat=None,loc='upper left',
-             fontsize=11.,alone=False,color='blue', show=True):
+             fontsize=11.,alone=False,color='blue', show=True,
+             savefig=None, **kwargs):
         """Show the current station on a map
 
         :Params:
@@ -68,27 +85,28 @@ class _StationPlot_(object):
         if self.nom is None:
             print("Aucune station n'est actuellement definie")
             return None
-        # FIXME: _StationPlot_ not finished and not working!
+        # FIXME: _SeaLevelStationPlot_ not finished and not working!
         import pylab as P
         from vacumm.misc.color import bistre
         from vacumm.misc import auto_scale
-        from vacumm.plot import map
+        from vacumm.plot import map2
         A = N.array
 
+
+        # Map
+        kwargs.setdefault('proj', 'lcc')
         dlon = 2.8
         dlat = 2.
         if lon is None:
             lon = A([-dlon/2.,dlon/2.])+self.longitude
         if lat is None:
             lat = A([-dlat/2.,dlat/2.])+self.latitude
+        m = map2(lon=lon, lat=lat, title='Station information',
+                 show=False, **kwargs)
         mlon, mlat = m([self.longitude,],[self.latitude,])
 
-        # Map
-        kwargs.setdefault('proj', 'lcc')
-        m = m(lon=lon, lat=lat, title='Station information', show=False, **kwargs)
-
         # Plot other stations
-        if isinstance(self, StationInfo) and not alone:
+        if isinstance(self, SeaLevelStationInfo) and not alone:
             for station in self._stations:
                 if station['nom'] != self.nom and \
                        station['longitude'] > min(lon) and \
@@ -124,8 +142,6 @@ class _StationPlot_(object):
 
         if savefig:
             P.savefig(savefig)
-        elif savefigs:
-            savefigs(savefigs)
         if show:
             P.show()
 
@@ -134,9 +150,7 @@ class _StationPlot_(object):
             return self.plot(*args, **kwargs)
 
 
-
-
-class StationInfo(_StationPlot_):
+class SeaLevelStationInfo(_SeaLevelStationPlot_):
     """Finding information about tidal stations
 
       This class helps finding information on
@@ -162,14 +176,14 @@ class StationInfo(_StationPlot_):
         # File name
         if file is None:
 #            file = _get_option_('ports_file')
-            file = VACUMM_CFG[__name__]['ports_file']
+            file = get_data_file(VACUMM_CFG[__name__]['ports_file'])
         if file is not None:
 #            if not os.path.isabs(file):
 #                file = os.path.abspath(os.path.join(dirname,  '../../../../data', file))
             if not os.path.exists(file):
-                raise StationInfoError('File of ports not found: '+file)
+                raise SeaLevelStationInfoError('File of ports not found: '+file)
         else:
-            raise StationInfoError('No valid file of ports found')
+            raise SeaLevelStationInfoError('No valid file of ports found')
 
         # Chargement du fichier
         self.set_file(file)
@@ -192,9 +206,8 @@ class StationInfo(_StationPlot_):
     def _load_file(self,**kwargs):
 
         # Open information file
-        if 'verbose' in kwargs:
-            if verbose:
-                print('Lecture de ',self._file)
+        if kwargs.get('verbose', False):
+            print('Reading ',self._file)
         f = open(self._file)
 
         # Parse general attributes
@@ -339,14 +352,13 @@ class StationInfo(_StationPlot_):
                     # Find the closest station
                     import vacumm.misc as M,math
                     distances = []
-                    x0 = deg2m(*val)
-                    y0 = deg2m(val[1])
                     for station in self._stations:
                         if station in stations:
                             continue
-                        x = deg2m(station['longitude'], station['latitude'])
-                        y = deg2m(station['latitude'])
-                        distances.append(math.sqrt((x-x0)**2+(y-y0)**2))
+                        dist = haversine(val[0], val[1],
+                                         station['longitude'],
+                                         station['latitude'])
+                        distances.append(dist)
                     stations.append(self._stations[N.argmin(distances)])
 
                 if len(stations) == nmax:
@@ -398,7 +410,7 @@ class StationInfo(_StationPlot_):
                 print('Definition des termes accessible avec definitions()')
             self._set(station)
 
-        return Station(station)
+        return SeaLevelStation(station)
 
 
     def _str2deg(self,str):
@@ -413,11 +425,10 @@ class StationInfo(_StationPlot_):
 
     def _print_one(self,station):
         """ Print info for one station"""
-        import types,vacumm.misc as M
         # Name and position
         self._print_one_arg('Nom',station['nom'])
         self._print_one_arg('Position','%s / %s' % \
-          (M.lonlab(station['longitude']),M.latlab(station['latitude'])))
+          (lonlab(station['longitude']), latlab(station['latitude'])))
         self._print_one_arg('Zone',station['zone'])
         # Ids
         for id in self._ids:
@@ -481,12 +492,16 @@ class StationInfo(_StationPlot_):
         for att in self._numerics.keys():
             self._print_one_arg(att.upper(),self._numerics[att])
 
-class Station(dict, _StationPlot_):
-    """A station with its info as a result from :class:`StationInfo`
+
+StationInfo = SeaLevelStationInfo
+
+
+class SeaLevelStation(dict, _SeaLevelStationPlot_):
+    """A station with its info as a result from :class:`SeaLevelStationInfo`
 
     :Example:
 
-    >>> from vacumm import StationInfo
+    >>> from vacumm.tide.station_info import SeaLevelStationInfo
     >>> station = StationInfo().find('Brest', nmax=1)
     >>> print station.longitude
     """
@@ -498,7 +513,7 @@ class Station(dict, _StationPlot_):
             setattr(self, key, value)
 
 
-
+Station = SeaLevelStation
 
 
 #class _MeanSeaLevelData(object):
@@ -565,6 +580,8 @@ class Station(dict, _StationPlot_):
 #
 class MeanSeaLevelError(Exception):
     pass
+
+
 class MeanSeaLevel(XYZBathy):
     """Retrieve mean sea level at stations
 
@@ -591,21 +608,13 @@ class MeanSeaLevel(XYZBathy):
     """
     def __init__(self, msl=None, names=None, **kwargs):
         if msl is None:
-            msl = get_config_value(__name__, 'meansealevel_file')
-#            msl = _get_option_('meansealevel_file')
-            if msl is None:
-                raise MeanSeaLevel("Can't find a default file of mean sea levels")
+            msl = get_data_file(VACUMM_CFG[__name__]['meansealevel_file'])
         if isinstance(msl, str): # file
-            if not os.path.isabs(msl):
-                msl = os.path.abspath(os.path.join(dirname,  '../../../../data', msl))
-            if not os.path.exists(msl):
-                raise MeanSeaLevel("File of mean sea levels not found: %s"%msl)
-            data = []
             names = []
             xx = [] ; yy = [] ; zz = []
             f = open(msl)
             for line in f:
-                name = six.text_type(line[:29].strip(), 'utf8')
+                name = six.text_type(line[:29].strip())#, 'utf8')
                 y, x, z = [float(v) for v in line[29:].split()]
                 names.append(name)
                 xx.append(x)
@@ -630,7 +639,7 @@ class MeanSeaLevel(XYZBathy):
     def clip(self, zone=None, inverse=False, **kwargs):
         """Geographical selection of part of the data
 
-        - **zone**: (xmin,ymin,xmax,ymax) or a complex polygon (see :func:`~vacumm.misc.grid.masking.polygons`).
+        - **zone**: (xmin,ymin,xmax,ymax) or a complex polygon (see :func:`~vacumm.misc.masking.polygons`).
         - *inverse*: Inverse the selection.
         """
         if zone is None:
@@ -642,5 +651,3 @@ class MeanSeaLevel(XYZBathy):
 
 
 
-from vacumm.misc.grid.masking import polygons
-from vacumm.misc.phys.units import deg2m

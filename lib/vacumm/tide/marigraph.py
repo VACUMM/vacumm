@@ -2,7 +2,7 @@
 """
 Provides a class to perform basic operations on marigraphic sea level data
 """
-# Copyright or © or Copr. Actimar/IFREMER (2011-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2011-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -39,8 +39,8 @@ import numpy as N, cdms2, MV2
 
 import pylab as P
 
-from vacumm.misc import kwfilter
-from vacumm.atime import mpl
+from vacumm.misc.misc import kwfilter
+from vacumm.misc.atime import mpl
 from vacumm.misc.plot import curve2 as curve, savefigs as Savefigs
 
 from .station_info import StationInfo
@@ -210,7 +210,7 @@ class Marigraph(object):
                 tmpmean = mean
             else:
                 tmpmean = float(data.mean())
-            data[:] = MV2.masked_outside(data, tmpmean-outside_std*std,   
+            data[:] = MV2.masked_outside(data, tmpmean-outside_std*std,
                 tmpmean+outside_std*std)
 
         # Attributes
