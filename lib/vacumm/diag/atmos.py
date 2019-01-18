@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -35,11 +35,14 @@ from __future__ import absolute_import
 from __future__ import print_function
 import numpy as N
 import MV2
-from vacumm.data.cf import format_var
+from vacumm.misc.cf import format_var
+
+__all__ = ['wind_stress', 'ws2w']
 
 
 def wind_stress(u, v, rhoa=1.25, cd=0.016, format_axes=False, alongxy=None):
-    """Compute the sea surface zonal and meridional wind stress from 10m wind components
+    """Compute the sea surface zonal and meridional wind stress
+    from 10m wind components
 
     Output variables are formatted using :func:`~vacumm.data.cf.format_var`.
 

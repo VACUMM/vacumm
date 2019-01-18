@@ -40,16 +40,23 @@ import cdms2
 import MV2
 from vacumm import VACUMMError
 from vacumm.misc.constants import GRAVITY as default_gravity
-from vacumm.misc.axes import isaxis
-from vacumm.misc.regridding import shiftgrid
-from vacumm.misc.grid import set_grid, resol
 from vacumm.misc.cf import format_var, format_grid
+from vacumm.misc.axes import isaxis
+from vacumm.misc.grid import set_grid, resol
+from vacumm.misc.regridding import shiftgrid
 
 
-def barotropic_geostrophic_velocity(ssh, dxy=None, gravity=default_gravity,
-                                    cyclic=False, format_axes=True,
-                                    getu=True, getv=True, filter=None):
-    """Get barotropic geostropic velocity from SSH on a C-grid
+__all__ = ['geostrophic_velocity_from_ssh',
+           'barotropic_geostrophic_velocity',
+           'coriolis_parameter',
+           'kinetic_energy', 'eddy_kinetic_energy',
+           ]
+
+
+def geostrophic_velocity_from_ssh(ssh, dxy=None, gravity=default_gravity,
+                                  cyclic=False, format_axes=True,
+                                  getu=True, getv=True, filter=None):
+    """Get barotropic geostropic velocity from sea level on a C-grid
 
     .. note:: ssh is supposed to be at T points,
         ubt is computed at V points,
@@ -152,6 +159,7 @@ def barotropic_geostrophic_velocity(ssh, dxy=None, gravity=default_gravity,
         return ugbt
     return ugbt, vgbt
 
+barotropic_geostrophic_velocity = geostrophic_velocity_from_ssh
 
 def coriolis_parameter(lat, gravity=default_gravity,
                        fromvar=False, format_axes=False):
@@ -268,4 +276,4 @@ def kinetic_energy(sshuv, gravity=default_gravity, format_axes=None, dxy=None):
     return format_var(ke, "ke", format_axes=False)
 
 
-eddy_kinetic_energy = kinetic_energy
+eddy_kinetic_energy = kinetic_energy = kinetic_energy
