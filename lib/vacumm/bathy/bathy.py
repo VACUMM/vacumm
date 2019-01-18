@@ -36,42 +36,47 @@ Bathmetry tools
 #
 from __future__ import absolute_import
 from __future__ import print_function
-import cdms2, MV2
-from genutil import minmax
-import numpy as N
-from six.moves import range
+from __future__ import division
+from builtins import str
+from builtins import range
+from builtins import object
 import six
-from configobj import ConfigObj
-MV = MV2
-cdms = cdms2
-
-
 import os.path
+from io import StringIO
+from collections import OrderedDict
+from operator import itemgetter
+
+import cdms2, MV2
 from matplotlib.ticker import Formatter
-import pylab as P
+import matplotlib.pyplot as P
+from configobj import ConfigObj
+import numpy as N
 
 from vacumm import VACUMMError, vcwarn, VACUMM_CFG
 from vacumm.config import check_data_file
+from vacumm.misc.config import ConfigManager
 from vacumm.misc.misc import kwfilter, auto_scale
-from vacumm.misc.grid import (get_xy, axes2d, resol, create_grid, meshgrid, 
-    meshbounds, get_axis)
-from vacumm.misc.grid.masking import polygon_mask
 from vacumm.misc.color import cmap_custom, auto_cmap_topo
-from vacumm.misc.regridding import refine, regrid2d
+from vacumm.misc.cf import format_var
+from vacumm.misc.axes import create_axes2d
+from vacumm.misc.grid import (get_xy, resol, create_grid, meshgrid,
+                              meshbounds, get_axis)
+from vacumm.misc.masking import polygon_mask
+from vacumm.misc.regridding import refine, regrid2d, GriddedMerger
 from vacumm.misc.plot import map2
-from vacumm.misc.filters import norm_atan,deriv2d,shapiro2d
-from vacumm.misc.io import Shapes
-from vacumm.misc.sdata import XYZ, XYZMerger
+from vacumm.misc.filters import norm_atan, deriv2d, shapiro2d
+from vacumm.misc.sdata import XYZ, XYZMerger, Shapes
 
-from .shorelines import get_best, get_shoreline, ShoreLine, get_bestres
+from .shorelines import (get_best_shoreline, get_shoreline, ShoreLine,
+                         get_best_res)
 
 
+__all__ = ['print_bathy_list', 'Bathy', 'plot_bathy', 'fmt_bathy',
+           'bathy_list', 'XYZBathy', 'XYZBathyBankClient', 'XYZBathyBank',
+           'XYZBathyMerger', 'GriddedBathy', 'GriddedBathyMerger',
+           'NcGriddedBathy', 'NcGriddedBathyError', 'format_bathy',
+           ]
 
-__all__ = ['print_bathy_list', 'Bathy', 'plot_bathy', 'fmt_bathy',  'bathy_list',
-    'XYZBathy', 'XYZBathyBankClient', 'XYZBathyBank', 'XYZBathyMerger', 'GriddedBathy',
-    'GriddedBathyMerger', 'NcGriddedBathy', 'NcGriddedBathyError',
-#    'get_cfgfiles_gridded'
-    ]
 
 def bathy_list(name=None, cfgfile=None, minstatus=0):
     """Get the list of bathymetries as dict
@@ -116,7 +121,7 @@ def bathy_list(name=None, cfgfile=None, minstatus=0):
     for section in VACUMM_CFG['gridded'].sections:
         status = _check_bathy_file_(section, avail=True)
 #        if not os.path.exists(f.get(section, 'file', vars=dvars)): continue
-        if status<=minstatus: 
+        if status<=minstatus:
             continue
         bathies[section] = {'status':status}
         bathies[section].update(VACUMM_CFG['gridded'][section])
@@ -203,8 +208,8 @@ class Bathy(object):
         self._sampling =1
 
         # Zoom
-        cdms.axis.longitude_aliases.append(self._lon_name)
-        cdms.axis.latitude_aliases.append(self._lat_name)
+        cdms2.axis.longitude_aliases.append(self._lon_name)
+        cdms2.axis.latitude_aliases.append(self._lat_name)
         self.zoom(lon,lat,**kwargs)
 
     def __call__(self):
@@ -237,7 +242,7 @@ class Bathy(object):
         self._lat_range = lat
 #        kwargs = {self._lon_name:self._lon_range,self._lat_name:self._lat_range}
 
-        f = cdms.open(self.file_name)
+        f = cdms2.open(self.file_name)
         ilonmin,ilonmax,ilonsamp = f[self._var_name].getLongitude().mapIntervalExt(self._lon_range)
         ilatin,ilatmax,ilatsamp = f[self._var_name].getLatitude().mapIntervalExt(self._lat_range)
         ilonsamp = ilatsamp = self._sampling
@@ -264,7 +269,7 @@ class Bathy(object):
         self.bathy.setAxisList([lat_axis,lon_axis])
 
         self._lon2d,self._lat2d = N.meshgrid(lon_axis.getValue(),lat_axis.getValue())
-        self._lon2dp,self._lat2dp = axes2d(lon_axis.getValue(),lat_axis.getValue(),bounds=True,numeric=True)
+        self._lon2dp,self._lat2dp = create_axes2d(lon_axis.getValue(),lat_axis.getValue(),bounds=True,numeric=True)
         self._xxs = self._yys = None
 
 
@@ -292,7 +297,10 @@ class Bathy(object):
         self.zoom(lon,lat)
 
         return plot_bathy(self, **kwargs)
+
+
     plot=show
+
 
     def write_netcdf(self,file):
         """Write the bathymetry as netcdf file
@@ -300,10 +308,12 @@ class Bathy(object):
         - **file**: Output netcdf file name
         """
         assert file.endswith('.nc'),'Your netcdf file name must end with .nc'
-        f = cdms.open(file,'w')
+        f = cdms2.open(file,'w')
         f.write(self.bathy)
         f.from_bathy_file = self.file_name
         f.close()
+
+
     def write_ascii(self,file,fmt='%10f %10f %10f'):
         """Write the bathymetry as an ascii file in the format : x y z
 
@@ -321,9 +331,10 @@ class Bathy(object):
         print('Bathy wrote to ascii file',file)
 
 
-def plot_bathy(bathy, shadow=True, contour=True, shadow_stretch=1., shadow_shapiro=False,
-    show=True, shadow_alpha=1., shadow_black=.3, white_deep=False, nmax=30,m=None, alpha=1.,
-    zmin=None, zmax=None, **kwargs):
+def plot_bathy(bathy, shadow=True, contour=True, shadow_stretch=1.,
+               shadow_shapiro=False, show=True, shadow_alpha=1.,
+               shadow_black=.3, white_deep=False, nmax_levels=30, m=None, alpha=1.,
+               zmin=None, zmax=None, **kwargs):
     """Plot a bathymetry
 
     - *lon*: Longitude range.
@@ -332,7 +343,7 @@ def plot_bathy(bathy, shadow=True, contour=True, shadow_stretch=1., shadow_shapi
     - *pcolor*: Use pcolor instead of contour [default: False]
     - *contour*: Add line contours [default: True]
     - *shadow*:Plot south-west shadows instead of filled contours.
-    - *nmax*: Max number of levels for contours [default: 30]
+    - *nmax_levels*: Max number of levels for contours [default: 30]
     - *white_deep*: Deep contours are white [default: False]
     - All other keyword are passed to :func:`~vacumm.misc.plot.map2`
     """
@@ -349,7 +360,8 @@ def plot_bathy(bathy, shadow=True, contour=True, shadow_stretch=1., shadow_shapi
                 lat2d = bb._lat2d
     elif shadow:
         xxs = yys = None
-        lon2d,lat2d = meshgrid(get_axis(bathy, -1).getValue(),get_axis(bathy, -2).getValue())
+        lon2d,lat2d = meshgrid(get_axis(bathy, -1).getValue(),
+                               get_axis(bathy, -2).getValue())
 
     # Masking
     if 'maxdep' in kwargs:
@@ -363,25 +375,31 @@ def plot_bathy(bathy, shadow=True, contour=True, shadow_stretch=1., shadow_shapi
 
     # Default arguments for map
     if hasattr(bathy, 'long_name'):
-        kwargs.setdefault('title',bathy.long_name)
+        kwargs.setdefault('title', bathy.long_name)
     if 'cmap' not in kwargs:
-        vmin, vmax = minmax(bathy)
+        vmin = bathy.min()
+        vmax = bathy.max()
 #        print 'cmap topo', vmin, vmax
-        kwargs['cmap'] = auto_cmap_topo((kwargs.get('vmin', vmin), kwargs.get('vmax', vmax)))
+        kwargs['cmap'] = auto_cmap_topo((kwargs.get('vmin', vmin),
+              kwargs.get('vmax', vmax)))
+        kwargs.update(vmin=kwargs['cmap']._vacumm_topomin,
+                      vmax=kwargs['cmap']._vacumm_topomax,
+                      levels_keepminmax=True)
 #       kwargs.setdefault('ticklabel_size','smaller')
     kwargs.setdefault('clabel_fontsize', 8)
     kwargs.setdefault('clabel_alpha',.7*alpha)
     kwargs.setdefault('clabel_glow_alpha', kwargs['clabel_alpha'])
     kwargs.setdefault('fill', 'contourf')
-    kwargs['nmax'] = nmax
+    kwargs['nmax_levels'] = kwargs.get('nmax', nmax_levels)
     kwargs['show'] = False
     kwargs['contour'] = contour
-    if shadow: kwargs.setdefault('alpha',.5*alpha)
+    if shadow:
+        kwargs.setdefault('alpha',.5*alpha)
     kwargs.setdefault('projection', 'merc')
     kwargs.setdefault('fmt', BathyFormatter())
     kwargs.setdefault('colorbar_format', BathyFormatter())
     kwargs.setdefault('units', False)
-    kwargs.setdefault('levels_mode','normal')
+    kwargs.setdefault('levels_mode', 'normal')
     kwargs.setdefault('bgcolor', '0.8')
     kwargs.setdefault('contour_linestyle', '-')
     savefig = kwargs.pop('savefig', None)
@@ -390,7 +408,12 @@ def plot_bathy(bathy, shadow=True, contour=True, shadow_stretch=1., shadow_shapi
 
     # White contour when dark
     if contour and white_deep:
-        levels = auto_scale(bathy,nmax=nmax)
+        if hasattr(kwargs['cmap'], '_vacumm_topomin'):
+            data = (kwargs['cmap']._vacumm_topomin,
+                    kwargs['cmap']._vacumm_topomax)
+        else:
+            data = bathy
+        levels = auto_scale(data, nmax=nmax)
         colors = []
         nlevel = len(levels)
         for i in range(nlevel):
@@ -398,6 +421,7 @@ def plot_bathy(bathy, shadow=True, contour=True, shadow_stretch=1., shadow_shapi
                 colors.append('w')
             else:
                 colors.append('k')
+        kwargs['levels'] = levels
         kwargs.setdefault('contour_colors',tuple(colors))
 
     # Call to map
@@ -407,7 +431,7 @@ def plot_bathy(bathy, shadow=True, contour=True, shadow_stretch=1., shadow_shapi
     if shadow:
 
         # Filter
-        data = MV.array(bathy,'f',fill_value=0.)
+        data = MV2.array(bathy,'f',fill_value=0.)
         if shadow_shapiro:
             data = shapiro2d(data,fast=True).shape
 
@@ -432,7 +456,7 @@ def plot_bathy(bathy, shadow=True, contour=True, shadow_stretch=1., shadow_shapi
         cmap = cmap_custom(( ((1, )*3, 0), ((shadow_black, )*3, 1) ))
 
         # Plot
-        pp = m.map.pcolormesh(xxs, yys, grdn,cmap=cmap)#P.get_cmap('gist_yarg'))
+        pp = m.map.pcolormesh(xxs, yys, grdn, cmap=cmap)#P.get_cmap('gist_yarg'))
         pp.set_zorder(.9)
         pp.set_linewidth(0)
         pp.set_alpha(shadow_alpha*N.clip(alpha*2, 0, 1))
@@ -447,18 +471,23 @@ def plot_bathy(bathy, shadow=True, contour=True, shadow_stretch=1., shadow_shapi
 
 bathy=Bathy
 
+
 class BathyFormatter(Formatter):
     """Label formatter for contour"""
+
     def __init__(self, fmt='%i m', signed=True):
         self.signed = signed
         self.fmt = fmt
+
     def __mod__(self, val):
         s = self.fmt % abs(val)
-        if self.signed and val<0:
+        if self.signed and val < 0:
             s = '-'+s
         return s
+
     def __call__(self, val, i=None):
         return self % val
+
 
 
 class XYZBathy(XYZ):
@@ -496,12 +525,18 @@ class XYZBathy(XYZ):
             if zmax > 0. and (zmin > 0. or abs(zmin) < zmax):
                 self._z[:] *= -1.
 
+    def togrid(self, grid=None, mask=None, cgrid=False,  **kwargs):
+        """Interpolate data to a grid"""
 
-    def togrid(self, grid=None, mask=None, cgrid=False,  proj=False, **kwargs):
+        # Grid
+        kwgrid = kwfilter(kwargs, 'grid_')
+        if grid is None:
+            grid = self.get_grid(**kwgrid)
 
 
         # Shoreline for masking
-        if mask is not None and mask is not False and mask is not MV2.nomask and grid is not None:
+        if (mask is not None and mask is not False and
+                mask is not MV2.nomask):
 
             # Clip for polygons
             kwmask = kwfilter(kwargs, 'mask')
@@ -515,10 +550,12 @@ class XYZBathy(XYZ):
                 clip = [xmin-dx, ymin-dy, xmax+dx, ymax+dy]
 
             # Auto resolution
-            if mask=='auto' and False:
+            if mask is True:
+                mask = 'auto'
+            if mask == 'auto' and False:
                 if grid is None:
                     grid = self.get_grid(**kwfilter(kwargs, 'grid'))
-                mask = get_best(grid)
+                mask = get_best_shoreline(grid)
 
             # Direct handling
             if isinstance(mask, (str, Shapes)):
@@ -526,7 +563,7 @@ class XYZBathy(XYZ):
                 mask = get_shoreline(mask, clip=clip)
 
         # Normal case
-        return XYZ.togrid(self, grid=grid, mask=mask, cgrid=cgrid,  proj=proj, **kwargs)
+        return XYZ.togrid(self, grid=grid, mask=mask, cgrid=cgrid,  **kwargs)
     togrid.__doc__ = XYZ.togrid.__doc__
 
     def bathy(self, *args, **kwargs):
@@ -543,6 +580,20 @@ class XYZBathy(XYZ):
         For value of default parameters: :meth:`~vacumm.misc.io.XYZ.plot`
     """
 
+
+XYZ_BATHY_BANK_CFG_SPECS = """
+[__many__]
+xyzfile=path(default=None,expand=True)
+xmin=float(default=None)
+xmax=float(default=None)
+ymin=float(default=None)
+ymax=float(default=None)
+transp=boolean(default=True)
+long_name=string(default=None)
+zorder=integer(default=0)
+"""
+
+XYZ_BATHY_RANK_CFGM = ConfigManager(XYZ_BATHY_BANK_CFG_SPECS.split('\n'))
 
 
 class XYZBathyBankClient(object):
@@ -564,94 +615,140 @@ class XYZBathyBankClient(object):
     >>> xyzbc.xyzfile = 'newfile.mnt'   # xmin, xmax, ymin, ymax updated
     >>> xyz = xyzbc.load()
     """
-    _atts = (('xyzfile', ''),
-        ('long_name', '', None),
-        ('xmin', 'float', None),
-        ('xmax', 'float', None),
-        ('ymin', 'float', None),
-        ('ymax', 'float', None),
-        ('transp', 'boolean', True),
-        )
+
     def __init__(self, bank, id, **kwargs):
         self.bank = bank
-        self.cfg = bank.cfg
-        assert self.cfg.has_section(id), 'No such bathy id "%s" in bathy bank'%id
-        self.id = id
-        assert self.cfg.has_option(id, 'xyzfile'), 'No "xyzfile" defined for bathy "%s"'%id
+        if id not in self.bank.cfg:
+            self.bank.cfg[id] = {}
+        self._id = id
         self._xyz = None
-        for att, val in kwargs.items():
-            setattr(self, att, val)
-        self._check_()
-    def _atts_(self):
-        return [att[0] for att in self._atts]
+        if kwargs:
+            self.update(**kwargs)
+        self._validate_()
+        pass
+
+    @property
+    def cfg(self):
+        return self.bank.cfg[self.id]
+
+    def _validate_(self):
+        self.bank.validate_cfg()
+        for key, val in self.cfg.items():
+            if val is None or val == '':
+                self.cfg[key] = self[key]
+
+
+
+    def __getitem__(self, key):
+
+        if key == 'id':
+            return self.id
+        value = self.cfg[key]
+        if key == 'long_name':
+            return value or self.id.capitalize()
+        if key in ('xmin', 'xmax', 'ymin', 'ymax'):
+            if value is None:
+                xyz = self.xyz
+                if xyz is not None:
+                    value = self.cfg[key] = getattr(xyz, key)
+        return value
+
+    def __setitem__(self, key, value):
+#        assert key in self.cfg
+        if key == 'id':
+            self.bank.rename(self._id, value)
+        else:
+            self.cfg[key] = value
+            self._validate_()
+
+    def get_id(self):
+        return self._id
+
+    def set_id(self, value):
+        self['id'] = value
+
+    id = property(get_id, set_id, doc='Bathymetry id')
+
+    def get_xmin(self):
+        return self['xmin']
+
+    def set_xmin(self, value):
+        self['xmin'] = value
+
+    xmin = property(get_xmin, set_xmin, doc='X min')
+
+    def get_xmax(self):
+        return self['xmax']
+
+    def set_xmax(self, value):
+        self['xmax'] = value
+
+    xmax = property(get_xmax, set_xmax, doc='X max')
+
+    def get_ymin(self):
+        return self['ymin']
+
+    def set_ymin(self, value):
+        self['ymin'] = value
+
+    ymin = property(get_ymin, set_ymin, doc='Y min')
+
+    def get_ymax(self):
+        return self['ymax']
+
+    def set_ymax(self, value):
+        self['ymax'] = value
+
+    ymax = property(get_ymax, set_ymax, doc='Y max')
+
+    def get_long_name(self):
+        return self['long_name']
+
+    def set_long_name(self, value):
+        self['long_name'] = value
+
+    long_name = property(get_long_name, set_long_name, doc='Long name')
+
+    def get_transp(self):
+        return self['transp']
+
+    def set_transp(self, value):
+        self['transp'] = value
+
+    transp = property(get_transp, set_transp, doc='Transparency')
+
+    def get_zorder(self):
+        return self['zorder']
+
+    def set_zorder(self, value):
+        self['zorder'] = value
+
+    zorder = property(get_zorder, set_zorder, doc='Z order')
+
+    def update(self, **kwargs):
+        for key, value in kwargs.items():
+            self[key] = value
+
+    def get_xyz(self):
+        """Load the file as a :class:`XYZBathy` instance"""
+        if hasattr(self, '_xyz') and self._xyz is not None:
+            return self._xyz
+        if not self['xyzfile'] or not os.path.exists(self['xyzfile']):
+            vcwarn('Not a valid xyzfile name: ' + str(self['xyzfile']))
+            return None
+        self._xyz = XYZBathy(self['xyzfile'], long_name=self['long_name'],
+                             transp=self['transp'], id=self.id)
+        return self._xyz
+
+    xyz = property(get_xyz, doc='XYZBathy instance')
 
     def __str__(self):
-        info = '[%s]\n'%self.id
-        for att in self._atts_():
-            info += '%s: %s\n'%(att, getattr(self, att))
-        return info
-
-    def _get_(self, att):
-        idx = self._atts_().index(att)
-        get = getattr(self.cfg,'get'+self._atts[idx][1])
-        if not self.cfg.has_option(self.id, att):
-            return self._atts[idx][2]
-        return get(self.id, att)
-    def _set_(self, att, val):
-        self.cfg.set(self.id, att, str(val))
-
-    def __setattr__(self, att, val):
-        if att in self._atts_():
-            self._set_(att, val)
-            if att == 'xyzfile':
-                del self._xyz
-                self._xyz = None
-                for att in 'xmin', 'xmax', 'ymin', 'ymax':
-                    self.cfg.remove_option(self.id, att)
-            self._check_(att=att)
-        else:
-            if att == 'id' and 'id' in self.__dict__:
-                # Rename section
-                assert not self.cfg.has_section(att), 'Bathy id "%s" already exists!'%att
-                self.cfg.add_section(val)
-                for opt in self.cfg.options(self.id):
-                    self.cfg.set(val, opt, self.cfg.get(self.id, opt))
-                self.cfg.remove_section(self.id)
-                self.bank._clients[val] = self
-                self.bank._clients.pop(self.id)
-            elif id == 'cfg':
-                raise AttributeError("You can't change the cfg file")
-            self.__dict__[att] = val
-        self.save()
-    def __getattr__(self, att):
-        if att in self._atts_():
-            return self._get_(att)
-        else:
-            return self.__dict__[att]
-
-    def _check_(self, att=None):
-        """Check that infos are consistent"""
-        if not os.path.exists(self.xyzfile):
-            vcwarn('%s xyz bathy file does not exist'%self.xyzfile)
-        else:
-            # Fill what is missing
-            if att is not None:
-                atts = [att]
-            else:
-                atts = self._atts_()[1:]
-            for att in atts:
-                if self._get_(att) is not None: continue
-                if self._xyz is not None:
-                    xyz = self._xyz
-                else:
-                    xyz = self._xyz = XYZBathy(self.xyzfile)
-                if att.startswith('x') or att.startswith('y'):
-                    self._set_(att, getattr(xyz, att))
-#               elif xyz.long_name is not None:
-#                   self.long_name = xyz.long_name
-#               elif xyz.units is not None:
-#                   self.units = xyz.units
-        self.save()
+        sio = StringIO()
+        cfg = ConfigObj(self.cfg.dict())
+        cfg.write(sio)
+        lines = sio.getvalue()
+        sio.close()
+        return lines
 
     def save(self):
         """Save the bank"""
@@ -664,13 +761,10 @@ class XYZBathyBankClient(object):
 
             :meth:`~vacumm.misc.io.XYZ.clip`
         """
-        if not os.path.exists(self.xyzfile):
-            vcwarn('%s xyz bathy file does not exist'%self.xyzfile)
-        else:
-            xyz = XYZBathy(self.xyzfile, long_name=self.long_name, transp=self.transp, id=self.id)
-            if zone is not None and zone != (None, )*4:
-                xyz = xyz.clip(zone=zone, margin=margin)
-            return xyz
+        xyz = self.xyz
+        if xyz is not None and zone is not None:
+            return xyz.clip(zone=zone, margin=margin)
+        return xyz
 
     def plot(self, id, **kwargs):
         """Load and plot this bathy"""
@@ -689,59 +783,95 @@ class XYZBathyBank(object):
     >>> xyzb = XYZBathyBank()
 
     """
+
     def __init__(self, cfg=None):
 
         # Config
-        if cfg is None: # default
-            cfg = VACUMM_CFG[__name__]['xyz']
-            cfgfile = None
-        elif isinstance(cfg, six.string_types) and os.path.exists(cfg):
-            cfgfile = cfg
-            cfg = ConfigObj()
-            cfg.load(cfgfile)
-        self.cfg = cfg
-        self.cfgfile = cfgfile
-            
+        self.load_cfg(cfg)
+        self.cfgfile = self.cfg.filename
+
         # Populate
-        self._clients = {}
-        for id in self.cfg.sections():
+        self._clients = OrderedDict()
+        for id in self.cfg.sections:
             self._clients[id] = XYZBathyBankClient(self, id)
         self._order = None
 
+    def load_cfg(self, cfg):
+        """Load a configuration and validate it"""
+        cfg_update = XYZ_BATHY_RANK_CFGM.load(cfg, validate='check')
+        if hasattr(self, 'cfg'):
+            self.cfg.merge(cfg_update)
+        else:
+            self.cfg = cfg_update
+        return self.cfg
+
+    def validate_cfg(self):
+        """Revalidate the configuration"""
+        cfg = self.cfg
+        del self.cfg
+        return self.load_cfg(cfg)
+
+    @property
     def ids(self):
         """Return the list of bathy ids"""
-        return self.cfg.sections()
+        return self.cfg.sections
 
     def __str__(self):
-        if not len(self):
-            return 'No bathymetry'
-        infos=[]
-        for id in self.ids():
-            infos.append(str(self._clients[id]))
-        return '\n'.join(infos)
+        return '\n'.join(ConfigObj(self.cfg.dict()).write())
+
     def __len__(self):
-        return len(self.cfg.sections())
+        return len(self.cfg.sections)
+
+    def check_id(self, id):
+        assert id in self._clients, ('No such XYZBathyBankClient '
+                                     'id: {}'.format(id))
+
+    def __getitem__(self, id):
+        if isinstance(id, XYZBathyBankClient):
+            id = id._id
+        self.check_id(id)
+        return self._clients[id]
+
+    def __setitem__(self, id, xyzfile):
+        self.cfg[id] = {'xyzfile': xyzfile}
+        self.validate_cfg()
+        self._clients[id] = XYZBathyBankClient(self, id)
+        self._update_order_()
+
+    def __delitem__(self, id):
+        if isinstance(id, XYZBathyBankClient):
+            id = id._id
+        self.check_id(id)
+        del self.cfg[id], self._clients[id]
+        self._update_order_()
+
+    def __contains__(self, id):
+        return id in self._clients
 
     def add(self, xyzfile, id=None, force=False, **kwargs):
         """Add a bathy to the bank
 
-        - **xyzfile**: xyz file.
-        - *id*: Id of the bank. If ``None``, it is guessed from the file name:
+        Parameters
+        ----------
+        xyzfile: str
+            xyz file.
+        id: str
+            Id of the bank. If ``None``, it is guessed from the file name:
            ``xyzfile="/path/toto.xyz"`` ->  ``id="toto"``
         """
         if id is None:
             id = os.path.basename(xyzfile)
-            if id.endswith('.xyz'): id = id[:-4]
-        if self.cfg.has_section(id):
+            if id.endswith('.xyz'):
+                id = id[:-4]
+        if id in self:
             if force:
-                self.cfg.remove_section(id)
+                del self.cfg[id]
             else:
                 raise KeyError('Bathymetry %s already exists'%id)
-        self.cfg.add_section(id)
-        self.cfg.set(id, 'xyzfile', xyzfile)
-        self._clients[id] = XYZBathyBankClient(self, id, **kwargs)
-#       self._save_()
+        self[id] = xyzfile
+        self._clients[id].update(**kwargs)
         self._update_order_()
+
     def __iadd__(self, d):
         self.add(d)
         return self
@@ -751,48 +881,43 @@ class XYZBathyBank(object):
 
         *id*: A bathy id or :class:`XYZBathyBankClient` instance.
         """
-        if isinstance(id, XYZBathyBankClient):
-            id = id.id
-        if not self.cfg.has_section(id):
-            vcwarn('No such bathymetry %s'%id)
-            return
-        self.cfg.remove_section(id)
-        del self._clients[id]
-        self._update_order_()
-#       self._save_()
+        del self[id]
+
     def __isub__(self, d):
         self.remove(id)
         return self
 
-    def copy(self, id1, id2):
+    def rename(self, id1, id2):
+        """Rename a bathymetry client"""
+        if isinstance(id1, XYZBathyBankClient):
+            id1 = id1.id
+        client = self[id1]
+        client._id = id2
+        self.cfg[id2] = self.cfg[id1]
+        self._clients[id2] = client
+        del self[id1]
+        self.validate_cfg()
+
+    def copy(self, id1, id2, **kwargs):
         """Copy bathy infos to another"""
-        assert self.cfg.has_section(id1), 'No such bathymetry %s'%id1
-        if not self.cfg.has_section(id2):
-            self.cfg.add_section(id2)
-        for opt in self.cfg.options(id1):
-            self.cfg.set(id2, self.cfg.get(id1, opt))
-        self._clients[id2] = XYZBathyBankClient(self, id2)
-        self._update_order_()
-##      self._save_()
+        if isinstance(id1, XYZBathyBankClient):
+            id1 = id1.id
+        self[id1]
+        self.cfg[id2] = self.cfg[id1].copy()
+        self._clients[id2] = XYZBathyBankClient(self, id2, **kwargs)
 
-    def __getitem__(self, id):
-        assert self.cfg.has_section(id), 'No such bathymetry %s'%id
-        return self._clients[id]
-    def __setitem__(self, id, xyzfile):
-        self.add(id, xyzfile)
-    def __deltiem__(self, id):
-        self.remove(id)
-
-    def load(self, id):
+    def load(self, id, **kwargs):
         """Load a bathymetry as a :class:`XYZBathy` instance"""
-        assert self.cfg.has_section(id), 'No such bathymetry '+id
-        return self._clients[id].load()
+        self.check_id(id)
+        return self._clients[id].load(**kwargs)
 
-    def list(self):
+    @property
+    def clients(self):
         """Get all clients of the bank as a list"""
         return list(self._clients.values())
 
-    def select(self, xmin=None, xmax=None, ymin=None, ymax=None, load=True, margin=None, ordered=None):
+    def select(self, xmin=None, xmax=None, ymin=None, ymax=None, load=True,
+               margin=None, ordered=None):
         """Return a list of bathymetries relevant to the specified region
 
         - *margin*: Margin for loading xyz bathies:
@@ -801,32 +926,36 @@ class XYZBathyBank(object):
             - else it should be a value relative to the approximative resolution (see :meth:`XYZBathy.resol`)
         """
         res = []
-        for id in self.ids():
-            b = self._clients[id]
-            if   (None not in (xmin, b.xmax) and xmin > b.xmax) or \
-                (None not in (xmax, b.xmin) and xmax < b.xmin) or \
-                (None not in (ymin, b.ymax) and ymin > b.ymax) or \
-                (None not in (ymax, b.ymin) and ymax > b.ymin): continue
+        for client in self.clients:
+            if ((None not in (xmin, client.xmax) and xmin > client.xmax) or
+                (None not in (xmax, client.xmin) and xmax < client.xmin) or
+                (None not in (ymin, client.ymax) and ymin > client.ymax) or
+                (None not in (ymax, client.ymin) and ymax > client.ymin)):
+                    continue
             if load:
-                b = b.load(zone=(xmin, ymin, xmax, ymax), margin=margin)
-            res.append(b)
-        if self.get_order() is not None and ordered != False:
-#            ids = [b_.id for b_ in res]
-#            order = [id for id in self.get_order() if id in ids]
-            res.sort(key=lambda b: self.get_order().index(b))
+                client = client.load(zone=(xmin, ymin, xmax, ymax),
+                                     margin=margin)
+            res.append(client)
         return res
 
-    def set_order(self, order):
-        """Set a list of ids to define the order"""
-        if order is None:
-            del self.cfg.defaults()['order']
-        else:
-            self.cfg.defaults()['order'] = str([id for id in order if id in self.ids()])
-    def get_order(self,):
-        """Get a list of ids that define the order"""
-        return eval(self.cfg.defaults().get('order', 'None'))
+    def _sort_(self):
+        clients = self.clients
+        clients.sort(key=itemgetter('zorder'))
+        self._clients = OrderedDict([(client.id, client)
+                                     for client in clients])
 
+#    def set_order(self, order):
+#        """Set a list of ids to define the order"""
+#        if order is None:
+#            del self.cfg.defaults()['order']
+#        else:
+#            self.cfg.defaults()['order'] = str([id for id in order if id in self.ids()])
+#    def get_order(self,):
+#        """Get a list of ids that define the order"""
+#        return eval(self.cfg.defaults().get('order', 'None'))
+#
     def _update_order_(self):
+        return
         if self.get_order() is None: return
         self.cfg.defaults()['order'] = str([id for id in self.get_order() if id in self.ids()])
 
@@ -855,6 +984,7 @@ class XYZBathyBank(object):
 
         return self.merger(**kwfilter(kwargs, 'merger')).plot(**kwargs)
 
+
 class XYZBathyMerger(XYZMerger):
     """Mix different bathymetries"""
     def __init__(self, xmin=None, xmax=None, ymin=None, ymax=None, long_name=None):
@@ -866,7 +996,7 @@ class XYZBathyMerger(XYZMerger):
 
     def _load_(self, d):
         # Bathy from the bank
-        if d in self._bank.ids():
+        if d in self._bank.ids:
             return self._bank[id].load()
         # Classic cases
         return XYZMerger._load_(self, d)
@@ -932,7 +1062,7 @@ class _GriddedBathyMasked_:
         .. note:: The mask is applied only if :meth:`masked_bathy` is called.
         """
         if shoreline=='auto' or shoreline is True:
-            shoreline = get_bestres((self.get_lon(), self.get_lat()))
+            shoreline = get_best_res((self.get_lon(), self.get_lat()))
         elif shoreline is False or shoreline is None:
             self._shoreline_mask = None
             self._masked_bathy = None
@@ -976,7 +1106,7 @@ class _GriddedBathyMasked_:
         """Remove the shoreline"""
         self.set_shoreline(False)
 
-    def masked_bathy(self, id=None, long_name=None):
+    def masked_bathy(self, **kwargs):
         """Get a masked version of the bathymetry"""
         # Mask with value
         bathy = self._bathy.clone()
@@ -990,18 +1120,18 @@ class _GriddedBathyMasked_:
 
         # Fill
         if self._fillvalue is not None and N.isreal(self._fillvalue):
-            bathy[:] = bathy.filled(self._fillvalue)
-        return fmt_bathy(bathy, id=id, long_name=long_name)
+            bathy.set_fill_value(self._fillvalue)
+#            bathy[:] = bathy.filled(self._fillvalue)
+        return format_bathy(bathy, **kwargs)
 
-def fmt_bathy(bathy, id=None, long_name=None):
+
+def format_bathy(bathy, **kwargs):
     """Format a bathymetry variable"""
-    if id is not None: bathy.id = id
-    if bathy.id.startswith('variable_'): bathy.id = 'bathy'
-    if long_name is not None: bathy.long_name = long_name
-    if not hasattr(bathy, 'long_name'): bathy.long_name = 'Bathymetry'
-    bathy.units = 'm'
-    return bathy
+    kwargs = dict([(k, v) for k, v in kwargs.items() if v is not None])
+    return format_var(bathy, 'bathy', **kwargs)
 
+
+fmt_bathy = format_bathy
 
 
 class GriddedBathy(_GriddedBathyMasked_):
@@ -1047,18 +1177,20 @@ class GriddedBathy(_GriddedBathyMasked_):
 
     def regrid(self, grid, method='auto', mask=True, id=None, long_name=None, **kwargs):
         """Regrid bathy to another grid"""
-        return regrid2d(self.bathy(mask=mask, id=id, long_name=long_name), grid, method=method, **kwargs)
+        return regrid2d(self.bathy(mask=mask, id=id, long_name=long_name),
+                        grid, method=method, **kwargs)
 
-    def bathy(self, mask=True, id=None, long_name=None):
+    def bathy(self, mask=True, **kwargs):
         """Get the bathymetry variable
 
         :Params:
 
-            - *mask*: If True and if a shoreline is set (with :meth:`set_shoreline`), apply a mask due to this shoreline.
+            - *mask*: If True and if a shoreline is set
+              (with :meth:`set_shoreline`), apply a mask due to this shoreline.
         """
         if mask:
-            return self.masked_bathy(id=id, long_name=long_name)
-        return fmt_bathy(self._bathy.clone(), id=id, long_name=long_name)
+            return self.masked_bathy(**kwargs)
+        return fmt_bathy(self._bathy.clone(), **kwargs)
 
 
     def save(self, ncfile, mask=True, **kwargs):
@@ -1074,7 +1206,6 @@ class GriddedBathy(_GriddedBathyMasked_):
         f.write(bathy)
         f.close()
 
-from vacumm.misc.grid.regridding import GriddedMerger
 class GriddedBathyMerger(GriddedMerger, GriddedBathy):
     """Merger of gridded variables
 
@@ -1205,14 +1336,14 @@ class NcGriddedBathy(GriddedBathy):
             if f[self.varname].getAxis(1).id != self.lonname:
                 print('Bad longitude name "%s" for variable "%s". Skipping...'%(self.lonname, self.varname))
             else:
-                cdms.axis.longitude_aliases.append(self.lonname)
+                cdms2.axis.longitude_aliases.append(self.lonname)
         if self.latname is None:
             self.latname = f[self.varname].getAxis(0).id
         elif self.latname in f.listdimension():
             if f[self.varname].getAxis(0).id != self.latname:
                 print('Bad latitude name "%s" for variable "%s". Skipping...'%(self.latname, self.varname))
             else:
-                cdms.axis.latitude_aliases.append(self.latname)
+                cdms2.axis.latitude_aliases.append(self.latname)
         # - select
         f[self.varname].getAxis(0).designateLatitude()
         f[self.varname].getAxis(1).designateLongitude()

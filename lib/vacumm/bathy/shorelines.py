@@ -39,17 +39,22 @@ from __future__ import print_function
 import numpy as N
 
 from vacumm import VACUMMError, VACUMM_CFG
-from vacumm.config import check_data_file
+from vacumm.config import get_data_file
 from vacumm.misc.grid import get_xy
 from vacumm.misc.basemap import gshhs_reslist, gshhs_autores
+from vacumm.misc.core_plot import register_plot_coastline
 from vacumm.misc.sdata import Shapes, GSHHSBM
 
 _shoreline_list = ['Histolitt', 'GSHHS_SF', 'GSHHS','GSHHSBM']
-__all__ = _shoreline_list+['ShoreLine', 'get_best', 'get_shoreline', 'list_shorelines', 'get_bestres']
+__all__ = _shoreline_list+['ShoreLine', 'get_best', 'get_shoreline',
+                           'list_shorelines', 'get_best_res',
+                           'Histolitt', 'GSHHS', 'GSHHS_SF', 'GSHHSSF',
+                           'ShoreLineError', 'get_best_shoreline',
+                           'get_bestres',]
 
 
 
-class VACUMMShorelineError(VACUMMError):
+class ShoreLineError(VACUMMError):
     pass
 
 def _shorelines_list_(name=None):
@@ -59,7 +64,7 @@ def _shorelines_list_(name=None):
     # Check requested name
     if name is not None:
         if name not in shorelines:
-            raise VACUMMShorelineError('Shoreline not available: %s. Please use list_shorelines() to print the list of available shorelines.'%name)
+            raise ShoreLineError('Shoreline not available: %s. Please use list_shorelines() to print the list of available shorelines.'%name)
         return shorelines[name]
 
     return shorelines
@@ -126,10 +131,12 @@ class _PolyShapes_:
                 poly = p
         return poly
 
-    def plot(self, select=None, ax=None, fill=None, fillcolor=None, points=False,
-            m=True, show=True, **kwargs):
-        return Shapes.plot(self, select=select, ax=ax, fill=fill, fillcolor=fillcolor,
-            points=points, m=m, show=show, **kwargs)
+    def plot(self, select=None, ax=None, m='auto', fill=None, color=None,
+             edgecolor=None, linewidth=None, show=True, **kwargs):
+        return Shapes.plot(self, select=select, ax=ax, fill=fill, m=m,
+                           color=color, edgecolor=edgecolor,
+                           linewidth=linewidth,
+                           show=show, **kwargs)
     plot.__doc__ = Shapes.plot.__doc__
 
 
@@ -145,23 +152,30 @@ class ShoreLine(_CoastalBathy_, _PolyShapes_,  Shapes):
 
     def _check_input_(self, input):
         if input is None and self._name is not None:
-            input = check_data_file(VACUMM_CFG[__file__]['shapefiles'][self._name])[:-4]
+            input = get_data_file(VACUMM_CFG[__name__]['shapefiles'][self._name],
+                                  raiseerr=False)
+            if input is None:
+                raise VACUMMError("Can't find shoreline file")
+            if input.endswith('.shp'):
+                input = input[:-4]
         return input
 
     @classmethod
-    def embed(cls, lon, lat):
-        """Is this shoreline embeddeding this point?"""
+    def contains(cls, lon, lat):
+        """Is this shoreline contains this point?"""
         if cls._extent is None: return True
         xmin, ymin, xmax, ymax = cls._extent
         lon = N.asarray(lon)
         lat = N.asarray(lat)
         return lon.max()>xmin and lon.min()<xmax and lat.max()>ymin and lat.min()<ymax
 
+    embed = contains
+
     @classmethod
     def avail(cls):
         """Is this shoreline available locally or for download?"""
         if cls._name is None: return True
-        return check_data_file(VACUMM_CFG[__file__]['shapefiles'][cls._name], avail=True)
+        return get_data_file(VACUMM_CFG[__file__]['shapefiles'][cls._name], avail=True)
 #        return 'shapefile_%s'%cls._name in _shorelines_list_()
 
 
@@ -172,19 +186,21 @@ class Histolitt(ShoreLine):
     _extent = [-5.1, 41.3, 9.7, 51.12]
     _name = 'histolitt'
 
+
 class Histolitt2(ShoreLine):
     """Shoreline of France from SHOM/IGN V2 at 1/25000from shapefile of Polygons covering metropolitan France"""
     _factor = 1.
     _mres = 18.5532411
     _extent = [-5.1, 41.3, 9.7, 51.12]
     _name = 'histolitt2'
+
     def __init__(self, input=None, clip=True, *args, **kwargs):
         ShoreLine.__init__(self, input, clip=False, *args, **kwargs)
         if clip is not None and clip is not False:
             self.clip(clip, copy=False)
 
 
-class GSHHS_SF(ShoreLine):
+class GSHHSSF(ShoreLine):
     """Fine world shoreline from USGS shapefile
     .. warning::
 
@@ -193,21 +209,35 @@ class GSHHS_SF(ShoreLine):
     _factor = 1.
     _name = 'gshhs'
 
+
+GSHHS_SF = GSHHSSF  # Compat
+
+
 class GSHHS(_CoastalBathy_, _PolyShapes_, GSHHSBM):
     _factor = 1.
 
-def get_bestres(gg):
+
+def get_best_res(gg):
     """Get the best shoreline resolution as letter, for my grid or (lon,lat)"""
+    # TODO: get_best_res must be based on meta data!
     lon, lat = get_xy(gg, num=True)
     testresol = ((lon.max()-lon.min())+(lat.max()-lat.min()))/2.0
-    if testresol <1. and Histolitt.avail() and Histolitt.embed(lon, lat):
+    if testresol < 1. and Histolitt.avail() and Histolitt.contains(lon, lat):
         return 's'
     return gshhs_autores(lon.min(), lon.max(), lat.min(), lat.max())
 
-def get_best(gg, **kwargs):
+
+get_bestres = get_best_res  # compat
+
+
+def get_best_shoreline(gg, **kwargs):
     """Get the best shoreline (:class:`GSHHS` or :class:`Histolitt`)
     for my grid or (lon,lat)"""
     return get_shoreline(get_bestres(gg), clip=gg, **kwargs)
+
+
+get_best = get_best_shoreline  # compat
+
 
 def get_shoreline(arg, *args, **kwargs):
     """Get a valid ShoreLine instance according to arg.
@@ -216,7 +246,7 @@ def get_shoreline(arg, *args, **kwargs):
 
     - **arg**: it can be either:
 
-        - A :class`~vacumm.misc.io.Shapes` instance
+        - A :class`~vacumm.misc.io.Shapes` instance (other args are ignored)
         - A string within the folowing lists:
 
             - for GSHHS resolutions: %s
@@ -227,7 +257,7 @@ def get_shoreline(arg, *args, **kwargs):
     if isinstance(arg, str):
         if arg in gshhs_reslist:
             return GSHHS(arg, *args, **kwargs)
-        elif arg == 's':
+        elif arg == 's':  #FIXME: must work with registered shorelines
             if not Histolitt.avail():
                 raise ShoreLineError('Shoreline not available: histolitt')
             return Histolitt(*args, **kwargs)
@@ -237,5 +267,4 @@ def get_shoreline(arg, *args, **kwargs):
 #   raise TypeError, 'cannot guess a ShoreLine from arg:', arg
 get_shoreline.__doc__ =  get_shoreline.__doc__% (gshhs_reslist, _shoreline_list)
 
-class ShoreLineError(Exception):
-    pass
+register_plot_coastline(Histolitt, 's')
