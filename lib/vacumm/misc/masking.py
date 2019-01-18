@@ -52,12 +52,12 @@ from mpl_toolkits.basemap import Basemap
 from _geoslib import Point, Polygon, LineString
 
 from vacumm import vcwarn
-from .misc import nduniq, cp_atts
+from .misc import nduniq, cp_atts, scalebox
+from .units import deg2m
+from .poly import convex_hull, create_shapes, clip_shapes
+from .basemap import get_proj
 from .grid import (get_xy, set_grid, isgrid, bounds2d, meshcells, curv2rect,
                    meshbounds, bounds1d, get_grid, resol, meshgrid, curv_grid)
-from .units import deg2m
-from .poly import convex_hull, polygons  # compat only
-from .basemap import get_proj
 
 envelop = convex_hull
 
@@ -355,9 +355,7 @@ class Lakes(object):
     def _size2ids_(self, item):
         ids = N.arange(self.nlakes)[self._argsort[item]]
         ids += 1
-        if isinstance(ids, int):
-            ids = N.asarray([ids])
-        return ids
+        return N.atleast_1d(ids)
 
     def plot(self, **kwargs):
         """Display the lakes
@@ -435,7 +433,8 @@ GetLakes = Lakes
 
 
 def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
-                 ocean=False, fractions=0, yclean=True, premask=None, proj=False):
+                 ocean=False, fractions=0, yclean=True, premask=None,
+                 proj=False, clip=None):
     """Create a mask on a regular or curvilinear grid according to a polygon list
 
     Parameters
@@ -499,7 +498,8 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
         #        yyb[yyb<-90.] = -89.99
         dx = xxb.ptp()/xxb.shape[1]
         dy = yyb.ptp()/yyb.shape[0]
-        clip = (xxb.min()-dx, yyb.min()-dy, xxb.max()+dx, yyb.max()+dy)
+        if clip is None:
+            clip = (xxb.min()-dx, yyb.min()-dy, xxb.max()+dx, yyb.max()+dy)
 #        ymin = yyb[:, 0, 0]-dy/10.
         xmin = xxb[0, 0].min()-dx/10.
         xmax = xxb[0, -1].max()+dx/10.
@@ -507,7 +507,8 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
     else:
         dx = xx.ptp()/xx.shape[1]
         dy = yy.ptp()/yy.shape[0]
-        clip = (xx.min()-dx, yy.min()-dy, xx.max()+dx, yy.max()+dy)
+        if clip is None:
+            clip = (xx.min()-dx, yy.min()-dy, xx.max()+dx, yy.max()+dy)
 #        ymin = yy[:, 0]-dy/10.
         xmin = xx[0, 0]-dx/10.
         xmax = xx[0, -1]+dx/10.
@@ -525,12 +526,12 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
         premask = N.asarray(premask, 'i')
 
     # Get instances of Polygons
-    kwpoly = dict(clip=clip, proj=proj, shapetype=2, clip_proj=False)
+    kwpoly = dict(clip=None if clip is False else clip)
     if isinstance(polys, str):
         from vacumm.bathy.shorelines import get_shoreline
         polys = get_shoreline(polys, **kwpoly).get_shapes()
     else:
-        polys = polygons(polys, **kwpoly)
+        polys = create_shapes(polys, 'polygon', **kwpoly)
 
     # Loop on grid points
     skipped = 0
@@ -766,7 +767,10 @@ def polygon_select(xx, yy, polys, zz=None, mask=False):
     yy = N.asarray(yy, 'd')
 
     # Get a proper polygon list
-    polys = polygons(polys, lon=(xx.min(), xx.max()), lat=(yy.min(), yy.max()))
+    polys = create_shapes(polys, 'polygon')
+    box = scalebox([xx.min(), yy.min(), xx.max(), yy.max()], 1.01)
+    polys = clip_shapes(polys, box)
+
 
     # Create the mask
     pmask = N.ones(xx.shape, '?')
