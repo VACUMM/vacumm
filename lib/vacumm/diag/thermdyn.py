@@ -48,12 +48,15 @@ from vacumm.misc.cf import format_var, match_var
 try:
     from seawater import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0, \
         dpth as sw_depth
-except BaseException:
+except ImportError:
     try:
         from seawater.csiro import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0, \
             depth as sw_depth
-    except BaseException:
+    except ImportError:
         vcwarn('Failed to import seawater functions')
+
+
+__all__ = ['mixed_layer_depth', 'density']
 
 
 def density(temp, sal, depth=None, lat=None, potential=False,
@@ -163,14 +166,14 @@ def mixed_layer_depth(data, depth=None, lat=None, zaxis=None,
             warn("Switching MLD computation mode to 'deltadens'")
             mode = "deltadens"
 
-    elif match_var(data, 'temp', mode='nslu'):
+    elif match_var(data, 'temp', mode='inslu'):
 
         if mode is not None and mode != 'deltatemp':
             warn("Switching MLD computation mode to 'deltatemp'")
         mode = 'deltatemp'
         temp = data
 
-    elif match_var(data, 'dens', mode='nslu'):
+    elif match_var(data, 'dens', mode='inslu'):
 
         if mode in ['kz', 'deltatemp']:
             warn("Switching MLD computation mode to 'deltadens'")
@@ -179,7 +182,7 @@ def mixed_layer_depth(data, depth=None, lat=None, zaxis=None,
             mode = "deltadens"
         dens = data
 
-    elif match_var(data, 'kz', mode='nslu'):
+    elif match_var(data, 'kz', mode='inslu'):
 
         if mode is None:
             mode = "kz"
@@ -199,8 +202,6 @@ def mixed_layer_depth(data, depth=None, lat=None, zaxis=None,
             raise VACUMMError("Invalid MLD computation mode : '%s'" % mode)
         else:
             raise VACUMMError("Can't guess MLD computation mode")
-
-        temp = delta
 
     # Find Z dim
     data0 = data[0] if isinstance(data, tuple) else data

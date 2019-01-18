@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-# Copyright or © or Copr. Actimar/IFREMER (2010-2015)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -38,12 +38,21 @@ from __future__ import division
 from builtins import str
 from builtins import range
 from past.utils import old_div
+import os
 import numpy as N
-from vacumm.misc import kwfilter
-from vacumm.misc.grid import resol
 import matplotlib.pyplot as P
 import cdms2
 from six.moves import range
+
+from vacumm.misc.misc import kwfilter
+from vacumm.misc.grid import resol
+
+
+__all__ = ['get_kxky', 'get_spec', 'get_cospec',
+           'get_spectrum', 'get_cospectrum',
+           'plot_loglog_kspec', 'plot_semilogx_kspec',
+           'energy_spectrum',
+           ]
 
 
 def get_kxky(shape, dx, dy, verbose=False):
@@ -72,8 +81,8 @@ def get_kxky(shape, dx, dy, verbose=False):
     return kx, ky, kkx, kky, kk, Lx, Ly
 
 
-def get_spec(var1, var2=None, dx=None, dy=None,
-             verbose=False, fft=False, **kwargs):
+def get_spectrum(var1, var2=None, dx=None, dy=None,
+                 verbose=False, fft=False, **kwargs):
     """Get the spectrum of a 2D variable
 
     :Return: specvar,nbwave,dk
@@ -83,7 +92,7 @@ def get_spec(var1, var2=None, dx=None, dy=None,
     if None in [dx, dy]:
         if not cdms2.isVariable(var1):
             raise TypeError('var1 must be a MV2 array to compute dx and dy')
-        kwresol.setdefault('proj', True)
+        kwresol.setdefault('meters', True)
         ldx, ldy = resol(var1, **kwresol)
         dx = dx or ldx
         dy = dy or ldy
@@ -149,12 +158,18 @@ def get_spec(var1, var2=None, dx=None, dy=None,
     return specvar, nbwave, dk
 
 
-def get_cospec(var1, var2, dx=None, dy=None, verbose=False, **kwargs):
+get_spec = get_spectrum
+
+
+def get_cospectrum(var1, var2, dx=None, dy=None, verbose=False, **kwargs):
     """Co-sprectum of two variables"""
     return get_spec(var1, var2, dx=dx, dy=dy, verbose=verbose, **kwargs)
 
 
-def save_spec(filename, var, absc, time):
+get_cospec = get_cospectrum
+
+
+def save_spectrum(filename, var, absc, time):
     if os.path.isfile(filename):
         # tmpabsc=N.column_stack((N.load(filename)['nbwave'],absc))
         tmpvar = N.column_stack((N.load(filename)['spectrum'], var))
@@ -163,6 +178,9 @@ def save_spec(filename, var, absc, time):
         tmpvar = var
         tmptime = time
     N.savez(filename, spectrum=tmpvar, nbwave=absc, time=tmptime)
+
+
+save_spec = save_spectrum
 
 
 def plot_loglog_kspec(data, abscisse, title=None, subtitle=None,
@@ -241,13 +259,15 @@ def plot_semilogx_kspec(data, abscisse, title=None,
 
 
 def energy_spectrum(var, dx=None, dy=None, ctime=None,
-                    dispfig=False, latmean=None, verbose=False):
+                    dispfig=False, latmean=None, verbose=False,
+                    **kwargs):
     """Compute the energy spectrum of a 2D variable"""
     # Guess dx and/or dy
     if None in [dx, dy]:
         if not cdms2.isVariable(var):
             raise TypeError('var must be a MV2 array to compute dx and dy')
-        kwresol.setdefault('proj', True)
+        kwresol = kwfilter(kwargs, 'resol_')
+        kwresol.setdefault('meters', True)
         ldx, ldy = resol(var, **kwresol)
         dx = dx or ldx
         dy = dy or ldy
