@@ -425,7 +425,11 @@ def add_logging_proxies(cls):
         cls.get_logger().skipCaller(wrapper.func)
         # XXX because _classinstancemethod_wrapper is created on classinstancemethod.__get__(),
         # we directly use _classinstancemethod_wrapper.__call__
-        cls.get_logger().skipCaller(_classinstancemethod_wrapper.__call__.__func__.__code__)
+        caller = _classinstancemethod_wrapper.__call__
+        if hasattr(caller, '__func__'):
+            caller = caller.__func__
+        caller = caller.__code__
+        cls.get_logger().skipCaller(caller)
 
     for args in _logging_proxies:
         wrap_logging_function(cls, *args)
