@@ -40,10 +40,7 @@ from six.moves import range
 import numpy as N
 import MV2
 import cdms2
-from genutil.filters import *
-import scipy.signal as S
-#from scipy.signal import convolve2d
-from pylab import meshgrid
+#from genutil.filters import *
 
 from .units import deg2m
 from .axes import islon, islat
@@ -108,6 +105,7 @@ def generic1d(data, weights, axis=0, mask='same', copy=True, cyclic=False):
     :func:`scipy.signal.convolve2d`
 
     """
+    import scipy.signal as S
 
     # Setup
     # - data
@@ -370,6 +368,7 @@ def generic2d(data, weights, mask='same', copy=True):
     :func:`scipy.signal.convolve2d`
 
     """
+    import scipy.signal as S
 
     # Setup
     data = MV2.asarray(data)
@@ -386,7 +385,7 @@ def generic2d(data, weights, mask='same', copy=True):
     datan = data.filled(0.).copy()
     if datan.ndim > 2:
         ny, nx = datan.shape[-2:]
-        datan.shape = datan.size/(nx*ny), ny, nx
+        datan.shape = int(datan.size/(nx*ny)), ny, nx
     elif datan.ndim == 2:
         datan.shape = (1,) + datan.shape[-2:]
     ww.shape = datan.shape
@@ -485,7 +484,7 @@ def gaussian2d(data, nxw, nyw=None, sxw=1/3., syw=1/3., rmax=3., **kwargs):
     assert nxw % 2 == 1 and nyw % 2 == 1, 'nxw and nyw must be odd numbers'
     assert sxw > 0 and syw > 0,  'sxw and syw must be positive'
 
-    xx, yy = meshgrid(N.arange(nxw)-nxw/2, N.arange(nyw)-nyw/2)
+    xx, yy = N.meshgrid(N.arange(nxw)-nxw/2, N.arange(nyw)-nyw/2)
 
     if sxw < 1:
         sxw *= nxw/2
