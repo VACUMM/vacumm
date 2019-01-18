@@ -21,6 +21,7 @@ install:
   - conda create -q -n test-environment -c conda-forge -c defaults --override-channels python=$TRAVIS_PYTHON_VERSION cdms2 cdutil genutil esmpy configobj paramiko xlutils seawater pytz cmocean basemap-data-hires matplotlib scipy pytest
   - source activate test-environment
   - python setup.py build_ext --inplace
+  - python setup.py install
   - export UVCDAT_ANONYMOUS_LOG=no
 
 script: pytest -W ignore -x test
