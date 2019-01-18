@@ -52,26 +52,25 @@ __all__ = [
 ]
 
 
-def uuconvert(value, oldunits, newunits):
+def convert_units(value, oldunits, newunits):
     """Change units using unidata units connverter"""
-    from unidata import udunits_wrap
-    s, i = udunits_wrap.convert(oldunits, newunits)
-    return value * s + i
+    from cf_units import Unit
+    return Unit(oldunits).convert(value, newunits)
 
 
-convert_units = uuconvert
+uuconvert = convert_units
 
 ############################################################
 
 
 def kt2ms(nd):
     """Convert nds to m/s"""
-    return uuconvert(nd, 'kt', 'm/s')
+    return convert_units(nd, 'kt', 'm/s')
 
 
 def ms2kt(ms):
     """Convert m/s to nds"""
-    return uuconvert(ms, 'm/s', 'kt')
+    return convert_units(ms, 'm/s', 'kt')
 
 
 ms2nd = ms2kt
@@ -251,7 +250,7 @@ def tometric(units, value=1.,  munits=['m',  'm/s']):
         munits = [munits]
     for mu in munits:
         try:
-            return uuconvert(value, units, mu)
+            return convert_units(value, units, mu)
         except:
             pass
 
