@@ -10,14 +10,10 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a
-  - conda config --add channels cdat
-  - conda config --add channels conda-forge
-  - travis_wait 30 conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION libgfortran scipy cdms2 cdutil genutil basemap configobj paramiko xlutils seawater pytz cmocean basemap-data-hires matplotlib pytest
+  - travis_wait 30 conda create -q -n test-environment -c conda-forge -c defaults --override-channels python=$TRAVIS_PYTHON_VERSION cdms2 cdutil genutil esmpy libgfortran gfortran_linux-64 configobj paramiko xlutils seawater pytz cmocean basemap-data-hires matplotlib>=2.0 scipy
   - source activate test-environment
   - python setup.py install
   - python setup.py build_ext --inplace
   - export UVCDAT_ANONYMOUS_LOG=no
-
-
 
 script: pytest -W ignore -x test
