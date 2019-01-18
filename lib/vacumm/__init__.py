@@ -36,8 +36,12 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
+from __future__ import division
+from future import standard_library
+standard_library.install_aliases()
 from warnings import warn
 import six
+import logging
 
 __project__ = 'vacumm'
 __version__ = '3.5.1'
@@ -116,3 +120,10 @@ VACUMM_CFG = CFG = None
 from . import config
 config.load_cfg('com')
 config.load_cfg('user')
+
+
+# Logging
+class NullHandler(logging.Handler):
+    def emit(self, record):
+        pass
+logging.getLogger("vacumm").addHandler(NullHandler())
