@@ -18,7 +18,7 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a
-  - conda create -q -n test-environment -c conda-forge -c defaults --override-channels python=$TRAVIS_PYTHON_VERSION cdms2 cdutil genutil esmpy configobj paramiko xlutils seawater pytz cmocean basemap-data-hires matplotlib scipy
+  - conda create -q -n test-environment -c conda-forge -c defaults --override-channels python=$TRAVIS_PYTHON_VERSION cdms2 cdutil genutil esmpy configobj paramiko xlutils seawater pytz cmocean basemap-data-hires matplotlib scipy pytest
   - source activate test-environment
   - python setup.py build_ext --inplace
   - export UVCDAT_ANONYMOUS_LOG=no
