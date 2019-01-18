@@ -59,7 +59,7 @@ from validate import Validator, VdtMissingValue
 import vacumm
 from vacumm import VACUMMError, vcwarn
 
-__all__ = ['VACUMM_CFGSPECS', 'VACUMM_CFGSPECS_FILE',
+__all__ = ['VACUMM_CFG_SPECS', 'VACUMM_CFG_SPECS_FILE',
            'VACUMM_VDT', 'VACUMM_VDT_LIVE',
            'VCValidator', 'check_data_file', 'download_file',
            'edit_file', 'get_cfg_checked',
@@ -108,6 +108,17 @@ def get_data_dir(raiseerr=False):
         and if ``raiseerr`` is True, else return ''.
 
     """
+    # From :func:`vacumm_data.get_vacumm_data_dir`
+    try:
+        from vacumm_data import get_vacumm_data_dir
+        data_dir = get_vacumm_data_dir()
+        if data_dir:
+            if not os.path.exists(data_dir):
+                vcwarn('Invalid vacumm data directory: '+data_dir)
+            return data_dir
+    except ImportError:
+        pass
+
     # From VACUMM_DATA_DIR env var
     if 'VACUMM_DATA_DIR' in os.environ:
         data_dir = os.environ['VACUMM_DATA_DIR']
@@ -137,6 +148,17 @@ def get_data_dir(raiseerr=False):
     if raiseerr:
         raise VACUMMError("Can't find a valid data directory")
     return ''
+
+
+def get_data_file(data_file, raiseerr=True):
+    """Transform the relative path of a VACUMM file to an absolute path"""
+    data_dir = get_data_dir(raiseerr=True)
+    if data_dir is None:
+        return
+    data_file = os.path.join(data_dir, data_file)
+    if raiseerr and not os.path.exists(data_file):
+        raise VACUMMError("Data file not found: " + data_file)
+    return data_file
 
 
 def data_sample(data_file, mode='all'):
@@ -433,11 +455,11 @@ def get_dl_dir(suggest=None, filedesc=None, quiet=False):
 
 
 #: Config specifications file
-VACUMM_CFGSPECS_FILE = os.path.join(os.path.dirname(__file__), 'vacumm.ini')
+VACUMM_CFG_SPECS_FILE = os.path.join(os.path.dirname(__file__), 'vacumm.ini')
 
 #: Config specifications
-VACUMM_CFGSPECS = ConfigObj(
-    VACUMM_CFGSPECS_FILE,
+VACUMM_CFG_SPECS = ConfigObj(
+    VACUMM_CFG_SPECS_FILE,
     interpolation=False,
     list_values=False)
 
@@ -541,7 +563,7 @@ def load_cfg(cfgfile=None, merge=True, live=False, validate=True):
 #        warn('Invalid cfgfile passed to load_cfg. Skipping.')
     cfg = ConfigObj(
         cfgfile,
-        configspec=VACUMM_CFGSPECS,
+        configspec=VACUMM_CFG_SPECS,
         interpolation='template')
 
     # Default section
@@ -667,7 +689,7 @@ def get_cfg_checked(sec, option, value=None):
         return sec[option]
 
     # Find the check specs and check!
-    sec = VACUMM_CFGSPECS
+    sec = VACUMM_CFG_SPECS
     for secname in sections:
         sec = sec[secname]
     check = sec[option]
