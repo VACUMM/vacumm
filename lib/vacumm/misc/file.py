@@ -42,6 +42,7 @@ import os
 import re
 import shutil
 import datetime
+import operator
 import six
 from six.moves import range
 
@@ -163,8 +164,8 @@ def rollover(filepath, count=1, suffix='.%d', keep=True, verbose=False):
     return True
 
 
-def _sort_size_dict(sd): return sorted(
-    list(sd.items()), lambda a, b: cmp(a[1], b[1]))
+def _sort_size_dict(sd):
+    return sorted(list(sd.items()), key=operator.itemgetter(1))
 
 
 # Binary units : 1 kibioctet (Kio) = 2^10 = 1024
@@ -443,10 +444,10 @@ def xefind(regex, path=None, depth=0, files=True, dirs=False, matchall=False, ab
     Example
     -------
 
-    >>> find('.*\.nc', '/path/to/data')
+    >>> find('.*\\.nc', '/path/to/data')
     ['/path/to/data/data_2010-01-01.nc', '/path/to/data/data_2010-01-02.nc', ...]
 
-    >>> filelist = find('data_([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})\.nc', 'data', getmatch=True, abspath=False)
+    >>> filelist = find('data_([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})\\.nc', 'data', getmatch=True, abspath=False)
     >>> for filepath, matchobj in filelist:
     >>>     print filepath, ':', matchobj.groups()
     data/data_2010-01-1.nc : ('2010', '01', '1')
