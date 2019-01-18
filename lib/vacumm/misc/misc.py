@@ -45,13 +45,14 @@ from __future__ import print_function
 import sys
 import re
 import os
-import string
 import glob
 import fnmatch
+import functools
 from collections import OrderedDict
 from copy import copy, deepcopy
 from itertools import cycle
-from types import IntType, FloatType, LongType, ComplexType, GeneratorType
+import numbers
+from types import GeneratorType
 import operator
 from warnings import warn
 
@@ -142,14 +143,15 @@ def broadcast(set, n, mode='last', **kwargs):
         res.append(next(filliter))
     if isinstance(set, list):
         return res
-    return res.__class__(res)
+    return set.__class__(res)
 
 
 def makeiter(var):
-    """Make var iterable as a list if not ietrable or a string"""
+    """Make var iterable as a list if not iterable or a string or an array"""
     if (isinstance(var, str) or not hasattr(var, '__len__')
             or not callable(var.__len__) or
-            not hasattr(var, '__getslice__')):
+#            not hasattr(var, '__getslice__') or  # FIXME: __getslice__ makes fail
+            isinstance(var, N.ndarray)):
         var = [var]
     return var
 
@@ -694,7 +696,8 @@ iterable = is_iterable
 
 
 def isnumber(var):
-    return type(var) in [IntType, FloatType, LongType, ComplexType]
+    """Check if var is a number"""
+    return isinstance(var, numbers.Number)
 
 
 def rm_html_tags(str):
@@ -746,7 +749,7 @@ def deg2str(*args, **kwargs):
     return phaselab(*args, **kwargs)
 
 
-def phaselab(vals, fmt='%.5g', label=None, decimal=True, tex=None,
+def phaselab(vals, fmt='%.5g', gfmt='%g', label=None, decimal=True, tex=None,
              auto_minutes=False, no_seconds=False, no_symbol=False,
              no_zeros=False, auto=False, bfdeg=False, **kwargs):
     """Return a nice label for degrees
@@ -837,9 +840,9 @@ def phaselab(vals, fmt='%.5g', label=None, decimal=True, tex=None,
                 sig = pstr
             nodeg = auto_minutes and abs(val % 1) > 1.e-4
             if not decimal:  # Minutes'(seconds'')
-                fmt = ifmt
+                fmt_ = ifmt
                 if bfdeg:
-                    fmt = r'\textbf{%s}' % fmt
+                    fmt_ = r'\textbf{%s}' % fmt
 #                if usetex and not ifmt.startswith('$'):
 #                    ifmt = r'$%s$'%ifmt
                 dd, mm, ss = deg_from_dec(val)
@@ -854,12 +857,13 @@ def phaselab(vals, fmt='%.5g', label=None, decimal=True, tex=None,
                     vv = ''
             else:
                 vv = ''
+                fmt_ = fmt
             if nodeg:
                 labstr = vv
             elif no_symbol:
-                labstr = fmt+vv
+                labstr = fmt_+vv
             else:
-                labstr = fmt+sdeg+vv
+                labstr = fmt_+sdeg+vv
             if not decimal:
                 cc = []
                 if not nodeg:
@@ -1027,7 +1031,7 @@ def dict_filter(kwargs, filters, defaults=None, copy=False, short=False,
                 kwout[filter_] = kwread(filter_)
         if not short and not filter_.endswith('_'):
             filter_ += '_'
-        for att, val in kwargs.items():
+        for att, val in list(kwargs.items()):
             if att.startswith(filter_) and att != filter_:
                 if keep:
                     kwout[att] = kwread(att)
@@ -1075,7 +1079,7 @@ def dict_filter_out(kwargs, filters, copy=False, mode='start'):
         filters = [filters]
     if mode == "regexp":
         filters = [re.compile(filter_).match for filter_ in filters]
-    for key in kwargs.keys():
+    for key in list(kwargs.keys()):
         for filter_ in filters:
             if callable(filter_) and list(filter_(key)):
                 break
@@ -1494,9 +1498,9 @@ class FileTree(object):
     relative: optional
         : Return file names relative to input_dir [default: False]
     """
-    default_patterns = dict(patterns=['.*'],
-                            exclude=['~$', '^CVS$/', '^\.svn$/',
-                                     '^\.DS_Store$', '\.db$', '\.ini$'],
+    default_patterns = dict(patterns=[r'.*'],
+                            exclude=[r'~$', r'^CVS$/', r'^\.svn$/',
+                                     r'^\.DS_Store$', r'\.db$', r'\.ini$'],
                             include=[],)
 
     def __init__(self, input_dir, relative=False, scan=True, **kwargs):
@@ -2529,32 +2533,16 @@ def checkdir(path, asfile=None, chmod=None):
 def nduniq(data, axis=0):
     """Remove duplicates in a numpy array along a given axis
 
+    .. note:: DEPRECATED! It is now a simple shortcut to :func:`numpy.unique`
+
     Example
     -------
     >>> import numpy as N
     >>> a = N.arange(20.).reshape((10,2))
     >>> a[5] = a[1]
-    >>> b = uniq(a)
+    >>> b = nuniq(a)
     """
-    nd = N.ndim(data)
-    if axis < 0:
-        axis = nd + axis
-    n = data.shape[axis]
-    if nd > 2:
-        wdata = N.rollaxis(data, 0).reshape(n, -1)
-    else:
-        wdata = data
-    keep = N.ones(0, '?')
-    for i, d in enumerate(wdata):
-        if not keep[i]:
-            continue
-        bad = wdata == d
-        if nd > 1:
-            bad = bad.all(axis=-1)
-        bad[i] = False
-        keep = keep & ~bad
-    del wdata
-    return N.compress(data, keep, axis=axis)
+    return N.unique(data, axis=axis)
 
 
 def splitidx(arr, crit):
@@ -2626,7 +2614,7 @@ class CaseChecker(object):
             valid_cases = [valid_cases]
         else:
             valid_cases = list(valid_cases)
-        valid_cases = list(map(string.lower, valid_cases))
+        valid_cases = list(map(str.lower, valid_cases))
         self.ic = ic
         self.includes = []
         self.excludes = []
@@ -2812,3 +2800,49 @@ class MV2Wrapper(object):
             return mv2ar
         import xarray
         return xarray.DataArray.from_cdms2(mv2ar)
+
+
+class memoize(object):
+    """Function or method decorator to cache its results
+
+    Caching is based on args and kwargs.
+
+    Example
+    -------
+    ::
+
+        @memoize
+        def myfunc(a, b=4)
+            return 'res: {} b={}'.format(a, b)
+
+        res = myfunc(5, b=7)  # cache res
+        res = myfunc(5, b=7)  # use cache
+        res = myfunc(6)  # recache
+    """
+    def __init__(self, func):
+        self.func = func
+        self.cache = {}
+
+    def __call__(self, *args, **kwargs):
+
+        def serialize_kwarg(x):
+            return str(x) + str(type(kwargs[x])) + str(kwargs[x])
+
+        def serialize_arg(x):
+            return str(x) + str(type(x))
+
+        kwargs_key = "".join(map(serialize_kwarg, sorted(kwargs)))
+        key = "".join(map(serialize_arg, args)) + kwargs_key
+        if key in self.cache:
+            return self.cache[key]
+        else:
+            value = self.func(*args, **kwargs)
+            self.cache[key] = value
+            return value
+
+    def __repr__(self):
+        return repr(self.func)
+
+    def __get__(self, obj, objtype):
+        '''Support instance methods.'''
+        return functools.partial(self.__call__, obj)
