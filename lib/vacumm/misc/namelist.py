@@ -38,9 +38,12 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 import os
 import re
-import StringIO
+import io
 import sys
 import six
 
@@ -228,7 +231,7 @@ class Namelist(dict):
 
     def save_string(self):
         '''Return the (fortran) formated namelists'''
-        s = StringIO.StringIO()
+        s = io.StringIO()
         for namelist, variables in six.iteritems(self):
             s.write('&%s\n' % namelist)
             for vn, vv in six.iteritems(variables):
