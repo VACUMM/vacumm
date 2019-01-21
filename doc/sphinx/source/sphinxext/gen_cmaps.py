@@ -22,17 +22,18 @@ def gen_cmaps(app, rstfile):
             savefigs = app.config.gen_cmaps_prefix+savefigs
         if cmap_kwargs is None: cmap_kwargs = {}
         cmap_name = cmap_funcname.replace('cmap_', 'vacumm_')
-        cmap_name += '('+','.join([('%s=%s'%item) for item in cmap_kwargs.items()])+')'
+        cmap_name += '('+','.join(
+                [('%s=%s'%item) for item in cmap_kwargs.items()])+')'
         cmaps[cmap_name] = (cmap_funcname, cmap_kwargs), savefigs
 
     # Plot individual colormaps
     from matplotlib import rc, rcdefaults
     outdir = os.path.join(app.builder.srcdir, os.path.dirname(rstfile))
     for cmap_name in status_iterator(
-            cmaps.iterkeys(), "generating colormaps... ",
-            length=len(cmaps),
-            stringify_func=lambda x: os.path.basename(x),
-        ):
+                cmaps.iterkeys(), "generating colormaps... ",
+                length=len(cmaps),
+                stringify_func=lambda x: os.path.basename(x),
+            ):
         cmap, savefigs = cmaps[cmap_name]
         try:
             if not isinstance(cmap, basestring):
@@ -40,7 +41,7 @@ def gen_cmaps(app, rstfile):
             savefigs = os.path.join(outdir, savefigs)
             vacumm.misc.color.plot_cmap(cmap, savefigs=savefigs,
                 show=False, title=cmap_name, savefigs_verbose=False)
-        except:
+        except Exception:
             pass
 
     # Overview figure
@@ -59,7 +60,7 @@ def check_cmaps(app, env, added, changed, removed):
     """
     rstname = app.config.gen_cmaps_file
     pyfile = None
-    for depfile in env.dependencies.get(rstname, ()):
+    for depfile in app.env.dependencies.get(rstname, ()):
         if depfile.endswith('.py'):
             pyfile = depfile
             break

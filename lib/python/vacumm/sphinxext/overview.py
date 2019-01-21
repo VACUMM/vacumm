@@ -32,7 +32,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-from sphinx.directives import Directive
+from docutils.parsers.rst import Directive
 from docutils.parsers.rst.directives import unchanged,single_char_or_unicode,positive_int
 from docutils import nodes
 from docutils.statemachine import string2lines
@@ -355,7 +355,7 @@ class OverView(object):
                 cls_xmeths = self.get_extra_methods(clsname)
                 if cls_xattrs or cls_xmeths:
                     cls_xattrs = [':attr:`~%s`\n'%obj for obj in cls_xattrs]
-                    cls_xfuncs = [':func:`~%s`\n'%obj for obj in cls_xfuncs]
+                    cls_xmeths = [':func:`~%s`\n'%obj for obj in cls_xmeths]
                     crst += '\n'
                     crst += self.format_list(sorted(cls_xattrs)+sorted(cls_xmeths),
                         indent=indent+1, columns=columns, xindent='  ')

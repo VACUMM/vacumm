@@ -258,8 +258,6 @@ extlinks = {
 
 
 # %% Python overview
-overview_title_overview = False
-overview_title_content = False
 overview_columns = 3
 
 # %% VACUMM config
