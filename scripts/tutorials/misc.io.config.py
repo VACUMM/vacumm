@@ -8,7 +8,7 @@ import os
 # On charge le fichier
 config = SafeConfigParser()
 print(os.getcwd())
-config.read('misc.io.config.in.ini') # FIXME: code_file_name?
+config.read(__file__[:-2] + 'in.ini')
 
 # List des sections
 print(config.sections())
@@ -49,6 +49,6 @@ print(config.has_option('sealevel', 'name'))
 #  -> True
 
 # On sauvegarde
-fc = open('misc.io.config.out.ini', 'w')
+fc = open(__file__[:-2] + 'out.ini', 'w')
 config.write(fc)
 fc.close()

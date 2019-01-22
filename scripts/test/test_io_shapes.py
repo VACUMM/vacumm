@@ -1,31 +1,26 @@
-"""Test the :func:`~vacumm.misc.grid.io.Shapes` class"""
-from vcmqm import data_sample, Shapes
-result = []
+"""Test the :class:`~vacumm.misc.sdata.Shapes` class"""
+from vcmqm import P, data_sample, Shapes
+import pyproj
 
-# Shapefile
+# %% Shapefile
 shpfile = data_sample("ne_110m_land/ne_110m_land")
 
-# Basic
+# %% Basic
 S = Shapes(shpfile)
-result.append(('assertEqual', [len(S), 127]))
-S.plot(title='Basic', show=False, m_fig='new')
+assert len(S) == 127
+S.plot(title='Basic', show=False, fig=P.figure())
 
-# Min area
-S = Shapes(shpfile, min_area=1000)
-result.append(('assertEqual', [len(S), 3]))
-S.plot(title='Min area', show=False, m_fig='new')
+# %% Projection
+x, y = S.get_xy(split=True)
+proj = pyproj.Proj({'proj':'moll', 'lon_0':0.})
+S = S.transform(proj)
+assert S[0].area() > 1e12
+S.plot(title='Projected', show=False, fig=P.figure())
 
-# Projection
-S = Shapes(shpfile, proj='merc')
-result.append(('assertGreater', [S[1].area(), 1e12]))
-S.plot(title='Projected', show=False, m_fig='new')
-
-# Clips
+# %% Clips
 S = Shapes(shpfile, clip=[-10, 42, 10, 51.])
-result.append(('assertEqual', [len(S), 3]))
-S.plot(title='Clipped', show=False, m_fig='new')
-S = Shapes(shpfile, clip=[-10, 42, 10, 51.], proj=True)
-result.append(('assertEqual', [len(S), 3]))
-S.plot(title='Clipped+projected', show=False, m_fig='new')
-
-
+assert len(S) == 3
+S.plot(title='Clipped', show=False, fig=P.figure())
+S = Shapes(shpfile, clip=[-10, 42, 10, 51.]).transform(proj)
+assert len(S) == 3
+S.plot(title='Clipped+projected', show=False, fig=P.figure())

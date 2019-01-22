@@ -1,6 +1,6 @@
 """Test fortran function :f:func:`bilin2dto1dc`"""
 
-from vcmq import P, N, add_grid, rotate_grid
+from vcmqm import P, N, add_grid, rotate_grid
 from vacumm.fortran.interp import bilin2dto1dc
 
 

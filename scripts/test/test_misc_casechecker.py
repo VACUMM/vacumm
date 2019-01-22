@@ -1,5 +1,5 @@
 """Test :class:`~vacumm.misc.misc.CaseChecker`"""
-from vcmq import CaseChecker
+from vcmqm import CaseChecker, VACUMMError
 
 c1 = CaseChecker(['mode1', 'mode2'], casename='mode')
 assert c1.isvalid('mode1') is True
@@ -15,8 +15,9 @@ assert c2.isvalid(None) is True
 #assert_raises(VACUMMError, c1.check, 'mode5')
 try:
     c1.check('mode5')
-except Exception as e: #VACUMMError, e:
-    assert e.message == "Invalid mode 'mode5': it must be one of ['mode1', 'mode2']"
+except VACUMMError as e:
+    assert e.args[0] == ("Invalid mode 'mode5': it must be one "
+                 "of ['mode1', 'mode2']")
 
 c3 = CaseChecker(['mode?', '-mode[56]'])
 assert c3.isvalid('mode3') is True

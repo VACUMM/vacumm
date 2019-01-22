@@ -1,6 +1,6 @@
 from __future__ import print_function
 from vcmq import XYZ, data_sample
-import pylab as P
+import matplotlib.pyplot as P
 
 # Lecture d'un fichier xyz et plot
 xyz = XYZ(data_sample('celtic_sea.xyz'))
@@ -26,7 +26,7 @@ P.figure(figsize=(5.5, 8))
 P.subplots_adjust(left=.12, top=.96, right=1, bottom=.06)
 P.subplot(211)
 xyz.plot(title='Mer celtique', units='m', m=True,
-    show=False, size=2, cmap='cmap_bathy')
+         show=False, size=2, cmap='cmap_bathy')
 
 # Zoom
 xyz_zoom = xyz.clip((-6, 51.5, -4, 52.5), long_name='Zoom')
@@ -34,7 +34,7 @@ P.subplot(212)
 xyz_zoom.plot(m=True, size=7, show=False, cmap='cmap_bathy')
 
 # Sauvegarde
-xyz_zoom.save('zoom.xyz') # WARNING: code_file_name?
+xyz_zoom.save(__file__[:-2]+'zoom.xyz')
 
 # Autres exemples d'initialisations
 xyz2 = XYZ(xyz.xyz)

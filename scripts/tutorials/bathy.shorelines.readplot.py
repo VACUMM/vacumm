@@ -2,28 +2,24 @@ from vcmq import map2, ocean, P, N, Histolitt
 from _geoslib import Polygon
 
 
-# Creer une carte se limitant a Ouessant avec fond de mer
-m = map2(lat=(48.41, 48.49), lon=(-5.15, -5), show=False,
-    fillcontinents=False, drawcoastlines=False, figsize=(5.5, 4),
-     bgcolor=ocean, left=.12, top=.9)
+# %% Create a map manually (or pass ``m="auto"`` to ``coast.plot``)
+m = map2(lon=(-5.2,  -3.4), lat=(47.6, 48.8), show=False, res=None,
+         fillcontinents=False, drawcoastlines=False, figsize=(5.5, 4),
+         bgcolor=ocean, left=.12, top=.9, proj='merc')
 
-# Fichier au 1/25000eme avec selection de la zone de la carte
-coast = Histolitt(m=m) # Chargement
-coast.plot(show=False) # Trace
+# %% Read Histolitt shape file
+coast = Histolitt(clip=m.map)
 
-# On travail maintenant sur l'ile
-# - creation d'un polygone (voir le tutoriel (*@\ref{lst:misc.grid.polygons}@*))
-select = Polygon(N.array([[-5.1, 48.41], [-5, 48.41], \
-    [-5, 48.49], [-5.1, 48.49]]))
-# - recuperation de l'ile
-island = coast.greatest_polygon()
-# - sauvegarde de l'ile complete dans un fichier ascii
-f = N.savetxt('bathy.shorelines.dat', island.boundary)
-# - boucle sur les intersections
-for poly in island.intersection(select):
-    xx, yy = poly.boundary.transpose() # coordonnees
-    P.fill(xx, yy, alpha=.5, facecolor='g', linewidth=0) # coloriage
+# %% Plot filled polygons
+coast.plot(color='0.8', linewidth=.5, edgecolor='.4',  m=m, show=False,
+           title='Histolitt shoreline')
 
-# Fin du trace
-P.title('Trait de cote SHOM/IGN 1/25000')
-
+# %% Add some polygon areas
+for poly, tpoly in zip(coast.shapes, coast.transform(m).shapes):
+    area = tpoly.area() * 1e-6
+    if area > 10:
+        m.add_text(poly.boundary[:, 0].mean(), poly.boundary[:, 1].mean(),
+                   "{:.0f}$km^2$".format(area), shadow=True, weight='bold',
+                   transform='data', offset=(0, 10), ha='center', color='w',
+                   bbox={'boxstyle': 'round', 'facecolor': 'tab:blue',
+                         'alpha': .8, 'edgecolor': 'k'})

@@ -1,9 +1,10 @@
+"""Discover CDAT time types"""
 from __future__ import print_function
 import cdtime
 from vcmq import is_comptime,is_reltime
 
-# Creer un objet 'comptime' : temps absolu
-# - en specifiant tout (annee,mois,jour,heure,minute,seconde)
+# Create a 'comptime' objetc: absolute time
+# - by specifying every components
 ctime = cdtime.comptime(2000,1,1,0,0,0)
 # - ou seulement les premiers arguments
 ctime = cdtime.comptime(2000)

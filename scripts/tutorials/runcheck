@@ -3,30 +3,47 @@
 
 Help:
 
-    check --help
+    runcheck --help
 """
 
-# Parse arguments
 from past.builtins import execfile
 from builtins import object
 from argparse import ArgumentParser
-import sys, os
+import sys
+import os
 from time import time as _time_
+from glob import glob
+import traceback
+import logging
+import warnings
+from matplotlib import rcdefaults, pyplot as P
+from configparser import ConfigParser
+
+
+# Parse arguments
 parser = ArgumentParser(
-    description="Check the execution of tutorials.\n\n[pattern] defaults to *.py.",)
-parser.add_argument('pattern', default='*.py', help='file pattern  [%(default)s]',
-    nargs='*')
+    description="Check the execution of tutorials.\n\n[pattern] "
+    "defaults to *.py.",)
+parser.add_argument('pattern', default='*.py',
+                    help='file pattern  [%(default)s]',
+                    nargs='*')
 parser.add_argument('-e', '--exclude', action='append',
-    help='add a glob pattern to exclude')
+                    help='add a glob pattern to exclude')
 parser.add_argument('-l', '--loglevel',
-    choices=['debug', 'info', 'error'], default='info',
-    help='logging level to console [%(default)s]')
-parser.add_argument('-c', '--cfgfile', default='check.cfg', help='configuration file')
+                    choices=['debug', 'info', 'error'], default='info',
+                    help='logging level to console [%(default)s]')
+parser.add_argument('-x', '--exit-on-failed', action='store_true',
+                    help='exit as soon as a script fails')
+parser.add_argument('-c', '--cfgfile', default='check.cfg',
+                    help='configuration file')
 args = parser.parse_args()
+
+# Configuration
+config = ConfigParser()
+config.read(args.cfgfile)
 
 # Retreive the list of scripts
 include = []
-from glob import glob
 # - include
 if not isinstance(args.pattern, list):
     args.pattern = [args.pattern]
@@ -35,32 +52,36 @@ for pat in args.pattern:
 include = [os.path.abspath(fn) for fn in include]
 # - exclude
 if args.exclude is None:
-    args.exclude = ['check.py']
-if args.exclude is not None:
+    args.exclude = []
+if "exclude" in config['DEFAULT']:
+    args.exclude.extend(config['DEFAULT']['exclude'].split())
+if args.exclude:
     exclude = []
     for pat in args.exclude:
         exclude.extend(glob(pat))
-    exclude = [os.path.abspath(fn) for fn in exclude] + [os.path.abspath(__file__)]
+    exclude = [os.path.abspath(fn) for fn in exclude] + \
+        [os.path.abspath(__file__)]
     files = []
     for fn in include:
-        if fn not in exclude:
+        if fn not in exclude and not os.path.samefile(__file__, fn):
             files.append(fn)
 else:
     files = include
 files.sort()
 
 # Setup the logger
-import logging
 logfile = '.'.join([os.path.splitext(__file__)[0], 'log'])
 if os.path.exists(logfile):
     os.remove(logfile)
 logger = logging.getLogger('RUNCHECK')
 file = logging.FileHandler(logfile)
 file.setFormatter(
-    logging.Formatter('%(asctime)s: %(name)s [%(levelname)-8s] %(message)s',
-        '%Y-%m-%d %H:%M'))
+    logging.Formatter(
+            '%(asctime)s: %(name)s [%(levelname)-8s] %(message)s',
+            '%Y-%m-%d %H:%M'))
 console = logging.StreamHandler()
-console.setFormatter(logging.Formatter('%(name)s [%(levelname)-8s] %(message)s'))
+console.setFormatter(
+        logging.Formatter('%(name)s [%(levelname)-8s] %(message)s'))
 file.setLevel('DEBUG')
 console.setLevel(args.loglevel.upper())
 logger.setLevel('DEBUG')
@@ -68,7 +89,6 @@ logger.addHandler(file)
 logger.addHandler(console)
 
 # Warnings
-import warnings
 for message in [
         r'The ishold function was deprecated',
         r'setting an item on a masked array which has a shared mask',
@@ -81,28 +101,43 @@ for message in [
         r'The matplotlib.delaunay module was deprecated in version',
         r'Warning: converting a masked element to nan',
         r'get_axes has been deprecated in ',
+        r'The following kwargs were',
+        r'The axesPatch function was deprecated',
+        r'Using a non-tuple sequence',
         ]:
     warnings.filterwarnings('ignore', message)
 
+
 # Redirections
+
+
 class Redirector(object):
+
     def __init__(self, func, prefix=''):
         self.func = func
         self.prefix = prefix
+
     def write(self, buf):
         self.func(self.prefix+buf.rstrip().strip('\n'))
+
     def flush(self):
         pass
+
+
 class Warner(object):
+
     def __init__(self, logger):
         self.logger = logger
+
     def showwarning(self, message, category, filename, lineno,
-            file=None):
+                    file=None, *args, **kwargs):
         self.logger.warning(
             'REDIRECTED: %s:%s: %s:%s',
             filename, lineno,
             category.__name__, message,
         )
+
+
 #old_sys_stdout = sys.stdout
 #old_sys_stderr = sys.stderr
 #old_showwarnings = warnings.showwarning
@@ -112,43 +147,48 @@ warnings.showwarning = Warner(logger).showwarning
 
 
 # Run them all
-import subprocess, traceback
-from matplotlib import rcdefaults, pyplot as P
 rcdefaults()
 igood = 0
 ibad = 0
 PWD = os.getcwd()
+T0 = _time_()
 for script in files:
     base_script = os.path.basename(script)
-    if os.path.realpath(script)==os.path.realpath(__file__):
+    if os.path.realpath(script) == os.path.realpath(__file__):
         logger.debug('{}: {}'.format(base_script, 'SKIPPED'))
         continue
     os.chdir(PWD)
     sys.argv = [script]
+    if 'args' in config.sections() and base_script in config['args'].keys():
+        sys.argv.extend(config['args'][base_script].split())
     logger.debug('Trying {}...'.format(base_script))
     t0_ = _time_()
 #    execfile(script, {'__file__':script})
     try:
-        execfile(script, {'__file__':script})
-        igood +=1
+        exec(open(script).read(), None, {'__file__': script})
+        igood += 1
         result = 'OK'
         report_func = logger.info
-    except:
-        ibad +=1
+    except Exception:
+        ibad += 1
         logger.debug(traceback.format_exc())
         result = 'FAILED'
         report_func = logger.error
     P.close()
     report_func('{}: {} [{:.1f}s]'.format(base_script, result, _time_()-t0_))
     rcdefaults()
+    if result == 'FAILED' and args.exit_on_failed:
+        report_func('Exiting...')
+        sys.exit(1)
 
 # Finalize
 gb = []
 if igood:
-    gb.append('%i OK'%igood)
+    gb.append('{} OK'.format(igood))
 if ibad:
-    gb.append('%i FAILED'%ibad)
-msg = 'Results (%i checks): %s'%(igood+ibad, ', '.join(gb))
+    gb.append('{} FAILED'.format(ibad))
+msg = 'Results ({} checks in {:.0f}s): {}'.format(igood+ibad,
+               _time_()-T0, ', '.join(gb))
 logger.info(msg)
 
 ## Clean redirections

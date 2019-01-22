@@ -2,7 +2,7 @@
 
 # Imports
 from vcmq import create_lon, N, MV2, create_dep, section2
-from vacumm.misc.phys.units import deg2m
+from vacumm.misc.units import deg2m
 
 # Init data with z 1D
 nz = 11

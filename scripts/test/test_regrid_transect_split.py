@@ -29,4 +29,4 @@ tt = [transect(u, tlons, tlats, times=ttimes, split=split) for split in splits]
 
 # Unittest
 for ts in tt[1:]:
-    N.testing.assert_allclose(tt[0], ts)
+    N.testing.assert_allclose(tt[0].asma(), ts.asma())

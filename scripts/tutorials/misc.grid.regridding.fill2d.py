@@ -1,29 +1,27 @@
-# -*- coding: utf8 -*-
-import cdms2, MV2, pylab as P
-from vcmq import data_sample, map2
+"""Fill 2D masked data and mask on land"""
+from vcmq import (cdms2, MV2, plt, data_sample, map2, fill2d, masked_polygon)
 
-# Lecture de la temperature
+# Read SST
 f = cdms2.open(data_sample('mars3d.xy.nc'))
 temp = f('temp', lon=(-5.5, -4), lat=(47, 49))
 f.close()
-temp.long_name = 'Original'
+temp.long_name = 'Masked'
 
-# On crée un trou
+# Create an hole
 temp[15:60, 40:80] = MV2.masked
 
-# On rempli des trous
-from vacumm.misc.grid.regridding import fill2d
+# Fill it
 tempf = fill2d(temp, method='carg')
-tempf.long_name = 'Rempli'
+tempf.long_name = 'Filled'
 
-# On masque la terre
-from vacumm.misc.grid.masking import masked_polygon
-tempf[:] = masked_polygon(tempf, 'h', copy=0)
+# Mask on GSHHS land
+tempf[:] = masked_polygon(tempf, 'i', copy=0)
 
-# Plots
-P.rc('font', size=9)
-kw = dict(vmin=9, vmax=13, show=False)
-map2(temp, subplot=211, hspace=.2, bottom=.05,
-    left=.08, top=.97, figsize=(4.5, 8), nmax=10, **kw)
-map2(tempf, subplot=212, **kw)
-P.rcdefaults()
+# Plot
+plt.rc('font', size=9)
+kw = dict(vmin=9, vmax=13, proj='merc', res='i', show=False,
+          nmax_levels=10, colorbar=False)
+map2(temp, subplot=121, hspace=.2,
+     left=.05, right=.95, figsize=(6, 4.5), **kw)
+map2(tempf, subplot=122, **kw)
+plt.rcdefaults()

@@ -1,45 +1,47 @@
-# *-* coding: utf-8 *-*
-import cdms2, MV2, numpy as N, pylab as P
-from vcmq import data_sample, create_lon, curve2, regrid1d, yscale
+"""Compare cella average versus linear interpolation"""
+from vcmq import (cdms2, MV2, plt, np, data_sample, create_lon, curve2,
+                  regrid1d, yscale)
 
-# Lecture de la temperature
+# Read temperature
 f = cdms2.open(data_sample('mars3d.x.uv.nc'))
 v = f('v', squeeze=1, lon=(-5.08, -4.88))
 f.close()
-v =  MV2.masked_values(v, 0.)
+v = MV2.masked_values(v, 0.)
 v.long_name = 'Original'
 
-# On ajoute un peu de bruit
-v[:] += N.random.random(len(v))
+# Add some noise
+np.random.seed(1)
+v[:] += np.random.random(len(v))
 
-# Creation des deux axes de longitudes
+# Create longitudes
 lon = v.getLongitude().getValue()
-dlon = N.diff(lon).mean()
-# - basse résolution
-lon_lr = create_lon((lon.min()+dlon*.7, lon.max()+dlon, dlon*3.3))
-# - haute résolution
+dlon = np.diff(lon).mean()
+# - low resolution
+lon_lr = create_lon((lon.min()+dlon*0.7, lon.max()+dlon, dlon*5.3))
+# - high resolution
 lon_hr = create_lon((lon.min()+dlon, lon.max()+dlon, dlon/3.3))
 # - dict
-lons = dict(haute=lon_hr, basse=lon_lr)
+lons = dict(low=lon_lr, high=lon_hr)
 
-# Regrillages et plots
-P.rcParams['font.size'] = 9
-P.figure(figsize=(5.5, 6))
-kwplot = dict(show=False,vmin=v.min(),vmax=v.max(),alpha=.7)
-for ilh,resdst  in enumerate(['basse', 'haute']):
+# Interp and plot
+plt.rcParams['font.size'] = 9
+plt.figure(figsize=(5.5, 6))
+kwplot = dict(show=False, vmin=v.min(), vmax=v.max(), alpha=.7, linewidth=.6)
+for ilh, resdst  in enumerate(lons):
 
-    # Regrillage
+    # Interp
     vlinear = regrid1d(v, lons[resdst], 'linear')
     vremap = regrid1d(v, lons[resdst], 'cellave')
 
     # Plots
-    P.subplot(2, 1, ilh+1)
-    curve2(v, 'o', markersize=4, color='k', label=u'Original', hspace=.3, **kwplot)
-    curve2(vremap, 'o', markersize=2, label=u'Cellave', linewidth=1.2, color='b', **kwplot)
-    curve2(vlinear, 'o', markersize=2, label=u'Linear', linewidth=1.2, color='r', **kwplot)
+    plt.subplot(2, 1, ilh+1)
+    curve2(v, 'o-', markersize=3, color='k', label=u'Original',
+           hspace=.3, **kwplot)
+    curve2(vremap, 'o-', markersize=2, label=u'Cellave',
+           color='tab:blue', **kwplot)
+    curve2(vlinear, 'o-', markersize=2, label=u'Linear',
+           color='tab:red', **kwplot)
     yscale(1.1)
-    P.title(u'Vers la %s resolution'%resdst)
-    if not ilh: P.legend(loc='lower left').legendPatch.set_alpha(.6)
-
-
-
+    plt.title('Toward {} resolution'.format(resdst))
+    if not ilh:
+        plt.legend(loc='lower left')#.legendPatch.set_alpha(.6)

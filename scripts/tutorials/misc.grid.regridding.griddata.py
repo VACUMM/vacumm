@@ -1,7 +1,10 @@
-# On construit un grille reguliere
 import numpy as N
 import pylab as P
-from vcmq import meshbounds
+from vcmq import meshbounds, griddata
+
+N.random.seed(0)
+
+# On construit un grille reguliere
 xr = N.arange(20.)
 yr = N.arange(10.)
 xxr, yyr = N.meshgrid(xr, yr)
@@ -17,8 +20,7 @@ xi, yi, zi = xxr.flat[ij], yyr.flat[ij], zzr.flat[ij]
 
 # Interpolation sur la grille reguliere
 # - natgrid
-from vacumm.misc.grid.regridding import griddata
-zirn = griddata(xi, yi, zi, (xr, yr), method='nat', ext=True, sub=6)
+#zirn = griddata(xi, yi, zi, (xr, yr), method='nat', ext=True, sub=6)
 # - krigeage
 zirk = griddata(xi, yi, zi, (xr, yr), method='carg')
 
@@ -31,12 +33,12 @@ P.pcolor(xrb, yrb, zzr, **vminmax)
 P.xlim(xrb.min(), xrb.max()) ; P.ylim(yrb.min(), yrb.max())
 P.title('Original')
 stdref = zzr.std()
-# - irregulier via natgrid
-P.subplot(312)
-P.pcolor(xrb, yrb, zirn, **vminmax)
-P.plot(xi, yi, 'ko')
-P.xlim(xrb.min(), xrb.max()) ; P.ylim(yrb.min(), yrb.max())
-P.title('Natgrid (err = %02i%%)'%((zzr-zirn).std()*100/stdref))
+## - irregulier via natgrid
+#P.subplot(312)
+#P.pcolor(xrb, yrb, zirn, **vminmax)
+#P.plot(xi, yi, 'ko')
+#P.xlim(xrb.min(), xrb.max()) ; P.ylim(yrb.min(), yrb.max())
+#P.title('Natgrid (err = %02i%%)'%((zzr-zirn).std()*100/stdref))
 # - irregulier via cargen
 P.subplot(313)
 P.pcolor(xrb, yrb, zirk, **vminmax)

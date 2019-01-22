@@ -1,59 +1,68 @@
+"""Manage random bathymetry datasets with :class:`~vacumm.bathy.bathy.XYZBathyBank`"""
 from __future__ import print_function
-import numpy as N,  os
+import numpy as np,  os
 from vcmq import XYZBathyBank
 
-# Creation de fausses bathymetries xyz
-# - fonction generatrice
-def gene_bathy(xc, yc, r, n):
-    noise = N.random.random(n)
-    a = N.random.random(n)*N.pi*2
-    r = r*N.random.random(n)
-    x = xc + r*N.cos(a)
-    y = yc + r*N.sin(a)
-    return N.asarray([x, y, N.exp(-(x-xc)**2/r**2-(y-yc)**2/r**2)*30.+noise]).transpose()
-# - bathy sud
-fsouth = __file__[:-2]+'bathy_south.xyz'
-N.savetxt(fsouth, gene_bathy(-5.1, 48.1, .15, 200.))
-# - bathy nord
-fnorth = __file__[:-2]+'bathy_north.xyz'
-N.savetxt(fnorth, gene_bathy(-5.1, 48.3, .15, 100.))
-# - bathy large
-flarge = __file__[:-2]+'bathy_large.xyz'
-N.savetxt(flarge, gene_bathy(-5.2, 48., .4, 300.))
+basename = __file__[:-2]
 
-# On stocke dans une banque
+# %% Create fake bathymetries
+# - generator
+def gene_bathy(xc, yc, r, n):
+    import numpy as np
+    noise = np.random.random(n)
+    a = np.random.random(n)*np.pi*2
+    r = r*np.random.random(n)
+    x = xc + r*np.cos(a)
+    y = yc + r*np.sin(a)
+    return np.asarray([x, y, np.exp(-(x-xc)**2/r**2-(y-yc)**2/r**2)*30.+noise]).transpose()
+# - south
+fsouth = basename + 'bathy_south.xyz'
+np.savetxt(fsouth, gene_bathy(-5.1, 48.1, .15, 200))
+# - north
+fnorth = basename + 'bathy_north.xyz'
+np.savetxt(fnorth, gene_bathy(-5.1, 48.3, .15, 100))
+# - large
+print(__file__)
+flarge = basename + 'bathy_large.xyz'
+print('flarge',flarge)
+np.savetxt(flarge, gene_bathy(-5.2, 48., .4, 300))
+
+# Put them in a bank
 # - from scratch
-bank_file = __file__[:-2]+'bank.cfg'
-if os.path.exists(bank_file): 
-    os.remove(bank_file) # FIXME: use code_file_name for tut?
-# - init de la banque
+bank_file = basename + 'bank.cfg'
+if os.path.exists(bank_file):
+    os.remove(bank_file)
 bank = XYZBathyBank(bank_file)
-# - ajout des fichiers bathy
+# - add bathy files
 bank.add(fsouth, id='south', long_name='South')
 bank.add(fnorth, id='north', long_name='North')
 bank.add(flarge) # id auto
-#   you can also use: bank += flarge
-# - on verifie ce qu'on a
+# similar to:
+# >>> bank += flarge
+# - we check
 print(bank)
 
-
-# Petites modifs
+# %% A few changes
 # - id
 bank['bathy.bathy.xyz.bathybank.bathy_large'].id = 'large'
-# - transparence
+bank['large'].update(long_name='Large')
+# similar to:
+# >>> bank.rename('bathy.bathy.xyz.bathybank.bathy_large', 'large')
+# - transparency
 bank['north'].transp = False
 # - long name
 bank['large'].long_name = 'Large'
+bank['large']['transp'] = True
 
-# Suppression d'une bathy
+# %% Remove one
 bank.remove('south')
-#  on peut aussi utiliser:
+#  similar to::
 #  >>> bank -= 'south'
 #  >>> bank -= bsouth
 #  >>> del bank['south']
 
-# Chargement d'une bathy
+# %% Load the data
 bsouth = bank['north'].load()
 
-# Plot de l'ensemble
-bank.plot(size=15,  map_proj='cyl', map_res=None, show=False)
+# %% Plot them all
+bank.plot(size=15, map_proj='cyl', map_res=None, show=False)

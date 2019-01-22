@@ -1,10 +1,10 @@
 """Test :class:`~vacumm.misc.stats.StatAccum` for a pair of variables"""
 
-# Imports
+# %% Imports
 from builtins import range
 from vcmq import MV2, N, StatAccum
 
-# Setup masked data
+# %% Setup masked data
 nt, ny, nx = 20, 15, 10
 var1 = MV2.arange(1.*nt*ny*nx).reshape(nt, ny, nx)
 var1.getAxis(0).designateTime()
@@ -17,10 +17,10 @@ mask = var1.mask|var2.mask # common mask
 vmax = var2.max()
 bins = N.linspace(-0.1*vmax, 0.9*vmax, 14)
 nbins = len(bins)
-maskyx = mask.all(axis=1)
+maskyx = mask.all(axis=0)
 maskt = mask.reshape((nt, -1)).all(axis=1)
 
-# Direct
+# %% Direct
 varm1 = var1.asma().copy()
 varm2 = var2.asma().copy()
 varm1[mask] = N.ma.masked
@@ -57,21 +57,19 @@ for ivar, varm in enumerate([varm1, varm2]):
         dstats['thist'][ivar][ibin] = valid.filled(False).sum(axis=0)
         dstats['shist'][ivar][:, ibin] = valid.filled(False).reshape((nt, -1)).sum(axis=1)
     dstats['thist'][ivar][:, maskyx] = N.ma.masked
-    dstats['shist'][ivar][:, maskt] = N.ma.masked
+    dstats['shist'][ivar][maskt] = N.ma.masked
 
-# Indirect using StatAccum
+# %% Indirect using StatAccum
 sa = StatAccum(tall=True, sall=True, bins=bins)
 sa += var1[:7], var2[:7]
 sa += var1[7:], var2[7:]
 istats = sa.get_stats()
 
-# Unitest
+# %% Tests
 result = []
 for key in sorted(dstats.keys()):
     if isinstance(dstats[key], tuple):
         for i in 0, 1:
-            value = N.ma.allclose(dstats[key][i], istats[key][i])
-            result.append(('assertTrue', value))
+            N.testing.assert_allclose(dstats[key][i], istats[key][i].asma())
     else:
-        value = N.ma.allclose(dstats[key], istats[key])
-        result.append(('assertTrue', value))
+        N.testing.assert_allclose(dstats[key], istats[key].asma())

@@ -5,7 +5,7 @@ from vacumm.misc.axes import (islon, islat, isdep, isforecast, istime,
                               create_time, create_forecast, create_axis)
 
 
-#%% Longitude
+# %% Longitude
 lon = create_lon(range(5), long_name='My longitudes')
 assert lon.id == 'lon'
 assert lon.long_name == 'My longitudes'
@@ -14,27 +14,27 @@ lon = create_axis(range(2))
 lon.units = 'degrees_east'
 assert islon(lon)
 
-#%% Latitude
+# %% Latitude
 lat = create_lat(range(5))
 assert lat.axis == 'Y'
 assert islat(lat)
 
-#%% Depth
+# %% Depth
 dep = create_dep(range(5))
 assert dep.units == 'm'
 assert isdep(dep)
 
-#%% Altitude
+# %% Altitude
 alt = create_alt(range(5))
 assert alt.units == 'm'
 assert isalt(alt)
 
-#%% Time
+# %% Time
 time = create_time(['2000', '2001'], units='years since 1990')
 assert istime(time)
 assert time[0] == 10
 
-#%% Forecast
+# %% Forecast
 forecast = create_forecast(range(5), units='days')
 assert isforecast(forecast)
 

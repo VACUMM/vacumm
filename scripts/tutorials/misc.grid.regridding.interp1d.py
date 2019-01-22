@@ -1,19 +1,19 @@
 # -*- coding: utf8 -*-
 import cdms2, MV2, pylab as P
-from vcmq import (data_sample, create_time, interp1d, xscale, 
+from vcmqm import (data_sample, create_time, interp1d, xscale,
     hov2, curve2, cmap_jets)
 from genutil import minmax
 
-# Lecture du niveau de la mer sur 9 pas de temps à une latitude
+# Read data
 f =cdms2.open(data_sample('mars3d.xt.xe.nc'))
 xe = f('xe', squeeze=1, time=slice(0, 9), lon=(-5, -4.83))
 f.close()
 xe.long_name = 'Original'
 
-# On crée un trou
+# Create a hole
 xe[3:4, 20:30] = MV2.masked
 
-# Nouvel axe temporel plus précis
+# New high resolution time axis
 #old_time = xe.getTime()
 old_time=create_time((xe.shape[0], ), 'hours since 2000')
 xe.setAxis(0, old_time)
@@ -36,7 +36,7 @@ P.rcParams['font.size'] = 8
 vmin, vmax = minmax(xe, xe_lin)
 kwplot = dict(vmin=vmin, vmax=vmax, show=False)
 kwhov = dict(kwplot)
-kwhov.update(cmap=cmap_jets(stretch=-.4), colorbar=False, xrotation=25.)
+kwhov.update(cmap='viridis', colorbar=False, xrotation=25.)
 kwcurve = dict(kwplot)
 kwcurve.update(transpose=True, color='r', yhide=True)
 kwplot.update(order = '-d', title=True)

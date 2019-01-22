@@ -3,6 +3,7 @@
 from builtins import range
 from vcmq import (N, create_lon, coord2slice, create_grid, create_axes2d)
 
+
 def plot(xx, yy, target, label, lon=None, lat=None, show=False):
     from vcmq import P, coord2slice, add_grid, N, meshbounds
     xs, ys, mask = coord2slice(target, lon=lon, lat=lat)
@@ -32,7 +33,7 @@ def plot(xx, yy, target, label, lon=None, lat=None, show=False):
     yy = yy[ys, xs]
 #    mask = mask[ys, xs]
     xxb, yyb = meshbounds(xx, yy)
-    P.pcolor(xxb, yyb, mask, shading='faceted')
+    P.pcolor(xxb, yyb, mask)
     P.scatter(xx.ravel(), yy.ravel(), c=(0, 1, 0))
     P.grid('on')
     P.axis('image')

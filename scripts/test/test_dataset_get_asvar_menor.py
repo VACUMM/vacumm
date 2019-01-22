@@ -1,16 +1,15 @@
 """Test the asvar keyword of :meth:`~vacumm.data.misc.dataset.Dataset.finalize_object` on MENOR"""
 
-# Inits
+# %% Inits
 ncfile="menor.nc"
 
-# Imports
+# %% Imports
 from vcmq import DS, data_sample
 
-# Read data
+# %% Read data
 ds = DS(data_sample(ncfile), 'mars', logger_level='critical')
 temp = ds.get_temp()
 bathy = ds.get_bathy(asvar=temp)
 
+# %% Checks
 assert bathy.shape==temp.shape
-
-

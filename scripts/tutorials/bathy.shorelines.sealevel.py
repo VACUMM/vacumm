@@ -1,14 +1,14 @@
-# -*- coding: utf8 -*-
+"""Interpolate mean sea level onto the shoreline"""
+from vacumm.bathy.shorelines import GSHHS
 
-# Definition de la region de travail Bretagne
+# %% Britanny zone
 zone = (-6.5, 47.2, -2, 49.05)
 
-# Recuperation du trait Europeen
-from vacumm.bathy.shorelines import GSHHS
-tc = GSHHS(input='h', clip=zone)
+# %% Get the shoreline
+tc = GSHHS(input='l', clip=zone)
 
-# Interpolation du niveau de la mer sur le trait
+# %% Interpolate
 xyz = tc.bathy()
 
-# Plot
-xyz.plot(size=10, savefigs=__file__, show=False)
+# %% Plot
+xyz.plot(size=10, show=False)

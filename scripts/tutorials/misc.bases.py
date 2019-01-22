@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-from vcm import Object
+from vcmq import Object
+
 
 class MyObject(Object):
-    
+
     @classmethod
     def init_class(cls, name, bases, dct):
         # do your class related stuff here
@@ -14,14 +15,10 @@ class MyObject(Object):
         print()
         print('default config:')
         print(cls.get_default_config())
-    
+
     def __init__(self):
         Object.__init__(self)
         # ...
 
-def main():
-    o = MyObject()
 
-if __name__ == '__main__':
-    main()
-
+MyObject()

@@ -8,7 +8,7 @@ class TSF(VCTestCase):
         'test_stats_stataccum_dual',
         ]:
         exec(method_template.format(test_name))
-        
-        
+
+
 if __name__ == '__main__':
     unittest.main()

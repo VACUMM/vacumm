@@ -17,7 +17,7 @@ sys.path.insert(0, lib_dir)
 
 method_template = """def {0}(self):
     P.close()
-    execfile(self.get_path('{0}'))
+    exec(open(self.get_path('{0}')).read())
     self.save_figs('{0}')
     self.handle_result(locals().get('result',None))
     P.rcdefaults()

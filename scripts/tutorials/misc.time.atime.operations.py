@@ -1,8 +1,10 @@
+"""Manipulate time objects"""
+
 from __future__ import print_function
 from datetime import datetime as Datetime
 import cdtime
-from vcmq import (create_time, date2num, strtime, comptime, numtime, add, 
-    datetime, utc_to_paris, paris_to_utc)
+from vcmqm import (create_time, date2num, strtime, comptime, numtime, add,
+    adatetime, utc_to_paris, paris_to_utc)
 
 # Comversions
 ct = comptime('2000-01')
@@ -17,20 +19,20 @@ print(date2num(Datetime(2000, 1, 1)))
 print(strtime([730120.0, cdtime.reltime(1,  'years since 1999')]))
 ['2000-1-1 0:0:0.0', '2000-1-1 0:0:0.0']
 
-# Axes de temps
+# Time axis
 taxis = create_time((0, 3.), 'days since 2000-01-01')
-print(datetime(taxis))
-# -> [datetime.datetime(2000, 1, 1, 0, 0), 
-#     datetime.datetime(2000, 1, 2, 0, 0), 
+print(adatetime(taxis))
+# -> [datetime.datetime(2000, 1, 1, 0, 0),
+#     datetime.datetime(2000, 1, 2, 0, 0),
 #     datetime.datetime(2000, 1, 3, 0, 0)]
 
-# Additions/soustractions
+# Additions and substractions
 print(add(ct, 2, 'days'))
 # -> 2000-1-3 0:0:0.0
 print(add(taxis, 1, 'month')[:])
 # -> [ 31.  32.  33.]
 
-# Zones
+# Time zones
 print(utc_to_paris('2000-01-01 12:00'))
 # -> 2000-1-1 13:0:0.0
 print(utc_to_paris('2000-06-01 12:00'))

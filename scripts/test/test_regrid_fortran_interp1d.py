@@ -10,7 +10,7 @@ vari = N.ma.asarray(u**2+v**2)
 vari.set_fill_value(mv)
 yi = N.linspace(-1000.,0., nyi)
 yo = N.linspace(-1200, 100, 30.)
-vari[nx/3:2*nx/3, nyi/3:2*nyi/3] = N.ma.masked
+vari[int(nx/3):int(2*nx/3), int(nyi/3):int(2*nyi/3)] = N.ma.masked
 x = N.arange(nx)
 yyib, xxib  = meshcells(yi, x)
 yyob, xxob  = meshcells(yo, x)

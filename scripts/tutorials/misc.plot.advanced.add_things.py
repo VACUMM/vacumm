@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from vcmq import cdms2, curve2, map2, data_sample, N, P
+from vcmqm import cdms2, curve2, map2, data_sample, N, P
 
 # Curve
 f = cdms2.open(data_sample('mars3d.t.nc'))
@@ -48,13 +48,15 @@ f = cdms2.open(data_sample('mars3d.xy.nc'))
 h0 = f('temp', lat=(47.75, 49))
 f.close()
 m = map2(h0, fill='pcolormesh', title='Bathy', contour=False, colorbar=False,
-    subplot=212, proj='lcc', show=False, cmap='GMT_gebco_r')
+    subplot=212, proj='lcc', show=False, cmap='GMT_gebco_r', land_color='.8')
 
 # Add a letter for subfigures like "b)"
 m.add_key('B', pos='top right', xmargin=20)
 
 # Point
 m.add_point(-5.3, 48.3, color='b', shadow=True, edgecolor='r', size=120)
+m.add_point(0.5, 0.5, color='k', marker='+', shadow=True,
+            transform='axes', size=200)
 
 # Place = point + text
 m.add_place(-4.62138, 48.38197, 'Plouzane', size=100)

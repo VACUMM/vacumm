@@ -50,7 +50,7 @@ version_sphinx = release
 release_sphinx = release
 
 # Infos
-name="vacumm"
+name = "vacumm"
 version = release
 description = 'A library for ocean science'
 long_description = ("A library and a collection of scripts "
@@ -179,25 +179,25 @@ if __name__ == '__main__':
     if not os.path.exists('setup.cfg'):
         shutil.copy('setup.cfg.simple', 'setup.cfg')
 
-
     # Lauch setup
     setup(name='vacumm',
-        version = version,
-        description = description,
-        long_description = long_description,
-        author = author,
-        author_email = author_email,
-        maintainer = author,
-        maintainer_email = author_email,
-        license = license,
-        url=url,
-        package_dir= {'':'lib'},
-        py_modules = ['vcmq'],
-        classifiers = classifiers,
-        cmdclass={'install':vacumm_install, 'install_data':vacumm_install_data,
-            'bdist_rpm':vacumm_bdist_rpm},
-        configuration=configuration,
-#        ext_modules = [ext_interp]
+          version=version,
+          description=description,
+          long_description=long_description,
+          author=author,
+          author_email=author_email,
+          maintainer=author,
+          maintainer_email=author_email,
+          license=license,
+          url=url,
+          package_dir= {'':'lib'},
+          py_modules=['vcmq', 'vcmqm'],
+          classifiers=classifiers,
+          cmdclass={'install':vacumm_install,
+                    'install_data':vacumm_install_data,
+                    'bdist_rpm':vacumm_bdist_rpm},
+          configuration=configuration,
+#        ext_modules=[ext_interp]
 
     )
 

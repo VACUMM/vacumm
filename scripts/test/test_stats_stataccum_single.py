@@ -1,8 +1,7 @@
 """Test :class:`~vacumm.misc.stats.StatAccum` for a single variable"""
 
 # Imports
-from builtins import range
-from vcmq import MV2, N, StatAccum
+from vcmq import cdms2, MV2, N, StatAccum
 
 # Setup masked data
 nt, ny, nx = 20, 15, 10
@@ -13,7 +12,7 @@ var.getAxis(0).units = 'months since 2000'
 vmax = var.max()
 bins = N.linspace(-0.1*vmax, 0.9*vmax, 14)
 nbins = len(bins)
-maskyx = var.mask.all(axis=1)
+maskyx = var.mask.all(axis=0)
 maskt = var.mask.reshape((nt, -1)).all(axis=1)
 
 # Direct
@@ -38,7 +37,7 @@ for ibin in range(nbins-1):
     dstats['thist'][ibin] = valid.filled(False).sum(axis=0)
     dstats['shist'][:, ibin] = valid.filled(False).reshape((nt, -1)).sum(axis=1)
 dstats['thist'][:, maskyx] = N.ma.masked
-dstats['shist'][:, maskt] = N.ma.masked
+dstats['shist'][maskt] = N.ma.masked
 
 
 # Indirect using StatAccum
@@ -50,6 +49,6 @@ istats = sa.get_stats()
 # Unitest
 result = []
 for key in sorted(dstats.keys()):
-    value = N.ma.allclose(dstats[key], istats[key])
-    result.append(('assertTrue', value))
-#    print key, value
+    if cdms2.isVariable(dstats[key]):
+        dstats[key] = dstats[key].asma()
+    N.testing.assert_allclose(dstats[key], istats[key].asma())

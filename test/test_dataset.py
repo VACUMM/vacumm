@@ -1,7 +1,7 @@
 from utils import *
 
 
-class TSF(VCTestCase):
+class TestDataset(VCTestCase):
 
     for test_name in [
         'test_dataset_get_temp_mfs',

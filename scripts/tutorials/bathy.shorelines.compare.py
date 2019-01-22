@@ -1,21 +1,17 @@
-from vcmq import GSHHS, EUROSION, Histolitt
+"""Compare two shorelines"""
+from vcmq import GSHHS, Histolitt
 from pylab import legend, title
 
-# Lecture des divers traits de cote
+# %% Read shapes
 zone = (-5.15, 48.42, -5.03, 48.49)
-gmt = GSHHS(clip=zone)
-euro = EUROSION(clip=zone)
+gmt = GSHHS('h', clip=zone)
 thc = Histolitt(clip=zone)
 
-# Trace
-kwpt  = dict(fill=False, points=True, s=2., alpha=.7, points_linewidth=0, show=False)
-thc.plot(color='r', zorder=12, m_left=.1,
-    label='Histolitt (SHOM/IGN)', m_figsize=(5.5, 6), **kwpt)
-euro.plot(color='g', zorder=11, label='EUROSION', m='auto', **kwpt)
-gmt.plot(fill=False, color='k', linewidth=1.5, zorder=10, label='GSHHS',
-    m='auto', show=False)
-
-# Fin de plot
-legend()
+# %% Plot
+kw  = dict(fill=False, show=False, linewidth=1.5)
+thc.plot(color='tab:blue', zorder=12, m_left=.1, m='auto',
+    label='Histolitt (SHOM/IGN)', m_figsize=(5.5, 6), **kw)
+gmt.plot(color='k', zorder=10, label='GSHHS (h)',
+    m='auto', **kw)
+legend(loc="lower right")
 title("Ushant shorelines")
-

@@ -1,28 +1,30 @@
-# -*- coding: utf8 -*-
-import cdms2, MV2, pylab as P, curve2
-from vcmq import data_sample, fill1d
+"""Fill masked data on 1D arrays"""
+from vcmqm import plt, MV2, cdms2, data_sample, fill1d, curve2
 
-# Lecture du niveau de la mer horaire
+# Read hourly sea level
 f = cdms2.open(data_sample('mars3d.t.nc'))
 xe = f('xe')
 f.close()
 xe.long_name = 'Original'
 
-# On crée des trous
-# - petits
-xe[:4] = MV2.masked
-xe[12:16] = MV2.masked
-# - gros
-xe[40:46] = MV2.masked
+# Create fake holes
+# - small
+xem = xe.clone()
+xem[:4] = MV2.masked
+xem[12:16] = MV2.masked
+# - big
+xem[40:46] = MV2.masked
+xem.long_name = 'Masked'
 
-# On rempli les petits trous (5 heures max) par interpolation cubique
-xef = fill1d(xe, method='cubic', maxgap=5)
-xef.long_name = 'Rempli'
-xef[:] += xef.max()/5. # on décalle pour les plots
+# Fill small holes using cubic interpolation
+xef = fill1d(xem, method='cubic', maxgap=5)
+xef.long_name = 'Filled [max gaps = 5]'
 
-# Plots
-P.rc('font', size=9)
-curve2(xe, show=False, linewidth=1.5, figsize=(6, 3), top=.88, bottom=.15)
-curve2(xef, show=False, linewidth=1.5, title='Niveau de la mer')
-P.legend()
-P.rcdefaults()
+# Plot
+plt.rc('font', size=9)
+curve2(xef, show=False, linewidth=4, color='0.8', figsize=(6, 3),
+       top=.88, bottom=.15)
+curve2(xe, 'o', show=False, color='k', markersize=3)
+curve2(xem, show=False, linewidth=1, color='tab:red', title='Sea level')
+plt.legend(loc='upper right')
+plt.rcdefaults()

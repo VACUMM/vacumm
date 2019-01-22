@@ -1,7 +1,8 @@
+"""Interpolate from random locations to random locations"""
 import numpy as N, pylab as P
 from vcmq import xy2xy
 
-# Donnees d'entree
+# Input data
 ni=100
 xi = N.random.random(ni)-.5
 yi = N.random.random(ni)-.5
@@ -9,13 +10,13 @@ zi = N.exp(-(xi**2+yi**2))#+N.random.random(ni)/10.
 zi = N.ma.asarray(zi)
 zi[(N.abs(yi)<.1)&(N.abs(xi)<.1)] = N.ma.masked
 
-# Donnees de sortie
+# Output locations
 no = 40
 xo = N.random.random(no)-.5
 yo = N.random.random(no)-.5
 
-# Regrillage
-zo = xy2xy(xi, yi, zi, xo, yo)
+# Regridding
+zo = xy2xy(xi, yi, zi, xo, yo, method='cargen')
 
 # Plots
 P.figure(figsize=(5, 7))

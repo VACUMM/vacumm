@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 import numpy as N, cdms2, MV2, pylab as P
-from vcmq import meshbounds, interp2d, add_grid
+from vcmqm import meshbounds, interp2d, add_grid
 
 # Input variables
 xi = N.arange(20.)

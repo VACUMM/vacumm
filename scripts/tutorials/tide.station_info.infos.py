@@ -1,3 +1,4 @@
+"""Searching for franch  sea level station info"""
 # -*- coding: utf8 -*-
 from __future__ import print_function
 from vacumm.tide.station_info import StationInfo
@@ -22,8 +23,8 @@ station = StationInfo('Bre')
 # On récupère la première station trouvée lors de l'initialisation
 # Mais bon, on vérifie quand même
 print(station.attributes())
-# -> ['igs', 'psmsl', 'uhslc', 'gloss', 'shom', 'legos', 'latitude', 
-#       'longitude', 'zone', 'phm', 'pm95', 'pm45', 'nm', 'bm45', 
+# -> ['igs', 'psmsl', 'uhslc', 'gloss', 'shom', 'legos', 'latitude',
+#       'longitude', 'zone', 'phm', 'pm95', 'pm45', 'nm', 'bm45',
 #        'bm95', 'pbm', 'zero_hydro']
 print(station.name, station.longitude)
 # -> Ile de Brehat (Port-Clos) -3.0
