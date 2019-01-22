@@ -61,8 +61,10 @@ from matplotlib.axes import Subplot
 from matplotlib.cm import ScalarMappable
 from matplotlib.collections import LineCollection
 from matplotlib.colors import ColorConverter, is_color_like
-from matplotlib.dates import (DateFormatter, MonthLocator, WeekdayLocator, YearLocator,
-                              DayLocator, HourLocator, MinuteLocator, SecondLocator,
+from matplotlib.dates import (DateFormatter, MonthLocator,
+                              WeekdayLocator, YearLocator,
+                              DayLocator, HourLocator, MinuteLocator,
+                              SecondLocator,
                               AutoDateLocator, MO)
 from matplotlib.patches import Wedge, Shadow, Circle, Arc
 from matplotlib.ticker import FormatStrFormatter
@@ -71,17 +73,21 @@ from mpl_toolkits.basemap import Basemap
 
 from vacumm import VACUMMError, VACUMM_CFG
 from .units import m2deg
-from .misc import (kwfilter, broadcast, auto_scale, is_iterable, geo_scale, deplab,
+from .misc import (kwfilter, broadcast, auto_scale, is_iterable,
+                   geo_scale, deplab,
                    zoombox, dict_check_defaults, latlab, lonlab, dict_aliases)
-from .color import get_cmap, Scalar2RGB, simple_colors
+from .color import get_cmap, Scalar2RGB, simple_colors, RGB
 from .axes import istime, check_axes, isaxis, axis_type
 from .atime import mpl, time, axis_add
 from .grid import meshbounds, meshgrid, var2d, get_xy
 from .core_plot import (Curve, Bar, Stick, Hov, Map, Section, Plot2D,
-                        add_glow, add_shadow, add_agg_filter, hlitvs, AutoDateFormatter2,
+                        add_glow, add_shadow, add_agg_filter, hlitvs,
+                        AutoDateFormatter2,
                         AutoDateLocator2, AutoDualDateFormatter, add_compass,
-                        add_right_label, add_left_label, add_top_label, add_bottom_label,
-                        add_param_label, get_quiverkey_value, add_lightshading, DualDateFormatter,
+                        add_right_label, add_left_label, add_top_label,
+                        add_bottom_label,
+                        add_param_label, get_quiverkey_value, add_lightshading,
+                        DualDateFormatter,
 
                         )
 
@@ -90,22 +96,24 @@ if VACUMM_CFG['vacumm.misc.docstrings']['activate']:
 else:
     def docfill(func): return func
 
-__all__ = ['traj', 'ellipsis',
-           'add_colorbar', 'scolorbar', 'rotate_tick_labels', 'rotate_xlabels', 'rotate_ylabels',
-           'scale_xlim', 'scale_ylim', 'xhide', 'yhide', 'xdate', 'ydate',
-           'get_locator_from_units', 'set_major_locator', 'get_major_locator',
-           'set_minor_locator', 'get_minor_locator', 'add_logo', 'wedge',
-           'add_time_mark', 'xi2a', 'yi2a', 'yi2f', 'xi2f', 'gobjs', 'add_key',
-           'colorbar', 'hldays',  'xscale', 'yscale', 'xrotate', 'yrotate',
-           'add_grid', 'savefigs', 'decorate_axis', 'markers', 'linestyles',
-           'make_movie', 'taylor', 'vtaylor', 'get_cls', 'dtaylor', 'rankhist',
-           'curve2', 'bar2', 'stick2', 'hov2', 'map2', 'section2',
-           'minimap', 'add_map_point', 'add_map_line', 'add_map_lines', 'add_map_box',  'rshpere_wgs84',
-           'add_glow', 'add_shadow', 'add_agg_filter', 'plot2d', 'hlitvs',
-           'add_compass', 'add_param_label', 'dtarget', 'add_map_places',
-           'add_right_label', 'add_left_label', 'add_top_label', 'add_bottom_label',
-           'get_quiverkey_value', "add_lightshading", ]
-__all__.sort()
+__all__ = sorted(['traj', 'ellipsis',
+                  'add_colorbar', 'scolorbar', 'rotate_tick_labels',
+                  'rotate_xlabels', 'rotate_ylabels',
+                  'scale_xlim', 'scale_ylim', 'xhide', 'yhide', 'xdate', 'ydate',
+                  'get_locator_from_units', 'set_major_locator', 'get_major_locator',
+                  'set_minor_locator', 'get_minor_locator', 'add_logo', 'wedge',
+                  'add_time_mark', 'xi2a', 'yi2a', 'yi2f', 'xi2f', 'gobjs', 'add_key',
+                  'colorbar', 'hldays', 'xscale', 'yscale', 'xrotate', 'yrotate',
+                  'add_grid', 'savefigs', 'decorate_axis', 'markers', 'linestyles',
+                  'make_movie', 'taylor', 'get_cls', 'dtaylor', 'rankhist',
+                  'curve2', 'bar2', 'stick2', 'hov2', 'map2', 'section2',
+                  'minimap', 'add_map_point', 'add_map_line', 'add_map_lines',
+                  'add_map_box', 'rshpere_wgs84',
+                  'add_glow', 'add_shadow', 'add_agg_filter', 'plot2d', 'hlitvs',
+                  'add_compass', 'add_param_label', 'dtarget', 'add_map_places',
+                  'add_right_label', 'add_left_label',
+                  'add_top_label', 'add_bottom_label',
+                  'get_quiverkey_value', "add_lightshading", ])
 
 
 MA = N.ma
@@ -155,7 +163,8 @@ linestyles = [
 ]
 
 
-def traj(lons, lats, res=None, dots=True, color=True, m=None, zoom=.9, cmap=None, colorbar=True, **kwargs):
+def traj(lons, lats, res=None, dots=True, color=True, m=None, zoom=.9,
+         cmap=None, colorbar=True, **kwargs):
 
     # Start the plot
     _start_plot_(**kwargs)
@@ -168,10 +177,10 @@ def traj(lons, lats, res=None, dots=True, color=True, m=None, zoom=.9, cmap=None
     if m is None:
         lon_min, lon_max = minmax(lons)
         lat_min, lat_max = minmax(lats)
-        lon_range = (lon_min+lon_max)*.5 + .5 * \
-            (lon_max-lon_min)/zoom * N.array([-1, 1])
-        lat_range = (lat_min+lat_max)*.5 + .5 * \
-            (lat_max-lat_min)/zoom * N.array([-1, 1])
+        lon_range = (lon_min + lon_max) * .5 + .5 * \
+            (lon_max - lon_min) / zoom * N.array([-1, 1])
+        lat_range = (lat_min + lat_max) * .5 + .5 * \
+            (lat_max - lat_min) / zoom * N.array([-1, 1])
         kwmap = kwfilter(kwargs, 'map', defaults=dict(
             lon=lon_range, lat=lat_range))
         kwmap['show'] = False
@@ -199,12 +208,12 @@ def traj(lons, lats, res=None, dots=True, color=True, m=None, zoom=.9, cmap=None
         mp = ScalarMappable(cmap=cmap)  # ,norm=no_norm())
         mp.set_array(N.array(tt))
         ttmin = min(tt)
-        dtt = max(tt)-ttmin
+        dtt = max(tt) - ttmin
         color = tuple([tuple(rgba)
-                       for rgba in mp.cmap((.5*(tt[:-1]+tt[1:])-ttmin)/dtt)])
+                       for rgba in mp.cmap((.5 * (tt[:-1] + tt[1:]) - ttmin) / dtt)])
         args = []
-        for ip in range(len(xx)-1):
-            args.extend([xx[ip:ip+2], yy[ip:ip+2]])
+        for ip in range(len(xx) - 1):
+            args.extend([xx[ip:ip + 2], yy[ip:ip + 2]])
         lines = []
         for ip, line in enumerate(P.gca()._get_lines(*args, **kwargs)):
             line.set_color(color[ip])
@@ -230,201 +239,43 @@ def traj(lons, lats, res=None, dots=True, color=True, m=None, zoom=.9, cmap=None
     return lines
 
 
-def vtaylor(data, ref=None, ref_color='red', color=None, label=None, title=None, xoffset=5, yoffset=-2, show=False, stdmax=None, savefig=None, **kwargs):
-    """Plot a Taylor diagram using :mod:`vcs` module from CDAT
-
-    Parameters
-    ----------
-    data:
-        A single or several points where a point is a pair of (std, corr).
-    ref:
-        Reference value (standard deviation of observations).
-    color:
-        Color of the points. It can be a list to set a different color for each pair.
-    label:
-        Label of the points. Obviously, if there are several points, there must have several labels.
-    x|yoffset:
-        Offset in font size unit of label position.
-    title:
-        A string or ``False``.
-    savefig:
-        Save figure to ``savefig``.
-    savefig_<keyword>:
-        ``keyword`` is used for saving figure.
-    **kwargs
-        Other keywords are passed to :meth:`plot`.
-
-    Example
-    -------
-    >>> taylor([21.,.83], ref=30., title='Single point')
-    >>> taylor(([[[21.,.83], [33., .7]], ref=28., color=['blue', 242], label=['Point 1', 'Point2'])
-
-
-    Warning
-    -------
-    This function uses the :mod:`vcs` module for plotting.
-    Therefore, yan can't alter the plot with :mod:`matplotlib` functions.
-    """
-    # Data
-    if cdms2.isVariable(data):
-        data = data.clone()
-    else:
-        data = MV2.array(data)
-    if data.ndim == 1:
-        data = MV2.resize(data, (1, 2))
-    if title is False:
-        title = None
-    elif title is None and hasattr(data, 'long_name') and \
-            not data.long_name.startswith('variable'):
-        title = data.long_name
-    data.id = ' '
-    np = len(data)
-
-    # Init canva and diagram
-    import vcs
-    x = vcs.init(size=1)
-    td = x.createtaylordiagram()
-    if ref is not None:
-        if hasattr(ref, 'std') and callable(ref.std):
-            ref = ref.std()
-        td.referencevalue = ref
-    td.preserveaspectratio = 'n'
-    if color is not None:
-        if not isinstance(color, list):
-            color = broadcast(list([color]), np)
-        td.Marker.id_color = color
-    if label is not None:
-        if not isinstance(label, list):
-            label = list(label)
-        td.Marker.id = label
-#   td.Marker.symbol=['dot','cross','circle', 'dot']
-    if not isinstance(xoffset, list):
-        xoffset = broadcast(list([xoffset]), np)
-    if not isinstance(yoffset, list):
-        yoffset = broadcast(list([yoffset]), np)
-    td.Marker.xoffset = xoffset
-    td.Marker.yoffset = yoffset
-
-    # Create the template
-    t = x.createtemplate(source="deftaylor")
-    t.data.x1 = .1
-    t.data.x2 = .9
-    t.data.y1 = .1
-    t.data.y2 = .9
-    t.xtic1.y1 = t.data.y1
-    t.xtic1.y2 = t.xtic1.y1+.01
-    t.xmintic1.y1 = t.data.y1
-    t.xmintic1.y2 = t.xmintic1.y1+.005
-    t.xlabel1.y = t.data.y1-.01
-    t.xname.y = t.xtic1.y1 - .05
-
-    # Sets the correlation major line
-    l = x.createline()
-    l.type = 'dash'
-    l.width = 1
-    t.ytic2.x1 = .1
-    t.ytic2.x2 = .9
-    t.ytic2.line = l
-    majorcor = vcs.mklabels([.1, .3, .6, .8, .9, .95, .99])
-    td.cticlabels1 = majorcor
-
-    # Sets the correlation minor line
-    l = x.createline()
-    l.type = 'dot'
-    l.width = 1
-    l.color = [252]  # grey
-    t.ymintic2.x1 = .1
-    t.ymintic2.x2 = .9
-    t.ymintic2.line = l
-    minorcor = vcs.mklabels(
-        [.2, .4, .5, .7, .85, .91, .92, .93, .94, .96, .97, .98, .998])
-    td.cmtics1 = minorcor
-
-    # Sets standard dev major tics
-    l = x.createline()
-    l.type = 'dash'
-    l.width = 1
-    t.xtic2.y1 = .1
-    t.xtic2.y2 = .9
-    t.xtic2.line = l
-    t.xtic2.priority = 1
-    vmax = data[:, 0].max()
-    stdticks = auto_scale([0., vmax], vmin=0.)
-    mjrstd1 = vcs.mklabels(stdticks)
-    td.xticlabels1 = mjrstd1
-    mjrstd2 = vcs.mklabels(stdticks)
-    td.yticlabels1 = mjrstd2
-
-    # Sets the std minor line
-    l = x.createline()
-    l.type = 'dot'
-    l.width = 1
-    l.color = [252]  # grey
-    t.xmintic2.y1 = .1
-    t.xmintic2.y2 = .9
-    t.xmintic2.line = l
-    t.xmintic2.priority = 1
-    mnrstd = vcs.mklabels((stdticks[:-1]+stdticks[1:])/2.)
-    td.xmtics1 = mnrstd
-    td.ymtics1 = mjrstd1
-
-    # Sets the reference
-    l = x.createline()
-    l.type = 'solid'
-    l.width = 2
-#   l.color=[ref_color]
-    l.color = [242]
-    t.line2.line = l
-
-    # Sets the maximum for arc value
-    if stdmax is None:
-        stdmax = stdticks[-1]
-    td.max = stdmax
-
-    # Main plot
-    kwsf = kwfilter(kwargs, 'savefig')
-    x.plot(data, t, td, bg=int(not show), title=title, **kwargs)
-
-    # Save
-    if savefig is not None:
-        for suf, func in [('eps', 'eps'), ('ps', 'postscript'), ('png', 'png'), ('gif', 'gif')]:
-            if savefig.endswith('.'+suf):
-                getattr(x, func)(savefig, **kwsf)
-                break
-
-
 def dtaylor(stats, stdref=None, labels=None, colors=None, **kwargs):
     """Directly plot a Taylor diagram
 
     Parameters
     ----------
     stats:
-        Statistics is the form ``[std, corr]`` or ``[[std1,corr1],[std2,corr2],...]``
+        Statistics is the form ``[std, corr]`` or
+        ``[[std1,corr1],[std2,corr2],...]``
     stdref:
         Standard deviation of reference
     labels: optional
-        Label of the points. Obviously, if there are several points, there must have several labels.
-        If ``None``, it tries to get it from the `long_name` attribute. If ``False``, it doesn't display it.
+        Label of the points. Obviously, if there are several points,
+        there must have several labels.
+        If ``None``, it tries to get it from the `long_name` attribute.
+        If ``False``, it doesn't display it.
     reflabel: optional
         Name of the reference label. It defaults to ``"Reference"``.
         $_taylor_
     """
     stats = N.asarray(stats)
     if stats.ndim == 1:
-        stats.shape = (1,)+stats.shape
+        stats.shape = (1,) + stats.shape
     elif stats.shape[1] != 2:
         stats = stats.T
     return _taylor_(stats, labels, colors, stdref=stdref, **kwargs)
 
 
-def taylor(datasets, ref, labels=False, colors=None, units=None, normalize=True, **kwargs):
+def taylor(datasets, ref, labels=False, colors=None, units=None,
+           normalize=True, **kwargs):
     """Plot a Taylor diagram after computing statistics
 
     Parameters
     ----------
     datasets:
         One or several arrays that must be evaluated against the reference.
-        Best is to provide :mod:`cdms2` variables with an appropriate `long_name` attribute
+        Best is to provide :mod:`cdms2` variables with an appropriate
+        `long_name` attribute
         to set labels automatically.
     ref:
         Reference array of the same shape as all ``datasets`` arrays.
@@ -444,7 +295,8 @@ def taylor(datasets, ref, labels=False, colors=None, units=None, normalize=True,
     -------
     Basic usage:
 
-    >>> taylor(var_model, var_obs, title='Single point', reflabel='Observations')
+    >>> taylor(var_model, var_obs, title='Single point',
+    ... reflabel='Observations')
 
     Two variables with the same reference:
 
@@ -456,7 +308,8 @@ def taylor(datasets, ref, labels=False, colors=None, units=None, normalize=True,
 
     A huge model ensemble of SST with colors varying with averaged SSS:
 
-    >>> taylor([sstm for sstm in sstens], sstsat, colors=cdutil.averager(sss, 'xy'))
+    >>> taylor([sstm for sstm in sstens], sstsat,
+    ... colors=cdutil.averager(sss, 'xy'))
 
     .. rubric:: Tutorial
 
@@ -503,9 +356,12 @@ def taylor(datasets, ref, labels=False, colors=None, units=None, normalize=True,
                     units=units, normalize=normalize, **kwargs)
 
 
-def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor='.5',
-             reflabel='Observations', normalize=True, addref=True, legend=True, negative=None,
-             minimal=False, stdmax=None, autoresize=True, scatter=False, zorder=12, cmap=None,
+def _taylor_(stats, labels=False, colors=None, stdref=None,
+             units=None, refcolor='.5',
+             reflabel='Observations', normalize=True,
+             addref=True, legend=True, negative=None,
+             minimal=False, stdmax=None, autoresize=True,
+             scatter=False, zorder=12, cmap=None,
              **kwargs):
     """stdref: optional
         Standard deviation of the reference used either when
@@ -548,7 +404,8 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
         A string for the general title.
     scatter: optional
         Use :func:`matplotlib.pyplot.scatter` to improve
-        plot efficiency when the number of points is huge. Labels are not plotted in
+        plot efficiency when the number of points is huge.
+        Labels are not plotted in
         this mode.
     savefig: optional
         Save figure to ``savefig``.
@@ -557,7 +414,8 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
     savefigs: optional
         Save figure to ``savefig`` using :func:`~vacumm.misc.plot.savefigs`.
     savefigs_<keyword>: optional
-        ``<keyword>`` is used for saving figure using :func:`~vacumm.misc.plot.savefigs`."""
+        ``<keyword>`` is used for saving figure using
+        :func:`~vacumm.misc.plot.savefigs`."""
     from matplotlib.transforms import offset_copy
 
     # Normalization
@@ -585,10 +443,10 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
     sticks = auto_scale([0, stdmax], vmin=0.)
     stdmax = sticks[-1]
     stdmin = -stdmax if negative else 0
-    sticksref = N.arange(0., stdmax*N.sqrt(2.), sticks[1]-sticks[0])
-    rticks = N.arange(0, 1., .1).tolist()+[.95, .99, 1.]
+    sticksref = N.arange(0., stdmax * N.sqrt(2.), sticks[1] - sticks[0])
+    rticks = N.arange(0, 1., .1).tolist() + [.95, .99, 1.]
     if negative:
-        rticks = (-N.asarray(rticks[:0:-1])).tolist()+rticks
+        rticks = (-N.asarray(rticks[:0:-1])).tolist() + rticks
 
     # Check options
     labels = broadcast(labels, np, fillvalue=None)
@@ -597,7 +455,7 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
         colors = kwargs.pop('color', 'k')
     if not isinstance(colors, N.ndarray):
         colors = broadcast(colors, np)
-        if any([isinstance(c, (int, float)) for c in colors]):  # list of scalars
+        if any([isinstance(c, (int, float)) for c in colors]):
             colors = N.array(colors)
     if isinstance(colors, N.ndarray):
         colors = N.resize(colors, (np,))
@@ -618,7 +476,7 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
     symbols = broadcast(kwargs.pop('symbols', 'o'), np)
     if negative and autoresize:
         x0, y0 = P.gcf().get_size_inches()
-        x1 = x0*2.
+        x1 = x0 * 2.
         y1 = y0
         if autoresize != 2:
             x1 /= N.sqrt(2.)
@@ -627,7 +485,7 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
 
     # Conversion function
     def xy(std, corr):
-        return std*corr, std*N.sin(N.arccos(corr))
+        return std * corr, std * N.sin(N.arccos(corr))
 
     # Start the plot
     if not minimal:
@@ -643,7 +501,7 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
 
         # All points
         x, y = xy(stats[:, 0], stats[:, 1])
-        ppts = P.scatter(x, y, 0.75*sizes**2, colors, marker=symbols[0],
+        ppts = P.scatter(x, y, 0.75 * sizes**2, colors, marker=symbols[0],
                          zorder=zorder, alpha=alphas[0], cmap=cmap, **kwpt)
 
     else:
@@ -660,38 +518,42 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
             # Labels
             if isinstance(labels[i], six.string_types):
                 transoffset = offset_copy(ax.transData, fig=fig,
-                                          x=0.0, y=-1.2*sizes[i], units='points')
-                P.text(x, y, labels[i], va='center', ha='center', transform=transoffset,
-                       zorder=zorder-2, size=label_size[i], **kwlab)
+                                          x=0.0, y=-1.2 * sizes[i],
+                                          units='points')
+                P.text(x, y, labels[i], va='center', ha='center',
+                       transform=transoffset,
+                       zorder=zorder - 2, size=label_size[i], **kwlab)
     del labels
 
     # Decorations for normal plots
     if not minimal:
 
         # Boundary standard deviation arc
-        arc = Arc((0., 0.), stdmax*2, stdmax*2,
+        arc = Arc((0., 0.), stdmax * 2, stdmax * 2,
                   fill=False, zorder=0, facecolor='none')
         ax.add_patch(arc)
 
         # Intermediates standard deviation arcs
         for radius in sticks[1:-1]:
-            pstd = Arc((0., 0.), radius*2, radius*2, linestyle='dashed',
-                       linewidth=P.rcParams['grid.linewidth'], fill=False, edgecolor='b', zorder=0)
+            pstd = Arc((0., 0.), radius * 2, radius * 2, linestyle='dashed',
+                       linewidth=P.rcParams['grid.linewidth'],
+                       fill=False, edgecolor='b', zorder=0)
             ax.add_patch(pstd)
 
         # RMS (red) for first ref only
-        rmax = N.sqrt(stdmax**2+stdref[0]**2)
+        rmax = N.sqrt(stdmax**2 + stdref[0]**2)
         for r in sticksref[1:-1]:
-            prms = Arc((stdref[0], 0.), r*2, r*2,
-                       linestyle='dashed', fill=False, linewidth=P.rcParams['grid.linewidth'],
+            prms = Arc((stdref[0], 0.), r * 2, r * 2,
+                       linestyle='dashed', fill=False,
+                       linewidth=P.rcParams['grid.linewidth'],
                        edgecolor='r', zorder=0)
             ax.add_patch(prms)
             prms.set_clip_on(True)
             prms.set_clip_path(arc)
-            xt = stdref[0]*r/rmax
-            yt = stdmax*r/rmax
-            P.text(stdref[0]-xt, yt, ('%g' % r).ljust(4), color='r',
-                   rotation=N.arctan2(xt, yt)*180./N.pi,
+            xt = stdref[0] * r / rmax
+            yt = stdmax * r / rmax
+            P.text(stdref[0] - xt, yt, ('%g' % r).ljust(4), color='r',
+                   rotation=N.arctan2(xt, yt) * 180. / N.pi,
                    va='center', ha='center', clip_on=True,
                    bbox=dict(facecolor='w', linewidth=0, alpha=.5))
 
@@ -700,13 +562,14 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
     if addref:
 
         # First Arc
-        ax.add_patch(Arc((0., 0.), stdref[0]*2, stdref[0]*2, fill=False,
+        ax.add_patch(Arc((0., 0.), stdref[0] * 2, stdref[0] * 2, fill=False,
                          edgecolor=refcolor, linewidth=2, zorder=0))
 
         # All points unless normalized
         imax = 1 if normalize else None
         rslice = slice(0, imax)
-        pref = P.plot(stdref[rslice], [0]*len(stdref[rslice]), 'o', color=refcolor,
+        pref = P.plot(stdref[rslice], [0] * len(stdref[rslice]),
+                      'o', color=refcolor,
                       markersize=10, clip_on=False)
 
     if not minimal:
@@ -714,9 +577,9 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
         # Ticks for correlation
         for r in rticks:
             x1, y1 = xy(stdmax, r)
-            x0, y0 = xy(stdmax*.98, r)
-            dxt = 12*x1/stdmax
-            dyt = 12*y1/stdmax
+            x0, y0 = xy(stdmax * .98, r)
+            dxt = 12 * x1 / stdmax
+            dyt = 12 * y1 / stdmax
             P.plot([x0, x1], [y0, y1], 'k-', label=False)
             pcor = P.plot([0, x1], [0, y1], 'k--',
                           linewidth=P.rcParams['grid.linewidth'], color='g')
@@ -724,10 +587,10 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
                 ax.transData, fig=fig, x=dxt, y=dyt, units='points')
             P.text(x1, y1, ('%g' % r).ljust(4), va='center', ha='center',
                    transform=transoffset,
-                   rotation=N.arccos(r)*180./N.pi + (r < 0)*180.)
-        xt = yt = stdmax/N.sqrt(2.)
-        dxt = 29*xt/stdmax
-        dyt = 29*yt/stdmax
+                   rotation=N.arccos(r) * 180. / N.pi + (r < 0) * 180.)
+        xt = yt = stdmax / N.sqrt(2.)
+        dxt = 29 * xt / stdmax
+        dyt = 29 * yt / stdmax
         transoffset = offset_copy(
             ax.transData, fig=fig, x=dxt, y=dyt, units='points')
         P.text(xt, yt, 'Correlation', va='center', ha='center', size=P.rcParams['axes.labelsize'],
@@ -738,8 +601,8 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
             legstd = 'Standard dev.'
             legrms = 'RMS error'
             if normalize:
-                legstd = 'Rel. '+legstd.lower()
-                legrms = 'Rel. '+legrms
+                legstd = 'Rel. ' + legstd.lower()
+                legrms = 'Rel. ' + legrms
             hdls = (pcor[0], pstd, prms)
             labs = ('Correlation', legstd, legrms)
             if addref:
@@ -770,7 +633,7 @@ def _taylor_(stats, labels=False, colors=None, stdref=None, units=None, refcolor
         P.axvline(0, color='k', label=False).set_clip_on(False)
         stdlabel = 'Standard deviation'
         if normalize:
-            stdlabel = 'Relative '+stdlabel.lower()
+            stdlabel = 'Relative ' + stdlabel.lower()
         if not normalize and units is not None and units is not False:
             stdlabel += ' [%s]' % units
         P.xlabel(stdlabel)
@@ -839,12 +702,12 @@ def dtarget(bias, rmsc, stdmod, stdref=None, colors='cyan', sizes=20,
 
     # Make plotted stats
     nrmsc = rmsc / stdref
-    nrmsc *= N.sign(stdmod-stdref)
+    nrmsc *= N.sign(stdmod - stdref)
     nbias = bias / stdref
 
     # Broadcast plot params
     if colors == 'rms':
-        colors = N.sqrt(rmsc**2+bias**2)
+        colors = N.sqrt(rmsc**2 + bias**2)
     elif isinstance(colors, N.ndarray):
         colors = N.resize(colors, bias.shape)
     else:
@@ -871,8 +734,10 @@ def dtarget(bias, rmsc, stdmod, stdref=None, colors='cyan', sizes=20,
     # Arcs
     kwarc = dict(linestyle='dashed', edgecolor='r',
                  linewidth=P.rcParams['grid.linewidth'], fill=False, zorder=0)
-    for radius in P.xticks()[0]:
-        pstd = Arc((0., 0.), radius*2, radius*2, **kwarc)
+    radii = P.xticks()[0]
+    radii = radii.compress(radii > 0)
+    for radius in radii:
+        pstd = Arc((0., 0.), radius * 2, radius * 2, **kwarc)
         ax.add_patch(pstd)
     kwarc['linestyle'] = 'solid'
     ax.add_patch(Arc((0., 0.), 1., 1., **kwarc))
@@ -926,10 +791,10 @@ def rankhist(obs, ens, title='Rank histogram', bins=None, **kwargs):
         rank = rank.compressed()
     _start_plot_(**kwargs)
     if bins is None:
-        bins = N.arange(-.5, nens+1.5)
+        bins = N.arange(-.5, nens + 1.5)
     pdf, bins, patches = P.hist(rank, bins=bins,
                                 normed=True, align='mid', **kwhist)
-    P.axhline(1./(nens+1), color='r', lw=2)
+    P.axhline(1. / (nens + 1), color='r', lw=2)
     P.xlim(bins.min(), bins.max())
     P.xlabel('Rank')
     P.ylabel('P(rank)')
@@ -977,7 +842,7 @@ def ellipsis(xpos, ypos, eAXIS, eaxis=None, rotation=0,
     """
 
     # Angles for discretization
-    pp = N.arange(0, 2*N.pi, 2*N.pi/np)
+    pp = N.arange(0, 2 * N.pi, 2 * N.pi / np)
     pp = N.concatenate((pp, pp[0:1]))  # Closed
     np = len(pp)
 
@@ -1028,13 +893,13 @@ def ellipsis(xpos, ypos, eAXIS, eaxis=None, rotation=0,
     if axes:
         kwaxes = kwfilter(kwargs, 'axes',
                           defaults=dict(color='k', linestyle=':', alpha=.5))
-        for ea, ap in (eAXIS, 0.), (eaxis, N.pi/2):
-            xaxis = N.array([-1, 1]) * N.cos(rotation+ap) * ea/2
-            yaxis = N.array([-1, 1]) * N.sin(rotation+ap) * ea/2
+        for ea, ap in (eAXIS, 0.), (eaxis, N.pi / 2):
+            xaxis = N.array([-1, 1]) * N.cos(rotation + ap) * ea / 2
+            yaxis = N.array([-1, 1]) * N.sin(rotation + ap) * ea / 2
             if ismap and iscyl:
                 xaxis = m2deg(xaxis, ypos)
                 yaxis = m2deg(yaxis)
-            gobj.plot(xaxis+xpos, yaxis+ypos, **kwaxes)
+            gobj.plot(xaxis + xpos, yaxis + ypos, **kwaxes)
 
     # Plot command
     if fill:
@@ -1053,38 +918,39 @@ def ellipsis(xpos, ypos, eAXIS, eaxis=None, rotation=0,
             color = cl = ColorConverter().to_rgb(
                 kwargs.pop('color', P.rcParams['lines.color']))
             if sign > 0:
-                pps = list(range(0, np-1))
+                pps = list(range(0, np - 1))
             else:
-                pps = list(range(np-2, -1, -1))
-            factor = N.absolute(sign+1.)*3
+                pps = list(range(np - 2, -1, -1))
+            factor = N.absolute(sign + 1.) * 3
             for ip in pps:
                 if sign_usewidth:
-                    lw = linewidth / factor + factor * linewidth * float(ip)/np
+                    lw = linewidth / factor + factor * \
+                        linewidth * float(ip) / np
                 if sign_usecolor:
-                    cl = ((color[0]*ip+(np-ip)*.5)/(np-1),
-                          (color[1]*ip+(np-ip)*.5)/(np-1),
-                          (color[2]*ip+(np-ip)*.5)/(np-1))
-                myplot = pcmd([xx[ip], xx[ip+1]], [yy[ip], yy[ip+1]],
+                    cl = ((color[0] * ip + (np - ip) * .5) / (np - 1),
+                          (color[1] * ip + (np - ip) * .5) / (np - 1),
+                          (color[2] * ip + (np - ip) * .5) / (np - 1))
+                myplot = pcmd([xx[ip], xx[ip + 1]], [yy[ip], yy[ip + 1]],
                               linewidth=lw, color=cl, **kwargs)
         else:
             xshaft = N.zeros(3)
             yshaft = N.zeros(3)
-            slen = sign*eAXIS/4.
-            ap = pp[int(round(np*3./4.))]
+            slen = sign * eAXIS / 4.
+            ap = pp[int(round(np * 3. / 4.))]
             xxx = eAXIS * N.cos(ap) * 0.5
             yyy = eaxis * N.sin(ap) * 0.5
             xshaft[1] = xxx * N.cos(rotation) - yyy * N.sin(rotation)
             yshaft[1] = xxx * N.sin(rotation) + yyy * N.cos(rotation)
             for ia, aa in enumerate([1, -1]):
-                aa *= N.pi*.85
-                xshaft[ia*2] = xshaft[1] + slen * N.cos(aa+rotation)
-                yshaft[ia*2] = yshaft[1] + slen * N.sin(aa+rotation)
+                aa *= N.pi * .85
+                xshaft[ia * 2] = xshaft[1] + slen * N.cos(aa + rotation)
+                yshaft[ia * 2] = yshaft[1] + slen * N.sin(aa + rotation)
             if ismap and iscyl:
                 xshaft = m2deg(xshaft, ypos)
                 yshaft = m2deg(yshaft)
             kws = kwargs.copy()
             kws['label'] = None
-            gobj.plot(xshaft+xpos, yshaft+ypos, **kws)
+            gobj.plot(xshaft + xpos, yshaft + ypos, **kws)
     if myplot is None:
         myplot = pcmd(xx, yy, **kwargs)
         if glow:
@@ -1097,8 +963,8 @@ def ellipsis(xpos, ypos, eAXIS, eaxis=None, rotation=0,
 
         # Position
         rotation = rotation % N.pi
-        key_x = key_position * N.cos(rotation) * eAXIS/2
-        key_y = key_position * N.sin(rotation) * eaxis/2
+        key_x = key_position * N.cos(rotation) * eAXIS / 2
+        key_y = key_position * N.sin(rotation) * eaxis / 2
         ha = 'center'
         va = 'center'
         if key_align != 'top':
@@ -1111,15 +977,15 @@ def ellipsis(xpos, ypos, eAXIS, eaxis=None, rotation=0,
         key_y += ypos
         key_rotation = rotation
         if key_orientation == 'tangential':
-            key_rotation -= N.pi/2
+            key_rotation -= N.pi / 2
 
         # Params
         for key, val in dict(color=myplot[0].get_color(), alpha=myplot[0].get_alpha(),
-                             rotation=key_rotation*180./N.pi, va=va, ha=ha).items():
+                             rotation=key_rotation * 180. / N.pi, va=va, ha=ha).items():
             kwkey.setdefault(key, val)
 
         # Content
-        value = eA_orig/2
+        value = eA_orig / 2
         if units is None:
             units = ''
         key_text = key_format % vars()
@@ -1139,7 +1005,8 @@ def ellipsis(xpos, ypos, eAXIS, eaxis=None, rotation=0,
     return myplot
 
 
-def add_colorbar(var=None, sm=None, horizontal=False, position=None, cmap=None, drawedges=False, axes=None, fig=None, figsize=None, frameon=None, levels=None, barwidth=None, barmargin=.1, norm=None, **kwargs):
+def add_colorbar(var=None, sm=None, horizontal=False, position=None, cmap=None, drawedges=False, axes=None,
+                 fig=None, figsize=None, frameon=None, levels=None, barwidth=None, barmargin=.1, norm=None, **kwargs):
     """Standalone colorbar"""
 
     if fig is None:
@@ -1154,7 +1021,7 @@ def add_colorbar(var=None, sm=None, horizontal=False, position=None, cmap=None, 
         if horizontal:
             if barwidth is None:
                 barwidth = .25
-            rect = [.05, 1-barmargin-barwidth, .9, barwidth]
+            rect = [.05, 1 - barmargin - barwidth, .9, barwidth]
         else:
             if barwidth is None:
                 barwidth = .18
@@ -1179,7 +1046,7 @@ def add_colorbar(var=None, sm=None, horizontal=False, position=None, cmap=None, 
         raise VACUMMError('Missing explicit arguments sm')
     for key, val in kwargs.items():
         if key not in ('close', 'show', 'savefig', 'units'):
-            kwargs['colorbar_'+key] = kwargs.pop(key)
+            kwargs['colorbar_' + key] = kwargs.pop(key)
     cb = colorbar(sm, vars=var, drawedges=drawedges, levels=levels, colorbar_horizontal=horizontal,
                   colorbar_position=position, standalone=True, cax=axes, **kwargs)
 
@@ -1297,7 +1164,9 @@ def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None,
                'linestyles': linestyle, 'linewidths': linewidth}
 
     # Centers
+    pcenters = None
     if centers:
+        centers = int(centers)
 
         # Markers
         if centers > 0:
@@ -1307,23 +1176,23 @@ def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None,
             kwdef['linewidth'] = markerlinewidth
             kwdef['label'] = label_centers
             kwdef['alpha'] = alpha
-            centers = ax.plot(xx[::samp, ::samp].ravel(), yy[::samp, ::samp].ravel(), marker, markersize=markersize,
-                              **kwfilter(kwargs, 'center', defaults=kwdef))
+            pcenters = ax.plot(xx[::samp, ::samp].ravel(),
+                               yy[::samp, ::samp].ravel(),
+                               marker, markersize=markersize,
+                               **kwfilter(kwargs, 'center', defaults=kwdef))
 
         # Lines
         if centers == 2 or centers < 0:
             kwpg = kwfilter(kwargs, 'center', defaults=kwlines)
-            edges = _plot_grid_(ax, xx, yy, samp, alpha,
-                                zorder, label_edges, **kwpg)
+            pedges = _plot_grid_(ax, xx, yy, samp, alpha,
+                                 zorder, label_edges, **kwpg)
 
-    else:
-        centers = None
 
     # Create lines
     if edges:
         kwpg = kwfilter(kwargs, 'edge', defaults=kwlines)
-        edges = _plot_grid_(ax, xx2d, yy2d, samp, alpha,
-                            zorder, label_edges, **kwpg)
+        pedges = _plot_grid_(ax, xx2d, yy2d, samp, alpha,
+                             zorder, label_edges, **kwpg)
 
 #        lines = ()
 #        ny, nx = gg.shape
@@ -1339,9 +1208,9 @@ def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None,
 #        ax.add_collection(edges)
 #        gobjs(grid_edges=edges)
     else:
-        edges = None
+        pedges = None
 
-    return centers, edges
+    return pcenters, pedges
 
 
 ####################
@@ -1398,7 +1267,7 @@ def _xyscale_(xylim, factor, keep_min=False, keep_max=False, **kwargs):
     if factor == 1. or (keep_min and keep_max):
         xylim()
     mn, mx = xylim()
-    delta = (mx-mn)*(factor-1.)
+    delta = (mx - mn) * (factor - 1.)
     mn -= delta * 0.5 * (1 + keep_max) * (1 - keep_min)
     mx += delta * 0.5 * (1 + keep_min) * (1 - keep_max)
     return xylim(minmax(auto_scale([mn, mx])))
@@ -1521,7 +1390,7 @@ def _xydate_(xy, tz=None, auto=True, fmt='dual', rotation=None,
         Same with minor_locator.
     """
     axes = kwargs.get('ax', P.gca())
-    axis = getattr(axes, xy+'axis')
+    axis = getattr(axes, xy + 'axis')
 ##  print 'xlimssss',P.gca(),ax
 ##  if ax.get_xlim() == (0.,1.): raise 'a'
     # Base
@@ -1530,21 +1399,21 @@ def _xydate_(xy, tz=None, auto=True, fmt='dual', rotation=None,
     # Scale axes
     if auto:
         axes.autoscale_view(
-            **{'scale'+xy: True, 'scale'+{'x': 'y', 'y': 'x'}[xy]: False})
+            **{'scale' + xy: True, 'scale' + {'x': 'y', 'y': 'x'}[xy]: False})
 
     # Guess locators
     major_locator = locator
     if nominor:
         minor_locator = False
     locs = ['year', 'month', 'weekday', 'day', 'hour', 'minute', 'second']
-    locs.extend([(loc+'s') for loc in locs])
+    locs.extend([(loc + 's') for loc in locs])
     kwmjl = kwfilter(kwargs, 'locator')
     kwmnl = kwfilter(kwargs, 'minor_locator')
     # - major
     if isinstance(major_locator, str):
         if major_locator.lower() in locs:
             major_locator = eval(
-                major_locator.lower().title()+'Locator(**kwmjl)')
+                major_locator.lower().title() + 'Locator(**kwmjl)')
         else:
             major_locator = None
     else:
@@ -1609,7 +1478,7 @@ def get_locator_from_units(locator, *args, **kwargs):
             if re.search(rep, key) is not None:
                 kw[key] = val
     unit = locator._get_unit()
-    units = [365., 30., 7., 1., 1/24., 1/(24*60.), 1/(24*3600.)]
+    units = [365., 30., 7., 1., 1 / 24., 1 / (24 * 60.), 1 / (24 * 3600.)]
     locs = [YearLocator, MonthLocator, WeekdayLocator,
             DayLocator, HourLocator, MinuteLocator, SecondLocator]
     loc = locs[units.index(unit)]
@@ -1618,7 +1487,7 @@ def get_locator_from_units(locator, *args, **kwargs):
         kw['byhour'] = list(range(0, 24, kw['interval']))
         args = ()
     if loc is WeekdayLocator:
-        args = (MO,)+args
+        args = (MO,) + args
     return loc(*args, **kw)
 
 
@@ -1693,16 +1562,16 @@ def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=
         try:
             logo = mpimg.imread(logofile)
             ny, nx = logo.shape[:2]
-        except:
+        except BaseException:
             raise VACUMMError("Can't read your logo file. "
                               "Please convert it to png format or install PIL and use `tool='pil'`")
     else:
         try:
             import PIL.Image as Image
-        except:
+        except BaseException:
             try:
                 import Image
-            except:
+            except BaseException:
                 raise VACUMMError("Can't import PIL to plot your logo. Convert it to png"
                                   " and use `tool='mpl'` calling add_logo")
         logo = Image.open(logofile)
@@ -1719,41 +1588,41 @@ def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=
         ax = None
     else:
 
-        dx = nx/(P.gcf().get_figwidth()*dpi)
-        dy = ny/(P.gcf().get_figheight()*dpi)
+        dx = nx / (P.gcf().get_figwidth() * dpi)
+        dy = ny / (P.gcf().get_figheight() * dpi)
         if scale is not None:
             dx *= scale
             dy *= scale
         else:
             scalex = scaley = 1.
             if dx > .25:
-                scalex = .25/dx
+                scalex = .25 / dx
             if dy > .25:
-                scaley = .25/dy
+                scaley = .25 / dy
             if scalex < 1. or scaley < 1.:
                 scale = min(scalex, scaley)
                 dx *= scale
                 dy *= scale
         if 'upper' in loc:
-            y = 1-dy
+            y = 1 - dy
             anchor = 'N'
         elif 'lower' in loc:
             y = 0
             anchor = 'S'
         else:
-            y = .5-dy/2
+            y = .5 - dy / 2
             anchor = 'C'
         if 'right' in loc:
-            x = 1-dx
+            x = 1 - dx
             anchor = anchor + 'E'
         elif 'left' in loc:
             x = 0
             anchor = anchor + 'W'
         else:
-            x = .5-dx/2
+            x = .5 - dx / 2
             anchor = anchor + 'C'
-        xc = x+dx/2.
-        yc = y+dy/2.
+#        xc = x + dx / 2.  # ?
+#        yc = y + dy / 2.  # ?
         if anchor == 'CC':
             anchor = 'C'
         elif 'C' in anchor:
@@ -1771,8 +1640,10 @@ def add_logo(logofile, axes=None, fig=None, loc='lower left', scale=None, alpha=
     return im
 
 
-def wedge(direction, width=18, fig=None, axes=None, figsize=(4, 4), shadow=False,
-          shadow_alpha=.5, circle=False, strength=None, strength_cmap=None, from_north=False,
+def wedge(direction, width=18, fig=None, axes=None,
+          figsize=(4, 4), shadow=False,
+          shadow_alpha=.5, circle=False, strength=None,
+          strength_cmap=None, from_north=False,
           center=True, center_radius=.04, scale=1., **kwargs):
     """Plot a wedge
 
@@ -1816,39 +1687,43 @@ def wedge(direction, width=18, fig=None, axes=None, figsize=(4, 4), shadow=False
     scale = N.clip(scale, .1, 1.)
 
     # Plot the wedge
-    r = .41*scale
+    r = .41 * scale
 ##  direction = (90.-direction+180+360)%360.
     if from_north:
-        direction = 90.-direction
-    direction = (direction+180+360) % 360.
+        direction = 90. - direction
+    direction = (direction + 180 + 360) % 360.
     zorder = kwargs.pop('zorder', 100)
-    ww = Wedge((-r*1.1*N.cos(direction*N.pi/180.), -r*1.1*N.sin(direction*N.pi/180.)), 2*r,
-               direction-width/2, direction+width/2,
-               **kwfilter(kwargs, ['edgecolor', 'facecolor', 'linewidth', 'antialiased'],
+    ww = Wedge((-r * 1.1 * N.cos(direction * N.pi / 180.),
+                -r * 1.1 * N.sin(direction * N.pi / 180.)), 2 * r,
+               direction - width / 2, direction + width / 2,
+               **kwfilter(kwargs, ['edgecolor', 'facecolor',
+                                   'linewidth', 'antialiased'],
                           defaults=dict(facecolor=facecolor, linewidth=0)))
     ww.set_zorder(zorder)
     axes.add_patch(ww)
 
     # Center
     if center:
-        cen = Circle((0, 0), center_radius*scale, **kwfilter(kwargs, 'center',
-                                                             defaults=dict(facecolor='#aaaaaa', linewidth=0)))
-        cen.set_zorder(zorder+1)
+        cen = Circle((0, 0), center_radius * scale,
+                     **kwfilter(kwargs, 'center',
+                                defaults=dict(facecolor='#aaaaaa',
+                                              linewidth=0)))
+        cen.set_zorder(zorder + 1)
         axes.add_patch(cen)
 
     # Shadow
     if shadow:
-        dx = kwargs.pop('dx', r/10)
-        dy = -kwargs.pop('dy', r/10)
+        dx = kwargs.pop('dx', r / 10)
+        dy = -kwargs.pop('dy', r / 10)
         sdw = Shadow(ww, dx, dy, **kwfilter(kwargs, 'shadow'))
         sdw.set_alpha(shadow_alpha)
-        sdw.set_zorder(zorder-1)
+        sdw.set_zorder(zorder - 1)
         axes.add_patch(sdw)
 
     # Circle
     if circle:
         cir = Circle((0, 0), .48, **kwfilter(kwargs, 'circle'))
-        cir.set_zorder(zorder-2)
+        cir.set_zorder(zorder - 2)
         axes.add_patch(cir)
 
     # End
@@ -1916,7 +1791,7 @@ def add_time_mark(date, ymin=0, ymax=1, color='r', line=True,
         if isinstance(marker, six.string_types):
             kwmarker.setdefault('marker', marker)
         kwmarker.setdefault('s', 40)
-        o = ax.scatter([date], [axis[2]], c=color,  zorder=zorder, **kwmarker)
+        o = ax.scatter([date], [axis[2]], c=color, zorder=zorder, **kwmarker)
         res.append(o)
         if shadow:
             add_shadow(o, ax=ax, **kwshad)
@@ -1924,7 +1799,8 @@ def add_time_mark(date, ymin=0, ymax=1, color='r', line=True,
     return res
 
 
-def add_key(key=None, pos=1, fmt='%s)', xmargin=10, ymargin=10, fig=None, axes=None, **kwargs):
+def add_key(key=None, pos=1, fmt='%s)', xmargin=10,
+            ymargin=10, fig=None, axes=None, **kwargs):
     """Add a key to specify the plot number in a figure
 
     Parameters
@@ -1962,10 +1838,10 @@ def add_key(key=None, pos=1, fmt='%s)', xmargin=10, ymargin=10, fig=None, axes=N
     if key is False:
         return
     if key is None or key is True:
-        key = max(1, fig.axes.index(axes)+1)
+        key = max(1, fig.axes.index(axes) + 1)
     if isinstance(key, int):
         key = max(key, 1)
-        key = 'abcdefghijklmnopqrstuvwxyz'[key-1]
+        key = 'abcdefghijklmnopqrstuvwxyz'[key - 1]
     key = fmt % key
 
     # Position
@@ -1983,22 +1859,24 @@ def add_key(key=None, pos=1, fmt='%s)', xmargin=10, ymargin=10, fig=None, axes=N
         ypos = int(abs(pos) in [1, 2])
 
     # Alignment
-    kwargs.setdefault('va',  ['bottom', 'top'][pos in [1, 2, -3, -4]])
-    kwargs.setdefault('ha',  ['right', 'left'][pos in [1, 4, -2, -3]])
+    kwargs.setdefault('va', ['bottom', 'top'][pos in [1, 2, -3, -4]])
+    kwargs.setdefault('ha', ['right', 'left'][pos in [1, 4, -2, -3]])
 
     # Margin
     from matplotlib.transforms import ScaledTranslation
-    xmargin = 1.*N.abs(xmargin)*(1 - 2*(pos in [-1, 2, -3, 4]))
-    ymargin = 1.*N.abs(ymargin)*(1 - 2*(pos in [1, 2, -3, -4]))
-    transMargin = ScaledTranslation(xmargin/fig.dpi, ymargin/fig.dpi,
+    xmargin = 1. * N.abs(xmargin) * (1 - 2 * (pos in [-1, 2, -3, 4]))
+    ymargin = 1. * N.abs(ymargin) * (1 - 2 * (pos in [1, 2, -3, -4]))
+    transMargin = ScaledTranslation(xmargin / fig.dpi, ymargin / fig.dpi,
                                     fig.dpi_scale_trans)
 
     # Add to plot
     kwargs.setdefault('size', 18)
-    return axes.text(xpos, ypos, key, transform=axes.transAxes+transMargin, **kwargs)
+    return axes.text(
+        xpos, ypos, key, transform=axes.transAxes + transMargin, **kwargs)
 
 
-def hldays(color='.95', y=False, tmin=None, tmax=None, fig=None, axes=None, **kwargs):
+def hldays(color='.95', y=False, tmin=None,
+           tmax=None, fig=None, axes=None, **kwargs):
     """Highlight different days with a different background color
 
     Parameters
@@ -2040,8 +1918,8 @@ def hldays(color='.95', y=False, tmin=None, tmax=None, fig=None, axes=None, **kw
     kwargs.setdefault('label', '_nolegend_')
     objs = []
     axspan = getattr(axes, 'ax%sspan' % 'vh'[y])
-    for t in range(int(tmin), int(tmax)+1, 2):
-        objs.append(axspan(t, t+1, **kwargs))
+    for t in range(int(tmin), int(tmax) + 1, 2):
+        objs.append(axspan(t, t + 1, **kwargs))
 #        objs[-1].set_zorder(0)
     getattr(axes, 'set_%slim' % 'xy'[y])(tmin, tmax)
     return objs
@@ -2053,9 +1931,9 @@ def xi2a(inch, data=None):
         xmin, xmax = P.gca().xaxis.get_data_interval().get_bounds()
     else:
         xmin, xmax = minmax(data)  # data
-    trans = (xmax-xmin)/(P.gca().get_position().width *
-                         P.gcf().get_figwidth())  # inch to data
-    return trans*inch  # data units
+    trans = (xmax - xmin) / (P.gca().get_position().width *
+                             P.gcf().get_figwidth())  # inch to data
+    return trans * inch  # data units
 
 
 def yi2a(inch, data=None):
@@ -2064,19 +1942,19 @@ def yi2a(inch, data=None):
         ymin, ymax = P.gca().yaxis.get_data_interval().get_bounds()
     else:
         ymin, ymax = minmax(data)  # data
-    trans = (ymax-ymin)/(P.gca().get_position().height *
-                         P.gcf().get_figheight())  # inch to data
-    return trans*inch  # data units
+    trans = (ymax - ymin) / (P.gca().get_position().height *
+                             P.gcf().get_figheight())  # inch to data
+    return trans * inch  # data units
 
 
 def yi2f(inch):
     """Convert from inch to relative height of figure"""
-    return inch/P.gcf().get_figheight()
+    return inch / P.gcf().get_figheight()
 
 
 def xi2f(inch):
     """Convert from inch to relative width of figure"""
-    return inch/P.gcf().get_figwidth()
+    return inch / P.gcf().get_figwidth()
 
 
 def gobjs(*args, **kwargs):
@@ -2097,7 +1975,8 @@ def gobjs(*args, **kwargs):
         return ax.gobjs
 
 
-def savefigs(basename, png=True, pdf=False, verbose=True, dpi=100, nodots=True, fig=None, **kwargs):
+def savefigs(basename, png=True, pdf=False, verbose=True,
+             dpi=100, nodots=True, fig=None, **kwargs):
     """Save a figure in multiple formats (optimized for sphinx doc generator)
 
     basename:
@@ -2120,8 +1999,8 @@ def savefigs(basename, png=True, pdf=False, verbose=True, dpi=100, nodots=True, 
     :func:`~matplotlib.pyplot.savefig` instead.
     """
     for ext in 'png', 'py':
-        if basename.endswith('.'+ext):
-            basename = basename[:-len(ext)-1]
+        if basename.endswith('.' + ext):
+            basename = basename[:-len(ext) - 1]
             break
     if nodots:
         basename = os.path.join(os.path.dirname(
@@ -2137,11 +2016,12 @@ def savefigs(basename, png=True, pdf=False, verbose=True, dpi=100, nodots=True, 
                 fig.savefig(file, dpi=dpi)
             figfiles.append(file)
             if verbose:
-                print('Wrote to '+file)
+                print('Wrote to ' + file)
     return figfiles
 
 
-def make_movie(fig_pattern, outfile, delay=1, clean=False, verbose=False, windows=True):
+def make_movie(fig_pattern, outfile, delay=1,
+               clean=False, verbose=False, windows=True):
     """Make a movie from a series of figures
 
     Paremeters
@@ -2175,7 +2055,7 @@ def make_movie(fig_pattern, outfile, delay=1, clean=False, verbose=False, window
             fig_pattern = ' '.join(fig_pattern)
         cmd = 'convert -delay %(delay)i %(fig_pattern)s %(outfile)s' % vars()
     else:
-        delay = 1./delay
+        delay = 1. / delay
         if windows:
             codec = 'msmpeg4v2'
         else:
@@ -2185,14 +2065,14 @@ def make_movie(fig_pattern, outfile, delay=1, clean=False, verbose=False, window
     # Execution
     import subprocess
     if verbose:
-        print('Executing command: '+cmd)
+        print('Executing command: ' + cmd)
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE, shell=True)
     out, err = p.communicate()
     if verbose:
         print(out)
         print(err)
-    print('ret', p.returncode,  err)
+    print('ret', p.returncode, err)
     if p.returncode:
         raise SystemError
 
@@ -2202,7 +2082,7 @@ def make_movie(fig_pattern, outfile, delay=1, clean=False, verbose=False, window
             print('Cleaning files')
         p = subprocess.Popen('rm -f %(fig_pattern)s' % vars(),
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out,  err = p.communicate()
+        out, err = p.communicate()
         if verbose:
             print(out)
             print(err)
@@ -2236,7 +2116,7 @@ def get_cls(n, colors=simple_colors, linestyles=linestyles):
             break
     cls = []
     for c, ls in zip(cc, ll):
-        cls.append(c+ls)
+        cls.append(c + ls)
     return cls
 
 #############
@@ -2244,7 +2124,8 @@ def get_cls(n, colors=simple_colors, linestyles=linestyles):
 #############
 
 
-def _check_var_(var, rank, order=None, xaxis=None, yaxis=None, tadd=None, tadd_copy=True, tlocal=False, xatts=None, yatts=None, **kwargs):
+def _check_var_(var, rank, order=None, xaxis=None, yaxis=None, tadd=None,
+                tadd_copy=True, tlocal=False, xatts=None, yatts=None, **kwargs):
     """
     xaxis:
         Use this X axis.
@@ -2269,7 +2150,7 @@ def _check_var_(var, rank, order=None, xaxis=None, yaxis=None, tadd=None, tadd_c
     else:
         # Get vectors and modulus
         vx, vy = [cdms.createVariable(v) for v in var]
-        vars = [MV.sqrt(vx**2+vy**2), vx, vy]
+        vars = [MV.sqrt(vx**2 + vy**2), vx, vy]
         ln = []
         for vv in vx, vy:
             if hasattr(vv, 'units'):
@@ -2295,23 +2176,25 @@ def _check_var_(var, rank, order=None, xaxis=None, yaxis=None, tadd=None, tadd_c
             var = var.clone()
             clone = True
             order = order.replace('.', '')
-            order = ('-'*(rank-len(order))+order)[-rank-1:]
+            order = ('-' * (rank - len(order)) + order)[-rank - 1:]
             var_order = var.getOrder()
             # Order requested axes if found
             for i, c in enumerate(order[::-1]):
                 pos = var_order.rfind(c)
-                if c != '-' and pos > -1 and var_order[-i-1] != c:
-                    var = var.reorder('-'*(var.rank()-i-1)+c+'-'*i)
+                if c != '-' and pos > -1 and var_order[-i - 1] != c:
+                    var = var.reorder('-' * (var.rank() - i - 1) + c + '-' * i)
             # Move bad axes to front
             i = 0
             for c in 'xyzt':
                 pos = var.getOrder()[-rank:].rfind(c)
-                if pos > -1 and order[pos-rank] != '-' and order.find(c) == -1:
-                    if i >= (var.rank()-rank-order.count('-')):
+                if pos > -1 and order[pos -
+                                      rank] != '-' and order.find(c) == -1:
+                    if i >= (var.rank() - rank - order.count('-')):
                         print('It seems that axis #%i (%s) of var should not be there and cannot be moved' % (
                             i, c.upper()))
                     else:
-                        var = var.reorder('-'*(var.rank()-i-1)+c+'-'*i)
+                        var = var.reorder(
+                            '-' * (var.rank() - i - 1) + c + '-' * i)
                     i += 1
         # Reduce rank
         while var.rank() > rank:
@@ -2323,7 +2206,7 @@ def _check_var_(var, rank, order=None, xaxis=None, yaxis=None, tadd=None, tadd_c
         if rank == 1 and xaxis is not None:
             assert len(xaxis) == len(
                 var), 'Length of new xaxis (%i) is different from length of var (%i)' % (len(xaxis), len(var))
-            if type(xaxis) is type([]):
+            if isinstance(xaxis, type([])):
                 xaxis = N.array(xaxis, copy=0)
             if not isinstance(xaxis, AbstractAxis):
                 tmpaxis = var.getAxis(0).clone()
@@ -2365,7 +2248,8 @@ def _check_var_(var, rank, order=None, xaxis=None, yaxis=None, tadd=None, tadd_c
     return vars[0]
 
 
-def _start_plot_(figure=None, figsize=None, subplot=None, subplots_adjust=None, bgcolor=None, noframe=False, fullscreen=False, **kwargs):
+def _start_plot_(figure=None, figsize=None, subplot=None, subplots_adjust=None,
+                 bgcolor=None, noframe=False, fullscreen=False, **kwargs):
     """
     Parameters
     ----------
@@ -2438,7 +2322,8 @@ def _start_plot_(figure=None, figsize=None, subplot=None, subplots_adjust=None, 
         P.gca().set_axis_bgcolor(bgcolor)
 
 
-def colorbar(pp=None, vars=None, drawedges=False, levels=None, colorbar_horizontal=False, colorbar=True, colorbar_visible=True, colorbar_position=None, units=None, standalone=False, cax=None, extend='neither', **kwargs):
+def colorbar(pp=None, vars=None, drawedges=False, levels=None, colorbar_horizontal=False, colorbar=True,
+             colorbar_visible=True, colorbar_position=None, units=None, standalone=False, cax=None, extend='neither', **kwargs):
     """
     Colorbar
 
@@ -2482,20 +2367,20 @@ def colorbar(pp=None, vars=None, drawedges=False, levels=None, colorbar_horizont
             if not isinstance(colorbar_position, (list, tuple)):
                 colorbar_position = (colorbar_position, 0.25)
             bbox = P.gca().get_position(original=True)
-            cb_start = colorbar_position[0]-colorbar_position[1]
+            cb_start = colorbar_position[0] - colorbar_position[1]
             if colorbar_horizontal:
-                cax = [bbox[0], bbox[1]*cb_start,
-                       bbox[2], bbox[1]*colorbar_position[1]]
+                cax = [bbox[0], bbox[1] * cb_start,
+                       bbox[2], bbox[1] * colorbar_position[1]]
             else:
-                bbox_start = bbox[0]+bbox[2]
-                cax = [bbox_start+(1-bbox_start)*cb_start, bbox[1],
-                       (1-bbox_start)*colorbar_position[1], bbox[3]]
+                bbox_start = bbox[0] + bbox[2]
+                cax = [bbox_start + (1 - bbox_start) * cb_start, bbox[1],
+                       (1 - bbox_start) * colorbar_position[1], bbox[3]]
             if not standalone:
                 gca = P.gca()
             cax = P.axes(cax)
 
         # Plot itself
-        kwaxis = kwfilter(kwargs, 'colorbar_'+xy)
+        kwaxis = kwfilter(kwargs, 'colorbar_' + xy)
         kwlabel = kwfilter(kwargs, 'colorbar_label')
         kwargs.setdefault('colorbar_extend', extend)
         cb = P.colorbar(pp, cax, orientation=orientation,
@@ -2534,7 +2419,8 @@ def colorbar(pp=None, vars=None, drawedges=False, levels=None, colorbar_horizont
 _colorbar_ = colorbar
 
 
-def colorbar_new(sm=None, vars=None, drawedges=False, levels=None, horizontal=False, visible=True, position=None, units=None, standalone=False, cax=None, ax=None, extend='neither', **kwargs):
+def colorbar_new(sm=None, vars=None, drawedges=False, levels=None, horizontal=False, visible=True,
+                 position=None, units=None, standalone=False, cax=None, ax=None, extend='neither', **kwargs):
     """Plot a colorbar as :func:`~matplotlib.pyplot.colorbar` with some advanced features
 
     Parameters
@@ -2585,14 +2471,14 @@ def colorbar_new(sm=None, vars=None, drawedges=False, levels=None, horizontal=Fa
         if not isinstance(position, (list, tuple)):
             position = (position, 0.25)
         bbox = P.gca().get_position(original=True)
-        cb_start = position[0]-position[1]
+        cb_start = position[0] - position[1]
         if horizontal:
-            cax = [bbox[0], bbox[1]*cb_start,
-                   bbox[2], bbox[1]*position[1]]
+            cax = [bbox[0], bbox[1] * cb_start,
+                   bbox[2], bbox[1] * position[1]]
         else:
-            bbox_start = bbox[0]+bbox[2]
-            cax = [bbox_start+(1-bbox_start)*cb_start, bbox[1],
-                   (1-bbox_start)*position[1], bbox[3]]
+            bbox_start = bbox[0] + bbox[2]
+            cax = [bbox_start + (1 - bbox_start) * cb_start, bbox[1],
+                   (1 - bbox_start) * position[1], bbox[3]]
         if not standalone:
             gca = P.gca()
         cax = P.axes(cax)
@@ -2633,7 +2519,8 @@ def colorbar_new(sm=None, vars=None, drawedges=False, levels=None, horizontal=Fa
     return cb
 
 
-def _levels_(var, anomaly=None, levels=None, nmax=8, vmin=None, vmax=None, **kwargs):
+def _levels_(var, anomaly=None, levels=None, nmax=8,
+             vmin=None, vmax=None, **kwargs):
     """Data levels
 
     Parameters
@@ -2659,7 +2546,8 @@ def _levels_(var, anomaly=None, levels=None, nmax=8, vmin=None, vmax=None, **kwa
         else:
             if anomaly is None:
                 mm = minmax(var)
-                anomaly = N.absolute((mm[1]-mm[0])/(.5*(mm[0]+mm[1]))) < .2
+                anomaly = N.absolute(
+                    (mm[1] - mm[0]) / (.5 * (mm[0] + mm[1]))) < .2
             if anomaly:
                 mm = max(N.absolute(minmax(var)))
                 levels = auto_scale([-mm, mm], nmax=nmax)
@@ -2679,7 +2567,8 @@ def _levels_(var, anomaly=None, levels=None, nmax=8, vmin=None, vmax=None, **kwa
 #   return lonlab(deg,decimal=False,no_seconds=True,no_zeros=True)
 
 
-def decorate_axis(axis=None, vertical=0, date_rotation=None, date_fmt=None, date_locator=None, date_minor_locator=None, date_nominor=False, nodate=False, values=None, ax=None, **kwargs):
+def decorate_axis(axis=None, vertical=0, date_rotation=None, date_fmt=None, date_locator=None,
+                  date_minor_locator=None, date_nominor=False, nodate=False, values=None, ax=None, **kwargs):
     """Axis decoration:
 
     Parameters
@@ -2731,7 +2620,7 @@ def decorate_axis(axis=None, vertical=0, date_rotation=None, date_fmt=None, date
     aatts = ['strict', ('fmt', 'format', 'tickfmt', 'tickformat'), ('rotation', 'rotate'),
              'lim', 'hide', 'type', 'locator', 'minor_locator', ('nmax', 'nmax_ticks')]
     defaults = dict()  # strict=True)
-    for raw_att in aatts+vatts:
+    for raw_att in aatts + vatts:
 
         # Merge aliases
         if isinstance(raw_att, tuple):
@@ -2777,12 +2666,12 @@ def decorate_axis(axis=None, vertical=0, date_rotation=None, date_fmt=None, date
         axmin, axmax = minmax(values)
     if props['lim']:
         if isinstance(props['lim'], dict):
-            if xy+'min' in props['lim']:
-                axmin = props['lim'][xy+'min']
+            if xy + 'min' in props['lim']:
+                axmin = props['lim'][xy + 'min']
             elif 'min' in props['lim']:
                 axmin = props['lim']['min']
-            if xy+'max' in props['lim']:
-                axmax = props['lim'][xy+'max']
+            if xy + 'max' in props['lim']:
+                axmax = props['lim'][xy + 'max']
             elif 'max' in props['lim']:
                 axmax = props['lim']['max']
         else:
@@ -2800,9 +2689,9 @@ def decorate_axis(axis=None, vertical=0, date_rotation=None, date_fmt=None, date
             axmax = max(values)
         axmax = max(axmax, props['maxmin'])
     if axmin is not None:
-        lim_func(**{xy+'min': axmin})
+        lim_func(**{xy + 'min': axmin})
     if axmax is not None:
-        lim_func(**{xy+'max': axmax})
+        lim_func(**{xy + 'max': axmax})
     #axis_save = P.axis()
 
     # Ticks
@@ -2829,7 +2718,7 @@ def decorate_axis(axis=None, vertical=0, date_rotation=None, date_fmt=None, date
             if len(axis) == 1:
                 nmonth = 1
             elif not axis.units.startswith('months'):
-                units = 'months '+' '.join(axis.units.split()[1:])
+                units = 'months ' + ' '.join(axis.units.split()[1:])
                 ct = axis.subAxis(0, len(axis)).asComponentTime(
                     cdtime.DefaultCalendar)
                 nmonth = ct[1].torel(units).value - \
@@ -2853,7 +2742,7 @@ def decorate_axis(axis=None, vertical=0, date_rotation=None, date_fmt=None, date
             else:
                 date_rotation = 30.
         # Ok let's format
-        trange = axis[-1]-axis[0]
+        trange = axis[-1] - axis[0]
         kwdate = kwfilter(kwargs, 'date', copy=1)
         kwdate.setdefault('nmax_ticks', props['nmax'])
         kwdate.setdefault('auto', axmin is None or axmax is None)
@@ -2879,7 +2768,7 @@ def decorate_axis(axis=None, vertical=0, date_rotation=None, date_fmt=None, date
 
     # Hiding
     if props['hide'] in [True, False] and props['hide']:
-        exec(xy+'hide()')
+        exec(xy + 'hide()')
 
     # Label
     elif props['label'] is not False:
@@ -2892,7 +2781,8 @@ def decorate_axis(axis=None, vertical=0, date_rotation=None, date_fmt=None, date
             slabel = []
             if ll and not cdms.isVariable(axis):
                 slabel.append(ll)
-            if isinstance(units, (str, six.text_type)) and units not in ['', '-', 'None']:
+            if isinstance(units, (str, six.text_type)
+                          ) and units not in ['', '-', 'None']:
                 if len(slabel):
                     slabel.append('[%s]' % units)
                 else:
@@ -2902,9 +2792,9 @@ def decorate_axis(axis=None, vertical=0, date_rotation=None, date_fmt=None, date
                 label_func(slabel, **props['label_kwargs'])
 
     if axmin is not None:
-        lim_func(**{xy+'min': axmin})
+        lim_func(**{xy + 'min': axmin})
     if axmax is not None:
-        lim_func(**{xy+'max': axmax})
+        lim_func(**{xy + 'max': axmax})
     # P.axis(axis_save)
     if gca is not None:
         P.gcf().sca(gca)
@@ -2917,7 +2807,8 @@ def decorate_axis(axis=None, vertical=0, date_rotation=None, date_fmt=None, date
 #       P.ylim(minmax(yaxis))
 
 
-def _end_plot_(var=None, grid=True, figtext=None, show=True, close=False, savefig=None, title=None, logo=False, fullscreen=False, anchor=None, autoresize=2, key=None, dayhl=False, **kwargs):
+def _end_plot_(var=None, grid=True, figtext=None, show=True, close=False, savefig=None, title=None,
+               logo=False, fullscreen=False, anchor=None, autoresize=2, key=None, dayhl=False, **kwargs):
     """
     Parameters
     ----------
@@ -2975,9 +2866,9 @@ def _end_plot_(var=None, grid=True, figtext=None, show=True, close=False, savefi
 #       rect = P.gca().get_position(True)
 #       if autoresize == 2: r *= rect.width/rect.height
         w, h = ax.get_figure().get_size_inches()
-        a = 1.*w*h
-        W = N.sqrt(a/r)
-        H = r*W
+        a = 1. * w * h
+        W = N.sqrt(a / r)
+        H = r * W
         P.gcf().set_size_inches(W, H)
         if anchor is None:
             anchor = 'C'
@@ -3003,7 +2894,7 @@ def _end_plot_(var=None, grid=True, figtext=None, show=True, close=False, savefi
 
     # Fig text
     if figtext is not None:
-        if type(figtext) is type('a'):
+        if isinstance(figtext, type('a')):
             figtext = (figtext,)
         if len(figtext) == 1:
             figtext = [0, 0, figtext[0]]
@@ -3031,7 +2922,7 @@ def _end_plot_(var=None, grid=True, figtext=None, show=True, close=False, savefi
             if backend not in suff_standalone:
                 savefig += '.png'
             elif backend in suff_standalone and not suff.lower().endwith(backend):
-                savefig += '.'+backend
+                savefig += '.' + backend
         P.savefig(savefig, **kwfilter(kwargs, 'savefig'))
     if 'savefigs' in kwargs:
         if kwargs['savefigs'] is not None:
@@ -3047,7 +2938,7 @@ def _end_plot_(var=None, grid=True, figtext=None, show=True, close=False, savefi
             'svg': ['/usr/bin/svgdisplay', '/usr/bin/konqueror']}
         if backend in list(viewers.keys()):
             if savefig is None:
-                tmpfig = mktemp(suffix='.'+backend)
+                tmpfig = mktemp(suffix='.' + backend)
                 P.savefig(tmpfig, **kwfilter(kwargs, 'savefig'))
             else:
                 tmpfig = savefig
@@ -3056,7 +2947,7 @@ def _end_plot_(var=None, grid=True, figtext=None, show=True, close=False, savefi
                     cmd = '%s %s' % (viewer, tmpfig)
                     try:
                         os.system(cmd)
-                    except:
+                    except BaseException:
                         print('Unable to view file with command:', cmd)
                     if savefig is None:
                         os.remove(tmpfig)
@@ -3194,7 +3085,7 @@ def curve2(*args, **kwargs):
     kwargs.setdefault('post_plot', True)
     if len(args) > 1 and 'parg' not in kwargs:
         kwargs['parg'] = args[1]
-        args = args[0:1]+args[2:]
+        args = args[0:1] + args[2:]
     return Curve(*args, **kwargs)
 
 
@@ -3926,7 +3817,7 @@ def plot2d(*args, **kwargs):
 
 def minimap(gg, bbox=[.85, .85, .14, .14], zoom=1., xmargin=None, ymargin=None,
             lon=None, lat=None, square=False, bgcolor=(0, .8, 1.), fig=None,
-            alpha=1, **kwargs):
+            alpha=1, res=2, **kwargs):
     """Create a minimap with :func:`map2`
 
     A minimap is small and generally in a corner of the figure,
@@ -3943,8 +3834,6 @@ def minimap(gg, bbox=[.85, .85, .14, .14], zoom=1., xmargin=None, ymargin=None,
     ------
     :class:`~vacumm.misc.core_plot.Map`
     """
-    from .grid import get_xy
-    from .color import RGB
     data = gg if cdms2.isVariable(gg) else None
     x, y = get_xy(gg)
     if lon is not None:
@@ -3958,7 +3847,8 @@ def minimap(gg, bbox=[.85, .85, .14, .14], zoom=1., xmargin=None, ymargin=None,
     ymin = y.min()
     ymax = y.max()
     xmin, ymin, xmax, ymax = zoombox([xmin, ymin, xmax, ymax], zoom,
-                                     xmargin=xmargin, ymargin=ymargin, square=square)
+                                     xmargin=xmargin, ymargin=ymargin,
+                                     square=square)
     kwargs.setdefault('anchor', 'E')
     kwargs.setdefault('colorbar', False)
     kwargs.setdefault('contour', False)
@@ -3968,10 +3858,11 @@ def minimap(gg, bbox=[.85, .85, .14, .14], zoom=1., xmargin=None, ymargin=None,
     if alpha:
         bgcolor += alpha,
     oldax = P.gca()
-    dict_check_defaults(kwargs, title=False, xhide=True, yhide=True, proj='merc',
+    dict_check_defaults(kwargs, title=False, xhide=True, yhide=True,
+                        proj='merc',
                         drawparallels_linewidth=.2, drawmeridians_linewidth=.2)
     m = map2(data, lon=(xmin, xmax), lat=(ymin, ymax), show=False,
-             axes_rect=bbox, bgcolor=bgcolor, fig=fig, **kwargs)
+             axes_rect=bbox, bgcolor=bgcolor, fig=fig, res=res, **kwargs)
 #    m.axes.set_alpha(alpha)
     fc = m.get_axobj('fillcontinents')
     if alpha != 1 and fc:
@@ -3982,7 +3873,8 @@ def minimap(gg, bbox=[.85, .85, .14, .14], zoom=1., xmargin=None, ymargin=None,
     return m
 
 
-def add_map_point(gg, lon, lat, marker='o', color='r', size=40,  m=None, alpha=1,  **kwargs):
+def add_map_point(gg, lon, lat, marker='o', color='r',
+                  size=40, m=None, alpha=1, **kwargs):
     """Add a small map with a point at specified longitude and latitude
 
     Parameters
@@ -4005,10 +3897,11 @@ def add_map_point(gg, lon, lat, marker='o', color='r', size=40,  m=None, alpha=1
         m = gg
     if m is None:
         m = minimap(gg, **kwmap)
-    return m.add_point(lon, lat, size=size, color=color, marker=marker, **kwargs)
+    return m.add_point(lon, lat, size=size, color=color,
+                       marker=marker, **kwargs)
 
 
-def add_map_places(gg, lon, lat, txt, marker='o', color='r', size=40,  m=None,
+def add_map_places(gg, lon, lat, txt, marker='o', color='r', size=40, m=None,
                    alpha=1, **kwargs):
     """Add a small map with one or several places at specified longitude and latitude
 
@@ -4067,7 +3960,8 @@ def add_map_line(gg, extents, color='r', linewidth=1.5, m=None, **kwargs):
     return m.add_line(extents, color=color, linewidth=linewidth, **kwargs)
 
 
-def add_map_lines(gg, xx, yy, color='r', linewidth=1.5, m=None, closed=False, **kwargs):
+def add_map_lines(gg, xx, yy, color='r', linewidth=1.5,
+                  m=None, closed=False, **kwargs):
     """Add a small map with a broken line specified longitudes and latitudes
 
     Parameters
