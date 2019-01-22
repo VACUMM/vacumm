@@ -33,6 +33,7 @@
 # knowledge of the CeCILL license and that you accept its terms.
 
 from common import *
+from matplotlib.dates import DateFormatter, num2date
 from vacumm.misc.core_plot import hlitvs
 
 class Day12hFormatter(DateFormatter):
@@ -40,7 +41,7 @@ class Day12hFormatter(DateFormatter):
     def __call__(self, x, pos=0):
         if x==0:
             raise ValueError('DateFormatter found a value of x=0, which is an illegal date.  This usually occurs because you have not informed the axis that it is plotting dates, eg with ax.xaxis_date()')
-        dt = P.num2date(x, self.tz)
+        dt = num2date(x, self.tz)
         if dt.hour!=12: return ''
         return self.strftime(dt, self.fmt)
 

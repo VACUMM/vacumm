@@ -48,8 +48,9 @@ from vacumm import vacumm_warn, VACUMM_CFG
 from .misc import kwfilter, dict_check_defaults, dirsize, zoombox
 from .constants import EARTH_RADIUS
 
-__all__ = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_map',
-           'merc', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
+__all__ = ['gshhs_reslist', 'gshhs_autores',
+           'cached_map', 'cache_map', 'get_map',
+           'get_merc', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
            'create_map', 'RSHPERE_WGS84', 'GSHHS_RESLIST']
 
 #: Earth radius of wgs84 ellipsoid
@@ -61,7 +62,8 @@ GSHHS_RESLIST = ['f', 'h', 'i', 'l', 'c']
 gshhs_reslist = GSHHS_RESLIST  # compat
 
 
-def gshhs_autores(lon_min, lon_max, lat_min, lat_max, asindex=False, shift=None):
+def gshhs_autores(lon_min, lon_max, lat_min, lat_max, asindex=False,
+                  shift=None):
     """Guess best resolution from lon/lat bounds"""
     testresol = ((lon_max-lon_min)+(lat_max-lat_min))/2.0
     ires = N.array([-1., 1., 5., 15., 50.]).searchsorted(testresol)-1
@@ -91,7 +93,8 @@ def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
 
     Example
     -------
-    >>> m = cached_map(lon_min=-5, lon_max=6, lat_min=40, lat_max=50, projection='lcc', resolution='f')
+    >>> m = cached_map(lon_min=-5, lon_max=6, lat_min=40, lat_max=50,
+    ..  projection='lcc', resolution='f')
     >>> m = cached_map(m) # Does only caching of map
     """
 
@@ -112,13 +115,14 @@ def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
     if verbose:
         print('Loadind cached map from '+os.path.basename(file))
     try:
-        f = open(file)
+        f = open(file, 'rb')
         m = six.moves.cPickle.load(f)
         f.close()
         return m
-    except:
-        vacumm_warn('Error while loading cached basemap instance from dir: ' +
-                    os.path.dirname(file))
+    except Exception:
+        vacumm_warn('Error while loading cached basemap instance from file: ' +
+                    os.path.basename(file))
+        print(file)
         os.remove(file)
         return None
 
@@ -138,7 +142,7 @@ def cache_map(m, mapdir=None):
             m.ax = None
             six.moves.cPickle.dump(m, f)
             f.close()
-        except:
+        except Exception:
             vacumm_warn('Error while trying to cache basemap instance into: ' +
                         os.path.dirname(file))
             return
@@ -177,7 +181,7 @@ def clean_cache(mapdir=None, maxsize=None):
             cache_size -= os.path.getsize(ff)
             try:
                 os.remove(ff)
-            except:
+            except Exception:
                 vacumm_warn('Error while trying to clean basemap cache in: ' +
                             os.path.dirname(ff))
                 return
@@ -217,13 +221,16 @@ def _cached_map_file_(m=None, mapdir=None, **kwargs):
     szone = '+%.5f+%.5f+%.5f+%.5f' % (m.llcrnrlon,
                                       m.llcrnrlat, m.urcrnrlon, m.urcrnrlat)
 #    bversion = '.'.join(basemap_version.split('.')[:2])
-    return os.path.join(mapdir, 'basemap-%s.%s.%s.pyk' % (basemap_version, srs, szone))
+    return os.path.join(mapdir, 'basemap-%s.%s.%s.pyk' % (basemap_version,
+                                                          srs, szone))
 
 
 def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
                projection='cyl', resolution='auto', epsg=None,
-               lon_center=None, lat_center=None, lat_ts=None, zoom=None, ax=None,
-               overlay=False, fullscreen=False, nocache=False, cache_dir=None, **kwargs):
+               lon_center=None, lat_center=None, lat_ts=None,
+               zoom=None, ax=None,
+               overlay=False, fullscreen=False, nocache=False, cache_dir=None,
+               **kwargs):
     """Generic creation of a :class:`Basemap` instance with caching
 
     .. todo:: Merge :func:`get_map` with :func:`create_map`
@@ -259,7 +266,7 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
         resolution = None
         lat_center = 0
         lon_center = 0
-    elif projection == None:
+    elif projection is None:
         projection = 'cyl'
 
     # Guess resolution
@@ -268,13 +275,15 @@ def create_map(lon_min=-180., lon_max=180., lat_min=-90., lat_max=90.,
         res = 'auto'
     elif res is False or res == 'None':
         res = None
-    elif isinstance(res, int):
-        if res < 0:
-            res = 'auto'
-        else:
-            res = GSHHS_RESLIST[4-res]
-    if res == 'auto':
-        res = gshhs_autores(lon_min, lon_max, lat_min, lat_max)
+#    elif isinstance(res, int):
+#        if res < 0:
+#            res = 'auto'
+#        else:
+#            res = GSHHS_RESLIST[4-res]
+    if res == 'auto' or isinstance(res, int):
+        shift = res if isinstance(res, int) else None
+        res = gshhs_autores(lon_min, lon_max, lat_min, lat_max,
+                            shift=shift)
     if res in GSHHS_RESLIST:
         kwargs.setdefault('resolution', res)
     else:
@@ -368,10 +377,11 @@ def get_map(gg=None, proj=None, res=None, auto=False, **kwargs):
     else:
         lat_center = 0.
         lon_center = 0.
-    return Basemap(lat_ts=lat_center, lat_0=lat_center, lon_0=lon_center,  **kwmap)
+    return Basemap(lat_ts=lat_center, lat_0=lat_center, lon_0=lon_center,
+                   **kwmap)
 
 
-def merc(lon=None, lat=None, **kwargs):
+def get_merc(lon=None, lat=None, **kwargs):
     """Mercator map
 
     Parameters
@@ -398,7 +408,8 @@ def merc(lon=None, lat=None, **kwargs):
     kwargs.setdefault('lat_ts', lat_ts)
     return Basemap(projection='merc', **kwargs)
 
-#proj = merc()
+
+merc = get_merc
 
 
 def get_proj(gg=None, proj=None, **kwargs):
@@ -411,11 +422,12 @@ def get_proj(gg=None, proj=None, **kwargs):
     ----------
     gg: optional
         Grid or tuple of coordinates.
-        If not provided, lon bounds are set to (-180,180) and lat bounds to (-89.99,89.99).
+        If not provided, lon bounds are set to (-180,180) and lat bounds to
+        (-89.99,89.99).
     **kwargs
-        Other keywords are passed to :class:`~mpl_toolkits.basemap.proj.Proj`. One of
-        them is the projection type, which defaults to configuration option
-        :confopt:`[vacumm.misc.basemap] proj`.
+        Other keywords are passed to :class:`~mpl_toolkits.basemap.proj.Proj`.
+        One of them is the projection type, which defaults to
+        configuration option :confopt:`[vacumm.misc.basemap] proj`.
 
     Return
     ------
