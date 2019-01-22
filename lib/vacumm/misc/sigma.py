@@ -56,25 +56,17 @@ from warnings import warn
 from vacumm import vcwarn
 from .misc import (selector2str, create_selector, split_selector,
                    filter_level_selector, dict_merge)
+from .cf import get_loc, get_cf_standard_name, standard_name_to_location
 from .axes import axis_type
 from .grid import dz2depth as dz2depths
 from .atime import create_time
 from .io import NcFileObj, ncread_axis, ncread_var
-from . import cf
 
-__all__ = ['standard_name_to_location', 'SigmaError', 'SigmaWarning',
+__all__ = ['SigmaError', 'SigmaWarning',
            'NcSigma', 'NcSigmaStandard', 'NcSigmaGeneralized',
            'sigma2depths', 'sigma2altitudes', 'SigmaStandard',
            'SigmaGeneralized']
 
-
-RE_SN2LOC_SEARCH = re.compile(r'_at_([uvwtdfr])_location', re.I).search
-
-
-def standard_name_to_location(standard_name):
-    m = RE_SN2LOC_SEARCH(standard_name)
-    if m is not None:
-        return m.group(1)
 
 
 class SigmaError(Exception):
@@ -126,18 +118,18 @@ class NcSigma(object):
 
     '''
     standard_names = dict(
-        dz=cf.VAR_SPECS['dz']['standard_name'],
-        dzu=cf.VAR_SPECS['dz_u']['standard_name'],
-        dzv=cf.VAR_SPECS['dz_v']['standard_name'],
-        dzw=cf.VAR_SPECS['dz_w']['standard_name'],
-        depth=cf.VAR_SPECS['bathy']['standard_name'],
-        depthu=cf.VAR_SPECS['bathy_u']['standard_name'],
-        depthv=cf.VAR_SPECS['bathy_v']['standard_name'],
-        eta=cf.VAR_SPECS['ssh']['standard_name'],
+        dz='cf:dz',
+        dzu='cf:dz_u',
+        dzv='cf:dz_v',
+        dzw='cf:dz_w',
+        depth='cf:bathy',
+        depthu='cf:bathy_u',
+        depthv='cf:bathy_v',
+        eta='cf:ssh',
         # cval utile ?
-        oro=cf.VAR_SPECS['oro']['standard_name'],
-        height=cf.VAR_SPECS['topheight']['standard_name'],
-        altitude=cf.VAR_SPECS['altitude']['standard_name'],
+        oro='cf:oro',
+        height='cf:topheight',
+        altitude='cf:altitude',
         #        dz = "ocean_layer_thickness",
         #        dzu = "ocean_layer_thickness_at_u_location",
         #        dzv = "ocean_layer_thickness_at_v_location",
@@ -199,6 +191,14 @@ class NcSigma(object):
 
     def __del__(self):
         self.close()
+
+    @classmethod
+    def get_standard_names(cls, target):
+        standard_names = cls.standard_names[target]
+        if (isinstance(standard_names, str) and
+                standard_names.startswith('cf:')):
+            standard_names = get_cf_standard_name(target[3:], mode='all')
+        return standard_names
 
     @classmethod
     def factory(cls, f, **kwargs):
@@ -284,8 +284,8 @@ class NcSigma(object):
         for sigcls in NcSigmaStandard, NcSigmaGeneralized:
 
             # Get standard names as a list
-            sigma_standard_names = sigcls.standard_names[sigcls.sigma_name] + \
-                sigcls.standard_names[sigcls.sigma_name + 'w']
+            sigma_standard_names = sigcls.get_standard_names(sigcls.sigma_name) + \
+                sigcls.get_standard_names(sigcls.sigma_name + 'w')
             if not isinstance(sigma_standard_names, list):
                 sigma_standard_names = [sigma_standard_names]
 
@@ -305,7 +305,8 @@ class NcSigma(object):
         targets = [(dimname, f.getAxis(dimname))
                    for dimname in f.listdimension()]
         targets += [var for var in f.variables.items()]
-        for name, standard_names in cls.standard_names.items():
+        for name in cls.standard_names:
+            standard_names = cls.get_standard_names(name)
             if not isinstance(standard_names, list):
                 standard_names = [standard_names]
             for ncname, ncvar in targets:
@@ -399,7 +400,7 @@ class NcSigma(object):
         if not isinstance(formula_terms, (list, tuple)):
             formula_terms = re.split('[\W]+', formula_terms)
         ft = {}
-        for i in range(len(formula_terms) / 2):
+        for i in range(int(len(formula_terms) / 2)):
             try:
                 ft[formula_terms[i * 2]] = formula_terms[i * 2 + 1]
             except BaseException:
@@ -490,7 +491,7 @@ class NcSigma(object):
 
         # Variable
         Variables = list(self.f.variables.keys())
-        variables = list(map(string.lower, Variables))
+        variables = list(map(str.lower, Variables))
         if ncname.lower() in variables:
             ncname = Variables[variables.index(ncname.lower())]
             not_scalar = self.f[ncname].shape
@@ -768,8 +769,9 @@ class NcSigmaStandard(NcSigma):
         "ocean_sigma_coordinate_at_t_location",
         "atmosphere_sigma_coordinate",
         "atmosphere_sigma_coordinate_at_t_location"]
-    standard_names[sigma_name + 'w'] = ["ocean_sigma_coordinate_at_w_location",
-                                        "atmosphere_sigma_coordinate_at_w_location"]
+    standard_names[sigma_name + 'w'] = [
+            "ocean_sigma_coordinate_at_w_location",
+            "atmosphere_sigma_coordinate_at_w_location"]
 
     def __init__(self, ncfile, levelvars=None, formula_terms=None):
 
