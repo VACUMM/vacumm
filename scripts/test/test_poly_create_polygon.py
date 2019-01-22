@@ -25,7 +25,7 @@ plot_polygon(p3, color='m', label='From min/max')
 
 # With projection
 proj = lambda x, y: (x*1.5, y*1.5)
-p4 = create_polygon(p0, proj=proj)
+p4 = create_polygon(p0, transform=proj)
 plot_polygon(p4, color='cyan', label='With projection')
 
 # Save

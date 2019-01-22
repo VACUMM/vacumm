@@ -46,6 +46,7 @@ from traceback import format_exc
 import warnings
 import datetime
 import time as _time
+import operator
 
 import six
 from six.moves import map
@@ -57,21 +58,23 @@ import cdms2
 import cdtime
 from _geoslib import Point, LineString, Polygon
 
-from vacumm import VACUMMError
+from vacumm import VACUMMError, vcwarn
 from .misc import (split_selector, kwfilter, squeeze_variable, is_iterable,
                    match_atts, set_atts, broadcast, create_selector,
                    MV2_concatenate, checkdir, get_atts)
-from .poly import create_polygon, clip_shape, sort_shapes
+from .cf import filter_search
+from .poly import (get_shape_type, clip_shapes,
+                   SHAPE_POINT, SHAPE_LINESTRING, SHAPE_POLYGON,
+                   get_shape_name)
 from .axes import (get_checker, islon, islat, istime, islevel,
                    create_lat, create_lon)
-from .basemap import get_proj
 from .grid import curv2rect, isgrid, create_grid, set_grid
 from .atime import (has_time_pattern, is_time, round_date, add_margin,
                     strptime, comptime, are_same_units, itv_union, ch_units,
                     create_time, tsel2slice,  pat2freq, IterDates,
-                    strftime, is_interval, datetime as adatetime,
-                    pat2glob, filter_time_selector, add_time)
-from .cf import filter_search
+                    strftime, is_interval, datetime as adatetime, reltime,
+                    pat2glob, filter_time_selector, add_time,
+                    is_in_time_interval)
 
 
 __all__ = ['list_forecast_files', 'NcIterBestEstimate',
@@ -281,7 +284,7 @@ col_printer = ColPrinter  # compat
 
 def list_forecast_files(filepattern, time=None, check=True,
                         nopat=False, patfreq=None, patfmtfunc=None,
-                        patmargin=None, verbose=False, sort=True):
+                        patref=None, verbose=False, sort=True):
     """Get a list of forecast files according to a file pattern
 
     Parameters
@@ -309,11 +312,14 @@ def list_forecast_files(filepattern, time=None, check=True,
         Never consider that input patterns have date patterns.
     patfreq: optional
         Frequency of files to generate file names for each date
-           when ``filepattern`` is a date pattern.
+        when ``filepattern`` is a date pattern.
+    patref: optional
+        Reference date to generate file names for each date
+        when ``filepattern`` is a date pattern.
     patfmtfunc: optional
         Function to use in place of
-           :func:`~vacumm.misc.atime.strftime` to generate file names.
-           It must take as arguments a date pattern and a CDAT component time.
+        :func:`~vacumm.misc.atime.strftime` to generate file names.
+        It must take as arguments a date pattern and a CDAT component time.
     sort: optional
         If True, files are sorted alphabetically after being listed;
         if a callable function, they are sorted using this function
@@ -366,6 +372,7 @@ def list_forecast_files(filepattern, time=None, check=True,
     # Date pattern
     elif not nopat and has_time_pattern(filepattern):
 
+        # Need a valid time interval
         if isinstance(time, cdms2.selectors.Selector):
             seltime = filter_time_selector(time, noslice=True)
             if seltime.components():
@@ -381,7 +388,6 @@ def list_forecast_files(filepattern, time=None, check=True,
                         time = itv_union(itv, time)
             else:
                 time = None
-
         if not is_interval(time):
             if is_time(time):
                 time = (time, time, 'ccb')
@@ -394,77 +400,159 @@ def list_forecast_files(filepattern, time=None, check=True,
         time = tuple(time)
         patfmtfunc = patfmtfunc if callable(patfmtfunc) else strftime
 
-        # Guess the minimal frequency
-        lmargin = 1
-        if patfreq is None:
+        # Guess the frequency and reference date
+#        lmargin = 1
+        guessed_patfreq = patfreq is None
+        if guessed_patfreq:  # freq units
             patfreq = pat2freq(filepattern)
             if verbose:
                 print('Detected frequency for looping on possible dates: ' +
                       patfreq.upper())
-        if not isinstance(patfreq, tuple):
-
-            #  Reform
+        if (not isinstance(patfreq, tuple) and
+                ('://' in filepattern or not check)):
+            vcwarn('Unable to guess recurrence frequency value. Set to 1.')
             patfreq = (1, patfreq)
 
-            # Guess left margin when possible
-            gfiles = glob.glob(pat2glob(filepattern))
-            gfiles.sort()
-            if gfiles < 2:
-                lmargin = 1
-            elif not glob.has_magic(filepattern):
-                date0 = date1 = None
-                for i in range(len(gfiles)-1):
-                    try:
-                        date0 = strptime(gfiles[i], filepattern)
-                        date1 = strptime(gfiles[i+1], filepattern)
-                    except Exception:
-                        continue
-                    if date0 >= time[0] or date1 <= time[1]:
-                        break
-                if None not in [date0, date1]:
-                    dt = adatetime(date1) - adatetime(date0)
-                    if dt.seconds != 0:
-                        lmargin = comptime('2000').add(
-                                dt.seconds, cdtime.Seconds).torel(
-                            patfreq[1]+' since 2000').value
+        tu = 'seconds since 200'
+        if isinstance(patfreq, tuple):  # explicit freq value
+
+            # Find reference date
+            time0 = round_date(time[0], patfreq[1], 'floor').torel(tu)
+            if '://' not in filepattern and check:
+                # Ref date can be guessed
+
+                for i in range(patfreq[0]):
+                    if i != 0:
+                        patrefdate = add_time(time0, i, patfreq[1])
                     else:
-                        lmargin = comptime('2000').add(
-                                dt.days, cdtime.Days).torel(
-                            patfreq[1]+' since 2000').value
+                        patrefdate = time0
+                    gfiles = glob.glob(patfmtfunc(filepattern, patrefdate))
+                    if gfiles:
+                        break
                 else:
-                    lmargin = 1
-             # FIXME: make it work with date+glob patterns
+                    vcwarn('Unable to guess reference date')
+                    patrefdate = time0
+
             else:
-                lmargin = patfreq[0]
+
+                vcwarn('Reference date set time to rounded time[0]')
+                patrefdate = time0
+
+            # Generate dates
+            iterdates = IterDates((patrefdate, time[1]), patfreq,
+                                  closed=len(time) == 3 and
+                                  time[2][1] == 'c' or True)
+
+            # List files
+            files = []
+            for date in iterdates:
+                file = strftime(filepattern, date)
+                if '://' in file:
+                    files.append(file)
+                elif check or glob.has_magic(file):
+                    files.extend(glob.glob(file))
+                else:
+                    files.append(file)
 
 
-#        # Add margin to time interval
-#        if patmargin is None:
-#
-#            # Guess margin from a second time pattern (like %Y_%%Y.nc)
-#            fp2 = patfmtfunc(filepattern, now())
-#            if has_time_pattern(fp2):
-#                for fn in glob(pat2glob(fp2):
-#
-#
-#        elif not isinstance(patmargin, tuple):
-#            patmargin = (1, patmargin)
+        else:  # implicit freq value -> we scan all files to find dates
 
-        # Make a loop on dates
-        itertime = (round_date(time[0], patfreq[1], 'floor'), time[1])
-        itertime = add_margin(itertime, (lmargin-1, patfreq[1]), False)
-        iterdates = IterDates(itertime, patfreq,
-                              closed=len(time) == 3 and
-                              time[2][1] == 'c' or True)
-        files = []
-        for date in iterdates:
-            file = patfmtfunc(filepattern, date)
-            if '://' in file:
-                files.append(file)
-            elif check or glob.has_magic(file):
-                files.extend(glob.glob(file))
+            gfiles = glob.glob(pat2glob(filepattern))
+            items = []
+            for gfile in gfiles:
+                try:
+                    date = datetime.strptime(gfile, filepattern)
+                except Exception:
+                    continue
+                if is_in_time_interval(date, time):
+                    items.append((date, gfile))
+            if items:
+                items.sort(key=operator.itemgetter(0))
+                files = [item[0] for item in items]
             else:
-                files.append(file)
+                files = []
+            sort = False
+
+#
+#
+#
+#            #  Reform
+#            patfreq = (1, patfreq)
+#
+#            # Guess left margin when possible
+#            gfiles = glob.glob(pat2glob(filepattern))
+#            gfiles.sort()
+#            if len(gfiles) < 2:
+#                lmargin = 1
+#            elif not glob.has_magic(filepattern):
+#
+#                # Get the list of dates and files
+#                items = []
+#                for gfile in gfiles:
+#                    try:
+#                        rdate = strptime(gfile, filepattern).torel(tu)
+#                    except Exception:
+#                        continue
+#                    items.append((rdate, gfile))
+#
+#                # Find the first two valid dates
+#                if items:
+#                    items.sort(key=operator.itemgetter(0))
+#
+#
+#                for i in range(len(gfiles)-1):
+#                    try:
+#                        date0 = strptime(gfiles[i], filepattern).torel(tu)
+#                        date1 = strptime(gfiles[i+1], filepattern).torel(tu)
+#                    except Exception:
+#                        continue
+#                    if (date0.value >= reltime(time[0], tu).value
+#                            or date1.value <= reltime(time[1], tu).value):
+#                        break
+#                if None not in [date0, date1]:
+#                    dt = adatetime(date1) - adatetime(date0)
+#                    if dt.seconds != 0:
+#                        lmargin = comptime('2000').add(
+#                                dt.seconds, cdtime.Seconds).torel(
+#                            patfreq[1]+' since 2000').value
+#                    else:
+#                        lmargin = comptime('2000').add(
+#                                dt.days, cdtime.Days).torel(
+#                            patfreq[1]+' since 2000').value
+#                else:
+#                    lmargin = 1
+#             # FIXME: make it work with date+glob patterns
+#            else:
+#                lmargin = patfreq[0]
+#
+#
+##        # Add margin to time interval
+##        if patmargin is None:
+##
+##            # Guess margin from a second time pattern (like %Y_%%Y.nc)
+##            fp2 = patfmtfunc(filepattern, now())
+##            if has_time_pattern(fp2):
+##                for fn in glob(pat2glob(fp2):
+##
+##
+##        elif not isinstance(patmargin, tuple):
+##            patmargin = (1, patmargin)
+#
+#        # Make a loop on dates
+#        itertime = (round_date(time[0], patfreq[1], 'floor'), time[1])
+#        itertime = add_margin(itertime, (lmargin-1, patfreq[1]), False)
+#        iterdates = IterDates(itertime, patfreq,
+#                              closed=len(time) == 3 and
+#                              time[2][1] == 'c' or True)
+#        files = []
+#        for date in iterdates:
+#            file = patfmtfunc(filepattern,  date)
+#            if '://' in file:
+#                files.append(file)
+#            elif check or glob.has_magic(file):
+#                files.extend(glob.glob(file))
+#            else:
+#                files.append(file)
 
     # Simple remote file or file object
     elif (isinstance(filepattern, cdms2.dataset.CdmsFile)
@@ -831,7 +919,7 @@ def ncread_var(f, vname, *args, **kwargs):
     oldvname = vname
 
     # Find
-    vname = ncfind_var(f, vname, ignorecase=ignorecase)
+    vname = ncfind_var(f, vname, ignorecase=ignorecase, searchmode=searchmode)
     if vname is None:
         del nfo
         if mode == 'raise':
@@ -1176,7 +1264,7 @@ class NcIterTimeSlice(object):
     def __iter__(self):
         return self
 
-    def next(self, verbose=False):
+    def __next__(self, verbose=False):
 
         # Last iteration
         if self.i == self.nfiles:
@@ -1210,6 +1298,9 @@ class NcIterTimeSlice(object):
         # Finalize
         self.i += 1
         return f, tslice
+
+    def next(self):
+        return self.__next__()
 
     def close(self):
         """Close file descriptors that can be closed"""
@@ -1282,7 +1373,7 @@ class NcIterBestEstimate(object):
             id = str(self.toffset)+str(self.seltime)+str(files)
             try:
                 import md5
-                id = md5.md5(self.id).digest()
+                id = md5.md5(id).digest()
             except:
                 pass
         self.id = id
@@ -1290,7 +1381,7 @@ class NcIterBestEstimate(object):
     def __iter__(self):
         return self
 
-    def next(self, verbose=False):
+    def __next__(self, verbose=False):
 
         # Last iteration
         if self.i == self.nfiles:
@@ -1392,6 +1483,9 @@ class NcIterBestEstimate(object):
         self.tslices.append(tslice)
         f._vacumm_nibe_tslices[self.id] = tslice
         return f, tslice
+
+    def next(self):
+        return self.__next__()
 
     def empty(self):
         """Nothing to read from this file"""
@@ -1919,269 +2013,200 @@ def grib2nc(filepattern, varname, ncoutfile=None):
             f.close()
 
 
-SHAPES_POINTS = SHAPES_POINT = 0
-SHAPES_LINES = SHAPES_LINE = 1
-SHAPES_POLYGONS = SHAPES_POLYS = SHAPES_POLY = SHAPES_POLYGON = 2
 SHAPEFILE_POINTS = 1
 SHAPEFILE_MULTIPOINTS = 8
 SHAPEFILE_POLYLINES = 3
 SHAPEFILE_POLYGONS = 5
 
 
-def read_shapefile(input, proj=False, inverse=False, clip=True,
-                   shapetype=None, min_area=None, sort=True,
-                   reverse=True, samp=1,
-                   clip_proj=True, m=None, getextended=False):
-    """Read geometries from a shapefile or a list of coordinates"""
+def read_shapefile(shapefile, clip=None, transform=None, samp=1,
+                   shapetype=None, ascoords=False):
+    """Minimal function to read geometries from a shapefile
 
-    # Inits
-    from_file = isinstance(input, str)
-    if hasattr(m, 'map'):
-        m = m.map
-    default_proj = None if m is None else m
+    Parameters
+    ----------
+    shapefile: str
+        Shapefile root name
+    clip: tuple
+        Clip shape with this bounding box ``(xmin, ymin, xmax, ymax)``
+    shapetype:
+        Force the output shape type, when applicable.
+        Typical values: "point", "linestring", "polygon",
+        or other type compatible with :func:`~vacumm.misc.poly.get_shape_name`.
+    samp: int
+        Undersample lines and polygons
+    filt: function
+        Final filter/transformation of each shape coordinates.
+        Must have a numpy array as input and output.
+    as_coords: bool
+        If True, return numpy arrays of coordinates.
 
-    if from_file:
+    Return
+    ------
+    list of shapes
+    shape type
+    """
 
-        # From a shapefile
-        if input.endswith('.shp') or input.endswith('.dbf'):
-            input = input[:-4]
-        for ext in ('shp', ):  # , 'dbf':
-            fname = '%s.%s' % (input, ext)
-            assert os.path.exists(fname), fname
+    # Shapefile name
+    if shapefile.endswith('.shp') or shapefile.endswith('.dbf'):
+        shapefile = shapefile[:-4]
+    for ext in ('shp', ):  # , 'dbf':
+        fname = '%s.%s' % (shapefile, ext)
+        assert os.path.exists(fname), fname
+
+    # Find the reader
+    try:
+        import fiona
+        reader_type = 'fiona'
+        if not shapefile.endswith('.shp'):
+            shapefile += '.shp'
+        shp = fiona.open(shapefile)
+        shapefile_type = get_shape_type(shp.meta['schema']['geometry'],
+                                        mode='string')
+        shapefile_type = {'point': SHAPEFILE_POINTS,
+                          'linestring': SHAPEFILE_POLYLINES,
+                          'polygon': SHAPEFILE_POLYGONS
+                          }[shapefile_type]
+        nshapes = len(shp)
+    except ImportError:
         try:
             try:
                 from shapefile import Reader
-            except:
+            except ImportError:
                 from mpl_toolkits.basemap.shapefile import Reader
-            newreader = True
-            shp = Reader(input)
+            reader_type = 'basemap'
+            shp = Reader(shapefile)
             shapefile_type = shp.shapeType
-        except Exception as e:
-            print('Cannot read %s:\n%s\nTrying with shapelib' % (input, e), file=sys.stderr)
-            from shapelib import ShapeFile
-            newreader = False
-            shp = ShapeFile(input)
-            shapefile_type = shp.info()[1]
-    #           dbf = dbflib.open(input)
-        if default_proj and (1, 1) == default_proj(1, 1):
-            default_proj = None
-            info = []
-
-    elif isinstance(input, (list, N.ndarray)):  # From coordinates
-        in_coords = input
-        shapefile_type = 5 if not len(
-            in_coords) or in_coords[0].ndim == 2 else 1
-        info = []
-
-    else:
-
-        # From a Shapes (or super) instance
-        in_coords = input.get_data(proj=False)
-        m = input._m  # overwrite m keyword
-        default_proj = input._proj
-        shapefile_type = [SHAPEFILE_POINTS, SHAPEFILE_POLYLINES,
-                          SHAPEFILE_POLYGONS][input._type]
-        info = input._info
-
-    # Get coordinates
-    if from_file:
-        if newreader:
             nshapes = shp.numRecords
-        else:
+        except ImportError as e:
+            print('Cannot read {}:\n{}\nTrying '
+                  'with shapelib'.format(shapefile, e),
+                  file=sys.stderr)
+            from shapelib import ShapeFile
+            reader_type = 'shapelib'
+            shp = ShapeFile(shapefile)
             nshapes = shp.info()[0]
-    else:
-        nshapes = 1
-    coords = []
+            shapefile_type = shp.info()[1]
+    #           dbf = dbflib.open(shapefile)
+    if shapetype is not None:
+        shapetype = get_shape_type(shapetype, mode='geos')
+    shapes = []
 
     # A Point or MultiPoint file
     if shapefile_type in [SHAPEFILE_POINTS, SHAPEFILE_MULTIPOINTS]:
-        if shapetype is not None and shapetype != SHAPES_POINTS:
+        if shapetype is not None and shapetype != SHAPE_POINT:
             raise TypeError('Your shape type is not point')
-        stype = SHAPES_POINTS
+        stype = SHAPE_POINT
 
         # Loop on shape groups
         for iobj in range(nshapes):
-            if from_file:
-                if newreader:
-                    all_points = shp.shape(iobj).shape.points
-                else:
-                    all_points = shp.read_object(iobj).vertices()
-            else:
-                all_points = in_coords
-            coords.extend(all_points)
 
-        # Merge coordinates
-        xy = N.asarray(coords)
+            # Coords
+            if reader_type == 'basemap':
+                coords = shp.shape(iobj).points
+            elif reader_type == 'shapelib':
+                coords = shp.read_object(iobj).vertices()
+            else:
+                coords = shp[iobj]['geometry']['coordinates']
+
+            # Transform
+            if six.callable(transform):
+                coords = transform(N.asarray(coords).T)
+
+            # As shapes
+            gshapes = [Point(xy) for xy in coords]
+
+            # Clip
+            if clip is not None:
+                gshapes = clip_shapes(gshapes, clip)
+
+            shapes.extend(gshapes)
+
+        # Filter
+        if six.callable(transform):
+            shapes = transform(shapes)
 
 #               if from_file: self._info.append(dbf.read_record(iobj))
 
     # A Polyline or Polygon file
     elif shapefile_type in [SHAPEFILE_POLYLINES, SHAPEFILE_POLYGONS]:
 
-        # Shape type
+        # Shape type compatibility
         if shapetype is not None:
-            if shapetype == SHAPES_POINTS:
+            if shapetype == SHAPE_POINT:
                 raise TypeError(
                     'Your shape type is point, not polyline or polygon')
             else:
                 stype = shapetype
         else:
             if shapefile_type == SHAPEFILE_POLYLINES:
-                stype = SHAPES_LINES
+                stype = SHAPE_LINESTRING
             else:
-                stype = SHAPES_POLYGONS
+                stype = SHAPE_POLYGON
+        shaper = [Point, LineString, Polygon][stype]
 
         # Loop on shape groups
         for iobj in range(nshapes):
-            if from_file:
-                if newreader:
-                    obj = shp.shapeRecord(iobj).shape
-                    all_points = obj.points
-                    if len(all_points) == 0:
-                        continue
-                    nparts = len(obj.parts)
-                    if nparts == 1:
-                        all_polys = [all_points]
-                    else:
-                        all_polys = []
-                        for ip in range(nparts-1):
-                            all_polys.append(
-                                all_points[obj.parts[ip]:obj.parts[ip+1]])  # xxxxxxxx
+
+            if reader_type == 'basemap':
+
+                # Coordinates
+                obj = shp.shape(iobj)
+                coords = obj.points
+                if len(coords) == 0:
+                    continue
+
+                # Transform
+                if six.callable(transform):
+                    coords = transform(N.asarray(coords).T)
+                coords = N.asarray(coords)
+
+                # As shapes
+                nparts = len(obj.parts)
+                if nparts == 1:
+                    gshapes = [shaper(coords[::samp])]
                 else:
-                    all_polys = shp.read_object(iobj).vertices()
+                    gshapes = []
+                    for ip in range(nparts-1):
+                        gshapes.append(
+                            shaper(coords[obj.parts[ip]:obj.parts[ip+1]:samp]))
+
             else:
-                all_polys = in_coords
-            coords.extend(all_polys)
 
-        # Merge coordinates
-        xy = N.concatenate(coords)
+                # Coordinates
+                if reader_type == 'shapelib':
+                    coords = shp.read_object(iobj).vertices()[::samp]
+                else:
+                    coords = N.array(shp[iobj]['geometry']['coordinates'][0])[
+                            ::samp, :2]
+                if len(coords) == 0:
+                    continue
 
-    else:
-        raise TypeError('Input shapefile must only contains 2D shapes')
+                # Transform
+                if six.callable(transform):
+                    coords = N.transpose(transform(*N.asarray(coords).T))
 
-    # Bounds
-    if xy.shape[0] > 0:
-        xmin = xy[:, 0].min()
-        xmax = xy[:, 0].max()
-        ymin = xy[:, 1].min()
-        ymax = xy[:, 1].max()
-    else:
-        xmin = N.inf
-        xmax = -N.inf
-        ymin = N.inf
-        ymax = -N.inf
-    del xy
-    xpmin = N.inf
-    xpmax = -N.inf
-    ypmin = N.inf
-    ypmax = -N.inf
+                # As shapes
+                gshapes = [shaper(coords)]
 
-    # Projection
-    # - projection function
-    if callable(proj):  # direct
-        proj = proj
-    elif default_proj is not None and (proj is None or proj is True):
-        proj = default_proj  # from basemap
-    elif isinstance(proj, six.string_types):
-        gg = None if xmin > xmax else (
-            [xmin, xmax], N.clip([ymin, ymax], -89.99, 89.99))
-        kw = dict(proj=proj) if isinstance(proj, six.string_types) else {}
-        proj = get_proj(gg, **kw)
-    else:
-        proj = False
-    # - synchronisation of map instance
-    m_projsync = None
-    if callable(m):  # same projection as of map?
-        if proj is False:
-            m_projsync = N.allclose((1, 1), m(1, 1))
-        elif proj is m:
-            m_projsync = True
-        elif callable(proj) and proj is not m:
-            m_projsync = N.allclose(proj(1, 1), m(1, 1))
+            # Clip
+            if clip is not None:
+                gshapes = clip_shapes(gshapes, clip)
 
-    # Clipping zone with projected coordinates
-    clip = create_polygon(clip, proj=clip_proj)
+            shapes.extend(gshapes)
 
-    # Convert to shapes
-    shaper = [Point, LineString, Polygon][stype]
-    all_shapes = []
-    for coord in coords:
-
-        # Numeric array
-        coord = N.asarray(coord)
-
-        # Under sampling
-        if samp > 1 and coord.shape[0] > (2*samp+1):
-            coord = coord[::samp]
-
-        # Projection
-        if proj:
-            if coord[..., 1].max() < 91 and coord[..., 1].min() > -91:
-                coord[..., 1] = N.clip(coord[..., 1], -89.99, 89.99)
-            coord = N.asarray(proj(coord[..., 0], coord[..., 1])).T
-
-        # Convert to shape instance
-        shape = shaper(coord)
-
-        # Clip
-        if clip:
-            shapes = clip_shape(shape, clip)
-        else:
-            shapes = [shape]
-
-        # Minimal area
-        if min_area is not None and shaper is Polygon and min_area > 0.:
-            shapes = [sh for sh in shapes if sh.area() >= min_area]
-
-        # Store
-        all_shapes.extend(shapes)
-
-        # Update min/max
-        for shape in shapes:
-            xyp = shape.boundary
-            xpmin = min(xpmin, xyp[..., 0].min())
-            xpmax = max(xpmax, xyp[..., 0].max())
-            ypmin = min(ypmin, xyp[..., 1].min())
-            ypmax = max(ypmax, xyp[..., 1].max())
-            if proj:
-                x, y = proj(xyp[..., 0], xyp[..., 1], inverse=True)
-                xpmin = min(xpmin, x.min())
-                xpmax = max(xpmax, x.max())
-                ypmin = min(ypmin, y.min())
-                ypmax = max(ypmax, y.max())
-            else:
-                xmin = xpmin
-                xmax = xpmax
-                ymin = ypmin
-                ymax = ypmax
-
-    # Finalize
-#    if from_file
-    if not newreader:
-        shp.close()
-#           dbf.close()
-
-    # Sort by area or cumulative length?
-    if sort:
-        sorted = sort_shapes(all_shapes, reverse=reverse)
-    else:
-        sorted = 0
-
-    if not getextended:
-        return all_shapes
-    return dict(shapes=all_shapes, shaper=shaper, proj=proj, m=m, xmin=xmin,
-                ymin=ymin, xmax=xmax, ymax=ymax, xpmin=xpmin,
-                xpmax=xpmax, ypmin=ypmin,
-                ypmax=ypmax, clip=clip, sorted=sorted, m_projsync=m_projsync)
+    return shapes, get_shape_name(stype)
 
 
-def write_snx(objects, snxfile, type='auto', mode='w', z=99, xfmt='%g', yfmt='%g', zfmt='%g', close=True):
+def write_snx(objects, snxfile, type='auto', mode='w', z=99,
+              xfmt='%g', yfmt='%g', zfmt='%g', close=True):
     """Write points, lines or polygons in a sinusX file"""
     # Check depth
     if isinstance(objects, (LineString, Polygon)):
         objects = [objects]
     elif isinstance(objects[0], Point) or \
-            (not isinstance(objects[0], (LineString, Polygon)) and not hasattr(objects[0][0], '__len__')):
+            (not isinstance(objects[0], (LineString, Polygon))
+            and not hasattr(objects[0][0], '__len__')):
         objects = [objects]
         if type == 'auto' or isinstance(objects[0][0], Point):
             type = 'point'

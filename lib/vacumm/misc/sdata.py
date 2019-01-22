@@ -44,7 +44,7 @@ import numbers
 
 import numpy as N
 import pylab as P
-from matplotlib.collections import LineCollection, PolyCollection
+#from matplotlib.collections import LineCollection, PolyCollection
 from matplotlib.markers import MarkerStyle
 from mpl_toolkits.basemap import Basemap
 import cdms2
@@ -52,9 +52,13 @@ import MV2
 from _geoslib import Point
 
 from vacumm import vcwarn
-from .misc import kwfilter, broadcast
+from .misc import (kwfilter, broadcast, ArgList, memoize)
 from .units import m2deg, deg2m
-from .poly import sort_shapes, proj_shape, create_polygon, polygons
+from .geo import get_distances
+from .poly import (sort_shapes, create_polygon, polygons, clip_shapes,
+                   create_shapes, undersamp_shapes, get_shape_type,
+                   transform_shape_coords, is_shape_type,
+                   plot_shapes_on_map)
 from .basemap import create_map, get_proj
 from .masking import rsamp, convex_hull, polygon_mask, polygon_select
 from .grid import (resol, create_grid, get_xy, get_grid, meshcells, set_grid,
@@ -87,24 +91,14 @@ class Shapes(object):
         if a shapefile, it assumes that <input>.shp contains points,
         multipoints, lines or polygons, and that <input>.dbf
         contains their attributes.
-    proj: optional
-        A projection function to convert coordinates. It must accept
-        the "inverse" keyword.
-    m: optional
-        A Basemap instance for converting for plotting.
-    inverse: optional
-        Inverset the conversion with proj .
     clip: optional
         If in the form ``(xmin,ymin,xmax,ymax)``,
         clips to this box ; if a polygon like argument,
         it clips to this polygon
         (see :func:`~vacumm.misc.grid.masking.polygons()` for arguments).
-        If simply ``True`` and *m* is present, it clips to the bounds of *m*.
-    min_area: optional
-        Minimal area to keep a polygon
     samp: optional
         An integer to undersample coordinates of polygons and lines.
-    shapetype: optional
+    shape_type: optional
 
             - If 0, it must only deal with points ;
             - if 1, only polylines ;
@@ -113,31 +107,78 @@ class Shapes(object):
     POINTS = POINT = 0
     LINES = LINE = 1
     POLYGONS = POLYS = POLY = POLYGON = 2
-    INPUT_POINTS = 1
-    INPUT_MULTIPOINTS = 8
-    INPUT_POLYLINES = 3
-    INPUT_POLYGONS = 5
+#    INPUT_POINTS = 1
+#    INPUT_MULTIPOINTS = 8
+#    INPUT_POLYLINES = 3
+#    INPUT_POLYGONS = 5
 
-    def __init__(self, input, m=None, proj=False, inverse=False, clip=True,
-                 shapetype=None, min_area=None, sort=True,
-                 reverse=True, samp=1,
-                 clip_proj=True):
+    def __init__(self, input, clip=None,
+                 shape_type=None, apply_filter=None,
+                 sort=True, sort_key=None,
+                 reverse=True, samp=1):
 
-        # Load data
-        sdata = read_shapefile(input, m=m, proj=proj, inverse=inverse,
-                               clip=clip,
-                               shapetype=shapetype, min_area=min_area,
-                               sort=sort, samp=samp,
-                               clip_proj=clip_proj)
+        # Load shapes
+        if isinstance(input, six.string_types):  # from shapefile
+            shapes, shape_type = read_shapefile(input, shapetype=shape_type,
+                                                clip=clip, samp=samp)
+        else:  # from other type like Shapes instance or coordinates
+            shapes = create_shapes(input, shape_type=shape_type,
+                                   clip=clip, samp=samp)
 
-        # Set attributes
-        for key in ['shapes', 'shaper', 'proj', 'sorted', 'm', 'm_projsync']:
-            setattr('_'+key, sdata[key])
-        for key in ['xmin', 'xmax', 'ymin', 'ymax', 'xpmin',
-                    'xpmax', 'ypmin', 'ypmax']:
-            setattr(key, sdata[key])
+        # Post-process
+        self._shapes = shapes
+        if sort:
+            self.sort(key=sort_key, reverse=reverse)
+        else:
+            self._sorted = {'status': False}
 
-    def clip(self, zone, copy=True, sort=True, reverse=True, **kwargs):
+        # Shape type
+        if not shapes:
+            self._shape_type = shape_type
+        else:
+            self._shape_type = get_shape_type(shapes)
+
+    def __len__(self):
+        return len(self._shapes)
+
+    def __getitem__(self, key):
+        return self._shapes[key]
+
+    def __copy__(self):
+        return self.copy()
+
+    def copy(self):
+        kwargs = self._sorted['kwargs']
+        kwargs['sort_key'] = kwargs.pop('key')
+        return self.__class__(list(self._shapes), sort=self._sorted['status'],
+                              **self._sorted['kwargs'])
+
+    def sort(self, key=None, reverse=True, out='self'):
+        """Sort shapes according to their surface or length
+
+        reverse:
+            If True, greater polygons are first [default: True]
+        """
+        if self._shapes:
+            sort_shapes(self._shapes, key=key, reverse=reverse)
+        self._sorted = dict(status=True,
+                            kwargs=dict(key=key, reverse=reverse))
+        if out == 'self':
+            return self
+        return self._sorted
+
+    @property
+    def sorted(self):
+        return self._sorted['status']
+
+    def resort(self, target=None):
+        if target is None:
+            target = self
+        if self._sorted['status']:
+            target.sort(**self._sorted['kwargs'])
+        return target
+
+    def clip(self, zone, copy=True):
         """Clip to zone
 
         Parameters
@@ -152,136 +193,69 @@ class Shapes(object):
             to the initialization
             of the new instance.
         """
-        if not copy:
-            zone = self._clip_zone_(zone)
-            if zone is None:
-                return self
-            if self._type > 0:
-                newshapes = []
-                for shape in self:
-                    if zone.intersects(shape):
-                        intersections = shape.intersection(zone)
-                        newshapes.extend(
-                            [s for s in intersections
-                             if isinstance(s,  self._shaper)])
-                self._shapes = newshapes
-                if sort:
-                    self.sort(reverse=reverse)
-            return self
-        return self.__class__(self, clip=zone, **kwargs)
+        # Clip
+        shapes = clip_shapes(self._shapes, zone)
 
-#   def join_lines(self, poly=True):
-#       # Array of end points
-#       nsh = len(self)
-#       ends = N.zeros((2*nsh, 3))
-#       for i in xrange(nsh):
-#           ends[i, 0:1] = self._shapes[i][0]
-#           ends[i+1, 0:1] = self._shapes[i][-1]
-#           ends[i:i+2, 2] = float(i)
-#       # Distances
-#       xx = ends[:, 0].reshape((nsh*2, nsh*2))
-#       yy = ends[:, 1].reshape((nsh*2, nsh*2))
-#       dst = (xx-xx.transpose())**2+(yy-yy.transpose())**2
-#       new_shapes = []
+        # Copy
+        if copy:
+            out = self.__class__(shapes)
+        else:
+            self._shapes = shapes
 
-    def __len__(self):
-        return len(self._shapes)
+        # Sort
+        self.resort(out)
 
-    def __getitem__(self, key):
-        return self._shapes[key]
+        return out
 
-#    def project(self, proj=True, inverse=False):
-#        """Project shapes using proj
-#
-#        - **proj**: A Basemap instance or pure projection instance (from Basemap).
-#          If True, a mercator projection is used.
-#        - *inverse*: Inverse projection [default: False]
-#        """
-#        if proj is True:
-#            proj=merc(lon=(self.xmin, self.xmax), lat=(self.ymin, self.ymax))
-#        for i, shape in enumerate(self):
-#            bb = shape.boundary
-#            if self._type == 0:
-#                bb = proj(b[0], b[1], inverse=inverse)
-#            else:
-#                bb[:, 0], bb[:, 1] = proj(bb[:, 0], bb[:, 1], inverse=inverse)
-#            self._shapes[i] = self._shaper(bb)
-#        if isinstance(proj, Basemap): proj = proj.projtran
-#        self._proj.append((proj, inverse))
+    def transform(self, transform, **kwargs):
+        """Transform shape coordinates
 
-    def sort(self, reverse=True):
-        """Sort shapes according to their surface or length
+        A typical transformation is for converting from degrees to meters.
 
-    reverse:
-        If True, greater polygons are first [default: True]
+        See :func:`vacumm.misc.shaping.transform_shape_coords`
         """
-        self._sorted = sort_shapes(self._shapes, reverse=reverse)
+        shapes = [transform_shape_coords(shape, transform, **kwargs)
+                  for shape in self._shapes]
+        kwargs = self._sorted['kwargs']
+        kwargs['sort_key'] = kwargs.pop('key')
+        return self.__class__(shapes, sort=self._sorted['status'],
+                              **kwargs)
 
-    @property
-    def sorted(self):
-        return self._sorted
+    def undersamp(self, samp, copy=True):
+        """Undersamp shape coordinates"""
 
-    def get_type(self):
+        # Undersamp
+        shapes = undersamp_shapes(self._shapes)
+
+        # Copy
+        if copy:
+            out = self.__class__(shapes)
+        else:
+            self._shapes = shapes
+
+        # Sort
+        self.resort(out)
+
+        return out
+
+    def get_type(self, mode='string'):
         """Return the type of shapes
 
-        - :attr:`POINTS` = Points,
-        - :attr:`LINES` = LineStrings = PolyLines
-        - :attr:`POLYGONS` = Polygons
+        See :func:`vacumm.misc.shaping.get_shape_type`
         """
-        return self._type
-    type = property(fget=get_type)
+        return self._shape_type
+    type = shape_type = property(fget=get_type)
 
-    def is_type(self, type):
+    def is_type(self, shape_type):
         """Check type
 
         Example
         -------
-
-            >>> self.is_type(self.POLYS)
+        >>> self.is_type('polygon')
         """
-        return self.get_type() == type
+        return is_shape_type(self.type, shape_type)
 
-    def _get_proj_(self, proj=None):
-        """Get a valid projection function to operate on shapes coordinates"""
-        if proj is None:
-            return
-        if proj is True or isinstance(proj, six.string_types):
-
-            if hasattr(self, '_proj') and callable(self._proj):  # already projected
-                return
-
-            if proj is True and callable(self._m):  # from map
-
-                return self._m
-
-            # using grid.basemap.get_proj
-            if self.xmin > self.xmax:
-                gg = None
-            else:
-                gg = ([self.xmin, self.xmax],
-                      N.clip([self.ymin, self.ymax], -89.99, 89.99))
-            kw = dict(proj=proj) if isinstance(proj, six.string_types) else {}
-            return get_proj(gg, **kw)
-
-        if callable(self._proj):  # already projected
-
-            if proj is False:  # no projection -> project back
-                return lambda x, y, inverse=False: self._proj(x, y, inverse=not inverse)
-
-            if proj is not self._proj:  # re-projection
-                old_proj = proj
-
-                def proj(x, y, inverse=False):
-                    if inverse:
-                        return self._proj(*(old_proj(x, y, True)+(False, )))
-                    return old_proj(*self._proj(x, y, True))
-
-            else:  # no need to project
-                proj = None
-
-        return proj
-
-    def get_shapes(self, key=None, proj=None):
+    def get_shapes(self, key=None):
         """Get the list of geos objects (polygons, etc)
 
         :Param:
@@ -291,141 +265,119 @@ class Shapes(object):
         proj:
             ``True``, or a callable to project or re-project coordinates.
         """
-        # Objects to work on
-        if key is None:
-            shapes = self._shapes
-        else:
-            shapes = self._shapes[key]
-        single = not isinstance(shapes, list)
-        if single:
-            shapes = [shapes]
+        if key is not None:
+            return self._shapes[key]
+        return self._shapes
 
-        # Projection
-        proj = self._get_proj_(proj)
+    shapes = property(fget=get_shapes, doc="List of shapes")
 
-        # Loop on shapes
-        polys = []
-        for poly in shapes:
-            if proj:
-                poly = proj_shape(poly, proj)
-            polys.append(poly)
-
-        if single:
-            return polys[0]
-        return polys
-
-    def get_data(self, key=None, proj=None):
-        """Get the numeric version of the list of geos objects (polygons, etc)
+    def get_coords(self, key=None):
+        """Get the coordinates of shapes as numpy arrays
 
         :Param:
 
         key:
             A slice selector applied to the list.
-        proj:
-            ``True``, or a callable to project or re-project coordinates.
         """
         if not len(self):
             return []
-        # Projection
-        proj = self._get_proj_(proj)
 
         # Shapes to work on
-        if key is None:
-            shapes = self._shapes
-        else:
-            shapes = self._shapes[key]
-        single = not isinstance(shapes, list)
-        if single:
-            shapes = [shapes]
+        al = ArgList(self.get_shapes(key))
+        shapes = al.get()
 
         # Loop on shapes
         data = []
-        for poly in shapes:
-            xy = poly.boundary
-            if proj:
-                if self.is_type(self.POINTS):  # Points
-                    xy = N.array(proj(*xy))
-                else:  # Lines
-                    xx, yy = proj(*xy.T)
-                    xy = N.asarray([xx, yy]).T
-                    del xx, yy
-            data.append(xy)
+        for shape in shapes:
+            data.append(shape.boundary)
+        if self.is_type('point'):
+            data = N.array(data)
 
-        if single:
-            return data[0]
-        return data
+        return al.put(data)
 
-    def get_points(self, key=None, split=True, proj=None):
-        """Get all the points from all the shapes as a tuple (x,y)"""
+    get_data = get_coords
+
+    def get_points(self, key=None, split=True):
+        """Get all the points from all the shapes as an array of size (2,n)"""
         if not len(self):
             return N.array([[], []])
 
-        # Projection
-        proj = self._get_proj_(proj)
-
-        # Shapes to work on
-        if key is None:
-            shapes = self._shapes
-        else:
-            shapes = self._shapes[key]
-        single = not isinstance(shapes, list)
-        if single:
-            shapes = [shapes]
-
-        # Loop in shapes
-        xx, yy = [], []
-        for poly in shapes:
-            xy = poly.boundary
-            if self.is_type(self.POINTS):
-                xx.append(xy[0])
-                yy.append(xy[1])
-            else:
-                xx.extend(xy[:, 0].tolist())
-                yy.extend(xy[:, 1].tolist())
+        coords = self.get_coords(key)
+        if not isinstance(coords, N.ndarray):
+            coords = N.vstack(coords)
         if split:
-            if proj:
-                return proj(N.asarray(xx), N.asarray(yy))
-            return N.asarray(xx), N.asarray(yy)
-        if proj:
-            return N.asarray(proj(xx, yy))
-        return N.asarray([xx, yy])
+            coords = coords[:, 0], coords[:, 1]
+        else:
+            coords = coords.T
+        return coords
 
-    def get_xy(self, key=None, proj=None):
+    def get_xy(self, key=None, split=False):
         """Shortcut to ``get_points(split=false)``"""
-        return self.get_points(split=False, key=key, proj=proj)
-    xy = property(get_xy, doc="XY coordinates as a (2,npts) array")
+        return self.get_points(split=split, key=key)
 
-    def resol(self, deg=True):
-        """Compute the mean "resolution" of the shapes based on the first shape
+    @property
+    def xy(self):
+        """XY coordinates as a (2,npts) array"""
+        if not hasattr(self, '_xy'):
+            self._xy = self.get_xy(split=False)
+        return self._xy
 
-    deg:
+    @property
+    def xmin(self):
+        if not hasattr(self, '_xmin'):
+            self._xmin = self.xy[0].min()
+        return self._xmin
 
-                - if ``False``: return a resolution in meters has a the median distance between points
-                - if ``True``: return the median distance between points as a resolution in degrees ``(xres,yres)``
+    @property
+    def xmax(self):
+        if not hasattr(self, '_xmax'):
+            self._xmax = self.xy[0].max()
+        return self._xmax
 
-        """
+    @property
+    def ymin(self):
+        if not hasattr(self, '_ymin'):
+            self._ymin = self.xy[1].min()
+        return self._ymin
+
+    @property
+    def ymax(self):
+        if not hasattr(self, '_ymax'):
+            self._ymax = self.xy[1].max()
+        return self._ymax
+
+    def get_bbox(self, margin=0.):
+        """The bounding boox as ``[xmin, ymin, xmax, ymax]``"""
+        dx = (self.xmax - self.xmin) * margin
+        dy = (self.ymax - self.ymin) * margin
+        return self.xmin - dx, self.ymin - dy, self.xmax + dx, self.ymax + dy
+
+    @property
+    def bbox(self):
+        return self.get_bbox()
+
+    def get_resol(self, distmode="euclidian", statfunc="mean"):
+        """Compute the "resolution" of the shapes based on the first shape"""
         if not len(self):
             return 0, 0
         x, y = self.get_xy(key=0)
-        if deg and callable(self._proj):  # m->deg
-            dx, dy = resol((x, y), proj=False)
-            x0 = x.mean()
-            y0 = y.mean()
-            x1, y1 = self._proj(x0+dx, y0+dx, inverse=True)
-            return x1-x0, y1-y0
-        elif not deg and not callable(self._proj):
-            return resol((x, y), proj=True)
-        return resol((x, y), proj=False)
+        func = getattr(N, statfunc)
+        return func(get_distances(x[:-1], y[:-1], x[1:], y[1:],
+                                  pairwise=True, mode=distmode))
 
-    def get_map(self):
-        """Return the associated basemap instance if set"""
-        if hasattr(self._m, 'map'):
-            return self._m.map
-        return self._m
 
-    def plot(self, select=None, ax=None, fill=None, points=False, lines=True,
-             fillcolor=None, color='k', s=None, linewidth=None, m=None, show=True,
-             alpha=1, autoscale=True, title=None, **kwargs):
+    resol = get_resol  # compat
+
+#    def get_map(self):
+#        """Return the associated basemap instance if set"""
+#        if hasattr(self._m, 'map'):
+#            return self._m.map
+#        return self._m
+
+    def plot(self, select=None, ax=None, fig=None, m=None,
+             fill=None, points=False, color=None,
+             facecolor=None, edgecolor=None, s=None, linewidth=None,
+             show=True, alpha=1, autoscale=True, title=None, **kwargs):
         """Plot shapes
 
         Parameters
@@ -434,7 +386,8 @@ class Shapes(object):
         select: optional
             argument for selecting shapes in the list [defaul: None].
         fill: optional
-            Force filling (True/False), else guessed from shpe type, ie filling for polygons only [default: None]
+            Force filling (True/False), else guessed from shape type,
+            ie filling for polygons only [default: None]
         ax: optional
             Axes instance.
         m: optional
@@ -442,8 +395,6 @@ class Shapes(object):
             (created with :func:`~vacumm.misc.plot.map2`) or a :class:`~mpl_toolkits.basemap.Basemap` instance.
         points: optional
             Plots shapes as points.
-        lines: optional
-            Plot shapes as lines (if a of type :attr:`POINTS`).
         fill_<params>: optional
             ``<param>`` is passed to
               :class:`~matplotlib.collections.PolyCollection`.
@@ -459,85 +410,88 @@ class Shapes(object):
         autoscale: optional
             Autoscale axis limits?
         """
-
-        # Keywords
-        kwpoints = kwfilter(kwargs, 'points')
-        kwlines = kwfilter(kwargs, 'lines')
-        kwpoints.setdefault('c', color)
-        if s is not None:
-            kwpoints.setdefault('s', s)
-        if linewidth is not None:
-            kwlines.setdefault('linewidth', linewidth)
-        kwlines.setdefault('linestyles', 'solid')
-        kwlines.setdefault('color', color)
-        kwlines.setdefault('alpha', alpha)
-        kwpoints.setdefault('alpha', alpha)
-        kwfill = kwfilter(kwargs, 'fill')
-        kwfill.update(kwlines)
-        if fill is None and self.is_type(self.POLYGONS):
-            fill = True
+        # Figure
+        if ax is None:
+            if six.callable(m):
+                ax = getattr(m, 'axes', getattr(m, 'ax', None))
+            if ax is None:
+                ax = P.gca()
+        if fig is None:
+            fig = ax.get_figure()
 
         # Map
+        kwmap = kwfilter(kwargs, 'm_')
         if m is True or m == 'auto':
-            if m != 'auto' and getattr(self, '_m', None):
-                m = self._m
-            else:
-                m = Map.get_current(axes=ax) or True
+#            if m != 'auto' and getattr(self, '_m', None):
+#                m = self._m
+#            else:
+            m = Map.get_current(axes=ax) or True
         if m is True:
             kwmap = kwfilter(kwargs, 'm_')
             if not len(self):
                 vcwarn('No shape found, thus nothing to plot')
             else:
-                if 'lon' not in kwmap:
-                    dx = (self.xmax-self.xmin)*.05
-                    kwmap['lon'] = (self.xmin-dx, self.xmax+dx)
-                if 'lat' not in kwmap:
-                    dy = (self.ymax-self.ymin)*.05
-                    kwmap['lat'] = (self.ymin-dy, self.ymax+dy)
+                if 'lon' not in kwmap or 'lat' not in kwmap:
+                    x0, y0, x1, y1 = self.get_bbox(margin=0.05)
+                    if 'lon' not in kwmap:
+                        kwmap['lon'] = (x0, x1)
+                    if 'lat' not in kwmap:
+                        kwmap['lat'] = (y0, y1)
             kwmap.setdefault('res', None)
             kwmap.setdefault('proj', 'merc')
             kwmap.update(show=False, axes=ax, title=title)
             m = map2(**kwmap)
             ax = m.axes
-        isbm = isinstance(m, Basemap)
+#        isbm = isinstance(m, Basemap)
 
-        # Plot on what?
-        if ax is None:
-            ax = getattr(m, 'axes',  None) or P.gca()
+        # Main plots
+        if color is None and m and self.is_type('polygon'):
+            color = land
+        plot_shapes_on_map(self.shapes, ax=ax, m=m, fill=fill, points=points,
+                           facecolor=facecolor, edgecolor=edgecolor,
+                           s=s, color=color, linewidth=linewidth,
+                           alpha=alpha, **kwargs)
+        if m:
+            if hasattr(m, 'map'):
+                m = m.map
+            m.set_axes_limits(ax=ax)
 
-        # Plot what?
-        if points:
-            xx, yy = self.get_points(split=True, proj=m)
-        if not self.is_type(self.POINTS):
-            data = self.get_data(select, proj=m)
-
-        # Polygons or lines
-        oo = []
-        if not self.is_type(self.POINTS):
-            if (fill is None and self.is_type(self.POLYGONS)) or fill is True:  # Polygons
-                if fillcolor is None:
-                    fillcolor = land
-                for kv in dict(facecolor=fillcolor).items():
-                    kwfill.setdefault(*kv)
-                cc = PolyCollection(data, **kwfill)
-            else:
-                cc = LineCollection(data, **kwlines)
-            ax.add_collection(cc)
-            oo.append(cc)
-            if isbm:
-                m.set_axes_limits(ax=ax)
-
-        # Points
-        if points:
-            cc = ax.scatter(xx, yy, **kwpoints)
-            oo.append(cc)
-            if isbm:
-                m.set_axes_limits(ax=ax)
-
-        # Special properties
-        for key in ['label']:
-            if key in kwargs and hasattr(cc, 'set_'+key):
-                getattr(cc, 'set_'+key)(kwargs[key])
+#        # Transform
+#        SS = self if m is None or (0., 0.) == m(0, 0) else self.transform(m)
+#
+#        # Plot what?
+#        if points:
+#            xx, yy = SS.get_points(split=True)
+#        if not self.is_type(self.POINTS):
+#            data = SS.get_coords(select)
+#
+#        # Polygons or lines
+#        oo = []
+#        if not self.is_type(self.POINTS):
+#            if (fill is None and self.is_type(self.POLYGONS)) or fill is True:  # Polygons
+#                if fillcolor is None:
+#                    fillcolor = land
+#                for kv in dict(facecolor=fillcolor).items():
+#                    kwfill.setdefault(*kv)
+#                cc = PolyCollection(data, **kwfill)
+#            else:
+#                cc = LineCollection(data, **kwlines)
+#            ax.add_collection(cc)
+#            oo.append(cc)
+#            if isbm:
+#                m.set_axes_limits(ax=ax)
+#
+#        # Points
+#        if points:
+#            cc = ax.scatter(xx, yy, **kwpoints)
+#            oo.append(cc)
+#            if isbm:
+#                m.set_axes_limits(ax=ax)
+#
+#        # Special properties
+#        for key in ['label']:
+#            if key in kwargs and hasattr(cc, 'set_'+key):
+#                getattr(cc, 'set_'+key)(kwargs[key])
 
         # Finalize
         if title:
@@ -548,87 +502,147 @@ class Shapes(object):
         if show:
             P.show()
 
-        return oo
 
 
 class GSHHSBM(Shapes):
     """Shoreline from USGS using Basemap
 
     Initialized with a valid Basemap instance with resolution not equal to None,
-    or thanks to arguments passed to :func:`create_mapplot.map`
+    or thanks to arguments passed to :func:`~vacumm.misc.basemap.create_map`
 
     input:
         Basemap or Shapes instance [default: None]
 
     """
 
-    def __init__(self, input=None, clip=None, sort=True, reverse=True, proj=False, **kwargs):
+    def __init__(self, input=None, clip=None, **kwargs):
 
-        # From another Shapes instance
-        if isinstance(input, Shapes):
-            if clip is None:  # m is not None and
-                clip = [input.xmin, input.ymin, input.xmax, input.ymax]
-            input = input._m
 
-        # Get the map without projection
-        if not isinstance(input, Basemap):
-
-            # Base to create the map
-            kwmap = kwargs.copy()
-            if isinstance(input, str):
-                kwmap['res'] = input
-            elif isinstance(input, dict):
-                kwmap.update(input)
-
-            # Clipping zone
-            if clip is not None:
-
-                # Vertices
-                clip = create_polygon(clip, mode='verts')
-
-                # Map extension from clip bounds
-                kwmap.setdefault('lon_min', clip[:, 0].min())
-                kwmap.setdefault('lon_max', clip[:, 0].max())
-                kwmap.setdefault('lat_min', clip[:, 1].min())
-                kwmap.setdefault('lat_max', clip[:, 1].max())
-
-            # Default resolution is 'i' if nothing to estimate it
-            if not 'res' in kwmap and not 'resolution' in kwmap and \
-                ((not 'lon' in kwmap and
-                  (not 'lon_min' in kwmap or not 'lon_max' in kwmap)) or
-                    (not 'lat' in kwmap and
-                        (not 'lat_min' in kwmap or not 'lat_max' in kwmap))):
-                kwmap['res'] = 'i'
-
-            # Check lats
-            if 'lat_min' in kwmap:
-                kwmap['lat_min'] = max(kwmap['lat_min'], -89.99)
-            if 'lat_max' in kwmap:
-                kwmap['lat_max'] = min(kwmap['lat_max'], 89.99)
-
-            # Build the map
-            m = create_map(**kwmap)
-            self.res = m.resolution
+        # From another Shapes instance or a list of shapes
+        if isinstance(input, list):
+            shapes = input
+        elif isinstance(input, Shapes):
+            shapes = input.shapes
 
         else:
 
-            clip = False
-            m = input
+            # Create the basemap
+            if not isinstance(input, Basemap):
 
-        # Get unprojected polygons vertices
-        self.res = m.resolution
-        assert m.resolution is not None, 'Your map needs its resolution to be set'
-        all_verts = []
-        for i, verts in enumerate(m.coastpolygons):
-            if m.coastpolygontypes[i] in [2, 4]:
-                continue  # Skip lakes
-            if m.projection != 'cyl':  # Project back
-                verts = m.projtran(verts[0], verts[1], inverse=True)
-            all_verts.append(N.asarray(verts).T)
+                # Clipping zone
+                if clip is not None:
+                    clip = create_polygon(clip, mode='verts')
+                    xmin = clip[:, 0].min()
+                    xmax = clip[:, 0].max()
+                    ymin = clip[:, 1].min()
+                    ymax = clip[:, 1].max()
+                    kw = dict(lon_min=xmin, lon_max=xmax,
+                                        lat_min=ymin, lat_max=ymax)
+                else:
+                    kw = {}
 
-        # Final initialization
-        Shapes.__init__(self, all_verts, m=m, clip=clip, sort=sort, proj=proj,
-                        shapetype=Shapes.POLYGON, **kwargs)
+                # Resolution
+                if input is None:
+                    kw['res'] = 'auto'
+                elif isinstance(input, dict):
+                    kw.update(input)
+                else:
+                    kw['res'] = input
+                kw['proj'] = 'cyl'
+
+#                # Check latitudes
+#                if 'lat_min' in kw:
+#                    kw['lat_min'] = max(kw['lat_min'], -89.9999)
+#                if 'lat_max' in kw:
+#                    kw['lat_max'] = min(kw['lat_max'], 89.9999)
+
+                # Create the map
+                m = create_map(**kw)
+                clip = None
+
+            # Already a basemap
+            else:
+
+                m = input
+                assert m.projection is not None
+
+            # Get the shapes
+            shapes = []
+            for i, verts in enumerate(m.coastpolygons):
+                if m.coastpolygontypes[i] in [2, 4]:
+                    continue  # Skip lakes
+                if m.projection != 'cyl':  # Project back
+                    verts = m.projtran(verts[0], verts[1], inverse=True)
+                shapes.append(create_polygon(verts))
+
+        # Init with shapes
+        Shapes.__init__(self, shapes, **kwargs)
+
+#        # From another Shapes instance
+#        if isinstance(input, Shapes):
+#            if clip is None:
+#                clip = [input.xmin, input.ymin, input.xmax, input.ymax]
+#
+#        # Get the map without projection
+#        if not isinstance(input, Basemap):
+#
+#            # Base to create the map
+#            kwmap = kwargs.copy()
+#            if isinstance(input, str):
+#                kwmap['res'] = input
+#            elif isinstance(input, dict):
+#                kwmap.update(input)
+#
+#            # Clipping zone
+#            if clip is not None:
+#
+#                # Vertices
+#                clip = create_polygon(clip, mode='verts')
+#
+#                # Map extension from clip bounds
+#                kwmap.setdefault('lon_min', clip[:, 0].min())
+#                kwmap.setdefault('lon_max', clip[:, 0].max())
+#                kwmap.setdefault('lat_min', clip[:, 1].min())
+#                kwmap.setdefault('lat_max', clip[:, 1].max())
+#
+#            # Default resolution is 'i' if nothing to estimate it
+#            if not 'res' in kwmap and not 'resolution' in kwmap and \
+#                ((not 'lon' in kwmap and
+#                  (not 'lon_min' in kwmap or not 'lon_max' in kwmap)) or
+#                    (not 'lat' in kwmap and
+#                        (not 'lat_min' in kwmap or not 'lat_max' in kwmap))):
+#                kwmap['res'] = 'i'
+#
+#            # Check lats
+#            if 'lat_min' in kwmap:
+#                kwmap['lat_min'] = max(kwmap['lat_min'], -89.99)
+#            if 'lat_max' in kwmap:
+#                kwmap['lat_max'] = min(kwmap['lat_max'], 89.99)
+#
+#            # Build the map
+#            m = create_map(**kwmap)
+#            self.res = m.resolution
+#
+#        else:
+#
+#            clip = False
+#            m = input
+#
+#        # Get unprojected polygons vertices
+#        self.res = m.resolution
+#        assert m.resolution is not None, 'Your map needs its resolution to be set'
+#        all_verts = []
+#        for i, verts in enumerate(m.coastpolygons):
+#            if m.coastpolygontypes[i] in [2, 4]:
+#                continue  # Skip lakes
+#            if m.projection != 'cyl':  # Project back
+#                verts = m.projtran(verts[0], verts[1], inverse=True)
+#            all_verts.append(N.asarray(verts).T)
+#
+#        # Final initialization
+#        Shapes.__init__(self, all_verts, clip=clip, sort=sort,
+#                        transform=transform,
+#                        shapetype=Shapes.POLYGON, **kwargs)
 
 
 GSHHS_BM = GSHHSBM
@@ -1033,20 +1047,21 @@ class XYZ(object):
         xyz.exclude(*self._exclusions)
         return xyz
 
-    def zone(self, poly=False, mask=True):
+    def get_bbox(self, poly=False, mask=True):
         """Get xmin,ymin,xmax,ymax
 
-    poly:
-        if True, return zone as a Polygon instance"""
+        Parameters
+        ----------
+        poly: bool
+            if True, return zone as a Polygon instance
+        """
         zone = self.get_xmin(mask), self.get_ymin(
             mask), self.get_xmax(mask), self.get_ymax(mask)
         if poly:
             return create_polygon(zone)
         return zone
 
-#   def get_map(self):
-#       """Return the map instance or None"""
-#       return self._m
+    zone = get_bbox  # compat
 
     def set_transp(self, transp):
         """Set :attr:`transp`
@@ -1216,12 +1231,12 @@ class XYZ(object):
         for i, zone in enumerate(zones):
             if isinstance(zone, XYZ):
                 zone = zone.shadows()
-            if isinstance(zone, tuple):  # inclusions
-                exc = create_polygon(zone)
-                if len(zone) == 1 or len(zone[1]) == 0:
-                    zone = exc
-                else:
-                    zone = exc, create_polygon(zone[1]), zone[2]
+            if isinstance(zone, tuple):  # FIXME: use inclusions too
+                zone = zone[0]
+#                if len(zone) == 1 or len(zone[1]) == 0:
+#                    zone = exc
+#                else:
+#                    zone = exc, create_polygon(zone[1]), zone[2]
             else:
                 zone = create_polygon(zone)
             zones[i] = zone
@@ -1257,10 +1272,12 @@ class XYZ(object):
         self._exclusions = []
         self._update_()
 
+    @property
     def selections(self):
         """Get all selection polygons as a tuple"""
         return self._selections
 
+    @property
     def exclusions(self):
         """Get all exclusion polygons as a tuple"""
         return self._exclusions
@@ -1279,7 +1296,8 @@ class XYZ(object):
         assert self._mask is not None
         if mask is False:
             return var
-        if isinstance(mask, str) and (mask.startswith('rever') or mask.startswith('inver') or
+        if isinstance(mask, str) and (mask.startswith('rever') or
+                                      mask.startswith('inver') or
                                       mask.startswith('mask')):
             mask = ~self._mask
         else:
@@ -1352,7 +1370,8 @@ class XYZ(object):
         yo:
             Output Y
         xyz:
-            If True, return a :class:`XYZ` instance instead of a :mod:`numpy` array
+            If True, return a :class:`XYZ` instance instead
+            of a :mod:`numpy` array
         interp_<param>: optional
             ``<param>`` is passed to the
               :func:`~vacumm.misc.grid.regridding.xy2xy` interpolation routine.
@@ -1394,9 +1413,10 @@ class XYZ(object):
         - ``"ind"``: indices of points
         - ``"poly"``: :class:`_geoslib.Polygon` instance
         """
-        return convex_hull((self.get_x(mask), self.get_y(mask)), poly=out == 'poly')
+        return convex_hull((self.get_x(mask), self.get_y(mask)),
+                           poly=out == 'poly')
 
-    def shadows(self):
+    def get_shadows(self):
         """Get the polygons defining the 'shadow' of this dataset.
 
         It consists of a tuple of two elements:
@@ -1404,7 +1424,8 @@ class XYZ(object):
             - the convex hull as a polygon,
             - a list of exclusion polygons that intersect the convex hull.
 
-        Therefore, a point in the shadow must be inside the convex hull polygon,
+        Therefore, a point in the shadow must be inside
+        the convex hull polygon,
         and outside the exclusion polygons.
 
         Returns
@@ -1413,7 +1434,7 @@ class XYZ(object):
         """
         hull_poly = self.hull(out='poly')
         exc_polys = []
-        for exc in self.exclusions():
+        for exc in self._exclusions:
             if isinstance(exc, tuple):
                 exc = exc[0]
             if hull_poly.intersects(exc):
@@ -1428,6 +1449,8 @@ class XYZ(object):
                 radius = N.sqrt((xres**2+yres**2)/2.)*self.get_magnet()
             magnet = radius, self.x, self.y
         return hull_poly, exc_polys, magnet
+
+    shadows = get_shadows  # compat
 
     def contains(self, x, y):
         """Check if one or several points are within a the convex hull
@@ -1459,7 +1482,8 @@ class XYZ(object):
                 return False
             return Point(x, y).within(hull)
 
-    def resol(self, convex_hull_method='delaunay', exc=[], deg=False):
+    def resol(self, convex_hull_method='delaunay', exc=[], meters=True,
+              **kwargs):
         """Return the mean resolution.
 
         Algorithm: Median distances between facets of triangles
@@ -1469,47 +1493,22 @@ class XYZ(object):
         (xres,yres)
 
         """
-        # Coordinates
+        # FIXME: integrate triangular resol to resol()
         x = self.x
         y = self.y
-        if not deg:
-            x, y = self._proj_(True)(x, y)
-
-#       if method.startswith('tri'): # Using the median length of triangles
+        meters = not kwargs.get('deg', not meters)
+        distmode = "haversine" if meters else "euclidian"
         from scipy.spatial import Delaunay
-
         coord = N.vstack((x, y)).T
         t = Delaunay(coord)
         distances = []
-        for p1, p2, p3 in t.vertices:
-            distances.append(N.sqrt((x[p1]-x[p2])**2+(y[p1]-y[p2])**2))
-            distances.append(N.sqrt((x[p1]-x[p3])**2+(y[p1]-y[p3])**2))
-            distances.append(N.sqrt((x[p2]-x[p3])**2+(y[p2]-y[p3])**2))
-
+        for p, q in [(0, 1), (1, 2), (2, 0)]:
+            dd = get_distances(x[t.vertices[:, p]], y[t.vertices[:, p]],
+                               x[t.vertices[:, q]], y[t.vertices[:, q]],
+                               pairwise=True, mode=distmode)
+            distances.append(dd)
+        distances = N.concatenate(distances)
         xres = yres = N.median(distances)
-        del t, distances
-
-#       else: # Using the convex hull
-#
-#           # Convex hull polygon
-#           hull = convex_hull((x, y), poly=True, method=convex_hull_method)
-#
-#           # Area
-#           # - max = convex hull
-#           area = hull.area()
-#           # - substract intersections with exclusions
-#           #FIXME: xyz.resol: non overlapping exclusions+inclusions
-#           for e in exc+self.exclusions():
-#               if isinstance(e, tuple):
-#                   e, incs = e
-#               else:
-#                   incs = []
-#               if hull.intersects(e):
-#                   for i in hull.intersection(e):
-#                       area -= i.area()
-#
-#           # Area and mean resolution
-#           xres = yres = N.sqrt(area/len(x))
 
         return xres, yres
 
@@ -1541,6 +1540,7 @@ class XYZ(object):
         # Conversions
         return self._get_res_(xres, yres, deg)
 
+    @memoize
     def _get_res_(self, xres, yres, degres):
         if degres:  # need degrees
             if xres < 0:
@@ -1565,7 +1565,9 @@ class XYZ(object):
             proj = get_proj((self._x, self._y))
         return proj
 
-    def get_grid(self, res=None, xmin=None, xmax=None, ymin=None, ymax=None, relres=.5, degres=False, id='xyz_grid'):
+    @memoize
+    def get_grid(self, res=None, xmin=None, xmax=None, ymin=None, ymax=None,
+                 relres=.5, degres=False, id='xyz_grid'):
         """Generate a rectangular grid based on x/y positions and resolution
 
     res:
@@ -1791,7 +1793,6 @@ class XYZ(object):
 
         Parameters
         ----------
-
         mode: optional
             'valid', 'masked' or 'both'.
         size: optional
@@ -1957,14 +1958,17 @@ class XYZ(object):
     def save(self, xyzfile, **kwargs):
         """Save to a file
 
-    xyzfile:
-        Output file name
+        Parameters
+        ----------
+        xyzfile:
+            Output file name
 
                 - write a netcdf file if it ends with ".nc" or ".grd"
                 - write a sinux file if it ends with ".snx"
                 - else write an ascii file with 3 columns
 
-        - Other keywords are passed to :func:`numpy.savetxt` for ascii saving
+        **kwargs
+            Other keywords are passed to :func:`numpy.savetxt` for ascii saving
         """
         if xyzfile.endswith('.nc') or xyzfile.endswith('.grd'):
             x = cdms2.createVariable(self.x, id='x')
@@ -2043,6 +2047,7 @@ class XYZMerger(object):
         """Return the merger as a list of datasets"""
         return self._datasets
 
+    @property
     def ids(self):
         return [d.id for d in self._datasets]
 
@@ -2088,7 +2093,7 @@ class XYZMerger(object):
 
     def _key_(self, key):
         if isinstance(key, str):
-            key = self.ids().find(key)
+            key = self.ids.find(key)
         return key
 
     def get_xyz(self, mask=True, **kwargs):
@@ -2126,33 +2131,36 @@ class XYZMerger(object):
              xmin=None, xmax=None, ymin=None, ymax=None, margin=5, xres=None, yres=None, **kwargs):
         """
 
-    alpha:
-        Alpha transparency:
+    Parameters
+    ----------
+        alpha:
+            Alpha transparency:
 
-                - applied to **all** points if ``mode="cluster"``
-                - applied to **hidden** points if ``mode="data"``
+                    - applied to **all** points if ``mode="cluster"``
+                    - applied to **hidden** points if ``mode="data"``
 
-    mode:
-        Display mode:
+        mode:
+            Display mode:
 
-                - ``"cluster"``: Points from different datasets have different colors and markers,
-                    and hidden points are transparent.
-                - ``"data"``: Points have the same marker, colors depends on Z value and hidden
-                    points are masked.
+                    - ``"cluster"``: Points from different datasets have different colors and markers,
+                        and hidden points are transparent.
+                    - ``"data"``: Points have the same marker, colors depends on Z value and hidden
+                        points are masked.
 
-    marker:
-        Define a single or several markers to be used.
-    legend:
-        Show a legend if ``mode="cluster"``.
-    title:
-        Title of the plot.
-    m:
-        :class:`~mpl_toolkits.basemap.Basemap` instance.
-    m_margin:
-        Margin for ``m``, relative to the mean resolution (see :meth:`XYZ.resol`)
-    m_<keywords>:
-        Keywords are passed to :func:`~vacumm.misc.plot.map`.
-        - Extra keywords are passed to :meth:`XYZ.plot`.
+        marker:
+            Define a single or several markers to be used.
+        legend:
+            Show a legend if ``mode="cluster"``.
+        title:
+            Title of the plot.
+        m:
+            :class:`~mpl_toolkits.basemap.Basemap` instance.
+        m_margin:
+            Margin for ``m``, relative to the mean resolution (see :meth:`XYZ.resol`)
+        m_<keywords>:
+            Keywords are passed to :func:`~vacumm.misc.plot.map`.
+        **kwargs
+            Extra keywords are passed to :meth:`XYZ.plot`.
         """
 
         # Limits
@@ -2190,13 +2198,14 @@ class XYZMerger(object):
             if color is None:
                 try:
                     from matplotlib._color_data import TABLEAU_COLORS
-                    color = TABLEAU_COLORS.keys()
-                except:
+                    color = list(TABLEAU_COLORS.keys())
+                except ImportError:
                     color = simple_colors
             color = broadcast(color, len(self))
             if marker is None:
-                marker = MarkerStyle.markers
+                marker = list(MarkerStyle.markers.keys())
             marker = broadcast(marker, len(self))
+
 
             # Copy all datasets
             datasets = [copy.deepcopy(d) for d in self._datasets]
@@ -2206,7 +2215,7 @@ class XYZMerger(object):
             for j, i in enumerate(range(len(datasets)-1, -1, -1)):
 
                 # Plot current dataset
-                pp.append(datasets[i].plot(mode='both', color=color[i], marker=marker[i],
+                pp.append(datasets[i].plot(mode='both', color=color[i], #marker=marker[i],
                                            zorder=200+i, masked_zorder=50+i, m=m, **kwplot))
                 m = datasets[i]._m
 
