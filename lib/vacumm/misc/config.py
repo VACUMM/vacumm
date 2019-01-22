@@ -39,21 +39,6 @@ import six
 from six.moves import filter
 from six.moves import map
 from six.moves import range
-if __name__ == '__main__':
-    import sys
-    del sys.path[0]
-
-__author__ = 'Stéphane Raynaud, Jonathan Wilkins'
-__email__ = 'raynaud@actimar.fr, wilkins@actimar.fr'
-__doc__ = '''\
-Configuration management with validation capabilities and commandline interaction.
-It is based on :mod:`configobj` and :mod:`validate` modules.
-
-
-List of builtin validators for :mod:`validate`, along with their plural form: {}
-
-'''
-
 import datetime
 import inspect
 import os
@@ -70,13 +55,33 @@ from argparse import (ArgumentParser,
 from warnings import warn
 
 from configobj import ConfigObj, flatten_errors
-from validate import Validator, ValidateError, VdtTypeError, VdtValueTooSmallError, VdtValueTooBigError
+from validate import (Validator, ValidateError, VdtTypeError,
+                      VdtValueTooSmallError, VdtValueTooBigError)
 import validate
+from vacumm.config import VCValidator
 
 try:
     import numpy
-except:
+except ImportError:
     numpy = None
+
+if __name__ == '__main__':
+    import sys
+    del sys.path[0]
+
+
+__author__ = 'Stéphane Raynaud, Jonathan Wilkins'
+__email__ = 'raynaud@actimar.fr, wilkins@actimar.fr'
+__doc__ = '''\
+Configuration management with validation capabilities and commandline interaction.
+It is based on :mod:`configobj` and :mod:`validate` modules.
+
+
+List of builtin validators for :mod:`validate`, along with their plural form: {}
+
+'''
+
+
 
 __all__ = ['ConfigException', 'ValidationWarning',
            'ConfigManager', 'print_short_help',
@@ -124,7 +129,7 @@ def _valwrap_(validator):
         #        default = args[0] if len(args) else kwargs.get('default', None)
         #        if value == '': return default
         # Remove extraneous arguments the validator can't handle
-        argspec = inspect.getargspec(validator)
+        argspec = inspect.getfullargspec(validator)
         kwargs = kwargs.copy()
         for k in kwargs.keys():
             if k not in argspec.args:
@@ -355,9 +360,9 @@ def validator_datetime(value, default=None, fmt='%Y-%m-%dT%H:%M:%S'):
         raise VdtDateTimeError(e)
 
 
-_re_validator_workdir_split_ = re.compile('\s*>\s*').split
-_re_validator_workdir_start_ = re.compile('^[\[(]').search
-_re_validator_workdir_stop_ = re.compile('[\])]').search
+_re_validator_workdir_split_ = re.compile(r'\s*>\s*').split
+_re_validator_workdir_start_ = re.compile(r'^[\[(]').search
+_re_validator_workdir_stop_ = re.compile(r'[\])]').search
 
 
 def validator_workdir(value, default=''):
@@ -379,11 +384,12 @@ def validator_workdir(value, default=''):
 
 
 def validator_path(value, default='', expand=None):
-    '''
-    Parse a value as a path
+    '''Parse a value as a path
+
     Parameters
     ----------
-        -- **expand**: expandvars and expandhome on loaded path
+    expand:
+        expandvars and expandhome on loaded path
 
     **Warning: expand currently can't work with interpolation**
     '''
@@ -560,7 +566,7 @@ def _update_registry_():
 
     # 1. Fix specs dicts
     # 2. Generate list validators
-    for k, v in VALIDATOR_SPECS.items():
+    for k, v in list(VALIDATOR_SPECS.items()):
 
         # Check type of spec
         if not isinstance(v, dict):
@@ -872,12 +878,12 @@ class ConfigManager(object):
             # Validation itself
             err = cfg.validate(self._validator, preserve_errors=True)
 
-            # Defaults for fixing
-            if validate in ['fix', 'report']:
-                defaults = self.defaults()
-
             # Loop on errors
-            if isinstance(err, dict):
+            if isinstance(err, dict) and validate != 'check':
+
+                # Defaults for fixing
+                if validate in ['fix', 'report']:
+                    defaults = self.defaults()
 
                 for sections, key, error in flatten_errors(cfg, err):
 
@@ -1723,7 +1729,7 @@ def _opt2cfgname_(name, nested):
     return cfgkey
 
 
-_re_cfg2optname_sub = re.compile('[_\s]').sub
+_re_cfg2optname_sub = re.compile(r'[_\s]').sub
 
 
 def _cfg2optname_(name, nested=None):
@@ -1805,11 +1811,11 @@ def get_spec(spec, validator=None):
 getspec = get_spec
 
 
-def get_validator(functions=None):
+def get_validator(functions=None, cls=VCValidator):
     """Get a default validator"""
 
     # Init
-    validator = Validator()
+    validator = cls()
 
     # User defined functions
     if functions:

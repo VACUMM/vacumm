@@ -2,8 +2,11 @@
 """
 Information about seaports and stations
 
-StationInfo : A class to retrieve alot of information about seaports and stations.
-MeanSeaLevel : A class dedicated to mean sea level along french coast (more complete than StationInfo).
+SeaLevelStationInfo:
+    A class to retrieve alot of information about seaports and stations.
+MeanSeaLevel:
+    A class dedicated to mean sea level along french coast
+    (more complete than SeaLevelStationInfo).
 """
 # Copyright or © or Copr. Actimar/IFREMER (2011-2016)
 #
