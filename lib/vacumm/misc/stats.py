@@ -47,6 +47,7 @@ import cdtime
 from genutil.statistics import percentiles
 
 import vacumm
+from .misc import MV2_axisConcatenate
 from .axes import isaxis
 from .grid import get_grid, set_grid, cp_atts
 from .atime import comptime
@@ -714,7 +715,7 @@ class StatAccum(object):
             if self.withtime:
                 taxes = ()
                 for i, tt in enumerate(self._stimes):
-                    taxis = vacumm.misc.MV2_axisConcatenate(tt)
+                    taxis = MV2_axisConcatenate(tt)
                     taxis.stataccum_oldid = taxis.id
                     taxis.id = 't'+str(i)
                     taxes += taxis,
@@ -1320,7 +1321,7 @@ class StatAccum(object):
 
         # Time axes
         stimes = None if self._stimes is None else \
-            [vacumm.misc.MV2_axisConcatenate(stime) for stime in self._stimes]
+            [MV2_axisConcatenate(stime) for stime in self._stimes]
 
         # Format and cache
         kwargs.update(templates=stimes, htemplates=self._baxis,
