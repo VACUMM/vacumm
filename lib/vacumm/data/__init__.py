@@ -52,6 +52,10 @@ from vacumm import VACUMMError, vcwarn
 import vacumm.misc.cf as cf  # compat
 from . import satellite
 
+__all__ = ['DS', 'DATASET_SPECS', 'setup_dataset', 'register_dataset',
+           'print_registered_datasets',
+           ]
+
 #: Specifications of available dataset types
 DATASET_SPECS = {}
 dataset_specs = DATASET_SPECS # compat

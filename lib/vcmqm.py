@@ -37,12 +37,13 @@ from genutil import minmax
 # Matplotlib
 
 import matplotlib.pyplot as plt
-import pylab as P
-mp = P
+#import pylab as P
+mp = P = plt
 from matplotlib import use, rc, rcdefaults, rcParams
 from matplotlib.dates import (DayLocator, HourLocator, WeekdayLocator,
                               MinuteLocator, YearLocator, MonthLocator,
-                              DateFormatter,  SecondLocator)
+                              DateFormatter,  SecondLocator,
+                              date2num, num2date)
 from matplotlib.ticker import (AutoLocator, MaxNLocator, FixedLocator,
                                IndexLocator, LinearLocator, LogLocator,
                                MultipleLocator, AutoMinorLocator)
@@ -75,7 +76,7 @@ from vacumm.misc.log import *
 
 from vacumm.misc.namelist import *
 
-from vacumm.misc.docstrings import *
+# from vacumm.misc.docstrings import *
 
 from vacumm.misc.weakrefset import *
 
@@ -89,8 +90,16 @@ from vacumm.misc.bases import *
 
 from vacumm.misc.remote import *
 
+from vacumm.misc.poly import *
+create_polygons = polygons = as_polygons
 
 # - misc level 1 (dep on misc)
+
+from vacumm.misc.cf import *
+match_obj = match_known_cf_obj
+match_known_var = match_var = match_known_cf_var
+match_known_axis = match_known_cf_axis
+
 
 from vacumm.misc.axes import *
 
@@ -109,7 +118,7 @@ ocean_color = ocean
 sea_color = sea
 
 from vacumm.misc.basemap import *
-
+merc = get_merc
 
 # - misc level 2  (dep on level 1)
 
@@ -124,22 +133,18 @@ krign = krig
 from vacumm.misc.atime import *
 datetime_ = adatetime = datetime
 datetime64_ = adatetime64 = datetime64
-del datetime, datetime64
+#del datetime, datetime64
 add_time = add
 is_time_interval = is_interval
 tcompress = compress
 round_time_interval = round_interval
 round_time = round_date
 
-from vacumm.misc.cf import *
-match_obj = match_known_cf_obj
-match_known_var = match_var = match_known_cf_var
-match_known_axis = match_known_cf_axis
-
 from vacumm.misc.io import *
 
 from vacumm.misc.sigma import *
 
+from vacumm.misc.stats import *
 
 # - misc level 4
 

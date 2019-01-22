@@ -6,19 +6,22 @@ from __future__ import print_function
 from vcmqm import *
 
 # Data
-
-from vacumm.data import setup_dataset, DS, register_dataset
-
-
-from vacumm.data.misc.dataset import (Dataset, OceanDataset, AtmosDataset,
-                                      GenericDataset)
-
-
+from vacumm.data import *
+from vacumm.data.misc.dataset import *
 
 # Diag
+from vacumm.diag.thermdyn import *
+from vacumm.diag.dynamics import *
+from vacumm.diag.atmos import *
+from vacumm.diag.dynamics import *
+from vacumm.diag.thermdyn import *
+from vacumm.diag.spectrum import *
 
-from vacumm.diag.thermdyn import density, mixed_layer_depth
+# Bathymetry and shoreline
+from vacumm.bathy.bathy import *
+from vacumm.bathy.shorelines import *
 
-from vacumm.diag.dynamics import (barotropic_geostrophic_velocity,
-                                  coriolis_parameter, kinetic_energy)
-
+# Tide
+from vacumm.tide.filters import *
+from vacumm.tide.station_info import *
+from vacumm.tide.marigraph import *

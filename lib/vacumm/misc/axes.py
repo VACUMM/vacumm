@@ -59,7 +59,7 @@ from cdms2.coord import TransientAxis2D
 from vacumm import VACUMMError
 from .misc import (check_def_atts, dict_check_defaults, match_atts,
                    set_atts, get_atts)
-from .cf import CF_AXIS_SPECS, cf2atts, cf2search
+from .cf import get_cf_axis_specs, cf2atts, cf2search
 
 __all__ = ['isaxis', 'islon', 'islat', 'islev', 'islevel',
            'islongitude', 'islatitude',
@@ -74,7 +74,8 @@ __all__ = ['isaxis', 'islon', 'islat', 'islev', 'islevel',
            'guess_timeid', 'get_order', 'set_order',
            'order_match', 'merge_orders',
            'check_order',  'create_axis',
-           'create_axes2d', 'axes2d', 'num2axes2d']
+           'create_axes2d', 'axes2d', 'num2axes2d',
+           'is_valid_order']
 
 
 def isaxis(obj):
@@ -86,7 +87,7 @@ def isaxis(obj):
 def islongitude(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
                 **attchecks):
     """Check if an object is of longitude type"""
-    specs = CF_AXIS_SPECS['lon']
+    specs = get_cf_axis_specs('lon')
     if defaults is None:
         defaults = cf2atts(specs)
     dict_check_defaults(attchecks, **cf2search(specs))
@@ -101,7 +102,7 @@ islon = islongitude
 def islatitude(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
                **attchecks):
     """Check if an object is of latitude type"""
-    specs = CF_AXIS_SPECS['lat']
+    specs = get_cf_axis_specs('lat')
     if defaults is None:
         defaults = cf2atts(specs)
     dict_check_defaults(attchecks, **cf2search(specs))
@@ -116,7 +117,7 @@ islat = islatitude
 def islevel(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
             **attchecks):
     """Check if an object is of level type"""
-    specs = CF_AXIS_SPECS['level']
+    specs = get_cf_axis_specs('level')
     if defaults is None:
         defaults = cf2atts(specs)
     dict_check_defaults(attchecks, **cf2search(specs))
@@ -136,7 +137,7 @@ islev = islevel
 def isdepth(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
             **attchecks):
     """Check if an object is of depth type"""
-    specs = CF_AXIS_SPECS['depth']
+    specs = get_cf_axis_specs('depth')
     if defaults is None:
         defaults = cf2atts(specs)
     dict_check_defaults(attchecks, **cf2search(specs))
@@ -156,7 +157,7 @@ isdep = isdepth
 def isaltitude(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
                **attchecks):
     """Check if an object is of altitude type"""
-    specs = CF_AXIS_SPECS['altitude']
+    specs = get_cf_axis_specs('altitude')
     if defaults is None:
         defaults = cf2atts(specs)
     dict_check_defaults(attchecks, **cf2search(specs))
@@ -176,7 +177,7 @@ isalt = isaltitude
 def istime(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
            **attchecks):
     """Check if an object is of time type"""
-    specs = CF_AXIS_SPECS['time']
+    specs = get_cf_axis_specs('time')
     if defaults is None:
         defaults = cf2atts(specs)
     dict_check_defaults(attchecks, **cf2search(specs))
@@ -200,7 +201,7 @@ def istime(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
 def isforecast(obj, defaults=None, ro=False, checkaxis=True, checkatts=True,
                **attchecks):
     """Check if an object is of level type"""
-    specs = CF_AXIS_SPECS['forecast']
+    specs = get_cf_axis_specs('forecast')
     if defaults is None:
         defaults = cf2atts(specs)
     dict_check_defaults(attchecks, **cf2search(specs))
@@ -426,6 +427,7 @@ def create_axis(values, atype='-', **atts):
     >>> lon = create_axis((-10., 0, 2), 't', id='temps',
     ...     units='seconds since 2000')
     """
+    # Values
     if N.isscalar(values):
         values = [values]
     if isinstance(values, tuple) and len(values) < 4:
@@ -438,9 +440,13 @@ def create_axis(values, atype='-', **atts):
         axis = cdms2.createAxis(values)
     else:
         axis = values
-    if atype in CF_AXIS_SPECS:
-        defaults = cf2atts(CF_AXIS_SPECS[atype])
-        dict_check_defaults(atts, **defaults)
+
+    # Attributes
+    if atype != '-':
+        specs = get_cf_axis_specs(atype)
+        if specs is not None:
+            defaults = cf2atts(specs)
+            dict_check_defaults(atts, **defaults)
     for att, val in atts.items():
         setattr(axis, att, val)
     if atype in 'xyztf-':
@@ -448,6 +454,7 @@ def create_axis(values, atype='-', **atts):
         check_axis(axis)
         if axis.axis == '-':
             del axis.axis
+
     return axis
 
 
@@ -496,7 +503,8 @@ def create_time(values, units=None, **atts):
 
     istuple = isinstance(values, tuple)
     if not istuple or (istuple and len(values) > 3):
-        if isinstance(values, str) or not isinstance(values, Sequence):
+        if ((isinstance(values, str) or not isinstance(values, Sequence))
+                and not isinstance(values, N.ndarray)):
             if hasattr(values, 'next') and hasattr(values, '__iter__'):
                 values = [v for v in values]
             else:
@@ -1073,6 +1081,14 @@ def merge_orders(order1, order2, raiseerr=True):
     return (neworder1, neworder2)[rev]
 
 
+_RE_VALID_ORDER_MATCH = re.compile('^[xyztfd-]+$', re.I).match
+
+
+def is_valid_order(order):
+    """Is input a valid order?"""
+    return _RE_VALID_ORDER_MATCH(order)
+
+
 def check_order(var, allowed, vertical=None, copy=False, reorder=False,
                 extended=None, getorder=False):
     """Check that the axis order of a variable is matches
@@ -1090,6 +1106,7 @@ def check_order(var, allowed, vertical=None, copy=False, reorder=False,
         - ``y``: latitudes,
         - ``z``: vertical levels,
         - ``t``: time axis,
+        - ``f``: time axis,
         - ``d``: data values (ignored),
         - ``-``: any kind of axis.
 

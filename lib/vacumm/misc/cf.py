@@ -33,7 +33,6 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
-# TODO: cf must be moved to vacumm.misc
 
 from __future__ import absolute_import
 from builtins import str
@@ -44,6 +43,7 @@ from collections import OrderedDict
 import string
 import six
 import re
+from copy import deepcopy
 
 import cdms2
 import MV2
@@ -53,21 +53,23 @@ from .misc import kwfilter, dict_merge, match_atts
 from .config import ConfigManager
 from .arakawa import ARAKAWA_LOCATIONS
 
-__all__ = ['VAR_SPECS', 'AXIS_SPECS',
-           'format_var', 'format_axis', 'format_grid', 'match_cf_obj',
+__all__ = [
+           'format_var', 'format_axis', 'format_grid', 'match_cf_atts',
            'cf2atts', 'cf2search', 'cp_suffix', 'get_loc',
            'change_loc', 'change_loc_single',
            'dupl_loc_specs', 'no_loc_single',
            'change_loc_specs', 'squeeze_loc_single',
            'squeeze_loc', 'get_physloc',
-           'HIDDEN_CF_ATTS', 'set_loc',
+           'HIDDEN_CF_ATTS', 'set_loc', 'parse_loc',
            'match_known_cf_var', 'match_known_cf_axis',
-           'match_known_cf_obj',
-           'CF_AXIS_SPECS', 'CF_VAR_SPECS',
+           'match_cf_from_name', 'match_known_cf_obj',
+           'is_known_cf_var_name', 'is_known_cf_axis_name',
            'register_cf_variable', 'register_cf_variables_from_cfg',
            'register_cf_axis', 'register_cf_axes_from_cfg',
-           'CF_DICT_MERGE_KWARGS', 'get_cf_cmap', 'is_cf_known',
-           'VarSpecs', 'AxisSpecs', 'CF_VAR_NAMES', 'CF_AXIS_NAMES',
+           'CF_DICT_MERGE_KWARGS', 'get_cf_cmap',
+           'is_known_cf_name', 'match_var', 'match_axis',
+           'get_cf_specs', 'get_cf_standard_name',
+           'VarSpecs', 'AxisSpecs', 'standard_name_to_location',
            ]
 
 ARAKAWA_SUFFIXES = [('_' + p) for p in ARAKAWA_LOCATIONS]
@@ -79,14 +81,14 @@ THISDIR = os.path.dirname(__file__)
 #: Joint variables and axes config specification file
 CF_GFG_INIFILE = os.path.join(THISDIR, 'cf.ini')
 
-# Config manager for specs
-CF_CFGM = ConfigManager(CF_GFG_INIFILE)
-
 #: Base config file for CF specifications
 CF_CFG_CFGFILE = os.path.join(THISDIR, 'cf.cfg')
 
-#: Base config object for CF specifications
-CF_CFG = CF_CFGM.load(CF_CFG_CFGFILE)
+#: File used for pickling :data:`CF_SPECS`
+_user_cache_dir = os.path.join(os.path.expanduser('~'), '.cache')
+_cache_dir = os.path.join(os.environ.get("XDG_CACHE_HOME", _user_cache_dir),
+                          'vacumm')
+CF_SPECS_PICKLED = os.path.join(_cache_dir, 'cf.pyk')
 
 #: Argument passed to dict_merge to merge CF configs
 CF_DICT_MERGE_KWARGS = dict(mergesubdicts=True, mergelists=True,
@@ -96,20 +98,50 @@ CF_DICT_MERGE_KWARGS = dict(mergesubdicts=True, mergelists=True,
 
 class BaseSpecs(object):
     """Base class for loading variables and axes CF specifications"""
-    aliases = {'id': ['ids', 'name', 'names'],
+    aliases = {'name': ['ids', 'id', 'names'],
                'standard_name': ["standard_names"],
                'long_name': ['long_names']
                }
     category = None
 
-    def __init__(self, inherit=None, names=None):
-        self._dict = OrderedDict(CF_CFG[self.category])
+    def __init__(self, inherit=None, names=None, parent=None, cfg=None):
+        if cfg is None:
+            cfg = _get_cf_cfg_()
+        self._dict = OrderedDict(cfg[self.category])
         for name, spec in list(self._dict.items()):
             self._dict[name] = self._dict[name].dict()
-        self._names = names
+        self._names = names  # ?
+        if parent is not None and self.category is not None:
+            parent[self.category] = self
+            if isinstance(inherit, str) and inherit in parent:
+                inherit = parent['inherit']
+        self.parent = parent
         self._inherit = inherit
-        self._cfgspec = CF_CFGM._configspec[self.category]['__many__'].dict()
+        self._cfgspec = get_cf_cfgm()._configspec[
+                self.category]['__many__'].dict()
         self._post_process_()
+
+    def copy_and_update(self, cfg=None, specs=None, names=None, parent=None,
+                        inherit=None):
+        # Copy
+        if inherit is None:
+            inherit = self._inherit.copy() if self._inherit else None
+        obj = self.__class__(names=names, inherit=inherit,
+                             cfg={self.category: {}}, parent=parent)
+        obj._dict = deepcopy(self._dict)
+
+        # Update
+        if cfg:
+            obj.register_from_cfg(cfg)
+        if specs:
+            obj.register(**specs)
+
+        return obj
+
+    def copy(self):
+        return self.copy_and_update()
+
+    __copy__ = copy
 
     @classmethod
     def get_alias_list(cls):
@@ -129,6 +161,9 @@ class BaseSpecs(object):
 
     def __contains__(self, key):
         return key in self._dict
+
+    def _assert_known_(self, name):
+        assert name in self, "Invalid entry name:" + name
 
     def __str__(self):
         return str(self._dict)
@@ -151,9 +186,11 @@ class BaseSpecs(object):
     def register_from_cfg(self, cfg):
         """"Register new elements from a :class:`ConfigObj` instance
         or a config file"""
+        if isinstance(cfg, str) and '[' in cfg:
+            cfg = cfg.split('\n')
         if isinstance(cfg, dict) and self.category not in list(cfg.keys()):
             cfg = {self.category: cfg}
-        local_cfg = CF_CFGM.load(cfg)[self.category]
+        local_cfg = get_cf_cfgm().load(cfg)[self.category]
         self._dict = dict_merge(self._dict, local_cfg,
                                 cls=OrderedDict, **CF_DICT_MERGE_KWARGS)
         self._post_process_()
@@ -191,9 +228,9 @@ class BaseSpecs(object):
         specs = self._dict[name]
 
         # Ids
-        if name in specs['id']:
-            specs['id'].remove(name)
-        specs['id'].insert(0, name)
+        if name in specs['name']:
+            specs['name'].remove(name)
+        specs['name'].insert(0, name)
 
         # Long name
         if not specs['long_name']:
@@ -228,7 +265,7 @@ class BaseSpecs(object):
                 if from_cat == self.category:
                     from_specs_container = self
                 else:
-                    from_specs_container = CF_SPECS[from_cat]
+                    from_specs_container = get_cf_specs(None, category=from_cat)
             else:
                 from_specs_container = self
             # to handle high level inheritance
@@ -242,9 +279,10 @@ class BaseSpecs(object):
                 if from_name in from_specs:
 
                     # Merge
-                    self._dict[name] = specs = dict_merge(specs,
-                              from_specs[from_name], cls=dict,
-                              **CF_DICT_MERGE_KWARGS)
+                    self._dict[name] = specs = dict_merge(
+                            specs,
+                            from_specs[from_name], cls=dict,
+                            **CF_DICT_MERGE_KWARGS)
 
                     # Validate
 #                    if from_specs is not self:
@@ -266,8 +304,8 @@ class BaseSpecs(object):
         # Standard_names in ids
         if specs['standard_name']:
             for standard_name in specs['standard_name']:
-                if standard_name not in specs['id']:
-                    specs['id'].append(standard_name)
+                if standard_name not in specs['name']:
+                    specs['name'].append(standard_name)
 
         # Duplicate at other locations
         if specs['atlocs']:
@@ -288,6 +326,16 @@ class BaseSpecs(object):
                 del self._names[0]
             self._names.extend(self.names)
 
+    def get_atts(self, name, select=None, exclude=None, ordered=True,
+                 raiseerr=True, **extra):
+        self._assert_known_(name)
+        return cf2atts(name, select=select, exclude=exclude, ordered=ordered,
+                       raiseerr=raiseerr, cf_source=self)
+
+    def get_search_specs(self, name, mode=None, raiseerr=True, ):
+        self._assert_known_(name)
+        return cf2search(name, mode=mode, raiseerr=raiseerr, cf_source=self)
+
 
 class VarSpecs(BaseSpecs):
     category = 'variables'
@@ -297,10 +345,14 @@ class AxisSpecs(BaseSpecs):
     category = 'axes'
 
 
+CF_LOCS = 'uvwtdfr'
 _reloc = OrderedDict(
-    [('id', re.compile('(_([a-z]))?$', re.I).search),
-     ('standard_name', re.compile('(_at_([a-z])_location)?$', re.I).search),
-     ('long_name', re.compile('( at ([a-z]) location)?$', re.I).search)],
+    [('name',
+      re.compile('(_([{}]))?$'.format(CF_LOCS), re.I).search),
+     ('standard_name',
+      re.compile('(_at_([{}])_location)?$'.format(CF_LOCS), re.I).search),
+     ('long_name',
+      re.compile('( at ([{}]) location)?$'.format(CF_LOCS), re.I).search)],
 )
 
 #: Default location of gridded variables
@@ -308,7 +360,7 @@ DEFAULT_LOCATION = 't'
 default_location = DEFAULT_LOCATION  # compat
 
 
-def get_loc(var, stype=None, mode='loc', default=None):
+def get_loc(var, stype=None, mode='loc', default=None, cf_source=None):
     """Get the location testing id, standard_name or long_name and other attributes
 
     :Params:
@@ -316,13 +368,13 @@ def get_loc(var, stype=None, mode='loc', default=None):
         - **var**: Generic id of the variable or axis OR an object CDAT object
           (variable or axis). If a CDAT object, it first searches for the
           :attr:`_vacumm_cf_location` attributes.
-        - **stype**, optional: One of 'id', 'standard_name' or 'long_name'.
+        - **stype**, optional: One of 'name', 'standard_name' or 'long_name'.
           If ``None``, they are all tested.
           If ``var`` is a string, location is searched interpreting
           it as of type ``'stype``.
           Else if ``var`` is an object ``stype`` specifies
           what attribute to test.
-        - **mode**, optional: What you get if something found.
+        - **mode**, optional: What you get if something is found.
 
             - ``"loc"``: Get the location lowercase letter (like "u").
             - ``"ext"``: Same as ``"loc"`` but searches for the
@@ -339,7 +391,7 @@ def get_loc(var, stype=None, mode='loc', default=None):
         >>> loc = get_loc('toto_u')
         >>> suffix = get_loc('toto_at_u_location', stype='standard_name',
                              mode='full')
-        >>> loc = get_loc(myvar, stype=['id','long_name'])
+        >>> loc = get_loc(myvar, stype=['name','long_name'])
 
     :Return:
 
@@ -353,7 +405,7 @@ def get_loc(var, stype=None, mode='loc', default=None):
         stype = list(_reloc.keys())  # all by default
     stypes = stype if isinstance(stype, list) else [stype]
 
-    # CDAT object (not a string)
+    # From a numeric object
     if isinstance(var, list):
         if len(var) == 0:
             return default
@@ -366,10 +418,12 @@ def get_loc(var, stype=None, mode='loc', default=None):
 
         # Location from ids
         for stype in stypes:
-            if stype == 'id':
-                loc = get_loc(var.id, stype, mode=mode)
+            if stype == 'name':
+                loc = get_loc(var.id, stype, mode=mode,
+                              cf_source=cf_source)
             elif hasattr(var, stype):
-                loc = get_loc(getattr(var, stype), stype, mode)
+                loc = get_loc(getattr(var, stype), stype, mode,
+                              cf_source=cf_source)
             else:
                 continue
             break
@@ -386,30 +440,26 @@ def get_loc(var, stype=None, mode='loc', default=None):
             # Physloc
             gid = var.id if not hasattr(
                 var, '_vacumm_cf_name') else var._vacumm_cf_name
-            gid = no_loc_single(gid, 'id')
-            if gid in CF_VAR_SPECS:
+            gid = no_loc_single(gid, 'name')
+            specs = get_cf_specs(gid, cf_source=cf_source)
+            if specs:
 
                 # From _vacumm_cf_physloc attribute
                 if hasattr(var, '_vacumm_cf_physloc'):
                     return var._vacumm_cf_physloc
 
                 # From specs
-                if CF_VAR_SPECS[gid].get('physloc'):
-                    return CF_VAR_SPECS[gid]['physloc']
+                if specs.get('physloc'):
+                    return specs['physloc']
 
         return default
 
     # String
-    outloc = mode == 'loc' or mode == 'ext'
+    parse_mode = "loc" if mode == 'loc' else "match"
     for stype in stypes:
 
         # From string
-        group = 2 if outloc else 1
-        if stype not in _reloc:
-            stype = 'id'
-        loc = _reloc[stype](var).group(group)
-        if loc and outloc:
-            loc = loc.lower()
+        loc = parse_loc(var, stype, mode=parse_mode)
         if loc:
             return loc
 
@@ -417,13 +467,56 @@ def get_loc(var, stype=None, mode='loc', default=None):
         if mode == 'ext':
 
             # From physloc
-            if stype == 'id' and var in CF_VAR_SPECS and CF_VAR_SPECS[var].get(
-                    'physloc'):
-                return CF_VAR_SPECS[var].get('physloc')
+            if stype == 'name':
+                specs = get_cf_specs(var, cf_source=cf_source)
+                if specs and specs.get('physloc'):
+                    return specs['physloc']
 
 #            # Default location
 #            return DEFAULT_LOCATION
     return default
+
+
+def parse_loc(name, stype, mode='loc'):
+    """Parse location from a name, standard_name or long_name
+
+    Parameters
+    ----------
+    name: str
+        The string to parse
+    stype: str
+        The string type within 'name', 'standard_name' and 'long_name'
+    mode: str
+        Ouput mode:
+
+        - "loc": location letter
+        - "re": the regular expression object
+        - "match": the match string that specify the location,
+          like "at_u_location")
+        - "split": a dict containing the pefix, the location and
+          the matched location string and the match regular expression
+          object.
+    """
+    if stype not in _reloc:
+        stype = 'name'
+    m = _reloc[stype](name)
+    if mode == 're':
+        return m
+    loc = m.group(2)
+    if loc:
+        loc = loc.lower()
+    if mode == 'loc':
+        return loc
+    match = m.group(1)
+    if mode == 'match':
+        return match
+    prefix = name if loc is None else name[:len(name)-len(match)]
+    return dict(loc=loc, prefix=prefix, match=match, re=m)
+
+
+def standard_name_to_location(standard_name):
+    """Directly access that location form the standard name"""
+    return parse_loc(standard_name, stype="standard_name", mode='loc')
 
 
 def no_loc_single(name, stype):
@@ -432,12 +525,10 @@ def no_loc_single(name, stype):
     :Params:
 
         - **name**: String to change
-        - **stype**: One of 'id', 'standard_name' or 'long_name'.
+        - **stype**: One of 'name', 'standard_name' or 'long_name'.
     """
-    loc = get_loc(name, stype, mode='full')
-    if loc is not None:
-        return name[:-len(loc)]
-    return name
+#    loc = get_loc(name, stype, mode='full', cf_source=cf_source)
+    return parse_loc(name, stype, mode='split')['prefix']
 
 
 def _loc_(loc=None):
@@ -450,6 +541,16 @@ def _loc_(loc=None):
     if loc not in string.ascii_letters:
         raise TypeError('Wrong location: ' + loc)
     return loc.lower()
+
+
+def format_loc(prefix, stype, loc):
+    """Format location string"""
+    loc = _loc_(loc)
+    if stype == 'standard_name':
+        return prefix + '_at_%s_location' % loc
+    if stype == 'long_name':
+        return prefix + ' at %s location' % loc.upper()
+    return prefix + '_' + loc
 
 
 def change_loc_single(name, stype, loc, squeeze=None):
@@ -473,33 +574,30 @@ def change_loc_single(name, stype, loc, squeeze=None):
         >>> change_loc_single('usurf_t', 'name', 'u', squeeze='u')
         'usurf'
     """
-    basename = no_loc_single(name, stype)
+    prefix = no_loc_single(name, stype)
     loc = _loc_(loc)
     if loc and (not squeeze or squeeze != loc):
-        if stype == 'standard_name':
-            return basename + '_at_%s_location' % loc
-        if stype == 'long_name':
-            return basename + ' at %s location' % loc.upper()
-        return basename + '_' + loc
-    return basename
+        return format_loc(prefix, stype, loc)
+    return prefix
 
 
-def change_loc_specs(loc, id=None, standard_name=None, long_name=None, axes=None,
+def change_loc_specs(loc, name=None, standard_name=None, long_name=None, axes=None,
                      iaxis=None, jaxis=None, squeeze=None, **kwargs):
     """Change location specification in id, standard names long name and axes id
 
     :Example:
 
-        >>> specs = change_loc_specs('v', id = ['usurf_u', 'u_u'])
+        >>> specs = change_loc_specs('v', name=['usurf_u', 'u_u'])
 
     :Return: A dictionary
     """
+    name = kwargs.pop('id', name)
     specs = kwargs.copy()
     if 'atlocs' in specs:
         del specs['atlocs']
 
     # Attributes
-    for stype in 'id', 'standard_name', 'long_name', 'iaxis', 'jaxis':
+    for stype in 'name', 'standard_name', 'long_name', 'iaxis', 'jaxis':
         values = locals()[stype]
         if values is None:
             continue
@@ -533,7 +631,7 @@ def change_loc_specs(loc, id=None, standard_name=None, long_name=None, axes=None
             laxes = [
                 change_loc_single(
                     axis,
-                    'id',
+                    'name',
                     loc,
                     squeeze=DEFAULT_LOCATION) for axis in laxes] + laxes  # dup
             lnewaxes = []
@@ -548,17 +646,17 @@ def change_loc_specs(loc, id=None, standard_name=None, long_name=None, axes=None
     return specs
 
 
-def change_loc(var, toloc, axes=True, squeeze=True):
+def change_loc(var, toloc, axes=True, squeeze=True, cf_source=None):
     """Change location specifications of a variable and its axes
 
-    It affects the id, the standard_name and the long_name when they
+    It affects the name, the standard_name and the long_name when they
     are defined.
 
 
     :Example:
-    >>> change_loc(sst, 'u').id
+    >>> change_loc(sst, 'u').name
     'sst_u'
-    >>> change_loc(sst, 't', squeeze=True).id
+    >>> change_loc(sst, 't', squeeze=True).name
     'sst'
 
     """
@@ -566,25 +664,25 @@ def change_loc(var, toloc, axes=True, squeeze=True):
     # Squeeze physloc
     if not isinstance(squeeze, six.string_types):
         if squeeze:
-            squeeze = get_physloc(var)
+            squeeze = get_physloc(var, cf_source=cf_source)
         else:
             squeeze = None
 
     # Change attributes
     # - get
     specs = change_loc_specs(toloc, squeeze=squeeze,
-                             id=var.id,
+                             name=var.id,
                              standard_name=getattr(var, 'standard_name', None),
                              long_name=getattr(var, 'long_name', None),
                              )
     # - set
-    var.id = specs['id']
+    var.id = specs['name']
     for att in 'standard_name', 'long_name':
         if att in specs:
             setattr(var, att, specs[att])
     # - cf name
     if hasattr(var, '_vacumm_cf_name'):
-        var._vacumm_cf_name = change_loc_single(var._vacumm_cf_name, 'id',
+        var._vacumm_cf_name = change_loc_single(var._vacumm_cf_name, 'name',
                                                 toloc,
                                                 squeeze=squeeze)
 
@@ -593,7 +691,7 @@ def change_loc(var, toloc, axes=True, squeeze=True):
 
         # Axes
         # - usual
-        for meth in 'Longitude', 'Latitude', 'Time', 'Level':
+        for meth in 'Longitude', 'Latitude', 'Level':
             if hasattr(var, 'get' + meth):
                 axismet = getattr(var, 'get' + meth)  # var.getLongitude
                 if axismet() is not None:
@@ -645,7 +743,7 @@ def set_loc(var, loc, addpos=False):
     return var
 
 
-def get_physloc(var):
+def get_physloc(var, cf_source=None):
     """Get the physical location of a variable
 
     .. note:: The physical location may be different from the current location.
@@ -657,10 +755,11 @@ def get_physloc(var):
         if hasattr(var, att):
             return getattr(var, att)
 
-    # Entry name in CF_VAR_SPECS (string)
+    # Entry name in cf specs (string)
     if isinstance(var, six.string_types):
-        if var in CF_VAR_SPECS:
-            var = CF_VAR_SPECS[var]
+        cf_specs = get_cf_specs(var, category='variables', source=cf_source)
+        if cf_specs is not None:
+            var = cf_specs[var]
         else:
             return DEFAULT_LOCATION
 
@@ -671,14 +770,15 @@ def get_physloc(var):
     # Using CF_VAR_SPECS
     if hasattr(var, '_vacumm_cf_name'):
         name = var._vacumm_cf_name
-    elif var.id in CF_VAR_SPECS:
-        name = var.id
     else:
+        name = var.id
+    cf_specs = get_cf_specs(name, category='variables', source=cf_source)
+    if cf_specs is None:
         return DEFAULT_LOCATION
-    return CF_VAR_SPECS[name].get('physloc', DEFAULT_LOCATION)
+    return cf_specs.get('physloc', DEFAULT_LOCATION)
 
 
-def squeeze_loc(var):
+def squeeze_loc(var, cf_source=None):
     """Squeeze out location specification of a variable if the location is
     physloc or :attr:`DEFAULT_LOCATION`
 
@@ -692,25 +792,27 @@ def squeeze_loc(var):
     :Return: The same variable
     """
     # Physloc
-    physloc = get_physloc(var)
+    physloc = get_physloc(var, cf_source=cf_source)
 
     # Remove loc only for physloc
     change_loc(var, None, axes=True, squeeze=physloc)
 
 
-def squeeze_loc_single(name, stype, physloc=None):
+def squeeze_loc_single(name, stype, physloc=None, cf_source=None):
     """Squeeze location specs if it matches physical location"""
-    if physloc is None and stype == 'id' and name in CF_VAR_SPECS:
-        physloc = CF_VAR_SPECS[name].get('physloc')
+    if physloc is None:
+        cf_specs = get_cf_specs(name, 'variables', cf_source=cf_source)
+        if cf_specs:
+            physloc = cf_specs['physloc']
     if physloc is None:
         physloc = DEFAULT_LOCATION
-    loc = get_loc(name, stype, mode='loc')
+    loc = parse_loc(name, stype, mode='loc')
     if loc == physloc:
         name = change_loc_single(name, stype, None)
     return name
 
 
-def dupl_loc_specs(all_specs, fromname, toloc):
+def dupl_loc_specs(cf_source, fromname, toloc, category=None):
     """Duplicate the specification for a variable or an axis to another
     or several locations
 
@@ -732,22 +834,24 @@ def dupl_loc_specs(all_specs, fromname, toloc):
         >>> dupl_loc_specs(CF_VAR_SPECS, 'corio_t', 'u') # Create 'corio_u' and 'corio_t'
 
     """
-    if fromname not in all_specs:
+    cf_source = get_cf_specs(name=None, category=category,
+                             cf_source=cf_source)
+    if fromname not in cf_source:
         raise KeyError('No such entry in specifications: ' + fromname)
     single = not isinstance(toloc, (list, tuple))
     if single:
         toloc = [toloc]
     tonames = []
     tomerge = []
-    fromnoloc = no_loc_single(fromname, 'id') == fromname
+    fromnoloc = no_loc_single(fromname, 'name') == fromname
     for loc in toloc:
 
         # New name (id)
-        toname = change_loc_single(fromname, 'id', loc)
+        toname = change_loc_single(fromname, 'name', loc)
         tonames.append(toname)
 
         # New specs
-        tospecs = change_loc_specs(loc, **all_specs[fromname])
+        tospecs = change_loc_specs(loc, **cf_source[fromname])
 
         # Add a version of standard_name and long_name for T loc without
         # location spec
@@ -766,8 +870,8 @@ def dupl_loc_specs(all_specs, fromname, toloc):
         tomerge.append(tospecs)
 
         # Merge with old spec if existing
-        if toname in all_specs:
-            tospecs = dict_merge(tospecs, all_specs[toname], mergelists=True,
+        if toname in cf_source:
+            tospecs = dict_merge(tospecs, cf_source[toname], mergelists=True,
                                  cls=dict, mergedicts=True, )
 
 #        # Default location -> add its generic version ('_t' -> + '')
@@ -780,17 +884,17 @@ def dupl_loc_specs(all_specs, fromname, toloc):
             tospecs.pop('atlocs')
 
         # Store it
-        all_specs[toname] = tospecs
+        cf_source[toname] = tospecs
 
     # Make a generic entry that merges all specialized ones
     if fromnoloc:
-        genspecs = all_specs[fromname]  # existing generic specs
+        genspecs = cf_source[fromname]  # existing generic specs
     else:
         genspecs = change_loc_specs(
-            None, **all_specs[fromname])  # remove location info
+            None, **cf_source[fromname])  # remove location info
     tomerge.insert(0, genspecs)
-    genname = genspecs['id'][0]
-    all_specs[genname] = dict_merge(*tomerge, **CF_DICT_MERGE_KWARGS)
+    genname = genspecs['name'][0]
+    cf_source[genname] = dict_merge(*tomerge, **CF_DICT_MERGE_KWARGS)
 
     if single:
         return tonames[0]
@@ -821,25 +925,134 @@ def cp_suffix(idref, id, suffixes=ARAKAWA_SUFFIXES):
     return id + m.group(1)
 
 
-#: List of generic variable names
+def _get_cf_cfg_():
+    from . import cf
+    if not hasattr(cf, 'CF_CFG'):
+        cfgm = get_cf_cfgm()
+        cf.CF_CFG = cfgm.load(CF_CFG_CFGFILE)
+    return cf.CF_CFG
+
+
+def get_cf_cfgm():
+    """Get a :class:`~vacumm.misc.config.ConfigManager` instance to manage
+    axes and variables spécifications"""
+    from . import cf
+    if not hasattr(cf, 'CF_CFGM'):
+        cf.CF_CFGM = ConfigManager(CF_GFG_INIFILE)
+    return cf.CF_CFGM
+
+
+def get_cf_specs(name=None, category=None, cf_source=None):
+    """Get the CF specifications for a target in a category
+
+    Parameters
+    ----------
+    name: str or None
+        A target name like "sst". If not provided, return all specs.
+    category: str or None
+        Select a category with "axes" or "variables".
+        If not provided, search first in "variables", then "axes".
+    cf_source: dict or None
+        Dictionary of specifications for variables and axes.
+
+    Return
+    ------
+    dict or None
+        None is return if no specs are found
+    """
+    # Init if not already done
+    if cf_source is None:
+        from . import cf
+        if not hasattr(cf, 'CF_SPECS'):
+
+            # Try from cache
+            import pickle
+            if os.path.exists(CF_SPECS_PICKLED) and (
+                    os.stat(CF_CFG_CFGFILE).st_mtime <
+                    os.stat(CF_SPECS_PICKLED).st_mtime):
+                try:
+                    with open(CF_SPECS_PICKLED, 'rb') as f:
+                        cf.CF_SPECS = pickle.load(f)
+                        cf.CF_VAR_SPECS = cf.CF_SPECS['variables']
+                        cf.CF_AXIS_SPECS = cf.CF_SPECS['axes']
+                        cf.CF_VAR_NAMES = cf.CF_VAR_SPECS._names
+                        cf.CF_AXIS_NAMES = cf.CF_AXIS_SPECS._names
+                except Exception as e:
+                    vcwarn('Error while load cached cf specs: '.format(e.args))
+
+            # Compute it from scratch
+            if not hasattr(cf, 'CF_SPECS'):
+
+                #: Specifications by category
+                cf.CF_SPECS = {}
+
+                #: Specifications for variables
+                cf.CF_VAR_SPECS = VarSpecs(names=cf.CF_VAR_NAMES,
+                                           parent=cf.CF_SPECS)
+                cf.CF_SPECS[cf.CF_VAR_SPECS.category] = cf.CF_VAR_SPECS
+
+                #: Specifications for axes
+                cf.CF_AXIS_SPECS = AxisSpecs(inherit=cf.CF_VAR_SPECS,
+                                             names=cf.CF_AXIS_NAMES,
+                                             parent=cf.CF_SPECS)
+                cf.CF_SPECS[cf.CF_AXIS_SPECS.category] = cf.CF_AXIS_SPECS
+
+                # Cache it
+                try:
+                    cachedir = os.path.dirname(CF_SPECS_PICKLED)
+                    if not os.path.exists(cachedir):
+                        os.makedirs(cachedir)
+                    with open(CF_SPECS_PICKLED, 'wb') as f:
+                        pickle.dump(cf.CF_SPECS, f)
+                except Exception as e:
+                    print(e.args)
+                    vcwarn('Error while caching cf specs: '.format(e.args))
+
+            # Compat but deprecated
+            cf.VAR_SPECS = cf.var_specs = cf.CF_VAR_SPECS
+            cf.AXIS_SPECS = cf.axis_specs = cf.CF_AXIS_SPECS
+
+        cf_source = cf.CF_SPECS
+
+    # Select categories
+    if category is not None:
+        if category in cf_source:
+            cf_source = cf_source[category]
+        assert (isinstance(cf_source, BaseSpecs) and
+                cf_source.category == category)
+        if name is None:
+            return cf_source
+        toscan = [cf_source]
+    else:
+        if name is None:
+            return cf_source
+        assert (isinstance(cf_source['variables'], VarSpecs) and
+                isinstance(cf_source['axes'], AxisSpecs))
+        toscan = [cf_source['variables'], cf_source['axes']]
+
+    # Search
+    for ss in toscan:
+        if name in ss:
+            return ss[name]
+
+
+def get_cf_axis_specs(name=None, cf_source=None):
+    """Shortcut to ``get_cf_specs(name=name, category='axes')``"""
+    return get_cf_specs(name=name, category='axes', cf_source=cf_source)
+
+
+def get_cf_var_specs(name=None, cf_source=None):
+    """Shortcut to ``get_cf_specs(name=name, category='variables')``"""
+    return get_cf_specs(name=name, category='variables', cf_source=cf_source)
+
+
+#: List of generic variable names (DEPRECATED)
 CF_VAR_NAMES = []
 generic_var_names = GENERIC_VAR_NAMES = GENERIC_CF_VAR_NAMES = CF_VAR_NAMES  # compat
 
-#: List of generic axis names
+#: List of generic axis names (DEPRECATED)
 CF_AXIS_NAMES = []
 generic_axis_names = GENERIC_AXIS_NAMES = GENERIC_CF_AXIS_NAMES = CF_AXIS_NAMES  # compat
-
-#: Specifications by category
-CF_SPECS = {}
-
-#: Specifications for variables
-CF_VAR_SPECS = VAR_SPECS = var_specs = VarSpecs(names=CF_VAR_NAMES)
-CF_SPECS[CF_VAR_SPECS.category] = CF_VAR_SPECS
-
-#: Specifications for axes
-CF_AXIS_SPECS = AXIS_SPECS = axis_specs = AxisSpecs(inherit=CF_VAR_SPECS,
-                                                    names=CF_AXIS_NAMES)
-CF_SPECS[CF_AXIS_SPECS.category] = CF_AXIS_SPECS
 
 #: Specifications for grid formating
 GRID_SPECS = {
@@ -861,17 +1074,18 @@ CF_NAMES = CF_VAR_NAMES + CF_AXIS_NAMES
 generic_names = GENERIC_NAMES = CF_NAMES  # compat
 
 
-def register_cf_variable(name, **specs):
+def register_cf_variable(name, cf_source=None, **specs):
     """Register a new CF variable given its generic name and its specs
 
     It simply calls :meth:`~VarSpecs.register` on :attr:`CF_VAR_SPECS`
 
     """
-    CF_VAR_SPECS.register(name, **specs)
-    return CF_VAR_SPECS[name]
+    cf_specs = get_cf_specs(category='variables', cf_source=cf_source)
+    cf_specs.register(name, **specs)
+    return cf_specs[name]
 
 
-def register_cf_variables_from_cfg(cfg):
+def register_cf_variables_from_cfg(cfg, cf_source=None):
     """Register a new CF variables from a config file or a dict
 
     It must contains a "variables" section.
@@ -879,20 +1093,22 @@ def register_cf_variables_from_cfg(cfg):
     It simply calls :meth:`~VarSpecs.register_from_cfg` on :attr:`CF_VAR_SPECS`
 
     """
-    CF_VAR_SPECS.register_from_cfg(cfg)
+    cf_specs = get_cf_specs(category='variables', cf_source=cf_source)
+    cf_specs.register_from_cfg(cfg)
 
 
-def register_cf_axis(name, **specs):
+def register_cf_axis(name, cf_source=None, **specs):
     """Register a new Cf axis given its generic name and its specs
 
     It simply calls :meth:`~VarSpecs.register` on :attr:`CF_AXIS_SPECS`
 
     """
-    CF_AXIS_SPECS.register(name, **specs)
-    return CF_AXIS_SPECS[name]
+    cf_specs = get_cf_specs(category='axes')
+    cf_specs.register(name, cf_source=cf_source, **specs)
+    return cf_specs[name]
 
 
-def register_cf_axes_from_cfg(cfg):
+def register_cf_axes_from_cfg(cfg, cf_source=None):
     """Register a new CF variables from a config file or a dict
 
     It must contains a "axes" section.
@@ -901,52 +1117,51 @@ def register_cf_axes_from_cfg(cfg):
     :attr:`CF_AXIS_SPECS`
 
     """
-    CF_AXIS_SPECS.register_from_cfg(cfg)
+    cf_specs = get_cf_specs(category='axes', cf_source=cf_source)
+    cf_specs.register_from_cfg(cfg)
 
 
-def cf2search(name, mode=None, raiseerr=True, **kwargs):
+def cf2search(name, mode=None, raiseerr=True, category=None, cf_source=None,
+              **kwargs):
     """Extract specs from :attr:`CF_AXIS_SPECS` or :attr:`CFVAR_SPECS`
     to form a search dictionary
 
-    :Params:
+    Parameters
+    ----------
+    name:
+        Generic name of an axis or a variable.
+    mode: optional
+        Search mode [default: None->``"nsa"``].
+        A string containg one or more of the following letters:
 
-        - **name**: Generic name of an axis or a variable.
-        - **mode**, optional: Search mode [default: None->``"isa"``].
-          A string containg one or more of the following letters:
+        - ``"i"`` or ``"n"``: Search using names (ids).
+        - ``"s"``: Search using standard_name attribute.
+        - ``"a"``: Search using axis attribute.
+        - ``"l"``: Search using long_name attribute.
+        - ``"u"``: Search using units attribute.
 
-            - ``"i"``: Search using names (ids).
-            - ``"s"``: Search using standard_name attribute.
-            - ``"a"``: Search using axis attribute.
-            - ``"l"``: Search using long_name attribute.
-            - ``"u"``: Search using units attribute.
+        The order is important.
 
-          The order is important.
+    Return
+    ------
+    An :class:`colections.OrderedDict`
 
-    :Return: An :class:`colections.OrderedDict`
+    Example
+    -------
 
-    :Example:
-
-        >>> cf2search('sst', mode='isu')
-        {'id':['sst'], 'id':['sst'],
-        'standard_names':['sea_surface_temperature'],
-        'units':['degrees_celsius']}
+    >>> cf2search('sst', mode='isu')
+    {'name':['sst'], 'name':['sst'],
+    'standard_names':['sea_surface_temperature'],
+    'units':['degrees_celsius']}
     """
     # Get specs
     if isinstance(name, dict):
         specs = name.copy()
-    elif name in CF_VAR_SPECS:
-        specs = CF_VAR_SPECS[name]
-    elif name in CF_AXIS_SPECS:
-        specs = CF_AXIS_SPECS[name]
     else:
-        if raiseerr:
-            raise VACUMMError(
-                "Wrong generic name. It should be one of: " +
-                ' '.join(
-                    list(
-                        CF_AXIS_SPECS.keys()) +
-                    list(
-                        CF_VAR_SPECS.keys())))
+        specs = get_cf_specs(name, category=category, cf_source=cf_source)
+        if specs is None:
+            if raiseerr:
+                raise VACUMMError("Specifications not found for "+name)
         else:
             return
 
@@ -956,11 +1171,11 @@ def cf2search(name, mode=None, raiseerr=True, **kwargs):
     else:
         mode = None
     if not isinstance(mode, six.string_types):
-        mode = 'isa'
-    mode = mode.replace('n', 'i')
+        mode = 'nsa'
+    mode = mode.replace('i', 'n')
     keys = []
     for m in mode:
-        for key in ['id', 'standard_name', 'axis', 'long_name', 'units']:
+        for key in ['name', 'standard_name', 'axis', 'long_name', 'units']:
             if key.startswith(m):
                 keys.append(key)
                 break
@@ -974,35 +1189,34 @@ _attnames_exclude = [
     'physloc',
     'iaxis',
     'jaxis',
-    'select']
+    'select',
+    'searchmode',
+    'cmap',
+    ]
 _attnames_firsts = [
     'standard_name',
     'long_name',
     'units',
     'axis',
     'valid_min',
-    'valid_max']
+    'valid_max',
+    ]
 
 
-def cf2atts(name, select=None, exclude=None, ordered=True, **extra):
+def cf2atts(name, select=None, exclude=None, ordered=True, raiseerr=True,
+            category=None, cf_source=None, **extra):
     """Extract specs from :attr:`CF_AXIS_SPECS` or :attr:`CF_VAR_SPECS` to form
     a dictionary of attributes (units and long_name)"""
     # Get specs
     if isinstance(name, dict):
         specs = name.copy()
-    elif name in CF_VAR_SPECS:
-        specs = CF_VAR_SPECS[name]
-    elif name in CF_AXIS_SPECS:
-        specs = CF_AXIS_SPECS[name]
     else:
-        raise VACUMMError(
-            "Wrong generic name: %s. It should be one of: " %
-            name +
-            ' '.join(
-                list(
-                    CF_AXIS_SPECS.keys()) +
-                list(
-                    CF_VAR_SPECS.keys())))
+        specs = get_cf_specs(name, category=category, cf_source=cf_source)
+        if specs is None:
+            if raiseerr:
+                raise VACUMMError("Specifications not found for "+name)
+        else:
+            return
 
     # Which attributes
     atts = OrderedDict() if ordered else {}
@@ -1031,6 +1245,8 @@ def cf2atts(name, select=None, exclude=None, ordered=True, **extra):
 
         # Store it
         atts[key] = value
+        if key == 'name':
+            atts['id'] = value
 
     # Extra
     for att, val in list(extra.items()):
@@ -1039,9 +1255,8 @@ def cf2atts(name, select=None, exclude=None, ordered=True, **extra):
     return atts
 
 
-# Format a variable
-def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=True,
-               mode='warn', **kwargs):
+def format_var(var, name=None, force=True, format_axes=True, order=None,
+               nodef=True, mode='warn', cf_source=None, **kwargs):
     """Format a MV2 variable according to its generic name
 
 
@@ -1050,7 +1265,7 @@ def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=T
         - **var**: A :mod:`numpy` or :mod:`MV2` variabe.
         - **name**: Generic name of variable. It should be one of
           those listed by :attr:`CF_VAR_SPECS`. If None, it is guessed
-          with :func:`match_known_var`.
+          with :func:`match_known_cf_var`.
         - **force**, optional: Overwrite attributes in all cases.
         - **format_axes**, optional: Also format axes.
         - **nodef**, optional: Remove location specification when it refers to the
@@ -1078,34 +1293,23 @@ def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=T
         var = MV2.asarray(var)
 
     # Check specs
-    if name is None:  # guess it
-        name = match_known_var(var)
-        if not name:
-            if mode == 'warn':
-                warn("Can't guess cf name")
-                return var
-            elif mode == 'silent':
-                return var
-            else:
-                raise KeyError("Variable does not match any CF var")
-    elif name not in CF_VAR_SPECS and name not in CF_AXIS_SPECS:
-        if var.id in CF_VAR_SPECS or var.id in CF_AXIS_SPECS:
-            name = var.id
-        elif mode == 'warn':
-            warn("Generic var name not found '%s'." % name)
+    if name is None:
+        name = match_known_cf_obj(var, cf_source=cf_source)
+    if name is not None:
+        specs = get_cf_specs(name, cf_source=cf_source)
+    else:
+        specs = None
+    if specs is None:
+        if mode == 'warn':
+            warn("Can't guess cf name")
             return var
         elif mode == 'silent':
             return var
         else:
-            raise KeyError("Generic var name not found '%s'. Please choose one of: %s" % (
-                name, ', '.join(list(CF_VAR_SPECS.keys()) + list(CF_AXIS_SPECS.keys()))))
-    isaxis_ = name in CF_AXIS_SPECS
-    if isaxis_:
-        specs = CF_AXIS_SPECS[name].copy()
-        if 'axis' in specs:
-            del specs['axis']
+            raise KeyError("Can't get cf specs from: "+name)
     else:
-        specs = CF_VAR_SPECS[name].copy()
+        specs = specs.copy()
+    isaxis_ = 'axis' in specs
     # - merge kwargs and specs
     for key, val in list(kwargs.items()):
         if val is None or key not in specs:
@@ -1119,14 +1323,14 @@ def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=T
     # - remove default location
     if nodef:
         refloc = specs.get('physloc', None) or DEFAULT_LOCATION
-        for att in 'id', 'long_name', 'standard_name':
+        for att in 'name', 'long_name', 'standard_name':
             if get_loc(specs[att], att) == refloc:
                 specs[att] = [no_loc_single(specs[att][0], att)]
-        name = specs['id'][0]
+        name = specs['name'][0]
     # - id
-    if ((force is True or force in [2, 'id', 'all'])
+    if ((force is True or force in [2, 'name', 'all'])
             or var.id.startswith('variable_') or
-            (isaxis_ and var.id.startswith('axis_'))):  # FIXME: use regexp
+            (isaxis_ and var.id.startswith('axis_'))):
         var.id = name
     # - attributes
     forceatts = (force is True or force in ['atts', 'all'] or
@@ -1152,7 +1356,8 @@ def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=T
         order = (var.getOrder() if not isinstance(order, six.string_types)
                  else order)
         if order is not None:
-            if not re.match('^[xyzt-]+$', order):
+            from .axes import is_valid_order
+            if not is_valid_order(order):
                 raise VACUMMError("Wrong cdms order type: " + order)
             if len(order) != var.ndim:
                 raise VACUMMError(
@@ -1180,12 +1385,10 @@ def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=T
 
     return var
 
-# Format an axis
-
 
 def format_axis(axis, name=None, force=True, recreate=False,
-                format_subaxes=True,
-                nodef=True, mode='warn', **kwargs):
+                format_subaxes=True, nodef=True, mode='warn',
+                cf_source=None, **kwargs):
     """Format a MV2 axis according to its generic name
 
 
@@ -1226,26 +1429,22 @@ def format_axis(axis, name=None, force=True, recreate=False,
             name = name[0]
 
     # Check specs
-    if name is None:  # guess it
-        name = match_known_cf_axis(axis)
-        if not name:
-            if mode == 'warn':
-                warn("Can't guess CF axis name")
-                return axis
-            elif mode == 'silent':
-                return axis
-            else:
-                raise KeyError("Variable does not match any CF axis")
-    elif name not in CF_AXIS_SPECS:
+    if name is None:
+        name = match_known_cf_axis(axis, cf_source=cf_source)
+    if name is not None:
+        specs = get_cf_specs(name, cf_source=cf_source)
+    else:
+        specs = None
+    if specs is None:
         if mode == 'warn':
-            warn("Generic axis name not found '%s'." % name)
+            warn("Can't guess cf name")
             return axis
         elif mode == 'silent':
             return axis
         else:
-            raise KeyError("Generic axis name not found '%s'. Please choose one of: %s" % (
-                name, ', '.join(list(CF_AXIS_SPECS.keys()))))
-    specs = CF_AXIS_SPECS[name]
+            raise KeyError("Can't get cf specs from: "+name)
+    else:
+        specs = specs.copy()
     # - merge kwargs and specs
     for key, val in list(kwargs.items()):
         if val is None or key not in specs:
@@ -1285,7 +1484,7 @@ def format_axis(axis, name=None, force=True, recreate=False,
         del kwargs[key]
     # - remove default location
     if nodef:
-        for att in 'id', 'long_name', 'standard_name':
+        for att in 'name', 'long_name', 'standard_name':
             #            sname = stype+'s'
             if att not in specs:
                 continue
@@ -1293,7 +1492,7 @@ def format_axis(axis, name=None, force=True, recreate=False,
                 specs[att] = [no_loc_single(specs[att][0], att)]
     # - id
     if force or axis.id.startswith('variable_') or axis.id.startswith('axis_'):
-        axis.id = specs['id'][0]
+        axis.id = specs['name'][0]
     # - attributes
     for att, val in list(cf2atts(
             specs, exclude=['axis'] if axis2d else None, **kwargs).items()):
@@ -1332,16 +1531,30 @@ hidden_cf_atts = HIDDEN_CF_ATTS  # compat
 
 
 def filter_search(specs, searchmode=None):
-    """Order and filter attribute-based searching"""
+    """Order and filter attribute-based searching
+
+    Parameters
+    ----------
+    specs: dict
+        CF searching specs for an axis or a variable
+    searchmode: None or str
+        Search mode to select attributes that must be used for searching
+
+    Return
+    ------
+    collections.OrderedDict
+        Selected searching specs in the right order
+
+    """
     # - get order
-    all_keys = ['id', 'standard_name', 'long_name', 'units', 'axis']
+    all_keys = ['id', 'name', 'standard_name', 'long_name', 'units', 'axis']
     all_keys0 = [key[0] for key in all_keys]
     if searchmode is None:
         if isinstance(specs, OrderedDict):
             searchmode = ''.join([key[0] for key in list(specs.keys())])
         else:
             searchmode = ''.join(all_keys0)
-    searchmode = searchmode.replace('n', 'i')
+#    searchmode = searchmode.replace('n', 'i')
     keys = []
     for key0 in searchmode:
         key = all_keys[all_keys0.index(key0)]
@@ -1351,9 +1564,9 @@ def filter_search(specs, searchmode=None):
     return OrderedDict([(key_, specs[key_]) for key_ in keys])
 
 
-def match_cf_obj(obj, id=None, standard_name=None,
-                 long_name=None, units=None, axis=None, ignorecase=True,
-                 searchmode=None, **kwargs):
+def match_cf_atts(obj, name=None, standard_name=None,
+                  long_name=None, units=None, axis=None, ignorecase=True,
+                  searchmode=None, **kwargs):
     """Check if an MV2 object (typicaly from a netcdf file) matches names,
     standard_names, etc
 
@@ -1380,15 +1593,15 @@ def match_cf_obj(obj, id=None, standard_name=None,
     Example
     -------
 
-    >>> ncmatch_cf_obj(sst, standard_name='sea_surface_temperature', id=['sst'])
+    >>> match_cf_obj(sst, standard_name='sea_surface_temperature', id=['sst'])
     >>> import re
-    >>> ncmatch_cf_obj(sst, long_name=re.compile('sea surface temp').match)
+    >>> match_cf_obj(sst, long_name=re.compile('sea surface temp').match)
     """
     # Format
     search = OrderedDict()
-    if id is None and 'name' in kwargs:
-        id = kwargs['name']
-    for key in ('standard_name', 'id', 'axis', 'long_name', 'units'):
+    name = kwargs.pop('id', name) or name
+    id = name
+    for key in ('standard_name', 'id', 'name', 'axis', 'long_name', 'units'):
         val = locals()[key]
         if val is None:
             continue
@@ -1405,7 +1618,8 @@ def match_cf_obj(obj, id=None, standard_name=None,
     return match_atts(obj, search, ignorecase)
 
 
-def match_known_cf_obj(obj, name, searchmode=None, **kwargs):
+def match_cf_from_name(obj, name, searchmode=None, category=None,
+                       cf_source=None, **kwargs):
     """Check if a variable or an axis matches generic specifications
 
     :Params:
@@ -1415,20 +1629,39 @@ def match_known_cf_obj(obj, name, searchmode=None, **kwargs):
         - **searchmode**, optional: Passed to
           :func:`~vacumm.misc.match_cf_obj`.
     """
-    search = cf2search(name, mode=searchmode, raiseerr=False)
+    search = cf2search(name, mode=searchmode, raiseerr=False,
+                       cf_source=cf_source, category=category)
     if search is None:
         return False
     search.update(kwargs)
-    return match_cf_obj(obj, searchmode=searchmode, **search)
+    return match_cf_atts(obj, searchmode=searchmode, **search)
 
 
-match_var = match_known_cf_obj
+def match_var(obj, name, searchmode=None, cf_source=None, **kwargs):
+    """Check if an obj matches a generic variable"""
+    return match_cf_from_name(obj, name, searchmode=searchmode,
+                              cf_source=cf_source, category='variables')
 
 
-def match_known_cf_var(obj, searchmode=None, **kwargs):
+def match_axis(obj, name, searchmode=None, cf_source=None, **kwargs):
+    """Check if an obj matches a generic variable"""
+    return match_cf_from_name(obj, name, searchmode=searchmode,
+                              cf_source=cf_source, category='axes')
+
+
+def match_known_cf_obj(obj, searchmode=None, cf_source=None, **kwargs):
+    """Check if an object matches a known variable or axis"""
+    return (match_known_cf_var(obj, searchmode=searchmode,
+                               cf_source=cf_source, **kwargs) or
+            match_known_cf_axis(obj, searchmode=searchmode,
+                                cf_source=cf_source, **kwargs))
+
+
+def match_known_cf_var(obj, searchmode=None, cf_source=None, **kwargs):
     """Check if an object matches a known variable"""
-    for name in CF_VAR_SPECS:
-        if match_cf_obj(obj, name, searchmode=searchmode):
+    for name in get_cf_var_specs(cf_source=cf_source):
+        if match_cf_from_name(obj, name, searchmode=searchmode,
+                              category='variables'):
             return name
     return False
 
@@ -1436,10 +1669,11 @@ def match_known_cf_var(obj, searchmode=None, **kwargs):
 match_known_var = match_known_cf_var
 
 
-def match_known_cf_axis(obj, searchmode=None, **kwargs):
+def match_known_cf_axis(obj, searchmode=None, cf_source=None, **kwargs):
     """Check if an object matches a known axis"""
-    for name in CF_AXIS_SPECS:
-        if match_cf_obj(obj, name, searchmode=searchmode):
+    for name in get_cf_axis_specs(cf_source=cf_source):
+        if match_cf_from_name(obj, name, searchmode=searchmode,
+                              category='axes'):
             return name
     return False
 
@@ -1447,20 +1681,51 @@ def match_known_cf_axis(obj, searchmode=None, **kwargs):
 match_known_axis = match_known_cf_axis
 
 
-def is_cf_known(name, type=None):
-    """Is this names registered in :attr:`CF_VAR_SPECS` or
-    :attr:`CF_AXIS_SPECS`"""
-    assert type is None or type in ('var', 'axis')
-    if type is None:
-        names = CF_AXIS_NAMES + CF_VAR_NAMES
-    elif type == 'var':
-        names = CF_VAR_NAMES
-    else:
-        names = CF_AXIS_NAMES
-    return name in names
+def is_known_cf_name(name, category=None, cf_source=None):
+    """Is this name has CF specs as an axis or a variable
+
+    Parameters
+    ----------
+    name: str
+    category: None or str
+        If a str, either "variables" or "axes"
+    """
+    if ((category is None or category.startswith('v')) and
+            is_known_cf_var_name(name, cf_source=cf_source)):
+        return True
+    if ((category is None or category.startswith('a')) and
+            is_known_cf_axis_name(name, cf_source=cf_source)):
+        return True
+    return False
 
 
-def get_cf_cmap(vname):
+def is_known_cf_var_name(name, cf_source=None):
+    """Check that a name is known as CF var"""
+    return name in get_cf_var_specs(cf_source=cf_source)
+
+
+def is_known_cf_axis_name(name, cf_source=None):
+    """Check that a name is known as CF axis"""
+    return name in get_cf_axis_specs(cf_source=cf_source)
+
+
+def get_cf_standard_name(name, category=None, mode='first', cf_source=None):
+    """Get the standard_name of a target
+
+    Return
+    ------
+    str or None
+        Return None of no specs found
+    """
+    specs = get_cf_specs(name=name, category=category, cf_source=cf_source)
+    if specs and specs['standard_name']:
+        standard_names = specs['standard_name']
+        if mode == 'first':
+            standard_names = standard_names[0]
+        return standard_names
+
+
+def get_cf_cmap(vname, cf_source=None):
     """Get a cmap from a standard name
 
     cmap may be specified for a variable with the 'cmap' key of
@@ -1468,11 +1733,53 @@ def get_cf_cmap(vname):
     """
     if hasattr(vname, 'id'):
         vname = vname.id
-    if vname in CF_VAR_SPECS and 'cmap' in CF_VAR_SPECS[vname]:
+    elif hasattr(vname, 'name'):
+        vname = vname.name
+    cf_specs = get_cf_var_specs(vname, cf_source=cf_source)
+    if cf_specs:
         from .color import get_cmap
-        cmap = get_cmap(CF_VAR_SPECS[vname]['cmap'])
-        if cmap.name != CF_VAR_SPECS[vname]['cmap']:
+        cmap = get_cmap(cf_specs['cmap'])
+        if cmap.name != cf_specs['cmap']:
             vcwarn("Can't get cmap '{}' for standard variable '{}'".format(
-                CF_VAR_SPECS[vname]['cmap'], vname))
+                cf_specs['cmap'], vname))
 
     return cmap
+
+
+class CFContext(object):
+    """Context for changing :data:`CF_SPECS`
+
+    Example
+    -------
+    >>> with CFContext(my_cf_source) as cfc:
+    ...    cmap = get_cf_cmap('temp')
+
+    """
+
+    def __init__(self, cf_source):
+        """
+        Parameters
+        ----------
+        cf_source: dict
+            Dict with 'variables' and 'axes' keys.
+        """
+        assert 'variables' in cf_source and 'axes' in cf_source
+        from . import cf
+        self.cf_module = cf
+        self.cf_source = cf_source
+
+    def __enter__(self):
+        cf = self.cf_module
+        if not hasattr(cf, 'CF_SPECS'):
+            get_cf_specs()
+        self.old_cf_source = cf.CF_SPECS
+        self._set_cf_source_(self.cf_source)
+
+    def __exit__(self):
+        self._set_cf_source_(self.old_cf_source)
+
+    def _set_cf_source_(self, cf_source):
+        cf = self.cf_module
+        cf.CF_SPECS = cf_source
+        cf.CF_VAR_SPECS = cf.VAR_SPECS = cf_source['variables']
+        cf.CF_AXIS_SPECS = cf.AXIS_SPECS = cf_source['axes']
