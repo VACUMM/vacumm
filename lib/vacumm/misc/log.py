@@ -70,12 +70,14 @@ except Exception:
 else:
     hascurses = True
 
+
 __all__ = ['Logger', 'ColoredStreamHandler', 'LoggerAdapter',
-           'StreamLogWrapper', 'get_str_level', 'get_int_level']
+           'StreamLogWrapper', 'get_str_level', 'get_int_level',
+           'get_level_names', 'get_str_levels', 'get_int_levels']
 
 
-logging.VERBOSE = logging.DEBUG + (logging.INFO - logging.DEBUG) / 2
-logging.NOTICE = logging.INFO + (logging.WARNING - logging.INFO) / 2
+logging.VERBOSE = logging.DEBUG + int((logging.INFO - logging.DEBUG) / 2)
+logging.NOTICE = logging.INFO + int((logging.WARNING - logging.INFO) / 2)
 
 logging.addLevelName(logging.VERBOSE, 'VERBOSE')
 logging.addLevelName(logging.NOTICE, 'NOTICE')
@@ -104,10 +106,17 @@ class LogLevelError(Exception):
 def check_level(level):
     if isinstance(level, six.string_types):
         level = level.strip().upper()
-    if level not in list(logging._levelNames.keys()):
+    if level not in get_level_names():
         raise LogLevelError(level)
     return level
 
+def get_level_names():
+    """Get a dict of level int<->str links"""
+    if hasattr(logging, '_levelNames'):
+        return logging._levelNames
+    level_names = logging._levelToName.copy()
+    level_names.update(logging._nameToLevel)
+    return level_names
 
 def convert_level(level):
     '''
@@ -115,11 +124,11 @@ def convert_level(level):
     '''
     if isinstance(level, six.string_types):
         level = level.strip().upper()
-    return logging._levelNames[check_level(level)]
+    return get_level_names()[check_level(level)]
 
 
 def get_int_levels():
-    return sorted([l for l in list(logging._levelNames.keys()) if isinstance(l, int)])
+    return sorted([l for l in list(get_level_names().keys()) if isinstance(l, int)])
 
 
 def get_str_levels():
@@ -689,7 +698,7 @@ class Logger(logging.getLoggerClass()):
 
     # redefine findCaller to ignore certain callers,
     # used to support the new levels (verbose/notice)
-    def findCaller(self):
+    def findCaller(self, *kwargs):
         """
         Find the stack frame of the caller so that we can note the source
         file name, line number and function name.
@@ -1100,7 +1109,7 @@ exception = default.exception
 def _testLog():
 
     levels = []
-    for i in sorted([l for l in list(logging._levelNames.keys()) if isinstance(l, int)]):
+    for i in sorted([l for l in list(get_level_names().keys()) if isinstance(l, int)]):
         levels.append(i)
         levels.append(get_str_level(i))
     funcs = [l for l in levels if isinstance(
