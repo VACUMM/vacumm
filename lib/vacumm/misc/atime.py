@@ -73,7 +73,7 @@ RE_MATCH_TIME_PATTERN = (r'[0-2]?\d?\d?\d(-[01]?\d(-[0-3]?\d([ TZ][0-2]?\d'
                          r'(:[0-6]?\d(:[0-6]?\d(\.\d+)?)?)?)?)?)?')
 RE_MATCH_TIME = recompile(RE_MATCH_TIME_PATTERN+'$', re.I).match
 RE_MATCH_UNITS_PATTERN = r'(%s) since ' % '|'.join(
-    STR_UNIT_TYPES)+RE_MATCH_TIME_PATTERN+'[ \w]*'
+    STR_UNIT_TYPES)+RE_MATCH_TIME_PATTERN+r'[ \w]*'
 RE_MATCH_UNITS = recompile(RE_MATCH_UNITS_PATTERN+'$', re.I).match
 
 #: Time units for CNES julian days
@@ -416,8 +416,8 @@ def are_same_units(units1, units2):
     True
 
     """
-    return (cdtime.reltime(100, str(units1).lower()) ==
-            cdtime.reltime(100, str(units2).lower()))
+    return (cdtime.reltime(100, str(units1).lower()).value ==
+            cdtime.reltime(100, str(units2).lower()).value)
 
 
 def are_valid_units(units):
@@ -1097,18 +1097,20 @@ def check_range(this_time, time_range):
     else:
         range_type = time_range[2].lower()
 
-    # Convert to component time
-    ctime = comptime(this_time)
+    # Convert to datetime
+    this_time = datetime(this_time)
     for i in 0, 1:
         if isinstance(time_range[i], six.string_types):
-            time_range[i] = comptime(time_range[i])
+            time_range[i] = datetime(time_range[i])
 
     # Before
-    if ctime.cmp(time_range[0]) < int(range_type[0] is 'o'):
+    op = 'lt' if range_type[0] == 'o' else 'le'
+    if getattr(operator, op)(this_time, time_range[0]):
         return -1
 
     # After
-    if ctime.cmp(time_range[1]) > -int(range_type[1] is 'o'):
+    op = 'gt' if range_type[1] == 'o' else 'ge'
+    if getattr(operator, op)(this_time, time_range[1]):
         return 1
 
     # Within
@@ -1843,7 +1845,7 @@ def strptime(mytime, fmt):
     --------
     :meth:`datetime.datetime.strptime`.
     """
-    return comptime(time.strptime(mytime, fmt))
+    return comptime(DT.strptime(mytime, fmt))
 
 
 _re_has_time_pattern = recompile('%[aAbBcdfHIjmpSUwWxXyYzZ]').search
@@ -2584,7 +2586,7 @@ class Intervals(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         # Iterator is consumed
         if self._current_date == self._last_date:
             raise StopIteration
@@ -2617,6 +2619,9 @@ class Intervals(object):
         if self.lmargin != 0 and self.rmargin is not None:
             out = add_margin(out, self.lmargin, self.rmargin)
         return out
+
+    def next(self):
+        return self.__next__()
 
     def tolist(self):
         return list(self)
@@ -2677,7 +2682,7 @@ class IterDates(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         # Next date
         if self._current_date is None:
             next_date = self._first_date
@@ -2693,6 +2698,9 @@ class IterDates(object):
         # Save and return
         self._current_date = next_date
         return next_date
+
+    def next(self):
+        return self.__next__()
 
     def tolist(self):
         return [date for date in self]
