@@ -60,7 +60,8 @@ from matplotlib.axis import YAxis
 from matplotlib.colors import Colormap, Normalize
 from matplotlib.dates import (DateFormatter,
                               WEEKLY, YEARLY, MONTHLY,
-                              AutoDateLocator, AutoDateFormatter, MO, DAILY, HOURLY, num2date,
+                              AutoDateLocator, AutoDateFormatter, MO,
+                              DAILY, HOURLY, num2date,
                               MINUTELY, SECONDLY)
 from matplotlib.figure import Figure
 from matplotlib.patches import Patch
@@ -76,9 +77,12 @@ from matplotlib.collections import PolyCollection, LineCollection
 
 from vacumm import VACUMMError, VACUMM_CFG
 from vacumm.config import get_cfg_checked
-from .misc import (kwfilter, dict_aliases, geo_scale, lonlab, latlab, deplab, cp_atts,
-                   auto_scale, dict_check_defaults, basic_auto_scale, dict_copy_items,
+from .misc import (kwfilter, dict_aliases, geo_scale, lonlab,
+                   latlab, deplab, cp_atts,
+                   auto_scale, dict_check_defaults,
+                   basic_auto_scale, dict_copy_items,
                    dict_merge, phaselab, set_atts, MV2Wrapper)
+from .basemap import create_map
 from ._ext_plot import (FilteredArtistList, DropShadowFilter, GrowFilter,
                         LightFilter)
 from .units import deg2m, tometric, m2deg
@@ -87,13 +91,8 @@ from .axes import (check_axes, axis_type, set_order, merge_orders,
 from .color import (get_cmap, RGB, land,
                     RGBA, change_luminosity, change_saturation, pastelise,
                     CMAP_POSITIVE, CMAP_NEGATIVE, CMAP_SYMETRIC)
-from .filters import generic2d
 from .grid import meshbounds, get_axis, meshgrid, meshcells, bounds2d
-from .basemap import create_map
 from .atime import mpl, strftime, is_numtime, numtime
-from .regridding import shift1d
-from .masking import resol_mask
-from six.moves import filter
 
 if VACUMM_CFG['vacumm.misc.docstrings']['activate']:
     from .docstrings import docfiller
@@ -101,13 +100,14 @@ if VACUMM_CFG['vacumm.misc.docstrings']['activate']:
 
 MA = N.ma
 
-
 __all__ = ['PlotError', 'Plot', 'Plot1D', 'Curve', 'Bar', 'Stick',
            'Plot2D', 'Map', 'Hov', 'QuiverKey',
            'ScalarMappable', 'AutoDateFormatter2', 'AutoDateLocator2',
-           'AutoDateMinorLocator', 'AutoDualDateFormatter', 'DualDateFormatter',
+           'AutoDateMinorLocator', 'AutoDualDateFormatter',
+           'DualDateFormatter',
            'MinuteLabel', 'Section', 'twinxy', 'DepthFormatter',
-           'AutoDegreesMinutesFormatter', 'AutoDegreesMinutesLocator']
+           'AutoDegreesMinutesFormatter', 'AutoDegreesMinutesLocator',
+           'register_plot_coastline']
 
 
 #: Aliases for argisimage services hosted by the arcgis server
@@ -127,6 +127,33 @@ ARCGISIMAGE_ALIASES = dict(
     streetmap="World_Street_Map",
     terrain="World_Terrain_Base",
 )
+
+EXTRA_COASTLINES = {}
+
+
+def register_plot_coastline(cls, name=None):
+    """Register a coastline class with a generic name
+
+
+
+    Parameters
+    ----------
+    cls: vacumm.misc.sdata.Shapes
+        The class must accept lon and lat keywords as initialisation,
+        and must have the get_shapes method that returns
+        :class:`Polygon` instances.
+    name: str
+        Register with this name. If omitted, it is taken to the lower-case
+        class name.
+
+    Example
+    -------
+    >>> register_plot_coastline(Histolitt, 's')
+    >>> map2(sst, res='s')
+    """
+    if name is None:
+        name = cls.__name__.lower()
+    EXTRA_COASTLINES[name] = cls
 
 
 class PlotError(VACUMMError):
@@ -947,7 +974,7 @@ class Plot(object):
                 self.axes = P.gca()
         try:  # Fails with host
             self.fig.sca(self.axes)
-        except:
+        except Exception:
             pass
         if axes_xoffset and hasattr(self.axes, 'get_grid_helper'):
             new_fixed_axis = self.axes.get_grid_helper().new_fixed_axis
@@ -966,7 +993,7 @@ class Plot(object):
             self.axes.set_frame_on(False)
         if bgcolor is not None:
             try:
-                self.axes.set_face_color(bgcolor)
+                self.axes.set_facecolor(bgcolor)
             except:
                 self.axes.set_axis_bgcolor(bgcolor)
 
@@ -1525,6 +1552,8 @@ class Plot(object):
                 getattr(self.axes, 'set_%sscale' % xy)(props['scale'])
 
             # Limits
+            mmargs = {'x': {'min': 'left', 'max': 'right'},
+                      'y': {'min': 'bottom', 'max': 'top'}}[xy]
             axmin, axmax = None, None
             # - wee clearly need strict limits
             if props['strict'] is None:
@@ -1566,21 +1595,25 @@ class Plot(object):
             # - ok, lets set it
             xylim_func = getattr(self.axes, 'set_%slim' % xy)
             if axmin is not None and axmin is not False:
-                if props['type'] == 't' and (isinstance(axmin, six.string_types) or not N.isscalar(axmin)):
+                if (props['type'] == 't' and
+                        (isinstance(axmin, six.string_types) or
+                         not N.isscalar(axmin))):
                     try:
                         axmin = mpl(axmin)
                     except:
                         raise PlotError(
                             "Can't convert axmin to date: %s" % axmin)
-                xylim_func(**{xy+'min': _asnum_(axmin)})
+                xylim_func(**{mmargs['min']: _asnum_(axmin)})
             if axmax is not None and axmax is not False:
-                if props['type'] == 't' and (isinstance(axmax, six.string_types) or not N.isscalar(axmax)):
+                if (props['type'] == 't' and
+                        (isinstance(axmax, six.string_types) or
+                         not N.isscalar(axmax))):
                     try:
                         axmax = mpl(axmax)
                     except:
                         raise PlotError(
                             "Can't convert axmax to date: %s" % axmin)
-                xylim_func(**{xy+'max': _asnum_(axmax)})
+                xylim_func(**{mmargs['max']: _asnum_(axmax)})
 
             # Ticks values and formats
             if props['type'] in ['x', 'y', 'z']:  # Lon, lat or dep axis
@@ -1692,9 +1725,9 @@ class Plot(object):
 
             # Now set again min/max
             if axmin is not None and axmax is not False:
-                xylim_func(**{xy+'min': _asnum_(axmin)})
+                xylim_func(**{mmargs['min']: _asnum_(axmin)})
             if axmax is not None and axmax is not False:
-                xylim_func(**{xy+'max': _asnum_(axmax)})
+                xylim_func(**{mmargs['max']: _asnum_(axmax)})
 
             # Properties
             if props['ticklabels_kwargs']:
@@ -1760,8 +1793,9 @@ class Plot(object):
     def _transform_(self, transform, default=None):
         return _transform_(transform, default, ax=self.axes, fig=self.fig)
 
-    def get_xy(self, x, y, transform=None, xyscaler=None, default_transform=None):
-        """Convert (x,y) in data coordinates
+    def transform_xy(self, x, y, transform=None, xyscaler=None, split=False,
+                     default_transform=None, offset=None, force_data=False):
+        """Transform coordinates taking scaling into account
 
         Parameters
         ----------
@@ -1777,16 +1811,31 @@ class Plot(object):
             and it defaults to attribute :attr:`xyscaler` if existing.
             It converts for instance from degrees to meters for :class:`Map`
             instances. If equal to False, no conversion is performed.
+        force_data: bool
+            Force conversion to data coordinates
+        offset: tuple
+            Offset coordinates in points (dx, dy)
+        split: bool
+            If True, return ``((x, y), transform)`` else ``(x, y, transform)``
+
+        Return
+        ------
+        tuple: x, y, transform
         """
         transform = self._transform_(transform, default_transform)
 
         # From figure or axes coordinates
-        if transform is self.fig.transFigure or transform is self.axes.transAxes:
-            return tuple((transform-self.axes.transData).transform_point((x, y)))
+        if (transform is self.fig.transFigure or
+                transform is self.axes.transAxes):
+            if force_data:
+                return tuple((transform-self.axes.transData).transform_point(
+                        (x, y))) + (self.axes.transData,)
 
         # From data coordinates (check xyscaler only)
-        if (transform is self.axes.transData or transform in list(self.axes.transData._parents.values())
-                or str(self.axes.transData) in str(transform)) and xyscaler is not False:  # Add transform from ie degrees to m
+        elif xyscaler is not False and (
+                transform is self.axes.transData or
+                transform in list(self.axes.transData._parents.values())
+                or str(self.axes.transData) in str(transform)):
             if xyscaler is None and hasattr(self, 'xyscaler'):
                 xyscaler = self.xyscaler
             x = _asnum_(x)
@@ -1794,7 +1843,14 @@ class Plot(object):
             if xyscaler:
                 x, y = xyscaler(x, y)
 
-        return x, y
+        # Final offset
+        if offset:
+            transform = self.get_transoffset(offset[0], offset[1],
+                                             transform=transform)
+
+        if split:
+            (x, y), transform
+        return x, y, transform
 
     def get_transoffset(self, x, y, units='points', transform='data'):
         """Return a translation :class:`~maplotlib.transforms.Transform`
@@ -1892,7 +1948,7 @@ class Plot(object):
     figtext = add_figtext  # backward compat
 
     def add_text(self, x, y, text, transform='axes', shadow=False, glow=False,
-                 xyscaler=None, strip=True, **kwargs):
+                 xyscaler=None, strip=True, offset=None, **kwargs):
         """Add text to the plot axes
 
         Parameters
@@ -1904,6 +1960,8 @@ class Plot(object):
         transform: optional
             Type of coordinates
             (like ``"axes"`` or ``"data"``).
+        offset: tuple of two floats, optional
+            Add the an offset to the text position, on (dx, dy) points
         shadow: optional
             Add a droped shadow below the text
             (see :func:`add_shadow`).
@@ -1922,9 +1980,9 @@ class Plot(object):
         kwgl = kwfilter(kwargs, 'glow')
 
         # Coordinates transform
-        transform = self._transform_(transform, 'axes')
-        if transform not in [self.axes.transAxes, self.fig.transFigure]:
-            x, y = self.get_xy(x, y, transform, xyscaler=xyscaler)
+        x, y, transform = self.transform_xy(
+                x, y, transform, xyscaler=xyscaler,
+                default_transform='axes', offset=offset)
 
         # Plot
         if strip:
@@ -2086,18 +2144,11 @@ class Plot(object):
 
         # Coordinates transform
         xycoords = kwargs.pop('transform', xycoords)
-        xycoords = self._transform_(xycoords, 'data')
-        if not isinstance(xycoords, six.string_types) and \
-                xycoords not in [self.axes.transAxes, self.fig.transFigure]:
-            x, y = self.get_xy(x, y, xycoords, xyscaler=xyscaler)
-        if textcoords is None:
-            textcoords = xycoords
-        else:
-            textcoords = self._transform_(textcoords, 'offset points')
-        if not isinstance(textcoords, six.string_types) and \
-                textcoords not in [self.axes.transAxes, self.fig.transFigure]:
-            xtext, ytext = self.get_xy(
-                xtext, ytext, textcoords, xyscaler=xyscaler)
+        x, y, xycoords = self.transform_xy(
+                x, y, xycoords, xyscaler=xyscaler, default_transform='data')
+        xtext, ytext, textcoords = self.transform_xy(
+                xtext, ytext, textcoords, xyscaler=xyscaler,
+                default_transform=xycoords)
 
         # Arrow properties
         if isinstance(arrowprops, six.string_types):
@@ -2110,7 +2161,8 @@ class Plot(object):
         if strip:
             text = text.strip()
         obj = self.axes.annotate(xy=(x, y), xytext=(xtext, ytext), s=text,
-                                 xycoords=xycoords, textcoords=textcoords, arrowprops=arrowprops, **kwargs)
+                                 xycoords=xycoords, textcoords=textcoords,
+                                 arrowprops=arrowprops, **kwargs)
         obj = self.add_axobj('text', obj)
         self.register_obj(obj, **kwargs)
 
@@ -2548,7 +2600,8 @@ class Plot(object):
         return o
 
     def add_point(self, x, y, zorder=150, shadow=False, glow=False,
-                  color='r', size=20, xyscaler=None, **kwargs):
+                  color='r', size=20, xyscaler=None, transform='data',
+                  offset=None, **kwargs):
         """Add a point to the map using :meth:`matplotlib.pyplots.plot`
 
         Parameters
@@ -2576,17 +2629,14 @@ class Plot(object):
         :func:`matplotlib.pyplot.scatter`
         """
         # Coordinates
-        x = _asnum_(x)
-        y = _asnum_(y)
-        x = N.asarray(x)
-        y = N.asarray(y)
-        if xyscaler is None and hasattr(self, 'xyscaler'):
-            xyscaler = self.xyscaler
-        if callable(xyscaler):
-            x, y = xyscaler(x, y)
+        x = _asnum_(x, asarray=True)
+        y = _asnum_(y, asarray=True)
+        x, y, transform = self.transform_xy(x, y, transform, xyscaler=xyscaler,
+                                            default_transform='data',
+                                            offset=offset)
 
         # Params
-        kwargs.update(zorder=zorder)
+        kwargs.update(zorder=zorder, transform=transform)
         kwsh = kwfilter(kwargs, 'shadow')
         kwgl = kwfilter(kwargs, 'glow')
         dict_copy_items(kwargs, [kwsh, kwgl], 'anim')
@@ -2612,7 +2662,7 @@ class Plot(object):
         return o
 
     def add_place(self, x, y, text, zorder=150, color='k',
-                  shadow=False, glow=False,
+                  shadow=False, glow=False, transform='data',
                   text_offset=(0, 10), ha='center', va='center', **kwargs):
         """Place a point using :meth:`add_point` and a label using :meth:`add_text`
 
@@ -2639,7 +2689,8 @@ class Plot(object):
         """
         kwpoint = kwfilter(kwargs, 'point_')
         kwtext = kwfilter(kwargs, 'text_')
-        kwcom = dict(zorder=zorder, shadow=shadow, glow=glow, color=color)
+        kwcom = dict(zorder=zorder, shadow=shadow, glow=glow, color=color,
+                     transform='data')
         dict_check_defaults(kwpoint, **kwcom)
         dict_check_defaults(kwtext, ha=ha, va=va, weight='bold', **kwcom)
         tha = kwtext['ha']
@@ -2661,12 +2712,13 @@ class Plot(object):
         kwtext['ha'] = tha
         kwtext['va'] = tva
         p = self.add_point(x, y, **kwpoint)
-        kwtext.setdefault('transform', self.get_transoffset(*text_offset))
+#        kwtext.setdefault('transform', self.get_transoffset(*text_offset))
+        kwtext.setdefault('offset', text_offset)
         t = self.add_text(x, y, text, **kwtext)
         return p, t
 
-    def add_lines(self, xx, yy, zorder=150, shadow=False, glow=False, color='r',
-                  xyscaler=None, closed=False, **kwargs):
+    def add_lines(self, xx, yy, zorder=150, shadow=False, glow=False,
+                  color='r', xyscaler=None, closed=False, **kwargs):
         """Add lines to the plot using :meth:`matplotlib.axes.Axes.plot`
 
         Parameters
@@ -4052,7 +4104,7 @@ class ScalarMappable:
         - ``"positive"``: Min is set to 0.
         - ``"negative"``: Max is set to 0.
         - ``"auto"``: If abs(min) and abs(max) are close,
-          ``"symetric"``is assumed. If min and max are > 0,
+          ``"symetric"`` is assumed. If min and max are > 0,
           ``"positive"`` is assumed, and the reverse for
           ``"negative"``.
 
@@ -4156,7 +4208,7 @@ class ScalarMappable:
             mode = 'positive'
         elif (vmin < 0 and vmax <= 0) and (vmax >= vmin/3.):
             mode = 'negative'
-        elif (vmin+vmax) < 0.05 * (vmax-vmin):
+        elif vmin < 0 and vmax > 0 and abs(vmin+vmax) < 0.05 * abs(vmax-vmin):
             mode = 'symetric'
         else:
             mode = 'normal'
@@ -4196,7 +4248,7 @@ class ScalarMappable:
     def get_levels_mode(self):
         """Get :attr:`levels_mode`"""
         levels_mode = self.get_obj('levels_mode')
-        if levels_mode is not None:
+        if levels_mode is None:
             levels_mode = VACUMM_CFG['vacumm.misc.plot']['levels_mode']
         levels_mode = str(levels_mode)
         return levels_mode
@@ -4352,9 +4404,11 @@ class ScalarMappable:
                 if cmap == 'magic':
                     kwargs.setdefault('mode', levels_mode)
                 kwargs.setdefault('stretcher', 'reduced_green')
-                if getattr(self, 'fill_method', None) == 'contourf' or getattr(self, 'fill', '') == 'contourf':
+                if (getattr(self, 'fill_method', None) == 'contourf' or
+                        getattr(self, 'fill', '') == 'contourf'):
                     dict_check_defaults(kwargs, stretch=0,
                                         lstretch=0, rstretch=0)
+                import color
                 cmap = getattr(color, 'cmap_'+cmap)(self.levels, **kwargs)
 
         elif not isinstance(cmap, Colormap):
@@ -4439,8 +4493,8 @@ class ScalarMappable:
     def colorbar(self, cax=None, fit=False, ticklabels_nmax=12, **kwargs):
         """Add a colorbar
 
-        The colorbar is drawn only if :meth:`get_scalar_mappable` returns a valid
-        scalar mappable.
+        The colorbar is drawn only if :meth:`get_scalar_mappable`
+        returns a valid scalar mappable.
 
         Parameters
         ----------
@@ -4453,7 +4507,8 @@ class ScalarMappable:
             <param> is set as a property
             of tick labels.
         **kwargs
-            Other keywords are passed to the :meth:`matplotlib.figure.Figure.colorbar`
+            Other keywords are passed to the
+            :meth:`matplotlib.figure.Figure.colorbar`
             method.
 
         See also
@@ -4490,35 +4545,30 @@ class ScalarMappable:
         if isinstance(cax, list):
             cax = self.fig.add_axes(cax)
         # - plot it
-#        print kwargs
-#        xxx
         cb = self.fig.colorbar(sm, ax=self.axes, cax=cax, **kwargs)
         # - fit to axes limits
         if fit:
             axbbox = self.axes.get_position()
             caxbbox = cb.ax.get_position()
-            print('avant', axbbox, caxbbox)
             if cb.orientation == 'horizontal':
                 cb.ax.set_position(
                     [axbbox.x0, caxbbox.y0, axbbox.width, caxbbox.height])
             else:
                 cb.ax.set_position(
                     [caxbbox.x0, axbbox.y0, caxbbox.width, axbbox.height])
-            print('apres', cb.ax.get_position())
-        # - ticks
-        if levels is not None and 'format' not in kwargs:
-            samp = len(levels)/ticklabels_nmax+1
+        # - tick labels
+        if cb.orientation == 'horizontal':
+            labels = cb.ax.get_xticklabels()
+        else:
+            labels = cb.ax.get_yticklabels()
+        if levels is not None:
+            samp = int(len(levels)/ticklabels_nmax) + 1
             if samp > 1:
-                levels = list(levels)
-                for i in range(len(levels)):
-                    if i % samp:
-                        levels[i] = ''
-            labels = cb.set_ticklabels(levels)
-
-            if kwtl:
-                #                axis = getattr(cb.ax, ('x' if cb.orientation=='horizontal' else 'y')+'axis')
-                #                P.setp(axis.get_ticklabels(), **kwtl)
-                P.setp(labels, **kwtl)
+                for i, label in enumerate(labels):
+                    if i % samp != 0:
+                        label.set_visible(False)
+        if kwtl:
+            P.setp(labels, **kwtl)
         # - label
         label = self.cblabel
         if label is not None:
@@ -4699,7 +4749,8 @@ class Curve(Plot1D):
         line_keys = ['color', 'linewidth',
                      'linestyle', 'markerwidth', 'drawstyle']
         marker_keys = ['markeredgecolor', 'markeredgesize',
-                       'markersize', 'markerfacecolor', 'marker', 'zorder', 'alpha']
+                       'markersize', 'markerfacecolor', 'marker',
+                       'zorder', 'alpha']
         line_keys.extend(marker_keys)
         for key in line_keys:
             if key in kwargs and kwargs[key] is not None:
@@ -5290,6 +5341,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
                 self.x2db = N.resize(
                     x2db, (self.x2d.shape[0]+1, x2db.shape[0]))
             elif x2db.shape[0] == self.x2d.shape[0]:
+                from .regridding import shift1d
                 self.x2db = N.zeros((self.x2d.shape[0]+1, self.x2d.shape[1]+1))
                 self.x2db[1:] = shift1d(x2db, 1, axis=0, mode='same')
                 self.x2db[:-1] += shift1d(x2db, -1, axis=0, mode='same')
@@ -5301,6 +5353,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
                 self.y2db = N.resize(
                     y2db, (self.y2d.shape[1]+1, y2db.shape[0])).T
             elif y2db.shape[1] == self.y2d.shape[1]:
+                from .regridding import shift1d
                 self.y2db = N.zeros((self.y2d.shape[0]+1, self.y2d.shape[1]+1))
                 self.y2db[:, 1:] = shift1d(y2db, 1, axis=1, mode='same')
                 self.y2db[:, :-1] += shift1d(y2db, -1, axis=1, mode='same')
@@ -5670,11 +5723,13 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         kwcl.setdefault('fmt', '%g')
         kw.setdefault('alpha', .5 if self.fill_method.startswith('pcolor') or
                       self.fill_method.startswith('imshow') else alpha)
-        kwcl.setdefault('alpha', alpha)
+#        kwcl.setdefault('alpha', alpha)
         if 'linewidth' in kw:
             linewidths = kw.pop('linewidth')
         if linewidths is None and 'linewidth' in kwargs:
             linewidths = kwargs.pop('linewidth')
+        if linewidths is None:
+            linewidths = VACUMM_CFG['vacumm.misc.plot']['contour_linewidth']
         if linewidths is not None:
             kw.setdefault('linewidths', linewidths)
         if zorder is not None:
@@ -5711,18 +5766,22 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
 
         # Labels
         if len(cc.collections) and not kwcl.pop('hide', not clabel):
-            kwcl.setdefault('zorder', cc.collections[0].get_zorder())
+#            kwcl.setdefault('zorder', cc.collections[0].get_zorder())
             clshadow = kwcl.pop('shadow', shadow)
             kwclsh = kwfilter(kwcl, 'shadow')
             clglow = kwcl.pop('glow', glow)
             kwclgl = kwfilter(kwcl, 'glow')
             dict_copy_items(kwargs, [kwclsh, kwclgl], 'anim')
+            cl_bbox = kwcl.pop('bbox', None)
             cl = self.axes.clabel(cc, **kwcl)
+            if cl_bbox:
+                for l in cl:
+                    l.set_bbox(cl_bbox)
             self.set_obj('clabel', cl)
             self.register_obj(cl, 'text', **kwargs)
             for l in cl:
-                l.set_alpha(kwcl['alpha'])
-                l.set_zorder(kwcl['zorder'])
+                l.set_alpha(alpha)  #kwcl['alpha'])
+                l.set_zorder(cc.collections[0].get_zorder())  # kwcl['zorder'])
             if clshadow:
                 self.add_shadow(cl, **kwclsh)
             if clglow:
@@ -5849,10 +5908,16 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         if quiver_ysamp is not None:
             quiver_yres = quiver_yrelres = False
         # - indirect
-        rmask = resol_mask((x2dr, y2dr), res=quiver_res, xres=quiver_xres, yres=quiver_yres,
-                           relres=quiver_relres, xrelres=quiver_xrelres, yrelres=quiver_yrelres,
-                           scaler=self.xyscaler, compact=True, nauto=quiver_nauto)
-
+        if (quiver_res or quiver_xres or quiver_yres or quiver_relres or
+                quiver_xrelres or quiver_yrelres):
+            from .masking import resol_mask
+            rmask = resol_mask((x2dr, y2dr), res=quiver_res, xres=quiver_xres,
+                               yres=quiver_yres, relres=quiver_relres,
+                               xrelres=quiver_xrelres, yrelres=quiver_yrelres,
+                               scaler=self.xyscaler, compact=True,
+                               nauto=quiver_nauto)
+        else:
+            rmask = False
         # - apply
         if rmask is not False:
             uu = uu.copy()
@@ -5896,7 +5961,6 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         if mask is not MV2.nomask:
             good = ~mask.ravel()
             qvargs = [N.compress(good, qa.ravel()) for qa in qvargs]
-            del qa
 
         # Arrows
         if barbs:
@@ -6347,10 +6411,14 @@ class Map(Plot2D):
             projection = kwargs.pop('proj', projection)
             resolution = kwargs.pop('res', resolution)
 
-            self.map = create_map(lon_min, lon_max, lat_min, lat_max, projection=projection,
-                                  resolution=resolution, overlay=overlay, fullscreen=fullscreen,
-                                  lon_center=lon_center, lat_center=lat_center, lat_ts=lat_ts, epsg=epsg,
-                                  nocache=nocache, cache_dir=cache_dir, zoom=zoom, ax=self.axes, **kwmap)
+            self.map = create_map(lon_min, lon_max, lat_min, lat_max,
+                                  projection=projection,
+                                  resolution=resolution, overlay=overlay,
+                                  fullscreen=fullscreen,
+                                  lon_center=lon_center, lat_center=lat_center,
+                                  lat_ts=lat_ts, epsg=epsg,
+                                  nocache=nocache, cache_dir=cache_dir,
+                                  zoom=zoom, ax=self.axes, **kwmap)
 
         # Projection of coordinates
         if self.has_data():
@@ -6414,6 +6482,7 @@ class Map(Plot2D):
 
         # Smooth
         if smooth:
+            from .filters import generic2d
             data[:] = generic2d(data, smooth)
 
         # Gradients
@@ -7173,7 +7242,7 @@ def get_quiverkey_value(data, mode=80):
         vref = N.ma.mean(data)
     else:
         if mode == 'median':
-            mode = .5
+            mode = 50
         elif not isinstance(mode, (int, float)):
             raise PlotError('Unkown quiverkey value mode: {}'.format(mode))
         vref = N.percentile(data, mode)
@@ -7588,8 +7657,9 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
                 kwmjl.setdefault('maxticks', maxticks)
                 major_locator = AutoDateLocator2(**kwmjl)
             elif major_locator.lower() in locs:
-                major_locator = eval(
-                    major_locator.lower().title()+'Locator(**kwmjl)')
+                major_locator = getattr(matplotlib.dates,
+                                        major_locator.lower().title() +
+                                        'Locator')(**kwmjl)
     if major_locator:
         axis.set_major_locator(major_locator)
     else:
@@ -7603,8 +7673,9 @@ def setup_time_axis(axis, auto=True, formatter=None, rotation=None,
     if isinstance(minor_locator, str):
         minor_locator = _get_split_locator_(minor_locator, kwmnl)
         if minor_locator.lower() in locs:
-            minor_locator = eval(
-                minor_locator.lower().title()+'Locator(**kwmnl)')
+            minor_locator = getattr(matplotlib.dates,
+                                    minor_locator.lower().title() +
+                                    'Locator')(**kwmnl)
         elif minor_locator.lower().startswith('auto'):
             minor_locator = AutoDateMinorLocator(**kwmnl)
         else:
@@ -8215,7 +8286,7 @@ def hlitvs(color='.95', axis='x', units='ticks', axes=None, maxticks=10, **kwarg
             axes = P.gca()
         axis = getattr(axes, axis+'axis')
     xy = 'xy'[isinstance(axis, YAxis)]
-    axes = axis.get_axes()
+    axes = axis.axes
 
     # Locators and ticks
     kwloc = kwfilter(kwargs, 'locator_')
@@ -8304,7 +8375,7 @@ class _PPatch(Patch):
         transform = Artist.get_transform(
             self) if self.is_transform_set() else None
         return _transform_pixrot_(self.center, size, self.angle, self.anglemode,
-                                  ax=self.get_axes(), posref=self.posref, transform=transform)
+                                  ax=self.axes, posref=self.posref, transform=transform)
 
     def get_patch_transform(self):
         self._update_transform_()
@@ -8532,7 +8603,7 @@ def add_compass(x, y, size=40, facecolor1='k', facecolor2='w', edgecolor='k',
     return patches, texts
 
 
-def _asnum_(xy):
+def _asnum_(xy, asarray=False):
     """Get xy as a number
 
     If it is a number or a numpy array, it not converted,
@@ -8556,6 +8627,8 @@ def _asnum_(xy):
         out.append(xy)
     if single:
         return out[0]
+    if asarray:
+        out = N.array(out, copy=False)
     return out
 
 

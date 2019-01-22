@@ -211,7 +211,7 @@ class DocFiller(object):
 
         Parameters
         ----------
-        indent: optional: string, int, object
+        indent: optional, string, int, object
             Indentation string for all but the first line.
             A single indentation as four spaces.
 
