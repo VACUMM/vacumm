@@ -44,6 +44,7 @@ import string
 import six
 import re
 from copy import deepcopy
+from pprint import pformat
 
 import cdms2
 import MV2
@@ -96,45 +97,51 @@ CF_DICT_MERGE_KWARGS = dict(mergesubdicts=True, mergelists=True,
                             overwriteempty=True, mergetuples=True)
 
 
-class BaseSpecs(object):
-    """Base class for loading variables and axes CF specifications"""
+class CFSpecs(object):
     aliases = {'name': ['ids', 'id', 'names'],
                'standard_name': ["standard_names"],
                'long_name': ['long_names']
                }
-    category = None
+    def __init__(self, cfg):
+        self._dict = self._load_cfg_(cfg)
+        self._cfgspecs = get_cf_cfgm()._configspec.dict()
 
-    def __init__(self, inherit=None, names=None, parent=None, cfg=None):
-        if cfg is None:
-            cfg = _get_cf_cfg_()
-        self._dict = OrderedDict(cfg[self.category])
-        for name, spec in list(self._dict.items()):
-            self._dict[name] = self._dict[name].dict()
-        self._names = names  # ?
-        if parent is not None and self.category is not None:
-            parent[self.category] = self
-            if isinstance(inherit, str) and inherit in parent:
-                inherit = parent['inherit']
-        self.parent = parent
-        self._inherit = inherit
-        self._cfgspec = get_cf_cfgm()._configspec[
-                self.category]['__many__'].dict()
         self._post_process_()
 
-    def copy_and_update(self, cfg=None, specs=None, names=None, parent=None,
-                        inherit=None):
+    @staticmethod
+    def _load_cfg_(cfg):
+        """Load and validate a configuration without post-processing"""
+        if isinstance(cfg, str) and '[' in cfg:
+            cfg = cfg.split('\n')
+        return OrderedDict(get_cf_cfgm().load(cfg).dict())
+
+    @property
+    def categories(self):
+        return self._cfgspecs.keys()
+
+    def __getitem__(self, category):
+        assert category in self.categories
+        return self._cfs[category]
+
+    def __contains__(self, category):
+        return category in self.categories
+
+    def __getattr__(self, name):
+        if name in self._cfs:
+            return self._cfs[name]
+
+    def __str__(self):
+        return pformat(self._dict)
+
+    def copy_and_update(self, cfg=None, specs=None):#, names=None):
         # Copy
-        if inherit is None:
-            inherit = self._inherit.copy() if self._inherit else None
-        obj = self.__class__(names=names, inherit=inherit,
-                             cfg={self.category: {}}, parent=parent)
+        obj = self.__class__(cfg={})#names=names, inherit=inherit,
+#                             cfg={self.category: {}}, parent=parent)
         obj._dict = deepcopy(self._dict)
 
         # Update
         if cfg:
             obj.register_from_cfg(cfg)
-        if specs:
-            obj.register(**specs)
 
         return obj
 
@@ -143,66 +150,29 @@ class BaseSpecs(object):
 
     __copy__ = copy
 
-    @classmethod
-    def get_alias_list(cls):
-        al = []
-        for aa in list(cls.aliases.values()):
-            al.extend(aa)
-        return al
-
-    def __getitem__(self, key):
-        return self._dict[key]
-
-    def __iter__(self):
-        return iter(self._dict)
-
-    def __len__(self):
-        return len(self._dict)
-
-    def __contains__(self, key):
-        return key in self._dict
-
-    def _assert_known_(self, name):
-        assert name in self, "Invalid entry name:" + name
-
-    def __str__(self):
-        return str(self._dict)
-
-    @property
-    def names(self):
-        return list(self._dict.keys())
-
-    def items(self):
-        return list(self._dict.items())
-
-    def keys(self):
-        return list(self._dict.keys())
-
-    def register(self, name, **specs):
-        """Register a new elements from its name and specs"""
-        data = {self.category: {name: specs}}
-        self.register_from_cfg(data)
 
     def register_from_cfg(self, cfg):
         """"Register new elements from a :class:`ConfigObj` instance
         or a config file"""
-        if isinstance(cfg, str) and '[' in cfg:
-            cfg = cfg.split('\n')
-        if isinstance(cfg, dict) and self.category not in list(cfg.keys()):
-            cfg = {self.category: cfg}
-        local_cfg = get_cf_cfgm().load(cfg)[self.category]
+        local_cfg = self._load_cfg_(cfg)
         self._dict = dict_merge(self._dict, local_cfg,
                                 cls=OrderedDict, **CF_DICT_MERGE_KWARGS)
+        print(self._dict['variables']['sst'])
         self._post_process_()
 
     def _post_process_(self):
-        self._from_atlocs = []
-        for name in self.names:
-            self._check_entry_(name)
+        self._cfs = {}
+        self._from_atlocs = {}
+        for category in self.categories:
+            self._cfs[category] = CFCatSpecs(self, category)
+            self._from_atlocs[category] = []
+            for name in list(self._dict[category].keys()):#names:
+                 if isinstance(self._dict[category][name], dict):
+                     self._check_entry_(category, name)
         self._add_aliases_()
-        self._update_names_()
+#        self._update_names_()
 
-    def _check_entry_(self, name):
+    def _check_entry_(self, category, name):
         """Validate an entry
 
         - Makes sure to have lists, except for 'axis' and 'inherit'
@@ -214,27 +184,34 @@ class BaseSpecs(object):
         - Check duplication to other locations ('toto' -> 'toto_u')
 
         """
+        # Dict of entries for this category
+        entries = self._dict[category]
+
         # Wrong entry!
-        if name not in self:
+        if name not in entries:
             return
 
         # Entry already generated with the atlocs key
-        if name in self._from_atlocs:
+        if name in self._from_atlocs[category]:
             return
 
-        # Get the specs
-        if hasattr(self._dict[name], 'dict'):
-            self._dict[name] = self._dict[name].dict()
-        specs = self._dict[name]
+        # Get the specs as pure dict
+        if hasattr(entries[name], 'dict'):
+            entries[name] = entries[name].dict()
+        specs = entries[name]
 
         # Ids
         if name in specs['name']:
             specs['name'].remove(name)
         specs['name'].insert(0, name)
 
-        # Long name
+        # Long name from name or standard_name
         if not specs['long_name']:
-            specs['long_name'].append(name.title().replace('_', ' '))
+            if specs['standard_name']:
+                long_name = specs['standard_name'][0]
+            else:
+                long_name = name.title().replace('_', ' ')
+            specs['long_name'].append(long_name.capitalize())
 
         # Physloc must be the first atlocs
         if 'physloc' in specs and 'atlocs' in specs:
@@ -244,50 +221,57 @@ class BaseSpecs(object):
                     specs['atlocs'].remove(p)
                 specs['atlocs'].insert(0, p)
 
-        # Geo axes (variables only)
-        if 'axes' in specs:
-            specs['axes'].setdefault('t', ['time'])
-            suffixes = [('_' + s) for s in 'rftuv']
-            specs['axes'].setdefault(
-                'y', [cp_suffix(name, 'lat', suffixes=suffixes)])
-            specs['axes'].setdefault(
-                'x', [cp_suffix(name, 'lon', suffixes=suffixes)])
-            for l, n in ('t', 'time'), ('y', 'lat'), ('x', 'lon'):
-                if isinstance(specs['axes'][l],
-                              list) and n not in specs['axes'][l]:
-                    specs['axes'][l].append(n)
+        # Coordinates and dimensions
+        if 'coords' in specs or 'dims' in specs:
+            # copy location
+            key = 'coords' if 'coords' in specs else 'dims'
+            specs[key].setdefault('t', ['time'])
+            suffixes = [('_' + s) for s in 'rftuvw']
+            for axis in 'xyz':
+                if axis in specs[key]:
+                    if isinstance(specs[key][axis], dict):
+                        for domain in specs[key][axis]:
+                            specs[key][axis][domain] = cp_suffix(
+                                    name, specs[key][axis][domain],
+                                    suffixes=suffixes)
+                    else:
+                        specs[key][axis] = cp_suffix(name, specs[key][axis],
+                             suffixes=suffixes)
+#            for l, n in ('t', 'time'), ('y', 'lat'), ('x', 'lon'):
+#                if isinstance(specs[key][l],
+#                              list) and n not in specs[key][l]:
+#                    specs[key][l].append(n)
 
         # Inherits from other specs (merge specs with dict_merge)
-        if specs['inherit']:
+        if 'inherit' in specs and specs['inherit']:
             from_name = specs['inherit']
             if ":" in from_name:
                 from_cat, from_name = from_name.split(':')[:2]
-                if from_cat == self.category:
-                    from_specs_container = self
-                else:
-                    from_specs_container = get_cf_specs(None, category=from_cat)
             else:
-                from_specs_container = self
+                from_cat = category
+            assert (from_cat != category or
+                    name != from_name), 'Cannot inherit cf specs from it self'
+#            from_specs_container = self[from_cat]
             # to handle high level inheritance
-            from_specs_container._check_entry_(from_name)
+            self._check_entry_(from_cat, from_name)
             from_specs = None
             to_scan = []
-            if self._inherit:
+            if 'inherit' in entries:
                 to_scan.append(self._inherit)
-            to_scan.append(self)
+            to_scan.append(entries)
+
             for from_specs in to_scan:
                 if from_name in from_specs:
 
                     # Merge
-                    self._dict[name] = specs = dict_merge(
+                    entries[name] = specs = dict_merge(
                             specs,
                             from_specs[from_name], cls=dict,
                             **CF_DICT_MERGE_KWARGS)
 
-                    # Validate
-#                    if from_specs is not self:
+                    # Check compatibility of keys
                     for key in list(specs.keys()):
-                        if key not in self._cfgspec:
+                        if key not in self._cfgspecs[category]['__many__']:
                             del specs[key]
             specs['inherit'] = None  # switch off inheritance now
 
@@ -309,16 +293,75 @@ class BaseSpecs(object):
 
         # Duplicate at other locations
         if specs['atlocs']:
-            tonames = dupl_loc_specs(self._dict, name, specs['atlocs'])
-            self._from_atlocs.extend(tonames)
-            specs = self._dict[name]
+            tonames = dupl_loc_specs(entries, name, specs['atlocs'])
+            self._from_atlocs[category].extend(tonames)
+            specs = entries[name]
 
     def _add_aliases_(self):
-        for name, specs in list(self._dict.items()):
-            for key, aliases in list(self.aliases.items()):
-                if key in specs:
-                    for alias in aliases:
-                        specs[alias] = specs[key]
+        for entries in self._cfs.values():
+            for name, specs in list(entries.items()):
+                for key, aliases in list(self.aliases.items()):
+                    if key in specs:
+                        for alias in aliases:
+                            specs[alias] = specs[key]
+
+    def get_alias_list(cls):
+        al = []
+        for aa in list(cls.aliases.values()):
+            al.extend(aa)
+        return al
+
+
+class CFCatSpecs(object):
+    """Base class for loading variables and axes CF specifications"""
+    aliases = {'name': ['ids', 'id', 'names'],
+               'standard_name': ["standard_names"],
+               'long_name': ['long_names']
+               }
+    category = None
+
+    def __init__(self, parent, category):
+        assert category in parent
+        self.parent = parent
+        self.category = category
+
+    @property
+    def _dict(self):
+        return self.parent._dict[self.category]
+
+    @classmethod
+    def __getitem__(self, key):
+        return self._dict[key]
+
+    def __iter__(self):
+        return iter(self._dict)
+
+    def __len__(self):
+        return len(self._dict)
+
+    def __contains__(self, key):
+        return key in self._dict
+
+    def __str__(self):
+        return pformat(self._dict)
+
+    def _assert_known_(self, name):
+        assert name in self, "Invalid entry name:" + name
+
+    @property
+    def names(self):
+        return list(self._dict.keys())
+
+    def items(self):
+        return list(self._dict.items())
+
+    def keys(self):
+        return list(self._dict.keys())
+
+    def register(self, name, **specs):
+        """Register a new elements from its name and specs"""
+        data = {self.category: {name: specs}}
+        self.parent.register_from_cfg(data)
 
     def _update_names_(self):
         if self._names is not None:
@@ -330,19 +373,20 @@ class BaseSpecs(object):
                  raiseerr=True, **extra):
         self._assert_known_(name)
         return cf2atts(name, select=select, exclude=exclude, ordered=ordered,
-                       raiseerr=raiseerr, cf_source=self)
+                       raiseerr=raiseerr, category=self.category)
 
     def get_search_specs(self, name, mode=None, raiseerr=True, ):
         self._assert_known_(name)
-        return cf2search(name, mode=mode, raiseerr=raiseerr, cf_source=self)
+        return cf2search(name, mode=mode, raiseerr=raiseerr,
+                         category=self.category)
 
 
-class VarSpecs(BaseSpecs):
-    category = 'variables'
-
-
-class AxisSpecs(BaseSpecs):
-    category = 'axes'
+#class VarSpecs(BaseSpecs):
+#    category = 'variables'
+#
+#
+#class AxisSpecs(BaseSpecs):
+#    category = 'axes'
 
 
 CF_LOCS = 'uvwtdfr'
@@ -920,7 +964,7 @@ def cp_suffix(idref, id, suffixes=ARAKAWA_SUFFIXES):
     if isinstance(suffixes, six.string_types):
         suffixes = [suffixes]
     m = re.match('.+(%s)$' % '|'.join(suffixes), idref)
-    if m is None:
+    if m is None or re.match('.+(%s)$' % '|'.join(suffixes), id):
         return id
     return id + m.group(1)
 
@@ -941,8 +985,18 @@ def get_cf_cfgm():
         cf.CF_CFGM = ConfigManager(CF_GFG_INIFILE)
     return cf.CF_CFGM
 
+def set_cf_source(cf_source):
+    """Set the current :attr:`CF_SPECS` as a :class:`CFSpecs` instance"""
+    assert isinstance(cf_source, CFSpecs)
+    from . import cf
+    cf.CF_SPECS = cf_source
+    # compat only:
+    cf.CF_VAR_SPECS = cf.var_specs = cf.CF_SPECS['variables']
+    cf.CF_AXIS_SPECS = cf.axis_specs = cf.CF_SPECS['coords']
+    cf.CF_VAR_NAMES = cf.CF_VAR_SPECS._names
+    cf.CF_AXIS_NAMES = cf.CF_AXIS_SPECS._names
 
-def get_cf_specs(name=None, category=None, cf_source=None):
+def get_cf_specs(name=None, category=None):
     """Get the CF specifications for a target in a category
 
     Parameters
@@ -950,84 +1004,60 @@ def get_cf_specs(name=None, category=None, cf_source=None):
     name: str or None
         A target name like "sst". If not provided, return all specs.
     category: str or None
-        Select a category with "axes" or "variables".
-        If not provided, search first in "variables", then "axes".
+        Select a category with "coords" or "variables".
+        If not provided, search first in "variables", then "coords".
     cf_source: dict or None
-        Dictionary of specifications for variables and axes.
+        Dictionary of specifications for variables and coords.
 
     Return
     ------
     dict or None
         None is return if no specs are found
     """
-    # Init if not already done
-    if cf_source is None:
-        from . import cf
+    # Get the source of specs
+    from . import cf
+    if not hasattr(cf, 'CF_SPECS'):
+
+        # Try from cache
+        import pickle
+        if os.path.exists(CF_SPECS_PICKLED) and (
+                os.stat(CF_CFG_CFGFILE).st_mtime <
+                os.stat(CF_SPECS_PICKLED).st_mtime):
+            try:
+                with open(CF_SPECS_PICKLED, 'rb') as f:
+                    set_cf_source(pickle.load(f))
+            except Exception as e:
+                vcwarn('Error while load cached cf specs: '.format(e.args))
+
+        # Compute it from scratch
         if not hasattr(cf, 'CF_SPECS'):
 
-            # Try from cache
-            import pickle
-            if os.path.exists(CF_SPECS_PICKLED) and (
-                    os.stat(CF_CFG_CFGFILE).st_mtime <
-                    os.stat(CF_SPECS_PICKLED).st_mtime):
-                try:
-                    with open(CF_SPECS_PICKLED, 'rb') as f:
-                        cf.CF_SPECS = pickle.load(f)
-                        cf.CF_VAR_SPECS = cf.CF_SPECS['variables']
-                        cf.CF_AXIS_SPECS = cf.CF_SPECS['axes']
-                        cf.CF_VAR_NAMES = cf.CF_VAR_SPECS._names
-                        cf.CF_AXIS_NAMES = cf.CF_AXIS_SPECS._names
-                except Exception as e:
-                    vcwarn('Error while load cached cf specs: '.format(e.args))
+            # Setup
+            set_cf_source(CFSpecs(CF_CFG_CFGFILE))
 
-            # Compute it from scratch
-            if not hasattr(cf, 'CF_SPECS'):
+            # Cache it
+            try:
+                cachedir = os.path.dirname(CF_SPECS_PICKLED)
+                if not os.path.exists(cachedir):
+                    os.makedirs(cachedir)
+                with open(CF_SPECS_PICKLED, 'wb') as f:
+                    pickle.dump(cf.CF_SPECS, f)
+            except Exception as e:
+                print(e.args)
+                vcwarn('Error while caching cf specs: '.format(e.args))
 
-                #: Specifications by category
-                cf.CF_SPECS = {}
-
-                #: Specifications for variables
-                cf.CF_VAR_SPECS = VarSpecs(names=cf.CF_VAR_NAMES,
-                                           parent=cf.CF_SPECS)
-                cf.CF_SPECS[cf.CF_VAR_SPECS.category] = cf.CF_VAR_SPECS
-
-                #: Specifications for axes
-                cf.CF_AXIS_SPECS = AxisSpecs(inherit=cf.CF_VAR_SPECS,
-                                             names=cf.CF_AXIS_NAMES,
-                                             parent=cf.CF_SPECS)
-                cf.CF_SPECS[cf.CF_AXIS_SPECS.category] = cf.CF_AXIS_SPECS
-
-                # Cache it
-                try:
-                    cachedir = os.path.dirname(CF_SPECS_PICKLED)
-                    if not os.path.exists(cachedir):
-                        os.makedirs(cachedir)
-                    with open(CF_SPECS_PICKLED, 'wb') as f:
-                        pickle.dump(cf.CF_SPECS, f)
-                except Exception as e:
-                    print(e.args)
-                    vcwarn('Error while caching cf specs: '.format(e.args))
-
-            # Compat but deprecated
-            cf.VAR_SPECS = cf.var_specs = cf.CF_VAR_SPECS
-            cf.AXIS_SPECS = cf.axis_specs = cf.CF_AXIS_SPECS
-
-        cf_source = cf.CF_SPECS
+    cf_source = cf.CF_SPECS
 
     # Select categories
     if category is not None:
-        if category in cf_source:
+        if isinstance(cf_source, CFSpecs):
             cf_source = cf_source[category]
-        assert (isinstance(cf_source, BaseSpecs) and
-                cf_source.category == category)
         if name is None:
             return cf_source
         toscan = [cf_source]
     else:
         if name is None:
             return cf_source
-        assert (isinstance(cf_source['variables'], VarSpecs) and
-                isinstance(cf_source['axes'], AxisSpecs))
         toscan = [cf_source['variables'], cf_source['axes']]
 
     # Search
@@ -1036,9 +1066,9 @@ def get_cf_specs(name=None, category=None, cf_source=None):
             return ss[name]
 
 
-def get_cf_axis_specs(name=None, cf_source=None):
-    """Shortcut to ``get_cf_specs(name=name, category='axes')``"""
-    return get_cf_specs(name=name, category='axes', cf_source=cf_source)
+def get_cf_coords_specs(name=None, cf_source=None):
+    """Shortcut to ``get_cf_specs(name=name, category='coords')``"""
+    return get_cf_specs(name=name, category='coords')
 
 
 def get_cf_var_specs(name=None, cf_source=None):
@@ -1121,8 +1151,7 @@ def register_cf_axes_from_cfg(cfg, cf_source=None):
     cf_specs.register_from_cfg(cfg)
 
 
-def cf2search(name, mode=None, raiseerr=True, category=None, cf_source=None,
-              **kwargs):
+def cf2search(name, mode=None, raiseerr=True, category=None, **kwargs):
     """Extract specs from :attr:`CF_AXIS_SPECS` or :attr:`CFVAR_SPECS`
     to form a search dictionary
 
@@ -1747,7 +1776,7 @@ def get_cf_cmap(vname, cf_source=None):
 
 
 class CFContext(object):
-    """Context for changing :data:`CF_SPECS`
+    """Context for changing current :class:`CFSpecs` instance
 
     Example
     -------
@@ -1760,10 +1789,10 @@ class CFContext(object):
         """
         Parameters
         ----------
-        cf_source: dict
-            Dict with 'variables' and 'axes' keys.
+        cf_source: CFSpecs
+            Dict with 'variables' and 'coords' keys.
         """
-        assert 'variables' in cf_source and 'axes' in cf_source
+        assert 'variables' in cf_source and 'coords' in cf_source
         from . import cf
         self.cf_module = cf
         self.cf_source = cf_source
@@ -1772,14 +1801,14 @@ class CFContext(object):
         cf = self.cf_module
         if not hasattr(cf, 'CF_SPECS'):
             get_cf_specs()
-        self.old_cf_source = cf.CF_SPECS
+        self.old_cf_specs = cf.CF_SPECS
         self._set_cf_source_(self.cf_source)
 
     def __exit__(self):
-        self._set_cf_source_(self.old_cf_source)
+        self._set_cf_source_(self.old_cf_specs)
 
     def _set_cf_source_(self, cf_source):
         cf = self.cf_module
-        cf.CF_SPECS = cf_source
+        cf.CF_SPECS = self.cf_specs = self.cf_source = cf_source
         cf.CF_VAR_SPECS = cf.VAR_SPECS = cf_source['variables']
-        cf.CF_AXIS_SPECS = cf.AXIS_SPECS = cf_source['axes']
+        cf.CF_AXIS_SPECS = cf.AXIS_SPECS = cf_source['coords']
