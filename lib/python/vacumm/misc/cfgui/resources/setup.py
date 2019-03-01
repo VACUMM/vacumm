@@ -36,16 +36,7 @@
 
 def configuration(parent_package='',top_path=None):
     from numpy.distutils.misc_util import Configuration
-    config = Configuration('cfgui', parent_package, top_path)
-    config.add_subpackage('controllers')
-    config.add_subpackage('models')
-    config.add_subpackage('resources/ui')
-    config.add_subpackage('views')
-    config.add_subpackage('utils')
-    config.add_data_files('cfgui')
-    config.add_data_files('makefile')
-    config.add_data_files('resources/ui/makefile')
-    config.add_data_files('resources/ui/*.ui')
+    config = Configuration('resources', parent_package, top_path)
     return config
 
 if __name__ == '__main__':
