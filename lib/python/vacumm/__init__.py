@@ -38,7 +38,7 @@ from warnings import warn
 
 __project__ = 'vacumm'
 __version__ = '3.6.3'
-__release__ = '0'
+__release__ = '1'
 __date__ = '2019-03-01'
 __author__ = 'Stephane Raynaud, Jonathan Wilkins, Guillaume Charria'
 __email__ = 'stephane.raynaud@gmail.com, wilkins@actimar.fr, charria@ifremer.fr'
