@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 #
-# Copyright or © or Copr. Actimar/IFREMER (2010-2018)
+# Copyright or © or Copr. Actimar/IFREMER (2010-2019)
 #
 # This software is a computer program whose purpose is to provide
 # utilities for handling oceanographic and atmospheric data,
@@ -37,9 +37,9 @@
 from warnings import warn
 
 __project__ = 'vacumm'
-__version__ = '3.6.2'
+__version__ = '3.6.3'
 __release__ = '0'
-__date__ = '2018-07-23'
+__date__ = '2019-03-01'
 __author__ = 'Stephane Raynaud, Jonathan Wilkins, Guillaume Charria'
 __email__ = 'stephane.raynaud@gmail.com, wilkins@actimar.fr, charria@ifremer.fr'
 __copyright__ = 'Copyright (c) 2010-2018 Actimar/IFREMER'

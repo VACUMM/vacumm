@@ -1,6 +1,25 @@
 Release notes
 #############
 
+Version 3.6.3
+=============
+
+- Fix cfgui in packages
+- Fix clone_grid
+- Fix cdtime comparisons
+- Fix grids creation
+- Fix twinxy for y
+- Fix resol with masked coordinates
+- Fix get_axis_slices
+- Fix some tests
+- Fix travis integration
+
+
+Version 3.6.2
+=============
+
+- Fix pypi integration
+
 Version 3.6.0
 =============
 
