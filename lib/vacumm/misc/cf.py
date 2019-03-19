@@ -47,7 +47,7 @@ import cdms2
 import MV2
 
 from vacumm import VACUMMError, vcwarn
-from .misc import kwfilter, dict_merge, match_atts, ArgList
+from .misc import kwfilter, dict_merge, match_atts, ArgList, memoize
 from .config import ConfigManager
 from .arakawa import ARAKAWA_LOCATIONS
 
@@ -111,21 +111,21 @@ class SGLocator(UserString):
                'standard_name': '{root}_at_{loc}_location',
                'long_name': '{root} at {loc} location'}
 
-    def __init__(self, letter=None, attrs=None, allowed='uvwtdpfr',
-                 default='t', formats=None):
+    def __init__(self, letter=None, attrs=None, allowed_locations='uvwtdpfr',
+                 default='t', name_format=None):
 
         # Init
-        self.allowed = allowed
+        self.allowed_locations = allowed_locations
         self.default = default
         self.formats = self.formats.copy()
 
         # Build regular expressions for searching
         self.rematch = {}
         for attr, fmt in self.formats.items():
-            if formats and attr in formats:
-                self.formats[attr] = fmt
+            if name_format and attr == 'name':
+                self.formats[attr] = fmt = name_format
             pattern = fmt.format(root='(?P<root>.+)',
-                                 loc='(?P<loc>[{}])'.format(self.allowed))
+                                 loc='(?P<loc>[{}])'.format(self.allowed_locations))
             self.rematch[attr] = _get_re_match_('^' + pattern + '$')
 
         # Parse attributes
@@ -280,16 +280,20 @@ class SGLocator(UserString):
         return self._loc
 
     def set_loc(self, loc):
-        loc = loc.lower()
         if loc:
-            assert loc in self.allowed, (
+            loc = loc.lower()
+            assert loc in self.allowed_locations, (
                     'Invalid location: {}. Please choose one '
-                    'of: {}'.format(loc, ' '.join(self.allowed)))
+                    'of: {}'.format(loc, ' '.join(self.allowed_locations)))
         else:
             loc = ''
         self._loc = loc
 
     loc = property(get_loc, set_loc, doc='Location in lower case')
+
+    def set_loc_from_name(self, name):
+        """Set :attr:`loc` by parsing name"""
+        self.loc = self.parse_loc(name, 'name', mode='loc')
 
     @property
     def LOC(self):
@@ -406,28 +410,126 @@ class SGLocator(UserString):
         return new_specs
 
 
+_cf_cfg_cache_ = {}
+
+
 class CFSpecs(object):
+    """CF specification manager
+
+    Parameters
+    ----------
+    cfg: str
+        A config file name or config string.
+        It must contains the "variables" and "coords" section.
+    sgl_name_format: str or None
+        Name format used for a :class:`SGLocator`
+    """
     aliases = {'name': ['ids', 'id', 'names'],
                'standard_name': ["standard_names"],
                'long_name': ['long_names']
                }
 
     def __init__(self, cfg):
-        self._dict = self._load_cfg_(cfg)
         self._cfgspecs = get_cf_cfgm()._configspec.dict()
+        self._cfs = {}
+        for category in self.categories:
+            if category not in self._cfs:
+                self._cfs[category] = CFCatSpecs(self, category)
+        self.load_cfg(cfg, update=False)
 
+#    @staticmethod
+#    def _load_single_cfg_(cfg, cache_key=None):
+#        """Load and validate a CF configuration without post-processing"""
+#        if cache_key and cache_key in _cf_cfg_cache_:
+#            return _cf_cfg_cache_[cache_key]
+#        if isinstance(cfg, str) and cfg.strip().startswith('['):
+#            cfg = cfg.split('\n')
+#        cfg = get_cf_cfgm().load(cfg).dict()
+#        if cache_key:
+#            _cf_cfg_cache_[cache_key] = cfg
+#        return cfg
+#
+##        """Load, validate and merge configurations without post-processing"""
+#        al = ArgList(cfg)
+#        cfgs = []
+#        cfgm = get_cf_cfgm()
+#        for cfg in al.get():
+#            if isinstance(cfg, str) and cfg.strip().startswith('['):
+#                cfg = cfg.split('\n')
+#            cfgs.append(cfgm.load(cfg).dict())
+#        if al.single:
+#            return cfgs[0]
+#        return dict_merge(*cfgs, **CF_DICT_MERGE_KWARGS)
+
+    def load_cfg(self, cfg, update=True):
+        """Load a single or a list of configuration
+
+        Parameters
+        ----------
+        cfg: str or list
+            Single or a list of either:
+
+            - config file name,
+            - multiline config string,
+            - config dict,
+            - two-element tuple with the first item of one of the above types,
+              and second item as a cache key for faster reloading.
+        update: bool
+            Update the current configuration or replace it.
+        """
+        # Core cfg
+        al = ArgList(cfg)
+        cfgs = []
+        cfgm = get_cf_cfgm()
+        for cfg in al.get():
+
+            # get from it cache?
+            if isinstance(cfg, tuple):
+                cfg, cache_key = cfg
+                if cache_key in _cf_cfg_cache_:
+                    cfgs.append(_cf_cfg_cache_[cache_key])
+                    print('CFG FROM CACHE: '+cache_key)
+                    continue
+            else:
+                cache_key = None
+
+            # load and validate
+            if isinstance(cfg, str) and cfg.strip().startswith('['):
+                cfg = cfg.split('\n')
+            cfgs.append(cfgm.load(cfg).dict())
+
+            # Cache it
+            if cache_key:
+                _cf_cfg_cache_[cache_key] = cfg
+
+        # merge
+        if update:
+            cfgs.append(self._core_cfg)
+        if len(cfgs) == 1:
+            self._core_cfg = cfgs[0]
+        else:
+            self._core_cfg = dict_merge(*cfgs, **CF_DICT_MERGE_KWARGS)
+
+        # Setup
+        self._dict = self._core_cfg.copy()
+        self._settings = self._dict['settings']
+        self._sgl = SGLocator(
+                name_format=self._settings['sgl_name_format'],
+                allowed_locations=self._settings['sgl_allowed_locations'])
+
+        # Post process
         self._post_process_()
 
-    @staticmethod
-    def _load_cfg_(cfg):
-        """Load and validate a configuration without post-processing"""
-        if isinstance(cfg, str) and '[' in cfg:
-            cfg = cfg.split('\n')
-        return OrderedDict(get_cf_cfgm().load(cfg).dict())
+    def _get_sgl_at_(self, new_loc):
+        if not hasattr(self, '_sgl_cache'):
+            self._sgl_cache = {}
+        if new_loc not in self._sgl_cache:
+            self._sgl_cache[new_loc] = self._sgl.to(new_loc)
+        return self._sgl_cache[new_loc]
 
     @property
     def categories(self):
-        return self._cfgspecs.keys()
+        return [key for key in self._cfgspecs.keys() if key != 'settings']
 
     def __getitem__(self, category):
         assert category in self.categories
@@ -437,8 +539,9 @@ class CFSpecs(object):
         return category in self.categories
 
     def __getattr__(self, name):
-        if name in self._cfs:
-            return self._cfs[name]
+        if '_cfs' in self.__dict__ and name in self.__dict__['_cfs']:
+            return self.__dict__['_cfs'][name]
+        raise AttributeError
 
     def __str__(self):
         return pformat(self._dict)
@@ -460,25 +563,23 @@ class CFSpecs(object):
 
     __copy__ = copy
 
-
     def register_from_cfg(self, cfg):
         """"Register new elements from a :class:`ConfigObj` instance
         or a config file"""
-        local_cfg = self._load_cfg_(cfg)
-        self._dict = dict_merge(self._dict, local_cfg,
-                                cls=OrderedDict, **CF_DICT_MERGE_KWARGS)
-        print(self._dict['variables']['sst'])
-        self._post_process_()
+        self.load_cfg(cfg, update=True)
+#        local_cfg = self._load_cfg_(cfg)
+#        self._dict = dict_merge(self._dict, local_cfg,
+#                                cls=OrderedDict, **CF_DICT_MERGE_KWARGS)
+#        print(self._dict['variables']['sst'])
+#        self._post_process_()
 
     def _post_process_(self):
-        self._cfs = {}
         self._from_atlocs = {}
         for category in self.categories:
-            self._cfs[category] = CFCatSpecs(self, category)
             self._from_atlocs[category] = []
-            for name in list(self._dict[category].keys()):#names:
-                 if isinstance(self._dict[category][name], dict):
-                     self._check_entry_(category, name)
+            for name in self[category].names:
+                if isinstance(self[category][name], dict):
+                    self._check_entry_(category, name)
         self._add_aliases_()
 #        self._update_names_()
 
@@ -490,8 +591,8 @@ class CFSpecs(object):
         - Check inheritance
         - Makes sure that coords specs have no 'coords' key
         - Makes sure that specs key is the first entry of 'names'
-        - add standard_name to list of names
-        - Check duplication to other locations ('toto' -> 'toto_u')
+        - Add standard_name to list of names
+        - Check duplications to other locations ('toto' -> 'toto_u')
 
         """
         # Dict of entries for this category
@@ -504,6 +605,7 @@ class CFSpecs(object):
         # Entry already generated with the atlocs key
         if name in self._from_atlocs[category]:
             return
+        loc = self._sgl.set_loc_from_name(name)
 
         # Get the specs as pure dict
         if hasattr(entries[name], 'dict'):
@@ -520,8 +622,9 @@ class CFSpecs(object):
             if specs['standard_name']:
                 long_name = specs['standard_name'][0]
             else:
-                long_name = name.title().replace('_', ' ')
-            specs['long_name'].append(long_name.capitalize())
+                long_name = name.title()
+            long_name = long_name.replace('_', ' ').capitalize()
+            specs['long_name'].append(long_name)
 
         # Physloc must be the first atlocs
         if 'physloc' in specs and 'atlocs' in specs:
@@ -532,25 +635,22 @@ class CFSpecs(object):
                 specs['atlocs'].insert(0, p)
 
         # Coordinates and dimensions
-        if 'coords' in specs or 'dims' in specs:
+        if loc and ('coords' in specs or 'dims' in specs):
             # copy location
             key = 'coords' if 'coords' in specs else 'dims'
             specs[key].setdefault('t', ['time'])
-            suffixes = [('_' + s) for s in 'rftuvw']
             for axis in 'xyz':
                 if axis in specs[key]:
                     if isinstance(specs[key][axis], dict):
                         for domain in specs[key][axis]:
-                            specs[key][axis][domain] = cp_suffix(
-                                    name, specs[key][axis][domain],
-                                    suffixes=suffixes)
+                            specs[key][axis][domain] = self._sgl.format_attrs(
+                                    {'name': specs[key][axis][domain]})['name']
+#                            specs[key][axis][domain] = cp_suffix(
+#                                    name, specs[key][axis][domain],
+#                                    suffixes=suffixes)
                     else:
-                        specs[key][axis] = cp_suffix(name, specs[key][axis],
-                             suffixes=suffixes)
-#            for l, n in ('t', 'time'), ('y', 'lat'), ('x', 'lon'):
-#                if isinstance(specs[key][l],
-#                              list) and n not in specs[key][l]:
-#                    specs[key][l].append(n)
+                        specs[key][axis] = self._sgl.format_attrs(
+                                {'name': specs[key][axis]})['name']
 
         # Inherits from other specs (merge specs with dict_merge)
         if 'inherit' in specs and specs['inherit']:
@@ -595,7 +695,7 @@ class CFSpecs(object):
 #                except:
 #                    pass
 
-        # Standard_names in ids
+        # Standard_names in names
         if specs['standard_name']:
             for standard_name in specs['standard_name']:
                 if standard_name not in specs['name']:
@@ -603,12 +703,20 @@ class CFSpecs(object):
 
         # Duplicate at other locations
         if specs['atlocs']:
-            tonames = dupl_loc_specs(entries, name, specs['atlocs'])
+            tonames = []
+            atlocs = specs['atlocs']
+            specs['atlocs'] = []
+            for new_loc in atlocs:
+                new_specs = self._get_sgl_at_(new_loc).format_cf_specs(specs)
+                new_name = new_specs['name'][0]
+                entries[new_name] = new_specs
+                tonames.append(new_name)
             self._from_atlocs[category].extend(tonames)
-            specs = entries[name]
+#            specs = entries[name]
+
 
     def _add_aliases_(self):
-        for entries in self._cfs.values():
+        for entries in self._dict.values():
             for name, specs in list(entries.items()):
                 for key, aliases in list(self.aliases.items()):
                     if key in specs:
@@ -639,7 +747,6 @@ class CFCatSpecs(object):
     def _dict(self):
         return self.parent._dict[self.category]
 
-    @classmethod
     def __getitem__(self, key):
         return self._dict[key]
 
@@ -669,15 +776,21 @@ class CFCatSpecs(object):
         return list(self._dict.keys())
 
     def register(self, name, **specs):
-        """Register a new elements from its name and specs"""
+        """Register a new element from its name and explicit specs"""
         data = {self.category: {name: specs}}
         self.parent.register_from_cfg(data)
 
-    def _update_names_(self):
-        if self._names is not None:
-            while self._names:
-                del self._names[0]
-            self._names.extend(self.names)
+    def register_from_cfg(self, cfg):
+        """Register new elements from a config specs"""
+        if isinstance(cfg, dict) and self.category not in cfg:
+            cfg = {self.category: cfg}
+        self.parent.register_from_cfg(cfg)
+
+#    def _update_names_(self):
+#        if self._names is not None:
+#            while self._names:
+#                del self._names[0]
+#            self._names.extend(self.names)
 
     def get_atts(self, name, select=None, exclude=None, ordered=True,
                  raiseerr=True, **extra):
@@ -1111,92 +1224,92 @@ def squeeze_loc_single(name, stype, physloc=None):
     return name
 
 
-def dupl_loc_specs(fromname, toloc, category=None):
-    """Duplicate the specification for a variable or an axis to another
-    or several locations
-
-    The following rules apply:
-
-        - If the original specifications are from a name
-          without a specific location
-          (generic), new specs (located) are appended (merged)
-          with original specs.
-        - If the specifications at target location already exist,
-          it merges new specs with old specs.
-        - Generic specification are systematically created or
-          updated by merging of
-          specialized ones.
-
-    :Example:
-
-        >>> dupl_loc_specs('corio', 'u') # Create the 'corio_u' entry in CF_VAR_SPECS and update 'corio'
-        >>> dupl_loc_specs('corio_t', 'u') # Create 'corio_u' and 'corio_t'
-
-    """
-    cf_source = get_cf_specs(name=None, category=category)
-    if fromname not in cf_source:
-        raise KeyError('No such entry in specifications: ' + fromname)
-    single = not isinstance(toloc, (list, tuple))
-    if single:
-        toloc = [toloc]
-    tonames = []
-    tomerge = []
-    fromnoloc = no_loc_single(fromname, 'name') == fromname
-    for loc in toloc:
-
-        # New name (id)
-        toname = change_loc_single(fromname, 'name', loc)
-        tonames.append(toname)
-
-        # New specs
-        tospecs = change_loc_specs(loc, **cf_source[fromname])
-
-        # Add a version of standard_name and long_name for T loc without
-        # location spec
-        if loc == 't':  # 'toto_at_t_location' -> ['toto_at_t_location','toto']
-            for spname in 'standard_name', 'long_name':
-                if spname not in tospecs:
-                    continue
-                addspecs = change_loc_specs(None, **{spname: tospecs[spname]})
-                for dd in tospecs, addspecs:  # to lists
-                    if not isinstance(dd[spname], list):
-                        dd[spname] = [dd[spname]]
-                tospecs[spname].extend(addspecs[spname])
-
-        # For merging specs back with old specs if old has no location
-#        if fromnoloc: # generic
-        tomerge.append(tospecs)
-
-        # Merge with old spec if existing
-        if toname in cf_source:
-            tospecs = dict_merge(tospecs, cf_source[toname], mergelists=True,
-                                 cls=dict, mergedicts=True, )
-
-#        # Default location -> add its generic version ('_t' -> + '')
-#        if loc==DEFAULT_LOCATION:
-#            genspecs = change_loc_specs(None, **tospecs)
-#            tospecs = dict_merge(tospecs, genspecs, mergelists=True)
-
-        # Remove atlocs attribute
-        if 'atlocs' in tospecs:
-            tospecs.pop('atlocs')
-
-        # Store it
-        cf_source[toname] = tospecs
-
-    # Make a generic entry that merges all specialized ones
-    if fromnoloc:
-        genspecs = cf_source[fromname]  # existing generic specs
-    else:
-        genspecs = change_loc_specs(
-            None, **cf_source[fromname])  # remove location info
-    tomerge.insert(0, genspecs)
-    genname = genspecs['name'][0]
-    cf_source[genname] = dict_merge(*tomerge, **CF_DICT_MERGE_KWARGS)
-
-    if single:
-        return tonames[0]
-    return tonames
+#def dupl_loc_specs(fromname, toloc, category=None):
+#    """Duplicate the specification for a variable or an axis to another
+#    or several locations
+#
+#    The following rules apply:
+#
+#        - If the original specifications are from a name
+#          without a specific location
+#          (generic), new specs (located) are appended (merged)
+#          with original specs.
+#        - If the specifications at target location already exist,
+#          it merges new specs with old specs.
+#        - Generic specification are systematically created or
+#          updated by merging of
+#          specialized ones.
+#
+#    :Example:
+#
+#        >>> dupl_loc_specs('corio', 'u') # Create the 'corio_u' entry in CF_VAR_SPECS and update 'corio'
+#        >>> dupl_loc_specs('corio_t', 'u') # Create 'corio_u' and 'corio_t'
+#
+#    """
+#    cf_source = get_cf_specs(name=None, category=category)
+#    if fromname not in cf_source:
+#        raise KeyError('No such entry in specifications: ' + fromname)
+#    single = not isinstance(toloc, (list, tuple))
+#    if single:
+#        toloc = [toloc]
+#    tonames = []
+#    tomerge = []
+#    fromnoloc = no_loc_single(fromname, 'name') == fromname
+#    for loc in toloc:
+#
+#        # New name (id)
+#        toname = change_loc_single(fromname, 'name', loc)
+#        tonames.append(toname)
+#
+#        # New specs
+#        tospecs = change_loc_specs(loc, **cf_source[fromname])
+#
+#        # Add a version of standard_name and long_name for T loc without
+#        # location spec
+#        if loc == 't':  # 'toto_at_t_location' -> ['toto_at_t_location','toto']
+#            for spname in 'standard_name', 'long_name':
+#                if spname not in tospecs:
+#                    continue
+#                addspecs = change_loc_specs(None, **{spname: tospecs[spname]})
+#                for dd in tospecs, addspecs:  # to lists
+#                    if not isinstance(dd[spname], list):
+#                        dd[spname] = [dd[spname]]
+#                tospecs[spname].extend(addspecs[spname])
+#
+#        # For merging specs back with old specs if old has no location
+##        if fromnoloc: # generic
+#        tomerge.append(tospecs)
+#
+#        # Merge with old spec if existing
+#        if toname in cf_source:
+#            tospecs = dict_merge(tospecs, cf_source[toname], mergelists=True,
+#                                 cls=dict, mergedicts=True, )
+#
+##        # Default location -> add its generic version ('_t' -> + '')
+##        if loc==DEFAULT_LOCATION:
+##            genspecs = change_loc_specs(None, **tospecs)
+##            tospecs = dict_merge(tospecs, genspecs, mergelists=True)
+#
+#        # Remove atlocs attribute
+#        if 'atlocs' in tospecs:
+#            tospecs.pop('atlocs')
+#
+#        # Store it
+#        cf_source[toname] = tospecs
+#
+#    # Make a generic entry that merges all specialized ones
+#    if fromnoloc:
+#        genspecs = cf_source[fromname]  # existing generic specs
+#    else:
+#        genspecs = change_loc_specs(
+#            None, **cf_source[fromname])  # remove location info
+#    tomerge.insert(0, genspecs)
+#    genname = genspecs['name'][0]
+#    cf_source[genname] = dict_merge(*tomerge, **CF_DICT_MERGE_KWARGS)
+#
+#    if single:
+#        return tonames[0]
+#    return tonames
 
 # def specs_def_loc(all_specs, names, suffixes=ARAKAWA_SUFFIXES):
 #    """Make specs of a variable at a special location the specs for default location
@@ -1239,18 +1352,20 @@ def get_cf_cfgm():
         cf.CF_CFGM = ConfigManager(CF_GFG_INIFILE)
     return cf.CF_CFGM
 
+
 def set_cf_source(cf_source):
     """Set the current :attr:`CF_SPECS` as a :class:`CFSpecs` instance"""
     assert isinstance(cf_source, CFSpecs)
     from . import cf
     cf.CF_SPECS = cf_source
     # compat only:
-    cf.CF_VAR_SPECS = cf.var_specs = cf.CF_SPECS['variables']
-    cf.CF_AXIS_SPECS = cf.axis_specs = cf.CF_SPECS['coords']
-    cf.CF_VAR_NAMES = cf.CF_VAR_SPECS._names
-    cf.CF_AXIS_NAMES = cf.CF_AXIS_SPECS._names
+    cf.CF_VAR_SPECS = cf.var_specs = cf.CF_SPECS.variables
+    cf.CF_AXIS_SPECS = cf.axis_specs = cf.CF_SPECS.coords
+    cf.CF_VAR_NAMES = cf.CF_VAR_SPECS.names
+    cf.CF_AXIS_NAMES = cf.CF_AXIS_SPECS.names
 
-def get_cf_specs(name=None, category=None):
+
+def get_cf_specs(name=None, category=None, cache=True):
     """Get the CF specifications for a target in a category
 
     Parameters
@@ -1260,6 +1375,8 @@ def get_cf_specs(name=None, category=None):
     category: str or None
         Select a category with "coords" or "variables".
         If not provided, search first in "variables", then "coords".
+    cache: bool
+        Cache specs for fast loading
 
     Return
     ------
@@ -1270,33 +1387,35 @@ def get_cf_specs(name=None, category=None):
     from . import cf
     if not hasattr(cf, 'CF_SPECS'):
 
-        # Try from cache
-        import pickle
-        if os.path.exists(CF_SPECS_PICKLED) and (
-                os.stat(CF_CFG_CFGFILE).st_mtime <
-                os.stat(CF_SPECS_PICKLED).st_mtime):
-            try:
-                with open(CF_SPECS_PICKLED, 'rb') as f:
-                    set_cf_source(pickle.load(f))
-            except Exception as e:
-                vcwarn('Error while load cached cf specs: '.format(e.args))
+        # Try from disk cache
+        if cache:
+            import pickle
+            if os.path.exists(CF_SPECS_PICKLED) and (
+                    os.stat(CF_CFG_CFGFILE).st_mtime <
+                    os.stat(CF_SPECS_PICKLED).st_mtime):
+                try:
+                    with open(CF_SPECS_PICKLED, 'rb') as f:
+                        set_cf_source(pickle.load(f))
+                except Exception as e:
+                    vcwarn('Error while loading cached cf specs: '+str(e.args))
 
         # Compute it from scratch
         if not hasattr(cf, 'CF_SPECS'):
 
             # Setup
-            set_cf_source(CFSpecs(CF_CFG_CFGFILE))
+            set_cf_source(CFSpecs((CF_CFG_CFGFILE, 'default')))
 
-            # Cache it
-            try:
-                cachedir = os.path.dirname(CF_SPECS_PICKLED)
-                if not os.path.exists(cachedir):
-                    os.makedirs(cachedir)
-                with open(CF_SPECS_PICKLED, 'wb') as f:
-                    pickle.dump(cf.CF_SPECS, f)
-            except Exception as e:
-                print(e.args)
-                vcwarn('Error while caching cf specs: '.format(e.args))
+            # Cache it on disk
+            if cache:
+                try:
+                    cachedir = os.path.dirname(CF_SPECS_PICKLED)
+                    if not os.path.exists(cachedir):
+                        os.makedirs(cachedir)
+                    with open(CF_SPECS_PICKLED, 'wb') as f:
+                        pickle.dump(cf.CF_SPECS, f)
+                except Exception as e:
+                    print(e.args)
+                    vcwarn('Error while caching cf specs: '+str(e.args))
 
     cf_source = cf.CF_SPECS
 
