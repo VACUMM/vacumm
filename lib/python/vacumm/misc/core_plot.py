@@ -5903,7 +5903,9 @@ class Map(Plot2D):
 #            ypixels=ypixels,
             dpi=dpi)
         try:
-            return self.map.arcgisimage(**kwargs)
+            img = self.map.arcgisimage(**kwargs)
+            img.set_zorder(kwargs.get('zorder', 1))
+            return img
         except Exception, e:
             warn('Error when plotting arcgisimage: {}.\nMessage: {}'.format(
                 service, e.message))
