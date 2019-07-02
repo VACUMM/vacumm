@@ -73,7 +73,7 @@ def haversine(lon0, lat0, lon1, lat1, degrees=True, radius=None):
     Nm = numod(lon0, lat0, lon1, lat1)
     a = Nm.sin((lat0-lat1)/2)**2 + Nm.cos(lat0) * \
         Nm.cos(lat1) * Nm.sin((lon0-lon1)/2)**2
-    return EARTH_RADIUS * 2 * Nm.arcsin(Nm.sqrt(a))
+    return radius * 2 * Nm.arcsin(Nm.sqrt(a))
 
 
 def get_bearing(lon0, lat0, lon1, lat1, degrees=True):
@@ -100,7 +100,7 @@ def beardist2loc(lon0, lat0, bearing, dist, degrees=True, radius=None):
         lat0 *= N.pi/180
         bearing *= N.pi/180
     Nm = numod(lon0, lat0, bearing, dist)
-    a = dist / EARTH_RADIUS
+    a = dist / radius
     lat1 = Nm.asin(Nm.sin(lat0)*Nm.cos(a) + Nm.cos(lat0)
                    * Nm.sin(a)*Nm.cos(bearing))
     lon1 = lon0 + Nm.atan2(Nm.cos(a)-Nm.sin(lat0)*Nm.sin(lat1),
@@ -123,7 +123,7 @@ def get_great_circle_points(lon0, lat0, lon1, lat1, npts, degrees=True,
         lat1 *= N.pi/180
     a = get_great_circle_angle(lon0, lat0, lon1, lat1, degrees=False)
     dists = N.reshape(N.linspace(0, 1, npts), N.shape(a)[::-1]+(1, )).T
-    dists *= a * EARTH_RADIUS
+    dists *= a *radius
     bearing = get_bearing(lon0, lat0, lon1, lat1, degrees=False)
     lon1, lat1 = beardist2loc(
         lon0, lat0, bearing, dists, degrees=False, radius=radius)
