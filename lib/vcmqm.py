@@ -96,9 +96,9 @@ create_polygons = polygons = as_polygons
 # - misc level 1 (dep on misc)
 
 from vacumm.misc.cf import *
-match_obj = match_known_cf_obj
-match_known_var = match_var = match_known_cf_var
-match_known_axis = match_known_cf_axis
+#match_obj = match_known_cf_obj
+#match_known_var = match_var = match_known_cf_var
+#match_known_axis = match_known_cf_axis
 
 
 from vacumm.misc.axes import *

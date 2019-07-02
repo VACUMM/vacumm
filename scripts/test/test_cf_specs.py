@@ -1,67 +1,98 @@
-"""Test the :class:`~vacumm.misc.cf.VarSpecs` and :class:`~vacumm.misc.cf.AxisSpecs` classes"""
+"""Test the :class:`~vacumm.misc.cf.CFSpecs` class"""
 from vacumm.misc.bases import code_file_name
-from vacumm.misc.cf import get_cf_specs
+from vacumm.misc.cf import get_cf_specs, get_cf_cmap, CFSpecs, CFContext
+import xarray as xr
 
 # %% Get current specs
-cf_specs = get_cf_specs()
+cfs = get_cf_specs(cache=False)
 
 # %% Content
-cf_var_specs = cf_specs.variables
-assert 'temp' in cf_var_specs
-ts = cf_var_specs['temp']
+assert 'temp' in cfs.variables
+ts = cfs.variables['temp']
 assert isinstance(ts['name'], list)
 assert ts['name'][0] == 'temp'
 assert ts['long_name'][0] == 'Temperature'
 
+
 # %% Register new variable from direct specs
-cf_var_specs.register('banana', long_name='Good bananas')
-assert 'banana' in cf_var_specs
-assert 'Good bananas' in cf_var_specs['banana']['long_name']
+cfs.variables.register('banana', long_name='Good bananas')
+assert 'banana' in cfs.variables
+assert 'Good bananas' in cfs.variables['banana']['long_name']
 
 # %% Change existing variable
-cf_var_specs.register('temp', long_name='Another temperature')
-assert 'TEMP' in cf_var_specs['temp']['name']  # keep default
-assert 'Another temperature' in cf_var_specs['temp']['long_name']
-assert 'banana' in cf_var_specs  # don't erase
+cfs.variables.register('temp', long_name='Another temperature')
+assert 'TEMP' in cfs.variables['temp']['name']  # keep default
+assert 'Another temperature' in cfs.variables['temp']['long_name']
+assert 'banana' in cfs.variables  # don't erase
 
 # %% Register from a config dict
 cfgdict = {'variables': {'ssb': {'standard_name': 'sea_surface_banana'}}}
-cf_var_specs.register_from_cfg(cfgdict)
-assert "ssb" in cf_var_specs
-assert cf_var_specs['ssb']['standard_name'][0] == 'sea_surface_banana'
-assert cf_var_specs['ssb']['long_name'][0] == 'Sea surface banana'
+cfs.variables.register_from_cfg(cfgdict)
+assert "ssb" in cfs.variables
+assert cfs.variables['ssb']['standard_name'][0] == 'sea_surface_banana'
+assert cfs.variables['ssb']['long_name'][0] == 'Sea surface banana'
 
 # %% Register from a config file
 cfgfile = code_file_name(ext='cfg')
-cf_var_specs.register_from_cfg(cfgfile)
-assert "funnyvar" in cf_var_specs
-assert "nicetemp" in cf_var_specs
-assert cf_var_specs["nicetemp"]['standard_name'][0] == "nice_temperature"
-assert "temp" in cf_var_specs["nicetemp"]['name']
+cfs.variables.register_from_cfg(cfgfile)
+assert "funnyvar" in cfs.variables
+assert "nicetemp" in cfs.variables
+assert cfs.variables["nicetemp"]['standard_name'][0] == "nice_temperature"
+assert "temp" in cfs.variables["nicetemp"]['name']
 
 # %% Register from a config string
 cfgstring = """[variables]
 [[nicetemp]]
 name=verynicetemp
+
+[[temp]]
+name=mytemp
 """
-cf_var_specs.register_from_cfg(cfgstring)
-assert "verynicetemp" in cf_var_specs['nicetemp']['name']
+cfs.variables.register_from_cfg(cfgstring)
+assert "verynicetemp" in cfs.variables['nicetemp']['name']
+assert "mytemp" in cfs.variables['temp']['name']
 
-# %% Other checks
-assert get_cf_specs("nicetemp") is cf_var_specs["nicetemp"]
+# %% Calling get_cf_specs
+assert get_cf_specs("nicetemp") is cfs.variables["nicetemp"]
 assert get_cf_specs("nicetemp", category='coords') is None
+assert get_cf_specs("lon", category='coords') is cfs.coords["lon"]
 
-##%% Copies
-#new_var_specs = cf_var_specs.copy()
-#assert "nicetemp" in new_var_specs
-#cfg_patch = """[variables]
-#[[nicetemp]]
-#name=verynicetemp
-#"""
-#CF_SPECS_PATCHED = {}
-#very_new_var_specs = new_var_specs.copy_and_update(cfg=cfg_patch,
-#                                                   parent=CF_SPECS_PATCHED)
-#assert "nicetemp" in very_new_var_specs
-#assert very_new_var_specs["nicetemp"] is not new_var_specs["nicetemp"]
-#assert "verynicetemp" in very_new_var_specs["nicetemp"]["name"]
-#
+# %% Search
+lon = xr.DataArray([1, 2], name='X',
+                   attrs={'standard_name': 'longitude_at_u_location'},
+                   dims='X')
+da = xr.DataArray([10, 20], coords=[lon], dims='X', name="mytemp")
+da2 = da.copy()
+da2.attrs['long_name'] = 'My salinity'
+ds = xr.Dataset({'mytemp': da, 'psal': da2})
+assert cfs.variables.is_matching(da, 'temp')
+assert not cfs.variables.is_matching(da, 'banana')
+assert cfs.variables.is_matching_any(da) == 'temp'
+assert cfs.variables.is_matching(ds['psal'], 'sal')
+assert cfs.variables.search(ds, 'sal').name == 'psal'
+assert cfs.coords.search(ds, 'lon', staggering='uv').name == 'X'
+
+# %% Misc functions
+assert get_cf_cmap('temp').name == 'thermal'
+assert get_cf_cmap(da).name == 'thermal'
+
+# %% Contexts
+cfs_a = CFSpecs({'variables': {'alpha': {}}})
+cfs_b = CFSpecs({'variables': {'beta': {}}})
+old_cfs = get_cf_specs()
+with CFContext(cfs_a) as cfs_c:
+    cfs = get_cf_specs()
+    assert cfs is not old_cfs
+    assert cfs is cfs_c
+    assert cfs is cfs_a
+    assert 'temp' not in cfs.variables.names
+    assert 'alpha' in cfs.variables.names
+
+    with CFContext(cfs_b):
+        cfs = get_cf_specs()
+        assert cfs is cfs_b
+        assert 'beta' in cfs.variables.names
+        assert 'alpha' not in cfs.variables.names
+
+    assert get_cf_specs() is cfs_a
+assert get_cf_specs() is old_cfs
