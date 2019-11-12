@@ -1,43 +1,38 @@
 """Test the fortran function :f:func:`interp1dx`"""
-from vcmq import N, P,meshcells
+from utils import np, plt, meshcells
 from vacumm.fortran.interp import interp1dx
 
-
-nx = nyi = 10
-mv = 1.e20
-u, v = N.mgrid[-3:3:nx*1j, -3:3:10j]-2
-vari = N.ma.asarray(u**2+v**2)
-vari.set_fill_value(mv)
-yi = N.linspace(-1000.,0., nyi)
-yo = N.linspace(-1200, 100, 30.)
-vari[int(nx/3):int(2*nx/3), int(nyi/3):int(2*nyi/3)] = N.ma.masked
-x = N.arange(nx)
+nx = 17
+nyi = 10
+nyo = 30
+u, v = np.mgrid[-3:3:nx*1j, -3:3:nyi*1j]-2
+vari = np.asarray(u**2+v**2)
+yi = np.linspace(-1000., 0., nyi)
+yo = np.linspace(-1200, 100, nyo)
+vari[int(nx/3):int(2*nx/3), int(nyi/3):int(2*nyi/3)] = np.nan
+x = np.arange(nx)
 dyi = (yi[1]-yi[0])*0.49
-yyi = N.resize(yi, vari.shape)+N.random.uniform(-dyi, dyi, vari.shape)
-yyib, xxib  = meshcells(yyi, x)
-yyob, xxob  = meshcells(yo, x)
+yyi = np.resize(yi, vari.shape)+np.random.uniform(-dyi, dyi, vari.shape)
+xxib, yyib = meshcells(x, yyi.T)
+xxob, yyob = meshcells(x, yo)
 
-varon = N.ma.masked_values(interp1dx(vari.filled(), yyi, yo, mv, 0, extrap=0), mv)
-varol = N.ma.masked_values(interp1dx(vari.filled(), yyi, yo, mv, 1, extrap=0), mv)
-varoh = N.ma.masked_values(interp1dx(vari.filled(), yyi, yo, mv, 3, extrap=0), mv)
+varon = interp1dx(vari, yyi, yo, 0, extrap=0)
+varol = interp1dx(vari, yyi, yo, 1, extrap=0)
+varoh = interp1dx(vari, yyi, yo, 3, extrap=0)
 
-kw = dict(vmin=vari.min(), vmax=vari.max())
+kw = dict(vmin=np.nanmin(vari), vmax=np.nanmax(vari))
 axlims = [x[0], x[-1], yo[0], yo[-1]]
-P.figure(figsize=(8, 8))
-P.subplot(221)
-P.pcolor(xxib, yyib, vari)
-P.axis(axlims)
-P.title('Original')
-P.subplot(222)
-P.pcolor(xxob, yyob, varon, **kw)
-P.axis(axlims)
-P.title('Nearest1dx')
-P.subplot(223)
-P.pcolor(xxob, yyob, varol, **kw)
-P.axis(axlims)
-P.title('Linear1dx')
-P.subplot(224)
-P.pcolor(xxob, yyob, varoh, **kw)
-P.axis(axlims)
-P.title('Hermit1dx')
-P.tight_layout()
+fig, [[ax0, ax1], [ax2, ax3]] = plt.subplots(ncols=2, nrows=2, figsize=(8, 8))
+ax0.pcolor(xxib, yyib, vari.T, **kw)
+ax0.axis(axlims)
+ax0.set_title('Original')
+ax1.pcolor(xxob, yyob, varon.T, **kw)
+ax1.axis(axlims)
+ax1.set_title('Nearest1dx')
+ax2.pcolor(xxob, yyob, varol.T, **kw)
+ax2.axis(axlims)
+ax2.set_title('Linear1dx')
+ax3.pcolor(xxob, yyob, varoh.T, **kw)
+ax3.axis(axlims)
+ax3.set_title('Hermit1dx')
+plt.tight_layout()
