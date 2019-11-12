@@ -2151,13 +2151,13 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,&
             endif
 
             ! Interpolate
-            vo(:,io) = 0d0
             do ieb = 1, nex/nexz
 
                 ie0 = 1+(ieb-1)*nexz
 
                 do iez=0,nexz-1
                     if(.not. any(bmask(ie0:ie0+iez,l:l+npl-1, k(iez+1):k(iez+1)+npk(iez+1)-1, j:j+npj-1, i:i+npi-1)))then
+                        vo(ie0+iez,io) = 0d0
                         do ll=0,npl-1
                             do kk=0,npk(iez+1)-1
                                 do jj=0,npj-1
