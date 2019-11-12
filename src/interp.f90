@@ -2029,7 +2029,7 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,&
                     i = 1
                     a = 0d0
                     npi = 1
-                else if(xxi(nxi,1)==xo(io))then
+                else if(xxi(1,nxi)==xo(io))then
                     i = nxi
                     npi = 1
                     a = 0d0
@@ -2046,7 +2046,7 @@ subroutine linear4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,&
                     j = 1
                     b = 0d0
                     npj = 1
-                else if(yyi(1,nyi)==yo(io))then
+                else if(yyi(nyi,1)==yo(io))then
                     j = nyi
                     b  = 0d0
                     npj = 1
@@ -2295,10 +2295,6 @@ subroutine nearest4dto1dxx(xxi,yyi,zzi,ti,vi,xo,yo,zo,to,vo,&
 
             endif
 
-!            print*,'X i',i
-!            print*,'Y j',j
-!            print*,'Z k',k
-!            print*,'T l',l
 
             ! Interpolate
             vo(:,io) = 0d0
