@@ -1,39 +1,31 @@
 """Test fortran function :f:func:`nearest2dto1dc`"""
 
-from vcmq import P, N, add_grid, rotate_grid
+from utils import plt, np, rotate_grid
 from vacumm.fortran.interp import nearest2dto1dc
 
-
-# Input grid and data
+# %% Input grid and data
 nxy = 15
-xi = N.arange(nxy*1.)
-yi = N.arange(nxy*1.)
-gridi = rotate_grid((xi, yi), 30)
-xxi = gridi.getLongitude().getValue()
-yyi = gridi.getLatitude().getValue()
-zzi = N.ma.array(yyi)
-zzi[int(nxy*0.3):int(nxy*0.8), int(nxy*0.3):int(nxy*0.8)] = N.ma.masked
+xi = np.arange(nxy*1.)
+yi = np.arange(nxy*1.)
+xxi, yyi = rotate_grid(xi, yi, 30)
+zzi = np.array(yyi)
+zzi[int(nxy*0.3):int(nxy*0.8), int(nxy*0.3):int(nxy*0.8)] = np.nan
 zzi.shape = 1, nxy, nxy
 
-# Output positions
+# %% Output positions
 no = 1000
-xo = N.random.uniform(-nxy/4., nxy+nxy/4., no)
-yo = N.random.uniform(-nxy/4., nxy+nxy/4., no)
+xo = np.random.uniform(-nxy/4., nxy+nxy/4., no)
+yo = np.random.uniform(-nxy/4., nxy+nxy/4., no)
 
-# Interpolate
-mv = zzi.get_fill_value()
-zo = nearest2dto1dc(xxi,yyi,zzi.filled(mv),xo,yo,mv)
-zo = N.ma.masked_values(zo, mv)
+# %% Interpolate
+zo = nearest2dto1dc(xxi, yyi, zzi, xo, yo)
 
-# Plot
-kw = dict(vmin=zzi.min(), vmax=zzi.max())
-P.figure(figsize=(6, 6))
-P.subplot(111, aspect=1)
-P.contourf(xxi, yyi, zzi[0], **kw)
-add_grid((xxi, yyi), edges=False, centers=True, marker='o')
-P.scatter(xo, yo, c=zo[0], s=50, **kw)
-P.title('nearest2dto1dc')
-P.tight_layout()
-
-
-
+# %% Plot
+kw = dict(vmin=np.nanmin(zzi), vmax=np.nanmax(zzi))
+plt.figure(figsize=(6, 6))
+plt.subplot(111, aspect=1)
+plt.contourf(xxi, yyi, zzi[0], **kw)
+plt.scatter(xxi, yyi, c='k')
+plt.scatter(xo, yo, c=zo[0], s=50, **kw)
+plt.title('nearest2dto1dc')
+plt.tight_layout()

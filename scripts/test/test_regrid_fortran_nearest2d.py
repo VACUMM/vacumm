@@ -1,36 +1,31 @@
 """Test the fortran function :f:func:`nearest2d`"""
-from vcmqm import N, P, rotate_grid, add_grid, meshbounds
+from utils import np, plt, rotate_grid, plot_grid, meshcells
 from vacumm.fortran.interp import nearest2d
 
-
-# Input grid
-gridi = rotate_grid((N.arange(5), N.arange(4)), 30)
-xxi = gridi.getLongitude()[:].filled()
-yyi = gridi.getLatitude()[:].filled()
-vari = N.resize(yyi, (20, ) + yyi.shape)
+# %% Input grid
+xxi, yyi = rotate_grid(np.arange(5), np.arange(4), 30)
+vari = np.resize(yyi, (20, ) + yyi.shape)
 nb = 10
-xxbi, yybi = meshbounds(xxi, yyi)
+xxbi, yybi = meshcells(xxi, yyi)
 
-# Output grid
-grido = rotate_grid((N.linspace(0, 6, 50)-1, N.linspace(0, 4, 35)+1.), -20)
-xxo = grido.getLongitude()[:].filled()
-yyo = grido.getLatitude()[:].filled()
-xxbo, yybo = meshbounds(xxo, yyo)
+# %% Output grid
+xxo, yyo = rotate_grid(np.linspace(0, 6, 50)-1, np.linspace(0, 4, 35)+1., -20)
+xxbo, yybo = meshcells(xxo, yyo)
 
-# Nearest
+# %% Nearest
 varo = nearest2d(vari, xxi, yyi, xxo, yyo, nb)
 
-# Plot
+# %% Plot
 vmin = varo.min()
 vmax = varo.max()
-P.figure(figsize=(8, 4))
-P.subplot(121, aspect=1)
-P.pcolormesh(xxbi, yybi, vari[0], vmin=vmin, vmax=vmax)
-add_grid(grido)
-P.title('original')
-P.subplot(122, aspect=1)
-P.pcolormesh(xxbo, yybo, varo[0], vmin=vmin, vmax=vmax)
-add_grid(gridi)
-P.title('nearest2d')
-P.axis('image')
-P.tight_layout()
+plt.figure(figsize=(8, 4))
+plt.subplot(121, aspect=1)
+plt.pcolormesh(xxbi, yybi, vari[0], vmin=vmin, vmax=vmax)
+plot_grid(xxbo, yybo)
+plt.title('original')
+plt.subplot(122, aspect=1)
+plt.pcolormesh(xxbo, yybo, varo[0], vmin=vmin, vmax=vmax)
+plot_grid(xxbi, yybi)
+plt.title('nearest2d')
+plt.axis('image')
+plt.tight_layout()
