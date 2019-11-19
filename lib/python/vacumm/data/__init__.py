@@ -46,7 +46,7 @@ try:
 except:
     pass
 
-from vacumm import VACUMMError
+from vacumm import VACUMMError, vcwarn
 import satellite
 
 #: Specifications of available dataset types
@@ -102,7 +102,7 @@ def DS(ncfile, clsname='generic', *args, **kwargs):
         cls = DATASET_SPECS[clsname]
     else:
         raise VACUMMError('Wrong name of dataset type: %s. '
-            ' Please choose one of the following: %s'%(clsname, ', '.join(DATASET_NAMES)))
+            ' Please choose one of the following: %s'%(clsname, ', '.join(DATASET_SPECS.keys())))
 
     # Instantiate
     return cls(ncfile, *args, **kwargs)
@@ -150,7 +150,7 @@ def register_dataset(cls, clsname=None, warn=True, force=True):
                 ms = 'Overwriting it...'
             else:
                 ms = 'Skipping...'
-            sonat_warn('Dataset class "{}" is already registered. '+ms)
+            vcwarn('Dataset class "{}" is already registered. '+ms)
         if not force:
             return
 
