@@ -1,6 +1,11 @@
 Release notes
 #############
 
+Version 3.6.4
+=============
+- Fix DS with wrong dataset type
+- Fix clone_grid
+
 Version 3.6.3
 =============
 

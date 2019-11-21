@@ -59,7 +59,7 @@ name = "vacumm"
 version_sphinx = release_sphinx = version = info['version']
 description = 'A library for ocean science'
 long_description = ("A library and a collection of scripts for ocean science, "
-    "mainly designed for data analysis and model validation")
+                    "mainly designed for data analysis and model validation")
 author = info['author']
 author_email = info['email']
 maintainer = "Stephane Raynaud"
@@ -69,7 +69,7 @@ url = "http://www.ifremer.fr/vacumm"
 classifiers = [#"Development Status :: 4 - Beta",
                "Intended Audience :: Science/Research",
                ("License :: OSI Approved :: CEA CNRS Inria Logiciel "
-                       "Libre License, version 2.1 (CeCILL-2.1)"),
+                "Libre License, version 2.1 (CeCILL-2.1)"),
                "Programming Language :: Python :: 2",
                "Topic :: Scientific/Engineering :: Physics",
                "Topic :: Scientific/Engineering :: Mathematics",
