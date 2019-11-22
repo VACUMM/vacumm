@@ -44,10 +44,10 @@ import numpy as N
 import pylab as P
 
 if not hasattr(N, 'isclose'):
-    from vacumm.misc import closeto as isclose
+    from ..misc import closeto as isclose
 else:
     isclose = N.isclose
-from vacumm.misc import bivariate_normal
+from ..misc import bivariate_normal
 
 #from scipy.optimize import curve_fit
 def get_blas_func(name):

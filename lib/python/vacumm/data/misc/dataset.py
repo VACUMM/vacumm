@@ -73,40 +73,40 @@ import cdms2, MV2, numpy, pylab, seawater
 from matplotlib.pyplot import colorbar, tight_layout
 N = numpy
 
-from vacumm.misc import auto_scale, MV2_concatenate, MV2_axisConcatenate, create_selector, \
+from ...misc.misc import auto_scale, MV2_concatenate, MV2_axisConcatenate, create_selector, \
     split_selector, dict_merge, dict_check_defaults, set_atts, broadcast
-from vacumm.misc.atime import add as add_time, comptime, datetime as adatetime, Intervals, \
+from ...misc.atime import add as add_time, comptime, datetime as adatetime, Intervals, \
     filter_time_selector, itv_intersect, strftime
-from vacumm.misc.axes import create_time, create_dep, create_lat, create_lon, guess_timeid, get_axis_type, isaxis
-from vacumm.misc.bases import Object
-import vacumm.misc.color as C
-from vacumm.misc.io import (ncget_var, ncfind_var, ncfind_obj, ncfind_axis,
+from ...misc.axes import create_time, create_dep, create_lat, create_lon, guess_timeid, get_axis_type, isaxis
+from ...misc.bases import Object
+from ...misc.color import cmap_magic
+from ...misc.io import (ncget_var, ncfind_var, ncfind_obj, ncfind_axis,
     list_forecast_files, ncread_files, ncmatch_obj,
     ncread_best_estimate, NcIterBestEstimate, ncget_time, ncget_lon, ncget_lat, ncget_level,
     ncget_grid, ncget_axis, NcIterTimeSlice)
-from vacumm.misc.grid.misc import meshweights, resol, create_grid, set_grid, \
+from ...misc.grid.misc import meshweights, resol, create_grid, set_grid, \
     dz2depth, depth2dz, isdepthup, gridsel, makedepthup, curv2rect, isgrid,  \
     coord2slice, clone_grid
-from vacumm.misc.grid.regridding import resol, interp1d, regrid1d, grid2xy, transect,  \
+from ...misc.grid.regridding import resol, interp1d, regrid1d, grid2xy, transect,  \
     shift1d, shift2d, extend1d, extend2d, regrid1dold
-from vacumm.misc.misc import is_iterable, kwfilter, squeeze_variable, dict_filter_out,  \
+from ...misc.misc import is_iterable, kwfilter, squeeze_variable, dict_filter_out,  \
     get_atts, set_atts
-from vacumm.misc.phys.constants import GRAVITY
-from vacumm.misc.plot import map2, curve2, section2, hov2, add_map_lines
-from vacumm.misc.axes import islon, islat, isdep
-from vacumm.data import register_dataset
-from vacumm.data.misc.sigma import NcSigma
-from vacumm.data.misc.arakawa import ArakawaGrid, AGrid, CGrid, ARAKAWA_LOCATIONS as arakawa_locations,  \
+from ...misc.phys.constants import GRAVITY
+from ...misc.plot import map2, curve2, section2, hov2, add_map_lines
+from ...misc.axes import islon, islat, isdep
+from ...data import register_dataset
+from ...data.misc.sigma import NcSigma
+from ...data.misc.arakawa import ArakawaGrid, AGrid, CGrid, ARAKAWA_LOCATIONS as arakawa_locations,  \
     set_grid_type, get_grid_type, _cdms2_atts as cdms2_arakawa_atts
-from vacumm.data.cf import (VAR_SPECS, AXIS_SPECS, cf2search, cf2atts,
+from ..cf import (VAR_SPECS, AXIS_SPECS, cf2search, cf2atts,
     CF_AXIS_SPECS, CF_VAR_SPECS, format_axis, format_var, get_loc, no_loc_single,
     DEFAULT_LOCATION, change_loc, HIDDEN_CF_ATTS, change_loc_single, format_grid,
     CF_DICT_MERGE_KWARGS)
 from vacumm import VACUMMError
-from vacumm.diag.dynamics import barotropic_geostrophic_velocity, kinetic_energy
-from vacumm.diag.thermdyn import mixed_layer_depth, density
+from ...diag.dynamics import barotropic_geostrophic_velocity, kinetic_energy
+from ...diag.thermdyn import mixed_layer_depth, density
 
-from vacumm.misc.misc import grow_variables
+from ...misc.misc import grow_variables
 
 # Kwargs which are pop'ed from intermediate plots
 # (e.g. plot section, then trajectory map, then post plot using these kwargs)
@@ -3765,8 +3765,8 @@ class OceanDataset(OceanSurfaceDataset):
         plotkw = kwfilter(kwargs, 'plot')
         mld = self.get_mixed_layer_depth(select)
         l = auto_scale((mld.min(), mld.max()))
-        c = C.cmap_magic(l)
-        #c = C.cmap_rainbow()
+        c = cmap_magic(l)
+        #c = cmap_rainbow()
         mapkw.update(dict(show=False, cmap=c))
         m = map2(mld, **mapkw)
         m.post_plot(**plotkw)
@@ -3789,8 +3789,8 @@ class OceanDataset(OceanSurfaceDataset):
         plotkw = kwfilter(kwargs, 'plot')
         ped = self.get_potential_energy_deficit(select)
         l = auto_scale((ped.min(), ped.max()))
-        c = C.cmap_magic(l)
-        #c = C.cmap_rainbow()
+        c = cmap_magic(l)
+        #c = cmap_rainbow()
         mapkw.update(dict(show=False, cmap=c))
         m = map2(ped, **mapkw)
         m.post_plot(**plotkw)

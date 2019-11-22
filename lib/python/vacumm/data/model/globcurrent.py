@@ -35,9 +35,9 @@
 #
 
 
-from vacumm.data import register_dataset
-from vacumm.data.misc.dataset import OceanDataset, AtmosSurfaceDataset
-from vacumm.misc import dict_merge
+from ..__init__ import register_dataset
+from ..misc.dataset import OceanDataset, AtmosSurfaceDataset
+from ...misc.misc import dict_merge
 #from vacumm.data.cf import specs_def_loc
 
 

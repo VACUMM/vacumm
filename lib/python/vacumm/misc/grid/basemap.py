@@ -45,13 +45,14 @@ from mpl_toolkits.basemap.proj import Proj
 from matplotlib import get_configdir
 import cPickle, stat
 #FIXME:imports
-from ...misc.io import Shapes
-from misc import get_xy
-from ...misc.phys.constants import R as rsphere_mean
-from ...misc.phys.units import deg2m, m2deg
-from ...misc.misc import kwfilter, dict_check_defaults,  zoombox
-from vacumm.config import get_config_value
 from ...__init__ import vacumm_warn
+from ...config import get_config_value
+from ..misc import kwfilter, dict_check_defaults,  zoombox
+from ..phys.constants import R as rsphere_mean
+from ..phys.units import deg2m, m2deg
+from ..io import Shapes
+from .misc import get_xy
+from .masking import polygons, create_polygon, proj_shape, clip_shape
 
 #: Earth radius of wgs84 ellipsoid
 RSHPERE_WGS84 = (6378137.0,6356752.3141)
@@ -588,4 +589,3 @@ def get_proj(gg=None, proj=None, **kwargs):
     return Proj(projparams, xmin, ymin, xmax, ymax)
 
 
-from masking import polygons, create_polygon, proj_shape, clip_shape

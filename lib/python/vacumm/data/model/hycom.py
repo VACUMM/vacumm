@@ -42,8 +42,8 @@ __date__ = '2012-02-12'
 __doc__ = 'HYCOM model data manipulation'
 
 
-from vacumm.data import register_dataset
-from vacumm.data.misc.dataset import OceanDataset, AtmosSurfaceDataset
+from ..__init__ import register_dataset
+from ..misc.dataset import OceanDataset, AtmosSurfaceDataset
 
 
 class HYCOMZ(OceanDataset,AtmosSurfaceDataset):

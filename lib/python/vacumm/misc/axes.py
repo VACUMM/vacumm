@@ -48,8 +48,8 @@ from re import match
 from operator import isSequenceType,isNumberType
 from fnmatch import fnmatch
 from warnings import warn
-from vacumm import VACUMMError
-from .misc import check_def_atts, dict_check_defaults, match_atts
+from ..__init__ import VACUMMError
+from .misc import check_def_atts, dict_check_defaults, match_atts, cp_atts
 
 __all__ = ['isaxis', 'islon', 'islat', 'islev', 'isdep', 'istime',
     'check_axes', 'is_geo_axis', 'check_axis', 'get_axis_type', 'check_id',
@@ -350,7 +350,6 @@ def create_axis(values, atype='-', **atts):
         >>> lon = create_axis((-10., 0, 2), 't', id='temps', units='seconds since 2000')
         >>>
     """
-    from vacumm.misc import cp_atts
     if N.isscalar(values):
         values = [values]
     if isinstance(values, tuple) and len(values) < 4:

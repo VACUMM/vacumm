@@ -39,14 +39,14 @@ from collections import OrderedDict
 import string
 
 import cdms2, MV2, re
-from vacumm import VACUMMError, vcwarn
-from vacumm.misc import kwfilter, dict_merge
-from vacumm.misc.axes import create as create_axis, isaxis
-from vacumm.misc.color import get_cmap
-from vacumm.misc.grid import create_axes2d
-from vacumm.misc.io import ncmatch_obj
-from vacumm.misc.config import ConfigManager
-from vacumm.data.misc.arakawa import ARAKAWA_LOCATIONS
+from ..__init__ import VACUMMError, vcwarn
+from ..misc.misc import kwfilter, dict_merge
+from ..misc.axes import create as create_axis, isaxis
+from ..misc.color import get_cmap
+from ..misc.grid.misc import create_axes2d
+from ..misc.io import ncmatch_obj
+from ..misc.config import ConfigManager
+from ..data.misc.arakawa import ARAKAWA_LOCATIONS
 
 __all__ = ['VAR_SPECS', 'AXIS_SPECS',
     'format_var', 'format_axis', 'format_grid', 'match_obj',

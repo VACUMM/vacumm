@@ -5,6 +5,9 @@
 
     Tutorials: :ref:`user.tut.misc.grid.masking`, :ref:`user.tut.misc.grid.polygons`
 """
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 # Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #
 # This software is a computer program whose purpose is to provide
@@ -39,6 +42,11 @@
 #
 #print 'importing masking 0'
 
+from builtins import str
+from builtins import zip
+from builtins import range
+from past.utils import old_div
+from builtins import object
 from warnings import warn
 import numpy as N
 MA = N.ma
@@ -129,7 +137,7 @@ def get_coastal_indices(mask, coast=None, asiijj=False, **kwargs):
     jj = N.compress(coast.ravel(),iy.ravel())
     ii = N.compress(coast.ravel(),ix.ravel())
     if asiijj: return ii, jj
-    return zip(jj, ii)
+    return list(zip(jj, ii))
 
 def get_dist_to_coast(grid, mask=None, proj=True):
     """Get the distance to coast on grid
@@ -154,10 +162,10 @@ def get_dist_to_coast(grid, mask=None, proj=True):
     """
     if mask is None and N.ma.isMA(grid):
         mask = grid
-    xx, yy = M.get_xy(grid, proj=proj, mesh=True, num=True)
+    xx, yy = get_xy(grid, proj=proj, mesh=True, num=True)
     if mask is None:
-        from basemap import gshhs_autores, merc
-        x, y = M.get_xy(grid, proj=False, num=True, mesh=False)
+        from .basemap import gshhs_autores, merc
+        x, y = get_xy(grid, proj=False, num=True, mesh=False)
         res = gshhs_autores(x.min(), x.max(), y.min(), y.max())
         mask = polygon_mask(grid, res)
     elif N.ma.isMA(mask):
@@ -182,7 +190,7 @@ def get_dist_to_coast(grid, mask=None, proj=True):
         mindists.id = 'coastdist'
         mindists.long_name = 'Distance to coast'
         mindists.units = 'm'
-        M.set_grid(mindists, M.get_grid(grid))
+        set_grid(mindists, get_grid(grid))
     return mindists
 
 
@@ -283,13 +291,13 @@ class Lakes(object):
         # Find lakes using labelling
         import scipy.ndimage
         self._lakes, self.nlakes = scipy.ndimage.label(1-self._imask)
-        self._ncells = [N.equal(self._lakes, ilake).astype('i').sum() for ilake in xrange(1, self.nlakes+1)]
+        self._ncells = [N.equal(self._lakes, ilake).astype('i').sum() for ilake in range(1, self.nlakes+1)]
 
         # Compute indices
         self._indices = []
-        for ilake in xrange(1, self.nlakes+1):
+        for ilake in range(1, self.nlakes+1):
             mask = self._lakes == ilake
-            self._indices.append(zip(self._ix[mask], self._iy[mask]))
+            self._indices.append(list(zip(self._ix[mask], self._iy[mask])))
 
         # Sorting argument
         self._argsort = N.argsort(self._ncells)[::-1]
@@ -409,11 +417,12 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
     """
 
     # Get proper numeric axes
-    gg = M.get_grid(gg)
+    gg = get_grid(gg)
     if proj is not False:
+        from .basemap import get_proj
         proj = get_proj(gg)
-    curved = M.isgrid(gg, curv=True) or proj
-    xx, yy = M.get_xy(gg, mesh=True, num=True, proj=proj)
+    curved = isgrid(gg, curv=True) or proj
+    xx, yy = get_xy(gg, mesh=True, num=True, proj=proj)
 
     # Thresholds
     if not isinstance(thresholds, (list, tuple)):
@@ -430,28 +439,28 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
     else:
         mask = N.zeros(xx.shape, dtype='?')
 
-    xxb = M.bounds2d(xx)
-    yyb = M.bounds2d(yy)
+    xxb = bounds2d(xx)
+    yyb = bounds2d(yy)
     if bmode:
 #        yyb[yyb>90.] = 89.99
 #        yyb[yyb<-90.] = -89.99
-        dx = xxb.ptp()/xxb.shape[1]
-        dy = yyb.ptp()/yyb.shape[0]
+        dx = xxb.ptp() / xxb.shape[1]
+        dy = yyb.ptp() / yyb.shape[0]
         clip = (xxb.min()-dx, yyb.min()-dy, xxb.max()+dx, yyb.max()+dy)
         ymins = yyb[:, 0, 0]-dy/10.
         xmin = xxb[0, 0].min()-dx/10.
         xmax = xxb[0, -1].max()+dx/10.
         ymax = yyb[-1, 0].max()+dy/10.
     else:
-        dx = xx.ptp()/xx.shape[1]
-        dy = yy.ptp()/yy.shape[0]
+        dx = xx.ptp() / xx.shape[1]
+        dy = yy.ptp() / yy.shape[0]
         clip = (xx.min()-dx, yy.min()-dy, xx.max()+dx, yy.max()+dy)
         ymins = yy[:, 0]-dy/10.
         xmin = xx[0, 0]-dx/10.
         xmax = xx[0, -1]+dx/10.
         ymax = yy[-1, 0]+dy/10.
     if curved:
-        xxc, yyc = M.meshcells(xx, yy)
+        xxc, yyc = meshcells(xx, yy)
         dxx = N.diff(xxc, axis=1)
         dxy = N.diff(xxc, axis=0)
         dyx = N.diff(yyc, axis=1)
@@ -467,7 +476,7 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
 
     # Loop on grid points
     skipped = 0
-    for j in xrange(xx.shape[0]):
+    for j in range(xx.shape[0]):
 
         # Get polygons of the curent row
         ypolys = []
@@ -502,7 +511,7 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
                 pass
         del rowpoly_array, rowpoly
 
-        for i in xrange(xx.shape[1]):
+        for i in range(xx.shape[1]):
 
             # Pre-masking
             if premask is not None and premask[j, i] != -1:
@@ -520,13 +529,13 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
             # Check the cell
             cell_poly = Polygon(N.asarray([xxb[j, i, :], yyb[j, i, :]]).transpose())
             if isinstance(cell_poly, (LineString, Point)):
-                raise TypeError, 'cell'
+                raise TypeError('cell')
             intersect_area = 0.
             nintersect = 0
             for ip, poly in enumerate(ypolys):
                 if poly is None: continue
                 if isinstance(poly, (LineString, Point)):
-                    raise TypeError, 'poly'
+                    raise TypeError('poly')
 
                 # Check X range
                 if xxb[j, i, :].max() <= poly.boundary[:, 0].min()  or \
@@ -567,7 +576,7 @@ def polygon_mask(gg, polys, mode='intersect', thresholds=[.5, .75],
                 if ok: break
 
             # Fraction
-            land_fraction = intersect_area/cell_poly.area()
+            land_fraction = intersect_area / cell_poly.area()
             if fmode: # Fraction only
                 if fmode==2:
                     mask[j, i] = intersect_area
@@ -758,7 +767,7 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
     if isinstance(polys, (Basemap, str, Polygon, N.ndarray, Shapes, AbstractGrid, tuple)):
         polys = [polys]
 
-    if kwargs.has_key('m'): proj = kwargs['m']
+    if 'm' in kwargs: proj = kwargs['m']
     kwclip = kwfilter(kwargs, 'clip_')
 
     # Numeric or geos polygons
@@ -778,13 +787,13 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
         clipl = None
 
     # Loop on polygon data
-    from misc import isgrid, isrect, curv2rect
+    from .misc import isgrid, isrect, curv2rect
     for poly in polys:
 
         # Grid (cdms var, grid or tuple of axes) -> get envelop
         if cdms2.isVariable(poly) or isgrid(poly) or \
             (isinstance(poly, tuple) and len(poly)==2 and islon(poly[1]) and islat(poly[0])):
-            grid = M.get_grid(poly)
+            grid = get_grid(poly)
             if grid is None: continue
             poly = grid_envelop(grid)
 
@@ -794,6 +803,7 @@ def polygons(polys, proj=None, clip=None, shapetype=2, **kwargs):
 
         # Polygon from GMT
         if isinstance(poly, (str, Basemap)):
+            from .basemap import GSHHS_BM
 #            poly = GSHHS_BM(poly)
 #           gmt_polys.append(poly)
             out_polys.extend(GSHHS_BM(poly, clip=clipl, proj=proj).get_shapes())
@@ -958,7 +968,7 @@ def convex_hull(xy, poly=False, method='delaunay'):
     """
 
     # Points
-    xx, yy = M.get_xy(xy, proj=False)
+    xx, yy = get_xy(xy, proj=False)
     xx = N.asarray(xx)
     yy = N.asarray(yy)
     if xx.ndim>1:
@@ -1054,7 +1064,7 @@ def uniq(data):
     >>> b = uniq(a)
     """
     if data.ndim>2:
-        wdata = data.reshape((data.shape[0], data.size/data.shape[0]))
+        wdata = data.reshape((data.shape[0], old_div(data.size,data.shape[0])))
     else:
         wdata = data
     keep = N.ones(len(data), '?')
@@ -1087,17 +1097,17 @@ def grid_envelop(gg, centers=False, poly=True):
         - ``False``: Return two 1D arrays ``xpts,ypts``
     """
     # Axes
-    x, y = M.get_xy(gg, num=True)
+    x, y = get_xy(gg, num=True)
 
     # Rectangular grids
-    gg = M.curv2rect(gg,mode=False)
-    if M.isgrid(gg, curv=False):
+    gg = curv2rect(gg,mode=False)
+    if isgrid(gg, curv=False):
         if centers:
             x0 = x.min() ;  x1 = x.max()
             y0 = y.min() ;  y1 = y.max()
         else:
-            xb = M.bounds1d(x)
-            yb = M.bounds1d(y)
+            xb = bounds1d(x)
+            yb = bounds1d(y)
             x0 = xb.min() ;  x1 = xb.max()
             y0 = yb.min() ;  y1 = yb.max()
         if poly:
@@ -1105,8 +1115,8 @@ def grid_envelop(gg, centers=False, poly=True):
         return N.array([x0, x1]), N.array([y0, y1])
 
     # Get the 2D axes
-    xx, yy = M.meshgrid(x, y)
-    xxb, yyb = M.meshbounds(x, y)
+    xx, yy = meshgrid(x, y)
+    xxb, yyb = meshbounds(x, y)
     if centers:
         xxref, yyref = xx, yy
     else:
@@ -1157,7 +1167,7 @@ def grid_envelop(gg, centers=False, poly=True):
 
     # Return the polygon or arrays
     if not poly: return N.asarray(xp), N.asarray(yp)
-    return Polygon(N.asarray(zip(xp, yp)))
+    return Polygon(N.asarray(list(zip(xp, yp))))
 
 def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
     """Create a mask on output grid from the bounds of an input grid:
@@ -1173,12 +1183,12 @@ def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
         A mask on output grid, where True means "outside bounds of input grid".
     """
 
-    if M.isgrid(ggi, curv=False): # Rectangular
-        x, y = M.get_xy(ggi)
-        xb = M.bounds1d(x)
-        yb = M.bounds1d(y)
-        ggo = M.get_grid(ggo)
-        xxo, yyo = M.meshgrid(*M.get_xy(ggo))
+    if isgrid(ggi, curv=False): # Rectangular
+        x, y = get_xy(ggi)
+        xb = bounds1d(x)
+        yb = bounds1d(y)
+        ggo = get_grid(ggo)
+        xxo, yyo = meshgrid(*get_xy(ggo))
         return (xxo<=xb.min())|(xxo>=xb.max())|(yyo<=yb.min())|(yyo>=yb.max())
 
     elif poly: # Using a polygon
@@ -1189,12 +1199,12 @@ def grid_envelop_mask(ggi, ggo, poly=True, **kwargs):
         return ~polygon_mask(ggo, [poly], mode='inside')
 
     else: # Using regridding
-        from regridding import regrid2d
-        xxb, yyb = M.meshbounds(*M.meshbounds(*M.get_xy(ggi)))
+        from .regridding import regrid2d
+        xxb, yyb = meshbounds(*meshbounds(*get_xy(ggi)))
         vari = MV2.asarray(xxb*0.)
         vari[[0, -1]] = 1.
         vari[:, [0, -1]] = 1.
-        M.set_grid(vari, M.curv_grid(xxb, yyb))
+        set_grid(vari, curv_grid(xxb, yyb))
         varo = regrid2d(vari, ggo, method='nearest', ext=True).filled(1.)
         return varo.astype('?')
 
@@ -1217,9 +1227,9 @@ def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
             xx, yy, mask = mask
         else:
             gg, mask = mask
-            xx, yy = M.get_xy(gg)
+            xx, yy = get_xy(gg)
     else:
-        xx, yy = M.get_xy(mask)
+        xx, yy = get_xy(mask)
 
     # Resolution
     dx = N.diff(xx).mean()
@@ -1246,8 +1256,8 @@ def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
 
         # Get intersection areas
         areas = N.zeros(amask.shape, 'f')
-        for j in xrange(amask.shape[-2]):
-            for i in xrange(amask.shape[-1]):
+        for j in range(amask.shape[-2]):
+            for i in range(amask.shape[-1]):
                 cell_poly = Polygon(N.array([xxb[j, i, :].ravel(), yyb[j, i, :].ravel()]).transpose())
                 if cell_poly.intersects(island_poly):
                     areas[j, i] = cell_poly.intersection(island_poly).area()
@@ -1257,7 +1267,7 @@ def check_poly_islands(mask, polys, offsetmin=.85, offsetmax=1.5, dcell=2):
         amask.flat[N.argmax(areas)] = True
         mask[jmin:jmax, imin:imax] = amask
 
-    print 'Masked %i islands' % ni
+    print('Masked %i islands' % ni)
     return mask
 
 def check_poly_straits(mask, polys, dcell=2, threshold=.75):
@@ -1275,9 +1285,9 @@ def check_poly_straits(mask, polys, dcell=2, threshold=.75):
             xx, yy, mask = mask
         else:
             gg, mask = mask
-            xx, yy = M.get_xy(gg)
+            xx, yy = get_xy(gg)
     else:
-        xx, yy = M.get_xy(mask)
+        xx, yy = get_xy(mask)
 
     # Get cell bounds
     xxb, yyb = bounds2d(xx),  bounds2d(yy)
@@ -1307,7 +1317,7 @@ def check_poly_straits(mask, polys, dcell=2, threshold=.75):
             # Several polygons = strait, so open
             mask[j, i] = npoly < 2
 
-    print 'Opened %i straits' %ns
+    print('Opened %i straits' %ns)
     return mask
 
 
@@ -1389,7 +1399,7 @@ def _old_rsamp_(x, y, r, z=None, rmean=.7, proj=False, getmask=False):
         x, y = proj(x, y)
 
     # Loop on valid points
-    for i0 in xrange(n):
+    for i0 in range(n):
         if not good[i0]: continue
         # Search for neighbours
         dst[:] = N.sqrt((x-x[i0])**2+(y-y[i0])**2)
@@ -1438,6 +1448,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
 
     # Projection
     if proj is True:
+        from .basemap import get_proj
         proj = get_proj((x,y))
     if callable(proj):
         x, y = proj(x, y)
@@ -1450,15 +1461,15 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
     dx = xmax-xmin ; dy = ymax-ymin
     xmin -= .001*dx ; xmax += .001*dx
     ymin -= .001*dy ; ymax += .001*dy
-    nxb = max(1, int((xmax-xmin)/(r*(rblock-1))))
-    nyb = max(1, int((ymax-ymin)/(r*(rblock-1))))
+    nxb = max(1, int(old_div((xmax-xmin),(r*(rblock-1)))))
+    nyb = max(1, int(old_div((ymax-ymin),(r*(rblock-1)))))
     rblock *= r
     xgood = N.zeros(n, '?')
     block = N.zeros(n, '?')
 
     # Loop on x bands
     x0 = xmin+r-rblock
-    for ixb in xrange(nxb):
+    for ixb in range(nxb):
         x0 += rblock-r
         if ixb == nxb-1:
             x1 = xmax
@@ -1469,7 +1480,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
 
         # Loop on y bands
         y0 = ymin+r-rblock
-        for iyb in xrange(nyb):
+        for iyb in range(nyb):
             y0 += rblock-r
             if iyb == nyb-1:
                 y1 = ymax
@@ -1487,7 +1498,7 @@ def rsamp(x, y, r, z=None, rmean=.7, proj=False, rblock=3, getmask=False):
             gg = good[block]
 
             # Loop on valid points
-            for i0 in xrange(nn):
+            for i0 in range(nn):
                 if not gg[i0]: continue
                 # Search for neighbours
                 dst = N.sqrt((xx-xx[i0])**2+(yy-yy[i0])**2)
@@ -1616,10 +1627,11 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
 
 
     # Get numeric axes
-    xx, yy = M.get_xy(grid, num=True, mesh=True, m=False)
+    xx, yy = get_xy(grid, num=True, mesh=True, m=False)
 
     # Scaler
     if scaler is None:
+        from .basemap import get_proj
         scaler = get_proj((xx, yy))
     if callable(scaler):
         xxs, yys = scaler(xx, yy)
@@ -1650,10 +1662,10 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
                 ymode = 'min'
             elif yrelres < 0:
                 ymode = 'max'
-        xr = M.resol(xx, axis=1, mode=xmode) if xres is None else xres
-        yr = M.resol(yy, axis=0, mode=ymode) if yres is None else yres
-        if N.abs(N.log10(xres/yres))<2: # similar coordinates
-            xr, yr = M.resol(xxs, yys, mode=(xmode, ymode))
+        xr = resol(xx, axis=1, mode=xmode) if xres is None else xres
+        yr = resol(yy, axis=0, mode=ymode) if yres is None else yres
+        if N.abs(N.log10(old_div(xres,yres)))<2: # similar coordinates
+            xr, yr = resol(xxs, yys, mode=(xmode, ymode))
             if xres is None: xres = -xr
             if yres is None: yres = -yr
         else:
@@ -1667,12 +1679,12 @@ def resol_mask(grid, res=None, xres=None, yres=None, xrelres=None, yrelres=None,
         x2d = xx if xres > 0 else xxs
         y2d = yy if yres > 0 else yys
     if xres is not None or yres is not None:
-        xbres, ybres = M.resol((x2d, y2d), mode='raw')
+        xbres, ybres = resol((x2d, y2d), mode='raw')
     if xres=='auto' or yres=='auto':
         xcres = N.ma.cumsum(xbres, axis=1)
         ycres = N.ma.cumsum(ybres, axis=0)
-        xares = -1.*xcres.max()/nauto
-        yares = -1.*ycres.max()/nauto
+        xares = old_div(-1.*xcres.max(),nauto)
+        yares = old_div(-1.*ycres.max(),nauto)
         xres = yres = min(xares, yares)
 #    else:
 #        x2d = y2d = xbres = ybres = xcres = ycres = None
@@ -1742,7 +1754,7 @@ def get_avail_rate(data, num=True, mode='rate'):
     # Count
     rate = mask.sum(axis=0)
     if mode=="rate" or mode=='pct':
-        rate = rate.astype('f')/rate.shape[0]
+        rate = old_div(rate.astype('f'),rate.shape[0])
         if mode=='pct':
             rate *= 100
 
@@ -1750,7 +1762,7 @@ def get_avail_rate(data, num=True, mode='rate'):
     if not num and cdms2.isVariable(data):
         rate = MV2.array(rate, copy=0)
         if data.getGrid() is not None:
-            M.set_grid(rate, data.getGrid())
+            set_grid(rate, data.getGrid())
         if mode=="rate":
             rate.long_name = 'Availability rate'
         elif mode=='pct':
@@ -1795,9 +1807,10 @@ def merge_masks(varlist, copy=False, mode='max'):
 
 ######################################################################
 ######################################################################
-import misc as M
-from ...misc.axes import islon, islat
-from ...misc.phys.units import deg2m
-from ...misc.io import Shapes
-from .basemap import GSHHS_BM, get_proj
-from ...misc.misc import cp_atts, kwfilter
+from ..misc import cp_atts, kwfilter
+from .misc import (get_xy, get_grid, set_grid,
+                   isgrid, bounds2d, curv2rect, meshcells, bounds1d,
+                   curv_grid, resol, meshbounds)
+from ..axes import islon, islat
+from ..phys.units import deg2m
+from ..io import Shapes

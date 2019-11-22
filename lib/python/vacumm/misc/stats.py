@@ -41,12 +41,12 @@ import cdms2
 import cdtime
 from genutil.statistics import percentiles
 
-from vacumm import VACUMMError
-from vacumm.misc.axes import isaxis, create_time
-from vacumm.misc.grid import get_grid, set_grid
-from vacumm.misc import MV2_axisConcatenate, set_atts, cp_atts
-from vacumm.misc.io import netcdf4
-from vacumm.misc.atime import comptime, reltime
+from ..__init__ import VACUMMError
+from .axes import isaxis, create_time
+from .grid.misc import get_grid, set_grid
+from .misc import MV2_axisConcatenate, set_atts, cp_atts
+from .io import netcdf4
+from .atime import comptime, reltime
 
 __all__ = ['corr_proba', 'ensrank', 'qtmin', 'qtmax', 'qtminmax',
     'StatAccum', 'StatAccumError']

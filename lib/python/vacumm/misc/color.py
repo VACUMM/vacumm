@@ -58,8 +58,8 @@ try:
 except:
     cmoceancm = None
 
-import vacumm
-from vacumm import vacumm_warn
+from ..__init__ import vacumm_warn, VACUMMError
+from .misc import kwfilter, dict_check_defaults
 
 # Color definitions
 
@@ -2240,7 +2240,6 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), fig=No
         sa=dict(left=.0, right=1, top=1, bottom=.0),
         savefig=None, savefigs=None, close=True, **kwargs):
     """Display a colormap"""
-    from vacumm.misc import kwfilter, dict_check_defaults
     cmap = get_cmap(cmap)
     if ax is None:
         if fig is None:
@@ -2290,13 +2289,11 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5,
     savefigs=None, aspect=0.05, fig=None, close=True, **kwargs):
     """Display a list of or all colormaps"""
 
-    from vacumm.misc import kwfilter
     kwsf = kwfilter(kwargs, 'savefig')
     kwsfs = kwfilter(kwargs, 'savefigs')
     kwargs.pop('nrow', None)
 
     # Default colormap list
-    from vacumm.misc import kwfilter
     if cmaps is None:
         cmaps = cmaps_mpl(names=False)
     elif isinstance(cmaps, str):
@@ -2460,7 +2457,7 @@ def cmap_gmt(name, register=True, **kwargs):
         if name.startswith('gmt_'): name = 'GMT_'+name[4:]
         mname = ('GMT_'+name) if not name.startswith('GMT_') else name
         if mname not in cmaps_gmt():
-            raise vacumm.VACUMMError('Invalid GMT colormap: %s. '%name +
+            raise VACUMMError('Invalid GMT colormap: %s. '%name +
                 'Please print available name with: print_cmaps_gmt()')
         return P.get_cmap(mname)
 
@@ -2470,7 +2467,7 @@ def cmap_gmt(name, register=True, **kwargs):
     name = os.path.basename(name[:-4])#.lower()
 
     if not os.path.exists(filePath):
-        raise vacumm.VACUMMError("Wrong GMT colormap file: "+filePath)
+        raise VACUMMError("Wrong GMT colormap file: "+filePath)
 
     f = open(filePath)
     lines = f.readlines()

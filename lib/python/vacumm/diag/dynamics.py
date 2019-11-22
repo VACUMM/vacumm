@@ -34,13 +34,13 @@
 #
 
 import numpy as N, cdms2, MV2
-from vacumm import VACUMMError
-from vacumm.data.cf import format_var, format_grid
-from vacumm.misc.phys.constants import GRAVITY as default_gravity
-from vacumm.misc.axes import isaxis
-from vacumm.misc.grid.regridding import shiftgrid
-from vacumm.misc.grid import set_grid, get_axis_slices, resol
-from vacumm.misc.filters import generic2d
+from ..__init__ import VACUMMError
+from ..data.cf import format_var, format_grid
+from ..misc.phys.constants import GRAVITY as default_gravity
+from ..misc.axes import isaxis
+from ..misc.grid.misc import set_grid, get_axis_slices, resol
+from ..misc.grid.regridding import shiftgrid
+from ..misc.filters import generic2d
 
 def barotropic_geostrophic_velocity(ssh, dxy=None, gravity=default_gravity, cyclic=False,
     format_axes=True, getu=True, getv=True, filter=None):

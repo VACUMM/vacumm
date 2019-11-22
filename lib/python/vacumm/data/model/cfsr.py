@@ -42,8 +42,8 @@ __date__ = '2013-12-06'
 __doc__ = 'CFSR atmospheric model output manipulation'
 
 
-from vacumm.data import register_dataset
-from vacumm.data.misc.dataset import AtmosDataset
+from ..__init__ import register_dataset
+from ..misc.dataset import AtmosDataset
 
 
 class CFSR(AtmosDataset):

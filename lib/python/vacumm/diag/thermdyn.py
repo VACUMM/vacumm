@@ -36,12 +36,12 @@
 from warnings import warn
 import numpy as N, cdms2, MV2
 from genutil.grower import grower
-from vacumm import VACUMMError
-from vacumm.data.cf import format_var, match_var
-from vacumm.misc.grid import get_zdim, get_axis_slices, get_grid, set_grid
-from vacumm.misc.axes import islat
-from vacumm.misc import N_choose, grow_depth, grow_lat
-from vacumm.misc.misc import grow_variables
+from ..__init__ import VACUMMError
+from ..misc.misc import N_choose, grow_depth, grow_lat
+from ..misc.grid.misc import get_zdim, get_axis_slices, get_grid, set_grid
+from ..misc.axes import islat
+from ..misc.misc import grow_variables
+from ..data.cf import format_var, match_var
 
 try:
     from seawater import pres as sw_pres, dens as sw_dens, dens0 as sw_dens0, \

@@ -3597,10 +3597,10 @@ def get_tri_mask(tri, dmask):
 
 ######################################################################
 ######################################################################
-from ...misc.atime import ch_units,compress
-from ...misc import cp_atts,get_atts,set_atts,intersect, numod,  check_case, kwfilter
+from ...misc.misc import cp_atts,get_atts,set_atts,intersect, numod,  check_case, kwfilter
 from ...misc.axes import (check_axes, islon, islat, islev, istime, create_lon,
     create_lat, isaxis, isdep)
+from ...misc.atime import ch_units,compress
 from ...misc.phys import units, constants
 from .basemap import get_map, cached_map, cache_map, get_proj
 from .masking import t2uvmasks

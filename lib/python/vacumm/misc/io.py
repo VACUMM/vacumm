@@ -4475,18 +4475,18 @@ netcdf4()
 ######################################################################
 ######################################################################
 
+from .phys.units import deg2m, m2deg
+from .axes import get_checker, istime, islon, islat, islevel
 from .atime import ch_units, round_date, are_same_units, now, has_time_pattern, \
     tsel2slice, is_time, time_selector, itv_union, add_margin, strptime, \
     datetime as adatetime, comptime,  filter_time_selector, reltime
-from .axes import get_checker, istime, islon, islat, islevel
 from .color import land, simple_colors, get_cmap
-from .grid import create_grid, get_xy, curv2rect, isgrid
+from .grid.misc import create_grid, get_xy, curv2rect, isgrid
 from .grid.masking import polygons, convex_hull, rsamp, polygon_mask, create_polygon, \
     clip_shape
 from .grid.regridding import griddata, xy2xy
 from .grid.basemap import get_proj
 from .misc import is_iterable,  broadcast, kwfilter, set_atts, create_selector, \
     squeeze_variable, checkdir, match_atts, get_atts, set_atts
-from .phys.units import deg2m, m2deg
 from .plot import map2, _colorbar_, savefigs as Savefigs, markers as Markers
 

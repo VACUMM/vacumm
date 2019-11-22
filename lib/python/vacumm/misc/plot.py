@@ -74,10 +74,9 @@ from .core_plot import (add_glow, add_shadow, add_agg_filter, hlitvs,
     add_right_label, add_left_label, add_top_label, add_bottom_label,
     add_lightshading, add_param_label, get_quiverkey_value)
 from .docstrings import docfill
-from .grid.misc import (meshgrid, meshbounds, var2d)
+from .grid.misc import (meshgrid, meshbounds, var2d, get_xy)
 from .grid import regridding
 from .grid.basemap import gshhs_reslist, gshhs_autores, cache_map, cached_map
-from .grid.misc import get_xy
 from .misc import is_iterable, broadcast, squarebox, zoombox
 from .phys.units import deg2m, m2deg
 from ..__init__ import VACUMMError
@@ -3799,7 +3798,6 @@ def minimap(gg, bbox= [.85, .85, .14, .14], zoom=1., xmargin=None, ymargin=None,
 
     :Return: A :class:`~vacumm.misc.core_plot.Map` object.
     """
-    from grid import get_xy
     from color import RGB
     data = gg if cdms2.isVariable(gg) else None
     x, y = get_xy(gg)

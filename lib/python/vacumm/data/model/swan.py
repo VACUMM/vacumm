@@ -36,8 +36,8 @@
 
 
 
-from vacumm.data import register_dataset
-from vacumm.data.misc.dataset import OceanSurfaceDataset
+from ..__init__ import register_dataset
+from ..misc.dataset import OceanSurfaceDataset
 
 
 class SWAN(OceanSurfaceDataset):

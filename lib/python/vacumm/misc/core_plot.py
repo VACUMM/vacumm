@@ -78,7 +78,7 @@ from .color import (get_cmap, RGB, land,
     CMAP_POSITIVE, CMAP_NEGATIVE, CMAP_SYMETRIC)
 from .docstrings import docfiller
 from .filters import generic2d
-from .grid import get_axis, meshbounds, meshgrid
+from .grid.misc import get_axis, meshbounds, meshgrid
 from .grid.masking import resol_mask
 from .grid.regridding import shift1d
 from .phys.units import deg2m, tometric, m2deg

@@ -36,8 +36,8 @@ It deals with bounds, areas, interpolations, regridding...
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 
-from misc import *
-import masking
-import regridding
-import basemap
+#from misc import *
+#import masking
+#import regridding
+#import basemap
 

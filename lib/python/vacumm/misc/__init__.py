@@ -37,17 +37,17 @@ instead of vacumm.misc.misc.*.
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-from misc import *
-import color
-import io
-import plot
-import axes
-import atime
-import stats
-import filters
-import phys
-import grid
-import math
+#from misc import *
+#import color
+#import io
+#import plot
+#import axes
+#import atime
+#import stats
+#import filters
+#import phys
+#import grid
+#import math
 
 import os as _os, locale as _locale
 _os.environ['LC_NUMERIC'] = 'en_US.UTF-8'
