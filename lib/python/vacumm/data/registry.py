@@ -37,10 +37,10 @@ Data tools
 #
 
 def _get_dataset_specs_():
-    from . import _specs
-    if not hasattr(_specs, 'DATASET_SPECS'):
-        _specs.DATASET_SPECS = {}
-    return _specs.DATASET_SPECS
+    from . import registry
+    if not hasattr(registry, 'DATASET_SPECS'):
+        registry.DATASET_SPECS = {}
+    return registry.DATASET_SPECS
 
 
 def DS(ncfile, clsname='generic', *args, **kwargs):
@@ -75,8 +75,8 @@ def DS(ncfile, clsname='generic', *args, **kwargs):
 
     """
     # Register builtin datasets
-    import vacumm.data.misc.dataset
-    import vacumm.data.model
+    from .misc import dataset
+    from . import model
 
     # Class name
     if clsname is None:

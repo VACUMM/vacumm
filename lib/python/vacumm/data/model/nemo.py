@@ -42,7 +42,7 @@ __date__ = '2012-11-14'
 __doc__ = 'NEMO model data manipulation'
 
 
-from ..__init__ import register_dataset
+from ..registry import register_dataset
 from ..misc.dataset import OceanDataset
 
 

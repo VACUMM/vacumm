@@ -44,12 +44,12 @@ try:
 except:
     pass
 
-import cfsr
-import globcurrent
-import hycom
-import mars3d
-import nemo
-import swan
-import mesonh
-import symphonie
-import ww3
+from . import cfsr
+from . import globcurrent
+from . import hycom
+from . import mars3d
+from . import nemo
+from . import swan
+from . import mesonh
+from . import symphonie
+from . import ww3

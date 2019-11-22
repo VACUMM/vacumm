@@ -42,7 +42,7 @@ __date__ = '2012-02-12'
 __doc__ = 'HYCOM model data manipulation'
 
 
-from ..__init__ import register_dataset
+from ..registry import register_dataset
 from ..misc.dataset import OceanDataset, AtmosSurfaceDataset
 
 

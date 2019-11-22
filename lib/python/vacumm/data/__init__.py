@@ -49,4 +49,3 @@ except:
 from ..__init__ import VACUMMError, vcwarn
 from . import satellite
 from .registry import DS, setup_dataset, register_dataset
-from .model import mars3d

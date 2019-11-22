@@ -44,7 +44,7 @@ __date__ = '2015-07-08'
 __doc__ = 'WW3 model data manipulation'
 
 
-from ..__init__ import register_dataset
+from ..registry import register_dataset
 from ..misc.dataset import WaveSurfaceDataset
 
 

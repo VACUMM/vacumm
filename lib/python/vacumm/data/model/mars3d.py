@@ -43,7 +43,7 @@ __doc__ = 'MARS3D model data manipulation'
 
 
 from ...misc.misc import dict_merge
-from ..__init__ import register_dataset
+from ..registry import register_dataset
 from ..misc.dataset import OceanDataset, AtmosSurfaceDataset
 #from vacumm.data.cf import specs_def_loc
 

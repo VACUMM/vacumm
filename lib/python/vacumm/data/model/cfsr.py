@@ -42,7 +42,7 @@ __date__ = '2013-12-06'
 __doc__ = 'CFSR atmospheric model output manipulation'
 
 
-from ..__init__ import register_dataset
+from ..registry import register_dataset
 from ..misc.dataset import AtmosDataset
 
 

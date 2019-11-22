@@ -36,7 +36,7 @@
 
 
 
-from ..__init__ import register_dataset
+from ..registry import register_dataset
 from ..misc.dataset import OceanSurfaceDataset
 
 
