@@ -6,6 +6,7 @@
 
     Tutorials: :ref:`user.tut.misc.variables.axes`
 """
+from __future__ import absolute_import
 # Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #
 # This software is a computer program whose purpose is to provide
@@ -38,6 +39,9 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from builtins import zip
+from builtins import range
+from past.builtins import basestring
 import re
 import numpy as N, cdms2, MV2
 cdms = cdms2
@@ -355,14 +359,14 @@ def create_axis(values, atype='-', **atts):
     if isinstance(values, tuple) and len(values) < 4:
         values = N.arange(*values, **{'dtype':'d'})
     if cdms2.isVariable(values):
-        for item in values.attributes.items():
+        for item in list(values.attributes.items()):
             atts.setdefault(*item)
         values = values.asma()
     if not isaxis(values):
         axis = cdms2.createAxis(values)
     else:
         axis = values
-    for att,val in atts.items():
+    for att,val in list(atts.items()):
         setattr(axis, att, val)
     axis.axis = atype.upper()
     check_axis(axis)
@@ -394,7 +398,7 @@ def create_time(values,units=None,**atts):
         >>> create_time([datetime(2000,1,1),'2000-2-1'],units='months since 2000')
         >>> create_time([cdtime.reltime(1,'months since 2000'),cdtime.comptime(2000,1)])
     """
-    from atime import are_good_units,comptime,strftime
+    from .atime import are_good_units,comptime,strftime
     for var in values, units:
         if hasattr(var, 'units'):
             units = var.units
@@ -425,7 +429,7 @@ def create_time(values,units=None,**atts):
         newvalues = values
 
     if units is None:
-        raise ValueError,'Unable to guess units. You must specify them.'
+        raise ValueError('Unable to guess units. You must specify them.')
 
     return create_axis(newvalues,'t',units=units,**atts)
 
@@ -443,7 +447,7 @@ def create_lon(values,**atts):
 
     """
     if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
-        from grid.misc import create_axes2d
+        from .grid.misc import create_axes2d
         atts.setdefault('long_name', 'Longitude')
         return create_axes2d(x=values, lonid=atts.pop('id', None), xatts=atts)
     return create_axis(values,'x',**atts)
@@ -462,7 +466,7 @@ def create_lat(values,**atts):
 
     """
     if isinstance(values, N.ndarray) and len(values.shape)==2 and not isaxis(values):
-        from grid.misc import create_axes2d
+        from .grid.misc import create_axes2d
         atts.setdefault('long_name', 'Latitude')
         return create_axes2d(y=values, latid=atts.pop('id', None), yatts=atts)
     return create_axis(values,'y',**atts)
@@ -625,7 +629,7 @@ def order_match(order1, order2, asscore=False, strict=False):
         assert False, 'Both orders must have the same length (%s, %s)'%(order1, order2)
     score = 1
     if strict is True: strict = "both"
-    for ic in xrange(len(order1)):
+    for ic in range(len(order1)):
         o1 = order1[ic]
         o2 = order2[ic]
         if '-' in o1+o2:
