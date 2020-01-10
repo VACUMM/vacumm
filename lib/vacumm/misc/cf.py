@@ -826,7 +826,7 @@ class _CFCatSpecs_(object):
         name: str, xarray.DataArray
         mode: "silent", "warning" or "error".
         **kwargs
-            Passed to :meth:`is_matching_any`
+            Passed to :meth:`is_obj_matching_any_specs`
 
         Return
         ------
@@ -834,7 +834,7 @@ class _CFCatSpecs_(object):
         """
         assert mode in ("silent", "warning", "error")
         if isinstance(name, xr.DataArray):
-            name = self.is_matching_any(name, **kwargs)
+            name = self.is_obj_matching_any_specs(name, **kwargs)
             if name is None:
                 if mode == 'warn':
                     vcwarn("Can't get specs matching dataarray attributes")
@@ -970,7 +970,7 @@ class _CFCatSpecs_(object):
                     break
         return dict([(k, specs[k]) for k in keys if k in specs])
 
-    def is_matching(self, obj, name, mode=None, ignorecase=True,
+    def is_obj_matching_specs(self, obj, name, mode=None, ignorecase=True,
                     staggering=False):
         """Check if an object is matching given cf item
 
@@ -987,12 +987,10 @@ class _CFCatSpecs_(object):
             locations provided by :attr:`sglocator.allowed_locations`.
             When a string is passed, it used as the list of allowed locations.
 
-        **kwargs
-            Passed to :meth:`is_matching`
 
         Examples
         --------
-        >>> cfs.is_matching(da, 'temp', staggering='uv')
+        >>> cfs.is_obj_matching_specs(da, 'temp', staggering='uv')
 
         Return
         ------
@@ -1019,7 +1017,7 @@ class _CFCatSpecs_(object):
                 return True
         return False
 
-    def is_matching_any(self, da, **kwargs):
+    def is_obj_matching_any_specs(self, da, **kwargs):
         """Check if a:class:`xarray.DataArray` is matching some specs
 
         Specs depend on the current category of specs: variables or coords
@@ -1030,7 +1028,7 @@ class _CFCatSpecs_(object):
             Search in `coords or `variables` depending on the current
             :attr:`category` attribute.
         **kwargs
-            Passed to :meth:`is_matching`
+            Passed to :meth:`is_obj_matching_specs`
 
 
         Return
@@ -1038,7 +1036,7 @@ class _CFCatSpecs_(object):
         None or matching cf name
         """
         for name in self.names:
-            if self.is_matching(da, name, **kwargs):
+            if self.is_obj_matching_specs(da, name, **kwargs):
                 return name
 
     def search(self, ds, name, **kwargs):
@@ -1067,7 +1065,7 @@ class _CFCatSpecs_(object):
         else:
             objs = ds.coords
         for da in objs.values():
-            if self.is_matching(da, name, **kwargs):
+            if self.is_obj_matching_specs(da, name, **kwargs):
                 return da
 
     def format_dataarray(self, da, name=None, force=True, format_coords=True,
@@ -1106,10 +1104,7 @@ class _CFCatSpecs_(object):
             force = 'all'
 
         # Always an xarray
-        if not isinstance(da, xr.DataArray):
-            da = xr.DataArray(da)
-        else:
-            da = da.copy()
+        da = xr.DataArray(da)
 
         # Attributes
         attrs = self.get_attrs(name or da, mode=mode, add_name=True,
@@ -1220,7 +1215,7 @@ class CFVarSpecs(_CFCatSpecs_):
             :class:`~xarray.DataArray` except if warn is set to ``2`` .
         """
         if isinstance(name, xr.DataArray):
-            name = self.is_matching_any(name)
+            name = self.is_obj_matching_any_specs(name)
             if int(warn) == 2 and name is None:
                 vcwarn("Can't get cmap for this dataarray. "
                        "Swithing to default.")
