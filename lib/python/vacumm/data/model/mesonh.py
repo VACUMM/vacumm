@@ -103,17 +103,5 @@ mesonh = MesoNH
 register_dataset(mesonh)
 
 
-if __name__ == '__main__' :
 
-    nb_cell = mesonh.mesonh().nb_cells()
-    print nb_cell[0:100]
-    from vacumm.data import DS
-    from vacumm.misc.plot import map2 as map
-    #map(sshmod[0, Ellipsis], res=None)
-    print "test utus"
-    f = DS('/temp/vgarnier/AMICO/WORKENV_METHODO/AROME/./AROME_IROISE_20110901-0000_20110910-0000.nc','mesonh')
-    xwind = f.get_u10m()
-    xxx
-    #f.get_depth()
-    xxxx
 

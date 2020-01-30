@@ -32,8 +32,10 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 
+from future import standard_library
+standard_library.install_aliases()
 from vcmq import *
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 from vacumm.misc.color import cmap_srs
 from matplotlib.transforms import offset_copy, blended_transform_factory
 import matplotlib.image as mpimg
@@ -77,8 +79,8 @@ def cfgget(option, section='DEFAULT', alt=None, reload=False):
     if reload: load_cfg(reload)
     if not cfg.has_option(section, option): return alt
     value = eval(cfg.get(section, option))
-    if isinstance(value, str):
-        value = value.decode('utf8')
+    # if isinstance(value, str):
+    #     value = value.decode('utf8')
     return value
 
 def set_mpl_defaults():
@@ -117,7 +119,7 @@ def add_title(texts, fig=None, addlegtime=1):
         texts = [[texts]]
     if addlegtime: # add legal time
         legtext = strftime("(heure légale) mise à jour du %m/%d/%Y %Hh%M",now())
-        legtext = legtext.decode('utf8')
+        # legtext = legtext.decode('utf8')
         legtext = ' '+legtext, title_legsize, None
         if addlegtime==1: # on last line
             last = texts[-1]

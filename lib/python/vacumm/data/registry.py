@@ -3,6 +3,7 @@
 Data tools
 
 """
+from __future__ import print_function
 # Copyright or © or Copr. Actimar/IFREMER (2010-2019)
 #
 # This software is a computer program whose purpose is to provide
@@ -150,6 +151,6 @@ def print_registered_datasets():
     """Print all registered datasets"""
     DATASET_SPECS = _get_dataset_specs_()
     for clsname, cls in DATASET_SPECS.items():
-        print clsname + ':'
-        print '  description: {}'.format(cls.description or '')
-        print '  class: ' + cls.__name__
+        print(clsname + ':')
+        print('  description: {}'.format(cls.description or ''))
+        print('  class: ' + cls.__name__)

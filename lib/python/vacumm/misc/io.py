@@ -66,7 +66,7 @@ __all__ = ['list_forecast_files', 'NcIterBestEstimate', 'NcIterBestEstimateError
     'ncget_grid', 'ncget_time','ncget_lon','ncget_lat','ncget_level', 'ncmatch_obj',
     'ncget_axis', 'netcdf3', 'netcdf4', 'ncread_axis', 'ncread_obj', 'ncget_fgrid',
     'grib_read_files', 'nccache_get_time', 'grib2nc', 'grib_get_names',
-    'Shapes', 'XYZ', 'XYZMerger', 'write_snx', 'ColoredFormatter', 'Logger', 'TermColors'
+    'Shapes', 'XYZ', 'XYZMerger', 'write_snx', 'ColoredFormatter', 'Logger', 'TermColors',
     'NcIterTimeSlice']
 __all__.sort()
 
@@ -350,7 +350,7 @@ def list_forecast_files(filepattern, time=None, check=True,
             # Guess left margin when possible
             gfiles = glob.glob(pat2glob(filepattern))
             gfiles.sort()
-            if gfiles<2:
+            if len(gfiles)<2:
                 lmargin = 1
             elif not glob.has_magic(filepattern):
                 date0 = date1 = None
@@ -1149,7 +1149,7 @@ class NcIterBestEstimate(object):
     def __iter__(self):
         return self
 
-    def next(self, verbose=False):
+    def __next__(self, verbose=False):
 
         # Last iteration
         if self.i == self.nfiles:
@@ -1244,6 +1244,8 @@ class NcIterBestEstimate(object):
         self.tslices.append(tslice)
         f._vacumm_nibe_tslices[self.id] = tslice
         return f, tslice
+
+    next = __next__
 
     def empty(self):
         """Nothing to read from this file"""
@@ -4235,7 +4237,7 @@ def write_snx(objects, snxfile, type='auto', mode='w', z=99, xfmt='%g', yfmt='%g
 
         # Write
         # - splited file
-        if isinstance(snxfile, (str, str)) and '%' in snxfile:
+        if isinstance(snxfile, str) and '%' in snxfile:
             f = open(snxfile%i, mode)
         # - header
         if type.startswith('point'): # Points
@@ -4250,7 +4252,7 @@ def write_snx(objects, snxfile, type='auto', mode='w', z=99, xfmt='%g', yfmt='%g
             else:
                 zz = o[2]
             f.write(('%s %s %s'%(xfmt, yfmt, zfmt)+' A\n')%(o[0], o[1], zz))
-        if isinstance(snxfile, (str, str)) and '%' in snxfile:
+        if isinstance(snxfile, str) and '%' in snxfile:
             f.close()
     if not f.closed and close:
         f.close()

@@ -56,6 +56,11 @@
 # ==============================================================================
 
 
+from builtins import zip
+from builtins import str
+from builtins import range
+from past.builtins import basestring
+from builtins import object
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
 __date__ = '2011-01-17'
@@ -223,7 +228,9 @@ def getvar_decmets(cls):
         if hasattr(cls, metname): continue
 
         # Declare the method
-        exec getvar_decmet_tpl%locals()
+        def get_var(self, **kwargs):
+            return _get_var_(self, name, **kwargs)
+        # exec(getvar_decmet_tpl%locals())
 
         # Change its name
         get_var.__name__ = metname
@@ -541,7 +548,7 @@ class Dataset(Object):
         self.ncobj_specs = ncobj_specs # set it
 
         # Loop on variables to format their specs
-        for name, specs in ncobj_specs.items():
+        for name, specs in list(ncobj_specs.items()):
             self._format_single_ncobj_specs_(specs, name)
 
     @classmethod
@@ -607,7 +614,7 @@ class Dataset(Object):
             else:
                 search['standard_name'] = [search['standard_name']]
         # - removes everything else
-        for key in search.keys():
+        for key in list(search.keys()):
             if key not in ['id', 'standard_name']:
                 del search[key]
 
@@ -763,7 +770,7 @@ class Dataset(Object):
             if atts is None:
                 atts = specs.get('atts', None)
                 if atts and attsingle:
-                    for att, val in atts.iteritems():
+                    for att, val in list(atts.items()):
                         if isinstance(val, list):
                             atts[att] = val[0]
 
@@ -909,10 +916,10 @@ class Dataset(Object):
             for only in onlies:
                 only = str(only).lower()
                 _geonames = {'x':'lon', 'y':'lat', 'z':'level', 't':'time'}
-                allowed = _geonames.keys()+_geonames.values()
+                allowed = list(_geonames.keys())+list(_geonames.values())
                 if not only in allowed:
                     raise TypeError('Wrong selector type for "only". Please choose on of: '%', '.join(allowed))
-                if only in  _geonames.keys():
+                if only in  list(_geonames.keys()):
                     only = _geonames[only]
 
                 # Get and merge
@@ -929,7 +936,7 @@ class Dataset(Object):
         if merge:
             myselect.refine(self.selector)
         kw = dict(lon=lon, lat=lat, level=level, time=time)
-        for key, val in kw.items():
+        for key, val in list(kw.items()):
             if val is None: del kw[key]
         if kw:
             myselect.refine(**kw)
@@ -1022,7 +1029,7 @@ class Dataset(Object):
             axis = format_axis(axis, genname)
         atts = _notuplist_(atts)
         if atts:
-            for key, val in atts.items():
+            for key, val in list(atts.items()):
                 setattr(axis, key, val)
 
         # Select
@@ -1244,7 +1251,7 @@ class Dataset(Object):
             if var is None:
                 if warn: self.warning('No data found for variable: %s, local select: %s', varname, selstring)
                 return
-        except VACUMMError, e:
+        except VACUMMError as e:
             if warn: self.warning('Error reading variable: %s. Message: %s',
                 varname,  e.message)
             return
@@ -1464,7 +1471,7 @@ class Dataset(Object):
         if dataset is None: dataset = self.dataset[0]
         self.debug('Using reference dataset: %s', dataset.id)
 
-        for grid in dataset.grids.values():
+        for grid in list(dataset.grids.values()):
 
             valid = True
             for name, axis in [(longenname, grid.getLongitude()),
@@ -1924,7 +1931,7 @@ class Dataset(Object):
                 title = "\n".join((title,"%s / %s period" %(ct0,ct1)))
             else:
                 title = "\n".join((title,ct0))
-        except Exception, e:
+        except Exception as e:
             self.warning("Can't get time information. Error: \n"+e.message)
         var = squeeze_variable(var)
 
@@ -2028,7 +2035,7 @@ class Dataset(Object):
                 ct1 = strftime('%Y-%m-%d',time[-1])
                 ctime = "%s / %s period" %(ct0,ct1)
             else: ctime = ct0
-        except Exception, e:
+        except Exception as e:
             self.warning("Can't get time information. Error: \n"+e.message)
 
         # Interpolate
@@ -2631,7 +2638,7 @@ class OceanDataset(OceanSurfaceDataset):
                     try:
                         d = sigma_converter(sel, at=atz, copyaxes=True, mode='sigma',
                             zerolid=zerolid)
-                    except Exception, e:
+                    except Exception as e:
                         if warn:
                             self.warning("Can't get depth from sigma. Error: \n"+e.message)
                         break
@@ -3254,10 +3261,10 @@ class OceanDataset(OceanSurfaceDataset):
             tmp, data = [], []
             time = depth.getTime()
             ctime = time.asComponentTime()
-            for it in xrange(len(time)):
+            for it in range(len(time)):
                 self.verbose('Processing time: %s', ctime[it])
                 tmp.append(compute_strat(temp[it], sal[it], lat, depth[it]))
-            for i in xrange(len(tmp[0])):
+            for i in range(len(tmp[0])):
                 d = [d[i] for d in tmp]
                 data.append(MV2.concatenate([d]))
             dens, densmin, densmax, densmean, ddepth = data
@@ -3634,7 +3641,7 @@ class OceanDataset(OceanSurfaceDataset):
             ct0 = strftime('%Y-%m-%d',time[0])
             ct1 = strftime('%Y-%m-%d',time[-1])
             ctime = "%s / %s period" %(ct0,ct1)
-        except Exception, e:
+        except Exception as e:
             self.warning("Can't get time information. Error: \n"+e.message)
 
         plotkw.setdefault('title', '%s Hovmoller of %s\ntime: %s\n%s'%(hovtype, var.id, ' / '.join((ct0,ct1)), lonlat))
@@ -4012,7 +4019,7 @@ class AtmosDataset(AtmosSurfaceDataset):
                     try:
                         d = sigma_converter(sel, at=atz, copyaxes=True, mode='sigma',
                             zerolid=zerolid)
-                    except Exception, e:
+                    except Exception as e:
                         if warn:
                             self.warning("Can't get altitude from sigma. Error: \n"+e.message)
                         break
@@ -4148,7 +4155,7 @@ def _notuplist_(dd):
     """Convert lists and tuples to single elements in dict (after copy)"""
     if dd is None: return
     dd = dd.copy()
-    for key, val in dd.items():
+    for key, val in list(dd.items()):
         if isinstance(val, (list, tuple)):
             dd[key] = val[0]
     return dd
@@ -4224,7 +4231,7 @@ class CurvedSelector(object):
         if n==0: return []
         lons = broadcast(lons, n, fillvalue=None)
         lats = broadcast(lats, n, fillvalue=None)
-        return zip(lons, lats)
+        return list(zip(lons, lats))
 
     @staticmethod
     def remove_geosels(select):

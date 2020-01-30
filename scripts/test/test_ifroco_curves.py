@@ -50,7 +50,7 @@ ptdata = grid2xy(data, lons, lats)
 datas = []
 for i in range(ptdata.shape[1]):
     datas.append(ptdata[:, i])
-    datas[i].long_name = points[i][2].decode('utf8')
+    datas[i].long_name = points[i][2]#.decode('utf8')
 
 # Plot
 logofile = os.path.join(os.path.dirname(code_file_name()), logofile)

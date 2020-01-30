@@ -50,7 +50,9 @@
 
 #class Satellite(Object):
 # --------------------------------------------
-class Satellite():
+from __future__ import print_function
+from builtins import object
+class Satellite(object):
     """ Donnees Satellite """
     def __init__(self):
-        print ''
+        print('')

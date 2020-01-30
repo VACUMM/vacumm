@@ -31,6 +31,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from __future__ import print_function
 import numpy as N, MV2
 from vacumm.data.cf import format_var
 
@@ -137,6 +138,6 @@ if __name__=='__main__':
     v = 2*u
     us, vs = wind_stress(u, v)
     U, V = ws2w(us, vs)
-    print u, v
-    print U, V
+    print(u, v)
+    print(U, V)
 

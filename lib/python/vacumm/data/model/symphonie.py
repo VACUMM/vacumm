@@ -97,19 +97,3 @@ symp = Symphonie
 
 # Register the class
 register_dataset(symp)
-
-if __name__ == '__main__' :
-    from vacumm.data import setup_dataset
-    from vacumm.misc.plot import map2 as map
-    #f = setup_dataset('symphonie', dataset='/home2/creizic/pgarreau/SIMED/SYMPHONIE/LION/GV_MFSTEP-SYS4_20040702_ASLV.nc')
-    #sshmod = f.get_ssh()
-    #map(sshmod[0, Ellipsis], res=None)
-#    f = DS('symphonie', dataset='/home2/creizic/pgarreau/SIMED/SYMPHONIE/SST/20100501_000118.nc')
-    print "test temperature"
-    f = setup_dataset('symp', '/home2/creizic/pgarreau/SIMED/SYMPHONIE/SST/20100501_000118.nc')
-#    f = setup_dataset('symphonie', '/home2/creizic/pgarreau/SIMED/SYMPHONIE/SST/20100501_000118.nc')
-    temp = f.get_temp()
-    xxx
-    #f.get_depth()
-    xxxx
-

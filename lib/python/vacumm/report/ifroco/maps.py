@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 """Plotting maps"""
+from __future__ import absolute_import
 # Copyright or © or Copr. Actimar/IFREMER (2013-2015)
 #
 # This software is a computer program whose purpose is to provide
@@ -32,7 +33,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 
-from common import *
+from .common import *
 
 
 def nested_axes(rect1=None, margins=None, fig=None):

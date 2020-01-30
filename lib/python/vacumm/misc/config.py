@@ -35,6 +35,12 @@
 
 from __future__ import absolute_import
 from __future__ import print_function
+from builtins import str
+from builtins import filter
+from builtins import map
+from builtins import range
+from past.builtins import basestring
+from builtins import object
 from future.utils import raise_
 if __name__ == '__main__':
     import sys; del sys.path[0]
@@ -108,7 +114,7 @@ def _valwrap_(validator):
         # Remove extraneous arguments the validator can't handle
         argspec = inspect.getargspec(validator)
         kwargs = kwargs.copy()
-        for k in kwargs.keys():
+        for k in list(kwargs.keys()):
             if k not in argspec.args:
                 kwargs.pop(k)
         return validator(value, *args, **kwargs)
@@ -168,7 +174,7 @@ def _valwraplist_(validator):
                 warn('Cannot check shape, numpy package is missing')
             else:
                 try:
-                    shape, vshape = map(int, shape), numpy.shape(value)
+                    shape, vshape = list(map(int, shape)), numpy.shape(value)
                     if vshape != shape:
                         raise VdtSizeError('Incorrect shape: %s, %s shape expected'%(vshape, shape))
                 except Exception as e:
@@ -178,7 +184,7 @@ def _valwraplist_(validator):
         istuple = isinstance(value, tuple)
 
         # Validate each values
-        value = map(lambda v: validator(v, *args[1:], **kwargs), value)
+        value = [validator(v, *args[1:], **kwargs) for v in value]
         return tuple(value) if istuple else value
 
     list_validator_wrapper.__name__ += '-'+validator.__name__
@@ -192,7 +198,7 @@ def validator_bbox(value, default=None):
     # two possible delimiters: whitespaces and ','
     for v in value.split(): c.extend(v.split(','))
     if len(c) != 4: raise VdtTypeError(value)
-    return map(float, c)
+    return list(map(float, c))
 
 
 def validator_numerics(value, default=None, min=None, max=None, type='float', n=None):
@@ -525,14 +531,14 @@ def _update_registry_():
     # List of names
     while VALIDATOR_TYPES:
         del VALIDATOR_TYPES[0]
-    VALIDATOR_TYPES.extend(VALIDATOR_SPECS.keys())
+    VALIDATOR_TYPES.extend(list(VALIDATOR_SPECS.keys()))
     VALIDATOR_TYPES.sort()
 
     # Dict of functions
-    for key in VALIDATOR_FUNCTIONS.keys():
+    for key in list(VALIDATOR_FUNCTIONS.keys()):
         del VALIDATOR_FUNCTIONS[key]
     VALIDATOR_FUNCTIONS.update(dict((k, v['func'])
-        for k,v in VALIDATOR_SPECS.items() if 'func' in v))
+        for k,v in list(VALIDATOR_SPECS.items()) if 'func' in v))
 
 _update_registry_()
 
@@ -805,7 +811,7 @@ class ConfigManager(object):
                             continue
 
                         # Loop on keys
-                        keys = secd.keys() if key is None else [key]
+                        keys = list(secd.keys()) if key is None else [key]
                         for k in keys:
 
                             vdef = secd.get(k, None)
@@ -1146,7 +1152,7 @@ class ConfigManager(object):
             wrapper_option_type_checker.__name__ += '-'+func.__name__
             return wrapper_option_type_checker
         # Setup type checkers  into the new Option class
-        for name,func in self._validator.functions.items():
+        for name,func in list(self._validator.functions.items()):
             if name in option_class.TYPE_CHECKER:
                 pass # warn('Overriding Option type checker %s'%(name))
             islist = VALIDATOR_SPECS.get(name, {}).get('iterable', None)
@@ -1595,7 +1601,7 @@ def get_validator(functions=None):
         validator.functions.update(functions)
 
     # Wrap default functions to handle none and extra args
-    for k, v in validator.functions.items():
+    for k, v in list(validator.functions.items()):
         validator.functions[k] = _valwrap_(v)
 
     # This modules's validator functions are already wrapped
@@ -1622,7 +1628,7 @@ def _walker_unchanged_options_(sec, key):
 def remove_defaults(cfg):
     defaults = cfg.walk(_walker_unchanged_options_, call_on_sections=False)
     def remove(c, d):
-        for k,v in d.items():
+        for k,v in list(d.items()):
             if isinstance(v, dict):
                 remove(c[k], v)
             elif v:
@@ -1634,7 +1640,7 @@ def _walker_optcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
     # Find genealogy
     parents = _parent_list_(sec, names=False)
     cfgkey = '_'.join([p.name.strip('_') for p in parents]+[key])
-    for option, value in options.__dict__.items():
+    for option, value in list(options.__dict__.items()):
 
         # Option not set
         if value is None: continue
@@ -1762,8 +1768,8 @@ def _shelp_(sec, key, format='%(shelp)s [default: %(default)r]', mode='auto',
     # filter
     def strip(c):
         return c.strip().strip('#').strip()
-    abcoms = map(strip, filter(lambda c: c is not None, sec.comments[key]))
-    incoms = map(strip, filter(lambda c: c is not None, [sec.inline_comments[key]]))
+    abcoms = list(map(strip, [c for c in sec.comments[key] if c is not None]))
+    incoms = list(map(strip, [c for c in [sec.inline_comments[key]] if c is not None]))
 
 
     # Merge comments above item and its inline comment
@@ -1844,7 +1850,7 @@ def get_secnames(cfg):
     """Get section names as list from top to bottom ['sec0','sec1',...]"""
     if cfg.depth==0: return []
     secnames = [cfg.name]
-    for i in xrange(cfg.depth-1):
+    for i in range(cfg.depth-1):
         cfg = cfg.parent
         secnames.append(cfg.name)
     return secnames[::-1]
@@ -2022,7 +2028,7 @@ def _walker_cfg2rst_(cfg, key, lines, optrole='cfgopt', secrole='cfgsec',
             if spec['kwargs']:
                 specs.update(spec['kwargs'])
     if specs: # join lists
-        for k, v in specs.items():
+        for k, v in list(specs.items()):
             if isinstance(v, list):
                 specs[k] = ', '.join(map(str, v))
 
@@ -2036,7 +2042,7 @@ def _walker_cfg2rst_(cfg, key, lines, optrole='cfgopt', secrole='cfgsec',
     # - description with specs
     if specs:
         sdesc = ''
-        for key, val in specs.items():
+        for key, val in list(specs.items()):
             if val=='':
                 val = ' '
             sdesc = sdesc + desc_fmt_desc_item.format(**locals())
@@ -2091,7 +2097,7 @@ def print_short_help(parser, formatter=None, compressed=False):
                 for optstr in opt.option_strings:
                     if optstr in compressed:
                         return True
-            actions = filter(valid_option, parser._actions)
+            actions = list(filter(valid_option, parser._actions))
             actions.append(fake_action)
         else:
             actions = parser._actions

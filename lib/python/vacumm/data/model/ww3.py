@@ -85,15 +85,3 @@ ww3 = WW3
 
 # Register the class
 register_dataset(ww3)
-
-if __name__ == '__main__' :
-    from vacumm.data import DS
-    from vacumm.misc.plot import map2 as map
-    #map(sshmod[0, Ellipsis], res=None)
-    print "test utus"
-    f = DS('/home1/caparmor/vgarnier/ww3.190012.nc','ww3')
-    stokes = f.get_utus()
-    xxx
-    #f.get_depth()
-    xxxx
-

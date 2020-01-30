@@ -33,6 +33,9 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from builtins import str
+from past.builtins import basestring
+from builtins import object
 import os
 from warnings import warn
 from collections import OrderedDict
@@ -93,7 +96,7 @@ class BaseSpecs(object):
 
     def __init__(self, inherit=None, names=None):
         self._dict = OrderedDict(CF_CFG[self.category])
-        for name, spec in self._dict.items():
+        for name, spec in list(self._dict.items()):
             self._dict[name] = self._dict[name].dict()
         self._names = names
         self._inherit = inherit
@@ -103,7 +106,7 @@ class BaseSpecs(object):
     @classmethod
     def get_alias_list(cls):
         al = []
-        for aa in cls.aliases.values():
+        for aa in list(cls.aliases.values()):
             al.extend(aa)
         return al
 
@@ -119,11 +122,11 @@ class BaseSpecs(object):
         return str(self._dict)
     @property
     def names(self):
-        return self._dict.keys()
+        return list(self._dict.keys())
     def items(self):
-        return self._dict.items()
+        return list(self._dict.items())
     def keys(self):
-        return self._dict.keys()
+        return list(self._dict.keys())
 
     def register(self, name, **specs):
         """Register a new elements from its name and specs"""
@@ -133,7 +136,7 @@ class BaseSpecs(object):
     def register_from_cfg(self, cfg):
         """"Register new elements from a :class:`ConfigObj` instance
         or a config file"""
-        if isinstance(cfg, dict) and self.category not in cfg.keys():
+        if isinstance(cfg, dict) and self.category not in list(cfg.keys()):
             cfg = {self.category:cfg}
         local_cfg = CF_CFGM.load(cfg)[self.category]
         self._dict = dict_merge(self._dict, local_cfg,
@@ -220,7 +223,7 @@ class BaseSpecs(object):
 
                     # Validate
 #                    if from_specs is not self:
-                    for key in specs.keys():
+                    for key in list(specs.keys()):
                         if key not in self._cfgspec:
                             del specs[key]
 
@@ -242,8 +245,8 @@ class BaseSpecs(object):
 
 
     def _add_aliases_(self):
-        for name, specs in self._dict.items():
-            for key, aliases in self.aliases.items():
+        for name, specs in list(self._dict.items()):
+            for key, aliases in list(self.aliases.items()):
                 if key in specs:
                     for alias in aliases:
                         specs[alias] = specs[key]
@@ -308,7 +311,7 @@ def get_loc(var, stype=None, mode='loc', default=None):
         - else, the complete matching string, like "_at_u_location".
     """
     # What to test
-    if stype is None: stype = _reloc.keys() # all by default
+    if stype is None: stype = list(_reloc.keys()) # all by default
     stypes = stype if isinstance(stype, list) else [stype]
 
     # CDAT object (not a string)
@@ -462,7 +465,7 @@ def change_loc_specs(loc, id=None, standard_name=None, long_name=None, axes=None
     # Axes
     if axes is not None:
         axes = axes.copy()
-        for l in axes.keys(): # loop on x, y
+        for l in list(axes.keys()): # loop on x, y
             if l=='t': continue # skip time
             laxes = axes[l]
             single = not isinstance(laxes, list)
@@ -844,7 +847,7 @@ def cf2search(name, mode='isa', raiseerr=True, **kwargs):
         specs = CF_AXIS_SPECS[name]
     else:
         if raiseerr:
-            raise VACUMMError("Wrong generic name. It should be one of: "+' '.join(CF_AXIS_SPECS.keys()+CF_VAR_SPECS.keys()))
+            raise VACUMMError("Wrong generic name. It should be one of: "+' '.join(list(CF_AXIS_SPECS.keys())+list(CF_VAR_SPECS.keys())))
         else:
             return
 
@@ -874,14 +877,14 @@ def cf2atts(name, select=None, exclude=None, ordered=True, **extra):
     elif name in CF_AXIS_SPECS:
         specs = CF_AXIS_SPECS[name]
     else:
-        raise VACUMMError("Wrong generic name: %s. It should be one of: "%name+' '.join(CF_AXIS_SPECS.keys()+CF_VAR_SPECS.keys()))
+        raise VACUMMError("Wrong generic name: %s. It should be one of: "%name+' '.join(list(CF_AXIS_SPECS.keys())+list(CF_VAR_SPECS.keys())))
 
     # Which attributes
     atts = OrderedDict() if ordered else {}
     if exclude is None: exclude = []
     elif isinstance(exclude, basestring): exclude = [exclude]
     exclude.extend(_attnames_exclude)
-    for key in _attnames_firsts+specs.keys():
+    for key in _attnames_firsts+list(specs.keys()):
 
         # Skip aliases
         if key in BaseSpecs.get_alias_list():
@@ -903,7 +906,7 @@ def cf2atts(name, select=None, exclude=None, ordered=True, **extra):
         atts[key] = value
 
     # Extra
-    for att, val in extra.items():
+    for att, val in list(extra.items()):
         atts[att] = val
 
     return atts
@@ -941,7 +944,7 @@ def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=T
     # Filter keywords for axis formating
     axismeths = {'t':'getTime', 'y':'getLatitude', 'x':'getLongitude'}
     kwaxes = {}
-    for k in axismeths.keys():
+    for k in list(axismeths.keys()):
         kwaxes[k] = kwfilter(kwargs, k+'_')
 
     # Always a MV2 array
@@ -969,7 +972,7 @@ def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=T
             return var
         else:
             raise KeyError("Generic var name not found '%s'. Please choose one of: %s"%(
-                name, ', '.join(CF_VAR_SPECS.keys()+CF_AXIS_SPECS.keys())))
+                name, ', '.join(list(CF_VAR_SPECS.keys())+list(CF_AXIS_SPECS.keys()))))
     isaxis = name in CF_AXIS_SPECS
     if isaxis:
         specs = CF_AXIS_SPECS[name].copy()
@@ -978,7 +981,7 @@ def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=T
     else:
         specs = CF_VAR_SPECS[name].copy()
     # - merge kwargs and specs
-    for key, val in kwargs.items():
+    for key, val in list(kwargs.items()):
         if val is None or key not in specs: continue
         # Check type
         if not isinstance(val, list) and isinstance(specs[key], list):
@@ -1001,7 +1004,7 @@ def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=T
     # - attributes
     forceatts = (force is True or force in ['atts', 'all'] or
         (isinstance(force, int) and force>0))
-    for att, val in cf2atts(specs, **kwargs).items():
+    for att, val in list(cf2atts(specs, **kwargs).items()):
         if forceatts or not getattr(var, att, ''):
             setattr(var, att, val)
     # - physical location
@@ -1030,7 +1033,7 @@ def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=T
         if 'axes' in specs:
             axspecs = specs['axes']
             formatted = []
-            for key, meth in axismeths.items():
+            for key, meth in list(axismeths.items()):
                 axis = getattr(var, meth)()
                 if order is not None: order.replace(key, '-')
                 if axis is not None:
@@ -1039,7 +1042,7 @@ def format_var(var, name=None, force=True, format_axes=True, order=None, nodef=T
 
             # Check remaining simple axes (DOES NOT WORK FOR 2D AXES)
             if order is not None and order!='-'*len(order):
-                for key in axismeths.keys():
+                for key in list(axismeths.keys()):
                     if key in order and key not in formatted:
                         axis = var.getAxis(order.index(key))
                         format_axis(axis, axspecs[key], **kwaxes[key])
@@ -1103,10 +1106,10 @@ def format_axis(axis, name=None, force=True, recreate=False, format_subaxes=True
             return axis
         else:
             raise KeyError("Generic axis name not found '%s'. Please choose one of: %s"%(
-                name, ', '.join(CF_AXIS_SPECS.keys())))
+                name, ', '.join(list(CF_AXIS_SPECS.keys()))))
     specs = CF_AXIS_SPECS[name]
     # - merge kwargs and specs
-    for key, val in kwargs.items():
+    for key, val in list(kwargs.items()):
         if val is None or key not in specs: continue
         # Check type
         if not isinstance(val, list) and isinstance(specs[key], list):
@@ -1130,7 +1133,7 @@ def format_axis(axis, name=None, force=True, recreate=False, format_subaxes=True
 
     # Apply specs
     # - merge kwargs and specs
-    for key, val in kwargs.items():
+    for key, val in list(kwargs.items()):
         if val is None or key not in specs: continue
         # Check type
         if not isinstance(val, list) and isinstance(specs[key], list):
@@ -1149,7 +1152,7 @@ def format_axis(axis, name=None, force=True, recreate=False, format_subaxes=True
     if force or axis.id.startswith('variable_') or axis.id.startswith('axis_'):
         axis.id = specs['id'][0]
     # - attributes
-    for att, val in cf2atts(specs, exclude=['axis'] if axis2d else None, **kwargs).items():
+    for att, val in list(cf2atts(specs, exclude=['axis'] if axis2d else None, **kwargs).items()):
         if force or not getattr(axis, att, ''):
             setattr(axis, att, val)
     # - store cf name

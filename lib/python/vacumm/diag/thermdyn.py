@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 """Diagnostics about thermodynamics"""
+from __future__ import print_function
 # Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #
 # This software is a computer program whose purpose is to provide
@@ -377,7 +378,7 @@ if __name__=='__main__':
 , -50.4651565552, -27.9384918213, -12.9207115173, -5.41182279587, -1.65737783909])
 
     varref = var[-1]-0.2
-    print varref, var[-1]
+    print(varref, var[-1])
 
     var = N.ma.array([13.1157875061, 13.1157875061, 13.1157875061, 13.1157875061, 13.1157875061
 , 13.1168556213, 13.1168556213, 13.1168556213, 13.1168556213, 13.1179237366
@@ -392,7 +393,7 @@ if __name__=='__main__':
 , -301.365203857, -221.854782104, -159.571640015, -113.190582275, -80.0612487793
 , -53.5577850342, -29.7046699524, -13.8025913239, -5.85155200958, -1.87603235245])
     varref = var[-1]-0.2
-    print varref, var[-1]
+    print(varref, var[-1])
 
     depref = _val2z_(var, depth, varref, 0, 1)
 
@@ -400,4 +401,4 @@ if __name__=='__main__':
 #    print 'varref', varref[0]
 #    print 'dep',depth[:,0]
 #    print 'res',depref[0]
-    print depref
+    print(depref)

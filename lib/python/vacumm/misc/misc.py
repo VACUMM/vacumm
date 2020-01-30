@@ -501,9 +501,9 @@ def match_string(ss, checks, ignorecase=True, transform=None):
             sss.append(check)
 
     # Strings
-    sss = list(map(string.strip, sss))
+    sss = [s.strip() for s in sss]
     if ignorecase:
-        sss = list(map(string.lower, sss))
+        sss = [s.lower() for s in sss]
     return ss in sss
 
 def match_atts(obj, checks, id=True, ignorecase=True, transform=None):
@@ -2271,7 +2271,7 @@ class CaseChecker(object):
             valid_cases = [valid_cases]
         else:
             valid_cases = list(valid_cases)
-        valid_cases = list(map(string.lower,valid_cases))
+        valid_cases = [v.lower() for v in valid_cases]
         self.ic = ic
         self.includes = []
         self.excludes = []

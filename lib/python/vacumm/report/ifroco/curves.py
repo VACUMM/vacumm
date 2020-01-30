@@ -32,6 +32,7 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 
+from builtins import range
 from .common import *
 from ...misc.core_plot import hlitvs
 
@@ -86,7 +87,7 @@ def plot_curves(data,
         data = [data]
     lsc = []
     lines = cfgget('lines', 'curves')
-    for i in xrange(len(data)):
+    for i in range(len(data)):
         if not isinstance(data[i], tuple):
             for sc in lines:
                 if sc not in lsc:
