@@ -36,7 +36,11 @@
 
 # ==================================================================================================
 
-import os, re, StringIO, sys
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+import os, re, io, sys
 
 # ==================================================================================================
 
@@ -137,7 +141,7 @@ class Namelist(dict):
         dict.__init__(self)
 
     def __str__(self):
-        return '\n\n'.join('%s:\n%s'%(namelist, '\n'.join(('  %s = %s (%s)'%(k,v,v.__class__.__name__) for k,v in variables.iteritems()))) for namelist, variables in self.iteritems())
+        return '\n\n'.join('%s:\n%s'%(namelist, '\n'.join(('  %s = %s (%s)'%(k,v,v.__class__.__name__) for k,v in variables.items()))) for namelist, variables in self.items())
 
     def __setitem__(self, key, value):
         if not isinstance(value, dict):
@@ -214,20 +218,20 @@ class Namelist(dict):
 
     def save_string(self):
         '''Return the (fortran) formated namelists'''
-        s = StringIO.StringIO()
-        for namelist,variables in self.iteritems():
+        s = io.StringIO()
+        for namelist,variables in self.items():
             s.write('&%s\n'%namelist)
-            for vn,vv in variables.iteritems():
+            for vn,vv in variables.items():
                 if isinstance(vv, dict):
-                    for i,vi in vv.iteritems():
-                        if isinstance(vi, (str,unicode)):
+                    for i,vi in vv.items():
+                        if isinstance(vi, str):
                             s.write('  %s(%s) = "%s"\n'%(vn,i,vi))
                         elif isinstance(vi, bool):
                             s.write('  %s(%s) = .%s.\n'%(vn,i,str(vi).lower()))
                         else:
                             s.write('  %s(%s) = %s\n'%(vn,i,vi))
                 else:
-                    if isinstance(vv, (str,unicode)):
+                    if isinstance(vv, str):
                         s.write('  %s = "%s"\n'%(vn,vv))
                     elif isinstance(vv, bool):
                         s.write('  %s = .%s.\n'%(vn,str(vv).lower()))
@@ -292,21 +296,21 @@ if __name__ == '__main__':
 '''
 
     if len(sys.argv) == 2 and sys.argv[1] in ('-t', '-test', '--test'):
-        print ' namelist in input '.center(80, '=')
-        print namelist
-        print
+        print(' namelist in input '.center(80, '='))
+        print(namelist)
+        print()
         nf = Namelist.from_string(namelist)
     elif len(sys.argv) == 2:
         nf = Namelist.from_file(sys.argv[1])
     else:
-        print 'usage: %(prog)s (namelistfile|--test)'%dict(prog=os.path.split(sys.argv[0])[1])
+        print('usage: %(prog)s (namelistfile|--test)'%dict(prog=os.path.split(sys.argv[0])[1]))
         sys.exit(1)
-    print ' namelist as a descriptive string (__str__ method) '.center(80, '=')
-    print nf
-    print
-    print ' namelist as formated string (save_string method) '.center(80, '=')
-    print nf.save_string()
-    print
+    print(' namelist as a descriptive string (__str__ method) '.center(80, '='))
+    print(nf)
+    print()
+    print(' namelist as formated string (save_string method) '.center(80, '='))
+    print(nf.save_string())
+    print()
 
 
 

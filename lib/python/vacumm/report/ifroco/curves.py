@@ -32,8 +32,8 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 
-from common import *
-from vacumm.misc.core_plot import hlitvs
+from .common import *
+from ...misc.core_plot import hlitvs
 
 class Day12hFormatter(DateFormatter):
     """Day formatter at 12h only"""

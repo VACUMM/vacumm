@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 "Unit conversions"
+from __future__ import absolute_import
 
 # Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #
@@ -34,8 +35,10 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from past.builtins import cmp
+from past.builtins import basestring
 import re
-from constants import *
+from .constants import *
 import numpy as N
 import MV2
 
@@ -273,7 +276,7 @@ def strfsize(size, fmt=None, si=None):
     """
     if fmt is None:
         fmt = '%.3f %s' if float(size) % 1 else '%d %s'
-    sortsizedict = lambda sd: reversed(sorted(sd.items(), lambda a, b: cmp(a[1],b[1])))
+    sortsizedict = lambda sd: reversed(sorted(list(sd.items()), lambda a, b: cmp(a[1],b[1])))
     if si is None: units,usfx = sortsizedict(sisizeunits),'o' # naive usage
     else: units,usfx = (sortsizedict(sisizeunits),'io') if si else (sortsizedict(sizeunits),'o')
     size = float(size)
@@ -282,7 +285,7 @@ def strfsize(size, fmt=None, si=None):
             return fmt%(size/thresh, unit) + usfx
     return fmt%(size) + usfx
 
-_strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?'%('|'.join(sizeunits.keys())), re.IGNORECASE)
+_strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?'%('|'.join(list(sizeunits.keys()))), re.IGNORECASE)
 
 def strpsize(size, si=True):
     """Parse a size in Ko, Mo, Kio, Mio, ...

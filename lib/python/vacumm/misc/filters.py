@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 """Various 1d and 2D filters"""
+from __future__ import absolute_import
 
 # Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #
@@ -33,6 +34,8 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from builtins import str
+from builtins import range
 __all__ = ['generic1d', 'shapiro1d', 'gaussian1d', 'hamming1d','generic2d', 'shapiro2d', 'gaussian2d', 'deriv', 'deriv2d',
     'norm_atan','running_average', 'bartlett1d', 'kaiser1d', 'hanning1d', 'blackman1d']
 __all__.sort()
@@ -45,10 +48,10 @@ cdms = cdms2
 import scipy.signal
 from scipy.signal import convolve2d
 
-from misc import cp_atts
-from phys.units import deg2m
+from .misc import cp_atts
+from .phys.units import deg2m
 from pylab import meshgrid
-from axes import islon,islat
+from .axes import islon,islat
 import warnings
 
 try:
@@ -346,7 +349,7 @@ def generic2d(data, weights, mask='same', copy=True):
 
     # Filter
     kwf = dict(mode='same', boundary='fill', fillvalue=0.)
-    for i in xrange(datan.shape[0]): # TODO: multiproc filter2d
+    for i in range(datan.shape[0]): # TODO: multiproc filter2d
         datan[i] = scipy.signal.convolve2d(datan[i], weights, **kwf)
         if data.mask is MV2.nomask:
             ww[i] = scipy.signal.convolve2d(one2d, weights, **kwf)
@@ -425,11 +428,11 @@ def generic2d_old(data,weights,fast=False,fill_value=None,min_valid=0):
         data_to_use = data
         mm = MV
 
-    for j in xrange(ny):
+    for j in range(ny):
         yyrange = N.clip([j-dyw,j+dyw],0,ny-1)
         jminw = min(yyrange)-j+dyw+1
         jmaxw = max(yyrange)-j+dyw+1
-        for i in xrange(nx):
+        for i in range(nx):
             xxrange = N.clip([i-dxw,i+dxw],0,nx-1)
             this_data = data_to_use[yyrange[0]:yyrange[1],xxrange[0]:xxrange[1]]
             if min_valid and MV.count(this_data) < min_valid:
@@ -696,7 +699,7 @@ def running_average(x, l, d = 0, w = None, keep_mask = True):
     ns = len(s)
 
     if d > (ns-1) or d < 0:
-        raise '[running_average] bad dimension', d
+        raise Exception('[running_average] bad dimension: %i'%d)
 
     n = s[d]
     #if w is None:
@@ -715,7 +718,7 @@ def running_average(x, l, d = 0, w = None, keep_mask = True):
     for i in range(n):
         imin = max(0,  i-l/2)
         imax = min(n-1,i+l/2)+1
-        exec 'out['+','.join(ii)+'] = AV.average(x['+','.join(io)+'], d)'
+        exec('out['+','.join(ii)+'] = AV.average(x['+','.join(io)+'], d)')
 
     if keep_mask:
         out = MV.masked_array(out,mask=MV.getmask(x))

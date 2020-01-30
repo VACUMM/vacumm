@@ -7,6 +7,9 @@ List of all available colormaps in matplotlib, including VACUMM colormaps
 .. image:: misc-color-cmaps.png
 
 """
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
 # Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
 # This software is a computer program whose purpose is to provide
@@ -39,6 +42,12 @@ List of all available colormaps in matplotlib, including VACUMM colormaps
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from past.builtins import cmp
+from builtins import zip
+from builtins import range
+from past.builtins import basestring
+from builtins import object
+from past.utils import old_div
 import re
 import os
 import glob
@@ -180,7 +189,7 @@ def rainbow(n=None, mode='auto', first=None, last=None, middle=None, stretcher=N
     if last is not None:
         colors[-1] = last
     if middle is not None and n%2:
-        colors[int(n/2)] = middle
+        colors[int(old_div(n,2))] = middle
 
     return colors
 
@@ -216,7 +225,7 @@ def cmap_rainbow(n=None, name='vacumm_rainbow', smoothed=True, mode='auto', **kw
 
     :Sample: .. image:: misc-color-vacumm_rainbow.png
     """
-    from misc import kwfilter
+    from .misc import kwfilter
     kwrb = kwfilter(kwargs, 'rainbow_')
     for att in 'first', 'last', 'middle', 'stretcher':
         kwrb[att] = kwargs.pop(att, None)
@@ -267,9 +276,9 @@ def cmap_magic(n=None, stretch = 0.4, mode='normal', white='.95', name='vacumm_m
     #print 'cmap_magic n in',n
     n, pos = _nlev_(n)
     kwargs.setdefault('smoothed', False)
-    from misc import broadcast
+    from .misc import broadcast
     for att in 'positive', 'negative', 'anomaly',  'symetric': # compat
-        if kwargs.has_key(att):
+        if att in kwargs:
             if kwargs[att]:
                 mode = att
             del kwargs[att]
@@ -286,7 +295,7 @@ def cmap_magic(n=None, stretch = 0.4, mode='normal', white='.95', name='vacumm_m
         kwargs['rstretch'] = broadcast(-stretch, n-1)+[0]
     elif mode.startswith('sym'):
         keepc = broadcast(None, n)
-        mid = int(n/2)
+        mid = int(old_div(n,2))
         if n%2: # odd
             kwargs['lstretch'] = [0]*mid+broadcast(-stretch, mid+1)
             kwargs['rstretch'] = kwargs['lstretch'][::-1]
@@ -317,7 +326,7 @@ def cmap_custom(colors, name='mycmap', ncol=256, ranged=False, register=True, **
     """
     ncol = kwargs.pop('N', ncol)
     if isinstance(colors, dict):
-        for cname, cvals in colors.items():
+        for cname, cvals in list(colors.items()):
             cvals = tuple(cvals)
             if cvals[0][0] != 0:
                 colors[cname] = ((0, cvals[0][1], cvals[0][2]), ) + cvals
@@ -510,22 +519,22 @@ def auto_cmap_topo(varminmax=(0., 1.), gzoom=1., xzoom=1., **kwargs):
     xzoom = N.clip(xzoom, 0., 1.)
     if abs(topomin) < topomax:
         # More land
-        alpha = -topomin/topomax
+        alpha = old_div(-topomin,topomax)
         if xzoom<alpha: xzoom=alpha
-        zero = xzoom/(1.+xzoom)
+        zero = old_div(xzoom,(1.+xzoom))
         start = zero*(1-alpha)
         stop = 1.
     else:
         # More ocean
-        alpha = -topomax/topomin
+        alpha = old_div(-topomax,topomin)
         if xzoom<alpha: xzoom=alpha
-        zero = 1/(1.+xzoom)
+        zero = old_div(1,(1.+xzoom))
         start = 0.
         stop = zero*(1+alpha)
     # Global zoom
     if gzoom<1: gzoom=1.
-    start = zero - (zero-start)/gzoom
-    stop = zero + (stop-zero)/gzoom
+    start = zero - old_div((zero-start),gzoom)
+    stop = zero + old_div((stop-zero),gzoom)
     kwargs.setdefault('register', False)
     return cmap_topo(start, stop, 'vacumm_auto_cmap_topo', zero=zero, **kwargs)
 
@@ -546,9 +555,9 @@ def cmap_ajete(w=.02, name='vacumm_ajete', **kwargs):
 
     :Sample: .. image:: misc-color-vacumm_ajete.png
     """
-    cdict =   {'red':((0.,.75,.75),(0.21,0,0),  (0.33,0,0),(.5-w/2,1,1),(.5+w/2,1,1),(0.67,1,1),        (.79,1,1),  (1,1,1)),
-               'green':((0.,0.,0.),(0.21,0,0),  (0.3,1,1),(.5-w/2,1,1),(.5+w/2,1,1),(0.71,1,1),     (.79,0,0),  (1,0,0)),
-               'blue':((0.,1.,1.),(0.21,1,1),   (0.33,1,1),(.5-w/2,1,1),(.5+w/2,1,1),(0.67,0,0),        (.79,0,0),  (1,.75,.75))}
+    cdict =   {'red':((0.,.75,.75),(0.21,0,0),  (0.33,0,0),(.5-old_div(w,2),1,1),(.5+old_div(w,2),1,1),(0.67,1,1),        (.79,1,1),  (1,1,1)),
+               'green':((0.,0.,0.),(0.21,0,0),  (0.3,1,1),(.5-old_div(w,2),1,1),(.5+old_div(w,2),1,1),(0.71,1,1),     (.79,0,0),  (1,0,0)),
+               'blue':((0.,1.,1.),(0.21,1,1),   (0.33,1,1),(.5-old_div(w,2),1,1),(.5+old_div(w,2),1,1),(0.67,0,0),        (.79,0,0),  (1,.75,.75))}
     return cmap_custom(cdict, name, **kwargs)
 
 def cmap_jet(smoothed=False, name='vacumm_jet', **kwargs):
@@ -639,7 +648,7 @@ def cmap_smoothed_steps(colors, stretch=None, rstretch=0, lstretch=0, name='vacu
                 lstretch, rstretch = stretch[:2]
             else:
                 lstretch = stretch[0]
-    from misc import broadcast
+    from .misc import broadcast
     ns = len(colors)
     lstretch = broadcast(lstretch, ns)
     rstretch = broadcast(rstretch, ns)
@@ -696,12 +705,12 @@ def cmap_srs(*args, **kwargs):
 def _regular_(colors, steptype='center', posmin=0., posmax=1.):
     rcolors = []
     dpos = posmax-posmin*1.
-    step = dpos/len(colors)
+    step = old_div(dpos,len(colors))
     if steptype == 'center':
         offset = .5
     else:
         if steptype == 'bounds':
-            step = dpos/(len(colors)-1)
+            step = old_div(dpos,(len(colors)-1))
         offset = 0
     for i,col in enumerate(colors):
         col = RGB(col)
@@ -734,7 +743,7 @@ def cmap_steps(cols, stretch=None, lstretch=0., rstretch=0., keepc=None, name='c
                 lstretch, rstretch = stretch[:2]
             else:
                 lstretch = stretch[0]
-    from misc import broadcast
+    from .misc import broadcast
     ns = len(cols)
     lstretch = broadcast(lstretch, ns)
     rstretch = broadcast(rstretch, ns)
@@ -876,14 +885,14 @@ def cmap_chla(name='vacumm_chla', smoothed=True, **kwargs):
         112,108,109,107,106,94,98,99,100,101,
         102,104,92,86,85,83,84,81,80,79,
         78,77,76,75,74,73,72,70,69,68,
-        067,47, 47])
+        67,47, 47])
     indtab = -(indtab - 127)
 
     param_red = param_red[indtab]
     param_green = param_green[indtab]
     param_blue = param_blue[indtab]
 
-    colors = zip(param_red,param_green,param_blue)
+    colors = list(zip(param_red,param_green,param_blue))
 
     func = cmap_regular_steps if not smoothed else cmap_smoothed_regular_steps
     return func(colors, name=name, **kwargs)
@@ -926,7 +935,7 @@ def cmap_previmer2(name='vacumm_previmer2', **kwargs):
     g /= 255.
     b = N.array([229,213,208,209,159,173,119,205,222,242,252,252,252,252,252,252,252,252,228,155,132,132,126,105,82,49,15,4,4,4,4,4,4,4.])
     b /= 255.
-    colors = zip(r,g,b)
+    colors = list(zip(r,g,b))
     cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
@@ -977,7 +986,7 @@ def cmap_ssec(name='vacumm_ssec', **kwargs):
     g = d[1::3]/255.
     b = d[2::3]/255.
 
-    colors = zip(r,g,b)
+    colors = list(zip(r,g,b))
     cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
@@ -1038,7 +1047,7 @@ def cmap_ncview_rainbow(name='vacumm_ncview_rainbow', **kwargs):
     g = d[1::3]/255.
     b = d[2::3]/255.
 
-    colors = zip(r,g,b)
+    colors = list(zip(r,g,b))
     cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
@@ -1281,7 +1290,7 @@ def cmap_nice_gfdl(name='vacumm_nice_gfdl', **kwargs):
     g = d[1::3]
     b = d[2::3]
 
-    colors = zip(r,g,b)
+    colors = list(zip(r,g,b))
     cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
@@ -2065,7 +2074,7 @@ def cmap_eke(name='vacumm_eke', **kwargs):
     0])
 
 
-    colors = zip(r,g,b)
+    colors = list(zip(r,g,b))
     cmap = cmap_srs(colors[1:-1], name=name, **kwargs)
     cmap.set_under(colors[0])
     cmap.set_over(colors[-1])
@@ -2259,9 +2268,9 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), fig=No
     p = ax.imshow(N.outer(N.ones(1),x), aspect=aspect*ncol,
         cmap=cmap, origin="lower",
         interpolation=interp, vmin=-.5, vmax=x[-1]+0.5)
-    ax.fill([x[0]-dx/2, x[0]-dx/2, x[0]-dx/2-ncol/20.], [-.5, .5, 0],
+    ax.fill([x[0]-old_div(dx,2), x[0]-old_div(dx,2), x[0]-old_div(dx,2)-ncol/20.], [-.5, .5, 0],
         facecolor=p.to_rgba(-1), edgecolor='none', linewidth=0)
-    ax.fill([x[-1]+dx/2, x[-1]+dx/2, x[-1]+dx/2+ncol/20.], [-.5, .5, 0],
+    ax.fill([x[-1]+old_div(dx,2), x[-1]+old_div(dx,2), x[-1]+old_div(dx,2)+ncol/20.], [-.5, .5, 0],
         facecolor=p.to_rgba(ncol+2), edgecolor='none', linewidth=0)
     if title is None: title = cmap.name
     if title is not None and title is not False:
@@ -2276,7 +2285,7 @@ def plot_cmap(cmap, ncol=None, smoothed=True,  ax=None, figsize=(5, .25), fig=No
     if savefig is not None:
         fig.savefig(savefig, **kwfilter(kwargs, 'savefig'))
     if savefigs is not None:
-        from plot import savefigs as Savefigs
+        from .plot import savefigs as Savefigs
         Savefigs(savefigs, fig=fig, **kwfilter(kwargs, 'savefigs'))
     if show:
         #fig.show()
@@ -2335,7 +2344,7 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5,
     if fig is None:
         fig = P.figure()
     ncol = min(ncmap, ncol)
-    nrow = (ncmap-1)/ncol+1
+    nrow = old_div((ncmap-1),ncol)+1
 #    nrow = min(ncmap, nrow)
 #    ncol = (ncmap-1)/nrow+1
     if N.isscalar(figsize):
@@ -2344,7 +2353,7 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5,
     else:
         figwidth = 6.
     if figsize is None:
-        onecol = figwidth / ncol
+        onecol = old_div(figwidth, ncol)
         onerow = figwidth * aspect * .8
         figheight = onerow * nrow
         figsize = (figwidth, figheight)
@@ -2366,7 +2375,7 @@ def plot_cmaps(cmaps=None, figsize=None, show=True, savefig=None, ncol=5,
     if savefig is not None:
         P.savefig(savefig, fig=fig, **kwsf)
     if savefigs is not None:
-        from plot import savefigs as _savefigs
+        from .plot import savefigs as _savefigs
         _savefigs(savefigs, fig=fig, **kwsfs)
     if show: fig.show()
     if close: P.close(fig)
@@ -2384,7 +2393,7 @@ def cmaps_registered(include=None, exclude=None, names=True):
         - **include**: Exclude colormaps that have one of these prefixes.
         - **names**: Return names OR colormaps.
     """
-    cmap_names = cmap_d.keys()
+    cmap_names = list(cmap_d.keys())
     cmap_names.sort()
     if include is None: include = []
     elif isinstance(include, basestring): include = [include]
@@ -2436,7 +2445,7 @@ def print_cmaps_gmt():
 
         :func:`cmap_gmt` :func:`cmaps_gmt` :func:`get_cmap`
     """
-    print 'List of available GMT colormaps: '+', '.join(cmaps_gmt(names=True))
+    print('List of available GMT colormaps: '+', '.join(cmaps_gmt(names=True)))
 
 _re_split_gmt = re.compile(r'[\t/\-]+').split
 def cmap_gmt(name, register=True, **kwargs):
@@ -2525,7 +2534,7 @@ def cmap_gmt(name, register=True, **kwargs):
         r = r/255.
         g = g/255.
         b = b/255.
-    xNorm = (x - x[0])/(x[-1] - x[0])
+    xNorm = old_div((x - x[0]),(x[-1] - x[0]))
 
     red = []
     blue = []
@@ -2831,7 +2840,7 @@ class StepsNorm(Normalize):
                 val = ma.log(val)
 
             # Inside
-            for ilev in xrange(nlev-1):
+            for ilev in range(nlev-1):
                 lev0, lev1 = self.levels[ilev:ilev+2]
                 p0, p1 = self.positions[ilev:ilev+2]
                 if self.log:
@@ -2840,7 +2849,7 @@ class StepsNorm(Normalize):
                 mincheck = (val>=lev0) if ilev>0 else True
                 maxcheck = (val<=lev1) if ilev<nlev-2 else True
                 result[:] = ma.where(mincheck&maxcheck,
-                    p0+(p1-p0)*(val-lev0)/(lev1-lev0), result)
+                    p0+old_div((p1-p0)*(val-lev0),(lev1-lev0)), result)
 
             # Above (linear extrapolation)
             lev0, lev1 = self.levels[-2:]
@@ -2848,7 +2857,7 @@ class StepsNorm(Normalize):
             if self.log:
                 lev0 = ma.log(lev0)
                 lev1 = ma.log(lev1)
-            result[:] = ma.where(val>=lev1, p1 + (p1-p0)*(val-lev1)/(lev1-lev0), result)
+            result[:] = ma.where(val>=lev1, p1 + old_div((p1-p0)*(val-lev1),(lev1-lev0)), result)
             result[N.isinf(val)] = N.inf
 
             # Below (linear extrapolation)
@@ -2857,7 +2866,7 @@ class StepsNorm(Normalize):
             if self.log:
                 lev0 = ma.log(lev0)
                 lev1 = ma.log(lev1)
-            result[:] = ma.where(val<lev0, p0 + (p0-p1)*(val-lev0)/(lev0-lev1), result)
+            result[:] = ma.where(val<lev0, p0 + old_div((p0-p1)*(val-lev0),(lev0-lev1)), result)
             result[N.isneginf(val)] = -N.inf
 
         if self._masked:
@@ -2880,7 +2889,7 @@ class StepsNorm(Normalize):
 
             # Inside
             nlev = len(self.levels)
-            for ilev in xrange(len(self.levels)-1):
+            for ilev in range(len(self.levels)-1):
                 lev0, lev1 = self.levels[ilev:ilev+2]
                 p0, p1 = self.positions[ilev:ilev+2]
                 if self.log:
@@ -2888,7 +2897,7 @@ class StepsNorm(Normalize):
                     lev1 = ma.log10(lev1)
                 mincheck = (pos>=p0) if ilev else True
                 maxcheck = (pos<=p1) if ilev<nlev-2 else True
-                result[:] = N.where(mincheck&maxcheck, lev0+(pos-p0)*(lev1-lev0)/(p1-p0), result)
+                result[:] = N.where(mincheck&maxcheck, lev0+old_div((pos-p0)*(lev1-lev0),(p1-p0)), result)
                 if self.log:
                     result = N.power(result)
 
@@ -2898,7 +2907,7 @@ class StepsNorm(Normalize):
             if self.log:
                 lev0 = ma.log(lev0)
                 lev1 = ma.log(lev1)
-            result[:] = ma.where(pos>=p1, lev1 + (lev1-lev0)*(pos-p1)/(p1-p0), result)
+            result[:] = ma.where(pos>=p1, lev1 + old_div((lev1-lev0)*(pos-p1),(p1-p0)), result)
             result[N.isinf(pos)] = N.inf
 
             # Below (linear extrapolation)
@@ -2907,7 +2916,7 @@ class StepsNorm(Normalize):
             if self.log:
                 lev0 = ma.log(lev0)
                 lev1 = ma.log(lev1)
-            result[:] = ma.where(pos<p0, lev0 + (lev0-lev1)*(pos-p0)/(p0-p1), result)
+            result[:] = ma.where(pos<p0, lev0 + old_div((lev0-lev1)*(pos-p0),(p0-p1)), result)
             result[N.isneginf(pos)] = -N.inf
 
 
@@ -2934,7 +2943,7 @@ class RangedLinearSegmentedColormap(Colormap):
 
     def _init(self):
         self._lut = N.ones((self.N + 3, 4), N.float)
-        n = int(N.ceil(self.N/(self._stop-self._start)))
+        n = int(N.ceil(old_div(self.N,(self._stop-self._start))))
         r = makeMappingArray(n, self._segmentdata['red'])
         g = makeMappingArray(n, self._segmentdata['green'])
         b = makeMappingArray(n, self._segmentdata['blue'])
@@ -3014,7 +3023,7 @@ def anamorph_cmap(cmap, transform, name=None):
     # Input segmentdata
     input_segmentdata = cmap._segmentdata.copy()
     if callable(input_segmentdata['red']):
-        for cname, cfunc in input_segmentdata.items():
+        for cname, cfunc in list(input_segmentdata.items()):
             xind = N.linspace(0, 1, cmap.N) ** cmap._gamma
             lut = N.clip(N.array(cfunc(xind), dtype=N.float), 0, 1)
             input_segmentdata[cname] = []
@@ -3028,19 +3037,19 @@ def anamorph_cmap(cmap, transform, name=None):
         dxi = xi1-xi0
         xo0 = ii*dxo
         xo1 = (ii+1)*dxo
-        for cname, cvals in input_segmentdata.items():
+        for cname, cvals in list(input_segmentdata.items()):
             for cval in cvals:
                 xi = cval[0]
                 if xi<xi0:
                     continue
                 if xi>=xi1:
                     break
-                xo = (xi-xi0)*dxo/dxi+xo0
+                xo = old_div((xi-xi0)*dxo,dxi)+xo0
                 segmentdata[cname].append((xo,)+cval[1:])
             else:
                 col = cmap(xi1)[['red', 'green', 'blue'].index(cname)]
                 segmentdata[cname].append((xo1, col, col))
-    for cname, cval in input_segmentdata.items():
+    for cname, cval in list(input_segmentdata.items()):
         segmentdata[cname].append(cval[-1])
 
     # Name
@@ -3082,7 +3091,7 @@ def discretise_cmap(cmap, bounds, name=None, **kwargs):
         bounds = N.linspace(0, 1, bounds)
     else:
         bounds = N.asarray(bounds)
-        bounds = (bounds-bounds[0])/(bounds[-1]-bounds[0])
+        bounds = old_div((bounds-bounds[0]),(bounds[-1]-bounds[0]))
 
     centers = 0.5*(bounds[:-1]+bounds[1:])
     colors = [old_cmap(c) for c in centers]
@@ -3132,7 +3141,7 @@ cmap_currents()
 cmap_nice_gfdl()
 cmap_ssec()
 # - basemap
-for _name in basemap_cm.datad.keys():
+for _name in list(basemap_cm.datad.keys()):
 #    sname = _name.lower() if _name.startswith('GMT_') else _name
     _cmap = getattr(basemap_cm, _name)
     P.register_cmap(_name, _cmap)

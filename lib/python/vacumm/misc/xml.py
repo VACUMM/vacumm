@@ -34,6 +34,13 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 from __future__ import absolute_import
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from past.builtins import basestring
+from builtins import object
+from future.utils import with_metaclass
 if __name__ == '__main__':
     import sys; del sys.path[0]
 
@@ -144,7 +151,7 @@ To save a xml file from the loaded object above you can do:
 
 #__all__ = ['XmlConfig', 'XmlConfigList', 'XmlConfigDict']
 
-import codecs, os, re, sys, traceback, urllib2
+import codecs, os, re, sys, traceback, urllib.request, urllib.error, urllib.parse
 
 try: import xml.etree.cElementTree as ElementTree
 except ImportError: import xml.etree.ElementTree as ElementTree
@@ -198,7 +205,7 @@ Dict = dict
 try:
     from collections import OrderedDict
     Dict = OrderedDict
-except Exception, e:
+except Exception as e:
     log(sys.modules[__name__], 'collections not available: %s', e)
 
 
@@ -235,7 +242,7 @@ def register(obj, attributes=None, elements=None, entries=None):
     :Return: obj
     '''
     if attributes:
-        for k,v in attributes.iteritems():
+        for k,v in attributes.items():
             setattr(obj, k, v)
     if elements: obj.extend(elements)
     if entries: obj.update(entries)
@@ -254,10 +261,10 @@ def usafe(o):
     '''
     Return a unicode textual representation of the given object
     '''
-    if isinstance(o, basestring) and not isinstance(o, unicode):
-        return unicode(o, encoding='UTF-8', errors='replace')
+    if isinstance(o, basestring) and not isinstance(o, str):
+        return str(o, encoding='UTF-8', errors='replace')
     elif not isinstance(o, basestring):
-        return unicode('%s'%o)
+        return str('%s'%o)
     return o
 
 
@@ -268,7 +275,7 @@ def xml_element_name(name):
     CamelCase name with any non alphanumeric characters omitted (eg. 'Class_A'
     => 'ClassA', 'class_b' => 'Classb' and class_C => 'ClassC')
     '''
-    return re.sub(r'[^a-zA-Z0-1]+', '', ''.join(map(lambda s:s[0].upper()+s[1:], name.split())))
+    return re.sub(r'[^a-zA-Z0-1]+', '', ''.join([s[0].upper()+s[1:] for s in name.split()]))
 
 
 #def xml_attribute_name(name):
@@ -294,7 +301,7 @@ def create_xml_element(name, attributes=None, childnodes=None, skipNone=True, **
     '''
     elt = ElementTree.Element(name)
     if attributes is not None:
-        for attrName, attrValue in attributes.iteritems():
+        for attrName, attrValue in attributes.items():
             if attrValue is None and skipNone: continue
             attrValue = '%s'%(attrValue,)
             elt.set(attrName, attrValue)
@@ -302,7 +309,7 @@ def create_xml_element(name, attributes=None, childnodes=None, skipNone=True, **
         if not isinstance(childnodes, (dict, list, tuple)):
             childnodes = (childnodes,)
         if isinstance(childnodes, dict):
-            for k,c in childnodes.iteritems():
+            for k,c in childnodes.items():
                 elt.append(c)
         else:
             for c in childnodes:
@@ -351,7 +358,7 @@ def getattribute(elt, name, default=None):
     :Return: attribute value or default
     '''
     ns, name = splitns(name)
-    for an, av in elt.attrib.iteritems():
+    for an, av in elt.attrib.items():
         if an == name: return av
         elif an[:1] == '{':
             namespace, attname = an[1:].rsplit('}', 1)
@@ -408,7 +415,7 @@ def load_xml_attributes(elt=None, attributes=None, dst=None, create=False):
             if hasattribute(elt, a): m[str(a)] = getattribute(elt, a)
             elif create: m[str(a)] = None
     elif isinstance(attributes, dict):
-        for a,dspec in attributes.iteritems():
+        for a,dspec in attributes.items():
             nsa = a
             ns, a = splitns(nsa)
             if isinstance(dspec, (list,tuple)): dtype, ddef = dspec[:]
@@ -420,7 +427,7 @@ def load_xml_attributes(elt=None, attributes=None, dst=None, create=False):
                 try:
                     m[str(a)] = (getattr(dtype, 'parse', dtype) or _emptyfunc)(getattribute(elt, nsa))
                     dspec[__loaded_from_elt__] = True
-                except Exception, e:
+                except Exception as e:
                     log(dst, '*** load_xml_attributes failed loading attribute "%s" of element "%s": %s', a, elt.tag, e) #####
                     if create:
                         log(dst, '*** load_xml_attributes setting default value for "%s": "%s"', a, ddef) #####
@@ -459,7 +466,7 @@ def load_xml_childnodes(elt=None, childnodes=None, dst=None, create=False):
     '''
     if elt is None: elt = ElementTree.Element(dst.__class__.__name__)
     attrs, elements, entries = Dict(), [], Dict()
-    for dname,dspec in childnodes.iteritems():
+    for dname,dspec in childnodes.items():
         dname = str(dname)
         if isinstance(dspec, (list,tuple)):
             (dtype, ddef), dcreate, dargs, dkwargs, dsingle, dself, dkey = (
@@ -495,7 +502,7 @@ def load_xml_childnodes(elt=None, childnodes=None, dst=None, create=False):
                     # Create default except when same class (avoid recursion)
                     if dsingle:
                         if issubclass(dtype, type(dst)):
-                            print __file__,'*** avoided recursion in creation of attribute "%s" with type "%s" on object with same type'%(dname, dtype)
+                            print(__file__,'*** avoided recursion in creation of attribute "%s" with type "%s" on object with same type'%(dname, dtype))
                         else: attrs[dname] = dtype(*dargs, **dkwargs)
                     else: attrs[dname] = Dict() if dkey else []
                 else:
@@ -534,7 +541,7 @@ def load_xml_textnodes(elt=None, textnodes=None, dst=None, create=False, xml_ele
     :Return: None
     '''
     if elt is None: elt = ElementTree.Element(dst.__class__.__name__)
-    for name,spec in textnodes.iteritems():
+    for name,spec in textnodes.items():
         log(dst, 'load_xml_textnodes processing "%s" with spec %s', name, spec) #####
         tagName, factory, default, single = xml_element_name(name), _emptyfunc, _no_default, False
         if isinstance(spec, (list,tuple)):
@@ -581,7 +588,7 @@ class XmlConfigMetaClass(type):
         return o
 
 
-class XmlConfig(object):
+class XmlConfig(with_metaclass(XmlConfigMetaClass, object)):
     '''
     Base class for XML serializations/deserializations.
 
@@ -597,7 +604,6 @@ class XmlConfig(object):
     **XML attributes, childnodes and textnodes are stored in this instance (object) attributes.**
 
     '''
-    __metaclass__ = XmlConfigMetaClass
 
     xml_tag_name = ''
     xml_attributes = Dict()
@@ -639,7 +645,7 @@ class XmlConfig(object):
             load_xml_attributes(None, self.xml_attributes, self, True)
             load_xml_childnodes(None, self.xml_childnodes, self, True)
             load_xml_textnodes(None, self.xml_textnodes, self, True, xml_element_name=self.xml_element_name)
-        for nsa,s in self.xml_attributes.items():
+        for nsa,s in list(self.xml_attributes.items()):
             ns, a = splitns(nsa)
             if a in kwargs:
                 v = kwargs[a]
@@ -650,7 +656,7 @@ class XmlConfig(object):
                     except:
                         raise TypeError('Unsupported type %r, %s required'%(v.__class__, t))
                 setattr(self, a, v)
-        for a,s in self.xml_childnodes.items():
+        for a,s in list(self.xml_childnodes.items()):
             if a in kwargs:
                 v = kwargs[a]
                 t = s.get('type', None)
@@ -661,7 +667,7 @@ class XmlConfig(object):
                     if s.get('key', None):
                         if t and not isinstance(v, dict):
                             raise TypeError('Unsupported type %r, %r required'%(v.__class__, dict))
-                        for vv in v.values():
+                        for vv in list(v.values()):
                             if t and not isinstance(vv, t):
                                 raise TypeError('Unsupported type %r, %r required'%(vv.__class__, t))
                     else:
@@ -673,7 +679,7 @@ class XmlConfig(object):
                             elif t and not isinstance(vv, t):
                                 raise TypeError('Unsupported type %r, %r required'%(vv.__class__, t))
                 setattr(self, a, v)
-        for a,s in self.xml_textnodes.items():
+        for a,s in list(self.xml_textnodes.items()):
             if a in kwargs:
                 setattr(self, a, kwargs[a])
         #import pdb; pdb.set_trace()
@@ -702,7 +708,7 @@ class XmlConfig(object):
             attrs = Dict([(a,{}) if isinstance(a, basestring) else a for a in attrs])
         else:
             raise TypeError('%s: Invalid attributes specifications: %r'%(cls, attrs))
-        for a,spec in attrs.iteritems():
+        for a,spec in attrs.items():
             d = spec
             if isinstance(spec, (list, tuple)):
                 d = {'type':spec[0], 'default':spec[1]}
@@ -721,7 +727,7 @@ class XmlConfig(object):
             if copy: childnodes = childnodes.copy()
         else:
             raise TypeError('%s: Invalid childnodes specifications: %r'%(cls, childnodes))
-        for c,spec in childnodes.iteritems():
+        for c,spec in childnodes.items():
             d = spec
             if isinstance(spec, (list, tuple)):
                 d = {'type':spec[0], 'default':spec[1]}
@@ -737,7 +743,7 @@ class XmlConfig(object):
             if copy: textnodes = textnodes.copy()
         else:
             raise TypeError('%s: Invalid textnodes specifications: %r'%(cls, textnodes))
-        for t,spec in textnodes.iteritems():
+        for t,spec in textnodes.items():
             d = spec
             if isinstance(spec, (list, tuple)):
                 d = {'type':spec[0], 'default':spec[1]}
@@ -789,19 +795,19 @@ class XmlConfig(object):
     @classmethod
     def from_url(cls, url, *a, **k):
         '''Factory method instanciating from xml string returned by url.'''
-        return cls.from_xml_str(urllib2.urlopen(url).read(-1), *a, **k)
+        return cls.from_xml_str(urllib.request.urlopen(url).read(-1), *a, **k)
 
     @classmethod
     def from_xml_elt(cls, e, *a, **k):
         '''Factory method instanciating from xml  element.'''
         try:
             o = cls(*a, __load_xml_elt__=e, **k)
-        except Exception, x:
+        except Exception as x:
             xmlmax = 2**10*100
             tb = traceback.format_exc()
             try:
                 xml = ElementTree.tostring(e)[:xmlmax]
-            except Exception, ee: xml = '[%s]'%ee
+            except Exception as ee: xml = '[%s]'%ee
             raise x.__class__('Failed to create %s from xml element:\n%s\n\n%s'%(
                 cls.__name__, xml, tb))
         return o
@@ -846,7 +852,7 @@ class XmlConfig(object):
         dumpdefault = kwargs.get('dumpdefault', True) # can be overriden in attr spec
         # Attributes
         attributes = Dict()
-        for a, spec in self.xml_attributes.iteritems():
+        for a, spec in self.xml_attributes.items():
             nsa = a
             ns, a = splitns(nsa)
             if hasattr(self, a):
@@ -861,7 +867,7 @@ class XmlConfig(object):
                 attributes['%s:%s'%(ns,a) if ns else a] = usafe(v)
         childnodes = []
         # Text nodes
-        for name,spec in self.xml_textnodes.iteritems():
+        for name,spec in self.xml_textnodes.items():
             v = getattr(self, name, None)
             if v is None: continue
             if not spec: spec = {}
@@ -881,14 +887,14 @@ class XmlConfig(object):
                     e.text = usafe(t)
                     childnodes.append(e)
         # Child nodes
-        for child,spec in self.xml_childnodes.iteritems():
+        for child,spec in self.xml_childnodes.items():
             tmpchildnodes = []
             log(self, 'to_xml_elt\n  %s', vars(self)) #####
             if spec.get('self', False):
                 if spec.get('key', None):
-                    for k,o in self.iteritems():
+                    for k,o in self.items():
                         e = o.to_xml_elt(**kwargs)
-                        if not e.attrib.has_key(spec['key']):
+                        if spec['key'] not in e.attrib:
                             e.set(spec['key'], usafe(k))
                         tmpchildnodes.append(e)
                 else:
@@ -900,9 +906,9 @@ class XmlConfig(object):
                         tmpchildnodes.append(getattr(self, child).to_xml_elt(**kwargs))
                 else:
                     if spec.get('key', None):
-                        for k,o in getattr(self, child).iteritems():
+                        for k,o in getattr(self, child).items():
                             e = o.to_xml_elt(**kwargs)
-                            if not e.attrib.has_key(spec['key']):
+                            if spec['key'] not in e.attrib:
                                 e.set(spec['key'], k)
                             tmpchildnodes.append(e)
                     else:
@@ -945,7 +951,7 @@ class XmlConfig(object):
 
     def to_xml_str(self, **kwargs):
         '''Dump object to a xml string.'''
-        from StringIO import StringIO
+        from io import StringIO
         s = StringIO()
         self.to_xml_stream(s, **kwargs)
         return s.getvalue()
@@ -961,17 +967,17 @@ class XmlConfig(object):
         def to_obj(obj):
             if isinstance(obj, XmlConfig):
                 d = dict()
-                for a,s in obj.xml_attributes.iteritems():
+                for a,s in obj.xml_attributes.items():
                     if hasattr(obj, a):
                         v = getattr(obj, a)
                         f = s.get('formatter', None)
                         if f: v = f(v)
                         d[a] = v
-                for a,s in obj.xml_childnodes.iteritems():
+                for a,s in obj.xml_childnodes.items():
                     if s.get('self', None):
                         if s.get('key', None):
                             dd = {}
-                            for aa,vv in obj.iteritems():
+                            for aa,vv in obj.items():
                                 dd[aa] = vv.to_obj()
                             d['__items__'] = dd
                         else:
@@ -984,10 +990,10 @@ class XmlConfig(object):
                                 d[a] = getattr(obj, a).to_obj()
                             else:
                                 if s.get('key', None):
-                                    d[a] = dict((kk, vv.to_obj()) for kk,vv in getattr(obj, a).iteritems())
+                                    d[a] = dict((kk, vv.to_obj()) for kk,vv in getattr(obj, a).items())
                                 else:
                                     d[a] = [vv.to_obj() for vv in getattr(obj, a)]
-                for a,s in obj.xml_textnodes.iteritems():
+                for a,s in obj.xml_textnodes.items():
                     d[a] = getattr(obj, a)
                     if s:
                         f = s.get('formatter', None)
@@ -996,19 +1002,19 @@ class XmlConfig(object):
             if isinstance(obj, (list,tuple)):
                 return [to_obj(o) for o in obj]
             if isinstance(obj, dict):
-                return dict(((k,to_obj(v)) for k,v in obj.iteritems()))
+                return dict(((k,to_obj(v)) for k,v in obj.items()))
             return obj
         return to_obj(self)
 
     def set_obj(self, obj):
-        for k,s in self.xml_attributes.items():
+        for k,s in list(self.xml_attributes.items()):
             if k in obj:
                 v = obj[k]
                 if v is None: pass
                 elif s.get('type', None): v = s['type'](v)
                 setattr(self, k, v)
         # TODO: childnodes ?
-        for k,s in self.xml_textnodes.items():
+        for k,s in list(self.xml_textnodes.items()):
             if k in obj:
                 v = obj[k]
                 if v is None: pass
@@ -1072,7 +1078,7 @@ class XmlConfigDict(Dict, XmlConfig):
 
 
 def _test():
-    print ' TEST XML '.center(80, '=')
+    print(' TEST XML '.center(80, '='))
     class SKlass(XmlConfig): pass
     class Klass(XmlConfig):
         def __init__(self):
@@ -1101,18 +1107,18 @@ def _test():
     <Textnodes>text2</Textnodes>
 </Klass>
     '''
-    print ' xml '.center(80, '-')
-    print x
+    print(' xml '.center(80, '-'))
+    print(x)
     o = Klass.from_xml_str(x)
-    print (' object from_xml_str %s '%(id(o))).center(80, '-')
-    print '\n'.join('%-20s : %-20s : %s'%(k,type(v),repr(v)) for k,v in o.__dict__.iteritems() if not k.startswith('xml_'))
-    print (' object to_xml_str %s '%(id(o))).center(80, '-')
-    print o.to_xml_str()
-    print (' object to_obj %s '%(id(o))).center(80, '-')
+    print((' object from_xml_str %s '%(id(o))).center(80, '-'))
+    print('\n'.join('%-20s : %-20s : %s'%(k,type(v),repr(v)) for k,v in o.__dict__.items() if not k.startswith('xml_')))
+    print((' object to_xml_str %s '%(id(o))).center(80, '-'))
+    print(o.to_xml_str())
+    print((' object to_obj %s '%(id(o))).center(80, '-'))
     import pprint
-    print pprint.pformat(o.to_obj())
-    print (' object from_xml_str(to_xml_str).to_xml_str %s '%(id(o))).center(80, '-')
-    print Klass.from_xml_str(o.to_xml_str()).to_xml_str()
+    print(pprint.pformat(o.to_obj()))
+    print((' object from_xml_str(to_xml_str).to_xml_str %s '%(id(o))).center(80, '-'))
+    print(Klass.from_xml_str(o.to_xml_str()).to_xml_str())
 
 if __name__ == '__main__':
     _test()

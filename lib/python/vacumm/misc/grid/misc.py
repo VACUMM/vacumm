@@ -6,6 +6,7 @@ It deals with bounds, areas, interpolations...
 
 See: :ref:`user.tut.misc.grid`.
 """
+from __future__ import division
 # Copyright or © or Copr. Actimar/IFREMER (2010-2018)
 #
 # This software is a computer program whose purpose is to provide
@@ -40,6 +41,11 @@ See: :ref:`user.tut.misc.grid`.
 #
 
 
+from builtins import str
+from builtins import range
+from past.builtins import basestring
+from builtins import object
+from past.utils import old_div
 import operator
 from gc import collect
 
@@ -58,9 +64,6 @@ MV = MV2
 from mpl_toolkits.basemap import Basemap
 from _geoslib import Point
 
-isseq = operator.isSequenceType
-isnum = operator.isNumberType
-isdic= ismap = operator.isMappingType
 
 __all__ = ['isoslice','isgrid', 'get_resolution', 'get_distances', 'get_closest', 'get_closest_depth', 'get_geo_area',
     'bounds2d', 'bounds1d', 'get_axis', 'get_grid', 'get_grid_axes', "gridsel",
@@ -101,9 +104,9 @@ def isoslice(var,prop,isoval=0,axis=0,masking=True):
     Get from OCTANT library : https://github.com/hetland/octant
     """
     if (len(var.squeeze().shape)<=2):
-        raise ValueError, 'variable must have at least two dimensions'
+        raise ValueError('variable must have at least two dimensions')
     if not prop.shape == var.shape:
-        raise ValueError, 'dimension of var and prop must be identical'
+        raise ValueError('dimension of var and prop must be identical')
     var = var.swapaxes(0, axis)
     prop = prop.swapaxes(0, axis)
     prop=prop-isoval
@@ -116,16 +119,16 @@ def isoslice(var,prop,isoval=0,axis=0,masking=True):
     varh = var[1:,:]*zc
     propl = prop[:-1,:]*zc
     proph = prop[1:,:]*zc
-    result = varl - propl*(varh-varl)/(proph-propl)
+    result = varl - old_div(propl*(varh-varl),(proph-propl))
     result = N.where(zc==1., result, 0.)
     szc = zc.sum(axis=0)
     szc = N.where(szc==0., 1, szc)
-    result = result.sum(axis=0)/szc
+    result = old_div(result.sum(axis=0),szc)
     if masking:
         result = N.ma.masked_where(zc.sum(axis=0)==0, result)
         if all(result.mask):
-            raise Warning, 'property==%f out of range (%f, %f)' % \
-                           (isoval, (prop+isoval).min(), (prop+isoval).max())
+            raise Warning('property==%f out of range (%f, %f)' % \
+                           (isoval, (prop+isoval).min(), (prop+isoval).max()))
     result = result.reshape(sz[1:])
     return(result)
 
@@ -358,12 +361,12 @@ def haversine(xa, ya, xb, yb, radius=None, degrees=True):
     if radius:
         radius = constants.EARTH_RADIUS
     if degrees:
-        xa *= N.pi/180
-        ya *= N.pi/180
-        xb *= N.pi/180
-        yb *= N.pi/180
+        xa *= old_div(N.pi,180)
+        ya *= old_div(N.pi,180)
+        xb *= old_div(N.pi,180)
+        yb *= old_div(N.pi,180)
     Nm = numod(xa, ya, xb, yb)
-    a = Nm.sin((ya-yb)/2)**2 + Nm.cos(ya) * Nm.cos(yb) * Nm.sin((xa-xb)/2)**2
+    a = Nm.sin(old_div((ya-yb),2))**2 + Nm.cos(ya) * Nm.cos(yb) * Nm.sin(old_div((xa-xb),2))**2
     return constants.EARTH_RADIUS * 2 * Nm.arcsin(Nm.sqrt(a))
 
 
@@ -510,7 +513,7 @@ def isregular(axis, tol=.05, iaxis=None, dx=None):
     dxx = N.abs(N.diff(thisdx, axis=iaxis))
     if dx is None:
         dx = N.median(thisdx)
-    return not ((dxx/dx)%1.>tol).any()
+    return not ((old_div(dxx,dx))%1.>tol).any()
 
 
 def bounds1d(xx, cellwidth=None):
@@ -682,7 +685,7 @@ def meshgrid(x,y,copy=1):
         yy = My.resize(y,x.shape[::-1]).transpose()
         return x,yy
 
-    raise ValueError, "Unable to safely convert to 2D axes"
+    raise ValueError("Unable to safely convert to 2D axes")
 
 def bounds2mesh(xb, yb=None):
     """Convert 2D 4-corners cell bounds arrays (results from :func:`bounds2d`) to 2D arrays
@@ -1583,7 +1586,7 @@ def set_grid(var, gg, intercept=False):
     gg = get_grid(gg, intercept=intercept)
     if gg is not None:
         ndim = len(gg.shape)
-        for i in xrange(-ndim, 0):
+        for i in range(-ndim, 0):
             axis = gg.getAxis(i)
             if ndim==2:
                 setattr(axis, 'axis', ['Y', 'X'][i])
@@ -2117,7 +2120,7 @@ def axis1d_from_bounds(axis1d,atts=None,numeric=False):
     # Formatted axis
     ax = cdms.createAxis(numax,savespace=1)
     if atts is not None:
-        for att,val in atts.items():
+        for att,val in list(atts.items()):
             setattr(ax,att,val)
     return ax
 
@@ -2466,7 +2469,7 @@ def resol(axy, mode='median',  axis=None, meters=False, cache=True, lat=None,
         else: # 1D
 
             eres = tuple([N.ma.resize(r, (r.shape[0]+1, )) for r in res])
-            for ik in xrange(len(xy)):
+            for ik in range(len(xy)):
                 eres[ik][1:-1] = .5*(res[ik][:-1]+res[ik][1:])
                 eres[ik][0] = 1.5*res[ik][0]-0.5*res[ik][1]
                 eres[ik][-1] = 1.5*res[ik][-1]-0.5*res[ik][-2]
@@ -2529,7 +2532,7 @@ def check_xy_shape(xx, yy, mesh=None):
     if not mesh: return xx, yy
     if xx.ndim==2 and yy.ndim==2 and xx.shape==yy.shape: return xx, yy
     if xx.ndim !=1 or yy.ndim != 1:
-        raise ValueError, 'xx and yy must be 1D for meshgrid transform.'
+        raise ValueError('xx and yy must be 1D for meshgrid transform.')
     return N.meshgrid(xx, yy)
 
 
@@ -2568,7 +2571,7 @@ def t2uvgrids(gg, getu=True, getv=True, mask=None):
         yu = yy.clone()
         gu = cdms.createRectGrid(yu, xu)
         if mask is not None:
-            gu.setMask(t2uvmasks(umask, getv=False))
+            gu.setMask(t2uvmasks(mask, getv=False))
         if not getv: return gu
     # V-points
     yv = yy.clone()
@@ -2578,7 +2581,7 @@ def t2uvgrids(gg, getu=True, getv=True, mask=None):
     xv = xx.clone()
     gv = cdms.createRectGrid(yv, xv)
     if mask is not None:
-        gv.setMask(t2uvmasks(vmask, getu=False))
+        gv.setMask(t2uvmasks(mask, getu=False))
     if not getu: return gv
     return gu, gv
 
@@ -2618,8 +2621,8 @@ def rotate_grid(ggi, angle, pivot='center', **kwargs):
         pivot = pivot.lower()
         if pivot == 'center':pivot = 'center center'
         sxpivot, sypivot = pivot.split()
-        ipivot = [0, nx/2, -1][['left', 'center', 'right'].index(sxpivot)]
-        jpivot = [0, ny/2, -1][['bottom', 'center', 'top'].index(sypivot)]
+        ipivot = [0, old_div(nx,2), -1][['left', 'center', 'right'].index(sxpivot)]
+        jpivot = [0, old_div(ny,2), -1][['bottom', 'center', 'top'].index(sypivot)]
         xpivot = xxi[jpivot, ipivot]
         ypivot = yyi[jpivot, ipivot]
 
@@ -2720,9 +2723,9 @@ def xextend(vari, n, mode=None):
         xleft = xi[0]-N.arange(1, nleft+1)*dx0
         xright = xi[-1]+N.arange(1, nright+1)*dx1
         if mode == 'constant':
-            for ileft in xrange(nleft):
+            for ileft in range(nleft):
                 varo[..., ileft] = vari[..., 0]
-            for iright in xrange(nright):
+            for iright in range(nright):
                 varo[..., nxo-iright-1] = vari[..., -1]
 
     # Insert axes
@@ -2952,9 +2955,9 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=F
 
     # Number of points
     if dy*Dx > dx*Dy:
-        npts = Dx/dx
+        npts = old_div(Dx,dx)
     else:
-        npts = Dy/dy
+        npts = old_div(Dy,dy)
     npts *= subsamp
     npts = int(N.ceil(npts))
 
@@ -3087,7 +3090,7 @@ def get_axis_slices(ndim, axis, **kwargs):
     selfirstp1 = list(sel) ; selfirstp1[axis] = 1 ; selfirstp1 = tuple(selfirstp1)
     selfirstp2 = list(sel) ; selfirstp2[axis] = 2 ; selfirstp2 = tuple(selfirstp2)
     if kwargs:
-        for key, val in kwargs.items():
+        for key, val in list(kwargs.items()):
             if isinstance(val, (list, tuple)):
                 val = slice(*val)
             ksel = list(sel)
@@ -3143,7 +3146,7 @@ def merge_axis_slice(sel1, sel2):
         sel1 = [slice(None)]*(ndim2-ndim1)+sel1
     elif ndim1>ndim2:
         sel2 = [slice(None)]*(ndim1-ndim2)+sel2
-    for axis in xrange(len(sel1)):
+    for axis in range(len(sel1)):
         if sel1[axis] is None or sel1[axis]==slice(None) or \
             sel1[axis] is Ellipsis or sel1[axis]==':':
             selm.append(sel2[axis])
@@ -3162,7 +3165,7 @@ def get_zdim(var, axis=None, default=None, strict=True):
         i = var.getAxisList().index(axis)
         if i!=-1: axis = i
     if axis is not None and not strict and hasattr(axis, '__len__') and len(axis)!=0: # find the same axis length
-        good = filter(lambda i:i==len(axis), var.shape)
+        good = [i for i in var.shape if i==len(axis)]
         if len(good)==1: return good[0]
         axis = None
     if axis is None:
@@ -3266,7 +3269,7 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
                 depth.assignValue(-depth[::-1])
                 depth.positive = 'up'
             else:
-                depth[:] = depth.take(range(depth.shape[axis]-1, -1, -1), axis=axis)
+                depth[:] = depth.take(list(range(depth.shape[axis]-1, -1, -1)), axis=axis)
 
     # Revert variables or depths
     if not isup:
@@ -3277,7 +3280,7 @@ def makedepthup(vv, depth=None, axis=None, default=None, ro=False, strict=True):
             else:
                 axis = get_zdim(var, axis=axis)
                 if axis is None: continue
-                var[:] = var.take(range(var.shape[axis]-1, -1, -1), axis=axis)
+                var[:] = var.take(list(range(var.shape[axis]-1, -1, -1)), axis=axis)
                 depaxis = var.getAxis(axis)
                 depaxis.assignValue(-depaxis[::-1])
 
@@ -3333,7 +3336,7 @@ def makealtitudeup(vv, depth=None, axis=None, default=None, ro=False, strict=Tru
                 depth.assignValue(depth[::-1])
                 depth.positive = 'up'
             else:
-                depth[:] = depth.take(range(depth.shape[axis]-1, -1, -1), axis=axis)
+                depth[:] = depth.take(list(range(depth.shape[axis]-1, -1, -1)), axis=axis)
 
     # Revert variables or depths
     if not isup:
@@ -3344,7 +3347,7 @@ def makealtitudeup(vv, depth=None, axis=None, default=None, ro=False, strict=Tru
             else:
                 axis = get_zdim(var, axis=axis)
                 if axis is None: continue
-                var[:] = var.take(range(var.shape[axis]-1, -1, -1), axis=axis)
+                var[:] = var.take(list(range(var.shape[axis]-1, -1, -1)), axis=axis)
                 depaxis = var.getAxis(axis)
                 depaxis.assignValue(depaxis[::-1])
 
@@ -3444,7 +3447,7 @@ def dz2depth(dz, ref=None, refloc=None, copyaxes=True, mode='edge',
 
     # Add reference
     if refloc == 'top': # zero at top
-        for it in xrange(nt):
+        for it in range(nt):
             depths[it] -= depths[it, -1]
         if zerolid:
             ref = 0

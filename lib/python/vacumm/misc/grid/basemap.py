@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 """Utilities derived from mpl_toolkits.basemap"""
+from __future__ import print_function
 
 # Copyright or © or Copr. Actimar/IFREMER (2010-2016)
 #
@@ -33,6 +34,9 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from past.builtins import cmp
+from future import standard_library
+standard_library.install_aliases()
 __all__  = ['gshhs_reslist', 'gshhs_autores', 'cached_map', 'cache_map', 'get_map',
 'GSHHS_BM', 'merc', 'clean_cache', 'reset_cache', 'get_map_dir', 'get_proj',
 'create_map', 'RSHPERE_WGS84', 'GSHHS_RESLIST']
@@ -43,7 +47,7 @@ import numpy as N
 from mpl_toolkits.basemap import Basemap, __version__ as basemap_version
 from mpl_toolkits.basemap.proj import Proj
 from matplotlib import get_configdir
-import cPickle, stat
+import pickle, stat
 #FIXME:imports
 from ...__init__ import vacumm_warn
 from ...config import get_config_value
@@ -99,12 +103,12 @@ def cached_map(m=None, mapdir=None, verbose=False, **kwargs):
     # Guess
     file = _cached_map_file_(mapdir=mapdir, **kwargs)
     if file is None: return None
-    if verbose: print 'Checking', file, os.path.exists(file)
+    if verbose: print('Checking', file, os.path.exists(file))
     if not os.path.exists(file): return None
-    if verbose: print 'Loadind cached map from '+os.path.basename(file)
+    if verbose: print('Loadind cached map from '+os.path.basename(file))
     try:
         f = open(file)
-        m = cPickle.load(f)
+        m = pickle.load(f)
         f.close()
         return m
     except:
@@ -124,7 +128,7 @@ def cache_map(m, mapdir=None):
         try:
             f = open(file, 'wb')
             m.ax = None
-            cPickle.dump(m, f)
+            pickle.dump(m, f)
             f.close()
         except:
             vacumm_warn('Error while trying to cache basemap instance into: '+
@@ -186,7 +190,7 @@ def _cached_map_file_(m=None, mapdir=None, **kwargs):
     if not os.path.exists(mapdir):
         os.makedirs(mapdir)
     if m is None:
-        if kwargs.has_key('resolution') and kwargs['resolution'] is None:
+        if 'resolution' in kwargs and kwargs['resolution'] is None:
             return None
         res = kwargs['resolution']
         kwargs['resolution'] = None

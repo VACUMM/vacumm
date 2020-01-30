@@ -3,6 +3,7 @@
 
 .. warning:: This module requires python 2.7+ to work.
 """
+from __future__ import print_function
 # Copyright or © or Copr. Actimar/IFREMER (2012-2015)
 #
 # This software is a computer program whose purpose is to provide
@@ -39,6 +40,8 @@
 # knowledge of the CeCILL license and that you accept its terms.
 
 
+from past.builtins import basestring
+from builtins import object
 from textwrap import dedent
 import re, inspect
 
@@ -181,7 +184,7 @@ class Docstring2Params(dict):
         """
         # Selection of parameters
         if select is None:
-            select = self.keys()
+            select = list(self.keys())
             select.sort()
         elif isinstance(select, basestring):
             select = [select]
@@ -248,11 +251,11 @@ class DocFiller(object):
         if objs: self.scan(*objs, **aobjs)
 
     def scan(self, *objs, **aobjs):
-        aliases = dict([(o, a) for a, o in aobjs.items()])
+        aliases = dict([(o, a) for a, o in list(aobjs.items())])
         for obj in objs+tuple(aliases.keys()):
             key =  obj.__name__
             if inspect.ismethod(obj):
-                key = obj.im_class.__name__+"_"+key
+                key = obj.__self__.__class__.__name__+"_"+key
             prefix = aliases[obj] if obj in aliases else ''
             self.content[key] = Docstring2Params(obj, prefix=prefix)
 
@@ -271,7 +274,7 @@ class DocFiller(object):
 
         """
         out = {}
-        for key, val in self.content.items():
+        for key, val in list(self.content.items()):
             out[key] = val.asfmtdict(indent=indent)
         return out
 
@@ -290,12 +293,12 @@ class DocFiller(object):
 #        obj.__doc__ = obj.__doc__.format(**self.formatted(obj))
         try:
             obj.__doc__ = obj.__doc__.format(**self.formatted(obj))
-        except KeyError, e:
-            if self.verbose: print 'Missing key for docfill: '+e.message
+        except KeyError as e:
+            if self.verbose: print('Missing key for docfill: '+e.message)
 #            print 'When formatting doc:'
 #            print obj.__doc__
-        except Exception, e:
-            if self.verbose: print 'Docfill error:', e.message
+        except Exception as e:
+            if self.verbose: print('Docfill error:', e.message)
         return obj
 
 from vacumm import docfiller_verbose
@@ -316,6 +319,6 @@ if __name__=='__main__':
         """
         pass
 
-    print myfunc.__doc__
+    print(myfunc.__doc__)
 
 

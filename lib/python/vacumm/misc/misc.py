@@ -43,6 +43,7 @@ from __future__ import absolute_import
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
+from builtins import next
 from builtins import str
 from builtins import map
 from builtins import filter
@@ -984,7 +985,7 @@ def dict_aliases(kwargs, aliases):
 def dict_check_defaults(kwargs, **defs):
     """Check that a dictionary has some default values"""
     if defs is None: defs = {}
-    for item in defs.items():
+    for item in list(defs.items()):
         kwargs.setdefault(*item)
     return kwargs
 
@@ -1077,7 +1078,7 @@ def dict_merge(*dd, **kwargs):
         if not isinstance(d, dict): continue
 
         # Content
-        for key, val in d.items():
+        for key, val in list(d.items()):
             if skipnones and val is None: continue
             if key not in outd or (overwriteempty and isempty(outd[key])): # Not set so we set
                 outd[key] = val

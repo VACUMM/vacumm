@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 """Plot a PREVIMER curve"""
 
+from builtins import range
 import matplotlib
 matplotlib.use('agg')
 
@@ -47,7 +48,7 @@ lons = N.array([d[0] for d in points])
 lats = N.array([d[1] for d in points])
 ptdata = grid2xy(data, lons, lats)
 datas = []
-for i in xrange(ptdata.shape[1]):
+for i in range(ptdata.shape[1]):
     datas.append(ptdata[:, i])
     datas[i].long_name = points[i][2].decode('utf8')
 

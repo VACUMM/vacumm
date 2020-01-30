@@ -135,7 +135,7 @@ def variogram_model(mtype, n, s, r, nrelmax=0.2):
 
 class VariogramModel(object):
     """Class used when fitting a variogram model to data to better control params"""
-    param_names = list(variogram_model.func_code.co_varnames[1:])
+    param_names = list(variogram_model.__code__.co_varnames[1:])
     param_names.remove('nrelmax')
     def __init__(self, mtype, **kwargs):
         self.mtype = variogram_model_type(mtype)

@@ -35,7 +35,13 @@
 #
 
 from __future__ import absolute_import
-import fnmatch, math, os, re, shutil
+from __future__ import print_function
+from __future__ import division
+from past.builtins import cmp
+from builtins import range
+from past.builtins import basestring
+from past.utils import old_div
+import fnmatch, math, os, re, shutil, operator
 
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
@@ -112,23 +118,23 @@ def rollover(filepath, count=1, suffix='.%d', keep=True, verbose=False):
         if os.path.exists(sfn):
             if os.path.exists(dfn):
                 os.remove(dfn)
-                if verbose: print 'rollover remove %s'%(dfn)
+                if verbose: print('rollover remove %s'%(dfn))
             os.rename(sfn, dfn)
-            if verbose: print 'rollover rename %s -> %s'%(sfn, dfn)
+            if verbose: print('rollover rename %s -> %s'%(sfn, dfn))
     dfn = fnt%(1)
     if os.path.exists(dfn):
         os.remove(dfn)
-        if verbose: print 'rollover remove %s'%(dfn)
+        if verbose: print('rollover remove %s'%(dfn))
     if keep:
         shutil.copy(filepath, dfn)
-        if verbose: print 'rollover copy %s -> %s'%(filepath, dfn)
+        if verbose: print('rollover copy %s -> %s'%(filepath, dfn))
     else:
         os.rename(filepath, dfn)
-        if verbose: print 'rollover rename %s -> %s'%(filepath, dfn)
+        if verbose: print('rollover rename %s -> %s'%(filepath, dfn))
     return True
 
 
-_sort_size_dict = lambda sd: sorted(sd.items(), lambda a, b: cmp(a[1],b[1]))
+_sort_size_dict = lambda sd: sorted(list(sd.items()), key=operator.itemgetter(1))
 
 # Binary units : 1 kibioctet (Kio) = 2^10 = 1024
 _size_units = {
@@ -146,7 +152,7 @@ _si_size_units = {
 }
 _sorted_si_size_units = _sort_size_dict(_si_size_units)
 
-_strfsize_doc_sorted_units = ', '.join(map(lambda s:s[0], _sorted_size_units))
+_strfsize_doc_sorted_units = ', '.join([s[0] for s in _sorted_size_units])
 
 def strfsize(size, fmt=None, unit=None, si=False, suffix=True):
     '''
@@ -184,7 +190,7 @@ def strfsize(size, fmt=None, unit=None, si=False, suffix=True):
             raise ValueError('Invalid unit, must be one of: %s'%(_strfsize_doc_sorted_units))
         fmt_unit, fmt_ratio = unit, units_dict[unit]
 
-    fmt_size = size / fmt_ratio
+    fmt_size = old_div(size, fmt_ratio)
     if fmt is None:
         fmt = '%(size).3f %(unit)s' if float(fmt_size) % 1 else '%(size)d %(unit)s'
     if suffix:
@@ -193,7 +199,7 @@ def strfsize(size, fmt=None, unit=None, si=False, suffix=True):
 
 strfsize.__doc__ %= _strfsize_doc_sorted_units
 
-_strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?'%('|'.join(_size_units.keys())), re.IGNORECASE)
+_strpsizerex = re.compile(r'(?P<number>[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)\s*(?P<unit>%s)?(?P<usfx>io|o)?'%('|'.join(list(_size_units.keys()))), re.IGNORECASE)
 
 def strpsize(size, si=False):
     """Parse a size in Ko, Mo, Kio, Mio, ...
@@ -245,7 +251,7 @@ def walk(top, topdown=True, onerror=None, followlinks=False, depth=None, onfile=
     '''
     if depth is not None and depth >= 0 and _depth > depth: return
     try: names = os.listdir(top)
-    except os.error, err:
+    except os.error as err:
         if onerror is not None: onerror(err)
         return
     dirs, nondirs = [], []
@@ -445,11 +451,11 @@ def tfind(regex, path=None, fmt='%Y-%m-%dT%H:%M:%SZ', min=None, max=None, group=
     items = list((i[0], i[1], datetime.datetime.strptime(i[2], fmt)) for i in items)
     # Filter by min/max datetimes
     if min:
-        if xmin: items = filter(lambda i: i[2] > min, items)
-        else: items = filter(lambda i: i[2] >= min, items)
+        if xmin: items = [i for i in items if i[2] > min]
+        else: items = [i for i in items if i[2] >= min]
     if max:
-        if xmax: items = filter(lambda i: i[2] < max, items)
-        else: items = filter(lambda i: i[2] <= max, items)
+        if xmax: items = [i for i in items if i[2] < max]
+        else: items = [i for i in items if i[2] <= max]
     # Sort by dates
     items = sorted(items, lambda a,b: cmp(a[2], b[2]))
     # Remove non-requested fields

@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 "Physics"
+from __future__ import absolute_import
 # Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #
 # This software is a computer program whose purpose is to provide
@@ -32,5 +33,5 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 #
-import units
-import constants
+from . import units
+from . import constants

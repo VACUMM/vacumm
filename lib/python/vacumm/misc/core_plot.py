@@ -1,5 +1,7 @@
 # -*- coding: utf8 -*-
 """Classes for all plots"""
+from __future__ import print_function
+from __future__ import absolute_import
 # Copyright or © or Copr. Actimar/IFREMER (2012-2018)
 #
 # This software is a computer program whose purpose is to provide
@@ -35,9 +37,14 @@
 # The fact that you are presently reading this means that you have had
 # knowledge of the CeCILL license and that you accept its terms.
 
+from builtins import zip
+from builtins import filter
+from builtins import str
+from builtins import range
+from past.builtins import basestring
+from builtins import object
 import os
 import re
-from operator import isNumberType
 from warnings import warn
 
 import matplotlib.dates
@@ -84,7 +91,7 @@ from .grid.regridding import shift1d
 from .phys.units import deg2m, tometric, m2deg
 from .remote import OutputWorkFile
 from ..config import get_config_value
-import color
+from . import color
 
 
 MA = N.ma
@@ -806,7 +813,7 @@ class Plot(object):
         kwaxes = kwfilter(kwargs,'axes')
         subplots_adjust = kwargs.pop('sa', subplots_adjust)
         for adj in 'left', 'right', 'top', 'bottom', 'wspace', 'hspace':
-            if kwargs.has_key(adj):
+            if adj in kwargs:
                 if subplots_adjust is None: subplots_adjust = {}
                 subplots_adjust[adj] = kwargs.pop(adj)
         if fullscreen:
@@ -859,7 +866,7 @@ class Plot(object):
         if axes is not None:
             self.axes = axes
             if self.axes.get_figure() != self.fig:
-                if verbose: print 'Axes does not match figure'
+                if verbose: print('Axes does not match figure')
                 self.fig = self.axes.get_figure()
         elif subplot is not None:
             if axes_host:
@@ -939,7 +946,7 @@ class Plot(object):
             if self.axes is not None:
                 for container in self.axes.xaxis, self.axes.yaxis, self.axes:
                     if hasattr(container, '_vacumm'):
-                        for key, val in container._vacumm.iteritems():
+                        for key, val in container._vacumm.items():
                             if val is obj:
                                 del container._vacumm[key]
             pp = self.get_obj('plotted')
@@ -991,7 +998,7 @@ class Plot(object):
             elif mefirst:
                 brothers = [self]+brothers.pop(self)
         if callable(filter):
-            brothers = [b for b in brothers if filter(b)]
+            brothers = [b for b in brothers if list(filter(b))]
         return brothers
 
     @classmethod
@@ -1051,7 +1058,7 @@ class Plot(object):
             if single:
                  self._gobjs[gt] = obj
             else:
-                if not self._gobjs.has_key(gt):
+                if gt not in self._gobjs:
                     self._gobjs[gt] = []
                 if isinstance(obj, list):
                     self._gobjs[gt].extend(obj)
@@ -1088,7 +1095,7 @@ class Plot(object):
             return self._gobjs.get(gtype, None)
 
         # Check type
-        for oo in self._gobjs.values():
+        for oo in list(self._gobjs.values()):
             if isinstance(oo, list):
                 for o in oo:
                     if isinstance(oo, gtype):
@@ -1123,7 +1130,7 @@ class Plot(object):
         if single:
              container._vacumm[gtype] = obj
         else:
-            if not container._vacumm.has_key(gtype):
+            if gtype not in container._vacumm:
                 container._vacumm[gtype] = []
             container._vacumm[gtype].append(obj)
         return obj
@@ -1178,7 +1185,7 @@ class Plot(object):
     def del_axobj(self, gtype, axis=None):
         container = self.axes if axis is None else getattr(self.axes, axis+'axis')
         if container is None: return
-        if container._vacumm.has_key(gtype):
+        if gtype in container._vacumm:
             del container._vacumm[gtype]
 
     def isset(self, key):
@@ -1250,7 +1257,7 @@ class Plot(object):
             'tight_layout', 'param_label', 'autoresize']:
             kw[kwtype] = kwfilter(kwargs, kwtype+'_')
             if (kwtype in self._primary_attributes+self._secondary_attributes+
-                    self._special_attributes and kw[kwtype].has_key(kwtype)):
+                    self._special_attributes and kwtype in kw[kwtype]):
                 del kw[kwtype][kwtype]
         kwanim = kwfilter(kwargs, 'anim_', keep=True)
         kw['show'].update(**kwanim)
@@ -1378,10 +1385,10 @@ class Plot(object):
                 # - get it from cdms variable
                 if props['type']=='d' and raw_att in vatts:
                     kwvar = dict_aliases(vkwargs, raw_att)
-                    if not xykwargs.has_key(att) and kwvar.has_key(att):
+                    if att not in xykwargs and att in kwvar:
                         default = kwvar[att]
                 # - special
-                if defaults.has_key(att):
+                if att in defaults:
                     default = defaults[att]
 
                 # Get attribute
@@ -1411,13 +1418,13 @@ class Plot(object):
             # - use of the form xlim/ylim
             if props['lim']:
                 if isinstance(props['lim'],dict):
-                    if props['lim'].has_key(xy+'min'):
+                    if xy+'min' in props['lim']:
                         axmin = props['lim'][xy+'min']
-                    elif props['lim'].has_key('min'):
+                    elif 'min' in props['lim']:
                         axmin = props['lim']['min']
-                    if props['lim'].has_key(xy+'max'):
+                    if xy+'max' in props['lim']:
                         axmax = props['lim'][xy+'max']
-                    elif props['lim'].has_key('max'):
+                    elif 'max' in props['lim']:
                         axmax = props['lim']['max']
                 else:
                     axmin, axmax = props['lim']
@@ -1650,7 +1657,7 @@ class Plot(object):
             return tuple((transform-self.axes.transData).transform_point((x, y)))
 
         # From data coordinates (check xyscaler only)
-        if (transform is self.axes.transData or transform in self.axes.transData._parents.values() \
+        if (transform is self.axes.transData or transform in list(self.axes.transData._parents.values()) \
             or str(self.axes.transData) in str(transform)) and xyscaler is not False: # Add transform from ie degrees to m
             if xyscaler is None and hasattr(self, 'xyscaler'): xyscaler = self.xyscaler
             x = _asnum_(x)
@@ -1741,7 +1748,7 @@ class Plot(object):
             defaults = dict(ha='left', va='bottom', size=9, color='.4', family='monospace')
         else:
             defaults = dict(ha='center', va='center', size='12')
-        for key, val in defaults.items():
+        for key, val in list(defaults.items()):
             kwargs.setdefault(key, val)
 
         # Plot
@@ -2538,7 +2545,7 @@ class Plot(object):
 
         # Save
         self.fig.savefig(figfile, **kwargs)
-        if verbose: print 'Saved plot to '+figfile
+        if verbose: print('Saved plot to '+figfile)
         self._last_figfile = figfile
 
         # Transfer
@@ -2572,7 +2579,7 @@ class Plot(object):
             'svg':['/usr/bin/svgdisplay',
                 '/usr/bin/konqueror']}
         backend = P.get_backend().lower()
-        if backend in viewers.keys():
+        if backend in list(viewers.keys()):
             if savefig is None:
                 tmpfig = mktemp(suffix='.'+backend)
                 self.fig.savefig(tmpfig, **kwargs)
@@ -3104,7 +3111,7 @@ class Plot(object):
         if xy=='d' or getattr(self, xy+'type')=='d':
             if not self.has_data(): return
             if idata is None:
-                idata = range(len(self.data))
+                idata = list(range(len(self.data)))
             elif not isinstance(idata, (list, tuple)):
                 idata = [idata]
             for i in idata:
@@ -3470,7 +3477,7 @@ class Plot(object):
         dd = {}
         for key in keys:
             dd[key] = getattr(self, key)
-        items = dict([(key, val) for (key, val) in items.items() if val is not None])
+        items = dict([(key, val) for (key, val) in list(items.items()) if val is not None])
         dd.update(items)
         if self.latex_units and 'units' in dd and not self.is_latex(dd['units']):
             dd['units'] = '$%(units)s$'%dd
@@ -3479,7 +3486,7 @@ class Plot(object):
     def sndict(self, *keys, **items):
         """Get attributes as a dictionary of strings or numbers"""
         dd = self.dict(*keys, **items)
-        for key, val in dd.items():
+        for key, val in list(dd.items()):
             if val is None or val is False or val is True:
                 dd[key] = ''
         return dd
@@ -3488,7 +3495,7 @@ class Plot(object):
     def sdict(self, *keys, **items):
         """Get attributes as a dictionary of strings"""
         dd = self.sndict(*keys, **items)
-        for key, val in dd.items():
+        for key, val in list(dd.items()):
             val = str(val)
         return dd
 
@@ -3567,7 +3574,7 @@ class Plot1D(Plot):
         return self.get_xdata(**kwargs)
 
 
-class ScalarMappable:
+class ScalarMappable(object):
     """Abstract class for adding scalar mappable utilities
 
     :Attribute params:
@@ -3706,7 +3713,7 @@ class ScalarMappable:
 
         # Min and max
         for key in 'positive', 'negative', 'symetric', 'anomaly':
-            if kwargs.has_key(key) and kwargs[key]:
+            if key in kwargs and kwargs[key]:
                 mode = key
         vmin = self.vmin if self.isset('vmin') else None
         vmax = self.vmax if self.isset('vmax') else None
@@ -4068,18 +4075,18 @@ class ScalarMappable:
         if fit:
             axbbox = self.axes.get_position()
             caxbbox = cb.ax.get_position()
-            print 'avant', axbbox, caxbbox
+            print('avant', axbbox, caxbbox)
             if cb.orientation=='horizontal':
                 cb.ax.set_position([axbbox.x0, caxbbox.y0, axbbox.width, caxbbox.height])
             else:
                 cb.ax.set_position([caxbbox.x0, axbbox.y0, caxbbox.width, axbbox.height])
-            print 'apres', cb.ax.get_position()
+            print('apres', cb.ax.get_position())
         # - ticks
         if levels is not None and 'format' not in kwargs:
             samp = len(levels)/ticklabels_nmax+1
             if samp>1:
                 levels = list(levels)
-                for i in xrange(len(levels)):
+                for i in range(len(levels)):
                     if i%samp:
                         levels[i] = ''
             labels = cb.set_ticklabels(levels)
@@ -4315,9 +4322,9 @@ class Curve(Plot1D):
             if N.sometrue(1-mask):
                 kwmark = {}
                 for key in marker_keys:
-                    if kwargs.has_key(key):
+                    if key in kwargs:
                         kwmark[key] = kwargs[key]
-                if kwargs.has_key('zorder'): kwmark['zorder'] = kwargs['zorder']
+                if 'zorder' in kwargs: kwmark['zorder'] = kwargs['zorder']
                 if self.xtype!='d':
                     xx = N.ma.array(xx,mask=mask)
                 else:
@@ -4390,7 +4397,7 @@ class Bar(Plot1D):
         kwbar = kwfilter(kwargs, 'bar_')
         bar_keys = ['color','linewidth','linestyle','markerwidth', 'edgecolor', 'zorder', 'alpha',  'log']
         for key in bar_keys:
-            if kwargs.has_key(key):
+            if key in kwargs:
                 kwbar[key] = kwargs[key]
         kwbar['label'] =   self.label  if label is None else label
 
@@ -4407,7 +4414,7 @@ class Bar(Plot1D):
         if shadow: self.add_shadow(pp, **kwsh)
         if glow: self.add_glow(pp, **kwgl)
 
-class QuiverKey:
+class QuiverKey(object):
 
     def quiverkey(self, qv, value=None, value_mode=80, **kwargs):
         """Add a quiver key to the plot
@@ -4635,7 +4642,7 @@ class Stick(QuiverKey, ScalarMappable, Curve):
         if glow: self.add_glow([qv], 'quiver_glow', **kwgl)
 
         # Zorder of modulus
-        if mod and not kwmod.has_key('zorder'):
+        if mod and 'zorder' not in kwmod:
             oo = self.get_obj('lines')
             if self.get_obj('lines_shadow') is not None:
                 oo.extend(self.get_obj('lines_shadow'))
@@ -4973,7 +4980,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         # Norm
 #        from matplotlib.colors import Normalize
         if norm is None:
-            from color import StepsNorm
+            from .color import StepsNorm
             norm = StepsNorm(levels, **kwnorm)
         elif norm is True:
             norm = Normalize(min(levels), max(levels))
@@ -5005,8 +5012,8 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
                 kwfill.setdefault('edgecolors', 'None')
                 kwfill.setdefault('linewidth', 0)
                 func = self._plotter.pcolor
-            for att, val in dict(cmap=cmap,alpha=alpha, norm=norm,
-                    vmin=self.vmin, vmax=self.vmax, edgecolors='none').items():
+            for att, val in list(dict(cmap=cmap,alpha=alpha, norm=norm,
+                    vmin=self.vmin, vmax=self.vmax, edgecolors='none').items()):
                 kwfill.setdefault(att, val)
             pp = func(self.x2db, self.y2db, data, **kwfill)
             if alpha != 1:
@@ -5059,7 +5066,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         for key in 'edgecolors', 'linewidths':
 #            if hasatt(pp, 'set_'+key):
 #                getattr(pp, 'set_'+key)(kwfill[key])
-            if not kwfill.has_key(key): continue
+            if key not in kwfill: continue
             if hasattr(pp, 'collections'):
                 for p in pp.collections:
                     getattr(p, 'set_'+key)(kwfill[key])
@@ -5121,7 +5128,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         dict_copy_items(kwargs, [kwsh, kwgl], 'anim')
 
         # Setup
-        if kwargs.has_key('fmt'):
+        if 'fmt' in kwargs:
             kwcl['fmt'] = kwargs['fmt']
         kwcl.setdefault('fmt', '%g')
         kw.setdefault('alpha', .5 if self.fill_method.startswith('pcolor') or
@@ -5413,7 +5420,7 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         kwsp = kwfilter(kwargs, 'streamplot')#, defaults=dict(angles='uv'))
         if zorder is not None:
             kwsp['zorder'] = zorder
-        if kwsp.has_key('width') and kwsp['width'] > .01:
+        if 'width' in kwsp and kwsp['width'] > .01:
             kwsp['width'] *= 0.001
         shadow = kwsp.pop('shadow', shadow)
         glow = kwsp.pop('glow', glow)
@@ -5905,11 +5912,11 @@ class Map(Plot2D):
             img = self.map.arcgisimage(**kwargs)
             img.set_zorder(kwargs.get('zorder', 1))
             return img
-        except Exception, e:
+        except Exception as e:
             warn('Error when plotting arcgisimage: {}.\nMessage: {}'.format(
                 service, e.message))
 
-    add_arcgisimage.__doc__.format(', '.join(ARCGISIMAGE_ALIASES.keys()))
+    add_arcgisimage.__doc__.format(', '.join(list(ARCGISIMAGE_ALIASES.keys())))
 
     def _get_posposref_(self, pos=None, posref=None, xrel=0.1, yrel=0.1, transform='axes',
         xpad=30, ypad=None):
@@ -6235,7 +6242,7 @@ class Map(Plot2D):
                 try:
                     self.set_axobj('drawmapboundary', self.map.drawmapboundary(**kwfilter(kwargs,'drawmapboundary')))
                 except:
-                    print 'Problem with Basemap.drawmapboundary'
+                    print('Problem with Basemap.drawmapboundary')
 
             # Continents
             if self.map.res is not None and self.map_update>=2:
@@ -6286,7 +6293,7 @@ class Map(Plot2D):
 
                 #elif m.res == 's': # SHOM
                 else:
-                    from io import Shapes
+                    from .io import Shapes
                     if self.map.res=='s':
                         from vacumm.bathy.shorelines import Histolitt
                         shoreline = Histolitt(m=self.map, proj=True)
@@ -6306,10 +6313,10 @@ class Map(Plot2D):
                                 kwshoreline.update(kwfillcontinents)
                             kwshoreline.update(show = False, axes=self.axes)
                             shoreline.plot(**kwshoreline)
-                        except Exception, e:
+                        except Exception as e:
                             import traceback
-                            print '*** Error in shaprefile shoreline'
-                            print traceback.format_exc()
+                            print('*** Error in shaprefile shoreline')
+                            print(traceback.format_exc())
 
             # Tick labels and lines
             kwpm_def = dict(linewidth=0.5)
@@ -6331,8 +6338,7 @@ class Map(Plot2D):
                         'minutes':minutes})
                 if parallels is None:
                     parallels = geo_scale(**kwgs)
-                parallels = filter(lambda _:
-                    _>= self.map.llcrnrlat and _<= self.map.urcrnrlat, parallels)
+                parallels = [_ for _ in parallels if _>= self.map.llcrnrlat and _<= self.map.urcrnrlat]
                 if minutes: kwp.setdefault('fmt',
                     MinuteLabel(parallels, zonal=False, tex=None,
                         no_seconds=no_seconds, bfdeg=bfdeg))
@@ -6356,8 +6362,7 @@ class Map(Plot2D):
                     if (meridians[-1]-meridians[0])>=360.: # to prevent overlaping
                         meridians = meridians[meridians<meridians[0]+360.]
                 crnlon = self.map.llcrnrlon,
-                meridians = filter(lambda _:
-                    _>= self.map.llcrnrlon and _<= self.map.urcrnrlon, meridians)
+                meridians = [_ for _ in meridians if _>= self.map.llcrnrlon and _<= self.map.urcrnrlon]
                 if minutes:
                     kwm.setdefault('fmt',
                         MinuteLabel(meridians, zonal=True,  tex=None,
@@ -6370,7 +6375,7 @@ class Map(Plot2D):
                 def addto3d(what, fmt='%g', labstyle=None, **kwargs):
                     """Handle lines ans labels for 3D plots"""
                     coords = []
-                    for value, par in self.get_axobj(what).items():
+                    for value, par in list(self.get_axobj(what).items()):
                         for line in par[0]:
                             xy = line.get_xydata()
                             coords.append(xy)
@@ -6412,7 +6417,7 @@ class Map(Plot2D):
                     addto3d('drawmeridians', **kwm)
                 # Remove duplicated labels
                 llfound = []
-                for ll in lonlabs.keys()[:]:
+                for ll in list(lonlabs.keys())[:]:
                     llm = ll%360.
                     istart = 1-int(llm in llfound)
                     for lab in lonlabs[ll][1][1:]:
@@ -6562,9 +6567,9 @@ class AutoDateLocator2(AutoDateLocator):
             # Fix hourly locator to start at midnight
             good = [2, 3, 4, 6, 8, 12]
             sampling = good[min(N.searchsorted(good, sampling), len(good)-1)]
-            for i in xrange(sampling):
+            for i in range(sampling):
                 try:
-                    locator.rule.set(byhour=range(i, 24, sampling))
+                    locator.rule.set(byhour=list(range(i, 24, sampling)))
                 except:
                     pass
             locator.rule.set(interval=1)
@@ -6620,7 +6625,7 @@ class DualDateFormatter(DateFormatter):
             locator=None, **kwargs):
         # Which level?
         slevels = ['year', 'month', 'week', 'day', 'hour', 'minute']
-        if not isNumberType(level):
+        if not isinstance(level, str):
             level = level.strip().lower()
             if level.endswith('s'):
                 level = level[:-1]
@@ -6727,7 +6732,7 @@ class DualDateFormatter(DateFormatter):
         if 'level' in kwargs:
             level = kwargs.pop('level')
         else:
-            keys = sorted(AutoDateFormatter2.scaled.keys(), reverse=True)
+            keys = sorted(list(AutoDateFormatter2.scaled.keys()), reverse=True)
             tmin, tmax = locator.axis.get_view_interval()
             dtmin, dtmax = locator.viewlim_to_dt()
             if hasattr(locator, 'get_locator'):
@@ -7055,7 +7060,7 @@ def add_lightshading(objs, width=7, fraction=0.5, zorder=None, ax=None, add=True
          warn('Cannot add light shading effect using agg filters')
 
 
-class MinuteLabel:
+class MinuteLabel(object):
     def __init__(self, m, zonal=True, **kwargs):
         bfdeg = kwargs.pop('bfdeg', None)
         if not isinstance(m, Basemap) and (bfdeg is None or bfdeg=='auto'):
@@ -7284,16 +7289,16 @@ def best_loc_map(m, onland=True, allowed=_locations):
     if not hasattr(m, 'coastpolygons'):
         sloc = allowed[0]
     else:
-        from grid.masking import polygons
-        from grid import bounds2d
+        from .grid.masking import polygons
+        from .grid import bounds2d
         from _geoslib import Polygon
         fractions = N.zeros((3, 3))
         polys = polygons(m)
         x = m.xmin + (m.xmax-m.xmin)*(0.5+N.arange(3))/3.
         y = m.ymin + (m.ymax-m.ymin)*(0.5+N.arange(3))/3.
         xxb, yyb = bounds2d(x, y)
-        for j in xrange(3):
-            for i in xrange(3):
+        for j in range(3):
+            for i in range(3):
                 pcell = Polygon(N.array([xxb[j, i], yyb[j, i]]).T)
                 for pcoast in polys:
                     if pcell.within(pcoast):
@@ -7330,7 +7335,7 @@ def add_param_label(text, loc=(0.01, 0.01), color='0.4', size=8, family='monospa
     if isinstance(text, dict):
         clsname = text.__class__.__name__
         tt = []
-        for item in text.items():
+        for item in list(text.items()):
             tt.append('%s=%s'%item)
         text = ', '.join(tt)
 
@@ -7471,7 +7476,7 @@ def hlitvs(color='.95', axis='x', units='ticks', axes=None, maxticks=10, **kwarg
     kwargs.setdefault('alpha', alpha)
     objs = []
     axspan = getattr(axes, 'ax%sspan'%'vh'[xy=='y'])
-    for i in xrange(0, len(ticks)-1, 2):
+    for i in range(0, len(ticks)-1, 2):
         objs.append(axspan(ticks[i], ticks[i+1], **kwargs))
 #        objs[-1].set_zorder(0)
     return objs

@@ -36,7 +36,7 @@ Satellite tools
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
-import satellite
+from . import satellite
 #import sst
 #import nar
 #import seviri
