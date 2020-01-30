@@ -45,7 +45,7 @@ from builtins import object
 import os
 import re
 import time, datetime as DT
-from operator import isNumberType, gt, ge, lt, le
+from operator import gt, ge, lt, le
 from re import split as resplit,match, compile as recompile
 import math
 
@@ -64,7 +64,7 @@ STR_UNIT_TYPES = ['years','months','days','hours','minutes','seconds']
 RE_SPLIT_DATE = recompile(r'[ Z:T\-]')
 RE_MATCH_TIME_PATTERN = r'[0-2]?\d?\d?\d(-[01]?\d(-[0-3]?\d([ TZ][0-2]?\d(:[0-6]?\d(:[0-6]?\d(\.\d+)?)?)?)?)?)?'
 RE_MATCH_TIME = recompile(RE_MATCH_TIME_PATTERN+'$', re.I).match
-RE_MATCH_UNITS_PATTERN = r'(%s) since '%'|'.join(STR_UNIT_TYPES)+RE_MATCH_TIME_PATTERN+'[ \w]*'
+RE_MATCH_UNITS_PATTERN = r'(%s) since '%'|'.join(STR_UNIT_TYPES)+RE_MATCH_TIME_PATTERN+r'[ \w]*'
 RE_MATCH_UNITS = recompile(RE_MATCH_UNITS_PATTERN+'$', re.I).match
 
 #: Time units for CNES julian days
@@ -1880,7 +1880,7 @@ class SpecialDateFormatter(DateFormatter):
 
         # Which level?
         slevels = ['year', 'month', 'day', 'hour', 'minute']
-        if not isNumberType(level):
+        if not isnumber(level):
             if level.lower() not in slevels:
                 level = -1
             else:
@@ -2017,7 +2017,7 @@ def round_date(mydate, round_type, mode='round'):
     else:
         step = 1
     step = max(int(step), 1)
-    if not isNumberType(round_type):
+    if not isnumber(round_type):
         round_type = STR_UNIT_TYPES.index(unit_type(round_type, string_type=True))
     stype = STR_UNIT_TYPES[round_type]
     ct = comptime(mydate)
@@ -2337,7 +2337,7 @@ class Intervals(object):
         end_date = comptime(time_range[1])
 
         # dt
-        if isNumberType(dt):
+        if isnumber(dt):
             units = 'seconds since 2000'
             dt = (
                 (end_date.torel(units).value-start_date.torel(units).value)/dt,
@@ -2442,7 +2442,7 @@ class IterDates(object):
         end_date = comptime(time_range[1])
 
         # dt
-        if isNumberType(dt):
+        if isnumber(dt):
             units = 'seconds since 2000'
             dt = (
                 (end_date.torel(units).value-start_date.torel(units).value)*1./dt,
@@ -2540,7 +2540,7 @@ def time_split(what, how, roundit=None, bb='co'):
     if is_time(how): how = [how]
 
     # dt
-    if (isNumberType(how) or isinstance(how, basestring) or
+    if (isnumber(how) or isinstance(how, basestring) or
             isinstance(how, tuple)):
         how = Intervals(tminmax[:2], how, roundto=roundit)
 
@@ -2819,7 +2819,7 @@ def time_selector(arg0, arg1=None, bounds=None, round=False, utc=True):
     # Interval
     if arg1 is None: # from a date to now
         selection = (comptime(arg0), now(utc))
-    elif isNumberType(arg0): # from now into the past
+    elif isnumber(arg0): # from now into the past
         nn = now(utc)
         selection = (add_time(nn, -arg0, arg1), nn)
     else: # between two dates

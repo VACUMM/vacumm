@@ -4963,7 +4963,6 @@ class Plot2D(ScalarMappable, QuiverKey, Plot):
         kwsh = kwfilter(kwargs, 'shadow')
         kwgl = kwfilter(kwargs, 'glow')
         dict_copy_items(kwargs, [kwsh, kwgl], 'anim')
-
         # Fill method
         fill = self.fill_method = self.get_fill(**kwargs)
         if fill == 'no': return

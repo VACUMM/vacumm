@@ -35,6 +35,7 @@
 #
 
 
+from __future__ import print_function
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
 __date__ = '2010-11-02'
@@ -106,16 +107,16 @@ class ExceptionDebugger(object):
                         s = s.replace('\n', '\n\t'+' '*22)
                         s = '%s = %s'%(type(value), s)
                         info = u'%s%s\n'%(info, s)
-                    except Exception, e:
+                    except Exception as e:
                         info = u'%s<ERROR WHILE PRINTING VALUE: %s>\n'%(info, e)
-        except Exception, e:
+        except Exception as e:
             info = u'%s<ERROR WHILE PRINTING EXCEPTION DETAILS: %s>\n'%(info, e)
         info = u'%s\n%s\n%s\n%s\n'%(info, ls, fmt_tb, ls)
         return info
 
     def exceptHook(self, etype, evalue, tb):
         '''Exception hook used when installed by :meth:`bindExceptHook`'''
-        print>>sys.stderr, self.getDetailedExceptionInfo(etype, evalue, tb)
+        print(self.getDetailedExceptionInfo(etype, evalue, tb), file=sys.stderr)
         if self.exit:
             sys.exit(1)
 

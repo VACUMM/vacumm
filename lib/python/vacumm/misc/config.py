@@ -34,6 +34,8 @@
 #
 
 from __future__ import absolute_import
+from __future__ import print_function
+from future.utils import raise_
 if __name__ == '__main__':
     import sys; del sys.path[0]
 
@@ -93,8 +95,8 @@ def _valwrap_(validator):
     validator._parse_with_caching(configspec[section][option])
     '''
     # Already wrapped
-    if (validator.func_name.startswith('validator_wrapper-') or
-        validator.func_name.startswith('list_validator_wrapper-')):
+    if (validator.__name__.startswith('validator_wrapper-') or
+        validator.__name__.startswith('list_validator_wrapper-')):
         return validator
 
     # Wrapper
@@ -127,7 +129,7 @@ def _valwraplist_(validator):
         - **shape**: check value shape (requires numpy)
     '''
     # Already wrapped
-    if validator.func_name.startswith('list_validator_wrapper-'):
+    if validator.__name__.startswith('list_validator_wrapper-'):
         return validator
 
     # Wrapper
@@ -169,7 +171,7 @@ def _valwraplist_(validator):
                     shape, vshape = map(int, shape), numpy.shape(value)
                     if vshape != shape:
                         raise VdtSizeError('Incorrect shape: %s, %s shape expected'%(vshape, shape))
-                except Exception, e:
+                except Exception as e:
                     raise ValidateError('Cannot test value shape, this may be caused by an irregular array-like shape. Error was:\n%s'%traceback.format_exc())
 
         # Preserve tuple type
@@ -297,11 +299,11 @@ def validator_datetime(value, default=None, fmt='%Y-%m-%dT%H:%M:%S'):
     if str(value) == 'None': return None
     if value == '': value = default
     try: return datetime.datetime.strptime(value, fmt)
-    except ValueError, e: raise VdtDateTimeError(e)
+    except ValueError as e: raise VdtDateTimeError(e)
 
-_re_validator_workdir_split_ = re.compile('\s*>\s*').split
-_re_validator_workdir_start_ =  re.compile('^[\[(]').search
-_re_validator_workdir_stop_ =  re.compile('[\])]').search
+_re_validator_workdir_split_ = re.compile(r'\s*>\s*').split
+_re_validator_workdir_start_ =  re.compile(r'^[\[(]').search
+_re_validator_workdir_stop_ =  re.compile(r'[\])]').search
 def validator_workdir(value, default=''):
     if str(value) == 'None': return ''
     value = value.strip()
@@ -486,7 +488,7 @@ def _update_registry_():
 
     # 1. Fix specs dicts
     # 2. Generate list validators
-    for k, v in VALIDATOR_SPECS.items():
+    for k, v in list(VALIDATOR_SPECS.items()):
 
         # Check type of spec
         if not isinstance(v, dict):
@@ -537,8 +539,8 @@ _update_registry_()
 _for_doc = []
 for key in VALIDATOR_TYPES:
     spec = VALIDATOR_SPECS[key]
-    if not spec['func'].func_name.startswith('list_validator_wrapper'):
-        val = ':func:`{} <{}>`'.format(key, spec['base_func'].func_name)
+    if not spec['func'].__name__.startswith('list_validator_wrapper'):
+        val = ':func:`{} <{}>`'.format(key, spec['base_func'].__name__)
     else:
         val = ':func:`{}`'.format(key)
     _for_doc.append(val)
@@ -702,9 +704,9 @@ class ConfigManager(object):
         cfg.filename = cfgfile
         cfg.write()
         if verbose:
-            print 'Created default config file: %s'%cfgfile
+            print('Created default config file: %s'%cfgfile)
             if backup:
-                print "Backuped old config file to: %s.bak"%cfgfile
+                print("Backuped old config file to: %s.bak"%cfgfile)
         return cfg
 
     def load(self, cfgfile='config.cfg',
@@ -814,7 +816,7 @@ class ConfigManager(object):
                                 sec[k] = vdef
 
                     else: # Raise an error
-                        raise ValidateError, msg
+                        raise_(ValidateError, msg)
 
             if geterr:
                 return cfg, err
@@ -1527,7 +1529,7 @@ def _opt2cfgname_(name, nested):
         cfgkey = cfgkey[len(nested+'_'):]
     return cfgkey
 
-_re_cfg2optname_sub = re.compile('[_\s]').sub
+_re_cfg2optname_sub = re.compile(r'[_\s]').sub
 def _cfg2optname_(name, nested=None):
     optkey = _re_cfg2optname_sub('-', name)
     if nested: optkey = nested+'-'+optkey
@@ -1643,7 +1645,7 @@ def _walker_optcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
         # Check or create cfg genealogy
         s = cfg
         for p in parents:
-            if not s.has_key(p.name):
+            if p.name not in s:
                 s[p.name] = {}
             s = s[p.name]
         s[key] = value
@@ -1695,7 +1697,7 @@ def _walker_argcfg_setcfg_(sec, key, cfg=None, options=None, nested=None):
         # Check or create cfg genealogy
         s = cfg
         for p in parents:
-            if not s.has_key(p.name):
+            if p.name not in s:
                 s[p.name] = {}
             s = s[p.name]
         s[key] = value
@@ -2068,7 +2070,7 @@ def print_short_help(parser, formatter=None, compressed=False):
         formatter.dedent()
         del result[-1]
         result.append(parser.format_epilog(formatter))
-        print "".join(result)
+        print("".join(result))
 
     elif isinstance(parser, ArgumentParser):
 
@@ -2160,6 +2162,6 @@ Options:
 #    --mars-version=MARS_VERSION
 #                        MARS version. [default: 'V8.11']
 #"""
-    print opt2rst(shelp)
+    print(opt2rst(shelp))
 
 

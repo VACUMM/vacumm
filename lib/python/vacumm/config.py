@@ -1,5 +1,8 @@
 # -*- coding: utf8 -*-
 """Utilities to manage VACUMM basic configuration of modules"""
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
 # Copyright or © or Copr. Actimar/IFREMER (2010-2015)
 #
 # This software is a computer program whose purpose is to provide
@@ -34,13 +37,21 @@
 #
 
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import input
+from past.builtins import basestring
+from builtins import object
+from past.utils import old_div
 import os, sys
 import re
 import glob
 import subprocess,  shlex
 import numpy.distutils
-from ConfigParser import SafeConfigParser, ConfigParser
-import StringIO
+from configparser import SafeConfigParser, ConfigParser
+import io
+import importlib
 from vacumm import VACUMMError
 
 def get_lib_dir():
@@ -318,8 +329,9 @@ def get_dir_dict(modname=None):
                 modname = None
             else:
                 try:
-                    exec 'import %s'+modname
-                    modname = eval(modname)
+                    #exec 'import %s'+modname
+                    #modname = eval(modname)
+                    modname = importlib.import_module(modname)
                 except:
                     mod_dir = os.path.join(get_lib_dir(), *modname.split('.')[1:-1])
                     modname = None
@@ -371,14 +383,14 @@ def get_dl_dir(suggest=None, filedesc=None, quiet=False):
         # Ask choice
         choice = None
         while True: #in range(1, len(dl_dirs)+1):
-            choice = raw_input(msg).strip()
+            choice = input(msg).strip()
             if len(choice)==0:
                 choice = '1'
-                print '1'
+                print('1')
             if len(choice)==1 and choice.isdigit(): # choose within the list of dirs
                 choice = int(choice)
                 if choice<1 or choice>nc:
-                    print "Wrong choice: %i"%choice
+                    print("Wrong choice: %i"%choice)
                     continue
                 break
             elif choice: # specifiy dir
@@ -386,10 +398,10 @@ def get_dl_dir(suggest=None, filedesc=None, quiet=False):
                     try:
                         os.makedirs(choice)
                     except:
-                        print "Can't create directory: "+choice
+                        print("Can't create directory: "+choice)
                         continue
                 if not os.access(choice, os.W_OK|os.R_OK|os.X_OK): # no access
-                    print "No write access to directory: "+choice
+                    print("No write access to directory: "+choice)
                     continue
                 break
         if isinstance(choice, int):
@@ -398,7 +410,7 @@ def get_dl_dir(suggest=None, filedesc=None, quiet=False):
             dl_dir = choice
 
     # Remember it
-    rem = raw_input('Remember this choice? [Y/n] ').strip()
+    rem = input('Remember this choice? [Y/n] ').strip()
     if not rem.lower().startswith('n'):
         set_config_value('vacumm', 'dl_dir', dl_dir)
 
@@ -608,7 +620,7 @@ def get_config_value(section, option, regexp=False, ispath=False, user=True,
                         value[opt].append(cfg.get(section, opt, vars=kwget, raw=raw))
 
         # Filters
-        for opt, values in value.items():
+        for opt, values in list(value.items()):
 
             # Detect tuple of values
             values = _opt2tuple_(values)
@@ -641,7 +653,7 @@ def _ops_on_values_(values, *ops):
 
     # Dict
     if isinstance(values, dict):
-        for key, val in values.items():
+        for key, val in list(values.items()):
             values[key] = _ops_on_values_(values[key], *ops)
         return values
 
@@ -673,7 +685,7 @@ def _filter_uvalues_(values, umode):
                 break
 
     # Remove Nones
-    values = filter(None, values)
+    values = [_f for _f in values if _f]
 
     # Merge values (take last)
     if umode=="merge":
@@ -788,7 +800,7 @@ def get_config(section=None, user=True, asstring=False, cfg=None,
     # As string
     if isinstance(cfg, tuple):
         cfg = merge_configs(cfg)
-    S = StringIO.StringIO()
+    S = io.StringIO()
     cfg.write(S)
     s = S.getvalue()
     S.close()
@@ -806,7 +818,7 @@ def _opt2tuple_(values):
         m = _re_opt2tuple_match(value)
         if m is not None:
             g = list(m.groups())
-            vv = filter(None, g[:-1])
+            vv = [_f for _f in g[:-1] if _f]
             if g[-1] is not None:
                 for i, v in enumerate(vv):
                     vv[i] += g[-1]
@@ -870,8 +882,8 @@ def merge_configs(cfgs, forprint=True, raw=True):
                     cfg.set(section, option, rvali)
 
     # Convert pending options
-    for section, options in pending.items():
-        for option, value in options.items():
+    for section, options in list(pending.items()):
+        for option, value in list(options.items()):
             if forprint:
                 if len(value)==1:
                     value = value[0]
@@ -885,9 +897,9 @@ def merge_configs(cfgs, forprint=True, raw=True):
     return cfg
 
 def _print_header_(text, nc):
-    print '#'*nc
-    print '##  %s'%text.ljust(nc-4)
-    print '#'*nc
+    print('#'*nc)
+    print('##  %s'%text.ljust(nc-4))
+    print('#'*nc)
 
 def print_config(section='__all__', system=True, direc=True, config=True, packages=True,
     extended=False, user=True, headers=True):
@@ -910,20 +922,20 @@ def print_config(section='__all__', system=True, direc=True, config=True, packag
     if extended: base = config = packages = True
     if user:
         if headers: _print_header_('System', nc)
-        print 'Python executable: '+sys.executable
-        print 'Python version: '+' '.join(sys.version.splitlines())
-        print 'Platform: '+sys.platform
+        print('Python executable: '+sys.executable)
+        print('Python version: '+' '.join(sys.version.splitlines()))
+        print('Platform: '+sys.platform)
     if direc:
         if headers: _print_header_('VACUMM directories', nc)
-        for dd in get_dir_dict().items():
-            print '%s: %s'%dd
+        for dd in list(get_dir_dict().items()):
+            print('%s: %s'%dd)
     if config:
         if headers: _print_header_('VACUMM configuration', nc)
-        print get_config(section=section, user=user, asstring=True).strip()
+        print(get_config(section=section, user=user, asstring=True).strip())
     if packages:
         if headers: _print_header_('Versions', nc)
-        from __init__ import __version__
-        print 'VACUMM: '+__version__
+        from .__init__ import __version__
+        print('VACUMM: '+__version__)
         for mname in 'numpy', 'matplotlib', ('mpl_toolkits.basemap', 'basemap'), 'scipy':
             try:
                 if isinstance(mname, tuple):
@@ -931,10 +943,10 @@ def print_config(section='__all__', system=True, direc=True, config=True, packag
                 else:
                     m = __import__(mname)
                 v = m.__version__
-            except ImportError, e:
+            except ImportError as e:
                 v = 'ERROR: '+e.message
             if isinstance(mname, tuple): mname = mname[0]
-            print '%s: %s'%(mname.split('.')[-1], v)
+            print('%s: %s'%(mname.split('.')[-1], v))
 
 
 def get_default_config(section='__all__'):
@@ -1003,13 +1015,13 @@ def set_config_value(section, option, value=None, quiet=False, cfgfile=None):
             cfg.add_section(section)
         cfg.set(section, option, value)
         if not quiet:
-            print 'Updated user configuration file (%s) with:'%cfgfile
-            print ' [%(section)s]\n  %(option)s=%(value)s'%locals()
+            print('Updated user configuration file (%s) with:'%cfgfile)
+            print(' [%(section)s]\n  %(option)s=%(value)s'%locals())
     elif cfg.has_option(section, option):
         cfg.remove_option(section, option)
         if not quiet:
-            print 'Removed the following option from user configuration file (%s):'%cfgfile
-            print ' [%(section)s]\n  %(option)s'%locals()
+            print('Removed the following option from user configuration file (%s):'%cfgfile)
+            print(' [%(section)s]\n  %(option)s'%locals())
 
     # Save
     f = open(cfgfile, 'w')
@@ -1118,12 +1130,12 @@ def check_data_file(section, option, parent_section=None, parent_option=None,
 
     # Ask for this path
     if not quiet:
-        print "Can't find data file: "+path
-        guessed = raw_input("If you know what is this file and where it is on your system,\n"
+        print("Can't find data file: "+path)
+        guessed = input("If you know what is this file and where it is on your system,\n"
             "please enter its name here, or leave it empty: \n").strip()
         if guessed:
             if not os.path.exists(guessed):
-                print 'File not found'
+                print('File not found')
             else:
                 _set_config_path_(guessed, section, option, parent_section,
                     parent_option, parent and cfgpath, suffix)
@@ -1140,13 +1152,13 @@ def check_data_file(section, option, parent_section=None, parent_option=None,
         lic = '#'*nc+'\n'
         lic += '# %s #\n'%license
         lic += '#'*nc
-        print "VACUMM is about to download this data file: %s\n"%url + \
+        print("VACUMM is about to download this data file: %s\n"%url + \
             "We suppose you have requested the authorization and are not responsible for your choice.\n" + \
             "If you're not sure you are allowed to do it, please abort.\n" + \
-            "For more information about this data file and associated distribution license, check this:\n"+lic
+            "For more information about this data file and associated distribution license, check this:\n"+lic)
         while True:
             try:
-                c = raw_input("Would you like to download it? [y/N]\n")
+                c = input("Would you like to download it? [y/N]\n")
             except:
                 c = 'n'
             if not c: c='n'
@@ -1187,7 +1199,7 @@ def _set_config_path_(path, section, option, parent_section, parent_option, cfgp
 
 # UTILITIES
 
-class URLLibProgressBar:
+class URLLibProgressBar(object):
     """Progress bar compatible with :func:`urllib.urlretrieve`
 
     It looks like::
@@ -1223,23 +1235,23 @@ class URLLibProgressBar:
             prog = "[%s]" % ('='*pwidth)
         else:
             prog = "[%s>%s]" % ('='*(np-1), ' '*(pwidth-np))
-        percentPlace = (len(prog) / 2) - len(str(amount))
+        percentPlace = (old_div(len(prog), 2)) - len(str(amount))
         percentString = str(amount) + "%"
         prog = ''.join([prog[0:percentPlace], percentString,
             prog[percentPlace+len(percentString):]])
         sys.stdout.write("\r%s"%prog)
         if end: sys.stdout.write("\n")
 
-import urllib, sys
+import urllib.request, urllib.parse, urllib.error, sys
 
 def download_file(url, locfile, quiet=False):
     """Download a file with a progress bar using :func:`urllib.urlretrieve`"""
     locfile = os.path.realpath(locfile)
     if not quiet:
-        print 'Downloading %s to %s'%(url, locfile)
+        print('Downloading %s to %s'%(url, locfile))
     dl_dir = os.path.dirname(locfile)
     if not os.path.exists(dl_dir): os.makedirs(dl_dir)
-    urllib.urlretrieve(url, locfile, reporthook=URLLibProgressBar() if not quiet else None)
+    urllib.request.urlretrieve(url, locfile, reporthook=URLLibProgressBar() if not quiet else None)
     return locfile
 
 
@@ -1263,10 +1275,10 @@ def edit_file(fname, editor=None, verbose=True):
         editor = os.environ.get("VISUAL") or os.environ.get("EDITOR", "vi")
 
     # Run editor
-    if verbose: print 'Editing user configuration file: '+fname
+    if verbose: print('Editing user configuration file: '+fname)
     if subprocess.call(shlex.split("%s \"%s\"" % (editor, fname))):
         raise VACUMMError("Error editing file: "+fname)
-    if verbose: print 'End of file edition'
+    if verbose: print('End of file edition')
 
 def edit_user_conf_file(fname='vacumm.cfg', editor=None, verbose=True):
     """Edit the user configuration file
@@ -1308,5 +1320,5 @@ if __name__=='__main__':
 #    print_config()
 
 
-    import vacumm.config2;reload( vacumm.config2); print vacumm.config2.get_config_value('vacumm.bathy.bathy','cfgfile_gridded')
+    import vacumm.config2;reload( vacumm.config2); print(vacumm.config2.get_config_value('vacumm.bathy.bathy','cfgfile_gridded'))
 

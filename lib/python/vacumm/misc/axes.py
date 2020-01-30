@@ -49,11 +49,11 @@ from cdms2.axis import AbstractAxis, FileAxis
 from cdms2.coord import TransientAxis2D
 
 from re import match
-from operator import isSequenceType,isNumberType
+import types
 from fnmatch import fnmatch
 from warnings import warn
 from ..__init__ import VACUMMError
-from .misc import check_def_atts, dict_check_defaults, match_atts, cp_atts
+from .misc import check_def_atts, dict_check_defaults, match_atts, cp_atts, isnumber
 
 __all__ = ['isaxis', 'islon', 'islat', 'islev', 'isdep', 'istime',
     'check_axes', 'is_geo_axis', 'check_axis', 'get_axis_type', 'check_id',
@@ -336,7 +336,7 @@ def check_id(axis,**kwargs):
     """Verify that an axis has a suitable id (not like 'axis_3' but 'lon')"""
     aliases = dict(X='lon',Y='lat',Z='depth',T='time')
     aliases.update(kwargs)
-    if hasattr(axis,'axis') and match('^axis_\d+$',axis.id) is not None or match('^variable_\d+$',axis.id):
+    if hasattr(axis,'axis') and match(r'^axis_\d+$',axis.id) is not None or match(r'^variable_\d+$',axis.id):
         axis.id = aliases[axis.axis]
 
 def create_axis(values, atype='-', **atts):
@@ -409,14 +409,13 @@ def create_time(values,units=None,**atts):
 
     istuple = isinstance(values, tuple)
     if not istuple or (istuple and len(values)>3):
-        if isinstance(values,str) or not isSequenceType(values):
-            if hasattr(values, 'next') and hasattr(values, '__iter__'):
-                values = [v for v in values]
-            else:
-                values = [values]
+        if isinstance(values, types.GeneratorType):
+            values = list(values)
+        elif isinstance(values,str):
+            values = [values]
         newvalues = []
         for value in values:
-            if isNumberType(value):
+            if isnumber(value):
                 newvalues.append(value)
             else:
                 if units is None and hasattr(value, 'units'):

@@ -34,6 +34,14 @@
 # knowledge of the CeCILL license and that you accept its terms.
 #
 
+from __future__ import division
+from future import standard_library
+standard_library.install_aliases()
+from builtins import map
+from past.builtins import basestring
+from builtins import object
+from past.utils import old_div
+from future.utils import with_metaclass
 __author__ = 'Jonathan Wilkins'
 __email__ = 'wilkins@actimar.fr'
 __doc__ = '''
@@ -206,12 +214,12 @@ try:
             mem = _psutil_process.memory_percent()
             meminfo = _psutil_process.memory_info()
         rss, vsz = meminfo[:2]
-        ps = '[CPU: %d%%  MEM: %d%%  RSS: %dMo  VSZ: %dMo'%(cpu, mem, rss / 2**20, vsz / 2**20)
+        ps = '[CPU: %d%%  MEM: %d%%  RSS: %dMo  VSZ: %dMo'%(cpu, mem, old_div(rss, 2**20), old_div(vsz, 2**20))
         if len(meminfo) >= 6:
-            ps += '  SHR: %dMo  DAT: %dMo'%(meminfo[2] / 2**20, meminfo[5] / 2**20)
+            ps += '  SHR: %dMo  DAT: %dMo'%(old_div(meminfo[2], 2**20), old_div(meminfo[5], 2**20))
         ps += ']'
         return ps
-except Exception, e:
+except Exception as e:
     Logger.default.verbose('psinfo disabled: %s', e)
     psinfo = lambda:'Ressources informations not available (no module psutil)'
 
@@ -258,7 +266,7 @@ def describe(obj, stats=None, format=pprint.pformat):
             return '%s: shape: %s%s'%(
                 otype, sh,
                 stats and ', min: %s, max: %s, avg: %s, count: %s'%(mi, ma, av, co) or '')
-    except Exception, e:
+    except Exception as e:
         logger.exception('Error getting description of object %s', type(obj))
         return '%s (error getting description)'%(type(obj))
 
@@ -273,17 +281,17 @@ class _classinstancemethod_wrapper(object):
         self.obj = obj
         self.type = type
     def __call__(self, *args, **kw):
-        assert not kw.has_key('self') and not kw.has_key('cls'), (
+        assert 'self' not in kw and 'cls' not in kw, (
             "You cannot use 'self' or 'cls' arguments to a "
             "classinstancemethod")
         return self.func(*((self.obj, self.type) + args), **kw)
     def __repr__(self):
         if self.obj is None:
             return ('<bound class method %s.%s>'
-                    % (self.type.__name__, self.func.func_name))
+                    % (self.type.__name__, self.func.__name__))
         else:
             return ('<bound method %s.%s of %r>'
-                    % (self.type.__name__, self.func.func_name, self.obj))
+                    % (self.type.__name__, self.func.__name__, self.obj))
 
 class classinstancemethod(object):
     """
@@ -328,7 +336,7 @@ class Class(type):
         cls._init_class(name, bases, dct)
 
 
-_logging_proxies = list(map(lambda f: (f.lower(),f.lower()), get_str_levels()+['exception']))
+_logging_proxies = list([(f.lower(),f.lower()) for f in get_str_levels()+['exception']])
 _logging_proxies += [
     ('get_loglevel', 'get_level_name'),
     ('set_loglevel', 'set_level'),
@@ -369,9 +377,9 @@ def add_logging_proxies(cls):
         
     for args in _logging_proxies:
         wrap_logging_function(cls, *args)
-add_logging_proxies.__doc__ %= ('\n        - '.join(map(lambda f: '%s => %s'%f, _logging_proxies)),)
+add_logging_proxies.__doc__ %= ('\n        - '.join(['%s => %s'%f for f in _logging_proxies]),)
 
-class Object(object):
+class Object(with_metaclass(Class, object)):
     '''
     Vacumm's base class proving common usefull features:
 
@@ -396,8 +404,6 @@ class Object(object):
     configuration (:func:`get_default_config`) made at instance creation time.
 
     '''
-    # All subclasses will use this metaclass
-    __metaclass__ = Class
     # For example, the following classes definition:
     #   In a vacumm.a.py module:
     #     from vacumm import Object
@@ -866,7 +872,7 @@ class Object(object):
 # http://code.activestate.com/recipes/204197-solving-the-metaclass-conflict/
 ################################################################################
 
-import inspect, types, __builtin__
+import inspect, types, builtins
 
 ###################### preliminary: two utility functions ######################
 
@@ -880,7 +886,7 @@ def skip_redundant(iterable, skipset=None):
 
 
 def remove_redundant(metaclasses):
-    skipset = set([types.ClassType])
+    skipset = set([type])
     for meta in metaclasses: # determines the metaclasses to be skipped
         skipset.update(inspect.getmro(meta)[1:])
     return tuple(skip_redundant(metaclasses, skipset))

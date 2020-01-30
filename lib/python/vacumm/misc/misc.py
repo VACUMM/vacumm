@@ -58,7 +58,7 @@ import fnmatch
 from collections import OrderedDict
 from copy import copy, deepcopy
 from itertools import cycle
-from types import IntType, FloatType, LongType, ComplexType
+import numbers
 import operator
 
 import numpy as N, MV2, cdms2
@@ -611,7 +611,7 @@ def is_iterable(obj, nostr=True, nogen=True):
 iterable = is_iterable
 
 def isnumber(var):
-    return type(var) in [IntType,FloatType,LongType,ComplexType]
+    return isinstance(var, numbers.Number)
 
 
 
@@ -1299,7 +1299,7 @@ class FileTree(object):
         - **include**, optional:: A string (or a list of strings) indicating which REGULAR EXPRESSION patterns files must match if they are excluded by 'exclude' patterns (using re.search) [default: None]
         - **relative**, optional:: Return file names relative to input_dir [default: False]
     """
-    default_patterns = dict(patterns=['.*'],exclude=['~$','^CVS$/','^\.svn$/','^\.DS_Store$','\.db$','\.ini$'],include=[],)
+    default_patterns = dict(patterns=[r'.*'],exclude=[r'~$',r'^CVS$/',r'^\.svn$/',r'^\.DS_Store$',r'\.db$',r'\.ini$'],include=[],)
 
     def __init__(self,input_dir,relative=False,scan=True,**kwargs):
 
