@@ -6625,7 +6625,7 @@ class DualDateFormatter(DateFormatter):
             locator=None, **kwargs):
         # Which level?
         slevels = ['year', 'month', 'week', 'day', 'hour', 'minute']
-        if not isinstance(level, str):
+        if isinstance(level, str):
             level = level.strip().lower()
             if level.endswith('s'):
                 level = level[:-1]
