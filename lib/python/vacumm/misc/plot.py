@@ -1188,21 +1188,21 @@ def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None,
             kwdef['linewidth'] = markerlinewidth
             kwdef['label'] = label_centers
             kwdef['alpha'] = alpha
-            centers = ax.plot(xx[::samp, ::samp].ravel(), yy[::samp, ::samp].ravel(), marker, markersize=markersize,
+            pcenters = ax.plot(xx[::samp, ::samp].ravel(), yy[::samp, ::samp].ravel(), marker, markersize=markersize,
                 **kwfilter(kwargs, 'center', defaults=kwdef))
 
         # Lines
         if centers==2 or centers<0:
             kwpg = kwfilter(kwargs, 'center', defaults=kwlines)
-            edges = _plot_grid_(ax, xx, yy, samp, alpha, zorder, label_edges, **kwpg)
+            pedges = _plot_grid_(ax, xx, yy, samp, alpha, zorder, label_edges, **kwpg)
 
     else:
-        centers=None
+        pcenters=None
 
     # Create lines
     if edges:
         kwpg = kwfilter(kwargs, 'edge', defaults=kwlines)
-        edges = _plot_grid_(ax, xx2d, yy2d, samp, alpha, zorder, label_edges, **kwpg)
+        pedges = _plot_grid_(ax, xx2d, yy2d, samp, alpha, zorder, label_edges, **kwpg)
 
 #        lines = ()
 #        ny, nx = gg.shape
@@ -1218,9 +1218,9 @@ def add_grid(gg, color='k', edges=True, centers=False, m=None, linecolor=None,
 #        ax.add_collection(edges)
 #        gobjs(grid_edges=edges)
     else:
-        edges=None
+        pedges=None
 
-    return centers, edges
+    return pcenters, pedges
 
 
 
