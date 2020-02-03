@@ -411,6 +411,7 @@ def get_closest(xx, yy, xp, yp, proj=True, mask=None,  gridded=True, **kwargs):
     # Geo grid distances
     if proj:
         if not callable(proj):
+            from .basemap import get_proj
             proj = get_proj((xx,yy))
         xx,yy = proj(xx,yy)
         xp,yp = proj(xp,yp)
@@ -819,6 +820,7 @@ def meshweights(x, y=None, proj=None, axis=-1):
     # - 2D
     if x.ndim==2:
         if proj is True:
+            from .basemap import get_proj
             proj = get_proj((x, y))
         xxb, yyb = meshcells(x, y)
         if proj:
@@ -2946,6 +2948,7 @@ def transect_specs(gg, lon0, lat0, lon1, lat1, subsamp=3, getxy=False, getproj=F
     """
 
     # Bounds and resolution
+    from .basemap import get_map
     dx, dy = resol(gg, proj='merc')
     m = get_map(gg, resol=None, proj='merc')
     x0, y0 = m(lon0, lat0)
@@ -3605,7 +3608,6 @@ from ...misc.axes import (check_axes, islon, islat, islev, istime, create_lon,
     create_lat, isaxis, isdep)
 from ...misc.atime import ch_units,compress
 from ...misc.phys import units, constants
-from .basemap import get_map, cached_map, cache_map, get_proj
 from .masking import t2uvmasks
 from .regridding import extend1d
 from ...__init__ import VACUMMError, VACUMMWarning, vcwarn
