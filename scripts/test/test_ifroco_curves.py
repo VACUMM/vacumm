@@ -53,7 +53,7 @@ for i in range(ptdata.shape[1]):
     datas[i].long_name = points[i][2]#.decode('utf8')
 
 # Plot
-logofile = os.path.join(os.path.dirname(code_file_name()), logofile)
+logofile = os.path.join(os.path.dirname(__file__), logofile)
 x = plot_curves(datas, vmin=vmin, vmax=vmax, units=units, long_name=long_name,
     title=long_long_name+u' aux bouées', logos=logofile, copyright=copyright,
     date_locator=HourLocator(byhour=[0, 12]),
@@ -63,4 +63,4 @@ x = plot_curves(datas, vmin=vmin, vmax=vmax, units=units, long_name=long_name,
 #    ylocator=MaxNlocator(integer=True), yminor_locator=MaxNlocator(integer=True, steps=2),
     close=True
     )
-#P.show()
+P#.show()
