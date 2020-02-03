@@ -1,7 +1,7 @@
 """Test :class:`~vacumm.misc.color.darken` """
 
 # Imports
-from vcmq import P, darken, code_file_name, plot_cmap
+from vcmq import P, darken, plot_cmap
 
 cmap_name = "CMRmap"
 cmap_old = P.get_cmap(cmap_name)
@@ -29,6 +29,6 @@ P.subplot(224)
 plot_cmap(cmap_10, title='f = 1.0', **kw)
 P.figtext(.5, 1, 'Darken '+cmap_name, va='top', ha='center', size=12)
 P.tight_layout()
-P.savefig(code_file_name(ext='png'))
+P.savefig(__file__[:-2]+'png')
 P.close()
 

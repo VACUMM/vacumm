@@ -1,9 +1,9 @@
 """Test :func:`~vacumm.misc.plot.Plot.add_point` and similar :class:`~vacumm.misc.plot.Plot` methods"""
 
 # Imports
-from vcmq import MV2, code_file_name, map2, curve2, create_time
+from vcmq import MV2, map2, curve2, create_time
 
-figfile = code_file_name(ext=False)+'_%i.png'
+figfile = __file__[:-2]+'_%i.png'
 
 # Create a map with projection
 m = map2(lon=(-10,1), lat=(43,51), res='l', show=False, proj='merc')

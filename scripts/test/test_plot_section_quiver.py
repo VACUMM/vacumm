@@ -1,7 +1,7 @@
 """Test :func:`~vacumm.misc.plot.section2` in quiver mode"""
 
 # Imports
-from vcmq import create_lon, N, MV2, create_dep, os, code_file_name, section2
+from vcmq import create_lon, N, MV2, create_dep, os, section2
 from vacumm.misc.phys.units import deg2m
 
 # Init data with z 1D
@@ -21,7 +21,7 @@ for var in u,w:
     var.units = 'm/s'
 
 # Plot
-figfile = code_file_name(ext='png')
+figfile = __file__[:-2]+'png'
 if os.path.exists(figfile): os.remove(figfile)
 s = section2((u,w), quiver_norm=1, fill=False, show=False,
     savefig=figfile, close=True, axes_aspect=1)

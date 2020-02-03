@@ -1,7 +1,7 @@
 """Test :class:`~vacumm.misc.color.anamorph_cmap` """
 
 # Imports
-from vcmq import P, anamorph_cmap, code_file_name, plot_cmap
+from vcmq import P, anamorph_cmap, plot_cmap
 
 # Array-like
 cmapa_old = P.get_cmap('jet')
@@ -23,6 +23,6 @@ plot_cmap(cmapf_old, **kw)
 P.subplot(224)
 plot_cmap(cmapf_new, **kw)
 P.tight_layout()
-P.savefig(code_file_name(ext='png'))
+P.savefig(__file__[:-2]+'png')
 P.close()
 

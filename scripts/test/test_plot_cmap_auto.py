@@ -1,7 +1,7 @@
 """Test :func:`~vacumm.misc.plot.plot2d` with automatic colormaps"""
 
 # Imports
-from vcmq import MV2, code_file_name, plot2d, os
+from vcmq import MV2, plot2d, os
 
 # Init
 var = MV2.reshape(MV2.arange(10*8), (8,10))
@@ -10,7 +10,7 @@ var.getAxis(0).id = 'frequency'
 var.getAxis(1).id = 'distance'
 
 # Plot
-figfile = code_file_name(ext='png')
+figfile = __file__[:-2]+'png'
 if os.path.exists(figfile): os.remove(figfile)
 # - positive
 plot2d(var, subplot=326, show=False, figsize=(6, 8), cmap='auto',

@@ -1,9 +1,9 @@
 """Testing CDAT regridding algorithm"""
-from vcmq import create_grid2d, meshbounds, set_grid, code_file_name, P, N, MV2, rc, add_grid
+from vcmq import create_grid2d, meshbounds, set_grid, P, N, MV2, rc, add_grid
 from collections import OrderedDict
 
 configs = OrderedDict(
-    libcf=['linear'], 
+    libcf=['linear'],
     esmf=[
         'linear',
         'patch',
@@ -15,10 +15,10 @@ configs = OrderedDict(
 nxi = 5
 nyi = 4
 xxi, yyi = N.meshgrid(N.arange(nxi)+.25, N.arange(nyi)-.25)
-for j in xrange(nyi):
+for j in range(nyi):
     xxi[j,:] -= j*0.5
     #yyi[j,:] += j
-for i in xrange(nxi):
+for i in range(nxi):
     yyi[:,i] += i*0.5
 gridi = create_grid2d(xxi,yyi) # input cdms grid
 xxib,yyib = meshbounds(xxi,yyi) # coordinates of cell corners
@@ -38,18 +38,18 @@ set_grid(vari, gridi) # set grid and axes
 #gridi.setMask(vari.mask)
 
 # Define plot function
-figfile = code_file_name(ext=False)+'_%(ifig)i.png'
+figfile = __file__[:-2]+'_%(ifig)i.png'
 #'%(tool)s_%(method)s.png'
 figfiles = []
 rc('font',size=9)
 kw = dict(vmin=vari.min(),vmax=vari.max())
-    
+
 # Define logger
-logfile = code_file_name(ext='log')
+logfile = __file__[:-2]+'log'
 f = open(logfile, 'w')
 def log(f, text): # logger
 #    print text
-    print >>f, text
+    print(text, file=f)
 
 # Loop on methods and tools
 for tool, methods in configs.items():
@@ -58,11 +58,11 @@ for tool, methods in configs.items():
         log(f,  ('%s/%s'%(tool,method)).upper())
         diag = {'dstAreaFractions': None,'dstAreas':
                 None,'srcAreaFractions':None,'srcAreas':None} # output diags
-        
+
         # Regridding
-        varo = vari.regrid(grido, tool=tool, method=method, 
+        varo = vari.regrid(grido, tool=tool, method=method,
             diag=diag, coordSys='cart')
-        
+
         # Ajustment for conservative methode
         frac = diag['dstAreaFractions']
         if method=='conservative': # divide by dstAreaFractions for conservative
@@ -72,9 +72,9 @@ for tool, methods in configs.items():
             varo[:] /= frac
             varo[:] = MV2.masked_where(mask, varo, copy=0)
             log(f, ' dstareas: %s'%diag['dstAreas'])
-            
+
         log(f, ' varo: %s'%varo)
-        
+
         # Plot
         P.figure(figsize=(6,3))
         P.subplot(121).set_aspect(1)

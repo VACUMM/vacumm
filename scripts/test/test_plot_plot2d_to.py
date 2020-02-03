@@ -15,7 +15,7 @@ y.units = 'Hz'
 y.long_name = 'Frequency'
 
 # Plot
-figfile = code_file_name(ext='png')
+figfile = __file__[:-2]+'png'
 if os.path.exists(figfile): os.remove(figfile)
 plot2d(var, savefig=figfile, show=False, close=True, fill='pcolor', order='t-')
 

@@ -1,7 +1,7 @@
 """Test :class:`~vacumm.misc.color.to_grey` """
 
 # Imports
-from vcmq import P, to_grey, code_file_name, plot_cmap
+from vcmq import P, to_grey, plot_cmap
 
 
 cmap_name = "CMRmap"
@@ -29,7 +29,7 @@ plot_cmap(cmap_05, title='f = 0.5', **kw)
 P.subplot(224)
 plot_cmap(cmap_10, title='f = 1.0', **kw)
 P.tight_layout()
-P.savefig(code_file_name(ext='png'))
+P.savefig(__file__[:-2]+'png')
 P.show()
 P.close()
 
